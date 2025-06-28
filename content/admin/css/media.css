@@ -1,0 +1,67 @@
+﻿@media (max-width:767px), (orientation: portrait) {
+
+	#header .info {width:100%;}
+	
+	#header {height:auto;}
+	#adm_out_submit {width:100%;}
+	
+	#header .info {width:100%; display:flex; flex-flow:row wrap; justify-content:center; align-items:center;}
+	#header .info > #adm_out {width:100%;}
+	#header .info > .home {margin:0;}
+	
+	#header .lng {width:100%;}
+	
+	#menu {width:100%; height:auto; position:relative; overflow-y:auto; padding:1rem 0;}
+	
+	#content {width:100%; min-height:auto; margin-left:0;}
+	
+	#content > .ctlg_dspl_tp {margin:0 auto;}
+	
+	#content > .ctlg {justify-content:space-around;}
+	#content > .ctlg.list .bx {height:4rem;}
+	#content > .ctlg.list .bx:hover > .adm_menu > .action_button {background-size:auto 40%; border-radius:0;}
+	#content > .ctlg.list .bx > .base_info {min-width:30%;}
+	#content > .ctlg.list .bx > .img {width:20%;}
+	#content > .ctlg.list .nm {width:20%; height:100%; padding:0; display:flex; flex-flow:column wrap; align-items:center; justify-content:center;}
+	#content > .ctlg.list .nm > span {width:100%; height:auto; line-height:.7rem; float:left; display:flex; align-items:center; justify-content:center;}
+	/*#content > .ctlg.list .nm > .mo {color:inherit;}*/
+	#content > .ctlg.list .info {width:30%; height:50%; line-height:1rem; font-size:.6rem; text-align:center;}
+	#content > .ctlg.list .info > .it {margin:0;}
+	#content > .ctlg.list .prc_wrap {width:30%; height:50%; padding:0; line-height:unset;}
+	
+	#content_box .dd_plc {width:90%;}
+	#content_box .prv .it {max-width:40%;}
+	
+	#add_photo, #photo_frame .photo {width:120px; height:120px;}
+	
+	#main_admin.slim {width:60%;}
+	
+	#action_menu {width:40%; overflow-y:scroll; padding:0 15px; border-bottom:none !important; border-left:1px solid #000;}
+	#action_menu.active {height:100%;}
+	
+	#action_menu > div {width:100%; height:50px; border-right:none !important; text-align:center;}
+	#action_menu > div.count {border-bottom:1px solid #000;}
+	
+	#mail_content > .mail > .title > div {width:100% !important;}
+	
+}
+
+@media (min-width:768px) and (max-width:954px) {
+	
+
+	
+}
+
+
+@media (min-width:955px) and (max-width:1229px) {
+	
+
+	
+}
+
+@media (min-width:1230px) {
+	
+
+	
+}
+

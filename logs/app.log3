@@ -1,0 +1,590 @@
+[2025-04-14 15:02:01] INFO: No adverts found to publish.
+
+Notice: Undefined variable: advert999_id in /home/sautom/public_html/console/publish_scheduled_adverts.php on line 100
+[2025-04-14 15:03:01] Advert  is already scheduled for 2025-04-15 08:14
+[2025-04-14 15:04:01] INFO: No adverts found to publish.
+[2025-04-14 15:05:01] INFO: No adverts found to publish.
+
+Notice: Undefined variable: advert999_id in /home/sautom/public_html/console/publish_scheduled_adverts.php on line 100
+[2025-04-14 15:06:02] Advert  is already scheduled for 2025-04-15 08:14
+[2025-04-14 15:07:01] INFO: No adverts found to publish.
+Array
+(
+    [error] => Array
+        (
+            [code] => 400
+            [errors] => Array
+                (
+                    [0] => Array
+                        (
+                            [feature_id] => 14
+                            [message] => Completați câmpul
+                        )
+
+                )
+
+            [message] => Validation failed
+            [reason] => bad_request
+        )
+
+)
+
+Notice: Undefined variable: advert999_id in /home/sautom/public_html/console/publish_scheduled_adverts.php on line 101
+[2025-04-14 15:08:02] Advert  is already scheduled for 2025-04-15 08:14
+[2025-04-14 15:09:01] INFO: No adverts found to publish.
+[2025-04-14 15:10:02] INFO: No adverts found to publish.
+Array
+(
+    [0] => stdClass Object
+        (
+            [id] => 20
+            [value] => 139
+        )
+
+    [1] => stdClass Object
+        (
+            [id] => 21
+            [value] => 729
+        )
+
+    [2] => stdClass Object
+        (
+            [id] => 2095
+            [value] => 34371
+        )
+
+    [3] => stdClass Object
+        (
+            [id] => 775
+            [value] => 18592
+        )
+
+    [4] => stdClass Object
+        (
+            [id] => 593
+            [value] => 18668
+        )
+
+    [5] => stdClass Object
+        (
+            [id] => 1761
+            [value] => 29670
+        )
+
+    [6] => stdClass Object
+        (
+            [id] => 1763
+            [value] => 29677
+        )
+
+    [7] => stdClass Object
+        (
+            [id] => 13
+            [value] => Toate ofertele din catalog le găsiți pe: https://www.sauto.md/ro/cars?tg=fltr&mo=kuga&br=ford
+Dealer autorizat de automobile importate din Uniunea Europeană
+Țările de baza: France, Germany, Belgium, Netherlands, Switzerland, Italy, Austria, Czech Rep of  
+De ce noi?
+Pentru că:  "Vei obține garanție deoarece că suntem încrezuți în automobilele pe care le vindem"
+Pentru că: "Prețul la trade-in rămâne ca cel ca de la cash”
+Pentru că:  "Oferim cel mai avantajos preț de piață deoarece importăm și vindem fără intermediari"  Metode de procurare: cash(numerar), transfer bancar, credit auto, leasing, trade-in(schimb)
+Adresa noastră: Chișinău, str. Calea Moșilor, 11 ( Piața “Calea Basarabiei”) 
+Puncte de reper: Gara de Nord;  Талчок - Piața Calea Basarabiei; Piața cu flori; Piața сu Mobilă)
+Ne găsiți ușor pe hartă: https://goo.gl/maps/kjoPtPwbh1JKa5Rs7
+        )
+
+    [8] => stdClass Object
+        (
+            [id] => 1404
+            [value] => undefined, ford, kuga
+        )
+
+    [9] => stdClass Object
+        (
+            [id] => 7
+            [value] => 12900
+        )
+
+    [10] => stdClass Object
+        (
+            [id] => 2
+            [unit] => eur
+            [value] => 16999
+        )
+
+    [11] => stdClass Object
+        (
+            [id] => 795
+            [value] => 23241
+        )
+
+    [12] => stdClass Object
+        (
+            [id] => 19
+            [value] => 2021
+        )
+
+    [13] => stdClass Object
+        (
+            [id] => 1196
+            [value] => 21979
+        )
+
+    [14] => stdClass Object
+        (
+            [id] => 846
+            [value] => 19119
+        )
+
+    [15] => stdClass Object
+        (
+            [id] => 102
+            [value] => 74
+        )
+
+    [16] => stdClass Object
+        (
+            [id] => 851
+            [value] => 19086
+        )
+
+    [17] => stdClass Object
+        (
+            [id] => 104
+            [unit] => km
+            [value] => 157000
+        )
+
+    [18] => stdClass Object
+        (
+            [id] => 103
+            [unit] => cm3
+            [value] => 1500
+        )
+
+    [19] => stdClass Object
+        (
+            [id] => 107
+            [unit] => hp
+            [value] => 120
+        )
+
+    [20] => stdClass Object
+        (
+            [id] => 151
+            [value] => 24
+        )
+
+    [21] => stdClass Object
+        (
+            [id] => 101
+            [value] => 16
+        )
+
+    [22] => stdClass Object
+        (
+            [id] => 108
+            [value] => 5
+        )
+
+    [23] => stdClass Object
+        (
+            [id] => 17
+            [value] => 50
+        )
+
+    [24] => stdClass Object
+        (
+            [id] => 109
+            [value] => 1
+        )
+
+    [25] => stdClass Object
+        (
+            [id] => 115
+            [value] => 1
+        )
+
+    [26] => stdClass Object
+        (
+            [id] => 110
+            [value] => 1
+        )
+
+    [27] => stdClass Object
+        (
+            [id] => 114
+            [value] => 1
+        )
+
+    [28] => stdClass Object
+        (
+            [id] => 116
+            [value] => 1
+        )
+
+    [29] => stdClass Object
+        (
+            [id] => 1639
+            [value] => 1
+        )
+
+    [30] => stdClass Object
+        (
+            [id] => 113
+            [value] => 1
+        )
+
+    [31] => stdClass Object
+        (
+            [id] => 111
+            [value] => 1
+        )
+
+    [32] => stdClass Object
+        (
+            [id] => 112
+            [value] => 1
+        )
+
+    [33] => stdClass Object
+        (
+            [id] => 119
+            [value] => 1
+        )
+
+    [34] => stdClass Object
+        (
+            [id] => 118
+            [value] => 1
+        )
+
+    [35] => stdClass Object
+        (
+            [id] => 126
+            [value] => 1
+        )
+
+    [36] => stdClass Object
+        (
+            [id] => 124
+            [value] => 1
+        )
+
+    [37] => stdClass Object
+        (
+            [id] => 125
+            [value] => 1
+        )
+
+    [38] => stdClass Object
+        (
+            [id] => 128
+            [value] => 1
+        )
+
+    [39] => stdClass Object
+        (
+            [id] => 123
+            [value] => 1
+        )
+
+    [40] => stdClass Object
+        (
+            [id] => 117
+            [value] => 1
+        )
+
+    [41] => stdClass Object
+        (
+            [id] => 1638
+            [value] => 1
+        )
+
+    [42] => stdClass Object
+        (
+            [id] => 122
+            [value] => 1
+        )
+
+    [43] => stdClass Object
+        (
+            [id] => 1766
+            [value] => 1
+        )
+
+    [44] => stdClass Object
+        (
+            [id] => 2201
+            [value] => 1
+        )
+
+    [45] => stdClass Object
+        (
+            [id] => 130
+            [value] => 1
+        )
+
+    [46] => stdClass Object
+        (
+            [id] => 131
+            [value] => 1
+        )
+
+    [47] => stdClass Object
+        (
+            [id] => 132
+            [value] => 1
+        )
+
+    [48] => stdClass Object
+        (
+            [id] => 133
+            [value] => 1
+        )
+
+    [49] => stdClass Object
+        (
+            [id] => 134
+            [value] => 1
+        )
+
+    [50] => stdClass Object
+        (
+            [id] => 135
+            [value] => 1
+        )
+
+    [51] => stdClass Object
+        (
+            [id] => 136
+            [value] => 1
+        )
+
+    [52] => stdClass Object
+        (
+            [id] => 137
+            [value] => 1
+        )
+
+    [53] => stdClass Object
+        (
+            [id] => 138
+            [value] => 1
+        )
+
+    [54] => stdClass Object
+        (
+            [id] => 139
+            [value] => 1
+        )
+
+    [55] => stdClass Object
+        (
+            [id] => 140
+            [value] => 1
+        )
+
+    [56] => stdClass Object
+        (
+            [id] => 141
+            [value] => 1
+        )
+
+    [57] => stdClass Object
+        (
+            [id] => 142
+            [value] => 1
+        )
+
+    [58] => stdClass Object
+        (
+            [id] => 143
+            [value] => 1
+        )
+
+    [59] => stdClass Object
+        (
+            [id] => 144
+            [value] => 1
+        )
+
+    [60] => stdClass Object
+        (
+            [id] => 145
+            [value] => 1
+        )
+
+    [61] => stdClass Object
+        (
+            [id] => 147
+            [value] => 1
+        )
+
+    [62] => stdClass Object
+        (
+            [id] => 148
+            [value] => 1
+        )
+
+    [63] => stdClass Object
+        (
+            [id] => 149
+            [value] => 1
+        )
+
+    [64] => stdClass Object
+        (
+            [id] => 150
+            [value] => 1
+        )
+
+    [65] => stdClass Object
+        (
+            [id] => 15
+            [value] => Array
+                (
+                    [0] => https://www.youtube.com/watch?v=_sbHQnaZ9kk
+                    [1] => https://www.youtube.com/watch?v=O9CdDeJ9vXs
+                    [2] => https://www.youtube.com/watch?v=LDzcvhjTf0w
+                )
+
+        )
+
+    [66] => stdClass Object
+        (
+            [id] => 16
+            [value] => Array
+                (
+                    [0] => 37379500425
+                )
+
+        )
+
+)
+Array
+(
+    [error] => Array
+        (
+            [code] => 400
+            [errors] => Array
+                (
+                    [0] => Array
+                        (
+                            [feature_id] => 14
+                            [message] => Completați câmpul
+                        )
+
+                )
+
+            [message] => Validation failed
+            [reason] => bad_request
+        )
+
+)
+
+Notice: Undefined variable: advert999_id in /home/sautom/public_html/console/publish_scheduled_adverts.php on line 102
+[2025-04-14 15:11:02] Advert  is already scheduled for 2025-04-15 08:14
+[2025-04-14 15:12:02] INFO: No adverts found to publish.
+[2025-04-14 15:13:01] INFO: No adverts found to publish.
+[2025-04-14 15:14:01] INFO: No adverts found to publish.
+[2025-04-14 15:15:02] INFO: No adverts found to publish.
+[2025-04-14 15:16:01] INFO: No adverts found to publish.
+[2025-04-14 15:17:01] INFO: No adverts found to publish.
+[2025-04-14 15:18:01] INFO: No adverts found to publish.
+[2025-04-14 15:19:01] INFO: No adverts found to publish.
+[2025-04-14 15:20:01] INFO: No adverts found to publish.
+[2025-04-14 15:21:01] INFO: No adverts found to publish.
+[2025-04-14 15:22:01] INFO: No adverts found to publish.
+[2025-04-14 15:23:01] INFO: No adverts found to publish.
+[2025-04-14 15:24:01] INFO: No adverts found to publish.
+[2025-04-14 15:25:01] INFO: No adverts found to publish.
+[2025-04-14 15:26:02] INFO: No adverts found to publish.
+[2025-04-14 15:27:01] INFO: No adverts found to publish.
+[2025-04-14 15:28:01] INFO: No adverts found to publish.
+[2025-04-14 15:29:02] INFO: No adverts found to publish.
+[2025-04-14 15:30:01] INFO: No adverts found to publish.
+[2025-04-14 15:31:01] INFO: No adverts found to publish.
+[2025-04-14 15:32:01] INFO: No adverts found to publish.
+[2025-04-14 15:33:02] INFO: No adverts found to publish.
+[2025-04-14 15:34:02] INFO: No adverts found to publish.
+[2025-04-14 15:35:01] INFO: No adverts found to publish.
+[2025-04-14 15:36:02] INFO: No adverts found to publish.
+[2025-04-14 15:37:01] INFO: No adverts found to publish.
+[2025-04-14 15:38:01] INFO: No adverts found to publish.
+[2025-04-14 15:39:02] INFO: No adverts found to publish.
+[2025-04-14 15:40:01] INFO: No adverts found to publish.
+[2025-04-14 15:41:01] INFO: No adverts found to publish.
+[2025-04-14 15:42:01] INFO: No adverts found to publish.
+[2025-04-14 15:43:01] INFO: No adverts found to publish.
+[2025-04-14 15:44:01] INFO: No adverts found to publish.
+[2025-04-14 15:45:02] INFO: No adverts found to publish.
+[2025-04-14 15:46:01] INFO: No adverts found to publish.
+[2025-04-14 15:47:02] INFO: No adverts found to publish.
+[2025-04-14 15:48:01] INFO: No adverts found to publish.
+[2025-04-14 15:49:01] INFO: No adverts found to publish.
+[2025-04-14 15:50:01] INFO: No adverts found to publish.
+[2025-04-14 15:51:02] INFO: No adverts found to publish.
+[2025-04-14 15:52:01] INFO: No adverts found to publish.
+[2025-04-14 15:53:01] INFO: No adverts found to publish.
+[2025-04-14 15:54:01] INFO: No adverts found to publish.
+[2025-04-14 15:55:01] INFO: No adverts found to publish.
+[2025-04-14 15:56:01] INFO: No adverts found to publish.
+[2025-04-14 15:57:01] INFO: No adverts found to publish.
+[2025-04-14 15:58:01] INFO: No adverts found to publish.
+[2025-04-14 15:59:01] INFO: No adverts found to publish.
+[2025-04-14 16:00:01] INFO: No adverts found to publish.
+[2025-04-14 16:01:02] INFO: No adverts found to publish.
+[2025-04-14 16:02:01] INFO: No adverts found to publish.
+[2025-04-14 16:03:01] INFO: No adverts found to publish.
+[2025-04-14 16:04:01] INFO: No adverts found to publish.
+[2025-04-14 16:05:01] INFO: No adverts found to publish.
+[2025-04-14 16:06:01] INFO: No adverts found to publish.
+[2025-04-14 16:07:01] INFO: No adverts found to publish.
+[2025-04-14 16:08:01] INFO: No adverts found to publish.
+[2025-04-14 16:09:01] INFO: No adverts found to publish.
+[2025-04-14 16:10:02] INFO: No adverts found to publish.
+[2025-04-14 16:11:01] INFO: No adverts found to publish.
+[2025-04-14 16:12:01] INFO: No adverts found to publish.
+[2025-04-14 16:13:01] INFO: No adverts found to publish.
+[2025-04-14 16:14:01] INFO: No adverts found to publish.
+[2025-04-14 16:15:02] INFO: No adverts found to publish.
+[2025-04-14 16:16:01] INFO: No adverts found to publish.
+[2025-04-14 16:17:01] INFO: No adverts found to publish.
+[2025-04-14 16:18:01] INFO: No adverts found to publish.
+[2025-04-14 16:19:01] INFO: No adverts found to publish.
+[2025-04-14 16:20:01] INFO: No adverts found to publish.
+[2025-04-14 16:21:01] INFO: No adverts found to publish.
+[2025-04-14 16:22:01] INFO: No adverts found to publish.
+[2025-04-14 16:23:01] INFO: No adverts found to publish.
+[2025-04-14 16:24:01] INFO: No adverts found to publish.
+[2025-04-14 16:25:01] INFO: No adverts found to publish.
+[2025-04-14 16:26:01] INFO: No adverts found to publish.
+[2025-04-14 16:27:01] INFO: No adverts found to publish.
+[2025-04-14 16:28:01] INFO: No adverts found to publish.
+[2025-04-14 16:29:01] INFO: No adverts found to publish.
+[2025-04-14 16:30:02] INFO: No adverts found to publish.
+[2025-04-14 16:31:01] INFO: No adverts found to publish.
+[2025-04-14 16:32:01] INFO: No adverts found to publish.
+[2025-04-14 16:33:01] INFO: No adverts found to publish.
+[2025-04-14 16:34:01] INFO: No adverts found to publish.
+[2025-04-14 16:35:01] INFO: No adverts found to publish.
+[2025-04-14 16:36:01] INFO: No adverts found to publish.
+[2025-04-14 16:37:01] INFO: No adverts found to publish.
+[2025-04-14 16:38:01] INFO: No adverts found to publish.
+[2025-04-14 16:39:02] INFO: No adverts found to publish.
+[2025-04-14 16:40:01] INFO: No adverts found to publish.
+[2025-04-14 16:41:01] INFO: No adverts found to publish.
+[2025-04-14 16:42:01] INFO: No adverts found to publish.
+[2025-04-14 16:43:01] INFO: No adverts found to publish.
+[2025-04-14 16:44:01] INFO: No adverts found to publish.
+[2025-04-14 16:45:01] INFO: No adverts found to publish.
+[2025-04-14 16:46:01] INFO: No adverts found to publish.
+[2025-04-14 16:47:02] INFO: No adverts found to publish.
+[2025-04-14 16:48:01] INFO: No adverts found to publish.
+[2025-04-14 16:49:01] INFO: No adverts found to publish.
+[2025-04-14 16:50:01] INFO: No adverts found to publish.
+[2025-04-14 16:51:01] Advert 100681583 is already update images. Response: {"success":true}
+[2025-04-14 16:51:01] Advert 100681583 is already republished
+[2025-04-14 16:51:01] Advert 100681583 is already scheduled for 2025-04-14 20:25
+[2025-04-14 16:51:01] Advert 100681583 is already scheduled for 2025-04-15 08:14
+[2025-04-14 16:52:01] INFO: No adverts found to publish.

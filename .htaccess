@@ -1,0 +1,98 @@
+#php_value max_execution_time 500
+#php_value max_input_time 500
+#php_value upload_max_filesize 60M
+#php_value post_max_size 60M
+
+RewriteEngine On
+# Прямой редирект при обращении к /FordFocus
+RewriteCond %{REQUEST_URI} ^/FordFocus/?$ [NC]
+RewriteRule ^.*$ https://www.sauto.md/ro/cars?tg=fltr&mo=focus&br=ford&utm_source=999&utm_medium=free_listing&utm_campaign=ford_focus&utm_content=text_link [R=301,L]
+
+# Прямой редирект при обращении к /MitsubishiOutlander
+RewriteCond %{REQUEST_URI} ^/MitsubishiOutlander/?$ [NC]
+RewriteRule ^.*$ https://www.sauto.md/ro/cars?tg=fltr&mo=outlander&br=mitsubishi&utm_source=999&utm_medium=free_listing&utm_campaign=mitsubishi_outlander&utm_content=text_link [R=301,L]
+
+Options +FollowSymLinks
+
+## Mod_rewrite in use
+
+# Block out any script trying to base64_encode data within the URL.
+# Block out any script that includes a <script> tag in URL.
+# Block out any script trying to set a PHP GLOBALS variable via URL.
+# Block out any script trying to modify a _REQUEST variable via URL.
+# Return 403 Forbidden header and show the content of the root homepage
+RewriteCond %{QUERY_STRING} base64_encode[^(]*\([^)]*\) [OR]
+RewriteCond %{QUERY_STRING} (<|%3C)([^s]*s)+cript.*(>|%3E) [NC,OR]
+RewriteCond %{QUERY_STRING} GLOBALS(=|\[|\%[0-9A-Z]{0,2}) [OR]
+RewriteCond %{QUERY_STRING} _REQUEST(=|\[|\%[0-9A-Z]{0,2})
+RewriteRule .* index.php [F]
+
+## Begin - Custom redirects [R=301,L]
+## End - Custom redirects
+
+# RewriteBase /
+
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+#
+# If the requested path and file is not /index.php and the request
+# has not already been internally rewritten to the index.php script
+# and the request is for something within the component folder,
+# or for the site root, or for an extensionless URL, or the
+# requested URL ends with one of the listed extensions
+# and the requested path and file doesn't directly match a physical file
+# and the requested path and file doesn't directly match a physical folder
+# internally rewrite the request to the index.php script
+RewriteCond %{REQUEST_URI} !^/index\.php
+RewriteCond %{REQUEST_URI} /component/|(/[^.]*|\.(php|html?|feed|pdf|vcf|raw))$ [NC]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule .* index.php [L]
+
+RewriteCond %{HTTPS} off
+RewriteRule .* https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+RewriteCond %{HTTP_HOST} !^www\. [NC]
+RewriteRule .* https://www\.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+Header set Strict-Transport-Security "max-age=31536000" env=HTTPS
+
+<FilesMatch "\.(ico|pdf|jpg|jpeg|png|webp|svg|gif|html|htm|xml|txt|xsl|css|js|ttf)$">
+Header set Cache-Control "max-age=31536050"
+</FilesMatch>
+
+# BEGIN cPanel-generated php ini directives, do not edit
+# Manual editing of this file may result in unexpected behavior.
+# To make changes to this file, use the cPanel MultiPHP INI Editor (Home >> Software >> MultiPHP INI Editor)
+# For more information, read our documentation (https://go.cpanel.net/EA4ModifyINI)
+<IfModule php7_module>
+   php_flag display_errors Off
+   php_value error_reporting Off
+   php_value max_execution_time 300
+   php_value max_input_time 300
+   php_value max_input_vars 2000
+   php_value memory_limit 1024M
+   php_value post_max_size 1024M
+   php_value session.gc_maxlifetime 1440
+   php_value session.save_path "/var/cpanel/php/sessions/ea-php74"
+   php_value upload_max_filesize 1024M
+   php_flag zlib.output_compression Off
+</IfModule>
+<IfModule lsapi_module>
+   php_flag display_errors Off
+   php_value error_reporting Off
+   php_value max_execution_time 300
+   php_value max_input_time 300
+   php_value max_input_vars 2000
+   php_value memory_limit 1024M
+   php_value post_max_size 1024M
+   php_value session.gc_maxlifetime 1440
+   php_value session.save_path "/var/cpanel/php/sessions/ea-php74"
+   php_value upload_max_filesize 1024M
+   php_flag zlib.output_compression Off
+</IfModule>
+# END cPanel-generated php ini directives, do not edit
+
+# php -- BEGIN cPanel-generated handler, do not edit
+# Set the “ea-php74” package as the default “PHP” programming language.
+<IfModule mime_module>
+  AddHandler application/x-httpd-ea-php74___lsphp .php .php7 .phtml
+</IfModule>
+# php -- END cPanel-generated handler, do not edit

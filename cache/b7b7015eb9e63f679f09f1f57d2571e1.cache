@@ -1,0 +1,1 @@
+{"error":{"errors":[{"field":"booster_settings","message":"rpc error: code = Unknown desc = Handlers GetBoostersSettings: UseCase GetBoostersSettings verifyAdsOwnership: UseCase verifyAdsOwnership input\/result different size","value":null}],"reason":"bad_request","code":400,"message":"Bad Request"}}
