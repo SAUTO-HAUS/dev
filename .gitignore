@@ -4,3 +4,4 @@ deploy.php
 filter_debug.log
 *.zip
 *.log
+environment.php

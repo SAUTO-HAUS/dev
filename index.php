@@ -1,4 +1,6 @@
 <?php
+include_once('environment.php');
+
 if ( ( session_id()=='' || !isset($_SESSION) ) ){ session_start(); }
 /*header('Cache-Control: no-cache');
 header('Pragma: no-cache');*/

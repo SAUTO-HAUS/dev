@@ -2,11 +2,11 @@
 
 //PDO start
 
-$sql_host = 'localhost';
-$sql_db = 'sautom_db';
-$sql_user = 'sautom_admin';
-$sql_pass = 'I4gU7kdv5gsYZuZbBZ';
-$sql_charset = 'utf8';
+$sql_host = SQL_HOST;
+$sql_db = SQL_DB;
+$sql_user = SQL_USER;
+$sql_pass = SQL_PASS;
+$sql_charset = SQL_CHARSET;
 
 $dsn = "mysql:host=$sql_host;dbname=$sql_db;charset=$sql_charset";
 $opt = [
