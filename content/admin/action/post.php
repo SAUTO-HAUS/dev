@@ -1,7 +1,8 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
 if ( isset( $_POST['adm_out_submit'] ) ){//___________________________________________________________________________________________ADM OUT
-	setcookie('sess', null, (time()-1), '/', '.'.$domain_name); unset($_COOKIE['sess']);	
+	$current_domain = $_SERVER['HTTP_HOST'];
+	setcookie('sess', '', (time()-1), '/', $current_domain); unset($_COOKIE['sess']);	
 } elseif ( isset( $_POST['adm_in_submit'] ) ){//___________________________________________________________________________________________PSWD check
 	//if ( !isset($_SESSION['adm_try']) ){ $_SESSION['adm_try']=1; }
 	//if($_SESSION['adm_try']>=5){ alertIt('Too many tries, you are banned for a while.'); }
@@ -20,20 +21,24 @@ if ( isset( $_POST['adm_out_submit'] ) ){//_____________________________________
 			$time = time()+(60*60*24*365);//1 year
 			$sess_time = time()+(60*$r['sess_t']);
 			
+			// Determinăm domeniului curent pentru cookie-uri specifice
+			$current_domain = $_SERVER['HTTP_HOST'];
+			$cookie_domain = $current_domain;
+			
 			setcookie('sess', $cookie_val, [
-				'expires'=>$time, 'path'=>'/', 'domain'=>'.'.$domain_name,
+				'expires'=>$time, 'path'=>'/', 'domain'=>$cookie_domain,
 				'secure'=>true, 'httponly'=>true, 'samesite'=>'Strict'
 			]);
             $_COOKIE['sess'] = $cookie_val;
 			
 			setcookie('usr', $r['login'], [
-				'expires'=>$time, 'path'=>'/', 'domain'=>'.'.$domain_name,
+				'expires'=>$time, 'path'=>'/', 'domain'=>$cookie_domain,
 				'secure'=>true, 'httponly'=>true, 'samesite'=>'Strict'
 			]);
             $_COOKIE['usr'] = $r['login'];
 			
 			setcookie('usr_id', $r['id'], [
-				'expires'=>$time, 'path'=>'/', 'domain'=>'.'.$domain_name,
+				'expires'=>$time, 'path'=>'/', 'domain'=>$cookie_domain,
 				'secure'=>true, 'httponly'=>true, 'samesite'=>'Strict'
 			]);
             $_COOKIE['usr_id'] = $r['id'];
