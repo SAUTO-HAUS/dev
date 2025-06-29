@@ -28,7 +28,8 @@ if ( isset($_COOKIE['sess'])&&!empty($_COOKIE['sess']) ){
 		$sess_dur = $r['sess_t'];
 		$sess_end = $r['sess_e'];
 		
-		setcookie('sess', $cookie_val, $time, '/', '.'.$domain_name); $_COOKIE['sess'] = $cookie_val;
+		$current_domain = $_SERVER['HTTP_HOST'];
+		setcookie('sess', $cookie_val, $time, '/', $current_domain); $_COOKIE['sess'] = $cookie_val;
 		
 		$pdo = $db->prepare('UPDATE '.$prefx.'_adm_usr SET `sess_e`=:sess_e, `cookie`=:cookie WHERE id=:id');
 		$pdo->execute(array(
