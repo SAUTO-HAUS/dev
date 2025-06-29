@@ -75,7 +75,7 @@ $isMobile = isMobile() ? '1' : '0';
 //start content
 if ( isset($_COOKIE['lang']) ){//если существует кука lang отвечающая за используемый язык (прописана в файле language.php)
 	echo '
-	<html lang="'.$_COOKIE['lang'].'" >';
+	<html lang="'.$_COOKIE['lang'].'" test-line >';
 		if (isset($t_mp[2]) && $t_mp[2] == $admin_dir) {//Если запрос к админке
             require_once(_ADM . '/body.php');
         } else {//Если запрос НЕ к админке
