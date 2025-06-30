@@ -11,7 +11,7 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 	require_once (_DEFAULT.'/arrays.php');
 	
 	require_once (_DEFAULT.'/language.php');
-	$z_site = 'https://' . $_SERVER['HTTP_HOST'];
+	$z_site = 'https://www.sauto.md';
 	$abr = '';
 	
 	/*$zcont = '
