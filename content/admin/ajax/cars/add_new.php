@@ -188,11 +188,18 @@ if (__post('sub') == 'mo_search') {
         dd("General Error: " . $e->getMessage());
     }
 } elseif (__post('sub') == 'file_load'){
+    $last_id = __post('last_id'); // Get the last_id from POST data
+    
     if (!empty($_FILES)) {
         //**********   FILE UPLOAD
         require_once($ajax_folder . '/file_upload.php');
-        $rtrn = ['img_qu' => __post('img_qu'), 'bx_id' => __post('bx_id'), 'last_id' => $last_id];
     }
+    
+    $rtrn = [
+        'img_qu' => __post('img_qu'),
+        'bx_id' => __post('bx_id'),
+        'last_id' => $last_id
+    ];
 } elseif (__post('sub') == 'make_it'){
     //**********    MAKE IT CARD
 	$last_id = __post('last_id');
