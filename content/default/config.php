@@ -3,6 +3,9 @@
 $is_https = 1;
 // Apply www redirect only to main domain, not subdomains
 $is_www = ($_SERVER['HTTP_HOST'] === 'sauto.md') ? 1 : 0;
+
+// DEBUG: Remove this after testing
+// echo '<!-- DEBUG: HTTP_HOST=' . $_SERVER['HTTP_HOST'] . ', is_www=' . $is_www . ' -->';
 $default_lang = 'ro';
 
 //Maintenance work

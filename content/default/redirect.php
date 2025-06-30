@@ -223,6 +223,6 @@ if ( substr($uri, -1) == '/' ){
 
 if ($redirect == 1){
 	header('HTTP/1.1 301 Moved Permanently');
-	header('Location: '.$protocol.'://'.$http_host . $uri);
+	header('Location: '.$protocol.$http_host . $uri);
 	exit();
 }
