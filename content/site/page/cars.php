@@ -312,7 +312,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
 			$spec_ar = ['yr', 'bt', 'mlg', 'vol', 'hp', 'fl', 'tra', 'wd', 'clr', 'sts', 'loc', 'import_country_id'];
 			
             //Update views
-            $db->query('UPDATE '.$prefx.'_car_ctlg SET `views` = `views` + 1 WHERE `id` = '.$it_id);
+            // $db->query('UPDATE '.$prefx.'_car_ctlg SET `views` = `views` + 1 WHERE `id` = '.$it_id);
 
 			$pdo = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg WHERE `id`= :id AND `vis`="1" AND `act`="1" LIMIT 1');
 			$pdo->execute(['id' => $it_id]);
@@ -825,6 +825,9 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
 					$rtrn .= '
 					</div>
 				</div>';
+
+                // Update views
+                $db->query('UPDATE '.$prefx.'_car_ctlg SET `views` = `views` + 1 WHERE `id` = '.$it_id);
 			}
 			
 			if ( $chkr_av == 1 ){ $rtrn .= '<script> $(document).ready(function(){ $("#crumbs .crnt").html("<a style=\"color:inherit;\" href=\"/"+$("body").data("lng")+"/cars/'.$r['br'].'-'.str_replace('_', '-', $r['mo']).'\">'.$r['br_nm'].' '.$r['mo_nm'].'</a>"); }) </script>'; }//, ['.$r['id'].']
