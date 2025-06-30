@@ -825,12 +825,6 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
 					$rtrn .= '
 					</div>
 				</div>';
-
-                sleep(2);
-
-                global $db2;
-                // Update views
-                $db2->query('UPDATE gh3sp_car_ctlg SET views = '.($r['views'] + 1).' WHERE id = '.$it_id);
 			}
 			
 			if ( $chkr_av == 1 ){ $rtrn .= '<script> $(document).ready(function(){ $("#crumbs .crnt").html("<a style=\"color:inherit;\" href=\"/"+$("body").data("lng")+"/cars/'.$r['br'].'-'.str_replace('_', '-', $r['mo']).'\">'.$r['br_nm'].' '.$r['mo_nm'].'</a>"); }) </script>'; }//, ['.$r['id'].']
