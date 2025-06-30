@@ -18,6 +18,8 @@ $opt = [
 ];
 $db = new PDO($dsn, $sql_user, $sql_pass, $opt) or die('Error can\'t connect.');
 
+$db2 = new PDO($dsn, $sql_user, $sql_pass, $opt) or die('Error can\'t connect.');
+
 //$database->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT );  
 //$database->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_WARNING );  
 //$database->setAttribute( PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION );
