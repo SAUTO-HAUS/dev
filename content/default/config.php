@@ -1,7 +1,8 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
 $is_https = 1;
-$is_www = 1;
+// Apply www redirect only to main domain, not subdomains
+$is_www = ($_SERVER['HTTP_HOST'] === 'sauto.md') ? 1 : 0;
 $default_lang = 'ro';
 
 //Maintenance work
