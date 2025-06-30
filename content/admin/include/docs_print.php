@@ -1,5 +1,5 @@
 <?php 
-include_once('environment.php');
+include_once($_SERVER['DOCUMENT_ROOT'].'/environment.php');
 
 if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'.$_POST['doc_f'].'.php') ){
 	define('_DOIT', 1); define('_DEFAULT', $_SERVER['DOCUMENT_ROOT'].'/content/default');
