@@ -827,6 +827,7 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
 				</div>';
 
                 // Update views
+                echo 'UPDATE gh3sp_car_ctlg SET views = '.($r['views'] + 1).' WHERE id = '.$it_id; 
                 $db->query('UPDATE gh3sp_car_ctlg SET views = '.($r['views'] + 1).' WHERE id = '.$it_id);
 			}
 			
