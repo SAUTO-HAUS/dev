@@ -320,8 +320,8 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
 				$chkr_av = 1;
 
 				//Update views
-				$pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `views`=`views`+1 WHERE `id`=:id');
-				$pdo->execute(['id' => $r['id']]);
+				// $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `views`=`views`+1 WHERE `id`=:id');
+				// $pdo->execute(['id' => $r['id']]);
 
 				//Collect photos
 				$pdo = $db->prepare('SELECT `name`, `main` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `pos` ASC'); 
