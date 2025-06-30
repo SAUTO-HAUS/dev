@@ -1,4 +1,5 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
+include_once('environment.php');
 
 define('_DEFAULT', $_SERVER['DOCUMENT_ROOT'].'/content/default');
 require_once (_DEFAULT.'/language.php');
