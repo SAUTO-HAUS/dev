@@ -1,8 +1,8 @@
-<?php //defined( '_DOIT' ) or die( 'Restricted access' );
+<?php defined( '_DOIT' ) or die( 'Restricted access' );
 
-define('_DOIT', 1); define('_DEFAULT', $_SERVER['DOCUMENT_ROOT'].'/content/default');
+define('_DEFAULT', $_SERVER['DOCUMENT_ROOT'].'/content/default');
 require_once (_DEFAULT.'/language.php');
-$z_site = 'https://www.sauto.md';
+$z_site = 'https://' . $_SERVER['HTTP_HOST'];
 $zcont = '
 <b>“SAUTO” SRL</b><br/>
 <span>Republica Moldova, MD-2084, mun.Chişinau</span><br/>
