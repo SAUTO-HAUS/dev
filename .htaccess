@@ -50,10 +50,8 @@ RewriteRule .* index.php [L]
 
 RewriteCond %{HTTPS} off
 RewriteRule .* https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-# Apply www rule only to main domain, not subdomains
 RewriteCond %{HTTP_HOST} !^www\. [NC]
-RewriteCond %{HTTP_HOST} ^sauto\.md$ [NC]
-RewriteRule .* https://www.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+RewriteRule .* https://www\.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 Header set Strict-Transport-Security "max-age=31536000" env=HTTPS
 
 <FilesMatch "\.(ico|pdf|jpg|jpeg|png|webp|svg|gif|html|htm|xml|txt|xsl|css|js|ttf)$">
