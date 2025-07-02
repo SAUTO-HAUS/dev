@@ -36,6 +36,14 @@ if (__post('sub') == 'mo_search') {
             $pdo->execute(['id' => __post('id')]);
             $r = $pdo->fetch();
 
+            // Get the correct brand and model names from car_list table
+            $car_info_stmt = $db->prepare('SELECT `br_nm`, `mo_nm` FROM '.$prefx.'_car_list WHERE `br`=:br AND `mo`=:mo LIMIT 1');
+            $car_info_stmt->execute(['br' => __post('br'), 'mo' => __post('mo')]);
+            $car_info = $car_info_stmt->fetch();
+            
+            $new_br_nm = $car_info ? $car_info['br_nm'] : $r['br_nm'];
+            $new_mo_nm = $car_info ? $car_info['mo_nm'] : $r['mo_nm'];
+
             $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET 
                 `gr`=:gr, `br`=:br, `mo`=:mo, `br_nm`=:br_nm, `mo_nm`=:mo_nm, `yr`=:yr,
                 `bt`=:bt, `sts`=:sts, `mlg`=:mlg, `unit`=:unit, `vol`=:vol, `hp`=:hp, `fl`=:fl,
@@ -49,8 +57,8 @@ if (__post('sub') == 'mo_search') {
                 'gr' => __post('gr'),
                 'br' => __post('br'),
                 'mo' => __post('mo'),
-                'br_nm' => $r['br_nm'],
-                'mo_nm' => $r['mo_nm'],
+                'br_nm' => $new_br_nm,
+                'mo_nm' => $new_mo_nm,
                 'yr' => __post('yr'),
                 'bt' => __post('bt'),
                 'sts' => __post('sts'),

@@ -56,6 +56,11 @@ if (__post('sub') == 'get_subcategory') {
     }
 } elseif (__post('sub') == 'set_999') {
 
+    // Validate form data
+    if (empty($_POST['form_data'])) {
+        $rtrn = ['error' => 'Form data is empty'];
+    } else {
+
     $request = null;
     $pdo = Container::get('db');
     $carId = __post('carId');
@@ -67,11 +72,24 @@ if (__post('sub') == 'get_subcategory') {
             (new Api999Service($advert['999_api_id']))->changeAccessPolicy($advert, $status);
         }
     }
-    parse_str($requestData['form_data'], $input);
+    
+    // Parse form data
+    parse_str($_POST['form_data'], $input);
+    
+    // Validate required fields
+    if (empty($input['999_api_id'])) {
+        $rtrn = ['error' => 'API ID is required'];
+    } elseif (empty($input['car']['category'])) {
+        $rtrn = ['error' => 'Category is required'];
+    } elseif (empty($input['car']['subcategory'])) {
+        $rtrn = ['error' => 'Subcategory is required'];
+    } else {
 
     $features = [];
 
-    foreach ($input["feature"] as $id => $value) {
+    // Safety check for features array
+    if (!empty($input["feature"]) && is_array($input["feature"])) {
+        foreach ($input["feature"] as $id => $value) {
         if (is_string($value) && trim($value) === "") {
             continue;
         }
@@ -94,6 +112,7 @@ if (__post('sub') == 'get_subcategory') {
         }
 
         $features[] = $feature;
+        }
     }
 
     if (!empty($advert['999_id'])) {
@@ -163,6 +182,11 @@ if (__post('sub') == 'get_subcategory') {
         __log($request);
         __log($features);
 
+        // Check if API call was successful
+        if (empty($request) || !isset($request['advert']['id'])) {
+            $rtrn = ['error' => 'Failed to submit to 999.md API'];
+        } else {
+
         $stmt = $pdo->prepare("
             UPDATE gh3sp_car_ctlg
             SET `999` = :featuresJson, `999_id` = :car999Id, `promotions` = :promotions, `999_api_id` = :999_api_id, `n_a_new` = :n_a_new
@@ -194,6 +218,9 @@ if (__post('sub') == 'get_subcategory') {
         } else {
             (new Api999Service($input['999_api_id']))->setAdvertSchedules($input, $images999, $request['advert']['id'], __post('carId'));
         }
+        }
+    }
+    }
     }
     __log($request);
     $rtrn = $request;
