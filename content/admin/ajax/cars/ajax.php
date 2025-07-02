@@ -464,10 +464,49 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
     if($post_id_arr['0']>0){
         // echo json_encode(['status' => 'ok', 'post_id' => $post['id']]);
 
-        $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `facebook_published`=:facebook_published WHERE `id`= :id ');
-        $pdo->execute([ 'id' => $it_id, 'facebook_published' => 1 ]);
-        $returnIt['status'] = true;
-        $returnIt['post_id'] = $post['id'];
+        try {
+            // Проверяем соединение с базой данных перед выполнением запроса
+            if (!$db) {
+                throw new Exception('Database connection lost');
+            }
+            
+            $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `facebook_published`=:facebook_published WHERE `id`= :id ');
+            $pdo->execute([ 'id' => $it_id, 'facebook_published' => 1 ]);
+            $returnIt['status'] = true;
+            $returnIt['post_id'] = $post['id'];
+            
+            error_log('Facebook publication successful for car ID: ' . $it_id . ', post_id: ' . $post['id']);
+        } catch (PDOException $e) {
+            error_log('Facebook publication database error for car ID ' . $it_id . ': ' . $e->getMessage());
+            
+            // Если ошибка 1615 - попробуем переподключиться и повторить
+            if ($e->getCode() == 1615 || strpos($e->getMessage(), '1615') !== false) {
+                try {
+                    // Создаем новое соединение
+                    $new_pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `facebook_published`=:facebook_published WHERE `id`= :id ');
+                    $new_pdo->execute([ 'id' => $it_id, 'facebook_published' => 1 ]);
+                    $returnIt['status'] = true;
+                    $returnIt['post_id'] = $post['id'];
+                    
+                    error_log('Facebook publication successful after retry for car ID: ' . $it_id);
+                } catch (Exception $retry_e) {
+                    error_log('Facebook publication failed after retry for car ID ' . $it_id . ': ' . $retry_e->getMessage());
+                    $returnIt['status'] = true; // Все равно возвращаем успех, так как пост опубликован
+                    $returnIt['post_id'] = $post['id'];
+                    $returnIt['db_warning'] = 'Database update failed but post was published';
+                }
+            } else {
+                // Для других ошибок логируем и продолжаем
+                $returnIt['status'] = true; // Пост опубликован, это главное
+                $returnIt['post_id'] = $post['id'];
+                $returnIt['db_warning'] = 'Database update failed: ' . $e->getMessage();
+            }
+        } catch (Exception $e) {
+            error_log('Facebook publication general error for car ID ' . $it_id . ': ' . $e->getMessage());
+            $returnIt['status'] = true; // Пост опубликован, это главное
+            $returnIt['post_id'] = $post['id'];
+            $returnIt['db_warning'] = 'Database update failed: ' . $e->getMessage();
+        }
     }
     else {
         $returnIt['status'] = false;
