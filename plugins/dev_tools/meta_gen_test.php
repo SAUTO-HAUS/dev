@@ -9,6 +9,12 @@ $z3 = isset($t_mp[3]) ? $t_mp[3] : '';
 
 $zrbt = 'index, follow';
 
+// Check if this is a subdomain and set noindex for subdomains
+$current_host = $_SERVER['HTTP_HOST'] ?? '';
+if (!empty($current_host) && strpos($current_host, '.sauto.md') !== false && $current_host !== 'sauto.md' && $current_host !== 'www.sauto.md') {
+    $zrbt = 'noindex, nofollow';
+}
+
 $r['ttl']='';$r['h1']='';$r['dsc']='';$r['kwd']='';
 
 $sa['meta']['ttl'] = 'Vînzarea autoturismelor și utilitarelor.';

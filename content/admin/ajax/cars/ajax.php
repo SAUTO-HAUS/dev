@@ -252,15 +252,24 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
 
     // /debug_token?input_token={TOKEN}&access_token={APP_ID}|{APP_SECRET}
     // https://graph.facebook.com/debug_token?input_token=EAA71HdmzXoEBO4MbZCfIlrtMS9X4qUMYzfX0C3okReZAfBnJgxh1WvPLzcup4ZAUOujIDDCTgx13SxcZCPR8WI1pBaRgH9YjQprKcKJptwR62AIaZAkxeLcayDYhdSxKF1XvquStSWMD1smvCLNAj4kzRGZADOlLCWjVdC3SAsYka4zOnj4gmPy3FjGObCeolm1dbhiDHaueztZBZAynwhZCy&access_token=4210158229216897
-    define('APP_ID', '1082088863732549');
-    define('APP_SECRET', '77368f52ab263907ee1fe3ea72909289');
-    define('PAGE_ID', '725963964220309');
-
-    // long user tokern paik
-    //define('PAGE_TOKEN', 'EAAPYJ3JWk0UBO2hpvYZAYjlnhEV2bKZAdZCTkPAkiCuNVPQnP8FrVuITZCX8DMsZB2d0OqvkXTr0JJs5lM0yKg9QSvt7uhtEcFLgclEONGHcq9P4tZBVDcq8HycG8bZA9KZCfcgC7JblkqeoB3INfpo3TyZAPNi7EaTqPMwSZBRXMX3MLw923CRNnU81cYNTtjijL2XCap0RrLQJZCnTGaq');
-    //define('PAGE_TOKEN', 'EAAPYJ3JWk0UBO8RKssEdMuJ6MZAB7O1Vpr0Fq9YyBarZB9pFiplHIDdKSpi8Lt45ft6ZAck5hYZBSeTeJFzFlHYx3AUo45ZCxZCYeTuQZB0LSLO6bePh9nBr9BmbTJSSFjndPhuCIObEt0ALVHUMl3ELAOS5KHl6FIDX4jIocv7Ce6VFlBoZCVjsarTzUN0tkUcx8oWuTRNKHkZAvGzAa');
-    // Page-token sauto - paik
-    define('PAGE_TOKEN', 'EAAPYJ3JWk0UBO6G3TndhaeRaj06GTzZC9nmIqBzdwTEzVekE6z3Yr5xH5wUFH3cVycDcugKYvOORP7cSuLk6diRDBiGhW2m8F3ZA8iUKPgsv9p85Y6ZA22ZAvTR5ulW24A6eFKJtL7ndCQlVsgiReI7yybKAbB20NaH5wOrOuz22SUryrwNgcjdQYjyiH5DPfNaPG4rbyXFzbqdBQqFbA5t8');
+    
+    // Determine Facebook settings based on domain
+    $current_host = $_SERVER['HTTP_HOST'] ?? '';
+    $is_main_domain = ($current_host === 'sauto.md' || $current_host === 'www.sauto.md');
+    
+    if ($is_main_domain) {
+        // Main domain Facebook settings
+        define('APP_ID', '1082088863732549');
+        define('APP_SECRET', '77368f52ab263907ee1fe3ea72909289');
+        define('PAGE_ID', '725963964220309');
+        define('PAGE_TOKEN', 'EAAPYJ3JWk0UBO6G3TndhaeRaj06GTzZC9nmIqBzdwTEzVekE6z3Yr5xH5wUFH3cVycDcugKYvOORP7cSuLk6diRDBiGhW2m8F3ZA8iUKPgsv9p85Y6ZA22ZAvTR5ulW24A6eFKJtL7ndCQlVsgiReI7yybKAbB20NaH5wOrOuz22SUryrwNgcjdQYjyiH5DPfNaPG4rbyXFzbqdBQqFbA5t8');
+    } else {
+        // Subdomain Facebook settings (fallback to same for now)
+        define('APP_ID', '1082088863732549');
+        define('APP_SECRET', '77368f52ab263907ee1fe3ea72909289');
+        define('PAGE_ID', '725963964220309');
+        define('PAGE_TOKEN', 'EAAPYJ3JWk0UBO6G3TndhaeRaj06GTzZC9nmIqBzdwTEzVekE6z3Yr5xH5wUFH3cVycDcugKYvOORP7cSuLk6diRDBiGhW2m8F3ZA8iUKPgsv9p85Y6ZA22ZAvTR5ulW24A6eFKJtL7ndCQlVsgiReI7yybKAbB20NaH5wOrOuz22SUryrwNgcjdQYjyiH5DPfNaPG4rbyXFzbqdBQqFbA5t8');
+    }
 
     define('GRAPH_VER', 'v22.0');
 
