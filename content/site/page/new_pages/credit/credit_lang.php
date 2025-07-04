@@ -57,10 +57,17 @@ if (isset($_COOKIE['lang']) && in_array($_COOKIE['lang'], array('ro', 'ru', 'en'
 }
 
 // Extract translations for the current language
-$lng = array();
+$lng_credit_page = array();
 foreach ($lng_credit as $key => $translations) {
     if (isset($translations[$current_lang])) {
-        $lng[$key] = $translations[$current_lang];
+        $lng_credit_page[$key] = $translations[$current_lang];
     }
+}
+
+// Merge with existing $lng to preserve site translations
+if (isset($lng) && is_array($lng)) {
+    $lng = array_merge($lng, $lng_credit_page);
+} else {
+    $lng = $lng_credit_page;
 }
 ?>
