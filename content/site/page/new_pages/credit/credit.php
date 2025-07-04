@@ -54,5 +54,11 @@ $page_js = '/content/site/page/new_pages/credit/credit.js';
             </div>
         </div>
     </section>
+</div>
 
-   
+<!-- Include jQuery and Ion Range Slider JS -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/js/ion.rangeSlider.min.js"></script>
+
+<!-- Include page-specific JS -->
+<script src="<?php echo $page_js; ?>"></script>

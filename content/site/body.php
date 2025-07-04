@@ -231,7 +231,7 @@ include(_SITE_INCL.'/functions.php'); ?>
 			</p>
 			<p><?php echo $lng['l']['date']['day']['mon']['l'].' - '.$lng['l']['date']['day']['fri']['l'].' 8:00 - 18:00<br/>'.$lng['l']['date']['day']['sat']['l'].' - '.$lng['l']['date']['day']['sun']['l'].' 9:00 - 16:00'; ?></p>
 			<a href="mailto:info@sauto.md" class="mail">info@sauto.md</a>
-			<p><?php echo $lng['t']['x']['social']; ?></p>
+			<p><?php echo $lng['w']['social'] ?? 'Social Media'; ?></p>
 			<div class="sc">
 				<?php
 				foreach ($sc_ar as $k => $v){
