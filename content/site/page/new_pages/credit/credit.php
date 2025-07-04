@@ -1,479 +1,165 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' ); ?>
 
-<style>
-/* Modern Credit Page Styles */
-.credit-page {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    line-height: 1.6;
-    color: #333;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
+<?php
+// Include language file
+include_once('credit_lang.php');
 
-/* Hero Section */
-.hero-section {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 80px 0;
-    text-align: center;
-    border-radius: 20px;
-    margin: 40px 0;
-    position: relative;
-    overflow: hidden;
-}
+// Include CSS and JS files for this page
+$page_css = '/content/site/page/new_pages/credit/credit.css';
+$page_js = '/content/site/page/new_pages/credit/credit.js';
+?>
 
-.hero-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.05"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-    opacity: 0.3;
-}
+<!-- Include page-specific CSS -->
+<link rel="stylesheet" href="<?php echo $page_css; ?>">
 
-.hero-content {
-    position: relative;
-    z-index: 2;
-}
-
-.hero-title {
-    font-size: 3.5rem;
-    font-weight: 700;
-    margin-bottom: 20px;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-}
-
-.hero-subtitle {
-    font-size: 1.3rem;
-    opacity: 0.9;
-    margin-bottom: 40px;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-/* Calculator Section */
-.calculator-section {
-    background: white;
-    border-radius: 20px;
-    padding: 50px;
-    margin: 40px 0;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-    border: 1px solid #f0f0f0;
-}
-
-.calculator-title {
-    font-size: 2.5rem;
-    font-weight: 600;
-    text-align: center;
-    margin-bottom: 40px;
-    color: #2d3748;
-}
-
-.calculator-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 40px;
-    margin-bottom: 40px;
-}
-
-.input-group {
-    position: relative;
-}
-
-.input-label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 12px;
-    color: #4a5568;
-    font-size: 1.1rem;
-}
-
-.input-field {
-    width: 100%;
-    padding: 16px 20px;
-    border: 2px solid #e2e8f0;
-    border-radius: 12px;
-    font-size: 1.1rem;
-    transition: all 0.3s ease;
-    background: #f8fafc;
-}
-
-.input-field:focus {
-    outline: none;
-    border-color: #667eea;
-    background: white;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.slider-container {
-    margin: 20px 0;
-}
-
-/* Results Section */
-.results-section {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    color: white;
-    padding: 40px;
-    border-radius: 16px;
-    text-align: center;
-    margin-top: 40px;
-}
-
-.result-title {
-    font-size: 1.3rem;
-    margin-bottom: 20px;
-    opacity: 0.9;
-}
-
-.result-amount {
-    font-size: 3rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-}
-
-.result-range {
-    font-size: 1.1rem;
-    opacity: 0.8;
-}
-
-/* Features Grid */
-.features-section {
-    margin: 80px 0;
-}
-
-.section-title {
-    font-size: 2.8rem;
-    font-weight: 600;
-    text-align: center;
-    margin-bottom: 60px;
-    color: #2d3748;
-}
-
-.features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 40px;
-    margin-bottom: 60px;
-}
-
-.feature-card {
-    background: white;
-    padding: 40px 30px;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    border: 1px solid #f0f0f0;
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.feature-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, #667eea, #764ba2);
-}
-
-.feature-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.12);
-}
-
-.feature-icon {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 20px;
-    font-size: 1.5rem;
-    color: white;
-}
-
-.feature-title {
-    font-size: 1.4rem;
-    font-weight: 600;
-    margin-bottom: 15px;
-    color: #2d3748;
-}
-
-.feature-description {
-    color: #718096;
-    line-height: 1.6;
-}
-
-.feature-list {
-    list-style: none;
-    padding: 0;
-    margin: 20px 0 0 0;
-}
-
-.feature-list li {
-    padding: 8px 0;
-    position: relative;
-    padding-left: 25px;
-    color: #4a5568;
-}
-
-.feature-list li::before {
-    content: '✓';
-    position: absolute;
-    left: 0;
-    color: #48bb78;
-    font-weight: bold;
-}
-
-/* Partners Section */
-.partners-section {
-    background: #f8fafc;
-    padding: 60px 40px;
-    border-radius: 20px;
-    margin: 60px 0;
-}
-
-.partners-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 30px;
-    margin-top: 40px;
-}
-
-.partner-card {
-    background: white;
-    padding: 30px 20px;
-    border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    transition: all 0.3s ease;
-}
-
-.partner-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-}
-
-.partner-name {
-    font-weight: 600;
-    color: #2d3748;
-    margin-bottom: 10px;
-}
-
-.partner-description {
-    font-size: 0.9rem;
-    color: #718096;
-}
-
-/* CTA Section */
-.cta-section {
-    background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
-    color: white;
-    padding: 60px 40px;
-    border-radius: 20px;
-    text-align: center;
-    margin: 60px 0;
-}
-
-.cta-title {
-    font-size: 2.5rem;
-    font-weight: 600;
-    margin-bottom: 20px;
-}
-
-.cta-description {
-    font-size: 1.2rem;
-    opacity: 0.9;
-    margin-bottom: 40px;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.cta-buttons {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-.btn {
-    padding: 16px 32px;
-    border-radius: 12px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.3s ease;
-    display: inline-block;
-    font-size: 1.1rem;
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    color: white;
-    border: none;
-}
-
-.btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
-}
-
-.btn-secondary {
-    background: transparent;
-    color: white;
-    border: 2px solid white;
-}
-
-.btn-secondary:hover {
-    background: white;
-    color: #2d3748;
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .hero-title {
-        font-size: 2.5rem;
-    }
-    
-    .calculator-grid {
-        grid-template-columns: 1fr;
-        gap: 30px;
-    }
-    
-    .calculator-section {
-        padding: 30px 20px;
-    }
-    
-    .features-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .partners-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .cta-buttons {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .btn {
-        width: 100%;
-        max-width: 300px;
-    }
-}
-
-/* Ion Range Slider Custom Styles */
-.irs {
-    position: relative;
-    display: block;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    font-size: 12px;
-    font-family: Arial, sans-serif;
-}
-
-.irs-line {
-    position: relative;
-    display: block;
-    overflow: hidden;
-    outline: none !important;
-    height: 8px;
-    top: 25px;
-    background: #e2e8f0;
-    border-radius: 4px;
-}
-
-.irs-bar {
-    position: absolute;
-    display: block;
-    left: 0;
-    width: 0;
-    height: 8px;
-    background: linear-gradient(135deg, #667eea, #764ba2);
-    border-radius: 4px;
-}
-
-.irs-handle {
-    position: absolute;
-    display: block;
-    box-sizing: border-box;
-    cursor: pointer;
-    width: 24px;
-    height: 24px;
-    top: 17px;
-    background: white;
-    border: 3px solid #667eea;
-    border-radius: 50%;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-}
-
-.irs-handle:hover {
-    background: #667eea;
-}
-
-.irs-min, .irs-max {
-    color: #718096;
-    font-size: 12px;
-    line-height: 1.333;
-    text-shadow: none;
-    top: 0;
-    padding: 1px 3px;
-    background: rgba(0,0,0,0.1);
-    border-radius: 3px;
-}
-
-.irs-from, .irs-to, .irs-single {
-    color: white;
-    font-size: 12px;
-    line-height: 1.333;
-    text-shadow: none;
-    padding: 4px 8px;
-    background: #667eea;
-    border-radius: 6px;
-    white-space: nowrap;
-}
-</style>
-
-<!--Plugin CSS file with desired skin-->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css"/>
-
-<!--jQuery-->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-
-<!--Plugin JavaScript file-->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js"></script>
+<!-- Include Ion Range Slider CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/css/ion.rangeSlider.min.css">
 
 <div class="credit-page">
     <!-- Hero Section -->
     <section class="hero-section">
         <div class="hero-content">
-            <h1 class="hero-title">Credit Auto în Moldova</h1>
-            <p class="hero-subtitle">
-                Obțineți creditul auto ideal cu condiții avantajoase și aprobare rapidă. 
-                Calculați rata lunară și alegeți cea mai bună opțiune pentru dvs.
-            </p>
+            <h1 class="hero-title"><?php echo $lng['credit_title'] ?? 'Creditele Auto'; ?></h1>
+            <p class="hero-subtitle"><?php echo $lng['credit_subtitle'] ?? 'Obțineți creditul auto perfect pentru nevoile dumneavoastră cu cele mai competitive rate din piață'; ?></p>
         </div>
     </section>
 
     <!-- Calculator Section -->
     <section class="calculator-section">
-        <h2 class="calculator-title">Calculator Credit Auto</h2>
+        <h2 class="calculator-title"><?php echo $lng['calculator_title'] ?? 'Calculator Credit Auto'; ?></h2>
         
         <div class="calculator-grid">
             <div class="input-group">
-                <label class="input-label" for="suma_creditului">Suma creditului (EUR)</label>
+                <label for="suma_creditului" class="input-label"><?php echo $lng['loan_amount'] ?? 'Suma creditului'; ?></label>
+                <input type="text" id="suma_creditului" class="input-field" value="25000" placeholder="€25,000">
+                <div class="slider-container">
+                    <input type="text" id="suma-slider" value="" name="suma-slider" />
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label for="termen_creditului" class="input-label"><?php echo $lng['loan_term'] ?? 'Termenul creditului'; ?></label>
+                <input type="text" id="termen_creditului" class="input-field" value="36" placeholder="36 luni">
+                <div class="slider-container">
+                    <input type="text" id="termen-slider" value="" name="termen-slider" />
+                </div>
+            </div>
+        </div>
+        
+        <div class="results-section">
+            <h3 class="result-title"><?php echo $lng['monthly_payment'] ?? 'Rata lunară estimată'; ?></h3>
+            <div class="result-amount" id="rata-lunara">€750</div>
+            <div class="result-range">
+                <?php echo $lng['payment_range'] ?? 'Interval'; ?>: <span id="rata-min">€650</span> - <span id="rata-max">€850</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <h2 class="section-title"><?php echo $lng['credit_types'] ?? 'Tipuri de Credite'; ?></h2>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🚗</div>
+                <h3 class="feature-title"><?php echo $lng['personal_auto_credit'] ?? 'Credit Auto Personal'; ?></h3>
+                <p class="feature-description"><?php echo $lng['personal_auto_desc'] ?? 'Soluția perfectă pentru achiziționarea automobilului personal cu condiții avantajoase.'; ?></p>
+                <ul class="feature-list">
+                    <li><?php echo $lng['feature_1'] ?? 'Rate competitive începând de la 8%'; ?></li>
+                    <li><?php echo $lng['feature_2'] ?? 'Termen de rambursare până la 5 ani'; ?></li>
+                    <li><?php echo $lng['feature_3'] ?? 'Aprobare rapidă în 24 ore'; ?></li>
+                    <li><?php echo $lng['feature_4'] ?? 'Fără comisioane ascunse'; ?></li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🏢</div>
+                <h3 class="feature-title"><?php echo $lng['business_credit'] ?? 'Credit Auto Business'; ?></h3>
+                <p class="feature-description"><?php echo $lng['business_credit_desc'] ?? 'Finanțare specializată pentru flote auto și vehicule comerciale.'; ?></p>
+                <ul class="feature-list">
+                    <li><?php echo $lng['business_feature_1'] ?? 'Sume mari de finanțare'; ?></li>
+                    <li><?php echo $lng['business_feature_2'] ?? 'Condiții flexibile de rambursare'; ?></li>
+                    <li><?php echo $lng['business_feature_3'] ?? 'Consultanță specializată'; ?></li>
+                    <li><?php echo $lng['business_feature_4'] ?? 'Avantaje fiscale'; ?></li>
+                </ul>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📋</div>
+                <h3 class="feature-title"><?php echo $lng['leasing'] ?? 'Leasing Auto'; ?></h3>
+                <p class="feature-description"><?php echo $lng['leasing_desc'] ?? 'Alternativa inteligentă la credit cu opțiuni flexibile de achiziție.'; ?></p>
+                <ul class="feature-list">
+                    <li><?php echo $lng['leasing_feature_1'] ?? 'Avans redus sau zero'; ?></li>
+                    <li><?php echo $lng['leasing_feature_2'] ?? 'Rate lunare mici'; ?></li>
+                    <li><?php echo $lng['leasing_feature_3'] ?? 'Opțiune de cumpărare la final'; ?></li>
+                    <li><?php echo $lng['leasing_feature_4'] ?? 'Întreținere inclusă'; ?></li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partners Section -->
+    <section class="partners-section">
+        <h2 class="section-title"><?php echo $lng['our_partners'] ?? 'Partenerii Noștri'; ?></h2>
+        <p style="text-align: center; color: #718096; font-size: 1.1rem; margin-bottom: 40px;">
+            <?php echo $lng['partners_desc'] ?? 'Colaborăm cu instituțiile financiare de top pentru a vă oferi cele mai bune condiții'; ?>
+        </p>
+        
+        <div class="partners-grid">
+            <div class="partner-card">
+                <div class="partner-name">BCR</div>
+                <div class="partner-description"><?php echo $lng['bcr_desc'] ?? 'Banca Comercială Română'; ?></div>
+            </div>
+            <div class="partner-card">
+                <div class="partner-name">BRD</div>
+                <div class="partner-description"><?php echo $lng['brd_desc'] ?? 'Groupe Société Générale'; ?></div>
+            </div>
+            <div class="partner-card">
+                <div class="partner-name">ING Bank</div>
+                <div class="partner-description"><?php echo $lng['ing_desc'] ?? 'ING Bank România'; ?></div>
+            </div>
+            <div class="partner-card">
+                <div class="partner-name">Raiffeisen</div>
+                <div class="partner-description"><?php echo $lng['raiffeisen_desc'] ?? 'Raiffeisen Bank'; ?></div>
+            </div>
+            <div class="partner-card">
+                <div class="partner-name">UniCredit</div>
+                <div class="partner-description"><?php echo $lng['unicredit_desc'] ?? 'UniCredit Bank'; ?></div>
+            </div>
+            <div class="partner-card">
+                <div class="partner-name">Alpha Bank</div>
+                <div class="partner-description"><?php echo $lng['alpha_desc'] ?? 'Alpha Bank România'; ?></div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Call to Action Section -->
+    <section class="cta-section">
+        <h2 class="cta-title"><?php echo $lng['ready_to_start'] ?? 'Gata să începeți?'; ?></h2>
+        <p class="cta-description">
+            <?php echo $lng['cta_desc'] ?? 'Contactați-ne astăzi pentru o consultație gratuită și descoperiți cea mai bună opțiune de finanțare pentru dumneavoastră.'; ?>
+        </p>
+        <div class="cta-buttons">
+            <a href="/<?php echo $lang; ?>/contacts" class="btn btn-primary"><?php echo $lng['contact_us'] ?? 'Contactați-ne'; ?></a>
+            <a href="tel:+40123456789" class="btn btn-secondary"><?php echo $lng['call_now'] ?? 'Sunați acum'; ?></a>
+        </div>
+    </section>
+</div>
+
+<!-- Include Ion Range Slider JS -->
+<script src="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/js/ion.rangeSlider.min.js"></script>
+
+<!-- Include page-specific JS -->
+<script src="<?php echo $page_js; ?>"></script>
+
+    <!-- Calculator Section -->
+    <section class="calculator-section">
+        <h2 class="calculator-title"><?php echo $lng['calculator_title'] ?? 'Calculator Credit Auto'; ?></h2>
+        
+        <div class="calculator-grid">
+            <div class="input-group">
+                <label class="input-label" for="suma_creditului"><?php echo $lng['loan_amount_eur'] ?? 'Suma creditului (EUR)'; ?></label>
                 <input type="text" id="suma_creditului" class="input-field" value="25000">
                 <div class="slider-container">
                     <input type="text" id="suma-slider" name="suma_slider">
@@ -481,7 +167,7 @@
             </div>
             
             <div class="input-group">
-                <label class="input-label" for="termen_creditului">Termenul (luni)</label>
+                <label class="input-label" for="termen_creditului"><?php echo $lng['loan_term_months'] ?? 'Termenul (luni)'; ?></label>
                 <input type="text" id="termen_creditului" class="input-field" value="36">
                 <div class="slider-container">
                     <input type="text" id="termen-slider" name="termen_slider">
@@ -490,58 +176,58 @@
         </div>
 
         <div class="results-section">
-            <div class="result-title">Rata lunară estimată</div>
+            <div class="result-title"><?php echo $lng['monthly_payment_est'] ?? 'Rata lunară estimată'; ?></div>
             <div class="result-amount" id="rata-lunara">€750</div>
             <div class="result-range">
-                De la <span id="rata-min">€720</span> până la <span id="rata-max">€780</span>
+                <?php echo $lng['payment_range_from'] ?? 'De la'; ?> <span id="rata-min">€720</span> <?php echo $lng['payment_range_to'] ?? 'până la'; ?> <span id="rata-max">€780</span>
             </div>
         </div>
     </section>
 
     <!-- Features Section -->
     <section class="features-section">
-        <h2 class="section-title">Avantajele Creditului Auto</h2>
+        <h2 class="section-title"><?php echo $lng['credit_advantages'] ?? 'Avantajele Creditului Auto'; ?></h2>
         
         <div class="features-grid">
             <div class="feature-card">
                 <div class="feature-icon">🚗</div>
-                <h3 class="feature-title">Credit Personal Auto</h3>
-                <p class="feature-description">Confortul și libertatea de mișcare – prioritatea noastră.</p>
+                <h3 class="feature-title"><?php echo $lng['personal_auto_credit'] ?? 'Credit Personal Auto'; ?></h3>
+                <p class="feature-description"><?php echo $lng['personal_auto_desc'] ?? 'Confortul și libertatea de mișcare – prioritatea noastră.'; ?></p>
                 <ul class="feature-list">
-                    <li>Suma până la €50,000</li>
-                    <li>Fără CASCO obligatoriu</li>
-                    <li>Orice an de fabricație</li>
-                    <li>Finanțare până la 100%</li>
-                    <li>Aprobare în 1 oră</li>
-                    <li>Rambursare anticipată fără penalități</li>
+                    <li><?php echo $lng['personal_feature_1'] ?? 'Suma până la €50,000'; ?></li>
+                    <li><?php echo $lng['personal_feature_2'] ?? 'Fără CASCO obligatoriu'; ?></li>
+                    <li><?php echo $lng['personal_feature_3'] ?? 'Orice an de fabricație'; ?></li>
+                    <li><?php echo $lng['personal_feature_4'] ?? 'Finanțare până la 100%'; ?></li>
+                    <li><?php echo $lng['personal_feature_5'] ?? 'Aprobare în 1 oră'; ?></li>
+                    <li><?php echo $lng['personal_feature_6'] ?? 'Rambursare anticipată fără penalități'; ?></li>
                 </ul>
             </div>
 
             <div class="feature-card">
                 <div class="feature-icon">🏢</div>
-                <h3 class="feature-title">Credit pentru Afaceri</h3>
-                <p class="feature-description">Dezvoltați afacerea cu un mijloc de transport fiabil.</p>
+                <h3 class="feature-title"><?php echo $lng['business_credit'] ?? 'Credit pentru Afaceri'; ?></h3>
+                <p class="feature-description"><?php echo $lng['business_credit_desc'] ?? 'Dezvoltați afacerea cu un mijloc de transport fiabil.'; ?></p>
                 <ul class="feature-list">
-                    <li>Pentru persoane fizice și juridice</li>
-                    <li>Plata în numerar sau transfer</li>
-                    <li>Finanțare pentru automobile comandate</li>
-                    <li>Refinanțare credit existent</li>
-                    <li>Sprijin pentru startup-uri</li>
-                    <li>Fără restricții de circulație</li>
+                    <li><?php echo $lng['business_feature_1'] ?? 'Pentru persoane fizice și juridice'; ?></li>
+                    <li><?php echo $lng['business_feature_2'] ?? 'Plata în numerar sau transfer'; ?></li>
+                    <li><?php echo $lng['business_feature_3'] ?? 'Finanțare pentru automobile comandate'; ?></li>
+                    <li><?php echo $lng['business_feature_4'] ?? 'Refinanțare credit existent'; ?></li>
+                    <li><?php echo $lng['business_feature_5'] ?? 'Sprijin pentru startup-uri'; ?></li>
+                    <li><?php echo $lng['business_feature_6'] ?? 'Fără restricții de circulație'; ?></li>
                 </ul>
             </div>
 
             <div class="feature-card">
                 <div class="feature-icon">📋</div>
-                <h3 class="feature-title">Leasing Auto</h3>
-                <p class="feature-description">Soluție modernă pentru utilizarea eficientă a automobilului.</p>
+                <h3 class="feature-title"><?php echo $lng['leasing'] ?? 'Leasing Auto'; ?></h3>
+                <p class="feature-description"><?php echo $lng['leasing_desc'] ?? 'Soluție modernă pentru utilizarea eficientă a automobilului.'; ?></p>
                 <ul class="feature-list">
-                    <li>Gestionarea optimă a bugetului</li>
-                    <li>Finanțare până la 100%</li>
-                    <li>Condiții transparente</li>
-                    <li>Pentru toate categoriile de clienți</li>
-                    <li>Durată flexibilă 12-60 luni</li>
-                    <li>Fără comisioane ascunse</li>
+                    <li><?php echo $lng['leasing_feature_1'] ?? 'Gestionarea optimă a bugetului'; ?></li>
+                    <li><?php echo $lng['leasing_feature_2'] ?? 'Finanțare până la 100%'; ?></li>
+                    <li><?php echo $lng['leasing_feature_3'] ?? 'Condiții transparente'; ?></li>
+                    <li><?php echo $lng['leasing_feature_4'] ?? 'Pentru toate categoriile de clienți'; ?></li>
+                    <li><?php echo $lng['leasing_feature_5'] ?? 'Durată flexibilă 12-60 luni'; ?></li>
+                    <li><?php echo $lng['leasing_feature_6'] ?? 'Fără comisioane ascunse'; ?></li>
                 </ul>
             </div>
         </div>
@@ -591,159 +277,3 @@
         </div>
     </section>
 </div>
-
-<script>
-$(document).ready(function() {
-    // Initialize sliders
-    const sumaSlider = $("#suma-slider").ionRangeSlider({
-        skin: "round",
-        min: 2000,
-        max: 50000,
-        from: 25000,
-        step: 500,
-        prefix: "€",
-        prettify_enabled: true,
-        prettify_separator: ",",
-        onStart: function(data) {
-            $("#suma_creditului").val(data.from);
-        },
-        onChange: function(data) {
-            $("#suma_creditului").val(data.from);
-            calculatePayment();
-        }
-    }).data("ionRangeSlider");
-
-    const termenSlider = $("#termen-slider").ionRangeSlider({
-        skin: "round",
-        min: 6,
-        max: 60,
-        from: 36,
-        step: 1,
-        postfix: " luni",
-        prettify_enabled: true,
-        onStart: function(data) {
-            $("#termen_creditului").val(data.from);
-        },
-        onChange: function(data) {
-            $("#termen_creditului").val(data.from);
-            calculatePayment();
-        }
-    }).data("ionRangeSlider");
-
-    // Handle input field changes
-    $("#suma_creditului").on("input", function() {
-        let val = parseInt($(this).val().replace(/[^0-9]/g, ''), 10);
-        if (!isNaN(val)) {
-            val = Math.max(2000, Math.min(50000, val));
-            val = Math.round(val / 500) * 500;
-            $(this).val(val);
-            sumaSlider.update({ from: val });
-            calculatePayment();
-        }
-    });
-
-    $("#termen_creditului").on("input", function() {
-        let val = parseInt($(this).val(), 10);
-        if (!isNaN(val)) {
-            val = Math.max(6, Math.min(60, val));
-            $(this).val(val);
-            termenSlider.update({ from: val });
-            calculatePayment();
-        }
-    });
-
-    function calculatePayment() {
-        const suma = parseInt($("#suma_creditului").val(), 10) || 25000;
-        const termen = parseInt($("#termen_creditului").val(), 10) || 36;
-        
-        // Interest rates (annual)
-        const rateMin = 0.08; // 8%
-        const rateMax = 0.15; // 15%
-        
-        // Convert to monthly rates
-        const monthlyRateMin = rateMin / 12;
-        const monthlyRateMax = rateMax / 12;
-        
-        // Calculate monthly payments using PMT formula
-        const pmtMin = suma * (monthlyRateMin * Math.pow(1 + monthlyRateMin, termen)) / 
-                      (Math.pow(1 + monthlyRateMin, termen) - 1);
-        const pmtMax = suma * (monthlyRateMax * Math.pow(1 + monthlyRateMax, termen)) / 
-                      (Math.pow(1 + monthlyRateMax, termen) - 1);
-        
-        const pmtAvg = (pmtMin + pmtMax) / 2;
-        
-        // Update display
-        $("#rata-lunara").text("€" + Math.round(pmtAvg).toLocaleString());
-        $("#rata-min").text("€" + Math.round(pmtMin).toLocaleString());
-        $("#rata-max").text("€" + Math.round(pmtMax).toLocaleString());
-    }
-
-    // Initial calculation
-    calculatePayment();
-
-    // Smooth scrolling for anchor links
-    $('a[href^="#"]').on('click', function(event) {
-        var target = $(this.getAttribute('href'));
-        if( target.length ) {
-            event.preventDefault();
-            $('html, body').stop().animate({
-                scrollTop: target.offset().top - 100
-            }, 1000);
-        }
-    });
-
-    // Add animation on scroll
-    function animateOnScroll() {
-        $('.feature-card, .partner-card').each(function() {
-            const elementTop = $(this).offset().top;
-            const elementBottom = elementTop + $(this).outerHeight();
-            const viewportTop = $(window).scrollTop();
-            const viewportBottom = viewportTop + $(window).height();
-            
-            if (elementBottom > viewportTop && elementTop < viewportBottom) {
-                $(this).addClass('animate-in');
-            }
-        });
-    }
-
-    $(window).on('scroll', animateOnScroll);
-    animateOnScroll(); // Initial check
-});
-</script>
-
-<style>
-/* Animation styles */
-.feature-card, .partner-card {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.6s ease;
-}
-
-.feature-card.animate-in, .partner-card.animate-in {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* Additional responsive improvements */
-@media (max-width: 480px) {
-    .hero-title {
-        font-size: 2rem;
-    }
-    
-    .hero-subtitle {
-        font-size: 1.1rem;
-    }
-    
-    .calculator-title {
-        font-size: 2rem;
-    }
-    
-    .section-title {
-        font-size: 2.2rem;
-    }
-    
-    .result-amount {
-        font-size: 2.5rem;
-    }
-}
-</style>

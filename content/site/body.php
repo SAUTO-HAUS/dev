@@ -160,7 +160,7 @@ include(_SITE_INCL.'/functions.php'); ?>
 		elseif ($t_mp[2]=='cars') {include (_SITE_PAGE.'/cars.php');}
 		elseif ($t_mp[2]=='services') {include (_SITE_PAGE.'/services.php');}
 		elseif ($t_mp[2]=='tyres') {include (_SITE_PAGE.'/tyres.php');}
-		elseif ($t_mp[2]=='credit') {include (_SITE_PAGE.'/new_pages/credit.php');}
+		elseif ($t_mp[2]=='credit') {include (_SITE_PAGE.'/new_pages/credit/credit.php');}
 		elseif ($t_mp[2]=='rent'&&(!isset($t_mp[3])&&!isset($q_mp[1]))) {include (_SITE_PAGE.'/rent.php');}
 		elseif ( in_array( $t_mp[2], $info_arr ) ) {include (_SITE_PAGE.'/information.php');}
 		elseif ($t_mp[2]=='contacts') {include (_SITE_PAGE.'/contacts.php');}
