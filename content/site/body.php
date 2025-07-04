@@ -203,14 +203,6 @@ include(_SITE_INCL.'/functions.php'); ?>
 					if ($l=='vehicles'){$v=isset($lng['l']['car']['bt'][$k]) ? $lng['l']['car']['bt'][$k] : $k; $k = 'cars?tg=fltr&bt='.$k;}
 					elseif ($l=='services'){$v=$lng['p']['services'][$k]['name']; $k='services/'.$k;}
 					elseif ($l=='information'){$v=$lng['p']['information'][$k]['name'];}
-					elseif ($l=='sitemap'&&$k=='*'){
-						$i=1;
-						while ( file_exists('sitemap'.$i.'.html') ){
-							echo '<a href="/sitemap'.$i.'.html">'.$lng['w']['map'].' #'.$i.'</a>';
-							$i++;
-						}
-						continue;
-					}
 					//$k = $a=='services'?'services/'.$k:$k;
 					echo '<a href="/'.$_COOKIE['lang'].'/'.$k.'">'.$v.'</a>';
 				}

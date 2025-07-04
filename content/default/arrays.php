@@ -37,9 +37,7 @@ $grp_arr = [
 $foo_arr = [
 	//'vehicles'=>['sdn', 'hbk', 'unv', 'pkp', 'mbs', 'van'],
 	'services'=>['sale', 'tradein', 'estimation', 'testdrive', 'insurance', 'order'],
-	'information'=>['about', 'insurance', 'terms', 'warranty', 'privacy', 'contacts'],
-	'information'=>['about', 'credit', 'terms', 'warranty', 'privacy', 'contacts'],
-	'sitemap'=>['*']
+	'information'=>['about', 'credit', 'terms', 'warranty', 'privacy', 'contacts']
 ];
 
 $phone = [

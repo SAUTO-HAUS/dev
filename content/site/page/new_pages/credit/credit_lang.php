@@ -5,14 +5,9 @@
 $lng_credit = array(
     // Hero Section
     'credit_title' => array(
-        'ro' => 'Cumpărați automobilul cu ușurință: Credit și Leasing în Moldova',
-        'ru' => 'Покупайте автомобиль с лёгкостью: Кредит и Лизинг в Молдове',
-        'en' => 'Buy a car with ease: Credit and Leasing in Moldova'
-    ),
-    'credit_subtitle' => array(
-        'ro' => 'Obțineți creditul auto perfect pentru nevoile dumneavoastră cu cele mai competitive rate din piață',
-        'ru' => 'Получите идеальный автокредит для ваших потребностей с самыми конкурентоспособными ставками на рынке',
-        'en' => 'Get the perfect car loan for your needs with the most competitive rates on the market'
+        'ro' => 'Cumpărați automobilul cu ușurință Credit și Leasing în Moldova',
+        'ru' => 'Покупайте автомобиль с лёгкостью Кредит и Лизинг в Молдове',
+        'en' => 'Buy a car with ease Credit and Leasing in Moldova'
     ),
     
     // Calculator Section
