@@ -48,6 +48,11 @@ $lng_credit = array(
     )
 );
 
+// Check if $lang is set and is a valid language, otherwise default to 'ro'
+if (!isset($lang) || !array_key_exists($lang, $lng_credit)) {
+    $lang = 'ro'; // Set Romanian as the default language
+}
+
 // Set the translations for the current language
 $lng = $lng_credit[$lang];
 ?>
