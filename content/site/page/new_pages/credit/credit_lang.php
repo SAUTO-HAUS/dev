@@ -48,11 +48,14 @@ $lng_credit = array(
     )
 );
 
-// Check if $lang is set and is a valid language, otherwise default to 'ro'
-if (!isset($lang) || !array_key_exists($lang, $lng_credit)) {
-    $lang = 'ro'; // Set Romanian as the default language
+// Get the language from cookie or default to Romanian
+$current_lang = 'ro'; // Default language
+
+// Try to get language from cookie if it exists
+if (isset($_COOKIE['lang']) && in_array($_COOKIE['lang'], array('ro', 'ru', 'en'))) {
+    $current_lang = $_COOKIE['lang'];
 }
 
 // Set the translations for the current language
-$lng = $lng_credit[$lang];
+$lng = $lng_credit[$current_lang];
 ?>

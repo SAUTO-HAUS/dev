@@ -30,7 +30,7 @@ $page_js = '/content/site/page/new_pages/credit/credit.js';
         
         <div class="calculator-grid">
             <div class="input-group">
-                <label for="suma_creditului" class="input-label"><?php echo $lng['loan_amount'] ?? 'Suma creditului'; ?></label>
+                <label for="suma_creditului" class="input-label"><?php echo $lng['loan_amount_eur'] ?? 'Suma creditului (EUR)'; ?></label>
                 <input type="text" id="suma_creditului" class="input-field" value="25000" placeholder="€25,000">
                 <div class="slider-container">
                     <input type="text" id="suma-slider" value="" name="suma-slider" />
@@ -38,7 +38,7 @@ $page_js = '/content/site/page/new_pages/credit/credit.js';
             </div>
             
             <div class="input-group">
-                <label for="termen_creditului" class="input-label"><?php echo $lng['loan_term'] ?? 'Termenul creditului'; ?></label>
+                <label for="termen_creditului" class="input-label"><?php echo $lng['loan_term_months'] ?? 'Termenul (luni)'; ?></label>
                 <input type="text" id="termen_creditului" class="input-field" value="36" placeholder="36 luni">
                 <div class="slider-container">
                     <input type="text" id="termen-slider" value="" name="termen-slider" />
@@ -47,10 +47,10 @@ $page_js = '/content/site/page/new_pages/credit/credit.js';
         </div>
         
         <div class="results-section">
-            <h3 class="result-title"><?php echo $lng['monthly_payment'] ?? 'Rata lunară estimată'; ?></h3>
+            <h3 class="result-title"><?php echo $lng['monthly_payment_est'] ?? 'Rata lunară estimată'; ?></h3>
             <div class="result-amount" id="rata-lunara">€750</div>
             <div class="result-range">
-                <?php echo $lng['payment_range'] ?? 'Interval'; ?>: <span id="rata-min">€650</span> - <span id="rata-max">€850</span>
+                <?php echo $lng['payment_range_from'] ?? 'De la'; ?> <span id="rata-min">€650</span> <?php echo $lng['payment_range_to'] ?? 'până la'; ?> <span id="rata-max">€850</span>
             </div>
         </div>
     </section>
