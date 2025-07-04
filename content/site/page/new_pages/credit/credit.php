@@ -30,16 +30,18 @@ if (file_exists($css_file_path)) {
         <div class="container">
             
             <!-- Text and image on the right side -->
-            <div class="hero-right-content">
-                <div class="hero-text">
-                    <div class="hero-main-title">
-                        ПОКУПАЙТЕ АВТОМОБИЛЬ С ЛЁГКОСТЬЮ
-                    </div>
-                    <div class="hero-subtitle">
-                        КРЕДИТ И ЛИЗИНГ В МОЛДОВЕ
-                    </div>
+            <div class="hero-container">
+                <div class="hero-left-content">
+                    <!-- Calculator va fi adăugat aici -->
+                </div>
+                
+                <div class="hero-right-content">
+                    <div class="hero-text">
+                        <div class="hero-main-title">ПОКУПАЙТЕ АВТОМОБИЛЬ С ЛЁГКОСТЬЮ</div>
+                        <div class="hero-subtitle">КРЕДИТ И ЛИЗИНГ В МОЛДОВЕ</div>
                     </div>
                 </div>
+                
                 <div class="car-hero-container">
                     <img src="/content/site/page/new_pages/credit/credit-media/car__red_credit.webp" alt="Automobil credit" class="car-hero-image">
                 </div>
