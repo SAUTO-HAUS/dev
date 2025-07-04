@@ -60,12 +60,13 @@ body {
     height: 250px;
     position: relative;
     margin-top: -40px;
+    right: 40px;
     gap: 12px;
     opacity: 1;
 }
 
 .hero-main-title {
-    font-size: 2.5rem;
+    font-size: 2.8rem;
     font-weight: 700;
     color: white;
     text-transform: uppercase;
@@ -74,7 +75,7 @@ body {
 }
 
 .hero-subtitle {
-    font-size: 1.7rem;
+    font-size: 2rem;
     font-weight: 500;
     color: white;
     text-transform: uppercase;
@@ -88,10 +89,10 @@ body {
 }
 
 .car-hero-image {
-    width: 876px;
-    height: 403px;
+    width: 830px;
+    height: 357px;
     position: absolute;
-    bottom: 20px;
+    bottom: 30px;
     right: 10px;
     transform: none;
     opacity: 1;
@@ -102,6 +103,278 @@ body {
 .hero-left-content {
     flex: 1;
     margin-right: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Stiluri pentru noul calculator de credit */
+.credit-calculator-container {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 32px;
+    margin: 0 auto;
+    margin-top: -20px;
+    max-width: 580px;
+    width: 100%;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.calculator-title {
+    font-size: 24px;
+    color: #333333;
+    font-weight: 600;
+    margin-bottom: 32px;
+    text-align: left;
+}
+
+.calculator-content {
+    padding: 0;
+}
+
+/* Calculator fields */
+.calculator-field {
+    margin-bottom: 32px;
+}
+
+.field-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.field-label {
+    font-size: 16px;
+    color: #666666;
+    font-weight: 400;
+}
+
+.field-value {
+    font-size: 16px;
+    color: #333333;
+    font-weight: 600;
+}
+
+/* Hide Ion Range Slider inputs */
+#suma-creditului,
+#termen-creditului {
+    display: none;
+}
+
+/* Ion Range Slider Red Styling */
+.irs--round .irs-line {
+    background: #e5e5e5;
+    height: 4px;
+}
+
+.irs--round .irs-bar {
+    background: #dc3545 !important;
+    height: 4px;
+}
+
+.irs--round .irs-handle {
+    background: #f4f4f4;
+    border: 3px solid #dc3545 !important;
+    width: 20px;
+    height: 20px;
+    top: -8px;
+}
+
+.irs--round .irs-handle:hover {
+    background: #c82333 !important;
+}
+
+.irs--round .irs-handle > i:first-child {
+    background: #ffffff;
+}
+
+.irs--round .irs-single {
+    background: #dc3545;
+    color: #ffffff;
+}
+
+.irs--round .irs-single:before {
+    border-top-color: #dc3545;
+}
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #999999;
+    margin-top: 8px;
+}
+
+.payment-result {
+    background: linear-gradient(135deg, #ffebee 0%, #fce4ec 100%);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    margin-top: 32px;
+}
+
+.result-label {
+    display: block;
+    font-size: 14px;
+    color: #666666;
+    margin-bottom: 8px;
+}
+
+.result-value {
+    font-size: 18px;
+    color: #dc3545;
+    font-weight: 600;
+}
+
+.calculator-field label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.input-slider-container {
+    width: 100%;
+    margin: 20px 0;
+    height: 40px;
+    min-height: 40px;
+}
+
+.calculator-input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    background-color: #f8f9fa;
+    text-align: center;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.calculator-input:focus {
+    outline: none;
+    border-color: #e2001a;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(226, 0, 26, 0.1);
+}
+
+.slider-container {
+    width: 100%;
+    margin: 20px 0;
+    height: 50px;
+    min-height: 50px;
+}
+
+/* HTML5 Range Slider Backup */
+.html-range-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 6px;
+    margin: 10px 0;
+    background: #ddd;
+    border-radius: 5px;
+    outline: none;
+}
+
+.html-range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #dc3545;
+    cursor: pointer;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 6px rgba(220,53,69,0.3);
+}
+
+.html-range-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #dc3545;
+    cursor: pointer;
+    border: 2px solid #ffffff;
+    box-shadow: 0 2px 6px rgba(220,53,69,0.3);
+}
+
+/* Stilizare Ion Range Slider styling to match image - REMOVED DUPLICATE */
+
+.irs--round .irs-handle.state_hover,
+.irs--round .irs-handle:hover {
+    background-color: #c82333;
+    border-color: #c82333;
+}
+
+.irs--round .irs-min, 
+.irs--round .irs-max {
+    display: none;
+}
+
+.irs--round .irs-single {
+    display: none;
+}
+
+.irs--round .irs-grid {
+    display: none;
+}
+
+.range-values {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+    font-size: 0.8rem;
+    color: #666;
+}
+
+/* Results section */
+.calculator-results {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 10px;
+    border: 1px solid #e0e0e0;
+}
+
+.calculator-results h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.payment-range {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.payment-min, .payment-max {
+    text-align: center;
+    width: 48%;
+}
+
+.payment-label {
+    display: block;
+    font-size: 0.8rem;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.payment-value {
+    display: block;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #e2001a;
 }
 
 /* Hero Container Layout */

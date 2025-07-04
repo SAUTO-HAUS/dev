@@ -9,6 +9,9 @@ $css_file_path = __DIR__ . '/credit.css';
 $page_js = '/content/site/page/new_pages/credit/credit.js';
 ?>
 
+<!-- Include Ion Range Slider CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/css/ion.rangeSlider.min.css">
+
 <!-- Include page-specific CSS inline -->
 <style>
 <?php
@@ -28,11 +31,46 @@ if (file_exists($css_file_path)) {
 <section class="hero-section">
     <div class="hero-content">
         <div class="container">
-            
-            <!-- Text and image on the right side -->
-            <div class="hero-container">
-                <div class="hero-left-content">
-                    <!-- Calculator va fi adăugat aici -->
+            <!-- Credit calculator container - positioned higher -->
+            <div class="credit-calculator-container">
+                <h3 class="calculator-title"><?php echo $lng['w']['calculator_title']; ?></h3>
+                <div class="calculator-content">
+                            <div class="calculator-field">
+                                <div class="field-header">
+                                    <label class="field-label"><?php echo $lng['w']['loan_amount_eur']; ?></label>
+                                    <span class="field-value" id="view_suma_creditului">€ 5 500</span>
+                                </div>
+                                <input type="text" id="suma-creditului">
+                                <div class="slider-labels">
+                                    <span>€ 2 000</span>
+                                    <span>€ 25 000</span>
+                                    <span>€ 50 000</span>
+                                </div>
+                            </div>
+                            
+                            <div class="calculator-field">
+                                <div class="field-header">
+                                    <label class="field-label"><?php echo $lng['w']['loan_term_months']; ?></label>
+                                    <span class="field-value" id="view_termen_creditului">36 <?php echo $lng['w']['calc_title_luni']; ?></span>
+                                </div>
+                                <input type="text" id="termen-creditului">
+                                <div class="slider-labels">
+                                    <span>6 <?php echo $lng['w']['calc_title_luni']; ?></span>
+                                    <span>30 <?php echo $lng['w']['calc_title_luni']; ?></span>
+                                    <span>60 <?php echo $lng['w']['calc_title_luni']; ?></span>
+                                </div>
+                            </div>
+                            
+                            <div class="payment-result">
+                                <span class="result-label"><?php echo $lng['w']['monthly_payment_est']; ?></span>
+                                <span class="result-value" id="payment-display" 
+                                      data-from="<?php echo $lng['w']['calc_title_plata']; ?>" 
+                                      data-to="<?php echo $lng['w']['calc_title_plata2']; ?>">
+                                    <?php echo $lng['w']['calc_title_plata']; ?> 175 <?php echo $lng['w']['calc_title_plata2']; ?> 215 €
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
                 <div class="hero-right-content">
@@ -43,7 +81,7 @@ if (file_exists($css_file_path)) {
                 </div>
                 
                 <div class="car-hero-container">
-                    <img src="/content/site/page/new_pages/credit/credit-media/car__red_credit.webp" alt="Automobil credit" class="car-hero-image">
+                    <img src="/content/site/page/new_pages/credit/credit-media/car__red_credit.png" alt="Automobil credit" class="car-hero-image">
                 </div>
             </div>
         </div>
