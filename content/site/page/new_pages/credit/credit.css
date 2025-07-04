@@ -8,16 +8,24 @@
     padding: 0 20px;
 }
 
-/* Hero Section */
+/* Container for hero content */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Hero Section - Full Width */
 .hero-section {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(to right, #415A8C 0%, #162E5E 100%);
     color: white;
     padding: 80px 0;
     text-align: center;
-    border-radius: 20px;
-    margin: 40px 0;
     position: relative;
     overflow: hidden;
+    width: 100%;
+    left: 0;
+    right: 0;
 }
 
 .hero-section::before {
@@ -60,6 +68,36 @@
     margin: 40px 0;
     box-shadow: 0 20px 60px rgba(0,0,0,0.1);
     border: 1px solid #f0f0f0;
+    position: relative;
+    overflow: hidden;
+}
+
+.calculator-wrapper {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+}
+
+.calculator-content {
+    flex: 1;
+    position: relative;
+    z-index: 2;
+    max-width: 65%;
+}
+
+.car-image-container {
+    position: absolute;
+    right: -80px;
+    bottom: -100px;
+    width: 50%;
+    max-width: 600px;
+    z-index: 1;
+}
+
+.car-image {
+    width: 100%;
+    height: auto;
+    transform: rotate(-5deg);
 }
 
 .calculator-title {
@@ -112,12 +150,14 @@
 
 /* Results Section */
 .results-section {
-    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    background: linear-gradient(135deg, #415A8C 0%, #162E5E 100%);
     color: white;
     padding: 40px;
     border-radius: 16px;
     text-align: center;
     margin-top: 40px;
+    position: relative;
+    z-index: 2;
 }
 
 .result-title {
