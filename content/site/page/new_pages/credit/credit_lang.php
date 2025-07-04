@@ -56,6 +56,11 @@ if (isset($_COOKIE['lang']) && in_array($_COOKIE['lang'], array('ro', 'ru', 'en'
     $current_lang = $_COOKIE['lang'];
 }
 
-// Set the translations for the current language
-$lng = $lng_credit[$current_lang];
+// Extract translations for the current language
+$lng = array();
+foreach ($lng_credit as $key => $translations) {
+    if (isset($translations[$current_lang])) {
+        $lng[$key] = $translations[$current_lang];
+    }
+}
 ?>
