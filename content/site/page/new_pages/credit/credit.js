@@ -20,16 +20,15 @@ $(document).ready(function() {
         skin: "round",
         min: 2000,
         max: 50000,
-        from: 5500,
+        from: 25000,
         step: 500,
         onStart: function(data) {
             console.log('Slider suma onStart:', data.from);
-            // Actualizează textul span-ului cu valoarea inițială
             $input_suma_creditului.text("€ " + formatMoney(data.from));
         },
         onChange: function (data) {
             console.log('Slider suma onChange:', data.from);
-            // Actualizează textul span-ului când se mișcă slider-ul
+
             $input_suma_creditului.text("€ " + formatMoney(data.from));
             console.log('Updated suma text to:', "€ " + formatMoney(data.from));
             clearTimeout(updateRateTimeout);
@@ -47,7 +46,7 @@ $(document).ready(function() {
         skin: "round",
         min: 6,
         max: 60,
-        from: 36,
+        from: 30,
         step: 1,
         onStart: function(data) {
             console.log('Slider termen onStart:', data.from);

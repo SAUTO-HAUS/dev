@@ -33,31 +33,31 @@ if (file_exists($css_file_path)) {
         <div class="container">
             <!-- Credit calculator container - positioned higher -->
             <div class="credit-calculator-container">
-                <h3 class="calculator-title"><?php echo $lng['w']['calculator_title']; ?></h3>
+                <h3 class="calculator-title" style="font-size: 32px; font-weight: bold;"><?php echo $lng['w']['calculator_title']; ?></h3>
                 <div class="calculator-content">
                             <div class="calculator-field">
-                                <div class="field-header">
+                                <div class="field-header" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; width: 100%;">
                                     <label class="field-label"><?php echo $lng['w']['loan_amount_eur']; ?></label>
-                                    <span class="field-value" id="view_suma_creditului">€ 5 500</span>
+                                    <span class="field-value" id="view_suma_creditului" style="font-weight: bold;">€ 25 000</span>
                                 </div>
                                 <input type="text" id="suma-creditului">
                                 <div class="slider-labels">
-                                    <span>€ 2 000</span>
-                                    <span>€ 25 000</span>
-                                    <span>€ 50 000</span>
+                                    <span style="margin-top:-5px;">€ 2 000</span>
+                                    <span style="padding-right:20px; margin-top:-5px;">€ 25 000</span>
+                                    <span style="margin-top:-5px;">€ 50 000</span>
                                 </div>
                             </div>
                             
                             <div class="calculator-field">
-                                <div class="field-header">
+                                <div class="field-header" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; width: 100%;">
                                     <label class="field-label"><?php echo $lng['w']['loan_term_months']; ?></label>
-                                    <span class="field-value" id="view_termen_creditului">36 <?php echo $lng['w']['calc_title_luni']; ?></span>
+                                    <span class="field-value" id="view_termen_creditului" style="font-weight: bold;">30 <?php echo $lng['w']['calc_title_luni']; ?></span>
                                 </div>
                                 <input type="text" id="termen-creditului">
                                 <div class="slider-labels">
-                                    <span>6 <?php echo $lng['w']['calc_title_luni']; ?></span>
-                                    <span>30 <?php echo $lng['w']['calc_title_luni']; ?></span>
-                                    <span>60 <?php echo $lng['w']['calc_title_luni']; ?></span>
+                                    <span style="margin-top:-5px;">6 <?php echo $lng['w']['calc_title_luni']; ?></span>
+                                    <span style="padding-right:50px; margin-top:-5px;">30 <?php echo $lng['w']['calc_title_luni']; ?></span>
+                                    <span style="margin-top:-5px;">60 <?php echo $lng['w']['calc_title_luni']; ?></span>
                                 </div>
                             </div>
                             
@@ -75,8 +75,8 @@ if (file_exists($css_file_path)) {
                 
                 <div class="hero-right-content">
                     <div class="hero-text">
-                        <div class="hero-main-title">ПОКУПАЙТЕ АВТОМОБИЛЬ С ЛЁГКОСТЬЮ</div>
-                        <div class="hero-subtitle">КРЕДИТ И ЛИЗИНГ В МОЛДОВЕ</div>
+                        <div class="hero-main-title"><?php echo $lng['w']['hero_main_title']; ?></div>
+                        <div class="hero-subtitle"><?php echo $lng['w']['hero_subtitle']; ?></div>
                     </div>
                 </div>
                 

@@ -93,7 +93,7 @@ body {
     height: 357px;
     position: absolute;
     bottom: 30px;
-    right: 10px;
+    right: 80px;
     transform: none;
     opacity: 1;
     object-fit: contain;
@@ -115,6 +115,7 @@ body {
     padding: 32px;
     margin: 0 auto;
     margin-top: -20px;
+    margin-bottom: -20px;
     max-width: 580px;
     width: 100%;
     box-shadow: 0 8px 32px rgba(0,0,0,0.12);
@@ -140,9 +141,8 @@ body {
 
 .field-header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 16px;
+    margin-bottom: -10px;
 }
 
 .field-label {
@@ -208,32 +208,38 @@ body {
 }
 
 .payment-result {
-    background: linear-gradient(135deg, #ffebee 0%, #fce4ec 100%);
+    background: linear-gradient(135deg, #ffe8e8 0%, #ffe8e8 100%);
     border-radius: 12px;
-    padding: 20px;
+    padding: 12px 20px;
     text-align: center;
-    margin-top: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: -10px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .result-label {
-    display: block;
+    display: inline;
     font-size: 14px;
-    color: #666666;
-    margin-bottom: 8px;
+    font-weight: bold;
+    color: #4f4f4f;
+    margin-right: 8px;
 }
 
 .result-value {
     font-size: 18px;
-    color: #dc3545;
-    font-weight: 600;
+    color: #db1629;
+    font-weight: bold;
 }
 
 .calculator-field label {
-    display: block;
+    display: inline;
     font-size: 0.9rem;
     font-weight: 600;
-    color: #333;
-    margin-bottom: 10px;
+    color: #2b2b2b;
+    margin-bottom: 0;
 }
 
 .input-slider-container {

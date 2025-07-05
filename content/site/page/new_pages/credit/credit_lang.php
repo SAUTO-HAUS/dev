@@ -7,6 +7,16 @@ $lng_credit_page = array(
     // Plasăm toate traducerile în subarray-ul 'w' pentru a fi compatibile cu structura site-ului
     'w' => array(
         // Hero Section
+        'hero_main_title' => array(
+            'ro' => 'CUMPĂRAȚI AUTOMOBILUL CU UȘURINȚĂ',
+            'ru' => 'ПОКУПАЙТЕ АВТОМОБИЛЬ С ЛЁГКОСТЬЮ',
+            'en' => 'BUY A CAR WITH EASE'
+        ),
+        'hero_subtitle' => array(
+            'ro' => 'CREDIT ȘI LEASING ÎN MOLDOVA',
+            'ru' => 'КРЕДИТ И ЛИЗИНГ В МОЛДОВЕ',
+            'en' => 'CREDIT AND LEASING IN MOLDOVA'
+        ),
         'credit_title' => array(
             'ro' => 'Cumpărați automobilul cu ușurință Credit și Leasing în Moldova',
             'ru' => 'Покупайте автомобиль с лёгкостью Кредит и Лизинг в Молдове',
@@ -15,24 +25,24 @@ $lng_credit_page = array(
         
         // Calculator Section
         'calculator_title' => array(
-            'ro' => 'Calculator Credit Auto',
+            'ro' => 'Calculator Credit',
             'ru' => 'Кредитный калькулятор',
-            'en' => 'Car Loan Calculator'
+            'en' => 'Loan Calculator'
         ),
         'loan_amount_eur' => array(
-            'ro' => 'Suma creditului (EUR)',
-            'ru' => 'Сумма кредита (EUR)',
-            'en' => 'Loan amount (EUR)'
+            'ro' => 'Suma creditului',
+            'ru' => 'Сумма кредита',
+            'en' => 'Loan amount'
         ),
         'loan_term_months' => array(
-            'ro' => 'Termenul (luni)',
-            'ru' => 'Срок кредита (месяцев)',
-            'en' => 'Term (months)'
+            'ro' => 'Termenul',
+            'ru' => 'Срок кредита',
+            'en' => 'Term'
         ),
         'monthly_payment_est' => array(
-            'ro' => 'Rata lunară estimată',
+            'ro' => 'Rata lunară',
             'ru' => 'Ежемесячный платеж',
-            'en' => 'Estimated monthly payment'
+            'en' => 'Monthly payment'
         ),
         'payment_range_from' => array(
             'ro' => 'De la',
@@ -45,32 +55,13 @@ $lng_credit_page = array(
             'en' => 'to'
         ),
         
-        // Old calculator compatibility keys
-        'calc_title' => array(
-            'ro' => 'Calculator Credit Auto',
-            'ru' => 'Калькулятор Автокредита',
-            'en' => 'Car Loan Calculator'
-        ),
-        'calc_title_sum_tl' => array(
-            'ro' => 'Suma creditului (EUR)',
-            'ru' => 'Сумма кредита (EUR)',
-            'en' => 'Loan amount (EUR)'
-        ),
-        'calc_title_term_tl' => array(
-            'ro' => 'Termenul (luni)',
-            'ru' => 'Срок (месяцев)',
-            'en' => 'Term (months)'
-        ),
-        'calc_title_rata' => array(
-            'ro' => 'Rata lunară estimată:',
-            'ru' => 'Ориентировочный ежемесячный платёж:',
-            'en' => 'Estimated monthly payment:'
-        ),
+        // Necesar pentru afișarea lunilor în slider
         'calc_title_luni' => array(
             'ro' => 'luni',
             'ru' => 'месяцев',
             'en' => 'months'
         ),
+        // Necesar pentru afișarea plății lunare
         'calc_title_plata' => array(
             'ro' => 'de la',
             'ru' => 'от',
