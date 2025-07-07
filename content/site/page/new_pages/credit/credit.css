@@ -93,7 +93,7 @@ body {
     height: 357px;
     position: absolute;
     bottom: 30px;
-    right: 80px;
+    right: 35px;
     transform: none;
     opacity: 1;
     object-fit: contain;
@@ -743,5 +743,207 @@ body {
     .leasing-grid {
         grid-template-columns: 1fr;
         gap: 20px;
+    }
+}
+
+/* =============================
+   PARTNERS SECTION STYLES 
+   ============================= */
+.partners-section {
+    padding: 80px 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.partners-content {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
+    gap: 60px;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+    position: relative;
+}
+
+/* Left side - Text content */
+.partners-text {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.partners-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #2c3e50;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.partners-subtitle {
+    font-size: 16px;
+    color: #6c757d;
+    line-height: 1.5;
+    margin: 0;
+}
+
+.apply-button {
+    background: #e2001a;
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    align-self: flex-start;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.apply-button:hover {
+    background: #c01a2b;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(226, 0, 26, 0.3);
+}
+
+/* Center - Partners grid */
+.partners-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(3, 1fr);
+    gap: 20px;
+    height: 420px;
+}
+
+.partner-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #e9ecef;
+}
+
+.partner-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.partner-logo {
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.partner-logo img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.partner-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 8px 0;
+}
+
+.partner-desc {
+    font-size: 13px;
+    color: #6c757d;
+    line-height: 1.4;
+    margin: 0;
+}
+
+/* Right side - Car image */
+.partners-car-image {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.partners-car-image img {
+    max-width: 100%;
+    height: auto;
+    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.2));
+}
+
+/* Responsive Design for Partners Section */
+@media (max-width: 1200px) {
+    .partners-content {
+        grid-template-columns: 1fr 1.5fr 1fr;
+        gap: 40px;
+    }
+    
+    .partners-title {
+        font-size: 28px;
+    }
+}
+
+@media (max-width: 992px) {
+    .partners-content {
+        grid-template-columns: 1fr;
+        gap: 40px;
+        text-align: center;
+    }
+    
+    .partners-grid {
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(3, auto);
+        gap: 15px;
+        height: auto;
+    }
+    
+    .partner-card {
+        padding: 15px;
+    }
+    
+    .partner-logo {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .partners-car-image {
+        order: -1;
+    }
+    
+    .partners-car-image img {
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 576px) {
+    .partners-section {
+        padding: 60px 0;
+    }
+    
+    .partners-title {
+        font-size: 24px;
+    }
+    
+    .partners-subtitle {
+        font-size: 14px;
+    }
+    
+    .partners-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: repeat(5, auto);
+    }
+    
+    .apply-button {
+        padding: 14px 28px;
+        font-size: 14px;
     }
 }

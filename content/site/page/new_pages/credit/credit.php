@@ -94,13 +94,13 @@ if (file_exists($css_file_path)) {
         <!-- Category tabs -->
         <div class="category-tabs">
             <button class="tab-button active" data-category="personal">
-                Автокредит для личного автомобиля
+                <?php echo $lng['w']['personal_credit_title'][$current_lang]; ?>
             </button>
             <button class="tab-button" data-category="business">
-                Автокредит для вашего бизнеса
+                <?php echo $lng['w']['business_credit_title'][$current_lang]; ?>
             </button>
             <button class="tab-button" data-category="leasing">
-                Автолизинг - гибкость и преимущество
+                <?php echo $lng['w']['leasing_title'][$current_lang]; ?>
             </button>
         </div>
         
@@ -108,8 +108,8 @@ if (file_exists($css_file_path)) {
         <div class="category-content">
             <!-- Personal car credit content -->
             <div class="category-grid active" id="personal-content">
-                <h2 class="category-title">Автокредит для личного автомобиля</h2>
-                <p class="category-description">Получите автомобиль своей мечты с выгодными условиями кредитования</p>
+                <h2 class="category-title"><?php echo $lng['w']['personal_credit_title'][$current_lang]; ?></h2>
+                <p class="category-description"><?php echo $lng['w']['personal_credit_desc'][$current_lang]; ?></p>
                 
                 <div class="personal-grid">
                     <!-- Item 1 - Large card spanning 2 rows -->
@@ -119,8 +119,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 4L6 10v12c0 11.11 7.67 21.47 18 24 10.33-2.53 18-12.89 18-24V10L24 4z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Сумма до 50 000 €</h3>
-                        <p class="feature-description">Идеально для любого выбора – от компактного городского хэтчбека до просторного кроссовера или семейного минивэна.</p>
+                        <h3 class="feature-title"><?php echo $lng['w']['personal_feature1_title'][$current_lang]; ?></h3>
+                        <p class="feature-description"><?php echo $lng['w']['personal_feature1_desc'][$current_lang]; ?></p>
                     </div>
                     
                     <!-- Item 2 -->
@@ -130,8 +130,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M12 18h24v-2c0-5-4-9-9-9s-9 4-9 9v2z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">КАСКО не обязательно</h3>
-                        <p class="feature-description">КАСКО оформляется только по вашему желанию. Мы ценим свободу выбора.</p>
+                        <h3 class="feature-title"><?php echo $lng['w']['personal_feature2_title'][$current_lang]; ?></h3>
+                        <p class="feature-description"><?php echo $lng['w']['personal_feature2_desc'][$current_lang]; ?></p>
                     </div>
                     
                     <!-- Item 3 -->
@@ -141,8 +141,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 2C13.5 2 5 10.5 5 21c0 15.25 19 25 19 25z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Любой год выпуска автомобиля</h3>
-                        <p class="feature-description">Финансируем покупку автомобиля независимо от года выпуска. Главное условие – хорошее техническое состояние.</p>
+                        <h3 class="feature-title"><?php echo $lng['w']['personal_feature3_title'][$current_lang]; ?></h3>
+                        <p class="feature-description"><?php echo $lng['w']['personal_feature3_desc'][$current_lang]; ?></p>
                     </div>
                     
                     <!-- Item 4 -->
@@ -152,8 +152,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M40 8H8c-2.2 0-4 1.8-4 4v24c0 2.2 1.8 4 4 4h32z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Финансирование до 100% стоимости</h3>
-                        <p class="feature-description">Вы можете купить автомобиль полностью в кредит, без обязательного первоначального взноса.</p>
+                        <h3 class="feature-title"><?php echo $lng['w']['personal_feature4_title'][$current_lang]; ?></h3>
+                        <p class="feature-description"><?php echo $lng['w']['personal_feature4_desc'][$current_lang]; ?></p>
                     </div>
                     
                     <!-- Item 5 -->
@@ -163,8 +163,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 12c-4.41 0-8 3.59-8 8s3.59 8 8 8 8-3.59 8-8-3.59-8-8-8z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Быстрое одобрение – до 1 часа</h3>
-                        <p class="feature-description">Мы ценим ваше время. Предварительное решение принимается оперативно.</p>
+                        <h3 class="feature-title"><?php echo $lng['w']['personal_feature5_title'][$current_lang]; ?></h3>
+                        <p class="feature-description"><?php echo $lng['w']['personal_feature5_desc'][$current_lang]; ?></p>
                     </div>
                     
                     <!-- Item 6 -->
@@ -174,8 +174,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M20 6H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Досрочное погашение без штрафов</h3>
-                        <p class="feature-description">Закрывайте кредит раньше без дополнительных затрат.</p>
+                        <h3 class="feature-title"><?php echo $lng['w']['personal_feature6_title'][$current_lang]; ?></h3>
+                        <p class="feature-description"><?php echo $lng['w']['personal_feature6_desc'][$current_lang]; ?></p>
                     </div>
                     
                     <!-- Item 7 -->
@@ -185,16 +185,16 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 4l4 8h8l-6 6 2 8-8-4-8 4 2-8-6-6h8z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Гибкий график платежей</h3>
-                        <p class="feature-description">Возможность адаптировать выплаты при частичном досрочном погашении.</p>
+                        <h3 class="feature-title"><?php echo $lng['w']['personal_feature7_title'][$current_lang]; ?></h3>
+                        <p class="feature-description"><?php echo $lng['w']['personal_feature7_desc'][$current_lang]; ?></p>
                     </div>
                 </div>
             </div>
             
             <!-- Business car credit content -->
             <div class="category-grid" id="business-content">
-                <h2 class="category-title">Автокредит для вашего бизнеса</h2>
-                <p class="category-description">Развивайте бизнес с надежным транспортом</p>
+                <h2 class="category-title"><?php echo $lng['w']['business_credit_title'][$current_lang]; ?></h2>
+                <p class="category-description"><?php echo $lng['w']['business_credit_desc'][$current_lang]; ?></p>
                 
                 <div class="business-grid">
                     <!-- Item 1 - Large card spanning 2 rows -->
@@ -204,8 +204,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M20 6H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">На имя физического или юридического лица</h3>
-                        <p class="feature-description">Кредит доступен как физическим лицам (включая индивидуальных предпринимателей), так и компаниям.</p>
+                        <h3 class="feature-title"><?php echo $lng['w']['business_feature1_title'][$current_lang]; ?></h3>
+                        <p class="feature-description"><?php echo $lng['w']['business_feature1_desc'][$current_lang]; ?></p>
                     </div>
                     
                     <!-- Item 2 -->
@@ -215,8 +215,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 4C13 4 4 13 4 24s9 20 20 20 20-9 20-20S35 4 24 4zm0 36c-8.8 0-16-7.2-16-16S15.2 8 24 8s16 7.2 16 16-7.2 16-16 16z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Удобный способ получения средств</h3>
-                        <p class="feature-description">Оплата наличными или перевод напрямую на счет вашей компании.</p>
+                        <h3 class="feature-title"><?php echo $lng['w']['business_feature2_title'][$current_lang]; ?></h3>
+                        <p class="feature-description"><?php echo $lng['w']['business_feature2_desc'][$current_lang]; ?></p>
                     </div>
                     
                     <!-- Item 3 -->
@@ -226,8 +226,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 2l-6 6h12l-6-6zm0 44l6-6H18l6 6zM8 24l6-6v12l-6-6zm32 0l-6 6V18l6 6z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Финансирование заказанных автомобилей</h3>
-                        <p class="feature-description">Получите кредит, даже если желаемый автомобиль ещё в пути в Молдову.</p>
+                        <h3 class="feature-title"><?php echo $lng['w']['business_feature3_title'][$current_lang]; ?></h3>
+                        <p class="feature-description"><?php echo $lng['w']['business_feature3_desc'][$current_lang]; ?></p>
                     </div>
                     
                     <!-- Item 4 -->
@@ -237,8 +237,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M36 16l-8 8 8 8-8-8 8-8zm-12 8l-8-8 8 8-8 8 8-8z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Поддержка стартапов</h3>
-                        <p class="feature-description">Упрощённая процедура и специальные условия для молодых компаний.</p>
+                        <h3 class="feature-title"><?php echo $lng['w']['business_feature4_title'][$current_lang]; ?></h3>
+                        <p class="feature-description"><?php echo $lng['w']['business_feature4_desc'][$current_lang]; ?></p>
                     </div>
                     
                     <!-- Item 5 -->
@@ -248,8 +248,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 12c-4.41 0-8 3.59-8 8s3.59 8 8 8 8-3.59 8-8-3.59-8-8-8z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Без ограничений на выезд за границу</h3>
-                        <p class="feature-description">Ваш автомобиль – ваш актив без границ.</p>
+                        <h3 class="feature-title"><?php echo $lng['w']['business_feature5_title'][$current_lang]; ?></h3>
+                        <p class="feature-description"><?php echo $lng['w']['business_feature5_desc'][$current_lang]; ?></p>
                     </div>
                     
                     <!-- Item 6 - Wide card spanning 2 columns -->
@@ -259,16 +259,16 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 4l4 8h8l-6 6 2 8-8-4-8 4 2-8-6-6h8z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Рефинансирование существующего автокредита</h3>
-                        <p class="feature-description">Улучшите условия текущего кредита.</p>
+                        <h3 class="feature-title"><?php echo $lng['w']['business_feature6_title'][$current_lang]; ?></h3>
+                        <p class="feature-description"><?php echo $lng['w']['business_feature6_desc'][$current_lang]; ?></p>
                     </div>
                 </div>
             </div>
             
             <!-- Leasing content -->
             <div class="category-grid" id="leasing-content">
-                <h2 class="category-title">Автолизинг - гибкость и преимущество</h2>
-                <p class="category-description">Получите автомобиль без больших первоначальных вложений</p>
+                <h2 class="category-title"><?php echo $lng['w']['leasing_title'][$current_lang]; ?></h2>
+                <p class="category-description"><?php echo $lng['w']['leasing_desc'][$current_lang]; ?></p>
                 
                 <div class="leasing-grid">
                     <!-- Item 1 - Large card spanning 2 rows -->
@@ -278,8 +278,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 4L6 10v12c0 11.11 7.67 21.47 18 24 10.33-2.53 18-12.89 18-24V10L24 4z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Оптимальное управление бюджетом</h3>
-                        <p class="feature-description">Пользуйтесь автомобилем без немедленной покупки.</p>
+                        <h3 class="feature-title"><?php echo $lng['w']['leasing_feature1_title'][$current_lang]; ?></h3>
+                        <p class="feature-description"><?php echo $lng['w']['leasing_feature1_desc'][$current_lang]; ?></p>
                     </div>
                     
                     <!-- Item 2 -->
@@ -289,8 +289,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M40 18H8l4-8h24l4 8zM8 42h32l-4-8H12l-4 8z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Финансирование до 100% стоимости автомобиля</h3>
-                        <p class="feature-description">Аванс не обязателен.</p>
+                        <h3 class="feature-title"><?php echo $lng['w']['leasing_feature2_title'][$current_lang]; ?></h3>
+                        <p class="feature-description"><?php echo $lng['w']['leasing_feature2_desc'][$current_lang]; ?></p>
                     </div>
                     
                     <!-- Item 3 -->
@@ -300,8 +300,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 2C13 4 4 13 4 24s9 20 20 20 20-9 20-20S35 4 24 4zm0 36c-8.8 0-16-7.2-16-16S15.2 8 24 8s16 7.2 16 16-7.2 16-16 16z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Прозрачные и понятные условия</h3>
-                        <p class="feature-description">Без скрытых комиссий.</p>
+                        <h3 class="feature-title"><?php echo $lng['w']['leasing_feature3_title'][$current_lang]; ?></h3>
+                        <p class="feature-description"><?php echo $lng['w']['leasing_feature3_desc'][$current_lang]; ?></p>
                     </div>
                     
                     <!-- Item 4 -->
@@ -311,8 +311,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M16 8v8h16V8H16zm0 32h16v-8H16v8zM8 24h8V16H8v8zm24 0h8v-8h-8v8z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Для всех категорий клиентов</h3>
-                        <p class="feature-description">Лизинг доступен физическим лицам, ИП и компаниям.</p>
+                        <h3 class="feature-title"><?php echo $lng['w']['leasing_feature4_title'][$current_lang]; ?></h3>
+                        <p class="feature-description"><?php echo $lng['w']['leasing_feature4_desc'][$current_lang]; ?></p>
                     </div>
                     
                     <!-- Item 5 -->
@@ -322,10 +322,77 @@ if (file_exists($css_file_path)) {
                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Гибкий срок договора</h3>
-                        <p class="feature-description">От 12 до 60 месяцев.</p>
+                        <h3 class="feature-title"><?php echo $lng['w']['leasing_feature5_title'][$current_lang]; ?></h3>
+                        <p class="feature-description"><?php echo $lng['w']['leasing_feature5_desc'][$current_lang]; ?></p>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Partners Section -->
+<section class="partners-section">
+    <div class="container">
+        <div class="partners-content">
+            <div class="partners-text">
+                <h2 class="partners-title"><?php echo $lng['w']['partners_title'][$current_lang]; ?></h2>
+                <p class="partners-subtitle"><?php echo $lng['w']['partners_subtitle'][$current_lang]; ?></p>
+                <button class="apply-button"><?php echo $lng['w']['submit_application'][$current_lang]; ?></button>
+            </div>
+            <div class="partners-grid">
+                <div class="partner-card">
+                    <div class="partner-logo">
+                        <img src="/images/partners/microinvest.png" alt="Microinvest">
+                    </div>
+                    <div class="partner-info">
+                        <h3 class="partner-name">Microinvest.md</h3>
+                        <p class="partner-desc"><?php echo $lng['w']['microinvest_desc'][$current_lang]; ?></p>
+                    </div>
+                </div>
+                
+                <div class="partner-card">
+                    <div class="partner-logo">
+                        <img src="/images/partners/maib-leasing.png" alt="Maib Leasing">
+                    </div>
+                    <div class="partner-info">
+                        <h3 class="partner-name">Leasing.md</h3>
+                        <p class="partner-desc"><?php echo $lng['w']['maib_leasing_desc'][$current_lang]; ?></p>
+                    </div>
+                </div>
+                
+                <div class="partner-card">
+                    <div class="partner-logo">
+                        <img src="/images/partners/bt-leasing.png" alt="BT Leasing">
+                    </div>
+                    <div class="partner-info">
+                        <h3 class="partner-name">BT Leasing</h3>
+                        <p class="partner-desc"><?php echo $lng['w']['bt_leasing_desc'][$current_lang]; ?></p>
+                    </div>
+                </div>
+                
+                <div class="partner-card">
+                    <div class="partner-logo">
+                        <img src="/images/partners/primero.png" alt="Primero">
+                    </div>
+                    <div class="partner-info">
+                        <h3 class="partner-name">Primero.md</h3>
+                        <p class="partner-desc"><?php echo $lng['w']['primero_desc'][$current_lang]; ?></p>
+                    </div>
+                </div>
+                
+                <div class="partner-card">
+                    <div class="partner-logo">
+                        <img src="/images/partners/victoriabank.png" alt="Victoriabank">
+                    </div>
+                    <div class="partner-info">
+                        <h3 class="partner-name">Victoriabank</h3>
+                        <p class="partner-desc"><?php echo $lng['w']['victoriabank_desc'][$current_lang]; ?></p>
+                    </div>
+                </div>
+            </div>
+            <div class="partners-car-image">
+                <img src="/credit-media/white-car-partners.png" alt="White car">
             </div>
         </div>
     </div>
