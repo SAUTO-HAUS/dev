@@ -88,6 +88,249 @@ if (file_exists($css_file_path)) {
     </div>
 </section>
 
+<!-- Credit Categories Section -->
+<section class="credit-categories-section">
+    <div class="container">
+        <!-- Category tabs -->
+        <div class="category-tabs">
+            <button class="tab-button active" data-category="personal">
+                Автокредит для личного автомобиля
+            </button>
+            <button class="tab-button" data-category="business">
+                Автокредит для вашего бизнеса
+            </button>
+            <button class="tab-button" data-category="leasing">
+                Автолизинг - гибкость и преимущество
+            </button>
+        </div>
+        
+        <!-- Category content -->
+        <div class="category-content">
+            <!-- Personal car credit content -->
+            <div class="category-grid active" id="personal-content">
+                <h2 class="category-title">Автокредит для личного автомобиля</h2>
+                <p class="category-description">Получите автомобиль своей мечты с выгодными условиями кредитования</p>
+                
+                <div class="personal-grid">
+                    <!-- Item 1 - Large card spanning 2 rows -->
+                    <div class="feature-card item1">
+                        <div class="feature-icon">
+                            <svg width="64" height="64" viewBox="0 0 48 48" fill="none">
+                                <path d="M24 4L6 10v12c0 11.11 7.67 21.47 18 24 10.33-2.53 18-12.89 18-24V10L24 4z" fill="#e2001a"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Надежная защита</h3>
+                        <p class="feature-description">Комплексное страхование автомобиля и защита ваших интересов</p>
+                    </div>
+                    
+                    <!-- Item 2 -->
+                    <div class="feature-card item2">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+                                <path d="M12 18h24v-2c0-5-4-9-9-9s-9 4-9 9v2z" fill="#e2001a"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Быстрое оформление</h3>
+                        <p class="feature-description">Минимум документов и быстрое решение по вашей заявке</p>
+                    </div>
+                    
+                    <!-- Item 3 -->
+                    <div class="feature-card item3">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+                                <path d="M24 2C13.5 2 5 10.5 5 21c0 15.25 19 25 19 25z" fill="#e2001a"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Выгодные условия</h3>
+                        <p class="feature-description">Низкие процентные ставки и гибкие условия погашения</p>
+                    </div>
+                    
+                    <!-- Item 4 -->
+                    <div class="feature-card item4">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+                                <path d="M40 8H8c-2.2 0-4 1.8-4 4v24c0 2.2 1.8 4 4 4h32z" fill="#e2001a"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Индивидуальный подход</h3>
+                        <p class="feature-description">Персональные условия в зависимости от ваших потребностей</p>
+                    </div>
+                    
+                    <!-- Item 5 -->
+                    <div class="feature-card item5">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+                                <path d="M24 12c-4.41 0-8 3.59-8 8s3.59 8 8 8 8-3.59 8-8-3.59-8-8-8z" fill="#e2001a"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Гибкие сроки</h3>
+                        <p class="feature-description">Срок кредитования до 60 месяцев на выгодных условиях</p>
+                    </div>
+                    
+                    <!-- Item 6 -->
+                    <div class="feature-card item6">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+                                <path d="M20 6H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12z" fill="#e2001a"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Без скрытых платежей</h3>
+                        <p class="feature-description">Прозрачные условия без скрытых комиссий и доплат</p>
+                    </div>
+                    
+                    <!-- Item 7 -->
+                    <div class="feature-card item7">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+                                <path d="M24 4l4 8h8l-6 6 2 8-8-4-8 4 2-8-6-6h8z" fill="#e2001a"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Онлайн заявка</h3>
+                        <p class="feature-description">Подача заявки онлайн 24/7 с быстрым рассмотрением</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Business car credit content -->
+            <div class="category-grid" id="business-content">
+                <h2 class="category-title">Автокредит для вашего бизнеса</h2>
+                <p class="category-description">Развивайте бизнес с надежным транспортом</p>
+                
+                <div class="business-grid">
+                    <!-- Item 1 - Large card spanning 2 rows -->
+                    <div class="feature-card item1">
+                        <div class="feature-icon">
+                            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                                <path d="M20 6H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z" fill="#e2001a"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Налоговые льготы</h3>
+                        <p class="feature-description">Оптимизация налогообложения при покупке автомобиля для бизнеса</p>
+                    </div>
+                    
+                    <!-- Item 2 -->
+                    <div class="feature-card item2">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+                                <path d="M24 4C13 4 4 13 4 24s9 20 20 20 20-9 20-20S35 4 24 4zm0 36c-8.8 0-16-7.2-16-16S15.2 8 24 8s16 7.2 16 16-7.2 16-16 16z" fill="#e2001a"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Удобный способ получения</h3>
+                        <p class="feature-description">Оплата авансом или порядок получения средств</p>
+                    </div>
+                    
+                    <!-- Item 3 -->
+                    <div class="feature-card item3">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+                                <path d="M24 2l-6 6h12l-6-6zm0 44l6-6H18l6 6zM8 24l6-6v12l-6-6zm32 0l-6 6V18l6 6z" fill="#e2001a"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Финансирование заказов</h3>
+                        <p class="feature-description">Кредит на машины в пути в Молдову</p>
+                    </div>
+                    
+                    <!-- Item 4 -->
+                    <div class="feature-card item4">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+                                <path d="M36 16l-8 8 8 8-8-8 8-8zm-12 8l-8-8 8 8-8 8 8-8z" fill="#e2001a"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Поддержка стартапов</h3>
+                        <p class="feature-description">Упрощенная процедура для молодых компаний</p>
+                    </div>
+                    
+                    <!-- Item 5 -->
+                    <div class="feature-card item5">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+                                <path d="M24 12c-4.41 0-8 3.59-8 8s3.59 8 8 8 8-3.59 8-8-3.59-8-8-8z" fill="#e2001a"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Гибкие сроки</h3>
+                        <p class="feature-description">Срок кредитования до 60 месяцев</p>
+                    </div>
+                    
+                    <!-- Item 6 - Wide card spanning 2 columns -->
+                    <div class="feature-card item6">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+                                <path d="M24 4l4 8h8l-6 6 2 8-8-4-8 4 2-8-6-6h8z" fill="#e2001a"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Комплексное обслуживание</h3>
+                        <p class="feature-description">Полный спектр услуг от консультации до получения кредита</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Leasing content -->
+            <div class="category-grid" id="leasing-content">
+                <h2 class="category-title">Автолизинг - гибкость и преимущество</h2>
+                <p class="category-description">Получите автомобиль без больших первоначальных вложений</p>
+                
+                <div class="leasing-grid">
+                    <!-- Item 1 - Large card spanning 2 rows -->
+                    <div class="feature-card item1">
+                        <div class="feature-icon">
+                            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                                <path d="M24 4L6 10v12c0 11.11 7.67 21.47 18 24 10.33-2.53 18-12.89 18-24V10L24 4z" fill="#e2001a"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Минимальный первый взнос</h3>
+                        <p class="feature-description">Начните использовать автомобиль с минимальными вложениями</p>
+                    </div>
+                    
+                    <!-- Item 2 -->
+                    <div class="feature-card item2">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+                                <path d="M40 18H8l4-8h24l4 8zM8 42h32l-4-8H12l-4 8z" fill="#e2001a"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Гибкие условия</h3>
+                        <p class="feature-description">Выберите оптимальный срок и условия лизинга</p>
+                    </div>
+                    
+                    <!-- Item 3 -->
+                    <div class="feature-card item3">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+                                <path d="M24 2C13 4 4 13 4 24s9 20 20 20 20-9 20-20S35 4 24 4zm0 36c-8.8 0-16-7.2-16-16S15.2 8 24 8s16 7.2 16 16-7.2 16-16 16z" fill="#e2001a"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Налоговые преимущества</h3>
+                        <p class="feature-description">Лизинговые платежи снижают налогооблагаемую базу</p>
+                    </div>
+                    
+                    <!-- Item 4 -->
+                    <div class="feature-card item4">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+                                <path d="M16 8v8h16V8H16zm0 32h16v-8H16v8zM8 24h8V16H8v8zm24 0h8v-8h-8v8z" fill="#e2001a"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Возможность выкупа</h3>
+                        <p class="feature-description">По окончании срока автомобиль может стать вашим</p>
+                    </div>
+                    
+                    <!-- Item 5 -->
+                    <div class="feature-card item5">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="#e2001a"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Быстрое оформление</h3>
+                        <p class="feature-description">Оперативная обработка заявки и минимум документов</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <div class="credit-page">
 </div>
 

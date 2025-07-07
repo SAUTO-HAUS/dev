@@ -117,4 +117,39 @@ $(document).ready(function() {
     
     // Calculate initial payments on page load
     calculatePayment();
+    
+    // Tab switching functionality for credit categories - Simple approach
+    $(document).on('click', '.tab-button', function(e) {
+        e.preventDefault();
+        
+        // Get the target category from data attribute
+        var targetCategory = $(this).attr('data-category');
+        
+        if (!targetCategory) {
+            console.log('No data-category found');
+            return;
+        }
+        
+        // Remove active class from all tabs
+        $('.tab-button').removeClass('active');
+        
+        // Add active class to clicked tab
+        $(this).addClass('active');
+        
+        // Hide all category grids
+        $('.category-grid').removeClass('active');
+        
+        // Show the target category grid
+        $('#' + targetCategory + '-content').addClass('active');
+        
+        console.log('Tab switched to:', targetCategory);
+    });
+    
+    // Make sure only first tab is active on page load
+    setTimeout(function() {
+        $('.category-grid').removeClass('active');
+        $('#personal-content').addClass('active');
+        $('.tab-button').removeClass('active');
+        $('.tab-button[data-category="personal"]').addClass('active');
+    }, 100);
 });
