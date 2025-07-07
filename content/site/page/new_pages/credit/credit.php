@@ -81,7 +81,7 @@ if (file_exists($css_file_path)) {
                 </div>
                 
                 <div class="car-hero-container">
-                    <img src="/content/site/page/new_pages/credit/credit-media/car__red_credit.png" alt="Automobil credit" class="car-hero-image">
+                    <img src="/content/site/page/new_pages/credit/credit-media/car_red_credit.png" alt="Automobil credit" class="car-hero-image">
                 </div>
             </div>
         </div>
@@ -365,7 +365,7 @@ if (file_exists($css_file_path)) {
                 <!-- White car card in column 3 spanning full height -->
                 <div class="partner-card white-car-card">
                     <div class="partner-logo white-car-logo">
-                        <img src="/credit-media/white-car-partners.png" alt="White car">
+                        <img src="/content/site/page/new_pages/credit/credit-media/white-car-partners.png" alt="White car">
                         <div><p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Repellendus error, magni harum laboriosam excepturi debitis sequi sunt alias ab veritatis.</p></div>
                     </div>
                 </div>
