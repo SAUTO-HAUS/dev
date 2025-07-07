@@ -94,13 +94,13 @@ if (file_exists($css_file_path)) {
         <!-- Category tabs -->
         <div class="category-tabs">
             <button class="tab-button active" data-category="personal">
-                <?php echo $lng['w']['personal_credit_title'][$current_lang]; ?>
+                <?php echo get_translation('personal_credit_title', $current_lang, $lng); ?>
             </button>
             <button class="tab-button" data-category="business">
-                <?php echo $lng['w']['business_credit_title'][$current_lang]; ?>
+                <?php echo get_translation('business_credit_title', $current_lang, $lng); ?>
             </button>
             <button class="tab-button" data-category="leasing">
-                <?php echo $lng['w']['leasing_title'][$current_lang]; ?>
+                <?php echo get_translation('leasing_title', $current_lang, $lng); ?>
             </button>
         </div>
         
@@ -108,8 +108,8 @@ if (file_exists($css_file_path)) {
         <div class="category-content">
             <!-- Personal car credit content -->
             <div class="category-grid active" id="personal-content">
-                <h2 class="category-title"><?php echo $lng['w']['personal_credit_title'][$current_lang]; ?></h2>
-                <p class="category-description"><?php echo $lng['w']['personal_credit_desc'][$current_lang]; ?></p>
+                <h2 class="category-title"><?php echo get_translation('personal_credit_title', $current_lang, $lng); ?></h2>
+                <p class="category-description"><?php echo get_translation('personal_credit_desc', $current_lang, $lng); ?></p>
                 
                 <div class="personal-grid">
                     <!-- Item 1 - Large card spanning 2 rows -->
@@ -119,8 +119,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 4L6 10v12c0 11.11 7.67 21.47 18 24 10.33-2.53 18-12.89 18-24V10L24 4z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title"><?php echo $lng['w']['personal_feature1_title'][$current_lang]; ?></h3>
-                        <p class="feature-description"><?php echo $lng['w']['personal_feature1_desc'][$current_lang]; ?></p>
+                        <h3 class="feature-title"><?php echo get_translation('personal_feature1_title', $current_lang, $lng); ?></h3>
+                        <p class="feature-description"><?php echo get_translation('personal_feature1_desc', $current_lang, $lng); ?></p>
                     </div>
                     
                     <!-- Item 2 -->
@@ -130,8 +130,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M12 18h24v-2c0-5-4-9-9-9s-9 4-9 9v2z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title"><?php echo $lng['w']['personal_feature2_title'][$current_lang]; ?></h3>
-                        <p class="feature-description"><?php echo $lng['w']['personal_feature2_desc'][$current_lang]; ?></p>
+                        <h3 class="feature-title"><?php echo get_translation('personal_feature2_title', $current_lang, $lng); ?></h3>
+                        <p class="feature-description"><?php echo get_translation('personal_feature2_desc', $current_lang, $lng); ?></p>
                     </div>
                     
                     <!-- Item 3 -->
@@ -141,8 +141,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 2C13.5 2 5 10.5 5 21c0 15.25 19 25 19 25z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title"><?php echo $lng['w']['personal_feature3_title'][$current_lang]; ?></h3>
-                        <p class="feature-description"><?php echo $lng['w']['personal_feature3_desc'][$current_lang]; ?></p>
+                        <h3 class="feature-title"><?php echo get_translation('personal_feature3_title', $current_lang, $lng); ?></h3>
+                        <p class="feature-description"><?php echo get_translation('personal_feature3_desc', $current_lang, $lng); ?></p>
                     </div>
                     
                     <!-- Item 4 -->
@@ -152,8 +152,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M40 8H8c-2.2 0-4 1.8-4 4v24c0 2.2 1.8 4 4 4h32z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title"><?php echo $lng['w']['personal_feature4_title'][$current_lang]; ?></h3>
-                        <p class="feature-description"><?php echo $lng['w']['personal_feature4_desc'][$current_lang]; ?></p>
+                        <h3 class="feature-title"><?php echo get_translation('personal_feature4_title', $current_lang, $lng); ?></h3>
+                        <p class="feature-description"><?php echo get_translation('personal_feature4_desc', $current_lang, $lng); ?></p>
                     </div>
                     
                     <!-- Item 5 -->
@@ -163,8 +163,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 12c-4.41 0-8 3.59-8 8s3.59 8 8 8 8-3.59 8-8-3.59-8-8-8z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title"><?php echo $lng['w']['personal_feature5_title'][$current_lang]; ?></h3>
-                        <p class="feature-description"><?php echo $lng['w']['personal_feature5_desc'][$current_lang]; ?></p>
+                        <h3 class="feature-title"><?php echo get_translation('personal_feature5_title', $current_lang, $lng); ?></h3>
+                        <p class="feature-description"><?php echo get_translation('personal_feature5_desc', $current_lang, $lng); ?></p>
                     </div>
                     
                     <!-- Item 6 -->
@@ -174,8 +174,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M20 6H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title"><?php echo $lng['w']['personal_feature6_title'][$current_lang]; ?></h3>
-                        <p class="feature-description"><?php echo $lng['w']['personal_feature6_desc'][$current_lang]; ?></p>
+                        <h3 class="feature-title"><?php echo get_translation('personal_feature6_title', $current_lang, $lng); ?></h3>
+                        <p class="feature-description"><?php echo get_translation('personal_feature6_desc', $current_lang, $lng); ?></p>
                     </div>
                     
                     <!-- Item 7 -->
@@ -185,16 +185,16 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 4l4 8h8l-6 6 2 8-8-4-8 4 2-8-6-6h8z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title"><?php echo $lng['w']['personal_feature7_title'][$current_lang]; ?></h3>
-                        <p class="feature-description"><?php echo $lng['w']['personal_feature7_desc'][$current_lang]; ?></p>
+                        <h3 class="feature-title"><?php echo get_translation('personal_feature7_title', $current_lang, $lng); ?></h3>
+                        <p class="feature-description"><?php echo get_translation('personal_feature7_desc', $current_lang, $lng); ?></p>
                     </div>
                 </div>
             </div>
             
             <!-- Business car credit content -->
             <div class="category-grid" id="business-content">
-                <h2 class="category-title"><?php echo $lng['w']['business_credit_title'][$current_lang]; ?></h2>
-                <p class="category-description"><?php echo $lng['w']['business_credit_desc'][$current_lang]; ?></p>
+                <h2 class="category-title"><?php echo get_translation('business_credit_title', $current_lang, $lng); ?></h2>
+                <p class="category-description"><?php echo get_translation('business_credit_desc', $current_lang, $lng); ?></p>
                 
                 <div class="business-grid">
                     <!-- Item 1 - Large card spanning 2 rows -->
@@ -204,8 +204,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M20 6H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title"><?php echo $lng['w']['business_feature1_title'][$current_lang]; ?></h3>
-                        <p class="feature-description"><?php echo $lng['w']['business_feature1_desc'][$current_lang]; ?></p>
+                        <h3 class="feature-title"><?php echo get_translation('business_feature1_title', $current_lang, $lng); ?></h3>
+                        <p class="feature-description"><?php echo get_translation('business_feature1_desc', $current_lang, $lng); ?></p>
                     </div>
                     
                     <!-- Item 2 -->
@@ -215,8 +215,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 4C13 4 4 13 4 24s9 20 20 20 20-9 20-20S35 4 24 4zm0 36c-8.8 0-16-7.2-16-16S15.2 8 24 8s16 7.2 16 16-7.2 16-16 16z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title"><?php echo $lng['w']['business_feature2_title'][$current_lang]; ?></h3>
-                        <p class="feature-description"><?php echo $lng['w']['business_feature2_desc'][$current_lang]; ?></p>
+                        <h3 class="feature-title"><?php echo get_translation('business_feature2_title', $current_lang, $lng); ?></h3>
+                        <p class="feature-description"><?php echo get_translation('business_feature2_desc', $current_lang, $lng); ?></p>
                     </div>
                     
                     <!-- Item 3 -->
@@ -226,8 +226,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 2l-6 6h12l-6-6zm0 44l6-6H18l6 6zM8 24l6-6v12l-6-6zm32 0l-6 6V18l6 6z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title"><?php echo $lng['w']['business_feature3_title'][$current_lang]; ?></h3>
-                        <p class="feature-description"><?php echo $lng['w']['business_feature3_desc'][$current_lang]; ?></p>
+                        <h3 class="feature-title"><?php echo get_translation('business_feature3_title', $current_lang, $lng); ?></h3>
+                        <p class="feature-description"><?php echo get_translation('business_feature3_desc', $current_lang, $lng); ?></p>
                     </div>
                     
                     <!-- Item 4 -->
@@ -237,8 +237,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M36 16l-8 8 8 8-8-8 8-8zm-12 8l-8-8 8 8-8 8 8-8z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title"><?php echo $lng['w']['business_feature4_title'][$current_lang]; ?></h3>
-                        <p class="feature-description"><?php echo $lng['w']['business_feature4_desc'][$current_lang]; ?></p>
+                        <h3 class="feature-title"><?php echo get_translation('business_feature4_title', $current_lang, $lng); ?></h3>
+                        <p class="feature-description"><?php echo get_translation('business_feature4_desc', $current_lang, $lng); ?></p>
                     </div>
                     
                     <!-- Item 5 -->
@@ -248,8 +248,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 12c-4.41 0-8 3.59-8 8s3.59 8 8 8 8-3.59 8-8-3.59-8-8-8z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title"><?php echo $lng['w']['business_feature5_title'][$current_lang]; ?></h3>
-                        <p class="feature-description"><?php echo $lng['w']['business_feature5_desc'][$current_lang]; ?></p>
+                        <h3 class="feature-title"><?php echo get_translation('business_feature5_title', $current_lang, $lng); ?></h3>
+                        <p class="feature-description"><?php echo get_translation('business_feature5_desc', $current_lang, $lng); ?></p>
                     </div>
                     
                     <!-- Item 6 - Wide card spanning 2 columns -->
@@ -259,16 +259,16 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 4l4 8h8l-6 6 2 8-8-4-8 4 2-8-6-6h8z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title"><?php echo $lng['w']['business_feature6_title'][$current_lang]; ?></h3>
-                        <p class="feature-description"><?php echo $lng['w']['business_feature6_desc'][$current_lang]; ?></p>
+                        <h3 class="feature-title"><?php echo get_translation('business_feature6_title', $current_lang, $lng); ?></h3>
+                        <p class="feature-description"><?php echo get_translation('business_feature6_desc', $current_lang, $lng); ?></p>
                     </div>
                 </div>
             </div>
             
             <!-- Leasing content -->
             <div class="category-grid" id="leasing-content">
-                <h2 class="category-title"><?php echo $lng['w']['leasing_title'][$current_lang]; ?></h2>
-                <p class="category-description"><?php echo $lng['w']['leasing_desc'][$current_lang]; ?></p>
+                <h2 class="category-title"><?php echo get_translation('leasing_title', $current_lang, $lng); ?></h2>
+                <p class="category-description"><?php echo get_translation('leasing_desc', $current_lang, $lng); ?></p>
                 
                 <div class="leasing-grid">
                     <!-- Item 1 - Large card spanning 2 rows -->
@@ -278,8 +278,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 4L6 10v12c0 11.11 7.67 21.47 18 24 10.33-2.53 18-12.89 18-24V10L24 4z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title"><?php echo $lng['w']['leasing_feature1_title'][$current_lang]; ?></h3>
-                        <p class="feature-description"><?php echo $lng['w']['leasing_feature1_desc'][$current_lang]; ?></p>
+                        <h3 class="feature-title"><?php echo get_translation('leasing_feature1_title', $current_lang, $lng); ?></h3>
+                        <p class="feature-description"><?php echo get_translation('leasing_feature1_desc', $current_lang, $lng); ?></p>
                     </div>
                     
                     <!-- Item 2 -->
@@ -289,8 +289,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M40 18H8l4-8h24l4 8zM8 42h32l-4-8H12l-4 8z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title"><?php echo $lng['w']['leasing_feature2_title'][$current_lang]; ?></h3>
-                        <p class="feature-description"><?php echo $lng['w']['leasing_feature2_desc'][$current_lang]; ?></p>
+                        <h3 class="feature-title"><?php echo get_translation('leasing_feature2_title', $current_lang, $lng); ?></h3>
+                        <p class="feature-description"><?php echo get_translation('leasing_feature2_desc', $current_lang, $lng); ?></p>
                     </div>
                     
                     <!-- Item 3 -->
@@ -300,8 +300,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 2C13 4 4 13 4 24s9 20 20 20 20-9 20-20S35 4 24 4zm0 36c-8.8 0-16-7.2-16-16S15.2 8 24 8s16 7.2 16 16-7.2 16-16 16z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title"><?php echo $lng['w']['leasing_feature3_title'][$current_lang]; ?></h3>
-                        <p class="feature-description"><?php echo $lng['w']['leasing_feature3_desc'][$current_lang]; ?></p>
+                        <h3 class="feature-title"><?php echo get_translation('leasing_feature3_title', $current_lang, $lng); ?></h3>
+                        <p class="feature-description"><?php echo get_translation('leasing_feature3_desc', $current_lang, $lng); ?></p>
                     </div>
                     
                     <!-- Item 4 -->
@@ -311,8 +311,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M16 8v8h16V8H16zm0 32h16v-8H16v8zM8 24h8V16H8v8zm24 0h8v-8h-8v8z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title"><?php echo $lng['w']['leasing_feature4_title'][$current_lang]; ?></h3>
-                        <p class="feature-description"><?php echo $lng['w']['leasing_feature4_desc'][$current_lang]; ?></p>
+                        <h3 class="feature-title"><?php echo get_translation('leasing_feature4_title', $current_lang, $lng); ?></h3>
+                        <p class="feature-description"><?php echo get_translation('leasing_feature4_desc', $current_lang, $lng); ?></p>
                     </div>
                     
                     <!-- Item 5 -->
@@ -336,9 +336,9 @@ if (file_exists($css_file_path)) {
     <div class="container">
         <div class="partners-content">
             <div class="partners-text">
-                <h2 class="partners-title"><?php echo $lng['w']['partners_title'][$current_lang]; ?></h2>
-                <p class="partners-subtitle"><?php echo $lng['w']['partners_subtitle'][$current_lang]; ?></p>
-                <button class="apply-button"><?php echo $lng['w']['submit_application'][$current_lang]; ?></button>
+                <h2 class="partners-title"><?php echo get_translation('partners_title', $current_lang, $lng); ?></h2>
+                <p class="partners-subtitle"><?php echo get_translation('partners_subtitle', $current_lang, $lng); ?></p>
+                <button class="apply-button"><?php echo get_translation('submit_application', $current_lang, $lng); ?></button>
             </div>
             <div class="partners-grid">
                 <div class="partner-card">
@@ -347,7 +347,7 @@ if (file_exists($css_file_path)) {
                     </div>
                     <div class="partner-info">
                         <h3 class="partner-name">Microinvest.md</h3>
-                        <p class="partner-desc"><?php echo $lng['w']['microinvest_desc'][$current_lang]; ?></p>
+                        <p class="partner-desc"><?php echo get_translation('microinvest_desc', $current_lang, $lng); ?></p>
                     </div>
                 </div>
                 
@@ -357,7 +357,7 @@ if (file_exists($css_file_path)) {
                     </div>
                     <div class="partner-info">
                         <h3 class="partner-name">Leasing.md</h3>
-                        <p class="partner-desc"><?php echo $lng['w']['maib_leasing_desc'][$current_lang]; ?></p>
+                        <p class="partner-desc"><?php echo get_translation('maib_leasing_desc', $current_lang, $lng); ?></p>
                     </div>
                 </div>
                 
@@ -367,7 +367,7 @@ if (file_exists($css_file_path)) {
                     </div>
                     <div class="partner-info">
                         <h3 class="partner-name">BT Leasing</h3>
-                        <p class="partner-desc"><?php echo $lng['w']['bt_leasing_desc'][$current_lang]; ?></p>
+                        <p class="partner-desc"><?php echo get_translation('bt_leasing_desc', $current_lang, $lng); ?></p>
                     </div>
                 </div>
                 
@@ -377,7 +377,7 @@ if (file_exists($css_file_path)) {
                     </div>
                     <div class="partner-info">
                         <h3 class="partner-name">Primero.md</h3>
-                        <p class="partner-desc"><?php echo $lng['w']['primero_desc'][$current_lang]; ?></p>
+                        <p class="partner-desc"><?php echo get_translation('primero_desc', $current_lang, $lng); ?></p>
                     </div>
                 </div>
                 
@@ -387,7 +387,7 @@ if (file_exists($css_file_path)) {
                     </div>
                     <div class="partner-info">
                         <h3 class="partner-name">Victoriabank</h3>
-                        <p class="partner-desc"><?php echo $lng['w']['victoriabank_desc'][$current_lang]; ?></p>
+                        <p class="partner-desc"><?php echo get_translation('victoriabank_desc', $current_lang, $lng); ?></p>
                     </div>
                 </div>
             </div>

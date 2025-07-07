@@ -2,9 +2,8 @@
 
 <?php
 
-// Cream array-ul temporar înainte de a-l combina cu $lng
+// Create temporary array with credit page translations
 $lng_credit_page = array(
-    // Plasăm toate traducerile în subarray-ul 'w' pentru a fi compatibile cu structura site-ului
     'w' => array(
         // Hero Section
         'hero_main_title' => array(
@@ -29,39 +28,36 @@ $lng_credit_page = array(
             'ru' => 'Кредитный калькулятор',
             'en' => 'Loan Calculator'
         ),
-        'loan_amount_eur' => array(
+        'calc_suma' => array(
             'ro' => 'Suma creditului',
             'ru' => 'Сумма кредита',
             'en' => 'Loan amount'
         ),
-        'loan_term_months' => array(
-            'ro' => 'Termenul',
-            'ru' => 'Срок кредита',
-            'en' => 'Term'
+        'calc_avans' => array(
+            'ro' => 'Avansul',
+            'ru' => 'Первоначальный взнос',
+            'en' => 'Down payment'
         ),
-        'monthly_payment_est' => array(
-            'ro' => 'Rata lunară',
-            'ru' => 'Ежемесячный платеж',
-            'en' => 'Monthly payment'
+        'calc_perioada' => array(
+            'ro' => 'Perioada de rambursare',
+            'ru' => 'Период погашения',
+            'en' => 'Repayment period'
         ),
-        'payment_range_from' => array(
-            'ro' => 'De la',
-            'ru' => 'от',
-            'en' => 'From'
-        ),
-        'payment_range_to' => array(
-            'ro' => 'până la',
-            'ru' => 'до',
-            'en' => 'to'
-        ),
-        
-        // Necesar pentru afișarea lunilor în slider
-        'calc_title_luni' => array(
+        'calc_luni' => array(
             'ro' => 'luni',
             'ru' => 'месяцев',
             'en' => 'months'
         ),
-        // Necesar pentru afișarea plății lunare
+        'calc_rata_lunara' => array(
+            'ro' => 'Rata lunară',
+            'ru' => 'Ежемесячный платёж',
+            'en' => 'Monthly payment'
+        ),
+        'calc_dobanda' => array(
+            'ro' => 'Dobânda anuală',
+            'ru' => 'Годовая процентная ставка',
+            'en' => 'Annual interest rate'
+        ),
         'calc_title_plata' => array(
             'ro' => 'de la',
             'ru' => 'от',
@@ -148,194 +144,186 @@ $lng_credit_page = array(
             'en' => 'Close the loan early without additional costs.'
         ),
         'personal_feature7_title' => array(
-            'ro' => 'Program flexibil de plăți',
-            'ru' => 'Гибкий график платежей',
-            'en' => 'Flexible payment schedule'
+            'ro' => 'Posibilitatea de a alege perioada de rambursare',
+            'ru' => 'Возможность выбора срока погашения',
+            'en' => 'Ability to choose repayment period'
         ),
         'personal_feature7_desc' => array(
-            'ro' => 'Posibilitatea de a adapta plățile la rambursarea parțială anticipată.',
-            'ru' => 'Возможность адаптировать выплаты при частичном досрочном погашении.',
-            'en' => 'Ability to adapt payments for partial early repayment.'
+            'ro' => 'Alegeți perioada de rambursare care vi se potrivește cel mai bine, de la 12 la 84 de luni.',
+            'ru' => 'Выберите срок погашения, который подходит вам лучше всего, от 12 до 84 месяцев.',
+            'en' => 'Choose the repayment period that suits you best, from 12 to 84 months.'
         ),
-        
+
         // Business Credit
         'business_credit_title' => array(
-            'ro' => 'Credit auto pentru afacerea dvs.',
-            'ru' => 'Автокредит для вашего бизнеса',
-            'en' => 'Auto credit for your business'
+            'ro' => 'Creditul pentru business',
+            'ru' => 'Кредит для бизнеса',
+            'en' => 'Business Credit'
         ),
         'business_credit_desc' => array(
-            'ro' => 'Dezvoltați afacerea cu transport de încredere',
-            'ru' => 'Развивайте бизнес с надежным транспортом',
-            'en' => 'Develop business with reliable transport'
+            'ro' => 'Soluții de finanțare pentru întreprinderile care doresc să își extindă parcul auto',
+            'ru' => 'Решения финансирования для предприятий, желающих расширить автопарк',
+            'en' => 'Financing solutions for businesses looking to expand their vehicle fleet'
         ),
         
         // Business Credit Features
         'business_feature1_title' => array(
-            'ro' => 'Pe numele persoanei fizice sau juridice',
-            'ru' => 'На имя физического или юридического лица',
-            'en' => 'In the name of an individual or legal entity'
+            'ro' => 'Finanțare pentru persoane juridice',
+            'ru' => 'Финансирование для юридических лиц',
+            'en' => 'Financing for legal entities'
         ),
         'business_feature1_desc' => array(
-            'ro' => 'Creditul este disponibil atât pentru persoanele fizice (inclusiv întreprinzătorii individuali), cât și pentru companii.',
-            'ru' => 'Кредит доступен как физическим лицам (включая индивидуальных предпринимателей), так и компаниям.',
-            'en' => 'Credit is available to both individuals (including sole proprietors) and companies.'
+            'ro' => 'Oferim servicii de creditare specializate pentru companii și întreprinderi. Procesul de aprobare este adaptat nevoilor business-ului dvs.',
+            'ru' => 'Предлагаем специализированные кредитные услуги для компаний и предприятий. Процесс одобрения адаптирован к потребностям вашего бизнеса.',
+            'en' => 'We offer specialized lending services for companies and enterprises. The approval process is tailored to your business needs.'
         ),
         'business_feature2_title' => array(
-            'ro' => 'Modalitate convenabilă de obținere a fondurilor',
-            'ru' => 'Удобный способ получения средств',
-            'en' => 'Convenient way to obtain funds'
+            'ro' => 'Credite pentru parcul auto',
+            'ru' => 'Кредиты для автопарка',
+            'en' => 'Fleet financing'
         ),
         'business_feature2_desc' => array(
-            'ro' => 'Plata în numerar sau transfer direct în contul companiei dvs.',
-            'ru' => 'Оплата наличными или перевод напрямую на счет вашей компании.',
-            'en' => 'Cash payment or direct transfer to your company account.'
+            'ro' => 'Finanțarea achiziției mai multor autovehicule pentru nevoile companiei dvs.',
+            'ru' => 'Финансирование покупки нескольких автомобилей для нужд вашей компании.',
+            'en' => 'Financing the purchase of multiple vehicles for your company needs.'
         ),
         'business_feature3_title' => array(
-            'ro' => 'Finanțarea automobilelor comandate',
-            'ru' => 'Финансирование заказанных автомобилей',
-            'en' => 'Financing of ordered cars'
+            'ro' => 'Condiții preferențiale',
+            'ru' => 'Льготные условия',
+            'en' => 'Preferential terms'
         ),
         'business_feature3_desc' => array(
-            'ro' => 'Obțineți credit chiar dacă automobilul dorit este încă în drum spre Moldova.',
-            'ru' => 'Получите кредит, даже если желаемый автомобиль ещё в пути в Молдову.',
-            'en' => 'Get a loan even if the desired car is still on its way to Moldova.'
+            'ro' => 'Clienții corporativi beneficiază de condiții speciale și rate reduse.',
+            'ru' => 'Корпоративные клиенты получают специальные условия и сниженные ставки.',
+            'en' => 'Corporate clients benefit from special conditions and reduced rates.'
         ),
         'business_feature4_title' => array(
-            'ro' => 'Sprijin pentru startup-uri',
-            'ru' => 'Поддержка стартапов',
-            'en' => 'Startup support'
+            'ro' => 'Flexibilitate în rambursare',
+            'ru' => 'Гибкость в погашении',
+            'en' => 'Repayment flexibility'
         ),
         'business_feature4_desc' => array(
-            'ro' => 'Procedură simplificată și condiții speciale pentru companiile tinere.',
-            'ru' => 'Упрощённая процедура и специальные условия для молодых компаний.',
-            'en' => 'Simplified procedure and special conditions for young companies.'
+            'ro' => 'Adaptăm graficul de plăți la fluxul de numerar al companiei.',
+            'ru' => 'Адаптируем график платежей к денежному потоку компании.',
+            'en' => 'We adapt the payment schedule to your company\'s cash flow.'
         ),
         'business_feature5_title' => array(
-            'ro' => 'Fără restricții de ieșire din țară',
-            'ru' => 'Без ограничений на выезд за границу',
-            'en' => 'No restrictions on leaving the country'
+            'ro' => 'Consultanță specializată',
+            'ru' => 'Специализированная консультация',
+            'en' => 'Specialized consultation'
         ),
         'business_feature5_desc' => array(
-            'ro' => 'Automobilul dvs. – activul dvs. fără frontiere.',
-            'ru' => 'Ваш автомобиль – ваш актив без границ.',
-            'en' => 'Your car is your asset without borders.'
+            'ro' => 'Echipa noastră de experți vă va ajuta să alegeți cea mai bună soluție.',
+            'ru' => 'Наша команда экспертов поможет вам выбрать лучшее решение.',
+            'en' => 'Our expert team will help you choose the best solution.'
         ),
         'business_feature6_title' => array(
-            'ro' => 'Refinanțarea creditului auto existent',
-            'ru' => 'Рефинансирование существующего автокредита',
-            'en' => 'Refinancing existing auto loan'
+            'ro' => 'Proces simplificat de aprobare',
+            'ru' => 'Упрощенный процесс одобрения',
+            'en' => 'Simplified approval process'
         ),
         'business_feature6_desc' => array(
-            'ro' => 'Îmbunătățiți condițiile creditului actual.',
-            'ru' => 'Улучшите условия текущего кредита.',
-            'en' => 'Improve the terms of your current loan.'
+            'ro' => 'Documentația redusă și proceduri accelerate pentru business-uri.',
+            'ru' => 'Сокращенная документация и ускоренные процедуры для бизнеса.',
+            'en' => 'Reduced documentation and accelerated procedures for businesses.'
         ),
-        
+
         // Leasing
         'leasing_title' => array(
-            'ro' => 'Leasing auto - flexibilitate și avantaj',
-            'ru' => 'Автолизинг - гибкость и преимущество',
-            'en' => 'Auto leasing - flexibility and advantage'
+            'ro' => 'Leasing auto',
+            'ru' => 'Автолизинг',
+            'en' => 'Car Leasing'
         ),
         'leasing_desc' => array(
-            'ro' => 'Obțineți un automobil fără investiții inițiale mari',
-            'ru' => 'Получите автомобиль без больших первоначальных вложений',
-            'en' => 'Get a car without large initial investments'
-        ),
-        
-        // Partners Section
-        'partners_title' => array(
-            'ro' => 'Partenerii noștri de încredere',
-            'ru' => 'Наши надежные партнеры',
-            'en' => 'Our Trusted Partners'
-        ),
-        'partners_subtitle' => array(
-            'ro' => 'Colaborăm doar cu organizații financiare verificate și de încredere din Moldova',
-            'ru' => 'Мы сотрудничаем только с проверенными и уважаемыми финансовыми организациями Молдовы',
-            'en' => 'We work only with verified and trusted financial organizations in Moldova'
-        ),
-        'submit_application' => array(
-            'ro' => 'Aplică acum',
-            'ru' => 'Подать заявку',
-            'en' => 'Apply Now'
-        ),
-        'microinvest_desc' => array(
-            'ro' => 'Procedură simplă și rapidă',
-            'ru' => 'Простая и быстрая процедура',
-            'en' => 'Simple and fast procedure'
-        ),
-        'maib_leasing_desc' => array(
-            'ro' => 'Expert recunoscut în domeniul leasingului',
-            'ru' => 'Признанный эксперт в области лизинга',
-            'en' => 'Recognized expert in leasing'
-        ),
-        'bt_leasing_desc' => array(
-            'ro' => 'Standarde europene de fiabilitate',
-            'ru' => 'Европейские стандарты надёжности',
-            'en' => 'European reliability standards'
-        ),
-        'primero_desc' => array(
-            'ro' => 'Abordări inovatoare',
-            'ru' => 'Инновационные подходы',
-            'en' => 'Innovative approaches'
-        ),
-        'victoriabank_desc' => array(
-            'ro' => 'Una dintre cele mai mari bănci din Moldova',
-            'ru' => 'Один из крупнейших банков Молдовы',
-            'en' => 'One of the largest banks in Moldova'
+            'ro' => 'Soluția ideală pentru a conduce un automobil nou fără să îl cumpărați',
+            'ru' => 'Идеальное решение для вождения нового автомобиля без его покупки',
+            'en' => 'The perfect solution for driving a new car without buying it'
         ),
         
         // Leasing Features
         'leasing_feature1_title' => array(
-            'ro' => 'Gestionarea optimă a bugetului',
-            'ru' => 'Оптимальное управление бюджетом',
-            'en' => 'Optimal budget management'
+            'ro' => 'Avans redus',
+            'ru' => 'Низкий первоначальный взнос',
+            'en' => 'Low down payment'
         ),
         'leasing_feature1_desc' => array(
-            'ro' => 'Folosiți automobilul fără achiziție imediată.',
-            'ru' => 'Пользуйтесь автомобилем без немедленной покупки.',
-            'en' => 'Use the car without immediate purchase.'
+            'ro' => 'Începeți cu un avans de doar 10-20% din valoarea mașinii.',
+            'ru' => 'Начните с первоначальным взносом всего 10-20% от стоимости автомобиля.',
+            'en' => 'Start with a down payment of only 10-20% of the car value.'
         ),
         'leasing_feature2_title' => array(
-            'ro' => 'Finanțare până la 100% din valoarea automobilului',
-            'ru' => 'Финансирование до 100% стоимости автомобиля',
-            'en' => 'Financing up to 100% of the car value'
+            'ro' => 'Rate lunare mici',
+            'ru' => 'Небольшие ежемесячные платежи',
+            'en' => 'Small monthly payments'
         ),
         'leasing_feature2_desc' => array(
-            'ro' => 'Avansul nu este obligatoriu.',
-            'ru' => 'Аванс не обязателен.',
-            'en' => 'Down payment is not required.'
+            'ro' => 'Plățile lunare sunt mai mici comparativ cu creditul clasic.',
+            'ru' => 'Ежемесячные платежи меньше по сравнению с классическим кредитом.',
+            'en' => 'Monthly payments are smaller compared to traditional credit.'
         ),
         'leasing_feature3_title' => array(
-            'ro' => 'Condiții transparente și clare',
-            'ru' => 'Прозрачные и понятные условия',
-            'en' => 'Transparent and clear conditions'
+            'ro' => 'Mașină nouă la fiecare 2-3 ani',
+            'ru' => 'Новый автомобиль каждые 2-3 года',
+            'en' => 'New car every 2-3 years'
         ),
         'leasing_feature3_desc' => array(
-            'ro' => 'Fără comisioane ascunse.',
-            'ru' => 'Без скрытых комиссий.',
-            'en' => 'No hidden fees.'
+            'ro' => 'Schimbați mașina cu una nouă la sfârșitul contractului.',
+            'ru' => 'Меняйте автомобиль на новый в конце контракта.',
+            'en' => 'Change to a new car at the end of the contract.'
         ),
         'leasing_feature4_title' => array(
-            'ro' => 'Pentru toate categoriile de clienți',
-            'ru' => 'Для всех категорий клиентов',
-            'en' => 'For all categories of clients'
+            'ro' => 'Serviciu complet inclus',
+            'ru' => 'Полный сервис включен',
+            'en' => 'Full service included'
         ),
         'leasing_feature4_desc' => array(
-            'ro' => 'Leasingul este disponibil pentru persoane fizice, II și companii.',
-            'ru' => 'Лизинг доступен физическим лицам, ИП и компаниям.',
-            'en' => 'Leasing is available for individuals, sole proprietors and companies.'
+            'ro' => 'Întreținerea, asigurarea și alte servicii pot fi incluse în contract.',
+            'ru' => 'Обслуживание, страхование и другие услуги могут быть включены в контракт.',
+            'en' => 'Maintenance, insurance and other services can be included in the contract.'
         ),
-        'leasing_feature5_title' => array(
-            'ro' => 'Perioada flexibilă a contractului',
-            'ru' => 'Гибкий срок договора',
-            'en' => 'Flexible contract term'
+
+        // Partners Section
+        'partners_title' => array(
+            'ro' => 'Partenerii noștri de încredere',
+            'ru' => 'Наши надёжные партнёры',
+            'en' => 'Our trusted partners'
         ),
-        'leasing_feature5_desc' => array(
-            'ro' => 'De la 12 la 60 de luni.',
-            'ru' => 'От 12 до 60 месяцев.',
-            'en' => 'From 12 to 60 months.'
+        'partners_subtitle' => array(
+            'ro' => 'Colaborăm cu instituții financiare de top pentru a vă oferi cele mai bune condiții',
+            'ru' => 'Сотрудничаем с ведущими финансовыми учреждениями, чтобы предложить вам лучшие условия',
+            'en' => 'We work with top financial institutions to offer you the best conditions'
+        ),
+        'submit_application' => array(
+            'ro' => 'Trimite cererea',
+            'ru' => 'Отправить заявку',
+            'en' => 'Submit application'
+        ),
+        
+        // Partner descriptions
+        'microinvest_desc' => array(
+            'ro' => 'Soluții de creditare flexibile și avantajoase pentru achiziția de autovehicule',
+            'ru' => 'Гибкие и выгодные кредитные решения для покупки автомобилей',
+            'en' => 'Flexible and advantageous credit solutions for vehicle purchases'
+        ),
+        'maib_leasing_desc' => array(
+            'ro' => 'Servicii de leasing profesionale cu condiții competitive',
+            'ru' => 'Профессиональные лизинговые услуги с конкурентными условиями',
+            'en' => 'Professional leasing services with competitive conditions'
+        ),
+        'bt_leasing_desc' => array(
+            'ro' => 'Experiență vastă în finanțarea auto și leasing',
+            'ru' => 'Большой опыт в автофинансировании и лизинге',
+            'en' => 'Extensive experience in auto financing and leasing'
+        ),
+        'primero_desc' => array(
+            'ro' => 'Partener de încredere pentru credite auto rapide și sigure',
+            'ru' => 'Надёжный партнёр для быстрых и безопасных автокредитов',
+            'en' => 'Trusted partner for fast and secure auto loans'
+        ),
+        'victoriabank_desc' => array(
+            'ro' => 'Bancă cu tradiție, oferind soluții financiare moderne',
+            'ru' => 'Банк с традициями, предлагающий современные финансовые решения',
+            'en' => 'Traditional bank offering modern financial solutions'
         ),
         
         // Footer keys needed for site functionality
@@ -347,13 +335,13 @@ $lng_credit_page = array(
     )
 );
 
-// Determinăm limba curentă din cookie sau default la română
+// Determine current language from cookie or default to Romanian
 $current_lang = 'ro';
 if (isset($_COOKIE['lang']) && in_array($_COOKIE['lang'], array('ro', 'ru', 'en'))) {
     $current_lang = $_COOKIE['lang'];
 }
 
-// Copy credit page translations to global $lng array
+// Initialize global $lng array
 if (!isset($lng)) {
     $lng = array();
 }
@@ -364,18 +352,18 @@ if (!isset($lng['w'])) {
 // Merge credit page translations with existing translations
 $lng['w'] = array_merge($lng['w'], $lng_credit_page['w']);
 
-// Procesăm traducerile pentru limba curentă
-$processed_translations = array();
-foreach ($lng_credit_page['w'] as $key => $translations) {
-    $processed_translations[$key] = $translations[$current_lang];
+// Helper function to safely get translation
+function get_translation($key, $current_lang, $lng) {
+    if (!isset($lng['w'][$key])) {
+        return '[MISSING: ' . $key . ']';
+    }
+    if (!is_array($lng['w'][$key])) {
+        return '[INVALID: ' . $key . ']';
+    }
+    if (!isset($lng['w'][$key][$current_lang])) {
+        return '[MISSING LANG: ' . $key . '[' . $current_lang . ']]';
+    }
+    return $lng['w'][$key][$current_lang];
 }
-
-// Creăm structura finală pentru merge
-$lng_credit_final = array(
-    'w' => $processed_translations
-);
-
-// Combinăm cu $lng existent pentru a păstra traducerile globale
-$lng = array_merge($lng, $lng_credit_final);
 
 ?>
