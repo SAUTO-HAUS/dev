@@ -33,11 +33,11 @@ if (file_exists($css_file_path)) {
         <div class="container">
             <!-- Credit calculator container - positioned higher -->
             <div class="credit-calculator-container">
-                <h3 class="calculator-title" style="font-size: 32px; font-weight: bold;"><?php echo $lng['w']['calculator_title']; ?></h3>
+                <h3 class="calculator-title" style="font-size: 32px; font-weight: bold;"><?php echo get_translation('calculator_title', $current_lang, $lng); ?></h3>
                 <div class="calculator-content">
                             <div class="calculator-field">
                                 <div class="field-header" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; width: 100%;">
-                                    <label class="field-label"><?php echo $lng['w']['loan_amount_eur']; ?></label>
+                                    <label class="field-label"><?php echo get_translation('calc_suma', $current_lang, $lng); ?></label>
                                     <span class="field-value" id="view_suma_creditului" style="font-weight: bold;">€ 25 000</span>
                                 </div>
                                 <input type="text" id="suma-creditului">
@@ -50,23 +50,23 @@ if (file_exists($css_file_path)) {
                             
                             <div class="calculator-field">
                                 <div class="field-header" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; width: 100%;">
-                                    <label class="field-label"><?php echo $lng['w']['loan_term_months']; ?></label>
-                                    <span class="field-value" id="view_termen_creditului" style="font-weight: bold;">30 <?php echo $lng['w']['calc_title_luni']; ?></span>
+                                    <label class="field-label"><?php echo get_translation('calc_perioada', $current_lang, $lng); ?></label>
+                                    <span class="field-value" id="view_termen_creditului" style="font-weight: bold;">30 <?php echo get_translation('calc_luni', $current_lang, $lng); ?></span>
                                 </div>
                                 <input type="text" id="termen-creditului">
                                 <div class="slider-labels">
-                                    <span style="margin-top:-5px;">6 <?php echo $lng['w']['calc_title_luni']; ?></span>
-                                    <span style="padding-right:50px; margin-top:-5px;">30 <?php echo $lng['w']['calc_title_luni']; ?></span>
-                                    <span style="margin-top:-5px;">60 <?php echo $lng['w']['calc_title_luni']; ?></span>
+                                    <span style="margin-top:-5px;">6 <?php echo get_translation('calc_luni', $current_lang, $lng); ?></span>
+                                    <span style="padding-right:50px; margin-top:-5px;">30 <?php echo get_translation('calc_luni', $current_lang, $lng); ?></span>
+                                    <span style="margin-top:-5px;">60 <?php echo get_translation('calc_luni', $current_lang, $lng); ?></span>
                                 </div>
                             </div>
                             
                             <div class="payment-result">
-                                <span class="result-label"><?php echo $lng['w']['monthly_payment_est']; ?></span>
+                                <span class="result-label"><?php echo get_translation('calc_rata_lunara', $current_lang, $lng); ?></span>
                                 <span class="result-value" id="payment-display" 
-                                      data-from="<?php echo $lng['w']['calc_title_plata']; ?>" 
-                                      data-to="<?php echo $lng['w']['calc_title_plata2']; ?>">
-                                    <?php echo $lng['w']['calc_title_plata']; ?> 175 <?php echo $lng['w']['calc_title_plata2']; ?> 215 €
+                                      data-from="<?php echo get_translation('calc_title_plata', $current_lang, $lng); ?>" 
+                                      data-to="<?php echo get_translation('calc_title_plata2', $current_lang, $lng); ?>">
+                                    <?php echo get_translation('calc_title_plata', $current_lang, $lng); ?> 175 <?php echo get_translation('calc_title_plata2', $current_lang, $lng); ?> 215 €
                                 </span>
                             </div>
                         </div>
@@ -75,8 +75,8 @@ if (file_exists($css_file_path)) {
                 
                 <div class="hero-right-content">
                     <div class="hero-text">
-                        <div class="hero-main-title"><?php echo $lng['w']['hero_main_title']; ?></div>
-                        <div class="hero-subtitle"><?php echo $lng['w']['hero_subtitle']; ?></div>
+                        <div class="hero-main-title"><?php echo get_translation('hero_main_title', $current_lang, $lng); ?></div>
+                        <div class="hero-subtitle"><?php echo get_translation('hero_subtitle', $current_lang, $lng); ?></div>
                     </div>
                 </div>
                 
@@ -314,17 +314,7 @@ if (file_exists($css_file_path)) {
                         <h3 class="feature-title"><?php echo get_translation('leasing_feature4_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('leasing_feature4_desc', $current_lang, $lng); ?></p>
                     </div>
-                    
-                    <!-- Item 5 -->
-                    <div class="feature-card item5">
-                        <div class="feature-icon">
-                            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
-                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="#e2001a"/>
-                            </svg>
-                        </div>
-                        <h3 class="feature-title"><?php echo $lng['w']['leasing_feature5_title'][$current_lang]; ?></h3>
-                        <p class="feature-description"><?php echo $lng['w']['leasing_feature5_desc'][$current_lang]; ?></p>
-                    </div>
+
                 </div>
             </div>
         </div>

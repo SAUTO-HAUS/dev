@@ -324,13 +324,6 @@ $lng_credit_page = array(
             'ro' => 'Bancă cu tradiție, oferind soluții financiare moderne',
             'ru' => 'Банк с традициями, предлагающий современные финансовые решения',
             'en' => 'Traditional bank offering modern financial solutions'
-        ),
-        
-        // Footer keys needed for site functionality
-        'contacts' => array(
-            'ro' => 'Contacte',
-            'ru' => 'Контакты',
-            'en' => 'Contacts'
         )
     )
 );
