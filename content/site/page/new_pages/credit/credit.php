@@ -332,7 +332,7 @@ if (file_exists($css_file_path)) {
     </div>
 </section>
 
-<!-- Partners Section -->
+<!--partners-section -->
 <section class="partners-section">
     <div class="container">
         <div class="partners-content">
@@ -342,9 +342,10 @@ if (file_exists($css_file_path)) {
                 <button class="apply-button"><?php echo get_translation('submit_application', $current_lang, $lng); ?></button>
             </div>
             <div class="partners-grid">
-                <div class="partner-card">
+                <!-- Partner 1: Column 1, Row 1 -->
+                <div class="partner-card partner-1">
                     <div class="partner-logo">
-                        <img src="/images/partners/microinvest.png" alt="Microinvest">
+                        <img src="/content/site/page/new_pages/credit/credit-media/microinvest.png" alt="Microinvest">
                     </div>
                     <div class="partner-info">
                         <h3 class="partner-name">Microinvest.md</h3>
@@ -352,9 +353,10 @@ if (file_exists($css_file_path)) {
                     </div>
                 </div>
                 
-                <div class="partner-card">
+                <!-- Partner 2: Column 2, Row 1 -->
+                <div class="partner-card partner-2">
                     <div class="partner-logo">
-                        <img src="/images/partners/maib-leasing.png" alt="Maib Leasing">
+                        <img src="/content/site/page/new_pages/credit/credit-media/maib.png" alt="Maib Leasing">
                     </div>
                     <div class="partner-info">
                         <h3 class="partner-name">Leasing.md</h3>
@@ -362,17 +364,10 @@ if (file_exists($css_file_path)) {
                     </div>
                 </div>
                 
-                <!-- White car card in column 3 spanning full height -->
-                <div class="partner-card white-car-card">
-                    <div class="partner-logo white-car-logo">
-                        <img src="/content/site/page/new_pages/credit/credit-media/white-car-partners.png" alt="White car">
-                        <div><p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Repellendus error, magni harum laboriosam excepturi debitis sequi sunt alias ab veritatis.</p></div>
-                    </div>
-                </div>
-                
-                <div class="partner-card">
+                <!-- Partner 3: Column 1, Row 2 -->
+                <div class="partner-card partner-3">
                     <div class="partner-logo">
-                        <img src="/images/partners/bt-leasing.png" alt="BT Leasing">
+                        <img src="/content/site/page/new_pages/credit/credit-media/bt.png" alt="BT Leasing">
                     </div>
                     <div class="partner-info">
                         <h3 class="partner-name">BT Leasing</h3>
@@ -380,13 +375,25 @@ if (file_exists($css_file_path)) {
                     </div>
                 </div>
                 
-                <div class="partner-card">
+                <!-- Partner 4: Column 2, Row 2 -->
+                <div class="partner-card partner-4">
                     <div class="partner-logo">
-                        <img src="/images/partners/primero.png" alt="Primero">
+                        <img src="/content/site/page/new_pages/credit/credit-media/primero.png" alt="Primero">
                     </div>
                     <div class="partner-info">
                         <h3 class="partner-name">Primero.md</h3>
                         <p class="partner-desc"><?php echo get_translation('primero_desc', $current_lang, $lng); ?></p>
+                    </div>
+                </div>
+                
+                <!-- Partner 5: BT Leasing - Column 3, Spans Both Rows -->
+                <div class="partner-card partner-5">
+                    <div class="partner-logo">
+                        <img src="/content/site/page/new_pages/credit/credit-media/bt.png" alt="BT Leasing">
+                    </div>
+                    <div class="partner-info">
+                        <h3 class="partner-name">BT Leasing</h3>
+                        <p class="partner-desc"><?php echo get_translation('bt_leasing_desc', $current_lang, $lng); ?></p>
                     </div>
                 </div>
             </div>

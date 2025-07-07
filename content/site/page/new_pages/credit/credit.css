@@ -775,71 +775,38 @@ body {
 
 .partners-content {
     display: grid;
-    grid-template-columns: 0.8fr 3fr 0.8fr;
-    gap: 40px;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 25px;
     align-items: center;
-    max-width: 1400px;
     margin: 0 auto;
     position: relative;
     padding: 0 20px;
 }
 
-/* Left side - Text content */
-.partners-text {
-    width: 280px;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-}
-
-.partners-title {
-    font-size: 32px;
-    font-weight: 700;
-    color: #2c3e50;
-    line-height: 1.2;
-    margin: 0;
-}
-
-.partners-subtitle {
-    font-size: 16px;
-    color: #6c757d;
-    line-height: 1.5;
-    margin: 0;
-}
-
-.apply-button {
-    background: #e2001a;
-    color: white;
-    border: none;
-    padding: 16px 32px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    align-self: flex-start;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.apply-button:hover {
-    background: #c01a2b;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(226, 0, 26, 0.3);
-}
-
-/* Center - Partners grid */
+/* Partners Grid - optimized layout with fixed proportions */
 .partners-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: repeat(2, 1fr);
+    grid-template-columns: 250px 250px 320px;
+    grid-template-rows: 195px 195px;
+    height: 400px;
     gap: 15px;
-    height: 450px;
-    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    justify-content: center;
 }
 
+.partners-grid .partner-1 { grid-row: 1; grid-column: 1; }
+.partners-grid .partner-2 { grid-row: 1; grid-column: 2; }
+.partners-grid .partner-3 { grid-row: 2; grid-column: 1; }
+.partners-grid .partner-4 { grid-row: 2; grid-column: 2; }
+.partners-grid .partner-5 {
+    grid-row: 1 / span 2;
+    grid-column: 3;
+}
+
+/* Partner Cards */
 .partner-card {
-    background: #f6f6f6b5;
+    background: #ffffff;
     border-radius: 12px;
     padding: 40px 30px;
     display: flex;
@@ -893,9 +860,7 @@ body {
     align-items: center;
     justify-content: center;
     padding: 15px;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    grid-row: 1 / span 2;
-    grid-column: 3;
+    background: #ffffff;
     min-height: 100%;
 }
 
@@ -915,99 +880,47 @@ body {
     filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.1));
 }
 
-/* Right side - Car image */
-.partners-car-image {
-    position: relative;
+/* Left side - Text content */
+.partners-text {
+    width: 280px;
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    gap: 18px;
 }
 
-
-
-.partners-car-image img {
-    max-width: 100%;
-    height: auto;
-    filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.2));
+.partners-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #2c3e50;
+    line-height: 1.2;
+    margin: 0;
 }
 
-/* Responsive Design for Partners Section */
-@media (max-width: 1200px) {
-    .partners-content {
-        grid-template-columns: 1fr 1.5fr 1fr;
-        gap: 40px;
-    }
-    
-    .partners-title {
-        font-size: 28px;
-    }
+.partners-subtitle {
+    font-size: 16px;
+    color: #6c757d;
+    line-height: 1.5;
+    margin: 0;
 }
 
-@media (max-width: 992px) {
-    .partners-content {
-        grid-template-columns: 1fr;
-        gap: 40px;
-        text-align: center;
-    }
-    
-    .partners-grid {
-        grid-template-columns: repeat(2, 1fr);
-        grid-template-rows: repeat(3, auto);
-        gap: 15px;
-        height: auto;
-    }
-    
-    .white-car-card {
-        grid-column: 2;
-        grid-row: 1 / span 2;
-        height: auto;
-        min-height: 200px;
-    }
-    
-    .partner-card {
-        padding: 15px;
-    }
-    
-    .partner-logo {
-        width: 60px;
-        height: 60px;
-    }
-    
-    .partners-car-image {
-        order: -1;
-    }
-    
-    .partners-car-image img {
-        max-width: 300px;
-    }
+.apply-button {
+    background: #e2001a;
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    align-self: flex-start;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-@media (max-width: 576px) {
-    .partners-section {
-        padding: 60px 0;
-    }
-    
-    .partners-title {
-        font-size: 24px;
-    }
-    
-    .partners-subtitle {
-        font-size: 14px;
-    }
-    
-    .partners-grid {
-        grid-template-columns: 1fr;
-        grid-template-rows: repeat(5, auto);
-    }
-    
-    .white-car-card {
-        grid-column: 1;
-        grid-row: 5;
-        height: 180px;
-    }
-    
-    .apply-button {
-        padding: 14px 28px;
-        font-size: 14px;
-    }
+.apply-button:hover {
+    background: #c01a2b;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(226, 0, 26, 0.3);
 }
+
