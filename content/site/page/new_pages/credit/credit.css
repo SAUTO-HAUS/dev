@@ -474,6 +474,8 @@ body {
 .tab-button.active {
     color: #e2001a;
     font-weight: 700;
+    background-color: hsl(0, 53%, 97%);
+    border-radius: 8px;
 }
 
 .tab-button.active::before {
