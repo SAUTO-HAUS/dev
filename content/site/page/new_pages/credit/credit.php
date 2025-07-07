@@ -344,7 +344,7 @@ if (file_exists($css_file_path)) {
             <div class="partners-grid">
                 <!-- Partner 1: Column 1, Row 1 -->
                 <div class="partner-card partner-1">
-                    <div class="partner-logo">
+                    <div class="partner-logo microinvest-logo">
                         <img src="/content/site/page/new_pages/credit/credit-media/microinvest.png" alt="Microinvest">
                     </div>
                     <div class="partner-info">
@@ -355,7 +355,7 @@ if (file_exists($css_file_path)) {
                 
                 <!-- Partner 2: Column 2, Row 1 -->
                 <div class="partner-card partner-2">
-                    <div class="partner-logo">
+                    <div class="partner-logo maib-logo">
                         <img src="/content/site/page/new_pages/credit/credit-media/maib.png" alt="Maib Leasing">
                     </div>
                     <div class="partner-info">
@@ -366,7 +366,7 @@ if (file_exists($css_file_path)) {
                 
                 <!-- Partner 3: Column 1, Row 2 -->
                 <div class="partner-card partner-3">
-                    <div class="partner-logo">
+                    <div class="partner-logo victoria-logo">
                         <img src="/content/site/page/new_pages/credit/credit-media/victoria.png" alt="BT Leasing">
                     </div>
                     <div class="partner-info">
