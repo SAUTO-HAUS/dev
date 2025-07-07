@@ -821,8 +821,9 @@ body {
 }
 
 .partner-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+    border-color: #e2001a;
 }
 
 .partner-logo {
@@ -874,10 +875,6 @@ body {
     margin-top: -10px;
 }
 
-/* Move MAIB content lower */
-.partner-2 {
-    padding-top: -50px;
-}
 
 .partner-desc {
     font-size: 13px;
@@ -917,9 +914,9 @@ body {
     width: 280px;
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 24px;
     align-self: start;
-    margin-top: -20px;
+    margin-top: 10px;
 }
 
 .partners-title {
