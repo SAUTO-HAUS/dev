@@ -314,6 +314,17 @@ if (file_exists($css_file_path)) {
                         <h3 class="feature-title"><?php echo get_translation('leasing_feature4_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('leasing_feature4_desc', $current_lang, $lng); ?></p>
                     </div>
+                    
+                    <!-- Item 5 -->
+                    <div class="feature-card item5">
+                        <div class="feature-icon">
+                            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
+                                <path d="M24 12v12l8-8-8-8zm0 24v12l8-8-8-8zM12 24h12l-8-8-8 8zm24 0h12l-8-8-8 8z" fill="#e2001a"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title"><?php echo get_translation('leasing_feature5_title', $current_lang, $lng); ?></h3>
+                        <p class="feature-description"><?php echo get_translation('leasing_feature5_desc', $current_lang, $lng); ?></p>
+                    </div>
 
                 </div>
             </div>
@@ -351,6 +362,14 @@ if (file_exists($css_file_path)) {
                     </div>
                 </div>
                 
+                <!-- White car card in column 3 spanning full height -->
+                <div class="partner-card white-car-card">
+                    <div class="partner-logo white-car-logo">
+                        <img src="/credit-media/white-car-partners.png" alt="White car">
+                        <div><p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Repellendus error, magni harum laboriosam excepturi debitis sequi sunt alias ab veritatis.</p></div>
+                    </div>
+                </div>
+                
                 <div class="partner-card">
                     <div class="partner-logo">
                         <img src="/images/partners/bt-leasing.png" alt="BT Leasing">
@@ -370,19 +389,6 @@ if (file_exists($css_file_path)) {
                         <p class="partner-desc"><?php echo get_translation('primero_desc', $current_lang, $lng); ?></p>
                     </div>
                 </div>
-                
-                <div class="partner-card">
-                    <div class="partner-logo">
-                        <img src="/images/partners/victoriabank.png" alt="Victoriabank">
-                    </div>
-                    <div class="partner-info">
-                        <h3 class="partner-name">Victoriabank</h3>
-                        <p class="partner-desc"><?php echo get_translation('victoriabank_desc', $current_lang, $lng); ?></p>
-                    </div>
-                </div>
-            </div>
-            <div class="partners-car-image">
-                <img src="/credit-media/white-car-partners.png" alt="White car">
             </div>
         </div>
     </div>

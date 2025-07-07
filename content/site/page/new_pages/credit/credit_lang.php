@@ -161,7 +161,7 @@ $lng_credit_page = array(
             'en' => 'Business Credit'
         ),
         'business_credit_desc' => array(
-            'ro' => 'Soluții de finanțare pentru întreprinderile care doresc să își extindă parcul auto',
+            'ro' => 'Soluții de finanțare pentru întreprinderile care doresc să își extindă parcul',
             'ru' => 'Решения финансирования для предприятий, желающих расширить автопарк',
             'en' => 'Financing solutions for businesses looking to expand their vehicle fleet'
         ),
@@ -280,6 +280,16 @@ $lng_credit_page = array(
             'ro' => 'Întreținerea, asigurarea și alte servicii pot fi incluse în contract.',
             'ru' => 'Обслуживание, страхование и другие услуги могут быть включены в контракт.',
             'en' => 'Maintenance, insurance and other services can be included in the contract.'
+        ),
+        'leasing_feature5_title' => array(
+            'ro' => 'Pentru toate categoriile de clienți',
+            'ru' => 'Для всех категорий клиентов',
+            'en' => 'For all client categories'
+        ),
+        'leasing_feature5_desc' => array(
+            'ro' => 'Leasingul este disponibil atât pentru persoane fizice, cât și pentru companii.',
+            'ru' => 'Лизинг доступен как для физических лиц, так и для компаний.',
+            'en' => 'Leasing is available for both individuals and companies.'
         ),
 
         // Partners Section
