@@ -760,7 +760,7 @@ body {
    PARTNERS SECTION STYLES 
    ============================= */
 .partners-section {
-    padding: 80px 0;
+    padding: 40px 0 80px 0;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     position: relative;
     overflow: hidden;
@@ -886,6 +886,8 @@ body {
     display: flex;
     flex-direction: column;
     gap: 18px;
+    align-self: start;
+    margin-top: -20px;
 }
 
 .partners-title {
@@ -919,8 +921,32 @@ body {
 }
 
 .apply-button:hover {
-    background: #c01a2b;
+    background: #c40017;
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(226, 0, 26, 0.3);
 }
 
+/* BT Leasing Card with extending car image */
+.bt-leasing-card {
+    position: relative;
+    overflow: visible;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.car-image-container {
+    position: absolute;
+    bottom: -10px;
+    right: -50px;
+    width: 200px;
+    height: 120px;
+    z-index: 2;
+}
+
+.extending-car {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2));
+}
