@@ -353,6 +353,17 @@ if (isset($_COOKIE['lang']) && in_array($_COOKIE['lang'], array('ro', 'ru', 'en'
     $current_lang = $_COOKIE['lang'];
 }
 
+// Copy credit page translations to global $lng array
+if (!isset($lng)) {
+    $lng = array();
+}
+if (!isset($lng['w'])) {
+    $lng['w'] = array();
+}
+
+// Merge credit page translations with existing translations
+$lng['w'] = array_merge($lng['w'], $lng_credit_page['w']);
+
 // Procesăm traducerile pentru limba curentă
 $processed_translations = array();
 foreach ($lng_credit_page['w'] as $key => $translations) {
