@@ -119,8 +119,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 4L6 10v12c0 11.11 7.67 21.47 18 24 10.33-2.53 18-12.89 18-24V10L24 4z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Надежная защита</h3>
-                        <p class="feature-description">Комплексное страхование автомобиля и защита ваших интересов</p>
+                        <h3 class="feature-title">Сумма до 50 000 €</h3>
+                        <p class="feature-description">Идеально для любого выбора – от компактного городского хэтчбека до просторного кроссовера или семейного минивэна.</p>
                     </div>
                     
                     <!-- Item 2 -->
@@ -130,8 +130,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M12 18h24v-2c0-5-4-9-9-9s-9 4-9 9v2z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Быстрое оформление</h3>
-                        <p class="feature-description">Минимум документов и быстрое решение по вашей заявке</p>
+                        <h3 class="feature-title">КАСКО не обязательно</h3>
+                        <p class="feature-description">КАСКО оформляется только по вашему желанию. Мы ценим свободу выбора.</p>
                     </div>
                     
                     <!-- Item 3 -->
@@ -141,8 +141,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 2C13.5 2 5 10.5 5 21c0 15.25 19 25 19 25z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Выгодные условия</h3>
-                        <p class="feature-description">Низкие процентные ставки и гибкие условия погашения</p>
+                        <h3 class="feature-title">Любой год выпуска автомобиля</h3>
+                        <p class="feature-description">Финансируем покупку автомобиля независимо от года выпуска. Главное условие – хорошее техническое состояние.</p>
                     </div>
                     
                     <!-- Item 4 -->
@@ -152,8 +152,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M40 8H8c-2.2 0-4 1.8-4 4v24c0 2.2 1.8 4 4 4h32z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Индивидуальный подход</h3>
-                        <p class="feature-description">Персональные условия в зависимости от ваших потребностей</p>
+                        <h3 class="feature-title">Финансирование до 100% стоимости</h3>
+                        <p class="feature-description">Вы можете купить автомобиль полностью в кредит, без обязательного первоначального взноса.</p>
                     </div>
                     
                     <!-- Item 5 -->
@@ -163,8 +163,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 12c-4.41 0-8 3.59-8 8s3.59 8 8 8 8-3.59 8-8-3.59-8-8-8z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Гибкие сроки</h3>
-                        <p class="feature-description">Срок кредитования до 60 месяцев на выгодных условиях</p>
+                        <h3 class="feature-title">Быстрое одобрение – до 1 часа</h3>
+                        <p class="feature-description">Мы ценим ваше время. Предварительное решение принимается оперативно.</p>
                     </div>
                     
                     <!-- Item 6 -->
@@ -174,8 +174,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M20 6H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Без скрытых платежей</h3>
-                        <p class="feature-description">Прозрачные условия без скрытых комиссий и доплат</p>
+                        <h3 class="feature-title">Досрочное погашение без штрафов</h3>
+                        <p class="feature-description">Закрывайте кредит раньше без дополнительных затрат.</p>
                     </div>
                     
                     <!-- Item 7 -->
@@ -185,8 +185,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 4l4 8h8l-6 6 2 8-8-4-8 4 2-8-6-6h8z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Онлайн заявка</h3>
-                        <p class="feature-description">Подача заявки онлайн 24/7 с быстрым рассмотрением</p>
+                        <h3 class="feature-title">Гибкий график платежей</h3>
+                        <p class="feature-description">Возможность адаптировать выплаты при частичном досрочном погашении.</p>
                     </div>
                 </div>
             </div>
@@ -204,8 +204,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M20 6H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Налоговые льготы</h3>
-                        <p class="feature-description">Оптимизация налогообложения при покупке автомобиля для бизнеса</p>
+                        <h3 class="feature-title">На имя физического или юридического лица</h3>
+                        <p class="feature-description">Кредит доступен как физическим лицам (включая индивидуальных предпринимателей), так и компаниям.</p>
                     </div>
                     
                     <!-- Item 2 -->
@@ -215,8 +215,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 4C13 4 4 13 4 24s9 20 20 20 20-9 20-20S35 4 24 4zm0 36c-8.8 0-16-7.2-16-16S15.2 8 24 8s16 7.2 16 16-7.2 16-16 16z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Удобный способ получения</h3>
-                        <p class="feature-description">Оплата авансом или порядок получения средств</p>
+                        <h3 class="feature-title">Удобный способ получения средств</h3>
+                        <p class="feature-description">Оплата наличными или перевод напрямую на счет вашей компании.</p>
                     </div>
                     
                     <!-- Item 3 -->
@@ -226,8 +226,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 2l-6 6h12l-6-6zm0 44l6-6H18l6 6zM8 24l6-6v12l-6-6zm32 0l-6 6V18l6 6z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Финансирование заказов</h3>
-                        <p class="feature-description">Кредит на машины в пути в Молдову</p>
+                        <h3 class="feature-title">Финансирование заказанных автомобилей</h3>
+                        <p class="feature-description">Получите кредит, даже если желаемый автомобиль ещё в пути в Молдову.</p>
                     </div>
                     
                     <!-- Item 4 -->
@@ -238,7 +238,7 @@ if (file_exists($css_file_path)) {
                             </svg>
                         </div>
                         <h3 class="feature-title">Поддержка стартапов</h3>
-                        <p class="feature-description">Упрощенная процедура для молодых компаний</p>
+                        <p class="feature-description">Упрощённая процедура и специальные условия для молодых компаний.</p>
                     </div>
                     
                     <!-- Item 5 -->
@@ -248,8 +248,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 12c-4.41 0-8 3.59-8 8s3.59 8 8 8 8-3.59 8-8-3.59-8-8-8z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Гибкие сроки</h3>
-                        <p class="feature-description">Срок кредитования до 60 месяцев</p>
+                        <h3 class="feature-title">Без ограничений на выезд за границу</h3>
+                        <p class="feature-description">Ваш автомобиль – ваш актив без границ.</p>
                     </div>
                     
                     <!-- Item 6 - Wide card spanning 2 columns -->
@@ -259,8 +259,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 4l4 8h8l-6 6 2 8-8-4-8 4 2-8-6-6h8z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Комплексное обслуживание</h3>
-                        <p class="feature-description">Полный спектр услуг от консультации до получения кредита</p>
+                        <h3 class="feature-title">Рефинансирование существующего автокредита</h3>
+                        <p class="feature-description">Улучшите условия текущего кредита.</p>
                     </div>
                 </div>
             </div>
@@ -278,8 +278,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 4L6 10v12c0 11.11 7.67 21.47 18 24 10.33-2.53 18-12.89 18-24V10L24 4z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Минимальный первый взнос</h3>
-                        <p class="feature-description">Начните использовать автомобиль с минимальными вложениями</p>
+                        <h3 class="feature-title">Оптимальное управление бюджетом</h3>
+                        <p class="feature-description">Пользуйтесь автомобилем без немедленной покупки.</p>
                     </div>
                     
                     <!-- Item 2 -->
@@ -289,8 +289,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M40 18H8l4-8h24l4 8zM8 42h32l-4-8H12l-4 8z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Гибкие условия</h3>
-                        <p class="feature-description">Выберите оптимальный срок и условия лизинга</p>
+                        <h3 class="feature-title">Финансирование до 100% стоимости автомобиля</h3>
+                        <p class="feature-description">Аванс не обязателен.</p>
                     </div>
                     
                     <!-- Item 3 -->
@@ -300,8 +300,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M24 2C13 4 4 13 4 24s9 20 20 20 20-9 20-20S35 4 24 4zm0 36c-8.8 0-16-7.2-16-16S15.2 8 24 8s16 7.2 16 16-7.2 16-16 16z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Налоговые преимущества</h3>
-                        <p class="feature-description">Лизинговые платежи снижают налогооблагаемую базу</p>
+                        <h3 class="feature-title">Прозрачные и понятные условия</h3>
+                        <p class="feature-description">Без скрытых комиссий.</p>
                     </div>
                     
                     <!-- Item 4 -->
@@ -311,8 +311,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M16 8v8h16V8H16zm0 32h16v-8H16v8zM8 24h8V16H8v8zm24 0h8v-8h-8v8z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Возможность выкупа</h3>
-                        <p class="feature-description">По окончании срока автомобиль может стать вашим</p>
+                        <h3 class="feature-title">Для всех категорий клиентов</h3>
+                        <p class="feature-description">Лизинг доступен физическим лицам, ИП и компаниям.</p>
                     </div>
                     
                     <!-- Item 5 -->
@@ -322,8 +322,8 @@ if (file_exists($css_file_path)) {
                                 <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="#e2001a"/>
                             </svg>
                         </div>
-                        <h3 class="feature-title">Быстрое оформление</h3>
-                        <p class="feature-description">Оперативная обработка заявки и минимум документов</p>
+                        <h3 class="feature-title">Гибкий срок договора</h3>
+                        <p class="feature-description">От 12 до 60 месяцев.</p>
                     </div>
                 </div>
             </div>
