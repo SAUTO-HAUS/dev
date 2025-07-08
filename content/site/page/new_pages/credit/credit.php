@@ -124,9 +124,9 @@ if (file_exists($css_file_path)) {
                     <!-- Item 2 -->
                     <div class="feature-card item2">
                         <div class="feature-icon">
-                            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
-                                <path d="M12 18h24v-2c0-5-4-9-9-9s-9 4-9 9v2z" fill="#e2001a"/>
-                            </svg>
+                        <div class="feature-icon">
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/1-2.png" alt="Feature Icon" width="64" height="64">
+                        </div>
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('personal_feature2_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('personal_feature2_desc', $current_lang, $lng); ?></p>
@@ -135,9 +135,9 @@ if (file_exists($css_file_path)) {
                     <!-- Item 3 -->
                     <div class="feature-card item3">
                         <div class="feature-icon">
-                            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
-                                <path d="M24 2C13.5 2 5 10.5 5 21c0 15.25 19 25 19 25z" fill="#e2001a"/>
-                            </svg>
+                        <div class="feature-icon">
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/1-3.png" alt="Feature Icon" width="64" height="64">
+                        </div>
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('personal_feature3_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('personal_feature3_desc', $current_lang, $lng); ?></p>
@@ -146,9 +146,9 @@ if (file_exists($css_file_path)) {
                     <!-- Item 4 -->
                     <div class="feature-card item4">
                         <div class="feature-icon">
-                            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
-                                <path d="M40 8H8c-2.2 0-4 1.8-4 4v24c0 2.2 1.8 4 4 4h32z" fill="#e2001a"/>
-                            </svg>
+                        <div class="feature-icon">
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/1-4.png" alt="Feature Icon" width="64" height="64">
+                        </div>
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('personal_feature4_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('personal_feature4_desc', $current_lang, $lng); ?></p>
@@ -157,9 +157,9 @@ if (file_exists($css_file_path)) {
                     <!-- Item 5 -->
                     <div class="feature-card item5">
                         <div class="feature-icon">
-                            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
-                                <path d="M24 12c-4.41 0-8 3.59-8 8s3.59 8 8 8 8-3.59 8-8-3.59-8-8-8z" fill="#e2001a"/>
-                            </svg>
+                        <div class="feature-icon">
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/1-5.png" alt="Feature Icon" width="64" height="64">
+                        </div>
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('personal_feature5_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('personal_feature5_desc', $current_lang, $lng); ?></p>
@@ -168,9 +168,9 @@ if (file_exists($css_file_path)) {
                     <!-- Item 6 -->
                     <div class="feature-card item6">
                         <div class="feature-icon">
-                            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
-                                <path d="M20 6H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12z" fill="#e2001a"/>
-                            </svg>
+                        <div class="feature-icon">
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/1-6.png" alt="Feature Icon" width="64" height="64">
+                        </div>
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('personal_feature6_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('personal_feature6_desc', $current_lang, $lng); ?></p>
@@ -179,9 +179,9 @@ if (file_exists($css_file_path)) {
                     <!-- Item 7 -->
                     <div class="feature-card item7">
                         <div class="feature-icon">
-                            <svg width="32" height="32" viewBox="0 0 48 48" fill="none">
-                                <path d="M24 4l4 8h8l-6 6 2 8-8-4-8 4 2-8-6-6h8z" fill="#e2001a"/>
-                            </svg>
+                        <div class="feature-icon">
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/1-7.png" alt="Feature Icon" width="64" height="64">
+                        </div>
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('personal_feature7_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('personal_feature7_desc', $current_lang, $lng); ?></p>
@@ -367,7 +367,7 @@ if (file_exists($css_file_path)) {
                 <!-- BT Leasing with car image - top row right, spans both rows -->
                 <div class="partner-card partner-3 bt-leasing-card">
                     <div class="partner-logo bt-logo">
-                        <img src="/content/site/page/new_pages/credit/credit-media/bt.png" alt="BT Leasing">
+                        <img style="margin-bottom: 40px;" src="/content/site/page/new_pages/credit/credit-media/bt.png" alt="BT Leasing">
                     </div>
                     <div class="partner-info">
                         <h3 class="partner-name">BT Leasing</h3>
