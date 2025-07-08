@@ -396,13 +396,6 @@ if (file_exists($css_file_path)) {
                         <p class="partner-desc"><?php echo get_translation('victoriabank_desc', $current_lang, $lng); ?></p>
                     </div>
                 </div>
-                
-                <!-- White car image on the right -->
-                <div class="partner-card partner-6 white-car-card">
-                    <div class="white-car-logo">
-                        <img src="/content/site/page/new_pages/credit/credit-media/car__red_credit.png" alt="Car">
-                    </div>
-                </div>
             </div>
         </div>
     </div>
