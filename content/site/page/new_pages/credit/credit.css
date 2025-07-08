@@ -651,16 +651,15 @@ body {
 }
 
 .feature-icon {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     display: flex;
     justify-content: center;
 }
 
-.feature-icon img,
-.feature-icon svg {
+.feature-icon img
+ {
     width: 48px;
     height: 48px;
-    margin-top: 20px;
 }
 
 .feature-title {
