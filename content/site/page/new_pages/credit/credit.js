@@ -1,3 +1,8 @@
+// Comments slider functionality - Show 2 comments at once
+let currentCommentIndex = 1;
+const totalComments = 8;
+const commentsPerView = 2;
+
 // Initialize sliders when page is ready
 $(document).ready(function() {
     console.log('Initializing credit calculator sliders...');
@@ -156,82 +161,81 @@ $(document).ready(function() {
     }, 100);
 });
 
-// Initial setup
-showCategory('personal');
+// Initial setup - removed showCategory call as function doesn't exist
 
-// Comments slider functionality - Show 2 comments at once
-let currentCommentPair = 1;
-const totalComments = 7;
-const commentsPerView = 2;
-
-// Function to show next pair of comments
-function nextComment() {
+// Function to show comments starting from a specific index
+function showCommentPair(startIndex) {
+    console.log('showCommentPair called with startIndex:', startIndex);
+    
     // Hide all comment cards first
     let commentCards = document.getElementsByClassName("comment-card");
+    console.log('Found comment cards:', commentCards.length);
+    
     for (let i = 0; i < commentCards.length; i++) {
         commentCards[i].classList.remove("active");
     }
     
     // Calculate which comments to show
-    let firstComment = currentCommentPair;
-    let secondComment = currentCommentPair + 1;
+    let firstIndex = startIndex;
+    let secondIndex = startIndex + 1;
     
-    // If we reach the end, wrap around
-    if (secondComment > totalComments) {
-        secondComment = 1;
+    // If second index exceeds total, wrap around to beginning
+    if (secondIndex > totalComments) {
+        secondIndex = 1;
     }
     
-    // Move to next pair
-    currentCommentPair += commentsPerView;
-    if (currentCommentPair > totalComments) {
-        currentCommentPair = 1;
-    }
+    console.log('Showing comments:', firstIndex, 'and', secondIndex);
     
     // Show the two comments
-    if (commentCards[firstComment - 1]) {
-        commentCards[firstComment - 1].classList.add("active");
+    if (commentCards[firstIndex - 1]) {
+        commentCards[firstIndex - 1].classList.add("active");
+        console.log('Activated comment:', firstIndex);
     }
-    if (commentCards[secondComment - 1]) {
-        commentCards[secondComment - 1].classList.add("active");
+    if (commentCards[secondIndex - 1]) {
+        commentCards[secondIndex - 1].classList.add("active");
+        console.log('Activated comment:', secondIndex);
     }
+    
+    // Update current index
+    currentCommentIndex = startIndex;
+}
+
+// Function to show next pair of comments
+function nextComment() {
+    console.log('nextComment() called, currentCommentIndex:', currentCommentIndex);
+    
+    // Calculate next starting index
+    let nextIndex = currentCommentIndex + 2;
+    if (nextIndex > totalComments) {
+        nextIndex = 1; // Wrap around to beginning
+    }
+    
+    console.log('Next index will be:', nextIndex);
+    showCommentPair(nextIndex);
 }
 
 // Function to show previous pair of comments
 function previousComment() {
-    // Hide all comment cards first
-    let commentCards = document.getElementsByClassName("comment-card");
-    for (let i = 0; i < commentCards.length; i++) {
-        commentCards[i].classList.remove("active");
+    console.log('previousComment() called, currentCommentIndex:', currentCommentIndex);
+    
+    // Calculate previous starting index
+    let prevIndex = currentCommentIndex - 2;
+    if (prevIndex < 1) {
+        // If we go below 1, wrap around to the end
+        // Calculate the correct starting index for the last complete pair
+        if (totalComments % 2 === 0) {
+            prevIndex = totalComments - 1;
+        } else {
+            prevIndex = totalComments;
+        }
     }
     
-    // Move to previous pair
-    currentCommentPair -= commentsPerView;
-    if (currentCommentPair < 1) {
-        currentCommentPair = totalComments - 1; // Show last pair
-    }
-    
-    // Calculate which comments to show
-    let firstComment = currentCommentPair;
-    let secondComment = currentCommentPair + 1;
-    
-    // If we reach the end, wrap around
-    if (secondComment > totalComments) {
-        secondComment = 1;
-    }
-    
-    // Show the two comments
-    if (commentCards[firstComment - 1]) {
-        commentCards[firstComment - 1].classList.add("active");
-    }
-    if (commentCards[secondComment - 1]) {
-        commentCards[secondComment - 1].classList.add("active");
-    }
+    console.log('Previous index will be:', prevIndex);
+    showCommentPair(prevIndex);
 }
 
 // Initialize comments slider when page loads
 $(document).ready(function() {
     // Show first two comments by default
-    let commentCards = document.getElementsByClassName("comment-card");
-    if (commentCards[0]) commentCards[0].classList.add("active");
-    if (commentCards[1]) commentCards[1].classList.add("active");
+    showCommentPair(1);
 });

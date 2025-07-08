@@ -398,14 +398,22 @@ if (file_exists($css_file_path)) {
                         <p class="partner-desc"><?php echo get_translation('victoriabank_desc', $current_lang, $lng); ?></p>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Comments Section -->
 <section class="comments-section">
     <div class="container">
-        <h2 class="comments-title"><?php echo get_translation('comments_title', $current_lang, $lng); ?></h2>
-        
-        <!-- Navigation under title -->
-        <div class="comments-navigation">
-            <button class="nav-btn" onclick="previousComment()">‹</button>
-            <button class="nav-btn" onclick="nextComment()">›</button>
+        <div class="comments-header">
+            <h2 class="comments-title"><?php echo get_translation('comments_title', $current_lang, $lng); ?></h2>
+            
+            <!-- Navigation under title -->
+            <div class="comments-navigation">
+                <button class="nav-btn" onclick="previousComment()">‹</button>
+                <button class="nav-btn" onclick="nextComment()">›</button>
+            </div>
         </div>
         
         <div class="comments-slider">
@@ -417,7 +425,7 @@ if (file_exists($css_file_path)) {
                 </div>
                 <div class="comment-author">
                     <div class="author-avatar">
-                        <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar1.jpg" 
+                        <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar1.webp" 
                              alt="<?php echo get_translation('comment_1_name', $current_lang, $lng); ?>" 
                              onerror="this.style.display='none'">
                     </div>
@@ -532,6 +540,25 @@ if (file_exists($css_file_path)) {
                     <div class="author-info">
                         <h4 class="author-name"><?php echo get_translation('comment_7_name', $current_lang, $lng); ?></h4>
                         <p class="author-location"><?php echo get_translation('comment_7_location', $current_lang, $lng); ?></p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Comment 8 -->
+            <div class="comment-card" data-comment="8">
+                <div class="comment-content">
+                    <div class="quote-mark">"</div>
+                    <p class="comment-text"><?php echo get_translation('comment_8_text', $current_lang, $lng); ?></p>
+                </div>
+                <div class="comment-author">
+                    <div class="author-avatar">
+                        <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar8.jpg" 
+                             alt="<?php echo get_translation('comment_8_name', $current_lang, $lng); ?>" 
+                             onerror="this.style.display='none'">
+                    </div>
+                    <div class="author-info">
+                        <h4 class="author-name"><?php echo get_translation('comment_8_name', $current_lang, $lng); ?></h4>
+                        <p class="author-location"><?php echo get_translation('comment_8_location', $current_lang, $lng); ?></p>
                     </div>
                 </div>
             </div>
