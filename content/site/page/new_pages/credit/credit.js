@@ -32,7 +32,7 @@ $(document).ready(function() {
             $input_suma_creditului.html("<span style='font-size: 1.2em; font-weight: bold;'>" + formatMoney(data.from) + "</span> €");
             console.log('Updated suma text to:', formatMoney(data.from) + " €");
             clearTimeout(updateRateTimeout);
-            updateRateTimeout = setTimeout(updateRate, 300);
+            updateRateTimeout = setTimeout(updateRate, 100);
         }
     }).data("ionRangeSlider");
     
@@ -63,7 +63,7 @@ $(document).ready(function() {
             $input_termen_creditului.html("<span style='font-size: 1.2em; font-weight: bold;'>" + data.from + "</span> " + monthsText);
             console.log('Updated termen text to:', data.from + " " + monthsText);
             clearTimeout(updateRateTimeout);
-            updateRateTimeout = setTimeout(updateRate, 300);
+            updateRateTimeout = setTimeout(updateRate, 100);
         }
     }).data("ionRangeSlider");
     
