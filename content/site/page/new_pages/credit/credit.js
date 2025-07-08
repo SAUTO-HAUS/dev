@@ -155,3 +155,73 @@ $(document).ready(function() {
         $('.tab-button[data-category="personal"]').addClass('active');
     }, 100);
 });
+
+// Initial setup
+showCategory('personal');
+
+// Comments slider functionality
+let currentCommentIndex = 1;
+const totalComments = 7;
+
+// Function to show specific comment
+function currentComment(n) {
+    showComment(currentCommentIndex = n);
+}
+
+// Function to show next comment
+function nextComment() {
+    if (currentCommentIndex >= totalComments) {
+        currentCommentIndex = 1;
+    } else {
+        currentCommentIndex++;
+    }
+    showComment(currentCommentIndex);
+}
+
+// Function to show previous comment
+function previousComment() {
+    if (currentCommentIndex <= 1) {
+        currentCommentIndex = totalComments;
+    } else {
+        currentCommentIndex--;
+    }
+    showComment(currentCommentIndex);
+}
+
+// Function to display the selected comment
+function showComment(n) {
+    let commentCards = document.getElementsByClassName("comment-card");
+    let dots = document.getElementsByClassName("dot");
+    
+    if (n > totalComments) { currentCommentIndex = 1; }
+    if (n < 1) { currentCommentIndex = totalComments; }
+    
+    // Hide all comment cards
+    for (let i = 0; i < commentCards.length; i++) {
+        commentCards[i].classList.remove("active");
+    }
+    
+    // Remove active class from all dots
+    for (let i = 0; i < dots.length; i++) {
+        dots[i].classList.remove("active");
+    }
+    
+    // Show selected comment and activate corresponding dot
+    if (commentCards[currentCommentIndex - 1]) {
+        commentCards[currentCommentIndex - 1].classList.add("active");
+    }
+    if (dots[currentCommentIndex - 1]) {
+        dots[currentCommentIndex - 1].classList.add("active");
+    }
+}
+
+// Auto-rotate comments every 5 seconds
+setInterval(function() {
+    nextComment();
+}, 5000);
+
+// Initialize comments slider when page loads
+$(document).ready(function() {
+    // Ensure first comment is visible
+    showComment(1);
+});

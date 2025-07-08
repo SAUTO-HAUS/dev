@@ -403,6 +403,141 @@ if (file_exists($css_file_path)) {
     </div>
 </section>
 
+<!-- Comments Section -->
+<section class="comments-section">
+    <div class="container">
+        <h2 class="comments-title"><?php echo get_translation('comments_title', $current_lang, $lng); ?></h2>
+        
+        <div class="comments-slider">
+            <div class="comment-card active">
+                <div class="comment-content">
+                    <div class="quote-mark">"</div>
+                    <p class="comment-text"><?php echo get_translation('comment1_text', $current_lang, $lng); ?></p>
+                </div>
+                <div class="comment-author">
+                    <div class="author-avatar">
+                        <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar1.jpg" alt="<?php echo get_translation('comment1_name', $current_lang, $lng); ?>" onerror="this.style.display='none'">
+                    </div>
+                    <div class="author-info">
+                        <h4 class="author-name"><?php echo get_translation('comment1_name', $current_lang, $lng); ?></h4>
+                        <p class="author-location"><?php echo get_translation('comment1_location', $current_lang, $lng); ?></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="comment-card">
+                <div class="comment-content">
+                    <div class="quote-mark">"</div>
+                    <p class="comment-text"><?php echo get_translation('comment2_text', $current_lang, $lng); ?></p>
+                </div>
+                <div class="comment-author">
+                    <div class="author-avatar">
+                        <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar2.jpg" alt="<?php echo get_translation('comment2_name', $current_lang, $lng); ?>" onerror="this.style.display='none'">
+                    </div>
+                    <div class="author-info">
+                        <h4 class="author-name"><?php echo get_translation('comment2_name', $current_lang, $lng); ?></h4>
+                        <p class="author-location"><?php echo get_translation('comment2_location', $current_lang, $lng); ?></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="comment-card">
+                <div class="comment-content">
+                    <div class="quote-mark">"</div>
+                    <p class="comment-text"><?php echo get_translation('comment3_text', $current_lang, $lng); ?></p>
+                </div>
+                <div class="comment-author">
+                    <div class="author-avatar">
+                        <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar3.jpg" alt="<?php echo get_translation('comment3_name', $current_lang, $lng); ?>" onerror="this.style.display='none'">
+                    </div>
+                    <div class="author-info">
+                        <h4 class="author-name"><?php echo get_translation('comment3_name', $current_lang, $lng); ?></h4>
+                        <p class="author-location"><?php echo get_translation('comment3_location', $current_lang, $lng); ?></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="comment-card">
+                <div class="comment-content">
+                    <div class="quote-mark">"</div>
+                    <p class="comment-text"><?php echo get_translation('comment4_text', $current_lang, $lng); ?></p>
+                </div>
+                <div class="comment-author">
+                    <div class="author-avatar">
+                        <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar4.jpg" alt="<?php echo get_translation('comment4_name', $current_lang, $lng); ?>" onerror="this.style.display='none'">
+                    </div>
+                    <div class="author-info">
+                        <h4 class="author-name"><?php echo get_translation('comment4_name', $current_lang, $lng); ?></h4>
+                        <p class="author-location"><?php echo get_translation('comment4_location', $current_lang, $lng); ?></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="comment-card">
+                <div class="comment-content">
+                    <div class="quote-mark">"</div>
+                    <p class="comment-text"><?php echo get_translation('comment5_text', $current_lang, $lng); ?></p>
+                </div>
+                <div class="comment-author">
+                    <div class="author-avatar">
+                        <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar5.jpg" alt="<?php echo get_translation('comment5_name', $current_lang, $lng); ?>" onerror="this.style.display='none'">
+                    </div>
+                    <div class="author-info">
+                        <h4 class="author-name"><?php echo get_translation('comment5_name', $current_lang, $lng); ?></h4>
+                        <p class="author-location"><?php echo get_translation('comment5_location', $current_lang, $lng); ?></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="comment-card">
+                <div class="comment-content">
+                    <div class="quote-mark">"</div>
+                    <p class="comment-text"><?php echo get_translation('comment6_text', $current_lang, $lng); ?></p>
+                </div>
+                <div class="comment-author">
+                    <div class="author-avatar">
+                        <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar6.jpg" alt="<?php echo get_translation('comment6_name', $current_lang, $lng); ?>" onerror="this.style.display='none'">
+                    </div>
+                    <div class="author-info">
+                        <h4 class="author-name"><?php echo get_translation('comment6_name', $current_lang, $lng); ?></h4>
+                        <p class="author-location"><?php echo get_translation('comment6_location', $current_lang, $lng); ?></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="comment-card">
+                <div class="comment-content">
+                    <div class="quote-mark">"</div>
+                    <p class="comment-text"><?php echo get_translation('comment7_text', $current_lang, $lng); ?></p>
+                </div>
+                <div class="comment-author">
+                    <div class="author-avatar">
+                        <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar7.jpg" alt="<?php echo get_translation('comment7_name', $current_lang, $lng); ?>" onerror="this.style.display='none'">
+                    </div>
+                    <div class="author-info">
+                        <h4 class="author-name"><?php echo get_translation('comment7_name', $current_lang, $lng); ?></h4>
+                        <p class="author-location"><?php echo get_translation('comment7_location', $current_lang, $lng); ?></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="comments-navigation">
+            <button class="nav-btn prev-btn" onclick="previousComment()">&lt;</button>
+            <div class="dots-indicator">
+                <span class="dot active" onclick="currentComment(1)"></span>
+                <span class="dot" onclick="currentComment(2)"></span>
+                <span class="dot" onclick="currentComment(3)"></span>
+                <span class="dot" onclick="currentComment(4)"></span>
+                <span class="dot" onclick="currentComment(5)"></span>
+                <span class="dot" onclick="currentComment(6)"></span>
+                <span class="dot" onclick="currentComment(7)"></span>
+            </div>
+            <button class="nav-btn next-btn" onclick="nextComment()">&gt;</button>
+        </div>
+    </div>
+</section>
+
 <div class="credit-page">
 </div>
 

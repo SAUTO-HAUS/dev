@@ -68,7 +68,138 @@ $lng_credit_page = array(
             'ru' => 'до',
             'en' => 'to'
         ),
-
+        'partners_button' => array(
+            'ro' => 'Aplică acum',
+            'ru' => 'Подать заявку',
+            'en' => 'Apply now'
+        ),
+        
+        // Comments Section
+        'comments_title' => array(
+            'ro' => 'Istorii ale clienților noștri',
+            'ru' => 'Истории наших клиентов',
+            'en' => 'Our customers stories'
+        ),
+        
+        // Comment 1 - Gheorghe Grozavu
+        'comment1_name' => array(
+            'ro' => 'Gheorghe Grozavu',
+            'ru' => 'Георгий Грозаву',
+            'en' => 'Gheorghe Grozavu'
+        ),
+        'comment1_location' => array(
+            'ro' => 'Betonist din Chokana',
+            'ru' => 'Бетонщик из Чоканы',
+            'en' => 'Concrete worker from Chokana'
+        ),
+        'comment1_text' => array(
+            'ro' => 'Aici este comentariul lui Gheorghe Grozavu',
+            'ru' => 'Здесь комментарий Георгия Грозаву',
+            'en' => 'Here is Gheorghe Grozavu\'s comment'
+        ),
+        
+        // Comment 2 - Maria Cojocaru
+        'comment2_name' => array(
+            'ro' => 'Maria Cojocaru',
+            'ru' => 'Мария Кожокару',
+            'en' => 'Maria Cojocaru'
+        ),
+        'comment2_location' => array(
+            'ro' => 'Vânzătoare din Sculeni',
+            'ru' => 'Продавщица из Скулен',
+            'en' => 'Seller from Sculeni'
+        ),
+        'comment2_text' => array(
+            'ro' => 'Aici este comentariul Mariei Cojocaru',
+            'ru' => 'Здесь комментарий Марии Кожокару',
+            'en' => 'Here is Maria Cojocaru\'s comment'
+        ),
+        
+        // Comment 3 - Alexandru Popescu
+        'comment3_name' => array(
+            'ro' => 'Alexandru Popescu',
+            'ru' => 'Александру Попеску',
+            'en' => 'Alexandru Popescu'
+        ),
+        'comment3_location' => array(
+            'ro' => 'Șofer din Chișinău',
+            'ru' => 'Водитель из Кишинэу',
+            'en' => 'Driver from Chisinau'
+        ),
+        'comment3_text' => array(
+            'ro' => 'Aici este comentariul lui Alexandru Popescu',
+            'ru' => 'Здесь комментарий Александру Попеску',
+            'en' => 'Here is Alexandru Popescu\'s comment'
+        ),
+        
+        // Comment 4 - Elena Moraru
+        'comment4_name' => array(
+            'ro' => 'Elena Moraru',
+            'ru' => 'Елена Морару',
+            'en' => 'Elena Moraru'
+        ),
+        'comment4_location' => array(
+            'ro' => 'Contabilă din Bălți',
+            'ru' => 'Бухгалтер из Бэлць',
+            'en' => 'Accountant from Balti'
+        ),
+        'comment4_text' => array(
+            'ro' => 'Aici este comentariul Elenei Moraru',
+            'ru' => 'Здесь комментарий Елены Морару',
+            'en' => 'Here is Elena Moraru\'s comment'
+        ),
+        
+        // Comment 5 - Ion Dimitriu
+        'comment5_name' => array(
+            'ro' => 'Ion Dimitriu',
+            'ru' => 'Ион Димитрию',
+            'en' => 'Ion Dimitriu'
+        ),
+        'comment5_location' => array(
+            'ro' => 'Antreprenor din Orhei',
+            'ru' => 'Предприниматель из Орхей',
+            'en' => 'Entrepreneur from Orhei'
+        ),
+        'comment5_text' => array(
+            'ro' => 'Aici este comentariul lui Ion Dimitriu',
+            'ru' => 'Здесь комментарий Иона Димитрию',
+            'en' => 'Here is Ion Dimitriu\'s comment'
+        ),
+        
+        // Comment 6 - Svetlana Rusu
+        'comment6_name' => array(
+            'ro' => 'Svetlana Rusu',
+            'ru' => 'Светлана Русу',
+            'en' => 'Svetlana Rusu'
+        ),
+        'comment6_location' => array(
+            'ro' => 'Profesoară din Cahul',
+            'ru' => 'Учительница из Кагул',
+            'en' => 'Teacher from Cahul'
+        ),
+        'comment6_text' => array(
+            'ro' => 'Aici este comentariul Svetlanei Rusu',
+            'ru' => 'Здесь комментарий Светланы Русу',
+            'en' => 'Here is Svetlana Rusu\'s comment'
+        ),
+        
+        // Comment 7 - Vasile Ungureanu
+        'comment7_name' => array(
+            'ro' => 'Vasile Ungureanu',
+            'ru' => 'Василе Унгуряну',
+            'en' => 'Vasile Ungureanu'
+        ),
+        'comment7_location' => array(
+            'ro' => 'Mecanic din Comrat',
+            'ru' => 'Механик из Комрат',
+            'en' => 'Mechanic from Comrat'
+        ),
+        'comment7_text' => array(
+            'ro' => 'Aici este comentariul lui Vasile Ungureanu',
+            'ru' => 'Здесь комментарий Василе Унгуряну',
+            'en' => 'Here is Vasile Ungureanu\'s comment'
+        ),
+        
         // Credit Categories Section
         // Personal Credit
         'personal_credit_title' => array(
