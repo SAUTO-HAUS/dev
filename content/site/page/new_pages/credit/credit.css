@@ -1068,16 +1068,7 @@ body {
     position: relative;
 }
 
-.comments-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 20"><defs><pattern id="grain" width="100" height="20" patternUnits="userSpaceOnUse"><circle cx="10" cy="10" r="0.5" fill="%23000000" opacity="0.02"/></pattern></defs><rect width="100" height="20" fill="url(%23grain)"/></svg>') repeat;
-    pointer-events: none;
-}
+
 
 .comments-header {
     display: flex;
@@ -1113,7 +1104,6 @@ body {
     transition: all 0.5s ease;
     flex: 1;
     min-width: 0;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
 .comment-card.active {
@@ -1169,7 +1159,6 @@ body {
     height: 70px;
     border-radius: 50%;
     overflow: hidden;
-    border: 3px solid #e2001a;
     flex-shrink: 0;
 }
 

@@ -419,10 +419,6 @@ if (file_exists($css_file_path)) {
         <div class="comments-slider">
             <!-- Comment 1 -->
             <div class="comment-card active" data-comment="1">
-                <div class="comment-content">
-                    <div class="quote-mark">"</div>
-                    <p class="comment-text"><?php echo get_translation('comment_1_text', $current_lang, $lng); ?></p>
-                </div>
                 <div class="comment-author">
                     <div class="author-avatar">
                         <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar1.webp" 
@@ -434,13 +430,13 @@ if (file_exists($css_file_path)) {
                         <p class="author-location"><?php echo get_translation('comment_1_location', $current_lang, $lng); ?></p>
                     </div>
                 </div>
+                <div class="comment-content">
+                    <div class="quote-mark">"</div>
+                    <p class="comment-text"><?php echo get_translation('comment_1_text', $current_lang, $lng); ?></p>
+                </div>
             </div>
             
             <div class="comment-card active" data-comment="2">
-                <div class="comment-content">
-                    <div class="quote-mark">"</div>
-                    <p class="comment-text"><?php echo get_translation('comment_2_text', $current_lang, $lng); ?></p>
-                </div>
                 <div class="comment-author">
                     <div class="author-avatar">
                         <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar2.jpg" 
@@ -452,13 +448,13 @@ if (file_exists($css_file_path)) {
                         <p class="author-location"><?php echo get_translation('comment_2_location', $current_lang, $lng); ?></p>
                     </div>
                 </div>
+                <div class="comment-content">
+                    <div class="quote-mark">"</div>
+                    <p class="comment-text"><?php echo get_translation('comment_2_text', $current_lang, $lng); ?></p>
+                </div>
             </div>
             
             <div class="comment-card" data-comment="3">
-                <div class="comment-content">
-                    <div class="quote-mark">"</div>
-                    <p class="comment-text"><?php echo get_translation('comment_3_text', $current_lang, $lng); ?></p>
-                </div>
                 <div class="comment-author">
                     <div class="author-avatar">
                         <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar3.jpg" 
@@ -470,13 +466,13 @@ if (file_exists($css_file_path)) {
                         <p class="author-location"><?php echo get_translation('comment_3_location', $current_lang, $lng); ?></p>
                     </div>
                 </div>
+                <div class="comment-content">
+                    <div class="quote-mark">"</div>
+                    <p class="comment-text"><?php echo get_translation('comment_3_text', $current_lang, $lng); ?></p>
+                </div>
             </div>
             
             <div class="comment-card" data-comment="4">
-                <div class="comment-content">
-                    <div class="quote-mark">"</div>
-                    <p class="comment-text"><?php echo get_translation('comment_4_text', $current_lang, $lng); ?></p>
-                </div>
                 <div class="comment-author">
                     <div class="author-avatar">
                         <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar4.jpg" 
@@ -488,13 +484,13 @@ if (file_exists($css_file_path)) {
                         <p class="author-location"><?php echo get_translation('comment_4_location', $current_lang, $lng); ?></p>
                     </div>
                 </div>
+                <div class="comment-content">
+                    <div class="quote-mark">"</div>
+                    <p class="comment-text"><?php echo get_translation('comment_4_text', $current_lang, $lng); ?></p>
+                </div>
             </div>
             
             <div class="comment-card" data-comment="5">
-                <div class="comment-content">
-                    <div class="quote-mark">"</div>
-                    <p class="comment-text"><?php echo get_translation('comment_5_text', $current_lang, $lng); ?></p>
-                </div>
                 <div class="comment-author">
                     <div class="author-avatar">
                         <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar5.jpg" 
@@ -506,13 +502,13 @@ if (file_exists($css_file_path)) {
                         <p class="author-location"><?php echo get_translation('comment_5_location', $current_lang, $lng); ?></p>
                     </div>
                 </div>
+                <div class="comment-content">
+                    <div class="quote-mark">"</div>
+                    <p class="comment-text"><?php echo get_translation('comment_5_text', $current_lang, $lng); ?></p>
+                </div>
             </div>
             
             <div class="comment-card" data-comment="6">
-                <div class="comment-content">
-                    <div class="quote-mark">"</div>
-                    <p class="comment-text"><?php echo get_translation('comment_6_text', $current_lang, $lng); ?></p>
-                </div>
                 <div class="comment-author">
                     <div class="author-avatar">
                         <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar6.jpg" 
@@ -524,13 +520,13 @@ if (file_exists($css_file_path)) {
                         <p class="author-location"><?php echo get_translation('comment_6_location', $current_lang, $lng); ?></p>
                     </div>
                 </div>
+                <div class="comment-content">
+                    <div class="quote-mark">"</div>
+                    <p class="comment-text"><?php echo get_translation('comment_6_text', $current_lang, $lng); ?></p>
+                </div>
             </div>
             
             <div class="comment-card" data-comment="7">
-                <div class="comment-content">
-                    <div class="quote-mark">"</div>
-                    <p class="comment-text"><?php echo get_translation('comment_7_text', $current_lang, $lng); ?></p>
-                </div>
                 <div class="comment-author">
                     <div class="author-avatar">
                         <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar7.jpg" 
@@ -542,15 +538,15 @@ if (file_exists($css_file_path)) {
                         <p class="author-location"><?php echo get_translation('comment_7_location', $current_lang, $lng); ?></p>
                     </div>
                 </div>
+                <div class="comment-content">
+                    <div class="quote-mark">"</div>
+                    <p class="comment-text"><?php echo get_translation('comment_7_text', $current_lang, $lng); ?></p>
+                </div>
             </div>
             
             <!-- Comment 8 -->
             <div class="comment-card" data-comment="8">
-                <div class="comment-content">
-                    <div class="quote-mark">"</div>
-                    <p class="comment-text"><?php echo get_translation('comment_8_text', $current_lang, $lng); ?></p>
-                </div>
-                <div class="comment-author">
+            <div class="comment-author">
                     <div class="author-avatar">
                         <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar8.jpg" 
                              alt="<?php echo get_translation('comment_8_name', $current_lang, $lng); ?>" 
@@ -561,6 +557,10 @@ if (file_exists($css_file_path)) {
                         <p class="author-location"><?php echo get_translation('comment_8_location', $current_lang, $lng); ?></p>
                     </div>
                 </div>
+                <div class="comment-content">
+                    <div class="quote-mark">"</div>
+                    <p class="comment-text"><?php echo get_translation('comment_8_text', $current_lang, $lng); ?></p>
+                </div>     
             </div>
         </div>
     </div>

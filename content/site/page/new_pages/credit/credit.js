@@ -1,4 +1,4 @@
-// Comments slider functionality - Show 2 comments at once
+// Comments slider functionality - Show 2 comments at a time
 let currentCommentIndex = 1;
 const totalComments = 8;
 const commentsPerView = 2;
@@ -163,7 +163,7 @@ $(document).ready(function() {
 
 // Initial setup - removed showCategory call as function doesn't exist
 
-// Function to show comments starting from a specific index
+// Function to show a pair of comments starting from a specific index
 function showCommentPair(startIndex) {
     console.log('showCommentPair called with startIndex:', startIndex);
     
@@ -175,22 +175,19 @@ function showCommentPair(startIndex) {
         commentCards[i].classList.remove("active");
     }
     
-    // Calculate which comments to show
+    // Show two consecutive comments
     let firstIndex = startIndex;
     let secondIndex = startIndex + 1;
     
-    // If second index exceeds total, wrap around to beginning
-    if (secondIndex > totalComments) {
-        secondIndex = 1;
-    }
-    
     console.log('Showing comments:', firstIndex, 'and', secondIndex);
     
-    // Show the two comments
+    // Show the first comment
     if (commentCards[firstIndex - 1]) {
         commentCards[firstIndex - 1].classList.add("active");
         console.log('Activated comment:', firstIndex);
     }
+    
+    // Show the second comment
     if (commentCards[secondIndex - 1]) {
         commentCards[secondIndex - 1].classList.add("active");
         console.log('Activated comment:', secondIndex);
@@ -204,13 +201,13 @@ function showCommentPair(startIndex) {
 function nextComment() {
     console.log('nextComment() called, currentCommentIndex:', currentCommentIndex);
     
-    // Calculate next starting index
+    // Calculate next pair starting index (move by 2)
     let nextIndex = currentCommentIndex + 2;
     if (nextIndex > totalComments) {
         nextIndex = 1; // Wrap around to beginning
     }
     
-    console.log('Next index will be:', nextIndex);
+    console.log('Next pair will start at:', nextIndex);
     showCommentPair(nextIndex);
 }
 
@@ -218,24 +215,19 @@ function nextComment() {
 function previousComment() {
     console.log('previousComment() called, currentCommentIndex:', currentCommentIndex);
     
-    // Calculate previous starting index
+    // Calculate previous pair starting index (move by 2)
     let prevIndex = currentCommentIndex - 2;
     if (prevIndex < 1) {
-        // If we go below 1, wrap around to the end
-        // Calculate the correct starting index for the last complete pair
-        if (totalComments % 2 === 0) {
-            prevIndex = totalComments - 1;
-        } else {
-            prevIndex = totalComments;
-        }
+        // Wrap around to the last pair
+        prevIndex = totalComments - 1; // Start at 7 to show 7,8
     }
     
-    console.log('Previous index will be:', prevIndex);
+    console.log('Previous pair will start at:', prevIndex);
     showCommentPair(prevIndex);
 }
 
 // Initialize comments slider when page loads
 $(document).ready(function() {
-    // Show first two comments by default
+    // Show first pair of comments by default
     showCommentPair(1);
 });
