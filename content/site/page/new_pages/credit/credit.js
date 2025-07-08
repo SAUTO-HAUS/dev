@@ -159,69 +159,79 @@ $(document).ready(function() {
 // Initial setup
 showCategory('personal');
 
-// Comments slider functionality
-let currentCommentIndex = 1;
+// Comments slider functionality - Show 2 comments at once
+let currentCommentPair = 1;
 const totalComments = 7;
+const commentsPerView = 2;
 
-// Function to show specific comment
-function currentComment(n) {
-    showComment(currentCommentIndex = n);
-}
-
-// Function to show next comment
+// Function to show next pair of comments
 function nextComment() {
-    if (currentCommentIndex >= totalComments) {
-        currentCommentIndex = 1;
-    } else {
-        currentCommentIndex++;
-    }
-    showComment(currentCommentIndex);
-}
-
-// Function to show previous comment
-function previousComment() {
-    if (currentCommentIndex <= 1) {
-        currentCommentIndex = totalComments;
-    } else {
-        currentCommentIndex--;
-    }
-    showComment(currentCommentIndex);
-}
-
-// Function to display the selected comment
-function showComment(n) {
+    // Hide all comment cards first
     let commentCards = document.getElementsByClassName("comment-card");
-    let dots = document.getElementsByClassName("dot");
-    
-    if (n > totalComments) { currentCommentIndex = 1; }
-    if (n < 1) { currentCommentIndex = totalComments; }
-    
-    // Hide all comment cards
     for (let i = 0; i < commentCards.length; i++) {
         commentCards[i].classList.remove("active");
     }
     
-    // Remove active class from all dots
-    for (let i = 0; i < dots.length; i++) {
-        dots[i].classList.remove("active");
+    // Calculate which comments to show
+    let firstComment = currentCommentPair;
+    let secondComment = currentCommentPair + 1;
+    
+    // If we reach the end, wrap around
+    if (secondComment > totalComments) {
+        secondComment = 1;
     }
     
-    // Show selected comment and activate corresponding dot
-    if (commentCards[currentCommentIndex - 1]) {
-        commentCards[currentCommentIndex - 1].classList.add("active");
+    // Move to next pair
+    currentCommentPair += commentsPerView;
+    if (currentCommentPair > totalComments) {
+        currentCommentPair = 1;
     }
-    if (dots[currentCommentIndex - 1]) {
-        dots[currentCommentIndex - 1].classList.add("active");
+    
+    // Show the two comments
+    if (commentCards[firstComment - 1]) {
+        commentCards[firstComment - 1].classList.add("active");
+    }
+    if (commentCards[secondComment - 1]) {
+        commentCards[secondComment - 1].classList.add("active");
     }
 }
 
-// Auto-rotate comments every 5 seconds
-setInterval(function() {
-    nextComment();
-}, 5000);
+// Function to show previous pair of comments
+function previousComment() {
+    // Hide all comment cards first
+    let commentCards = document.getElementsByClassName("comment-card");
+    for (let i = 0; i < commentCards.length; i++) {
+        commentCards[i].classList.remove("active");
+    }
+    
+    // Move to previous pair
+    currentCommentPair -= commentsPerView;
+    if (currentCommentPair < 1) {
+        currentCommentPair = totalComments - 1; // Show last pair
+    }
+    
+    // Calculate which comments to show
+    let firstComment = currentCommentPair;
+    let secondComment = currentCommentPair + 1;
+    
+    // If we reach the end, wrap around
+    if (secondComment > totalComments) {
+        secondComment = 1;
+    }
+    
+    // Show the two comments
+    if (commentCards[firstComment - 1]) {
+        commentCards[firstComment - 1].classList.add("active");
+    }
+    if (commentCards[secondComment - 1]) {
+        commentCards[secondComment - 1].classList.add("active");
+    }
+}
 
 // Initialize comments slider when page loads
 $(document).ready(function() {
-    // Ensure first comment is visible
-    showComment(1);
+    // Show first two comments by default
+    let commentCards = document.getElementsByClassName("comment-card");
+    if (commentCards[0]) commentCards[0].classList.add("active");
+    if (commentCards[1]) commentCards[1].classList.add("active");
 });
