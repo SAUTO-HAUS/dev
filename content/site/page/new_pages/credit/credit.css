@@ -1,3 +1,6 @@
+/* ========================================
+   1. GLOBAL STYLES
+   ======================================== */
 .credit-page {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     line-height: 1.6;
@@ -13,7 +16,16 @@ body {
     overflow-x: hidden;
 }
 
-/* Styles for hero section layout */
+.container {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    max-width: 1200px;
+}
+
+/* ========================================
+   2. HERO SECTION
+   ======================================== */
 .hero-section {
     background: linear-gradient(to right, #415A8C 0%, #162E5E 100%);
     color: white;
@@ -39,13 +51,6 @@ body {
     width: 100%;
     display: flex;
     justify-content: flex-end;
-}
-
-.container {
-    display: flex;
-    justify-content: flex-end;
-    width: 100%;
-    max-width: 1200px;
 }
 
 .hero-right-content {
@@ -116,7 +121,9 @@ body {
     justify-content: center;
 }
 
-/* Stiluri pentru noul calculator de credit */
+/* ========================================
+   3. CREDIT CALCULATOR SECTION
+   ======================================== */
 .credit-calculator-container {
     background: #ffffff;
     border-radius: 16px;
@@ -142,7 +149,7 @@ body {
     padding: 0;
 }
 
-/* Calculator fields */
+/* Calculator input fields */
 .calculator-field {
     margin-bottom: 32px;
 }
@@ -165,23 +172,28 @@ body {
     font-weight: 600;
 }
 
-/* Hide Ion Range Slider inputs */
+/* ========================================
+   4. ION RANGE SLIDER STYLING
+   ======================================== */
+/* Hide default slider inputs */
 #suma-creditului,
 #termen-creditului {
     display: none;
 }
 
-/* Ion Range Slider Red Styling */
+/* Slider track styling */
 .irs--round .irs-line {
     background: #e5e5e5;
     height: 4px;
 }
 
+/* Active slider bar - red color */
 .irs--round .irs-bar {
     background: #dc3545 !important;
     height: 4px;
 }
 
+/* Slider handle styling */
 .irs--round .irs-handle {
     background: #f4f4f4;
     border: 3px solid #dc3545 !important;
@@ -198,6 +210,7 @@ body {
     background: #ffffff;
 }
 
+/* Slider value tooltip */
 .irs--round .irs-single {
     background: #dc3545;
     color: #ffffff;
@@ -207,6 +220,7 @@ body {
     border-top-color: #dc3545;
 }
 
+/* Slider value labels */
 .slider-labels {
     display: flex;
     justify-content: space-between;
@@ -215,6 +229,7 @@ body {
     margin-top: 8px;
 }
 
+/* Payment calculation result display */
 .payment-result {
     background: linear-gradient(135deg, #ffe8e8 0%, #ffe8e8 100%);
     border-radius: 12px;
@@ -756,9 +771,11 @@ body {
     }
 }
 
-/* =============================
-   PARTNERS SECTION STYLES 
-   ============================= */
+/* ========================================
+   5. PARTNERS SECTION
+   ======================================== */
+
+/* Main partners section container */
 .partners-section {
     padding: 40px 0 80px 0;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
@@ -773,6 +790,7 @@ body {
     display: block;
 }
 
+/* Partners content layout - three columns */
 .partners-content {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
@@ -783,28 +801,52 @@ body {
     padding: 0 20px;
 }
 
-/* Partners Grid - optimized layout with fixed proportions */
+/* Partners grid - 3x2 layout with car image */
 .partners-grid {
     display: grid;
-    grid-template-columns: 250px 250px 320px;
-    grid-template-rows: 195px 195px;
-    height: 400px;
-    gap: 15px;
-    max-width: 1200px;
-    margin: 0 auto;
-    justify-content: center;
+    grid-template-columns: repeat(3, 1fr) 200px;
+    grid-template-rows: repeat(2, 1fr);
+    gap: 20px;
+    flex: 1;
+    max-width: 900px;
+    height: 360px;
 }
 
-.partners-grid .partner-1 { grid-row: 1; grid-column: 1; }
-.partners-grid .partner-2 { grid-row: 1; grid-column: 2; }
-.partners-grid .partner-3 { grid-row: 2; grid-column: 1; }
-.partners-grid .partner-4 { grid-row: 2; grid-column: 2; }
-.partners-grid .partner-5 {
-    grid-row: 1 / span 2;
+/* Partner positioning in grid */
+/* Top row: Microinvest, Maib Leasing, BT Leasing */
+.partner-1 {
+    grid-column: 1;
+    grid-row: 1;
+}
+
+.partner-2 {
+    grid-column: 2;
+    grid-row: 1;
+}
+
+.partner-3 {
     grid-column: 3;
+    grid-row: 1;
 }
 
-/* Partner Cards */
+/* Bottom row: Primero, Victoriabank */
+.partner-4 {
+    grid-column: 1;
+    grid-row: 2;
+}
+
+.partner-5 {
+    grid-column: 2;
+    grid-row: 2;
+}
+
+/* Car image spanning both rows */
+.partner-6 {
+    grid-column: 4;
+    grid-row: 1 / 3;
+}
+
+/* Individual partner cards */
 .partner-card {
     background: #ffffff;
     border-radius: 12px;
@@ -826,6 +868,7 @@ body {
     border-color: #e2001a;
 }
 
+/* Partner logos container */
 .partner-logo {
     width: 160px;
     height: 80px;
@@ -842,7 +885,7 @@ body {
     object-position: center;
 }
 
-/* Specific logo sizes */
+/* Specific partner logo sizes */
 .microinvest-logo {
     width: 200px;
     height: 80px;
@@ -858,23 +901,13 @@ body {
     height: 64px;
 }
 
+/* Partner text content */
 .partner-name {
     font-size: 16px;
     font-weight: 600;
     color: #2c3e50;
     margin: 0 0 8px 0;
 }
-
-/* Standard positioning for all cards */
-.partner-info {
-    margin-top: 0;
-}
-
-/* Move only Microinvest text higher */
-.partner-1 .partner-info {
-    margin-top: -10px;
-}
-
 
 .partner-desc {
     font-size: 13px;
@@ -883,7 +916,17 @@ body {
     margin: 0;
 }
 
-/* White car styling for 5th partner card */
+/* Partner info positioning */
+.partner-info {
+    margin-top: 0;
+}
+
+/* Microinvest specific positioning */
+.partner-1 .partner-info {
+    margin-top: -10px;
+}
+
+/* White car card styling - 5th partner position */
 .white-car-card {
     display: flex;
     align-items: center;
@@ -909,7 +952,7 @@ body {
     filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.1));
 }
 
-/* Left side - Text content */
+/* Partners text content - left side */
 .partners-text {
     width: 280px;
     display: flex;
@@ -934,6 +977,7 @@ body {
     margin: 0;
 }
 
+/* Application button styling */
 .apply-button {
     background: #e2001a;
     color: white;
@@ -955,7 +999,7 @@ body {
     box-shadow: 0 8px 20px rgba(226, 0, 26, 0.3);
 }
 
-/* BT Leasing Card with clipped car image */
+/* BT Leasing card - special styling with car image */
 .bt-leasing-card {
     position: relative;
     overflow: hidden;
@@ -965,7 +1009,7 @@ body {
     padding-top: 15px;
 }
 
-/* BT Leasing card with standardized spacing */
+/* BT Leasing card spacing adjustments */
 .bt-leasing-card .partner-logo {
     margin-bottom: 25px;
 }
@@ -979,6 +1023,7 @@ body {
     margin-bottom: 5px;
 }
 
+/* Car image extending outside the card */
 .car-image-container {
     position: absolute;
     bottom: -45px;

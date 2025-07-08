@@ -332,17 +332,20 @@ if (file_exists($css_file_path)) {
     </div>
 </section>
 
-<!--partners-section -->
+<!-- Partners Section -->
 <section class="partners-section">
     <div class="container">
         <div class="partners-content">
+            <!-- Left side: Text content -->
             <div class="partners-text">
                 <h2 class="partners-title"><?php echo get_translation('partners_title', $current_lang, $lng); ?></h2>
                 <p class="partners-subtitle"><?php echo get_translation('partners_subtitle', $current_lang, $lng); ?></p>
                 <button class="apply-button"><?php echo get_translation('submit_application', $current_lang, $lng); ?></button>
             </div>
+            
+            <!-- Center: Partners grid -->
             <div class="partners-grid">
-                <!-- Partner 1: Column 1, Row 1 -->
+                <!-- Top row: Microinvest, Maib Leasing, BT Leasing -->
                 <div class="partner-card partner-1">
                     <div class="partner-logo microinvest-logo">
                         <img src="/content/site/page/new_pages/credit/credit-media/microinvest.png" alt="Microinvest">
@@ -353,7 +356,6 @@ if (file_exists($css_file_path)) {
                     </div>
                 </div>
                 
-                <!-- Partner 2: Column 2, Row 1 -->
                 <div class="partner-card partner-2">
                     <div class="partner-logo maib-logo">
                         <img src="/content/site/page/new_pages/credit/credit-media/maib.png" alt="Maib Leasing">
@@ -364,10 +366,9 @@ if (file_exists($css_file_path)) {
                     </div>
                 </div>
                 
-                <!-- Partner 3: Column 1, Row 2 -->
                 <div class="partner-card partner-3">
-                    <div class="partner-logo victoria-logo">
-                        <img src="/content/site/page/new_pages/credit/credit-media/victoria.png" alt="BT Leasing">
+                    <div class="partner-logo">
+                        <img src="/content/site/page/new_pages/credit/credit-media/bt.png" alt="BT Leasing">
                     </div>
                     <div class="partner-info">
                         <h3 class="partner-name">BT Leasing</h3>
@@ -375,7 +376,7 @@ if (file_exists($css_file_path)) {
                     </div>
                 </div>
                 
-                <!-- Partner 4: Column 2, Row 2 -->
+                <!-- Bottom row: Primero, Victoriabank -->
                 <div class="partner-card partner-4">
                     <div class="partner-logo">
                         <img src="/content/site/page/new_pages/credit/credit-media/primero.png" alt="Primero">
@@ -386,17 +387,20 @@ if (file_exists($css_file_path)) {
                     </div>
                 </div>
                 
-                <!-- Partner 5: BT Leasing - Column 3, Spans Both Rows -->
-                <div class="partner-card partner-5 bt-leasing-card">
-                    <div class="partner-logo">
-                        <img src="/content/site/page/new_pages/credit/credit-media/bt.png" alt="BT Leasing">
+                <div class="partner-card partner-5">
+                    <div class="partner-logo victoria-logo">
+                        <img src="/content/site/page/new_pages/credit/credit-media/victoria.png" alt="Victoriabank">
                     </div>
                     <div class="partner-info">
-                        <h3 class="partner-name">BT Leasing</h3>
-                        <p class="partner-desc"><?php echo get_translation('bt_leasing_desc', $current_lang, $lng); ?></p>
+                        <h3 class="partner-name">Victoriabank</h3>
+                        <p class="partner-desc"><?php echo get_translation('victoriabank_desc', $current_lang, $lng); ?></p>
                     </div>
-                    <div class="car-image-container">
-                        <img src="/content/site/page/new_pages/credit/credit-media/car-1.avif" alt="Car" class="extending-car">
+                </div>
+                
+                <!-- White car image on the right -->
+                <div class="partner-card partner-6 white-car-card">
+                    <div class="white-car-logo">
+                        <img src="/content/site/page/new_pages/credit/credit-media/car__red_credit.png" alt="Car">
                     </div>
                 </div>
             </div>
