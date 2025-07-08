@@ -115,9 +115,7 @@ if (file_exists($css_file_path)) {
                     <!-- Item 1 - Large card spanning 2 rows -->
                     <div class="feature-card item1">
                         <div class="feature-icon">
-                            <svg width="64" height="64" viewBox="0 0 48 48" fill="none">
-                                <path d="M24 4L6 10v12c0 11.11 7.67 21.47 18 24 10.33-2.53 18-12.89 18-24V10L24 4z" fill="#e2001a"/>
-                            </svg>
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/1-1.svg" alt="Feature Icon" width="64" height="64">
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('personal_feature1_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('personal_feature1_desc', $current_lang, $lng); ?></p>
