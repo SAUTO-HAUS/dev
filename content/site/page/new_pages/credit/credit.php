@@ -366,13 +366,17 @@ if (file_exists($css_file_path)) {
                     </div>
                 </div>
                 
-                <div class="partner-card partner-3">
-                    <div class="partner-logo">
+                <!-- BT Leasing with car image - top row right, spans both rows -->
+                <div class="partner-card partner-3 bt-leasing-card">
+                    <div class="partner-logo bt-logo">
                         <img src="/content/site/page/new_pages/credit/credit-media/bt.png" alt="BT Leasing">
                     </div>
                     <div class="partner-info">
                         <h3 class="partner-name">BT Leasing</h3>
                         <p class="partner-desc"><?php echo get_translation('bt_leasing_desc', $current_lang, $lng); ?></p>
+                    </div>
+                    <div class="car-image-container">
+                        <img src="/content/site/page/new_pages/credit/credit-media/car-1.avif" alt="Car" class="extending-car">
                     </div>
                 </div>
                 
