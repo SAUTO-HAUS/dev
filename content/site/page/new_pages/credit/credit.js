@@ -24,13 +24,13 @@ $(document).ready(function() {
         step: 500,
         onStart: function(data) {
             console.log('Slider suma onStart:', data.from);
-            $input_suma_creditului.text("€ " + formatMoney(data.from));
+            $input_suma_creditului.html("<span style='font-size: 1.2em; font-weight: bold;'>" + formatMoney(data.from) + "</span> €");
         },
         onChange: function (data) {
             console.log('Slider suma onChange:', data.from);
 
-            $input_suma_creditului.text("€ " + formatMoney(data.from));
-            console.log('Updated suma text to:', "€ " + formatMoney(data.from));
+            $input_suma_creditului.html("<span style='font-size: 1.2em; font-weight: bold;'>" + formatMoney(data.from) + "</span> €");
+            console.log('Updated suma text to:', formatMoney(data.from) + " €");
             clearTimeout(updateRateTimeout);
             updateRateTimeout = setTimeout(updateRate, 300);
         }
@@ -50,20 +50,22 @@ $(document).ready(function() {
         step: 1,
         onStart: function(data) {
             console.log('Slider termen onStart:', data.from);
-            // Actualizează textul span-ului cu valoarea inițială
-            $input_termen_creditului.text(data.from + " luni");
+            // Get the translated months text from the data attribute
+            var monthsText = $input_termen_creditului.data('months') || 'luni';
+            // Update the span text with larger number and normal text
+            $input_termen_creditului.html("<span style='font-size: 1.2em; font-weight: bold;'>" + data.from + "</span> " + monthsText);
         },
         onChange: function (data) {
             console.log('Slider termen onChange:', data.from);
-            // Actualizează textul span-ului când se mișcă slider-ul
-            $input_termen_creditului.text(data.from + " luni");
-            console.log('Updated termen text to:', data.from + " luni");
+            // Get the translated months text from the data attribute
+            var monthsText = $input_termen_creditului.data('months') || 'luni';
+            // Update the span text when the slider moves with larger number and normal text
+            $input_termen_creditului.html("<span style='font-size: 1.2em; font-weight: bold;'>" + data.from + "</span> " + monthsText);
+            console.log('Updated termen text to:', data.from + " " + monthsText);
             clearTimeout(updateRateTimeout);
             updateRateTimeout = setTimeout(updateRate, 300);
         }
     }).data("ionRangeSlider");
-    
-    // Nu mai avem nevoie de evenimente de input manual deoarece folosim span-uri, nu input-uri
     
     // Update Rate function - adaptat pentru a citi din slider-uri direct
     function updateRate() {
@@ -111,8 +113,8 @@ $(document).ready(function() {
         var fromText = $("#payment-display").attr('data-from') || 'от';
         var toText = $("#payment-display").attr('data-to') || 'до';
         
-        // Display results in localized format
-        $("#payment-display").text(fromText + " " + Math.floor(minPayment) + " " + toText + " " + Math.floor(maxPayment) + " €");
+        // Display results in localized format with smaller "from" and "to" text
+        $("#payment-display").html("<span style='font-size: 0.85em;'>" + fromText + "</span> " + Math.floor(minPayment) + " <span style='font-size: 0.85em;'>" + toText + "</span> " + Math.floor(maxPayment) + " €");
     }
     
     // Calculate initial payments on page load

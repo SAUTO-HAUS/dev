@@ -39,9 +39,9 @@ $lng_credit_page = array(
             'en' => 'Down payment'
         ),
         'calc_perioada' => array(
-            'ro' => 'Perioada de rambursare',
-            'ru' => 'Период погашения',
-            'en' => 'Repayment period'
+            'ro' => 'Termenul creditului',
+            'ru' => 'Срок кредита',
+            'en' => 'Loan term'
         ),
         'calc_luni' => array(
             'ro' => 'luni',

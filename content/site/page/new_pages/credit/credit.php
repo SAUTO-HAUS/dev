@@ -37,27 +37,27 @@ if (file_exists($css_file_path)) {
                 <div class="calculator-content">
                             <div class="calculator-field">
                                 <div class="field-header" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; width: 100%;">
-                                    <label class="field-label"><?php echo get_translation('calc_suma', $current_lang, $lng); ?></label>
-                                    <span class="field-value" id="view_suma_creditului" style="font-weight: bold;">€ 25 000</span>
+                                    <label class="field-label" style="color:rgb(95, 95, 95);"><?php echo get_translation('calc_suma', $current_lang, $lng); ?></label>
+                                    <span class="field-value" id="view_suma_creditului" style="font-weight: bold;"><span style='font-size: 1em; font-weight: bold;'>25 000</span> €</span>
                                 </div>
                                 <input type="text" id="suma-creditului">
                                 <div class="slider-labels">
-                                    <span style="margin-top:-5px;">€ 2 000</span>
-                                    <span style="padding-right:20px; margin-top:-5px;">€ 25 000</span>
-                                    <span style="margin-top:-5px;">€ 50 000</span>
+                                    <span style="margin-top:-5px;">2 000 €</span>
+                                    <span style="padding-right:20px; margin-top:-5px;">25 000 €</span>
+                                    <span style="margin-top:-5px;">50 000 €</span>
                                 </div>
                             </div>
                             
                             <div class="calculator-field">
                                 <div class="field-header" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; width: 100%;">
-                                    <label class="field-label"><?php echo get_translation('calc_perioada', $current_lang, $lng); ?></label>
-                                    <span class="field-value" id="view_termen_creditului" style="font-weight: bold;">30 <?php echo get_translation('calc_luni', $current_lang, $lng); ?></span>
+                                    <label class="field-label" style="color:rgb(95, 95, 95);"><?php echo get_translation('calc_perioada', $current_lang, $lng); ?></label>
+                                    <span class="field-value" id="view_termen_creditului" style="font-weight: bold;" data-months="<?php echo get_translation('calc_luni', $current_lang, $lng); ?>"><span style='font-size: 1em; font-weight: bold;'>30</span> <?php echo get_translation('calc_luni', $current_lang, $lng); ?></span>
                                 </div>
                                 <input type="text" id="termen-creditului">
                                 <div class="slider-labels">
-                                    <span style="margin-top:-5px;">6 <?php echo get_translation('calc_luni', $current_lang, $lng); ?></span>
-                                    <span style="padding-right:50px; margin-top:-5px;">30 <?php echo get_translation('calc_luni', $current_lang, $lng); ?></span>
-                                    <span style="margin-top:-5px;">60 <?php echo get_translation('calc_luni', $current_lang, $lng); ?></span>
+                                    <span style="margin-top:-5px;" class="months-label" data-months="<?php echo get_translation('calc_luni', $current_lang, $lng); ?>">6 <?php echo get_translation('calc_luni', $current_lang, $lng); ?></span>
+                                    <span style="padding-right:50px; margin-top:-5px;" class="months-label" data-months="<?php echo get_translation('calc_luni', $current_lang, $lng); ?>">30 <?php echo get_translation('calc_luni', $current_lang, $lng); ?></span>
+                                    <span style="margin-top:-5px;" class="months-label" data-months="<?php echo get_translation('calc_luni', $current_lang, $lng); ?>">60 <?php echo get_translation('calc_luni', $current_lang, $lng); ?></span>
                                 </div>
                             </div>
                             
@@ -66,7 +66,7 @@ if (file_exists($css_file_path)) {
                                 <span class="result-value" id="payment-display" 
                                       data-from="<?php echo get_translation('calc_title_plata', $current_lang, $lng); ?>" 
                                       data-to="<?php echo get_translation('calc_title_plata2', $current_lang, $lng); ?>">
-                                    <?php echo get_translation('calc_title_plata', $current_lang, $lng); ?> 175 <?php echo get_translation('calc_title_plata2', $current_lang, $lng); ?> 215 €
+                                    <span style="font-size: 0.85em;"><?php echo get_translation('calc_title_plata', $current_lang, $lng); ?></span> 175 <span style="font-size: 0.85em;"><?php echo get_translation('calc_title_plata2', $current_lang, $lng); ?></span> 215 €
                                 </span>
                             </div>
                         </div>
