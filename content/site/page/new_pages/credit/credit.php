@@ -378,8 +378,12 @@ if (file_exists($js_file_path)) {
             
             <!-- Navigation under title -->
             <div class="comments-navigation">
-                <button class="nav-btn" onclick="previousComment()">‹</button>
-                <button class="nav-btn" onclick="nextComment()">›</button>
+                <button class="nav-btn" onclick="previousComment()">
+                    <img src="/content/site/page/new_pages/credit/credit-media/avatars/left-circle.svg" alt="Previous" width="40" height="40">
+                </button>
+                <button class="nav-btn" onclick="nextComment()">
+                    <img src="/content/site/page/new_pages/credit/credit-media/avatars/right-circle.svg" alt="Next" width="40" height="40">
+                </button>
             </div>
         </div>
         
