@@ -852,7 +852,18 @@ body {
     
     .leasing-grid {
         grid-template-columns: 1fr;
+        grid-template-rows: repeat(5, auto);
+        height: auto;
         gap: 20px;
+    }
+    
+    .leasing-grid .item1,
+    .leasing-grid .item2,
+    .leasing-grid .item3,
+    .leasing-grid .item4,
+    .leasing-grid .item5 {
+        grid-column: 1;
+        grid-row: auto;
     }
     
     /* Hero Section Mobile Styles */
