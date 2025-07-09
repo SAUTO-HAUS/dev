@@ -1325,11 +1325,12 @@ body {
 
 .comments-section .container {
     max-width: 1200px;
-    margin: 0;
+    margin: 0 auto;
     padding: 0 20px;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 40px;
 }
 
 
@@ -1338,36 +1339,40 @@ body {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    justify-content: center;
     margin-bottom: 20px;
+    flex-shrink: 0;
 }
 
 .comments-title {
-    text-align: center;
+    text-align: left;
     font-size: 1.25rem; /* Half the original size */
     font-weight: 700;
     color: #2c3e50;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     position: relative;
 }
 
 .comments-slider {
     position: relative;
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 80%;
+    margin: 20px 0 0 0;
     overflow: hidden;
     display: flex;
     gap: 15px;
+    min-width: 0;
 }
 
 .comment-card {
     display: none;
     background: #ffffff;
-    padding: 40px 30px;
+    padding: 30px 25px;
     border-radius: 20px;
     position: relative;
     transition: all 0.5s ease;
-    width: 500px;
+    width: 70%;
     height: 300px;
+    min-width: 400px;
 }
 
 .comment-card.active {
@@ -1387,13 +1392,13 @@ body {
 }
 
 .comment-content {
-    margin-bottom: 30px;
+    margin-bottom: 20px;
     position: relative;
     
 }
 
 .quote-mark {
-    font-size: 6rem;
+    font-size: 4rem;
     color: #e2001a;
     font-family: serif;
     position: absolute;
@@ -1404,8 +1409,8 @@ body {
 }
 
 .comment-text {
-    font-size: 1.2rem;
-    line-height: 1.8;
+    font-size: 1rem;
+    line-height: 1.6;
     color: #444;
     font-style: italic;
     margin-left: 30px;
@@ -1438,14 +1443,14 @@ body {
 }
 
 .author-name {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
     color: #2c3e50;
     margin: 0 0 5px 0;
 }
 
 .author-location {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: #6c757d;
     margin: 0;
 }
@@ -1462,11 +1467,11 @@ body {
 
 .comments-navigation {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     gap: 15px;
     margin-top: 0;
-    margin-bottom: 60px;
+    margin-bottom: 0;
 }
 
 /* Navigation buttons with perfectly centered arrows */
@@ -1504,18 +1509,6 @@ body {
     transform: scale(1.1);
 }
 
-
-.nav-btn span {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    width: 100%;
-    transform: translateY(-1px);
-}
-
-
-
 /* Mobile Responsive - Partners Section */
 @media (max-width: 768px) {
     .partners-section {
@@ -1538,6 +1531,18 @@ body {
         margin-bottom: 0;
     }
     
+    .comment-card {
+        display: none;
+        background: #ffffff;
+        padding: 30px 25px;
+        border-radius: 20px;
+        position: relative;
+        transition: all 0.5s ease;
+        width: 70%;
+        height: 300px;
+        min-width: 300px;
+    }
+
     /* First: H2 Title */
     .partners-title {
         font-size: 24px;
@@ -1545,6 +1550,8 @@ body {
         margin-bottom: 15px;
         order: 1;
     }
+
+
     
     /* Second: P Subtitle */
     .partners-subtitle {
