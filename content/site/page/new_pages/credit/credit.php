@@ -116,7 +116,7 @@ if (file_exists($js_file_path)) {
                     <!-- Item 1 - Large card spanning 2 rows -->
                     <div class="feature-card item1">
                         <div class="feature-icon">
-                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icons-category.svg" alt="Feature Icon" width="64" height="64">
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icon-category.svg" alt="Feature Icon" width="64" height="64">
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('personal_feature1_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('personal_feature1_desc', $current_lang, $lng); ?></p>
@@ -125,9 +125,7 @@ if (file_exists($js_file_path)) {
                     <!-- Item 2 -->
                     <div class="feature-card item2">
                         <div class="feature-icon">
-                        <div class="feature-icon">
-                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icons-category.svg" alt="Feature Icon" width="64" height="64">
-                        </div>
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icon-category.svg" alt="Feature Icon" width="64" height="64">
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('personal_feature2_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('personal_feature2_desc', $current_lang, $lng); ?></p>
@@ -136,9 +134,7 @@ if (file_exists($js_file_path)) {
                     <!-- Item 3 -->
                     <div class="feature-card item3">
                         <div class="feature-icon">
-                        <div class="feature-icon">
-                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icons-category.svg" alt="Feature Icon" width="64" height="64">
-                        </div>
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icon-category.svg" alt="Feature Icon" width="64" height="64">
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('personal_feature3_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('personal_feature3_desc', $current_lang, $lng); ?></p>
@@ -147,9 +143,7 @@ if (file_exists($js_file_path)) {
                     <!-- Item 4 -->
                     <div class="feature-card item4">
                         <div class="feature-icon">
-                        <div class="feature-icon">
-                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icons-category.svg" alt="Feature Icon" width="64" height="64">
-                        </div>
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icon-category.svg" alt="Feature Icon" width="64" height="64">
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('personal_feature4_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('personal_feature4_desc', $current_lang, $lng); ?></p>
@@ -158,9 +152,7 @@ if (file_exists($js_file_path)) {
                     <!-- Item 5 -->
                     <div class="feature-card item5">
                         <div class="feature-icon">
-                        <div class="feature-icon">
-                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icons-category.svg" alt="Feature Icon" width="64" height="64">
-                        </div>
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icon-category.svg" alt="Feature Icon" width="64" height="64">
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('personal_feature5_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('personal_feature5_desc', $current_lang, $lng); ?></p>
@@ -169,9 +161,7 @@ if (file_exists($js_file_path)) {
                     <!-- Item 6 -->
                     <div class="feature-card item6">
                         <div class="feature-icon">
-                        <div class="feature-icon">
-                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icons-category.svg" alt="Feature Icon" width="64" height="64">
-                        </div>
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icon-category.svg" alt="Feature Icon" width="64" height="64">
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('personal_feature6_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('personal_feature6_desc', $current_lang, $lng); ?></p>
@@ -180,9 +170,7 @@ if (file_exists($js_file_path)) {
                     <!-- Item 7 -->
                     <div class="feature-card item7">
                         <div class="feature-icon">
-                        <div class="feature-icon">
-                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icons-category.svg" alt="Feature Icon" width="64" height="64">
-                        </div>
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icon-category.svg" alt="Feature Icon" width="64" height="64">
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('personal_feature7_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('personal_feature7_desc', $current_lang, $lng); ?></p>
@@ -199,9 +187,7 @@ if (file_exists($js_file_path)) {
                     <!-- Item 1 - Large card spanning 2 rows -->
                     <div class="feature-card item1">
                         <div class="feature-icon">
-                        <div class="feature-icon">
-                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icons-category.svg" alt="Feature Icon" width="64" height="64">
-                        </div>
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icon-category.svg" alt="Feature Icon" width="64" height="64">
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('business_feature1_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('business_feature1_desc', $current_lang, $lng); ?></p>
@@ -210,9 +196,7 @@ if (file_exists($js_file_path)) {
                     <!-- Item 2 -->
                     <div class="feature-card item2">
                         <div class="feature-icon">
-                        <div class="feature-icon">
-                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icons-category.svg" alt="Feature Icon" width="64" height="64">
-                        </div>
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icon-category.svg" alt="Feature Icon" width="64" height="64">
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('business_feature2_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('business_feature2_desc', $current_lang, $lng); ?></p>
@@ -221,9 +205,7 @@ if (file_exists($js_file_path)) {
                     <!-- Item 3 -->
                     <div class="feature-card item3">
                         <div class="feature-icon">
-                        <div class="feature-icon">
-                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icons-category.svg" alt="Feature Icon" width="64" height="64">
-                        </div>
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icon-category.svg" alt="Feature Icon" width="64" height="64">
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('business_feature3_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('business_feature3_desc', $current_lang, $lng); ?></p>
@@ -232,9 +214,7 @@ if (file_exists($js_file_path)) {
                     <!-- Item 4 -->
                     <div class="feature-card item4">
                         <div class="feature-icon">
-                        <div class="feature-icon">
-                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icons-category.svg" alt="Feature Icon" width="64" height="64">
-                        </div>
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icon-category.svg" alt="Feature Icon" width="64" height="64">
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('business_feature4_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('business_feature4_desc', $current_lang, $lng); ?></p>
@@ -243,9 +223,7 @@ if (file_exists($js_file_path)) {
                     <!-- Item 5 -->
                     <div class="feature-card item5">
                         <div class="feature-icon">
-                        <div class="feature-icon">
-                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icons-category.svg" alt="Feature Icon" width="64" height="64">
-                        </div>
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icon-category.svg" alt="Feature Icon" width="64" height="64">
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('business_feature5_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('business_feature5_desc', $current_lang, $lng); ?></p>
@@ -254,9 +232,7 @@ if (file_exists($js_file_path)) {
                     <!-- Item 6 - Wide card spanning 2 columns -->
                     <div class="feature-card item6">
                         <div class="feature-icon">
-                        <div class="feature-icon">
-                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icons-category.svg" alt="Feature Icon" width="64" height="64">
-                        </div>
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icon-category.svg" alt="Feature Icon" width="64" height="64">
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('business_feature6_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('business_feature6_desc', $current_lang, $lng); ?></p>
@@ -273,9 +249,7 @@ if (file_exists($js_file_path)) {
                     <!-- Item 1 - Large card spanning 2 rows -->
                     <div class="feature-card item1">
                         <div class="feature-icon">
-                        <div class="feature-icon">
-                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icons-category.svg" alt="Feature Icon" width="64" height="64">
-                        </div>
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icon-category.svg" alt="Feature Icon" width="64" height="64">
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('leasing_feature1_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('leasing_feature1_desc', $current_lang, $lng); ?></p>
@@ -284,9 +258,7 @@ if (file_exists($js_file_path)) {
                     <!-- Item 2 -->
                     <div class="feature-card item2">
                         <div class="feature-icon">
-                        <div class="feature-icon">
-                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icons-category.svg" alt="Feature Icon" width="64" height="64">
-                        </div>
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icon-category.svg" alt="Feature Icon" width="64" height="64">
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('leasing_feature2_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('leasing_feature2_desc', $current_lang, $lng); ?></p>
@@ -295,9 +267,7 @@ if (file_exists($js_file_path)) {
                     <!-- Item 3 -->
                     <div class="feature-card item3">
                         <div class="feature-icon">
-                        <div class="feature-icon">
-                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icons-category.svg" alt="Feature Icon" width="64" height="64">
-                        </div>
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icon-category.svg" alt="Feature Icon" width="64" height="64">
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('leasing_feature3_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('leasing_feature3_desc', $current_lang, $lng); ?></p>
@@ -306,9 +276,7 @@ if (file_exists($js_file_path)) {
                     <!-- Item 4 -->
                     <div class="feature-card item4">
                         <div class="feature-icon">
-                        <div class="feature-icon">
-                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icons-category.svg" alt="Feature Icon" width="64" height="64">
-                        </div>
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icon-category.svg" alt="Feature Icon" width="64" height="64">
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('leasing_feature4_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('leasing_feature4_desc', $current_lang, $lng); ?></p>
@@ -317,9 +285,7 @@ if (file_exists($js_file_path)) {
                     <!-- Item 5 -->
                     <div class="feature-card item5">
                         <div class="feature-icon">
-                        <div class="feature-icon">
-                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icons-category.svg" alt="Feature Icon" width="64" height="64">
-                        </div>
+                            <img src="/content/site/page/new_pages/credit/credit-media/icons-category/ex-icon-category.svg" alt="Feature Icon" width="64" height="64">
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('leasing_feature5_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('leasing_feature5_desc', $current_lang, $lng); ?></p>
