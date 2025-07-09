@@ -295,6 +295,7 @@ if (file_exists($js_file_path)) {
             </div>
         </div>
     </div>
+    <button class="apply-button-categories"><?php echo get_translation('submit_application', $current_lang, $lng); ?></button>
 </section>
 
 <!-- Partners Section -->
