@@ -6,13 +6,13 @@ if ( (isset($t_mp[2])&&$t_mp[2]=='dev_tools') && (isset($t_mp[3])&&$t_mp[3]=='ap
 elseif ( isset($_POST['qSd4b_print']) ){ $_COOKIE['lang'] = 'ro'; }
 elseif( !isset($_COOKIE['lang']) ) {
 	if ( in_array($t_mp[1], $lang_arr, true) ){
-		setcookie('lang', $t_mp[1], $time, '/', $domain_name); $_COOKIE['lang'] = $t_mp[1];
+		setcookie('lang', $t_mp[1], $time, '/', '.'.$domain_name); $_COOKIE['lang'] = $t_mp[1];
 	}else{
-		setcookie('lang', $default_lang, $time, '/', $domain_name); $_COOKIE['lang'] = $default_lang;
+		setcookie('lang', $default_lang, $time, '/', '.'.$domain_name); $_COOKIE['lang'] = $default_lang;
 	}
 }
 elseif ( ( isset($_COOKIE['lang']) && $_COOKIE['lang']!=$t_mp[1] ) && in_array($t_mp[1], $lang_arr, true) ){
-	setcookie('lang', $t_mp[1], $time, '/', $domain_name); $_COOKIE['lang'] = $t_mp[1];
+	setcookie('lang', $t_mp[1], $time, '/', '.'.$domain_name); $_COOKIE['lang'] = $t_mp[1];
 }
 
 $language = array(
