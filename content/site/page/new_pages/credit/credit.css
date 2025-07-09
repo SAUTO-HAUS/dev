@@ -504,16 +504,19 @@ body {
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    align-self: flex-start;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    display: block;
+    margin: 30px auto 0 auto;
+    text-align: center;
 }
 
 .apply-button-categories:hover {
     background: #c40017;
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(226, 0, 26, 0.3);
-
+}
+}
 
 .tab-button:hover {
     color: #e2001a;
