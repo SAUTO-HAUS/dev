@@ -54,8 +54,20 @@ RewriteCond %{HTTP_HOST} !^www\. [NC]
 RewriteRule .* https://www\.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 Header set Strict-Transport-Security "max-age=31536000" env=HTTPS
 
-<FilesMatch "\.(ico|pdf|jpg|jpeg|png|webp|svg|gif|html|htm|xml|txt|xsl|css|js|ttf)$">
-Header set Cache-Control "max-age=31536050"
+# Cache settings optimized for development and production
+# Images and fonts can have longer cache (1 week)
+<FilesMatch "\.(ico|pdf|jpg|jpeg|png|webp|svg|gif|ttf|woff|woff2)$">
+Header set Cache-Control "max-age=604800"
+</FilesMatch>
+
+# CSS and JS files have shorter cache but rely on version parameters for cache busting
+<FilesMatch "\.(css|js)$">
+Header set Cache-Control "max-age=86400"
+</FilesMatch>
+
+# HTML files should not be cached to ensure dynamic content is fresh
+<FilesMatch "\.(html|htm|xml|txt|xsl)$">
+Header set Cache-Control "max-age=3600"
 </FilesMatch>
 
 # BEGIN cPanel-generated php ini directives, do not edit

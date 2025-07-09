@@ -4,28 +4,31 @@
 // Include language file
 include_once('credit_lang.php');
 
-// Include CSS inline to avoid path issues
+// Set up paths with cache busting
 $css_file_path = __DIR__ . '/credit.css';
+$js_file_path = __DIR__ . '/credit.js';
+$page_css = '/content/site/page/new_pages/credit/credit.css';
 $page_js = '/content/site/page/new_pages/credit/credit.js';
-?>
 
-<!-- Include Ion Range Slider CSS -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/css/ion.rangeSlider.min.css">
-
-<!-- Include page-specific CSS inline -->
-<style>
-<?php
+// Add cache busting timestamp using the same format as main site
 if (file_exists($css_file_path)) {
-    echo file_get_contents($css_file_path);
-    echo "\n/* CSS successfully loaded from: $css_file_path */";
+    $css_version = '?d=' . date("GYimsd", filemtime($css_file_path));
 } else {
-    echo "/* ERROR: CSS file not found at: $css_file_path */";
+    $css_version = '?d=' . date("GYimsd", time());
+}
+
+if (file_exists($js_file_path)) {
+    $js_version = '?d=' . date("GYimsd", filemtime($js_file_path));
+} else {
+    $js_version = '?d=' . date("GYimsd", time());
 }
 ?>
-</style>
 
 <!-- Include Ion Range Slider CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/css/ion.rangeSlider.min.css">
+
+<!-- Include page-specific CSS with cache busting -->
+<link rel="stylesheet" type="text/css" href="<?php echo $page_css . $css_version; ?>">
 
 <!-- Hero Section - Full Width -->
 <section class="hero-section">
@@ -573,5 +576,5 @@ if (file_exists($css_file_path)) {
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/js/ion.rangeSlider.min.js"></script>
 
-<!-- Include page-specific JS -->
-<script src="<?php echo $page_js; ?>"></script>
+<!-- Include page-specific JS with cache busting -->
+<script src="<?php echo $page_js . $js_version; ?>"></script>
