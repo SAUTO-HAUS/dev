@@ -46,7 +46,6 @@ if (file_exists($js_file_path)) {
                                 <input type="text" id="suma-creditului">
                                 <div class="slider-labels">
                                     <span style="margin-top:-5px;">2 000 €</span>
-                                    <span style="padding-right:20px; margin-top:-5px;">25 000 €</span>
                                     <span style="margin-top:-5px;">50 000 €</span>
                                 </div>
                             </div>
@@ -59,7 +58,6 @@ if (file_exists($js_file_path)) {
                                 <input type="text" id="termen-creditului">
                                 <div class="slider-labels">
                                     <span style="margin-top:-5px;" class="months-label" data-months="<?php echo get_translation('calc_luni', $current_lang, $lng); ?>">6 <?php echo get_translation('calc_luni', $current_lang, $lng); ?></span>
-                                    <span style="padding-right:50px; margin-top:-5px;" class="months-label" data-months="<?php echo get_translation('calc_luni', $current_lang, $lng); ?>">30 <?php echo get_translation('calc_luni', $current_lang, $lng); ?></span>
                                     <span style="margin-top:-5px;" class="months-label" data-months="<?php echo get_translation('calc_luni', $current_lang, $lng); ?>">60 <?php echo get_translation('calc_luni', $current_lang, $lng); ?></span>
                                 </div>
                             </div>

@@ -125,40 +125,101 @@ $(document).ready(function() {
     // Calculate initial payments on page load
     calculatePayment();
     
-    // Tab switching functionality for credit categories - Simple approach
+    // Tab switching functionality for credit categories with mobile accordion
     $(document).on('click', '.tab-button', function(e) {
         e.preventDefault();
         
-        // Get the target category from data attribute
         var targetCategory = $(this).attr('data-category');
+        var isMobile = window.innerWidth <= 768;
         
         if (!targetCategory) {
             console.log('No data-category found');
             return;
         }
         
-        // Remove active class from all tabs
-        $('.tab-button').removeClass('active');
-        
-        // Add active class to clicked tab
-        $(this).addClass('active');
-        
-        // Hide all category grids
-        $('.category-grid').removeClass('active');
-        
-        // Show the target category grid
-        $('#' + targetCategory + '-content').addClass('active');
+        if (isMobile) {
+            // Mobile accordion behavior
+            var clickedTab = $(this);
+            var isCurrentlyActive = clickedTab.hasClass('active');
+            
+            if (isCurrentlyActive) {
+                // Close the currently open accordion
+                clickedTab.removeClass('active');
+                clickedTab.next('.mobile-category-content').remove();
+            } else {
+                // Close any open accordion
+                $('.tab-button').removeClass('active');
+                $('.mobile-category-content').remove();
+                
+                // Open the clicked accordion
+                clickedTab.addClass('active');
+                
+                // Clone the content and insert after clicked tab
+                var contentToClone = $('#' + targetCategory + '-content').clone();
+                contentToClone.removeClass('category-grid active');
+                contentToClone.addClass('mobile-category-content');
+                
+                // Remove the duplicate title (keep only description and feature cards)
+                contentToClone.find('.category-title').hide();
+                
+                contentToClone.css({
+                    'display': 'block',
+                    'padding': '20px',
+                    'background-color': 'white',
+                    'border-bottom': '1px solid #e0e0e0'
+                });
+                
+                clickedTab.after(contentToClone);
+            }
+        } else {
+            // Desktop tab behavior
+            $('.tab-button').removeClass('active');
+            $(this).addClass('active');
+            $('.category-grid').removeClass('active');
+            $('#' + targetCategory + '-content').addClass('active');
+        }
         
         console.log('Tab switched to:', targetCategory);
     });
     
-    // Make sure only first tab is active on page load
-    setTimeout(function() {
-        $('.category-grid').removeClass('active');
-        $('#personal-content').addClass('active');
-        $('.tab-button').removeClass('active');
-        $('.tab-button[data-category="personal"]').addClass('active');
-    }, 100);
+    // Initialize categories based on screen size
+    function initializeCategories() {
+        var isMobile = window.innerWidth <= 768;
+        
+        if (isMobile) {
+            // Mobile: Close all accordions - no categories open initially
+            $('.tab-button').removeClass('active');
+            $('.category-grid').removeClass('active');
+            $('.mobile-category-content').remove();
+        } else {
+            // Desktop: Show first tab as active
+            $('.mobile-category-content').remove();
+            $('.category-grid').removeClass('active');
+            $('#personal-content').addClass('active');
+            $('.tab-button').removeClass('active');
+            $('.tab-button[data-category="personal"]').addClass('active');
+        }
+    }
+    
+    // Initialize on page load
+    setTimeout(initializeCategories, 100);
+    
+    // Store initial window width to detect real resize
+    var lastWindowWidth = window.innerWidth;
+    var resizeTimeout;
+    
+    // Reinitialize on window resize with debounce and width check
+    $(window).on('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(function() {
+            var currentWidth = window.innerWidth;
+            // Only reinitialize if width actually changed (not just scroll)
+            if (Math.abs(currentWidth - lastWindowWidth) > 50) {
+                lastWindowWidth = currentWidth;
+                initializeCategories();
+            }
+        }, 250);
+    });
 });
 
 // Initial setup - removed showCategory call as function doesn't exist

@@ -100,9 +100,9 @@ $lng_credit_page = array(
         
         // Comments Section
         'comments_title' => array(
-            'ro' => 'Poveștile clienților noștri',
-            'ru' => 'Истории наших клиентов',
-            'en' => 'Our customers stories'
+            'ro' => 'Poveștile clienților<br>noștri',
+            'ru' => 'Истории наших<br>клиентов',
+            'en' => 'Our customers<br>stories'
         ),
         
         // Comment 2 - Maria Cojocaru
