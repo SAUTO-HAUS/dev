@@ -1299,7 +1299,7 @@ body {
 /* Car image extending outside the card */
 .car-image-container {
     position: absolute;
-    bottom: -45px;
+    bottom: -90px;
     right: -200px;
     width: 450px;
     height: 350px;
@@ -1317,7 +1317,7 @@ body {
    6. COMMENTS SECTION
    ======================================== */
 .comments-section {
-    padding: 40px 0;
+    padding: 20px 0;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     position: relative;
     overflow: hidden;
@@ -1471,7 +1471,7 @@ body {
 
 /* Navigation buttons with perfectly centered arrows */
 .nav-btn {
-    background: #e0e0e0;
+    background: transparent;
     width: 60px;
     height: 60px;
     border-radius: 50%;
@@ -1615,8 +1615,8 @@ body {
     }
     
     .partner-card {
-        min-width: 280px;
-        width: 280px;
+        min-width: 220px;
+        width: 220px;
         flex-shrink: 0;
         height: 120px;
         margin-bottom: 0;
@@ -1638,7 +1638,7 @@ body {
     /* Centered content in cards */
     .partner-card .partner-logo {
         height: 40px;
-        margin-bottom: 8px;
+        margin-bottom: 30px;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -1677,50 +1677,120 @@ body {
 /* Mobile Responsive - Comments Section */
 @media (max-width: 768px) {
     .comments-section {
-        padding: 60px 0;
+        padding: 40px 0;
     }
-
+    
+    .comments-section .container {
+        flex-direction: column;
+        align-items: center;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    
+    .comments-header {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 30px;
+        order: 1; /* Title first */
+    }
+    
+    /* H2 Title - Only in container */
     .comments-title {
-        font-size: 1rem;
-        margin-bottom: 10px;
+        font-size: 1.5rem;
+        text-align: center;
+        margin-bottom: 20px;
+        color: #2c3e50;
+        font-weight: 700;
+        width: 100%;
+        order: 1;
     }
-
+    
+    /* Navigation buttons - Move to bottom on mobile */
+    .comments-navigation {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        margin-top: 30px;
+        margin-bottom: 0;
+        width: 100%;
+        order: 3; /* Buttons last */
+    }
+    
+    /* Comments slider - Middle position */
     .comments-slider {
+        order: 2; /* Comments in middle */
+    }
+    
+    .nav-btn {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+    
+    .nav-btn:hover {
+        background: #e2001a;
+        transform: scale(1.05);
+    }
+    
+    .nav-btn img {
+        width: 60px;
+        height: 60px;
+    }
+    
+    /* Comment cards - Column layout - Show only one at a time */
+    .comments-slider {
+        width: 100%;
+        max-width: 100%;
+        display: flex;
         flex-direction: column;
         gap: 20px;
-        max-width: 100%;
     }
-
+    
+    /* Hide inactive comments on mobile - show only one */
+    .comment-card:not(.active) {
+        display: none;
+    }
+    
     .comment-card {
-        padding: 25px 20px;
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        padding: 20px;
         margin: 0;
+        box-sizing: border-box;
     }
-
+    
     .comment-text {
         font-size: 1rem;
-        margin-left: 15px;
+        line-height: 1.6;
+        margin-left: 10px;
     }
-
+    
     .quote-mark {
-        font-size: 2.5rem;
-        left: -5px;
-        top: -15px;
+        font-size: 2rem;
+        bottom: 40px;
+        right: 5px;
     }
-
+    
     .author-avatar {
         width: 50px;
         height: 50px;
     }
-
-    .comments-navigation {
-        gap: 20px;
-        margin-bottom: 20px;
-    }
-
-    .nav-btn {
-        width: 45px;
-        height: 45px;
+    
+    .author-name {
         font-size: 1rem;
+    }
+    
+    .author-location {
+        font-size: 0.85rem;
     }
 }
 

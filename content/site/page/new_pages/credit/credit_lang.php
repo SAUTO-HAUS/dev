@@ -95,14 +95,14 @@ $lng_credit_page = array(
         'comment_1_text' => array(
             'ro' => 'Aici este comentariul lui Gheorghe Grozavu',
             'ru' => 'Здесь комментарий Георгия Грозаву',
-            'en' => 'Here is Gheorghe Grozavu\'s comment'
+            'en' => 'Here is Gheorghe Grozavu \'s comment'
         ),
         
         // Comments Section
         'comments_title' => array(
-            'ro' => 'Poveștile clienților<br>noștri',
-            'ru' => 'Истории наших<br>клиентов',
-            'en' => 'Our customers<br>stories'
+            'ro' => 'Poveștile clienților noștri',
+            'ru' => 'Истории наших клиентов',
+            'en' => 'Our customers stories'
         ),
         
         // Comment 2 - Maria Cojocaru
