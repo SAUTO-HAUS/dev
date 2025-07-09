@@ -516,7 +516,7 @@ body {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(226, 0, 26, 0.3);
 }
-}
+
 
 .tab-button:hover {
     color: #e2001a;
