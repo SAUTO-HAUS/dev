@@ -287,6 +287,76 @@ function previousComment() {
     showCommentPair(prevIndex);
 }
 
+// Initialize partners slider with infinite scroll
+$(document).ready(function() {
+    // Initialize partners slider position on mobile
+    if (window.innerWidth <= 768) {
+        setTimeout(function() {
+            const partnersGrid = document.querySelector('.partners-grid');
+            const originalCards = document.querySelectorAll('.partner-card');
+            
+            if (partnersGrid && originalCards.length > 0) {
+                console.log('Found partners grid and', originalCards.length, 'original partner cards');
+                
+                // Create infinite scroll by duplicating cards
+                const cardArray = Array.from(originalCards);
+                
+                // Clone cards and add them before (in reverse order) and after original cards
+                const clonedBefore = cardArray.slice().reverse().map(card => {
+                    const clone = card.cloneNode(true);
+                    clone.classList.add('clone-before');
+                    return clone;
+                });
+                
+                const clonedAfter = cardArray.map(card => {
+                    const clone = card.cloneNode(true);
+                    clone.classList.add('clone-after');
+                    return clone;
+                });
+                
+                // Insert cloned cards
+                clonedBefore.forEach(clone => {
+                    partnersGrid.insertBefore(clone, partnersGrid.firstChild);
+                });
+                
+                clonedAfter.forEach(clone => {
+                    partnersGrid.appendChild(clone);
+                });
+                
+                // Position to start at original first card (after the cloned-before cards)
+                const firstOriginalCard = partnersGrid.querySelector('.partner-card:not(.clone-before):not(.clone-after)');
+                if (firstOriginalCard) {
+                    firstOriginalCard.scrollIntoView({ inline: 'start', behavior: 'auto' });
+                }
+                
+                console.log('Infinite scroll setup complete with', partnersGrid.children.length, 'total cards');
+                
+                // Add infinite scroll listener
+                partnersGrid.addEventListener('scroll', function() {
+                    const scrollLeft = partnersGrid.scrollLeft;
+                    const scrollWidth = partnersGrid.scrollWidth;
+                    const clientWidth = partnersGrid.clientWidth;
+                    const cardWidth = 272; // 260px + 12px gap
+                    const originalCardsWidth = cardWidth * originalCards.length;
+                    
+                    // If scrolled to far right (past original cards), jump to beginning
+                    if (scrollLeft >= originalCardsWidth + (cardWidth * originalCards.length)) {
+                        partnersGrid.scrollLeft = originalCardsWidth;
+                    }
+                    
+                    // If scrolled to far left (before original cards), jump to end
+                    if (scrollLeft <= 0) {
+                        partnersGrid.scrollLeft = originalCardsWidth;
+                    }
+                });
+                
+            } else {
+                console.log('Partners grid or cards not found');
+            }
+        }, 500); // Wait for page to fully load
+    }
+});
+
 // Initialize comments slider when page loads
 $(document).ready(function() {
     // Show first pair of comments by default
