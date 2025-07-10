@@ -88,106 +88,99 @@ $lng_credit_page = array(
             'en' => 'Gheorghe Grozavu'
         ),
         'comment_1_location' => array(
-            'ro' => 'Betonist din Chokana',
+            'ro' => 'Betonist din Ciocana',
             'ru' => 'Бетонщик из Чоканы',
-            'en' => 'Concrete worker from Chokana'
+            'en' => 'Concrete worker from Ciacana'
         ),
         'comment_1_text' => array(
-            'ro' => 'Aici este comentariul lui Gheorghe Grozavu',
-            'ru' => 'Здесь комментарий Георгия Грозаву',
-            'en' => 'Here is Gheorghe Grozavu \'s comment'
+            'ro' => 'Gheorghe spunea mereu: „Fericirea nu stă într-o mașină. Ci în faptul că nu mergi la muncă cu trei schimburi de transport și cu rucsacul în spate.” La început a avut răbdare. Apoi a început să urască oamenii care se înghesuie fără rușine în autobuz. Într-o zi, cineva l-a întrebat: „Când îți iei mașină?” A răspuns: „Când viața se va întoarce spre mine cu fața, nu cu spatele.” Peste o săptămână a intrat în Sauto. Peste trei ore a ieșit cu mașină. Adică, a ieșit triumfător! Acum merge singur, cu muzică. Și cu fața întoarsă spre viață.',
+            'ru' => 'Георгий всегда говорил: «Счастье не в машине. А в том, что не нужно ездить на работу с тремя пересадками и с рюкзаком за спиной». Сначала он терпел. Потом стал ненавидеть людей, которые без стыда толпятся в автобусе. Однажды кто-то спросил: «Когда ты купишь машину?» Он ответил: «Когда жизнь повернётся ко мне лицом, а не спиной». Через неделю он пришёл в Sauto. Через три часа вышел на машине. То есть, вышел победителем! Теперь ездит один, с музыкой. И лицом к жизни.',
+            'en' => 'Gheorghe always said, “Happiness isn’t in a car. It’s in not having to commute with three transfers and a backpack on your back.” At first, he was patient. Then he started to hate people who shamelessly squeezed into the bus. One day, someone asked him: “When will you get a car?” He replied: “When life faces me, not turns its back.” A week later he came to Sauto. Three hours later, he left with a car. In other words, he left victorious! Now he goes alone, with music. And facing life.'
         ),
         
-        // Comments Section
-        'comments_title' => array(
-            'ro' => 'Poveștile clienților noștri',
-            'ru' => 'Истории наших клиентов',
-            'en' => 'Our customers stories'
-        ),
-        
-        // Comment 2 - Maria Cojocaru
+        // Comment 2 - Liudmila Postolache
         'comment_2_name' => array(
+            'ro' => 'Liudmila Postolache',
+            'ru' => 'Людмила Постолаче',
+            'en' => 'Liudmila Postolache'
+        ),
+        'comment_2_location' => array(
+            'ro' => 'Asistentă medicală, Buiucani',
+            'ru' => 'Медицинская сестра, Буюканы',
+            'en' => 'Medical nurse, Buiucan'
+        ),
+        'comment_2_text' => array(
+            'ro' => 'Liudmila mergea mereu pe jos. „E sănătos!” – spunea ea. Până în ziua în care a ajuns acasă și a uitat de ce a ieșit. În fiecare dimineață – policlinica în Botanica, apoi spitalul din Râșcani, apoi înapoi – totul pe jos. Într-o zi s-a urcat în autobuz și a auzit: „Următoarea oprire – răbdarea s-a terminat.” A venit la SAUTO Sales. A luat un credit. Acum zice: „Să mergi pe jos e bine. Dar cu mașina e mai bine pentru nervi.',
+            'ru' => 'Людмила всегда ходила пешком. «Это полезно!» – говорила она. Пока однажды не пришла домой и забыла, зачем вышла. Каждое утро – поликлиника в Ботанике, затем больница в Рыбнице, потом обратно – всё пешком. Однажды она села в автобус и услышала: «Следующая остановка – терпение закончилось». Она пришла в Sauto Sales, взяла кредит. Теперь говорит: «Ходить пешком – хорошо. Но на машине лучше для нервов».',
+            'en' => 'Liudmila always walked everywhere. “It’s healthy!” she said. Until the day she came home and forgot why she left. Every morning — clinic in Botanica, then hospital in Râșcani, then back — all on foot. One day she got on a bus and heard: “Next stop — patience is over.” She came to SAUTO Sales. Took a loan. Now she says: “Walking is good. But driving is better for your nerves.'
+        ),
+        
+        // Comment 3 - Ilia Bejenaru
+        'comment_3_name' => array(
+            'ro' => 'Ilia Bejenaru',
+            'ru' => 'Илья Беженару',
+            'en' => 'Ilia Bejenaru'
+        ),
+        'comment_3_location' => array(
+            'ro' => 'Paznic din Durlești',
+            'ru' => 'Охранник из Дурлешт',
+            'en' => 'Security guard from Durlești'
+        ),
+        'comment_3_text' => array(
+            'ro' => 'Ilia lucra în ture și credea că viața e ca un grafic de lucru: totul planificat, dar fără sens. Mergea la muncă cu schimburi de transport, gândindu-se: „E drumul spre nicăieri.” Într-o zi, trei microbuze au trecut pe lângă el fără să oprească. Atunci a înțeles: ori își ia mașină, ori începe să vorbească cu bălțile. A venit la Sauto. Tot oameni, dar măcar buni. Peste o oră – aprobat. Acum zice: „Liniștea e atunci când stai în ambuteiaj în mașina ta, nu în a altuia.',
+            'ru' => 'Илья работал посменно и думал, что жизнь – это график работы: всё спланировано, но бессмысленно. Ездил на работу с пересадками, думая: «Это дорога в никуда». Однажды три маршрутки проехали мимо него, не останавливаясь. Тогда он понял: либо купит машину, либо начнёт разговаривать с лужами. Он пришёл в Sauto. Люди, но хотя бы хорошие. Через час – одобрено. Теперь говорит: «Тишина – это когда стоишь в пробке в своей машине, а не в чужой».',
+            'en' => 'Ilia worked shifts and believed life was like a work schedule: everything planned but meaningless. He commuted by transfers thinking, “This road leads nowhere.” One day, three minibuses passed him by without stopping. Then he understood: either he buys a car or starts talking to puddles. He came to Sauto. People there, but at least good people. An hour later — approved. Now he says: “Silence is when you’re stuck in traffic in your own car, not someone else’s.'
+        ),
+        
+        // Comment 4 - Maria Cojocaru
+        'comment_4_name' => array(
             'ro' => 'Maria Cojocaru',
             'ru' => 'Мария Кожокару',
             'en' => 'Maria Cojocaru'
         ),
-        'comment_2_location' => array(
-            'ro' => 'Vânzătoare din Sculeni',
-            'ru' => 'Продавщица из Скулен',
-            'en' => 'Seller from Sculeni'
-        ),
-        'comment_2_text' => array(
-            'ro' => 'Aici este comentariul Mariei Cojocaru',
-            'ru' => 'Здесь комментарий Марии Кожокару',
-            'en' => 'Here is Maria Cojocaru\'s comment'
-        ),
-        
-        // Comment 3 - Alexandru Popescu
-        'comment_3_name' => array(
-            'ro' => 'Alexandru Popescu',
-            'ru' => 'Александру Попеску',
-            'en' => 'Alexandru Popescu'
-        ),
-        'comment_3_location' => array(
-            'ro' => 'Șofer din Chișinău',
-            'ru' => 'Водитель из Кишинэу',
-            'en' => 'Driver from Chisinau'
-        ),
-        'comment_3_text' => array(
-            'ro' => 'Aici este comentariul lui Alexandru Popescu',
-            'ru' => 'Здесь комментарий Александру Попеску',
-            'en' => 'Here is Alexandru Popescu\'s comment'
-        ),
-        
-        // Comment 4 - Elena Moraru
-        'comment_4_name' => array(
-            'ro' => 'Elena Moraru',
-            'ru' => 'Елена Морару',
-            'en' => 'Elena Moraru'
-        ),
         'comment_4_location' => array(
-            'ro' => 'Contabilă din Bălți',
-            'ru' => 'Бухгалтер из Бэлць',
-            'en' => 'Accountant from Balti'
+            'ro' => 'Vânzătoare din Sculeni',
+            'ru' => 'Продавщица из Скулень',
+            'en' => 'Saleswoman from Sculeni'
         ),
         'comment_4_text' => array(
-            'ro' => 'Aici este comentariul Elenei Moraru',
-            'ru' => 'Здесь комментарий Елены Морару',
-            'en' => 'Here is Elena Moraru\'s comment'
+            'ro' => 'Maria la ora 5 dimineața mergea după marfă. La 6 – în piață. La 7 – înapoi acasă. Într-o zi a ridicat o ladă de varză și a spus: „Destul. Umerii mei merită mai mult.” A căutat mult de unde să ia un credit. La bancă au întrebat-o: „Aveți dovezi de venit?” Ea a întrebat: „Dar dumneavoastră aveți conștiință?” A venit la Sauto – i-au explicat. Au ajutat-o. Nu au râs de varză. Acum are mașină. Și banca – un client mai puțin.',
+            'ru' => 'Мария в пять утра шла за товаром. В шесть – на рынок. В семь – обратно домой. Однажды она подняла ящик с капустой и сказала: «Хватит. Мои плечи заслуживают большего». Она долго искала, где взять кредит. В банке её спросили: «Есть ли у вас подтверждение дохода?» Она спросила: «А у вас есть совесть?» Она пришла в Sauto – ей всё объяснили, помогли. Не смеялись над капустой. Теперь у неё есть машина. И у банка – на одного клиента меньше.',
+            'en' => 'Maria went to get goods at 5 a.m. At 6 — to the market. At 7 — back home. One day she lifted a crate of cabbage and said: “Enough. My shoulders deserve better.” She searched a lot for where to get a loan. At the bank, they asked: “Do you have proof of income?” She asked back: “Do you have a conscience?” She came to Sauto — they explained. They helped. They didn’t laugh at the cabbage. Now she has a car. And the bank — one less client.'
         ),
         
-        // Comment 5 - Ion Dimitriu
+        // Comment 5 - Valeriu Țurcanu
         'comment_5_name' => array(
-            'ro' => 'Ion Dimitriu',
-            'ru' => 'Ион Димитрию',
-            'en' => 'Ion Dimitriu'
+            'ro' => 'Valeriu Țurcanu',
+            'ru' => 'Валериу Цуркану',
+            'en' => 'Valeriu Turcanu'
         ),
         'comment_5_location' => array(
-            'ro' => 'Antreprenor din Orhei',
-            'ru' => 'Предприниматель из Орхей',
-            'en' => 'Entrepreneur from Orhei'
+            'ro' => 'Mecanic auto',
+            'ru' => 'Автомеханик',
+            'en' => 'Auto mechanic'
         ),
         'comment_5_text' => array(
-            'ro' => 'Aici este comentariul lui Ion Dimitriu',
-            'ru' => 'Здесь комментарий Иона Димитрию',
-            'en' => 'Here is Ion Dimitriu\'s comment'
+            'ro' => 'Valeriu avea talent – repara mașinile altora. Dar pe a lui nu o putea porni. Pentru că nu avea. Mergea la lucru pe jos, dar tuturor clienților le spunea: „Trebuie să-ți iei o mașină bună!” Un client nu a mai răbdat: „Tu ia-ți mai întâi una!” Valeriu a mers la Sauto. Peste o oră – aprobat. Acum repară în continuare, dar nu mai merge acasă cu autobuzul 26.',
+            'ru' => 'У Валерия был талант – он чинил чужие машины. Но свою завести не мог. Потому что её не было. Он ходил на работу пешком, но всем клиентам говорил: «Нужно взять хорошую машину!» Один клиент не выдержал: «Ты сначала себе возьми!» Валерий пришёл в Sauto. Через час – одобрено. Теперь он продолжает ремонтировать, но домой больше не ездит на автобусе №26.',
+            'en' => 'Valeriu had talent — he repaired other people’s cars. But couldn’t start his own. Because he didn’t have one. He walked to work but told all clients: “You need to get a good car!” One client couldn’t take it anymore: “You get one first!” Valeriu went to Sauto. An hour later — approved. Now he keeps repairing, but no longer rides bus 26 home.'
         ),
         
-        // Comment 6 - Svetlana Rusu
+        // Comment 6 - Ivan Nerușu
         'comment_6_name' => array(
-            'ro' => 'Svetlana Rusu',
-            'ru' => 'Светлана Русу',
-            'en' => 'Svetlana Rusu'
+            'ro' => 'Ivan Nerușu',
+            'ru' => 'Иван Нерушу',
+            'en' => 'Ivan Nerușu'
         ),
         'comment_6_location' => array(
-            'ro' => 'Profesoară din Cahul',
-            'ru' => 'Учительница из Кагул',
-            'en' => 'Teacher from Cahul'
+            'ro' => 'Iluminarea corporativă',
+            'ru' => 'Корпоративное просветление',
+            'en' => 'corporate enlightenment'
         ),
         'comment_6_text' => array(
-            'ro' => 'Aici este comentariul Svetlanei Rusu',
-            'ru' => 'Здесь комментарий Светланы Русу',
-            'en' => 'Here is Svetlana Rusu\'s comment'
+            'ro' => 'Ivan era manager la compania Simbals. Vindea aer, dar făcea 1 oră și 47 minute până la muncă, cu două schimburi, o mănușă pierdută și trei crize existențiale. Mașina părea un lux. Până în ziua în care a urcat într-un microbuz unde în același timp cânta Zdob și Zdub și cineva îi respira în ceafă. A ieșit și a înțeles: ori își ia mașină, ori își caută medic de familie permanent. A luat credit de la noi într-o oră. A doua zi deja le recomanda tuturor colegilor. Acum, în biroul lui, toți au mașini și un alt nivel de zen. Cu microbuzul merg doar la muzeu – să vadă cum trăiau strămoșii.',
+            'ru' => 'Иван был менеджером в компании Simbals. Продавал воздух, но добирался до работы 1 час 47 минут, с двумя пересадками, потерянной перчаткой и тремя экзистенциальными кризисами. Машина казалась роскошью. Пока однажды он не сел в маршрутку, где одновременно играла группа Zdob și Zdub и кто-то дышал ему в затылок. Он вышел и понял: либо покупает машину, либо ищет постоянного семейного врача. Он взял кредит у нас за час. На следующий день уже рекомендовал всем коллегам. Теперь в его офисе у всех есть машины и другой уровень дзена. На маршрутке ездят только в музей – посмотреть, как жили предки.',
+            'en' => 'Ivan was a manager at Simbals company. He sold air but took 1 hour 47 minutes to get to work, with two transfers, a lost glove, and three existential crises. A car seemed a luxury. Until the day he boarded a minibus where Zdob și Zdub played and someone breathed down his neck. He got off and realized: either he gets a car or permanently looks for a family doctor. He took a loan from us in an hour. The next day he recommended it to all colleagues. Now, in his office, everyone has a car and a new level of zen. They only take minibuses to museums — to see how ancestors lived.'
         ),
         
         // Comment 7 - Vasile Ungureanu
@@ -197,14 +190,14 @@ $lng_credit_page = array(
             'en' => 'Vasile Ungureanu'
         ),
         'comment_7_location' => array(
-            'ro' => 'Mecanic din Comrat',
-            'ru' => 'Механик из Комрат',
-            'en' => 'Mechanic from Comrat'
+            'ro' => 'Instalator din Chișinău',
+            'ru' => 'Сантехник из Кишинёва',
+            'en' => 'Plumber from Chișinău'
         ),
         'comment_7_text' => array(
-            'ro' => 'Aici este comentariul lui Vasile Ungureanu',
-            'ru' => 'Здесь комментарий Василе Унгуряну',
-            'en' => 'Here is Vasile Ungureanu\'s comment'
+            'ro' => 'Lucrez de 15 ani ca instalator și mereu am mers cu transportul public. Într-o zi am calculat - pierd 3 ore zilnic în deplasări! Am auzit de SAUTO de la un prieten. M-am dus sceptic, dar după 2 ore am ieșit cu aprobarea pentru credit. Acum ajung la mai multe lucrări pe zi și câștig dublu. Mașina s-a plătit singură!',
+            'ru' => 'Работаю сантехником уже 15 лет и всегда ездил на общественном транспорте. Однажды подсчитал - теряю 3 часа в день на дорогу! Узнал о SAUTO от друга. Пришёл скептически настроенный, но через 2 часа вышел с одобрением кредита. Теперь успеваю на больше работ в день и зарабатываю вдвое больше. Машина окупилась сама!',
+            'en' => 'I\'ve been working as a plumber for 15 years and always used public transport. One day I calculated - I lose 3 hours daily on commuting! I heard about SAUTO from a friend. I went there skeptically, but after 2 hours I left with credit approval. Now I get to more jobs per day and earn double. The car paid for itself!'
         ),
         
         // Comment 8 - Natalia Ciobanu
@@ -219,44 +212,44 @@ $lng_credit_page = array(
             'en' => 'Teacher from Soroca'
         ),
         'comment_8_text' => array(
-            'ro' => 'Aici este comentariul Nataliei Ciobanu',
-            'ru' => 'Здесь комментарий Натальи Чобану',
-            'en' => 'Here is Natalia Ciobanu\'s comment'
+            'ro' => 'Sunt profesoară la Soroca și fac naveta zilnic din Chișinău. Autobuzele mereu întârzie și ajung obosită la lecții. Copiii mei mă întrebau mereu "Mama, când îți iei mașină?" La SAUTO mi-au explicat totul clar, fără termeni complicați. În 3 zile aveam cheile în mână. Acum petrec mai mult timp acasă și sunt mai relaxată la muncă.',
+            'ru' => 'Я учительница в Сороках и каждый день добираюсь из Кишинёва. Автобусы постоянно опаздывают, и я прихожу на уроки уставшей. Мои дети всегда спрашивали: "Мама, когда ты купишь машину?" В SAUTO мне всё объяснили понятно, без сложных терминов. Через 3 дня у меня были ключи в руках. Теперь провожу больше времени дома и более спокойна на работе.',
+            'en' => 'I\'m a teacher in Soroca and commute daily from Chișinău. Buses are always late and I arrive tired for classes. My children always asked "Mom, when will you buy a car?" At SAUTO they explained everything clearly, without complicated terms. In 3 days I had the keys in my hands. Now I spend more time at home and I\'m more relaxed at work.'
         ),
         
         // Credit Categories Section
         // Personal Credit
         'personal_credit_title' => array(
-            'ro' => 'Creditul personal pentru autovehicule',
-            'ru' => 'Личный автокредит',
-            'en' => 'Personal Auto Credit'
+            'ro' => 'Credit auto pentru automobil personal',
+            'ru' => 'Автокредит для личного автомобиля',
+            'en' => 'Car loan for a personal vehicle'
         ),
         'personal_credit_desc' => array(
-            'ro' => 'Obțineți mașina visurilor dvs. cu condiții avantajoase',
-            'ru' => 'Получите автомобиль своей мечты на выгодных условиях',
-            'en' => 'Get your dream car with favorable conditions'
+            'ro' => 'Confortul și libertatea de deplasare – prioritatea noastră',
+            'ru' => 'Комфорт и свобода передвижения – наш приоритет',
+            'en' => 'Comfort and freedom of movement are our priority'
         ),
         
         // Personal Credit Features
         'personal_feature1_title' => array(
-            'ro' => 'Minimum 18 ani și experiență de conducere',
-            'ru' => 'Минимум 18 лет и водительский опыт',
-            'en' => 'Minimum 18 years old and driving experience'
+            'ro' => 'Sumă de până la 50.000 euro',
+            'ru' => 'Сумма до 50 000 евро',
+            'en' => 'Amount up to 50,000 euros'
         ),
         'personal_feature1_desc' => array(
-            'ro' => 'Pentru a obține un credit auto, trebuie să aveți cel puțin 18 ani și să dețineți permis de conducere valid. Experiența de conducere demonstrează responsabilitatea dvs.',
-            'ru' => 'Для получения автокредита необходимо иметь минимум 18 лет и действующие водительские права. Опыт вождения демонстрирует вашу ответственность.',
-            'en' => 'To get an auto loan, you must be at least 18 years old and have a valid driver\'s license. Driving experience demonstrates your responsibility.'
+            'ro' => 'Ideal pentru orice alegere – de la un hatchback compact de oraș la un crossover spațios sau un minivan de familie.',
+            'ru' => 'Идеально для любого выбора – от компактного городского хэтчбека до просторного кроссовера или семейного минивэна.',
+            'en' => 'Perfect for any choice – from a compact city hatchback to a spacious crossover or family minivan.'
         ),
         'personal_feature2_title' => array(
-            'ro' => 'CASCO nu este obligatoriu',
-            'ru' => 'КАСКО не обязательно',
-            'en' => 'CASCO is not mandatory'
+            'ro' => 'Fără CASCO obligatoriu',
+            'ru' => 'Без обязательного КАСКО',
+            'en' => 'Without mandatory CASCO insurance'
         ),
         'personal_feature2_desc' => array(
-            'ro' => 'CASCO se încheie doar la dorința dvs. Prețuim libertatea de alegere.',
-            'ru' => 'КАСКО оформляется только по вашему желанию. Мы ценим свободу выбора.',
-            'en' => 'CASCO is arranged only at your request. We value freedom of choice.'
+            'ro' => 'Asigurarea CASCO se încheie doar la dorința dumneavoastră. Prețuim libertatea de alegere.',
+            'ru' => 'Страховка КАСКО оформляется только по вашему желанию. Мы ценим свободу выбора.',
+            'en' => 'CASCO insurance is issued only at your request. We value the freedom of choice.'
         ),
         'personal_feature3_title' => array(
             'ro' => 'Orice an de fabricație a automobilului',
@@ -264,9 +257,9 @@ $lng_credit_page = array(
             'en' => 'Any year of car manufacture'
         ),
         'personal_feature3_desc' => array(
-            'ro' => 'Finanțăm achiziția automobilului indiferent de anul de fabricație. Condiția principală – starea tehnică bună.',
-            'ru' => 'Финансируем покупку автомобиля независимо от года выпуска. Главное условие – хорошее техническое состояние.',
-            'en' => 'We finance the purchase of a car regardless of the year of manufacture. The main condition is good technical condition.'
+            'ro' => ' Finanțăm achiziția automobilului indiferent de anul fabricației. Condiția principală – stare tehnică bună.',
+            'ru' => 'Финансируем покупку авто независимо от года выпуска. Главное условие – хорошее техническое состояние.',
+            'en' => 'We finance car purchases regardless of the year of manufacture. The main condition is good technical condition.'
         ),
         'personal_feature4_title' => array(
             'ro' => 'Finanțare până la 100% din valoare',
@@ -274,34 +267,34 @@ $lng_credit_page = array(
             'en' => 'Financing up to 100% of value'
         ),
         'personal_feature4_desc' => array(
-            'ro' => 'Puteți cumpăra un automobil complet în credit, fără avans obligatoriu.',
-            'ru' => 'Вы можете купить автомобиль полностью в кредит, без обязательного первоначального взноса.',
-            'en' => 'You can buy a car completely on credit, without a mandatory down payment.'
+            'ro' => 'Cumpărați complet în credit, fără avans obligatoriu.',
+            'ru' => 'Покупайте полностью в кредит без обязательного аванса.',
+            'en' => 'Buy entirely on credit with no mandatory down payment.'
         ),
         'personal_feature5_title' => array(
-            'ro' => 'Aprobare rapidă – până la 1 oră',
+            'ro' => 'probare rapidă – până la 1 oră',
             'ru' => 'Быстрое одобрение – до 1 часа',
             'en' => 'Fast approval – up to 1 hour'
         ),
         'personal_feature5_desc' => array(
-            'ro' => 'Prețuim timpul dvs. Decizia preliminară se ia prompt.',
+            'ro' => 'Prețuim timpul dumneavoastră. Decizia preliminară se ia operativ.',
             'ru' => 'Мы ценим ваше время. Предварительное решение принимается оперативно.',
-            'en' => 'We value your time. The preliminary decision is made promptly.'
+            'en' => 'We value your time. A preliminary decision is made promptly.'
         ),
         'personal_feature6_title' => array(
-            'ro' => 'Rambursare anticipată fără penalități',
-            'ru' => 'Досрочное погашение без штрафов',
-            'en' => 'Early repayment without penalties'
+            'ro' => 'Grafic flexibil de plată',
+            'ru' => 'Гибкий график платежей',
+            'en' => 'Flexible payment schedule'
         ),
         'personal_feature6_desc' => array(
             'ro' => 'Închideți creditul mai devreme fără costuri suplimentare.',
-            'ru' => 'Закрывайте кредит раньше без дополнительных затрат.',
+            'ru' => 'Возможность адаптировать выплаты при частичном досрочном погашении.',
             'en' => 'Close the loan early without additional costs.'
         ),
         'personal_feature7_title' => array(
-            'ro' => 'Posibilitatea de a alege perioada de rambursare',
+            'ro' => 'Posibilitatea de a ajusta plățile în caz de rambursare anticipată parțială.',
             'ru' => 'Возможность выбора срока погашения',
-            'en' => 'Ability to choose repayment period'
+            'en' => 'Possibility to adjust payments with partial early repayment.'
         ),
         'personal_feature7_desc' => array(
             'ro' => 'Alegeți perioada de rambursare care vi se potrivește cel mai bine, de la 12 la 84 de luni.',
@@ -311,140 +304,140 @@ $lng_credit_page = array(
 
         // Business Credit
         'business_credit_title' => array(
-            'ro' => 'Creditul pentru business',
-            'ru' => 'Кредит для бизнеса',
-            'en' => 'Business Credit'
+            'ro' => 'Credit auto pentru afacerea dumneavoastră',
+            'ru' => 'Автокредит для вашего бизнеса',
+            'en' => 'Car loan for your business'
         ),
         'business_credit_desc' => array(
-            'ro' => 'Soluții de finanțare pentru întreprinderile care doresc să își extindă parcul',
-            'ru' => 'Решения финансирования для предприятий, желающих расширить автопарк',
-            'en' => 'Financing solutions for businesses looking to expand their vehicle fleet'
+            'ro' => 'Dezvoltați-vă afacerea cu un mijloc de transport fiabil',
+            'ru' => 'Развивайте бизнес с надежным транспортом',
+            'en' => 'Grow your business with reliable transportation'
         ),
         
         // Business Credit Features
         'business_feature1_title' => array(
-            'ro' => 'Finanțare pentru persoane juridice',
-            'ru' => 'Финансирование для юридических лиц',
-            'en' => 'Financing for legal entities'
+            'ro' => 'Pe numele unei persoane fizice sau juridice',
+            'ru' => 'На имя физического или юридического лица',
+            'en' => 'In the name of an individual or legal entity'
         ),
         'business_feature1_desc' => array(
-            'ro' => 'Oferim servicii de creditare specializate pentru companii și întreprinderi. Procesul de aprobare este adaptat nevoilor business-ului dvs.',
-            'ru' => 'Предлагаем специализированные кредитные услуги для компаний и предприятий. Процесс одобрения адаптирован к потребностям вашего бизнеса.',
-            'en' => 'We offer specialized lending services for companies and enterprises. The approval process is tailored to your business needs.'
+            'ro' => 'Creditul este disponibil atât persoanelor fizice (inclusiv întreprinzătorilor individuali), cât și companiilor.',
+            'ru' => 'Кредит доступен как физическим лицам (включая индивидуальных предпринимателей), так и компаниям.',
+            'en' => 'Credit is available to individuals (including sole proprietors) as well as companies.'
         ),
         'business_feature2_title' => array(
-            'ro' => 'Credite pentru parcul auto',
-            'ru' => 'Кредиты для автопарка',
-            'en' => 'Fleet financing'
+            'ro' => 'Modalitate convenabilă de primire a fondurilor',
+            'ru' => 'Удобный способ получения средств',
+            'en' => 'Convenient way to receive funds'
         ),
         'business_feature2_desc' => array(
-            'ro' => 'Finanțarea achiziției mai multor autovehicule pentru nevoile companiei dvs.',
-            'ru' => 'Финансирование покупки нескольких автомобилей для нужд вашей компании.',
-            'en' => 'Financing the purchase of multiple vehicles for your company needs.'
+            'ro' => 'Plată în numerar sau transfer direct în contul companiei dumneavoastră.',
+            'ru' => 'Оплата наличными или перевод напрямую на счет вашей компании',
+            'en' => 'Payment in cash or direct transfer to your company’s account.'
         ),
         'business_feature3_title' => array(
-            'ro' => 'Condiții preferențiale',
-            'ru' => 'Льготные условия',
-            'en' => 'Preferential terms'
+            'ro' => 'Finanțarea automobilelor comandate',
+            'ru' => 'Финансирование заказанных автомобилей',
+            'en' => 'Financing of ordered cars'
         ),
         'business_feature3_desc' => array(
-            'ro' => 'Clienții corporativi beneficiază de condiții speciale și rate reduse.',
-            'ru' => 'Корпоративные клиенты получают специальные условия и сниженные ставки.',
-            'en' => 'Corporate clients benefit from special conditions and reduced rates.'
+            'ro' => 'Obțineți credit chiar dacă mașina dorită este încă în drum spre Moldova.',
+            'ru' => 'Получите кредит, даже если желаемый автомобиль ещё в пути в Молдову.',
+            'en' => 'Get a loan even if the desired car is still on its way to Moldova.'
         ),
         'business_feature4_title' => array(
-            'ro' => 'Flexibilitate în rambursare',
-            'ru' => 'Гибкость в погашении',
-            'en' => 'Repayment flexibility'
+            'ro' => 'Sprijin pentru startup-uri',
+            'ru' => 'Поддержка стартапов',
+            'en' => 'Startup support'
         ),
         'business_feature4_desc' => array(
-            'ro' => 'Adaptăm graficul de plăți la fluxul de numerar al companiei.',
-            'ru' => 'Адаптируем график платежей к денежному потоку компании.',
-            'en' => 'We adapt the payment schedule to your company\'s cash flow.'
+            'ro' => 'Procedură simplificată și condiții speciale pentru companiile tinere.',
+            'ru' => 'Упрощённая процедура и специальные условия для молодых компаний.',
+            'en' => 'Simplified procedure and special conditions for young companies.'
         ),
         'business_feature5_title' => array(
-            'ro' => 'Consultanță specializată',
-            'ru' => 'Специализированная консультация',
-            'en' => 'Specialized consultation'
+            'ro' => 'Fără restricții la ieșirea în străinătate',
+            'ru' => 'Без ограничений на выезд за границу',
+            'en' => 'No restrictions on traveling abroad'
         ),
         'business_feature5_desc' => array(
-            'ro' => 'Echipa noastră de experți vă va ajuta să alegeți cea mai bună soluție.',
-            'ru' => 'Наша команда экспертов поможет вам выбрать лучшее решение.',
-            'en' => 'Our expert team will help you choose the best solution.'
+            'ro' => 'Mașina dumneavoastră – un activ fără granițe.',
+            'ru' => 'Ваш автомобиль – ваш актив без границ.',
+            'en' => 'Your car – your asset without borders.'
         ),
         'business_feature6_title' => array(
-            'ro' => 'Proces simplificat de aprobare',
-            'ru' => 'Упрощенный процесс одобрения',
-            'en' => 'Simplified approval process'
+            'ro' => 'Refinanțarea creditului auto existent',
+            'ru' => 'Рефинансирование существующего автокредита',
+            'en' => 'Refinancing an existing car loan'
         ),
         'business_feature6_desc' => array(
-            'ro' => 'Documentația redusă și proceduri accelerate pentru business-uri.',
-            'ru' => 'Сокращенная документация и ускоренные процедуры для бизнеса.',
-            'en' => 'Reduced documentation and accelerated procedures for businesses.'
+            'ro' => 'Îmbunătățiți condițiile creditului curent.',
+            'ru' => 'Улучшите условия текущего кредита',
+            'en' => 'Improve the terms of your current loan.'
         ),
 
         // Leasing
         'leasing_title' => array(
-            'ro' => 'Leasing auto',
-            'ru' => 'Автолизинг',
-            'en' => 'Car Leasing'
+            'ro' => 'Leasing auto - flexibilitate și avantaje',
+            'ru' => 'Автолизинг - гибгость и преимущества',
+            'en' => 'Car leasing – flexibility and benefits'
         ),
         'leasing_desc' => array(
-            'ro' => 'Soluția ideală pentru a conduce un automobil nou fără să îl cumpărați',
-            'ru' => 'Идеальное решение для вождения нового автомобиля без его покупки',
-            'en' => 'The perfect solution for driving a new car without buying it'
+            'ro' => 'Soluție modernă pentru utilizarea eficientă a automobilului',
+            'ru' => 'Современное решение для эффективного использования автомобиля',
+            'en' => 'A modern solution for the efficient use of a car'
         ),
         
         // Leasing Features
         'leasing_feature1_title' => array(
-            'ro' => 'Avans redus',
-            'ru' => 'Низкий первоначальный взнос',
-            'en' => 'Low down payment'
+            'ro' => 'Gestionare optimă a bugetului',
+            'ru' => 'Оптимальное управление бюджетом',
+            'en' => 'Optimal budget management'
         ),
         'leasing_feature1_desc' => array(
-            'ro' => 'Începeți cu un avans de doar 10-20% din valoarea mașinii.',
-            'ru' => 'Начните с первоначальным взносом всего 10-20% от стоимости автомобиля.',
-            'en' => 'Start with a down payment of only 10-20% of the car value.'
+            'ro' => 'Folosiți automobilul fără a-l cumpăra imediat.',
+            'ru' => 'Пользуйтесь автомобилем без немедленной покупки.',
+            'en' => 'Use the car without immediate purchase.'
         ),
         'leasing_feature2_title' => array(
-            'ro' => 'Rate lunare mici',
-            'ru' => 'Небольшие ежемесячные платежи',
-            'en' => 'Small monthly payments'
+            'ro' => 'Finanțare până la 100% din valoarea automobilului',
+            'ru' => 'Финансирование до 100% стоимости автомобиля',
+            'en' => 'Financing up to 100% of the car’s value'
         ),
         'leasing_feature2_desc' => array(
-            'ro' => 'Plățile lunare sunt mai mici comparativ cu creditul clasic.',
-            'ru' => 'Ежемесячные платежи меньше по сравнению с классическим кредитом.',
-            'en' => 'Monthly payments are smaller compared to traditional credit.'
+            'ro' => 'Avansul nu este obligatoriu.',
+            'ru' => 'Аванс не обязателен.',
+            'en' => 'No down payment required.'
         ),
         'leasing_feature3_title' => array(
-            'ro' => 'Mașină nouă la fiecare 2-3 ani',
-            'ru' => 'Новый автомобиль каждые 2-3 года',
-            'en' => 'New car every 2-3 years'
+            'ro' => 'Condiții transparente și clare',
+            'ru' => 'Прозрачные и понятные условия',
+            'en' => 'ransparent and clear terms'
         ),
         'leasing_feature3_desc' => array(
-            'ro' => 'Schimbați mașina cu una nouă la sfârșitul contractului.',
-            'ru' => 'Меняйте автомобиль на новый в конце контракта.',
-            'en' => 'Change to a new car at the end of the contract.'
+            'ro' => 'Fără comisioane ascunse.',
+            'ru' => 'Без скрытых комиссий.',
+            'en' => 'No hidden fees.'
         ),
         'leasing_feature4_title' => array(
-            'ro' => 'Serviciu complet inclus',
-            'ru' => 'Полный сервис включен',
-            'en' => 'Full service included'
-        ),
-        'leasing_feature4_desc' => array(
-            'ro' => 'Întreținerea, asigurarea și alte servicii pot fi incluse în contract.',
-            'ru' => 'Обслуживание, страхование и другие услуги могут быть включены в контракт.',
-            'en' => 'Maintenance, insurance and other services can be included in the contract.'
-        ),
-        'leasing_feature5_title' => array(
             'ro' => 'Pentru toate categoriile de clienți',
             'ru' => 'Для всех категорий клиентов',
-            'en' => 'For all client categories'
+            'en' => 'For all categories of clients'
+        ),
+        'leasing_feature4_desc' => array(
+            'ro' => 'Leasingul este disponibil persoanelor fizice, întreprinzătorilor individuali și companiilor.',
+            'ru' => 'Лизинг доступен физическим лицам, ИП и компаниям.',
+            'en' => 'Leasing is available to individuals, sole proprietors, and companies.'
+        ),
+        'leasing_feature5_title' => array(
+            'ro' => 'Durată flexibilă a contractului',
+            'ru' => 'Гибкий срок договора',
+            'en' => 'Flexible contract term'
         ),
         'leasing_feature5_desc' => array(
-            'ro' => 'Leasingul este disponibil atât pentru persoane fizice, cât și pentru companii.',
-            'ru' => 'Лизинг доступен как для физических лиц, так и для компаний.',
-            'en' => 'Leasing is available for both individuals and companies.'
+            'ro' => 'De la 12 până la 60 de luni.',
+            'ru' => 'От 12 до 60 месяцев.',
+            'en' => 'From 12 to 60 months.'
         ),
 
         // Partners Section
@@ -454,9 +447,9 @@ $lng_credit_page = array(
             'en' => 'Our trusted partners'
         ),
         'partners_subtitle' => array(
-            'ro' => 'Colaborăm cu instituții financiare de top pentru a vă oferi cele mai bune condiții',
-            'ru' => 'Сотрудничаем с ведущими финансовыми учреждениями, чтобы предложить вам лучшие условия',
-            'en' => 'We work with top financial institutions to offer you the best conditions'
+            'ro' => 'Colaborăm doar cu organizații financiare verificate și respectate din Moldova.',
+            'ru' => 'Мы сотрудничаем только с проверенными и уважаемыми финансовыми организациями Молдовы',
+            'en' => 'We cooperate only with trusted and respected financial organizations in Moldova.'
         ),
         'submit_application' => array(
             'ro' => 'Trimite cererea',
@@ -466,29 +459,29 @@ $lng_credit_page = array(
         
         // Partner descriptions
         'microinvest_desc' => array(
-            'ro' => 'Soluții de creditare flexibile și avantajoase pentru achiziția de autovehicule',
-            'ru' => 'Гибкие и выгодные кредитные решения для покупки автомобилей',
-            'en' => 'Flexible and advantageous credit solutions for vehicle purchases'
+            'ro' => 'Procedură simplă și rapidă',
+            'ru' => 'Простая и быстрая процедура',
+            'en' => 'Simple and fast procedure'
         ),
         'maib_leasing_desc' => array(
-            'ro' => 'Servicii de leasing profesionale cu condiții competitive',
-            'ru' => 'Профессиональные лизинговые услуги с конкурентными условиями',
-            'en' => 'Professional leasing services with competitive conditions'
+            'ro' => 'Experți recunoscuți în domeniul leasingului',
+            'ru' => 'Признанные эксперты в области лизинга',
+            'en' => 'Recognized experts in the field of leasing'
         ),
         'bt_leasing_desc' => array(
-            'ro' => 'Experiență vastă în finanțarea auto și leasing',
-            'ru' => 'Большой опыт в автофинансировании и лизинге',
-            'en' => 'Extensive experience in auto financing and leasing'
+            'ro' => 'Standardele europene de fiabilitate',
+            'ru' => 'Европейские стандарты надёжности',
+            'en' => ' European standards of reliability'
         ),
         'primero_desc' => array(
-            'ro' => 'Partener de încredere pentru credite auto rapide și sigure',
-            'ru' => 'Надёжный партнёр для быстрых и безопасных автокредитов',
-            'en' => 'Trusted partner for fast and secure auto loans'
+            'ro' => 'Abordări inovatoare',
+            'ru' => 'Инновационные подходы',
+            'en' => 'Innovative approaches'
         ),
         'victoriabank_desc' => array(
-            'ro' => 'Bancă cu tradiție, oferind soluții financiare moderne',
-            'ru' => 'Банк с традициями, предлагающий современные финансовые решения',
-            'en' => 'Traditional bank offering modern financial solutions'
+            'ro' => 'Una dintre cele mai mari bănci din Moldova',
+            'ru' => 'Один из крупнейших банков Молдовы',
+            'en' => 'One of the largest banks in Moldova'
         )
     )
 );
