@@ -393,7 +393,7 @@ if (file_exists($js_file_path)) {
             <div class="comment-card active" data-comment="1">
                 <div class="comment-author">
                     <div class="author-avatar">
-                        <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar1.webp" 
+                        <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar1.jpeg" 
                              alt="<?php echo get_translation('comment_1_name', $current_lang, $lng); ?>" 
                              onerror="this.style.display='none'">
                     </div>
@@ -465,7 +465,7 @@ if (file_exists($js_file_path)) {
             <div class="comment-card" data-comment="5">
                 <div class="comment-author">
                     <div class="author-avatar">
-                        <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar5.jpg" 
+                        <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar5.webp" 
                              alt="<?php echo get_translation('comment_5_name', $current_lang, $lng); ?>" 
                              onerror="this.style.display='none'">
                     </div>
@@ -501,7 +501,7 @@ if (file_exists($js_file_path)) {
             <div class="comment-card" data-comment="7">
                 <div class="comment-author">
                     <div class="author-avatar">
-                        <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar7.jpg" 
+                        <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar7.webp" 
                              alt="<?php echo get_translation('comment_7_name', $current_lang, $lng); ?>" 
                              onerror="this.style.display='none'">
                     </div>
