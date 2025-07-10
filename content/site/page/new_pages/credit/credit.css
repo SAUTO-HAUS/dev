@@ -1520,6 +1520,35 @@ body {
     transform: scale(1.1);
 }
 
+/* Category Car Images Styles */
+.category-car-image {
+    position: absolute;
+    bottom: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    pointer-events: none;
+    height: 130px;
+    overflow: hidden;
+}
+
+.car-category-image {
+    width: auto;
+    height: 270px;
+    max-width: 230px;
+    object-fit: contain;
+    object-position: center top;
+    position: relative;
+    top: 0;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+/* Make sure the feature card item1 has relative positioning */
+.feature-card.item1 {
+    position: relative;
+    overflow: visible;
+}
+
 /* Mobile Responsive - Partners Section */
 @media (max-width: 768px) {
     .partners-section {
@@ -1820,6 +1849,11 @@ body {
     
     .author-location {
         font-size: 0.85rem;
+    }
+    
+    /* Car images mobile styles - hide completely */
+    .category-car-image {
+        display: none;
     }
 }
 
