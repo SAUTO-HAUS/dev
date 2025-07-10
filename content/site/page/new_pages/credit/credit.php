@@ -120,6 +120,10 @@ if (file_exists($js_file_path)) {
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('personal_feature1_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('personal_feature1_desc', $current_lang, $lng); ?></p>
+                        <!-- Car image for item1 -->
+                        <div class="category-car-image">
+                            <img src="/content/site/page/new_pages/credit/credit-media/car2.png" alt="Personal Credit Car" class="car-category-image">
+                        </div>
                     </div>
                     
                     <!-- Item 2 -->
@@ -191,6 +195,10 @@ if (file_exists($js_file_path)) {
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('business_feature1_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('business_feature1_desc', $current_lang, $lng); ?></p>
+                        <!-- Car image for item1 -->
+                        <div class="category-car-image">
+                            <img src="/content/site/page/new_pages/credit/credit-media/car2.png" alt="Business Credit Car" class="car-category-image">
+                        </div>
                     </div>
                     
                     <!-- Item 2 -->
@@ -253,6 +261,10 @@ if (file_exists($js_file_path)) {
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('leasing_feature1_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('leasing_feature1_desc', $current_lang, $lng); ?></p>
+                        <!-- Car image for item1 -->
+                        <div class="category-car-image">
+                            <img src="/content/site/page/new_pages/credit/credit-media/car2.png" alt="Leasing Car" class="car-category-image">
+                        </div>
                     </div>
                     
                     <!-- Item 2 -->

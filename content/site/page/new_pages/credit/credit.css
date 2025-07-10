@@ -1774,18 +1774,27 @@ body {
         gap: 20px;
     }
     
-    /* Hide inactive comments on mobile - show only one */
-    .comment-card:not(.active) {
-        display: none;
+    /* Mobile: Override desktop styles - Hide all comments */
+    .comments-section .comments-slider .comment-card {
+        display: none !important;
+    }
+    
+    /* Mobile: Show only one active comment at a time */
+    .comments-section .comments-slider .comment-card.active {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: unset !important;
+        margin: 0 !important;
     }
     
     .comment-card {
-        width: 100%;
-        max-width: 100%;
-        height: auto;
-        padding: 20px;
-        margin: 0;
-        box-sizing: border-box;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        padding: 20px !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
     }
     
     .comment-text {
