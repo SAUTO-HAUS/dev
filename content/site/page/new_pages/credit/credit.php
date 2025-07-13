@@ -618,39 +618,12 @@ $(document).ready(function() {
                 formId = 'ieagmu'; // Default to RO
         }
         
-        // Trigger Bitrix24 form
-        if (window.BX24 && window.BX24.showForm) {
-            window.BX24.showForm(formId);
-        } else {
-            // Fallback: try to find and trigger the correct form
-            var formSelector = '[data-b24-form="inline/' + 
-                (currentLang === 'en' ? '38' : currentLang === 'ru' ? '36' : '40') + 
-                '/' + formId + '"]';
-            
-            var formContainer = document.querySelector(formSelector);
-            
-            if (formContainer) {
-                // Try to find a button or clickable element within the form
-                var formButton = formContainer.querySelector('button, .b24-form-btn, [type="submit"]');
-                if (formButton) {
-                    formButton.click();
-                } else {
-                    // Dispatch click event on the container itself
-                    var event = new Event('click', { bubbles: true });
-                    formContainer.dispatchEvent(event);
-                }
-            } else {
-                console.log('Bitrix24 form not ready yet, trying alternative method...');
-                // Alternative method - wait and try again
-                setTimeout(function() {
-                    var altFormContainer = document.querySelector('[data-b24-form*="' + formId + '"]');
-                    if (altFormContainer) {
-                        var event = new Event('click', { bubbles: true });
-                        altFormContainer.dispatchEvent(event);
-                    }
-                }, 500);
-            }
-        }
+        // Simple solution: Open Bitrix24 form URL directly
+        var formNum = (currentLang === 'en' ? '38' : currentLang === 'ru' ? '36' : '40');
+        var bitrixUrl = 'https://b33145896.bitrix24.ru/pub/form/' + formNum + '/' + formId + '/';
+        
+        console.log('Opening Bitrix24 form:', bitrixUrl);
+        window.open(bitrixUrl, '_blank');
     }
     
     // Attach click events to both buttons
