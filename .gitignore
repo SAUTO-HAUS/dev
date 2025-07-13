@@ -5,3 +5,4 @@ filter_debug.log
 *.zip
 *.log
 environment.php
+/robots.txt
