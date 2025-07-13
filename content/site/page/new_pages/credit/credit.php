@@ -307,7 +307,7 @@ if (file_exists($js_file_path)) {
             </div>
         </div>
     </div>
-    <button class="apply-button-categories"><?php echo get_translation('submit_application', $current_lang, $lng); ?></button>
+    <button class="apply-button-categories" id="apply-button-categories"><?php echo get_translation('submit_application', $current_lang, $lng); ?></button>
 </section>
 
 <!-- Partners Section -->
@@ -318,7 +318,7 @@ if (file_exists($js_file_path)) {
             <div class="partners-text">
                 <h2 class="partners-title"><?php echo get_translation('partners_title', $current_lang, $lng); ?></h2>
                 <p class="partners-subtitle"><?php echo get_translation('partners_subtitle', $current_lang, $lng); ?></p>
-                <button class="apply-button"><?php echo get_translation('submit_application', $current_lang, $lng); ?></button>
+                <button class="apply-button" id="apply-button-partners"><?php echo get_translation('submit_application', $current_lang, $lng); ?></button>
             </div>
             
             <!-- Center: Partners grid -->
@@ -559,3 +559,105 @@ if (file_exists($js_file_path)) {
 
 <!-- Include page-specific JS with cache busting -->
 <script src="<?php echo $page_js . $js_version; ?>"></script>
+
+<!-- Bitrix24 Forms Container -->
+<div id="bitrix-forms" style="display: none;">
+    <!-- Form RO -->
+    <div id="bitrix-form-ro">
+        <script data-b24-form="inline/40/ieagmu" data-skip-moving="true">
+        (function(w,d,u){
+        var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
+        var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
+        })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_40.js');
+        </script>
+    </div>
+    
+    <!-- Form ENG -->
+    <div id="bitrix-form-en">
+        <script data-b24-form="inline/38/w39a70" data-skip-moving="true">
+        (function(w,d,u){
+        var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
+        var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
+        })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_38.js');
+        </script>
+    </div>
+    
+    <!-- Form RU -->
+    <div id="bitrix-form-ru">
+        <script data-b24-form="inline/36/gurnp4" data-skip-moving="true">
+        (function(w,d,u){
+        var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
+        var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
+        })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_36.js');
+        </script>
+    </div>
+</div>
+
+<!-- JavaScript for Bitrix24 Forms -->
+<script>
+$(document).ready(function() {
+    // Get current language from PHP
+    var currentLang = '<?php echo $current_lang; ?>';
+    console.log('Current language:', currentLang);
+    
+    // Function to show Bitrix24 form based on language
+    function showBitrixForm() {
+        var formId;
+        
+        switch(currentLang) {
+            case 'ro':
+                formId = 'ieagmu';
+                break;
+            case 'en':
+                formId = 'w39a70';
+                break;
+            case 'ru':
+                formId = 'gurnp4';
+                break;
+            default:
+                formId = 'ieagmu'; // Default to RO
+        }
+        
+        // Trigger Bitrix24 form
+        if (window.BX24 && window.BX24.showForm) {
+            window.BX24.showForm(formId);
+        } else {
+            // Fallback: try to find and trigger the correct form
+            var formSelector = '[data-b24-form="inline/' + 
+                (currentLang === 'en' ? '38' : currentLang === 'ru' ? '36' : '40') + 
+                '/' + formId + '"]';
+            
+            var formContainer = document.querySelector(formSelector);
+            
+            if (formContainer) {
+                // Try to find a button or clickable element within the form
+                var formButton = formContainer.querySelector('button, .b24-form-btn, [type="submit"]');
+                if (formButton) {
+                    formButton.click();
+                } else {
+                    // Dispatch click event on the container itself
+                    var event = new Event('click', { bubbles: true });
+                    formContainer.dispatchEvent(event);
+                }
+            } else {
+                console.log('Bitrix24 form not ready yet, trying alternative method...');
+                // Alternative method - wait and try again
+                setTimeout(function() {
+                    var altFormContainer = document.querySelector('[data-b24-form*="' + formId + '"]');
+                    if (altFormContainer) {
+                        var event = new Event('click', { bubbles: true });
+                        altFormContainer.dispatchEvent(event);
+                    }
+                }, 500);
+            }
+        }
+    }
+    
+    // Attach click events to both buttons
+    $('#apply-button-categories, #apply-button-partners').on('click', function(e) {
+        e.preventDefault();
+        console.log('Apply button clicked, showing form for language:', currentLang);
+        showBitrixForm();
+    });
+});
+</script>
