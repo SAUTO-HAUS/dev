@@ -197,7 +197,7 @@ if (file_exists($js_file_path)) {
                         <p class="feature-description"><?php echo get_translation('business_feature1_desc', $current_lang, $lng); ?></p>
                         <!-- Car image for item1 -->
                         <div class="category-car-image">
-                            <img src="/content/site/page/new_pages/credit/credit-media/car2.png" alt="Business Credit Car" class="car-category-image">
+                            <img src="/content/site/page/new_pages/credit/credit-media/car-2.png" alt="Business Credit Car" class="car-category-image">
                         </div>
                     </div>
                     
@@ -244,6 +244,9 @@ if (file_exists($js_file_path)) {
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('business_feature6_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('business_feature6_desc', $current_lang, $lng); ?></p>
+                        <div class="category-car-image-2">
+                            <img src="/content/site/page/new_pages/credit/credit-media/car-3.png" alt="Business Credit Car" class="car-2-category-image">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -263,7 +266,7 @@ if (file_exists($js_file_path)) {
                         <p class="feature-description"><?php echo get_translation('leasing_feature1_desc', $current_lang, $lng); ?></p>
                         <!-- Car image for item1 -->
                         <div class="category-car-image">
-                            <img src="/content/site/page/new_pages/credit/credit-media/car2.png" alt="Leasing Car" class="car-category-image">
+                            <img src="/content/site/page/new_pages/credit/credit-media/car-2.png" alt="Leasing Car" class="car-category-image">
                         </div>
                     </div>
                     
@@ -301,6 +304,9 @@ if (file_exists($js_file_path)) {
                         </div>
                         <h3 class="feature-title"><?php echo get_translation('leasing_feature5_title', $current_lang, $lng); ?></h3>
                         <p class="feature-description"><?php echo get_translation('leasing_feature5_desc', $current_lang, $lng); ?></p>
+                        <div class="category-car-image-2">
+                            <img src="/content/site/page/new_pages/credit/credit-media/car-3.png" alt="Business Credit Car" class="car-2-category-image">
+                        </div>
                     </div>
 
                 </div>
@@ -560,11 +566,11 @@ if (file_exists($js_file_path)) {
 <!-- Include page-specific JS with cache busting -->
 <script src="<?php echo $page_js . $js_version; ?>"></script>
 
-<!-- Bitrix24 Forms Container -->
-<div id="bitrix-forms" style="display: none;">
-    <!-- Form RO -->
-    <div id="bitrix-form-ro">
-        <script data-b24-form="inline/40/ieagmu" data-skip-moving="true">
+<!-- Off-screen Bitrix24 Form Buttons (positioned off-screen but clickable) -->
+<div style="position: absolute;left: -9999px;top: -9999px;">
+    <!-- RO Form Button -->
+    <div id="bitrix-form-ro" class="btn msg2">
+        <script data-b24-form="click/40/ieagmu" data-skip-moving="true">
         (function(w,d,u){
         var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
         var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
@@ -572,9 +578,9 @@ if (file_exists($js_file_path)) {
         </script>
     </div>
     
-    <!-- Form ENG -->
-    <div id="bitrix-form-en">
-        <script data-b24-form="inline/38/w39a70" data-skip-moving="true">
+    <!-- EN Form Button -->
+    <div id="bitrix-form-en" class="btn msg2">
+        <script data-b24-form="click/38/w39a70" data-skip-moving="true">
         (function(w,d,u){
         var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
         var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
@@ -582,16 +588,34 @@ if (file_exists($js_file_path)) {
         </script>
     </div>
     
-    <!-- Form RU -->
-    <div id="bitrix-form-ru">
-        <script data-b24-form="inline/36/gurnp4" data-skip-moving="true">
+    <!-- RU Form Button - Temporarily using RO form -->
+    <div id="bitrix-form-ru" class="btn msg2">
+        <script data-b24-form="click/40/ieagmu" data-skip-moving="true">
         (function(w,d,u){
         var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
         var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-        })(window,document,'https://sauto-haus.bitrix24.ru/bitrix/js/crm/site/form/embed/loader_36.js');
+        })(window,document,'https://sauto-haus.bitrix24.ru/bitrix/js/crm/site/form/embed/loader_40.js');
         </script>
     </div>
 </div>
+
+<!-- Modal Dialog for Bitrix Form -->
+<div id="bitrix-modal" class="modal-overlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:10000;">
+    <div class="modal-container" style="position:absolute; top:10%; left:50%; transform:translate(-50%, 0); background:#fff; padding:0; border-radius:5px; box-shadow:0 0 20px rgba(0,0,0,0.5); width:80%; max-width:650px; height:90%; max-height:700px; overflow:hidden;">
+        <div class="modal-body" style="position:relative; height:100%; padding:0; margin:0;">
+            <button id="close-modal" style="position:absolute; top:10px; right:15px; z-index:100; background:none; border:none; font-size:36px; line-height:1; cursor:pointer; color:#E74C3C; font-weight:bold;">×</button>
+            <iframe id="bitrix-iframe" src="" style="width:100%; height:100%; border:none; display:block; margin:0;" scrolling="no" frameborder="0"></iframe>
+        </div>
+
+    </div>
+</div>
+
+<style>
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+</style>
 
 <!-- JavaScript for Bitrix24 Forms -->
 <script>
@@ -600,30 +624,64 @@ $(document).ready(function() {
     var currentLang = '<?php echo $current_lang; ?>';
     console.log('Current language:', currentLang);
     
-    // Function to show Bitrix24 form based on language
+    // Preload form URLs for each language
+    var bitrixUrls = {
+        'ro': 'https://sauto-haus.bitrix24.ru/pub/form/40/ieagmu/',
+        'en': 'https://sauto-haus.bitrix24.ru/pub/form/38/w39a70/',
+        'ru': 'https://sauto-haus.bitrix24.ru/pub/form/36/gurnp4/'
+    };
+    
+    // Function to show Bitrix24 form in a modal dialog on the same page
     function showBitrixForm() {
-        var formId;
+        console.log('Opening Bitrix24 form for language:', currentLang);
         
-        switch(currentLang) {
-            case 'ro':
-                formId = 'ieagmu';
-                break;
-            case 'en':
-                formId = 'w39a70';
-                break;
-            case 'ru':
-                formId = 'gurnp4';
-                break;
-            default:
-                formId = 'ieagmu'; // Default to RO
+        // Show the modal instantly
+        document.getElementById('bitrix-modal').style.display = 'block';
+        
+        // Lock body scroll immediately
+        document.body.style.overflow = 'hidden';
+        
+
+        
+        // Set the iframe src to the Bitrix24 form URL
+        var bitrixUrl;
+        if (currentLang === 'ru') {
+            bitrixUrl = bitrixUrls['ro']; // Fallback to RO form for Russian
+        } else {
+            bitrixUrl = bitrixUrls[currentLang] || bitrixUrls['ro'];
         }
         
-        // Simple solution: Open Bitrix24 form URL directly
-        var formNum = (currentLang === 'en' ? '38' : currentLang === 'ru' ? '36' : '40');
-        var bitrixUrl = 'https://sauto-haus.bitrix24.ru/pub/form/' + formNum + '/' + formId + '/';
+        // Set the iframe src
+        document.getElementById('bitrix-iframe').src = bitrixUrl;
         
-        console.log('Opening Bitrix24 form:', bitrixUrl);
-        window.open(bitrixUrl, '_blank');
+        // Frame loaded event
+        document.getElementById('bitrix-iframe').onload = function() {
+            console.log('Iframe loaded successfully');
+        };
+        
+        // 8. Setup event handlers
+        document.getElementById('close-modal').onclick = closeModal;
+        document.getElementById('bitrix-modal').onclick = function(e) {
+            if (e.target === this) closeModal();
+        };
+        document.addEventListener('keydown', function escHandler(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+                document.removeEventListener('keydown', escHandler);
+            }
+        });
+    }
+    
+    // Function to close the modal
+    function closeModal() {
+        // Hide modal immediately (no fade out delay)
+        document.getElementById('bitrix-modal').style.display = 'none';
+        
+        // Clear the iframe src to stop any running processes
+        document.getElementById('bitrix-iframe').src = '';
+        
+        // Restore body scroll
+        document.body.style.overflow = '';
     }
     
     // Attach click events to both buttons
