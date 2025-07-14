@@ -1590,19 +1590,20 @@ body {
 
 .category-car-image-2 {
     position: absolute;
-    bottom: 0px;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 70%;
+    transform: translateY(-50%);
+    right: 0;
     z-index: 1;
     pointer-events: none;
-    height: 130px;
+    height: 180px;
     overflow: hidden;
+    width: 200px; 
 }
 
 .car-2-category-image {
     width: auto;
-    height: 270px;
-    max-width: 230px;
+    height: 400px;
+    max-width: 400px;
     object-fit: contain;
     object-position: center top;
     position: relative;
@@ -1996,6 +1997,10 @@ body {
     
     /* Car images mobile styles - hide completely */
     .category-car-image {
+        display: none;
+    }
+
+    .category-car-image-2 {
         display: none;
     }
 }
