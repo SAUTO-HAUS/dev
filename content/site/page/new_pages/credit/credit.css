@@ -1588,6 +1588,28 @@ body {
     filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
 }
 
+.category-car-image-2 {
+    position: absolute;
+    bottom: 0px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+    pointer-events: none;
+    height: 130px;
+    overflow: hidden;
+}
+
+.car-2-category-image {
+    width: auto;
+    height: 270px;
+    max-width: 230px;
+    object-fit: contain;
+    object-position: center top;
+    position: relative;
+    top: 0;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
 /* Make sure the feature card item1 has relative positioning */
 .feature-card.item1 {
     position: relative;
