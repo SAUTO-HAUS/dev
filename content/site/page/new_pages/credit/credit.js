@@ -224,9 +224,12 @@ $(document).ready(function() {
 
 // Initial setup - removed showCategory call as function doesn't exist
 
-// Function to show a pair of comments starting from a specific index
+// Function to show comments based on screen size
 function showCommentPair(startIndex) {
     console.log('showCommentPair called with startIndex:', startIndex);
+    
+    // Check if mobile (same breakpoint as CSS)
+    const isMobile = window.innerWidth <= 768;
     
     // Hide all comment cards first
     let commentCards = document.getElementsByClassName("comment-card");
@@ -236,54 +239,73 @@ function showCommentPair(startIndex) {
         commentCards[i].classList.remove("active");
     }
     
-    // Show two consecutive comments
-    let firstIndex = startIndex;
-    let secondIndex = startIndex + 1;
-    
-    console.log('Showing comments:', firstIndex, 'and', secondIndex);
-    
-    // Show the first comment
-    if (commentCards[firstIndex - 1]) {
-        commentCards[firstIndex - 1].classList.add("active");
-        console.log('Activated comment:', firstIndex);
-    }
-    
-    // Show the second comment
-    if (commentCards[secondIndex - 1]) {
-        commentCards[secondIndex - 1].classList.add("active");
-        console.log('Activated comment:', secondIndex);
+    if (isMobile) {
+        // Mobile: Show only one comment
+        let commentIndex = startIndex;
+        console.log('Mobile: Showing comment:', commentIndex);
+        
+        if (commentCards[commentIndex - 1]) {
+            commentCards[commentIndex - 1].classList.add("active");
+            console.log('Activated comment:', commentIndex);
+        }
+    } else {
+        // Desktop: Show two consecutive comments
+        let firstIndex = startIndex;
+        let secondIndex = startIndex + 1;
+        
+        console.log('Desktop: Showing comments:', firstIndex, 'and', secondIndex);
+        
+        // Show the first comment
+        if (commentCards[firstIndex - 1]) {
+            commentCards[firstIndex - 1].classList.add("active");
+            console.log('Activated comment:', firstIndex);
+        }
+        
+        // Show the second comment
+        if (commentCards[secondIndex - 1]) {
+            commentCards[secondIndex - 1].classList.add("active");
+            console.log('Activated comment:', secondIndex);
+        }
     }
     
     // Update current index
     currentCommentIndex = startIndex;
 }
 
-// Function to show next pair of comments
+// Function to show next comments (1 on mobile, 2 on desktop)
 function nextComment() {
     console.log('nextComment() called, currentCommentIndex:', currentCommentIndex);
     
-    // Calculate next pair starting index (move by 2)
-    let nextIndex = currentCommentIndex + 2;
+    // Check if mobile (same breakpoint as CSS)
+    const isMobile = window.innerWidth <= 768;
+    const step = isMobile ? 1 : 2;
+    
+    // Calculate next starting index
+    let nextIndex = currentCommentIndex + step;
     if (nextIndex > totalComments) {
         nextIndex = 1; // Wrap around to beginning
     }
     
-    console.log('Next pair will start at:', nextIndex);
+    console.log('Next will start at:', nextIndex, '(step:', step + ')');
     showCommentPair(nextIndex);
 }
 
-// Function to show previous pair of comments
+// Function to show previous comments (1 on mobile, 2 on desktop)
 function previousComment() {
     console.log('previousComment() called, currentCommentIndex:', currentCommentIndex);
     
-    // Calculate previous pair starting index (move by 2)
-    let prevIndex = currentCommentIndex - 2;
+    // Check if mobile (same breakpoint as CSS)
+    const isMobile = window.innerWidth <= 768;
+    const step = isMobile ? 1 : 2;
+    
+    // Calculate previous starting index
+    let prevIndex = currentCommentIndex - step;
     if (prevIndex < 1) {
-        // Wrap around to the last pair
-        prevIndex = totalComments - 1; // Start at 7 to show 7,8
+        // Wrap around to the end
+        prevIndex = isMobile ? totalComments : totalComments - 1;
     }
     
-    console.log('Previous pair will start at:', prevIndex);
+    console.log('Previous will start at:', prevIndex, '(step:', step + ')');
     showCommentPair(prevIndex);
 }
 
