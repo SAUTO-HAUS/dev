@@ -349,7 +349,7 @@ if (file_exists($js_file_path)) {
                     <div class="partner-logo bt-logo">
                         <img style="margin-bottom: 40px;" src="/content/site/page/new_pages/credit/credit-media/bt.svg" alt="BT Leasing">
                     </div>
-                    <div class="partner-info">
+                    <div class="partner-info" style="margin-top: -20px;">
                         <h3 class="partner-name">BT Leasing</h3>
                         <p class="partner-desc"><?php echo get_translation('bt_leasing_desc', $current_lang, $lng); ?></p>
                     </div>
