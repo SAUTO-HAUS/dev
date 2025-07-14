@@ -197,7 +197,7 @@ if (file_exists($js_file_path)) {
                         <p class="feature-description"><?php echo get_translation('business_feature1_desc', $current_lang, $lng); ?></p>
                         <!-- Car image for item1 -->
                         <div class="category-car-image">
-                            <img src="/content/site/page/new_pages/credit/credit-media/car2.png" alt="Business Credit Car" class="car-category-image">
+                            <img src="/content/site/page/new_pages/credit/credit-media/car-2.png" alt="Business Credit Car" class="car-category-image">
                         </div>
                     </div>
                     
@@ -263,7 +263,7 @@ if (file_exists($js_file_path)) {
                         <p class="feature-description"><?php echo get_translation('leasing_feature1_desc', $current_lang, $lng); ?></p>
                         <!-- Car image for item1 -->
                         <div class="category-car-image">
-                            <img src="/content/site/page/new_pages/credit/credit-media/car2.png" alt="Leasing Car" class="car-category-image">
+                            <img src="/content/site/page/new_pages/credit/credit-media/car-2.png" alt="Leasing Car" class="car-category-image">
                         </div>
                     </div>
                     
