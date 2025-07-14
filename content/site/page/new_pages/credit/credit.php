@@ -122,7 +122,7 @@ if (file_exists($js_file_path)) {
                         <p class="feature-description"><?php echo get_translation('personal_feature1_desc', $current_lang, $lng); ?></p>
                         <!-- Car image for item1 -->
                         <div class="category-car-image">
-                            <img src="/content/site/page/new_pages/credit/credit-media/car2.png" alt="Personal Credit Car" class="car-category-image">
+                            <img src="/content/site/page/new_pages/credit/credit-media/car-2.png" alt="Personal Credit Car" class="car-category-image">
                         </div>
                     </div>
                     
@@ -354,7 +354,7 @@ if (file_exists($js_file_path)) {
                         <p class="partner-desc"><?php echo get_translation('bt_leasing_desc', $current_lang, $lng); ?></p>
                     </div>
                     <div class="car-image-container">
-                        <img src="/content/site/page/new_pages/credit/credit-media/car-1.avif" alt="Car" class="extending-car">
+                        <img src="/content/site/page/new_pages/credit/credit-media/car-1.png" alt="Car" class="extending-car">
                     </div>
                 </div>
                 
