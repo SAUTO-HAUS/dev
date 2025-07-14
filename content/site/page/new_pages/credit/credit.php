@@ -568,7 +568,7 @@ if (file_exists($js_file_path)) {
         (function(w,d,u){
         var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
         var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-        })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_40.js');
+        })(window,document,'https://sauto-haus.bitrix24.ru/bitrix/js/crm/site/form/embed/loader_40.js');
         </script>
     </div>
     
@@ -578,7 +578,7 @@ if (file_exists($js_file_path)) {
         (function(w,d,u){
         var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
         var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-        })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_38.js');
+        })(window,document,'https://sauto-haus.bitrix24.ru/bitrix/js/crm/site/form/embed/loader_38.js');
         </script>
     </div>
     
@@ -588,7 +588,7 @@ if (file_exists($js_file_path)) {
         (function(w,d,u){
         var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
         var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-        })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_36.js');
+        })(window,document,'https://sauto-haus.bitrix24.ru/bitrix/js/crm/site/form/embed/loader_36.js');
         </script>
     </div>
 </div>
@@ -620,7 +620,7 @@ $(document).ready(function() {
         
         // Simple solution: Open Bitrix24 form URL directly
         var formNum = (currentLang === 'en' ? '38' : currentLang === 'ru' ? '36' : '40');
-        var bitrixUrl = 'https://b33145896.bitrix24.ru/pub/form/' + formNum + '/' + formId + '/';
+        var bitrixUrl = 'https://sauto-haus.bitrix24.ru/pub/form/' + formNum + '/' + formId + '/';
         
         console.log('Opening Bitrix24 form:', bitrixUrl);
         window.open(bitrixUrl, '_blank');
