@@ -412,7 +412,7 @@ $lng_credit_page = array(
         'leasing_feature3_title' => array(
             'ro' => 'Condiții transparente și clare',
             'ru' => 'Прозрачные и понятные условия',
-            'en' => 'ransparent and clear terms'
+            'en' => 'Transparent and clear terms'
         ),
         'leasing_feature3_desc' => array(
             'ro' => 'Fără comisioane ascunse.',
