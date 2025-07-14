@@ -272,7 +272,7 @@ $lng_credit_page = array(
             'en' => 'Buy entirely on credit with no mandatory down payment.'
         ),
         'personal_feature5_title' => array(
-            'ro' => 'probare rapidă – până la 1 oră',
+            'ro' => 'Aprobare rapidă – până la 1 oră',
             'ru' => 'Быстрое одобрение – до 1 часа',
             'en' => 'Fast approval – up to 1 hour'
         ),
