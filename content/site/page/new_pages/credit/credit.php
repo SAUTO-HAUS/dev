@@ -644,12 +644,10 @@ $(document).ready(function() {
 
         
         // Set the iframe src to the Bitrix24 form URL
-        var bitrixUrl;
-        if (currentLang === 'ru') {
-            bitrixUrl = bitrixUrls['ro']; // Fallback to RO form for Russian
-        } else {
-            bitrixUrl = bitrixUrls[currentLang] || bitrixUrls['ro'];
-        }
+        var bitrixUrl = bitrixUrls[currentLang] || bitrixUrls['ro'];
+        
+        // Log which form URL we're using
+        console.log('Using Bitrix form URL:', bitrixUrl);
         
         // Set the iframe src
         document.getElementById('bitrix-iframe').src = bitrixUrl;
