@@ -91,18 +91,20 @@ body {
     overflow: visible;
     height: 520px;
     z-index: 20;
+    pointer-events: none;
 }
 
 .car-hero-image {
     width: 980px;
     height: 420px;
     position: absolute;
-    top: 90px;
-    right: 20px;
+    top: 110px;
+    right: 30px;
     transform: none;
     opacity: 1;
     object-fit: contain;
     z-index: 20;
+    pointer-events: none;
 }
 
 .car-hero-container img {
