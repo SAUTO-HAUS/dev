@@ -556,17 +556,20 @@ body {
     background: #e2001a;
     color: white;
     border: none;
-    padding: 16px 32px;
+    padding: 18px 32px;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0;
     display: block;
     margin: 25px auto 0 auto;
     text-align: center;
+    width: 250px;
+    max-width: 100%;
+    white-space: nowrap;
 }
 
 .apply-button-categories:hover {
@@ -1420,17 +1423,20 @@ body {
     background: #e2001a;
     color: white;
     border: none;
-    padding: 16px 32px;
+    padding: 18px 32px;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0;
     display: block;
     margin: 25px auto 0 auto;
     text-align: center;
+    width: 250px;
+    max-width: 100%;
+    white-space: nowrap;
 }
 
 .apply-button:hover {
