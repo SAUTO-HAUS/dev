@@ -82,7 +82,7 @@ if (file_exists($js_file_path)) {
                 </div>
                 
                 <div class="car-hero-container">
-                    <img src="/content/site/page/new_pages/credit/credit-media/car_red_credit.svg" alt="Automobil credit" class="car-hero-image">
+                    <img src="/content/site/page/new_pages/credit/credit-media/car_red_credit.png" alt="Automobil credit" class="car-hero-image">
                 </div>
             </div>
         </div>
