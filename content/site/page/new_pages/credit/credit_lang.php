@@ -76,9 +76,9 @@ $lng_credit_page = array(
         
         // Comments Section
         'comments_title' => array(
-            'ro' => 'Istorii ale clienților noștri',
-            'ru' => 'Истории наших клиентов',
-            'en' => 'Our customers stories'
+            'ro' => 'Istorii ale clienților<br>noștri',
+            'ru' => 'Истории наших<br>клиентов',
+            'en' => 'Our customers<br>stories'
         ),
         
         // Comment 1 - Gheorghe Grozavu

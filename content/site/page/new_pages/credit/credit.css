@@ -467,33 +467,61 @@ body {
     display: block;
 }
 
+/* Category container with red border like in Figma */
+.category-content {
+    border: 2px solid #e2001a;
+    border-radius: 8px;
+    background: #ffffff;
+    margin-top: 0;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(226, 0, 26, 0.1);
+}
+
+.category-grid {
+    display: none;
+    width: 100%;
+    transition: all 0.3s ease;
+    padding: 0 15px 15px 15px;
+}
+
+@media (max-width: 768px) {
+    .category-grid {
+        padding: 0 5px 15px 5px;
+    }
+}
+
+.category-grid.active {
+    display: block;
+}
+
 /* Category tabs */
 .category-tabs {
     display: flex;
     justify-content: center;
-    margin-bottom: 40px;
-    border-bottom: 1px solid #e0e0e0;
-    gap: 0;
+    margin-bottom: 0;
+    border-bottom: none;
+    gap: 8px;
     position: relative;
+    padding: 0 40px;
 }
 
 .tab-button {
-    background: none;
-    border: none;
-    padding: 16px;
+    background: #f8f9fa;
+    border: 2px solid #e0e0e0;
+    border-bottom: 2px solid #e2001a;
+    padding: 12px 18px;
     font-size: 16px;
     font-weight: 600;
-    color: #000000;
+    color: #666666;
     cursor: pointer;
+    transition: all 0.3s ease;
     position: relative;
-    transition: color 0.3s ease;
-    white-space: nowrap;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
     flex: 1;
     text-align: center;
     min-width: 0;
+    border-radius: 8px 8px 0 0;
+    margin-bottom: -2px;
+    z-index: 5;
 }
 
 .apply-button-categories {
@@ -526,35 +554,14 @@ body {
 .tab-button.active {
     color: #e2001a;
     font-weight: 700;
-    background-color: hsl(0, 53%, 97%);
-    border-radius: 8px;
+    background-color: #ffffff;
+    border-color: #e2001a;
+    border-bottom: 2px solid #ffffff;
+    border-radius: 8px 8px 0 0;
+    z-index: 10;
 }
 
-.tab-button.active::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100% - 24px); /* Subtract left and right padding */
-    height: 3px;
-    background: #e2001a;
-    border-radius: 2px;
-}
-
-.tab-button.active::after {
-    content: '';
-    display: block;
-    width: 0; 
-    height: 0; 
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 8px solid #e2001a;
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-}
+/* Tab active styling removed - using border connection instead */
 
 /* Category content */
 .category-content {
@@ -616,6 +623,8 @@ body {
     grid-template-rows: 195px 195px;
     height: 400px;
     gap: 10px;
+    margin: 0 auto;
+    justify-content: center;
 }
 
 .personal-grid .item1 {
@@ -638,6 +647,8 @@ body {
     grid-template-rows: 195px 195px;
     height: 400px;
     gap: 10px;
+    margin: 0 auto;
+    justify-content: center;
 }
 
 .business-grid .item1 {
@@ -659,6 +670,8 @@ body {
     grid-template-rows: 195px 195px;
     height: 400px;
     gap: 10px;
+    margin: 0 auto;
+    justify-content: center;
 }
 
 .leasing-grid .item1 {
@@ -678,25 +691,27 @@ body {
 }
 
 .feature-icon {
-    margin-bottom: 10px;
+    margin-bottom: 0px;
     display: flex;
     justify-content: flex-start;
-    padding-top: 5px;
+    align-items: flex-start;
+    margin-left: 15px;
+    padding-left: 0;
 }
 
-.feature-icon img
- {
-    width: 48px;
-    height: 48px;
+.feature-icon img {
+    width: 40px;
+    height: 40px;
 }
 
 .feature-title {
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 600;
     color: #333;
-    margin-bottom: -5px;
+    margin-bottom: 0px;
     line-height: 1.3;
-    margin-top: 50px;
+    margin-top: 45px;
+    margin-left: -15px;
 }
 
 .feature-description {
@@ -704,20 +719,65 @@ body {
     color: #666;
     line-height: 1.5;
     margin: 0;
-    margin-top: 8px;
+    margin-top: 5px;
+    margin-left: -15px;
 }
 
 /* Responsive design for credit categories */
 @media (max-width: 768px) {
     .credit-categories-section {
-        padding: 20px 0;
+        padding: 0 8px;
         min-height: auto;
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+        box-sizing: border-box;
+    }
+    
+    .credit-categories-section .container {
+        max-width: none;
+        width: 100%;
+        padding: 0;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    /* Add borders for mobile categories */
+    .category-content {
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+        width: calc(100% - 20px);
+        margin-left: auto;
+        margin-right: auto;
+        padding: 0;
+        background-color: white;
+    }
+    
+    .tab-button {
+        border: none;
+        border-bottom: 1px solid #e0e0e0;
+        border-radius: 0;
+    }
+    
+    .tab-button.active {
+        border: none;
+        border-bottom: 1px solid #e0e0e0;
     }
     
     .category-tabs {
         flex-direction: column;
-        gap: 0;
+        gap: 10px;
         border-bottom: none;
+        width: calc(100% - 20px);
+        margin: 0 auto 20px auto;
+        padding: 20px 10px 10px 10px;
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
     }
     
     .tab-button {
@@ -810,10 +870,14 @@ body {
     }
     
     .category-grid {
-        padding: 20px;
-        border-bottom: 1px solid #e0e0e0;
-        background-color: white;
+        padding: 20px 15px;
+        border: none;
+        border-radius: 0;
+        background-color: transparent;
         display: none;
+        width: 100%;
+        margin: 0;
+        box-shadow: none;
     }
     
     .category-grid.active {
@@ -831,18 +895,25 @@ body {
         padding: 15px !important;
         display: flex;
         flex-direction: row;
-        align-items: flex-start;
-        gap: 8px;
+        align-items: center;
+        gap: 12px;
         text-align: left;
-        min-height: 100px;
+        min-height: 80px;
     }
     
     .category-title {
         font-size: 24px;
+        text-align: center;
+        margin: 0 auto 15px auto;
+        padding: 0 15px;
     }
     
     .category-description {
         font-size: 16px;
+        text-align: center;
+        margin: 0 auto 25px auto;
+        padding: 0 15px;
+        max-width: 90%;
     }
     
     /* Mobile specific alignment for icons and titles */
@@ -855,16 +926,16 @@ body {
         display: flex !important;
         justify-content: center !important;
         align-items: center !important;
-        width: 48px !important;
-        height: 48px !important;
+        width: 40px !important;
+        height: 40px !important;
         margin: 0 !important;
         padding: 0 !important;
         flex-shrink: 0;
     }
     
     .credit-categories-section .feature-icon img {
-        width: 48px !important;
-        height: 48px !important;
+        width: 40px !important;
+        height: 40px !important;
     }
     
     .feature-card .feature-content {
