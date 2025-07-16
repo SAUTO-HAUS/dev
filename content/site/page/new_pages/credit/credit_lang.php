@@ -453,7 +453,7 @@ $lng_credit_page = array(
         ),
         'submit_application' => array(
             'ro' => 'Trimite cererea',
-            'ru' => 'Отправить заявку',
+            'ru' => 'Подать заявку',
             'en' => 'Submit application'
         ),
         
