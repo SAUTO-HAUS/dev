@@ -552,6 +552,25 @@ if (file_exists($js_file_path)) {
                     <p class="comment-text"><?php echo get_translation('comment_8_text', $current_lang, $lng); ?></p>
                 </div>     
             </div>
+
+             <!-- Comment 9 -->
+            <div class="comment-card" data-comment="9">
+                <div class="comment-author">
+                    <div class="author-avatar">
+                        <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar9.jpg" 
+                             alt="<?php echo get_translation('comment_9_name', $current_lang, $lng); ?>" 
+                             onerror="this.style.display='none'">
+                    </div>
+                    <div class="author-info">
+                        <h4 class="author-name"><?php echo get_translation('comment_9_name', $current_lang, $lng); ?></h4>
+                        <p class="author-location"><?php echo get_translation('comment_9_location', $current_lang, $lng); ?></p>
+                    </div>
+                </div>
+                <div class="comment-content">
+                    <div class="quote-mark">"</div>
+                    <p class="comment-text"><?php echo get_translation('comment_9_text', $current_lang, $lng); ?></p>
+                </div>
+            </div>
         </div>
     </div>
 </section>
