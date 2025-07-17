@@ -379,8 +379,37 @@ $(document).ready(function() {
     }
 });
 
+// Function to fix text spacing in feature titles
+function fixTextSpacing() {
+    const featureTitles = document.querySelectorAll('.feature-title');
+    
+    featureTitles.forEach(title => {
+        const originalText = title.textContent || title.innerText;
+        // Ensure proper spacing between words
+        const fixedText = originalText.replace(/\s+/g, ' ').trim();
+        
+        // Only update if text has changed
+        if (originalText !== fixedText) {
+            title.textContent = fixedText;
+        }
+        
+        // Force style recalculation
+        title.style.wordSpacing = 'normal';
+        title.style.whiteSpace = 'normal';
+        title.style.letterSpacing = 'normal';
+    });
+}
+
 // Initialize comments slider when page loads
 $(document).ready(function() {
     // Show first pair of comments by default
     showCommentPair(1);
+    
+    // Fix text spacing after page load
+    setTimeout(fixTextSpacing, 100);
+    
+    // Fix text spacing after tab switches
+    $('.tab-button').on('click', function() {
+        setTimeout(fixTextSpacing, 50);
+    });
 });
