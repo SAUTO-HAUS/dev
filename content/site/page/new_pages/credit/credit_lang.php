@@ -216,6 +216,23 @@ $lng_credit_page = array(
             'ru' => 'В качестве преподавателя у неё напряжённый график и мало свободного времени, поэтому она особенно оценила, насколько просто и эффективно прошёл весь процесс получения автокредита через SAUTO. Команда была очень отзывчивой и чётко объяснила каждый шаг, без лишней бюрократии. Ей удалось приобрести желаемый автомобиль в короткие сроки, на выгодных условиях и без стресса. Её впечатлили профессионализм консультантов и прозрачность предложения. Она с уверенностью рекомендует услуги SAUTO всем, кто, как и она, нуждается в быстрых и надёжных решениях.',
             'en' => 'As a teacher with a busy schedule and little free time, she truly appreciated how simple and efficient the entire car loan process was with SAUTO. The team was very responsive and explained every step clearly, without unnecessary bureaucracy. She managed to purchase the car she wanted in a short time, with affordable rates and no stress. She was impressed by the consultants\' professionalism and the transparency of the offer. She confidently recommends SAUTO to anyone who, like her, is looking for quick and reliable solutions.'
         ),
+
+        // Comment 9 - Robert Botnarenco
+        'comment_9_name' => array(
+            'ro' => 'Robert Botnarenco',
+            'ru' => 'Роберт Ботнареко',
+            'en' => 'Robert Botnarenco'
+        ),
+        'comment_9_location' => array(
+            'ro' => 'Avocat',
+            'ru' => 'Адвокат ',
+            'en' => 'Lawyer'
+        ),
+        'comment_9_text' => array(
+            'ro' => 'Chiar și cu un venit stabil și un job bine plătit, nu își permitea să cumpere mașina dorită fără să își pună în pericol echilibrul financiar lunar. A găsit o soluție de finanțare care i s-a părut transparentă, corectă și adaptată nevoilor sale. Echipa care l-a asistat a fost profesionistă, răbdătoare și clară în fiecare etapă a procesului, oferindu-i toate informațiile necesare fără termeni complicați sau birocrație inutilă. Totul a decurs rapid și fără stres, iar acum se bucură de automobilul pe care și-l dorea, cu o finanțare accesibilă și condiții avantajoase. Recomandă cu încredere această opțiune oricui caută o metodă sigură, transparentă și comodă pentru achiziția unei mașini.',
+            'ru' => 'Даже при стабильном доходе и хорошо оплачиваемой работе он не мог позволить себе купить желаемый автомобиль, не рискуя своим ежемесячным финансовым балансом. Он нашёл решение финансирования, которое показалось ему прозрачным, справедливым и адаптированным под его потребности. Команда, которая его сопровождала, была профессиональной, терпеливой и понятной на каждом этапе процесса, предоставляя всю необходимую информацию без сложных терминов и лишней бюрократии. Всё прошло быстро и без стресса, и теперь он наслаждается автомобилем, о котором мечтал, с доступным финансированием и выгодными условиями. Он с уверенностью рекомендует этот вариант всем, кто ищет надёжный, прозрачный и удобный способ приобретения машины.',
+            'en' => 'Even with a stable income and a well-paid job, he couldn’t afford to buy the car he wanted without risking his monthly financial balance. He found a financing solution that seemed transparent, fair, and tailored to his needs. The team assisting him was professional, patient, and clear at every step of the process, providing all the necessary information without complicated terms or unnecessary bureaucracy. Everything went quickly and stress-free, and now he enjoys the car he dreamed of, with affordable financing and favorable conditions. He confidently recommends this option to anyone looking for a reliable, transparent, and convenient way to purchase a vehicle.'
+        ),
         
         // Credit Categories Section
         // Personal Credit
