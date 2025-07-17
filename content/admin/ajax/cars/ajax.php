@@ -253,13 +253,29 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
     // /debug_token?input_token={TOKEN}&access_token={APP_ID}|{APP_SECRET}
     // https://graph.facebook.com/debug_token?input_token=EAA71HdmzXoEBO4MbZCfIlrtMS9X4qUMYzfX0C3okReZAfBnJgxh1WvPLzcup4ZAUOujIDDCTgx13SxcZCPR8WI1pBaRgH9YjQprKcKJptwR62AIaZAkxeLcayDYhdSxKF1XvquStSWMD1smvCLNAj4kzRGZADOlLCWjVdC3SAsYka4zOnj4gmPy3FjGObCeolm1dbhiDHaueztZBZAynwhZCy&access_token=4210158229216897
 
-    echo 'push';
-exit('2');
+
 
     // Determine Facebook settings based on domain
-    $current_host = $_SERVER['HTTP_HOST'] ?? '';
-    $is_main_domain = ($current_host === 'sauto.md' || $current_host === 'www.sauto.md');
+    // $current_host = $_SERVER['HTTP_HOST'] ?? '';
+    // $is_main_domain = ($current_host === 'sauto.md' || $current_host === 'www.sauto.md');
     
+
+
+
+    $carId = $it_id = __post('id');
+
+    $local_id = __post('local_id');
+
+    echo $local_id;
+    exit('2');
+
+    $_COOKIE['lang']='ro';
+    require (_DEFAULT.'/language.php');
+
+    $phone = "+37379600446";
+    $car_title_name = "";
+
+
     if ($is_main_domain) {
         // Main domain Facebook settings
         define('APP_ID', '1082088863732549');
@@ -276,14 +292,6 @@ exit('2');
 
     define('GRAPH_VER', 'v22.0');
 
-
-    $carId = $it_id = __post('id');
-
-    $_COOKIE['lang']='ro';
-    require (_DEFAULT.'/language.php');
-
-    $phone = "+37379600446";
-    $car_title_name = "";
 
     $pdo = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg WHERE `id`= :id LIMIT 1');
     $pdo->execute(['id' => $it_id]);
