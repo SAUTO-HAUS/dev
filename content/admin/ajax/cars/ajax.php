@@ -252,18 +252,39 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
 
     // /debug_token?input_token={TOKEN}&access_token={APP_ID}|{APP_SECRET}
     // https://graph.facebook.com/debug_token?input_token=EAA71HdmzXoEBO4MbZCfIlrtMS9X4qUMYzfX0C3okReZAfBnJgxh1WvPLzcup4ZAUOujIDDCTgx13SxcZCPR8WI1pBaRgH9YjQprKcKJptwR62AIaZAkxeLcayDYhdSxKF1XvquStSWMD1smvCLNAj4kzRGZADOlLCWjVdC3SAsYka4zOnj4gmPy3FjGObCeolm1dbhiDHaueztZBZAynwhZCy&access_token=4210158229216897
-    
+
+
+
     // Determine Facebook settings based on domain
-    $current_host = $_SERVER['HTTP_HOST'] ?? '';
-    $is_main_domain = ($current_host === 'sauto.md' || $current_host === 'www.sauto.md');
+    // $current_host = $_SERVER['HTTP_HOST'] ?? '';
+    // $is_main_domain = ($current_host === 'sauto.md' || $current_host === 'www.sauto.md');
     
-    if ($is_main_domain) {
+
+
+
+    $carId = $it_id = __post('id');
+
+    $local_id = __post('local_id');
+
+  //  echo $local_id;
+   // exit('2');
+
+    $_COOKIE['lang']='ro';
+    require (_DEFAULT.'/language.php');
+
+    $phone = "+37379600446";
+    $car_title_name = "";
+
+    if ($local_id == 2) {
+        // Vânzări automobile Piața Pruncu
+
         // Main domain Facebook settings
         define('APP_ID', '1082088863732549');
         define('APP_SECRET', '77368f52ab263907ee1fe3ea72909289');
-        define('PAGE_ID', '725963964220309');
-        define('PAGE_TOKEN', 'EAAPYJ3JWk0UBO6G3TndhaeRaj06GTzZC9nmIqBzdwTEzVekE6z3Yr5xH5wUFH3cVycDcugKYvOORP7cSuLk6diRDBiGhW2m8F3ZA8iUKPgsv9p85Y6ZA22ZAvTR5ulW24A6eFKJtL7ndCQlVsgiReI7yybKAbB20NaH5wOrOuz22SUryrwNgcjdQYjyiH5DPfNaPG4rbyXFzbqdBQqFbA5t8');
-    } else {
+        define('PAGE_ID', '482777831588669');
+        define('PAGE_TOKEN', 'EAAPYJ3JWk0UBPFbYyIr4DFIganwXlrl1vnEWDBnWWZBZAUZBE0t3dO6qECxmjPOn0lSMXrA9HRlrzp7kKGZB9wCTU8PyF3OADlRCUQEl432SdhZCDlxzISpTiy0u2vvoUNeZCR1HHt4LYaLKVZAcjPyfYdnOqKpt5Hksxbn8GympTi5uak0jmtO1CT5F2EX6huUs1epnnI5m9DZAyyOs4Ujmht0ZCplYaNfLZAV6ti0UavnC7CPJLYkRh3HuUojlMZD');
+    }
+    else {
         // Subdomain Facebook settings (fallback to same for now)
         define('APP_ID', '1082088863732549');
         define('APP_SECRET', '77368f52ab263907ee1fe3ea72909289');
@@ -273,14 +294,6 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
 
     define('GRAPH_VER', 'v22.0');
 
-
-    $carId = $it_id = __post('id');
-
-    $_COOKIE['lang']='ro';
-    require (_DEFAULT.'/language.php');
-
-    $phone = "+37379600446";
-    $car_title_name = "";
 
     $pdo = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg WHERE `id`= :id LIMIT 1');
     $pdo->execute(['id' => $it_id]);

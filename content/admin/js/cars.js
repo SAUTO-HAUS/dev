@@ -20,7 +20,8 @@ function sendToFacebookCars() {
 				tp: reqType,
 				pg: reqPage,
 				fn: 'sendToFacebookCars', // Имя обработчика в PHP
-				id: carId
+				id: carId,
+				local_id: $('select[name=loc]').val()
 			},
 			statusCode: {
 				0: function(){
