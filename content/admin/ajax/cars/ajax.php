@@ -277,11 +277,12 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
 
     if ($local_id == 2) {
         // Vânzări automobile Piața Pruncu
+
         // Main domain Facebook settings
         define('APP_ID', '1082088863732549');
         define('APP_SECRET', '77368f52ab263907ee1fe3ea72909289');
         define('PAGE_ID', '482777831588669');
-        define('PAGE_TOKEN', 'EAAPYJ3JWk0UBO3UrsSJpNT2DeqqJ2uzR8RrdgU4PkGqm8oSHSWEduOljB7LewWEiwuRw8y9kYHFvX9wB3NHAD8TvItQr8xkZBIZBeP44OZCmUeEXsbl4fFZCzvqv2Nqa7QIDPWGOJ23OSBQIVckFF6UZAJchBfZCZA1X9ghp6I1HWbn9cTadKQpksYAkLxFEj27E7XY2Bmz9VAYtJ3fgXrvBtpZBSnLoCscZBBTY3SZC3KVpa2xoHowRlZBtSX0');
+        define('PAGE_TOKEN', 'EAAPYJ3JWk0UBPFbYyIr4DFIganwXlrl1vnEWDBnWWZBZAUZBE0t3dO6qECxmjPOn0lSMXrA9HRlrzp7kKGZB9wCTU8PyF3OADlRCUQEl432SdhZCDlxzISpTiy0u2vvoUNeZCR1HHt4LYaLKVZAcjPyfYdnOqKpt5Hksxbn8GympTi5uak0jmtO1CT5F2EX6huUs1epnnI5m9DZAyyOs4Ujmht0ZCplYaNfLZAV6ti0UavnC7CPJLYkRh3HuUojlMZD');
     }
     else {
         // Subdomain Facebook settings (fallback to same for now)
