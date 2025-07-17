@@ -1,6 +1,6 @@
 // Comments slider functionality - Show 2 comments at a time
 let currentCommentIndex = 1;
-const totalComments = 8;
+const totalComments = 9;
 const commentsPerView = 2;
 
 // Initialize sliders when page is ready
