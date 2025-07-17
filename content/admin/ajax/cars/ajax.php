@@ -252,7 +252,9 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
 
     // /debug_token?input_token={TOKEN}&access_token={APP_ID}|{APP_SECRET}
     // https://graph.facebook.com/debug_token?input_token=EAA71HdmzXoEBO4MbZCfIlrtMS9X4qUMYzfX0C3okReZAfBnJgxh1WvPLzcup4ZAUOujIDDCTgx13SxcZCPR8WI1pBaRgH9YjQprKcKJptwR62AIaZAkxeLcayDYhdSxKF1XvquStSWMD1smvCLNAj4kzRGZADOlLCWjVdC3SAsYka4zOnj4gmPy3FjGObCeolm1dbhiDHaueztZBZAynwhZCy&access_token=4210158229216897
-    
+
+    echo 'push';
+
     // Determine Facebook settings based on domain
     $current_host = $_SERVER['HTTP_HOST'] ?? '';
     $is_main_domain = ($current_host === 'sauto.md' || $current_host === 'www.sauto.md');
