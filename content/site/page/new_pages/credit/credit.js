@@ -379,24 +379,48 @@ $(document).ready(function() {
     }
 });
 
-// Function to fix text spacing in feature titles
-function fixTextSpacing() {
-    const featureTitles = document.querySelectorAll('.feature-title');
+// Function to force last word on new line for category tab buttons on mobile
+function forceLastWordNewLineTabButtons() {
+    const isMobile = window.innerWidth <= 768;
     
-    featureTitles.forEach(title => {
-        const originalText = title.textContent || title.innerText;
-        // Ensure proper spacing between words
-        const fixedText = originalText.replace(/\s+/g, ' ').trim();
-        
-        // Only update if text has changed
-        if (originalText !== fixedText) {
-            title.textContent = fixedText;
+    if (!isMobile) {
+        restoreOriginalTabButtonText();
+        return; // Only apply line break on mobile
+    }
+    
+    const tabButtons = document.querySelectorAll('.tab-button');
+    
+    tabButtons.forEach(button => {
+        // Get original text and save it
+        let text = button.getAttribute('data-original-text');
+        if (!text) {
+            text = button.textContent || button.innerText;
+            button.setAttribute('data-original-text', text.trim());
         }
         
-        // Force style recalculation
-        title.style.wordSpacing = 'normal';
-        title.style.whiteSpace = 'normal';
-        title.style.letterSpacing = 'normal';
+        // Split text into words
+        const words = text.trim().split(/\s+/);
+        
+        if (words.length > 1) {
+            // Join all words except last with spaces, then add line break before last word
+            const allButLast = words.slice(0, -1).join(' ');
+            const lastWord = words[words.length - 1];
+            
+            // Use HTML to force line break
+            button.innerHTML = allButLast + '<br>' + lastWord;
+        }
+    });
+}
+
+// Function to restore original text for tab buttons (for desktop)
+function restoreOriginalTabButtonText() {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    
+    tabButtons.forEach(button => {
+        const originalText = button.getAttribute('data-original-text');
+        if (originalText) {
+            button.textContent = originalText;
+        }
     });
 }
 
@@ -405,11 +429,18 @@ $(document).ready(function() {
     // Show first pair of comments by default
     showCommentPair(1);
     
-    // Fix text spacing after page load
-    setTimeout(fixTextSpacing, 100);
+    // Force last word on new line for tab buttons after page load
+    setTimeout(forceLastWordNewLineTabButtons, 100);
     
-    // Fix text spacing after tab switches
+    // Force last word on new line for tab buttons after tab switches
     $('.tab-button').on('click', function() {
-        setTimeout(fixTextSpacing, 50);
+        setTimeout(forceLastWordNewLineTabButtons, 50);
+    });
+    
+    // Handle window resize to switch between mobile and desktop behavior
+    $(window).on('resize', function() {
+        setTimeout(function() {
+            forceLastWordNewLineTabButtons();
+        }, 100);
     });
 });
