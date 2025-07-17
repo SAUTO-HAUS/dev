@@ -7,8 +7,8 @@ $lng_credit_page = array(
     'w' => array(
         // Hero Section
         'hero_main_title' => array(
-            'ro' => 'CUMPĂRAȚI AUTOMOBILUL CU UȘURINȚĂ',
-            'ru' => 'ПОКУПАЙТЕ АВТОМОБИЛЬ С ЛЁГКОСТЬЮ',
+            'ro' => 'CUMPĂRAȚI AUTOMOBILUL<br>CU UȘURINȚĂ',
+            'ru' => 'ПОКУПАЙТЕ АВТОМОБИЛЬ<br>С ЛЁГКОСТЬЮ',
             'en' => 'BUY A CAR WITH EASE'
         ),
         'hero_subtitle' => array(
@@ -24,9 +24,9 @@ $lng_credit_page = array(
         
         // Calculator Section
         'calculator_title' => array(
-            'ro' => 'Calculator Credit',
+            'ro' => 'Calculator credit',
             'ru' => 'Кредитный калькулятор',
-            'en' => 'Loan Calculator'
+            'en' => 'Loan calculator'
         ),
         'calc_suma' => array(
             'ro' => 'Suma creditului',
@@ -76,7 +76,7 @@ $lng_credit_page = array(
         
         // Comments Section
         'comments_title' => array(
-            'ro' => 'Istorii ale clienților<br>noștri',
+            'ro' => 'istoriile clienților<br>noștri',
             'ru' => 'Истории наших<br>клиентов',
             'en' => 'Our customers<br>stories'
         ),
