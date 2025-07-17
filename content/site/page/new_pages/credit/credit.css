@@ -1101,7 +1101,7 @@ body {
     /* Hero Section Mobile Styles */
     .hero-section {
         height: auto;
-        padding: 0 0 10px 0;
+        padding: 0;
         text-align: center;
     }
     
@@ -1109,7 +1109,7 @@ body {
         flex-direction: column;
         align-items: center;
         text-align: center;
-        padding: 0 20px;
+        padding: 0 17px;
     }
     
     .hero-content .container {
@@ -1134,19 +1134,18 @@ body {
         margin: 0;
         right: 0;
         padding: 0 20px;
-        margin-bottom: 15px;
+        margin-top: 20px;
     }
     
     .hero-main-title {
-        font-size: 1.8rem;
+        font-size: 2.3rem;
         line-height: 1.3;
         margin-bottom: 8px;
     }
     
     .hero-subtitle {
-        font-size: 1.2rem;
+        font-size: 1.4rem;
         line-height: 1.4;
-        margin-bottom: 10px;
     }
     
     .car-hero-container {
@@ -1177,7 +1176,7 @@ body {
         left: auto;
         right: auto;
         margin: 0 auto;
-        top: 0px;
+        top: 40px;
         display: block;
         transform: none;
     }

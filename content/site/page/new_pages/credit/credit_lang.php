@@ -321,7 +321,7 @@ $lng_credit_page = array(
 
         // Business Credit
         'business_credit_title' => array(
-            'ro' => 'Credit auto pentru afacerea dvs.',
+            'ro' => 'Credit auto pentru afacerea dumneavoastră',
             'ru' => 'Автокредит для вашего бизнеса',
             'en' => 'Car loan for your business'
         ),
