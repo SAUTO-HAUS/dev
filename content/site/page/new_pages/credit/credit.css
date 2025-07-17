@@ -654,7 +654,7 @@ body {
     grid-template-columns: 1fr 1fr 1fr 1fr;
     grid-template-rows: 195px 195px;
     height: 400px;
-    gap: 10px;
+    gap: 15px;
     margin: 0 auto;
     justify-content: center;
 }
@@ -672,13 +672,25 @@ body {
 .personal-grid .item6 { grid-row: 2; grid-column: 3; }
 .personal-grid .item7 { grid-row: 2; grid-column: 4; }
 
+.personal-grid .item1,
+.personal-grid .item2,
+.personal-grid .item3,
+.personal-grid .item4,
+.personal-grid .item5,
+.personal-grid .item6,
+.personal-grid .item7
+{
+    background-color: #f1f1f1;
+}
+
+
 /* BUSINESS CATEGORY - Special 6 section layout */
 .business-grid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
     grid-template-rows: 195px 195px;
     height: 400px;
-    gap: 10px;
+    gap: 15px;
     margin: 0 auto;
     justify-content: center;
 }
@@ -695,13 +707,23 @@ body {
 
 .business-grid .item6 { grid-row: 2; grid-column: 3 / span 2; }
 
+.business-grid .item1,
+.business-grid .item2,
+.business-grid .item3,
+.business-grid .item4,
+.business-grid .item5,
+.business-grid .item6
+{
+    background-color: #f1f1f1;
+}
+
 /* LEASING CATEGORY - Special 5 section layout */
 .leasing-grid {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr;
     grid-template-rows: 195px 195px;
     height: 400px;
-    gap: 10px;
+    gap: 15px;
     margin: 0 auto;
     justify-content: center;
 }
@@ -715,6 +737,16 @@ body {
 .leasing-grid .item3 { grid-row: 1; grid-column: 5 / 8; }
 .leasing-grid .item4 { grid-row: 2; grid-column: 2 / 4; }
 .leasing-grid .item5 { grid-row: 2; grid-column: 4 / 8; }
+
+.leasing-grid .item1,
+.leasing-grid .item2,
+.leasing-grid .item3,
+.leasing-grid .item4,
+.leasing-grid .item5
+{
+    background-color: #f1f1f1;
+}
+
 
 .feature-card:hover {
     transform: translateY(-4px);
@@ -747,7 +779,7 @@ body {
 }
 
 .feature-description {
-    font-size: 13px;
+    font-size: 15px;
     color: #656565;
     line-height: 1.5;
     margin: 0;
