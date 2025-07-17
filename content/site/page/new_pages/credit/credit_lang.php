@@ -195,9 +195,9 @@ $lng_credit_page = array(
             'en' => 'Plumber from Chișinău'
         ),
         'comment_7_text' => array(
-            'ro' => 'Lucrez de 15 ani ca instalator și mereu am mers cu transportul public. Într-o zi am calculat - pierd 3 ore zilnic în deplasări! Am auzit de SAUTO de la un prieten. M-am dus sceptic, dar după 2 ore am ieșit cu aprobarea pentru credit. Acum ajung la mai multe lucrări pe zi și câștig dublu. Mașina s-a plătit singură!',
-            'ru' => 'Работаю сантехником уже 15 лет и всегда ездил на общественном транспорте. Однажды подсчитал - теряю 3 часа в день на дорогу! Узнал о SAUTO от друга. Пришёл скептически настроенный, но через 2 часа вышел с одобрением кредита. Теперь успеваю на больше работ в день и зарабатываю вдвое больше. Машина окупилась сама!',
-            'en' => 'I\'ve been working as a plumber for 15 years and always used public transport. One day I calculated - I lose 3 hours daily on commuting! I heard about SAUTO from a friend. I went there skeptically, but after 2 hours I left with credit approval. Now I get to more jobs per day and earn double. The car paid for itself!'
+            'ro' => 'Lucrează de 15 ani ca instalator și întotdeauna a folosit transportul public pentru a ajunge la locurile de muncă. Într-o zi a realizat că pierde 3 ore pe zi în deplasări. A aflat despre SAUTO de la un prieten și, deși inițial era sceptic, după doar o oră a obținut aprobarea pentru credit. Acum reușește să ajungă la mai multe lucrări într-o zi și câștigă mult mai mult, iar mașina s-a plătit de la sine.',
+            'ru' => 'Он работает сантехником уже 15 лет и всегда использовал общественный транспорт для поездок на работу. Однажды он понял, что тратит 3 часа в день на дорогу. Он узнал о SAUTO от друга, и, хотя поначалу был скептически настроен, через час получил одобрение на кредит. Теперь он успевает посетить больше объектов за день и зарабатывает гораздо больше, а машина уже окупила себя.',
+            'en' => 'He has been working as a plumber for 15 years and has always used public transport to get to work. One day, he realized that he was spending 3 hours a day commuting. He heard about SAUTO from a friend, and although he was initially skeptical, he got approved for the loan in just one hour. Now, he manages to reach more jobs in a day and earns much more, with the car paying for itself.'
         ),
         
         // Comment 8 - Natalia Ciobanu
@@ -207,14 +207,14 @@ $lng_credit_page = array(
             'en' => 'Natalia Ciobanu'
         ),
         'comment_8_location' => array(
-            'ro' => 'Profesoară din Soroca',
-            'ru' => 'Учительница из Сорока',
-            'en' => 'Teacher from Soroca'
+            'ro' => 'Profesoară din Chișinău',
+            'ru' => 'Учительница из Кишинёва',
+            'en' => 'Teacher from Chisinau'
         ),
         'comment_8_text' => array(
-            'ro' => 'Sunt profesoară la Soroca și fac naveta zilnic din Chișinău. Autobuzele mereu întârzie și ajung obosită la lecții. Copiii mei mă întrebau mereu "Mama, când îți iei mașină?" La SAUTO mi-au explicat totul clar, fără termeni complicați. În 3 zile aveam cheile în mână. Acum petrec mai mult timp acasă și sunt mai relaxată la muncă.',
-            'ru' => 'Я учительница в Сороках и каждый день добираюсь из Кишинёва. Автобусы постоянно опаздывают, и я прихожу на уроки уставшей. Мои дети всегда спрашивали: "Мама, когда ты купишь машину?" В SAUTO мне всё объяснили понятно, без сложных терминов. Через 3 дня у меня были ключи в руках. Теперь провожу больше времени дома и более спокойна на работе.',
-            'en' => 'I\'m a teacher in Soroca and commute daily from Chișinău. Buses are always late and I arrive tired for classes. My children always asked "Mom, when will you buy a car?" At SAUTO they explained everything clearly, without complicated terms. In 3 days I had the keys in my hands. Now I spend more time at home and I\'m more relaxed at work.'
+            'ro' => 'În calitate de profesoară, are un program încărcat și puțin timp liber, așa că a apreciat enorm cât de simplu și eficient a decurs tot procesul de obținere a creditului auto prin SAUTO. Echipa a fost foarte receptivă și i-a explicat clar fiecare pas, fără birocrație inutilă. A reușit să-și cumpere automobilul dorit într-un timp scurt, cu rate avantajoase și fără stres. A fost impresionată de profesionalismul consultanților și de transparența ofertei. Recomandă cu încredere serviciile SAUTO, mai ales celor care, ca și ea, au nevoie de soluții rapide și sigure.',
+            'ru' => 'В качестве преподавателя у неё напряжённый график и мало свободного времени, поэтому она особенно оценила, насколько просто и эффективно прошёл весь процесс получения автокредита через SAUTO. Команда была очень отзывчивой и чётко объяснила каждый шаг, без лишней бюрократии. Ей удалось приобрести желаемый автомобиль в короткие сроки, на выгодных условиях и без стресса. Её впечатлили профессионализм консультантов и прозрачность предложения. Она с уверенностью рекомендует услуги SAUTO всем, кто, как и она, нуждается в быстрых и надёжных решениях.',
+            'en' => 'As a teacher with a busy schedule and little free time, she truly appreciated how simple and efficient the entire car loan process was with SAUTO. The team was very responsive and explained every step clearly, without unnecessary bureaucracy. She managed to purchase the car she wanted in a short time, with affordable rates and no stress. She was impressed by the consultants\' professionalism and the transparency of the offer. She confidently recommends SAUTO to anyone who, like her, is looking for quick and reliable solutions.'
         ),
         
         // Credit Categories Section
