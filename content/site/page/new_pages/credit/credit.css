@@ -1588,7 +1588,7 @@ body {
 
 .comments-slider {
     position: relative;
-    width: 80%;
+    width: 90%;
     margin: 20px 0 0 0;
     overflow: hidden;
     display: flex;
@@ -2228,67 +2228,6 @@ body {
     }
 }
 
-/* Large Screens (iMac 24-inch) */
-@media screen and (min-width: 1920px) {
-    .hero-section {
-        height: 580px;
-        padding: 80px 0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .car-hero-container {
-        height: 580px;
-    }
-    
-    .car-hero-image {
-        width: 1100px;
-        height:450px;
-        top: 220px;
-        right: 230px;
-    }
-
-    .hero-right-content {
-        width: 70%;
-    }
-
-    .container {
-        max-width: 1400px;
-        margin: 0 auto;
-        display: flex;
-        justify-content: center;
-    }
-
-    .hero-text {
-        margin-top: 55px;
-        margin-right: 320px;
-    }
-
-    .credit-calculator-container {
-        margin-top: 55px;
-        margin-bottom: 0;
-        margin-left: 300px;
-        height: 80%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-    }
-    
-    .credit-calculator-container .calculator-content,
-    .credit-calculator-container .calculator-field,
-    .credit-calculator-container .input-slider-container,
-    .credit-calculator-container .slider-container,
-    .credit-calculator-container .payment-result {
-        width: 100%;
-    }
-    
-    .credit-calculator-container .irs {
-        width: 100%;
-    }
-}
-
 /* Extra Large Screens (iMac 27-inch and larger) */
 @media screen and (min-width: 2560px) {
     .hero-section {
@@ -2358,4 +2297,153 @@ body {
         font-size: 2.4rem;
     }
 }
+
+/* (Large)  1920*/
+@media screen and (min-width: 1920px) {
+    .hero-section {
+        height: 650px;
+        padding: 80px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .car-hero-container {
+        height: 650px;
+    }
+    
+    .car-hero-image {
+        width: 1100px;
+        height: 450px;
+        top: 270px;
+        right: 120px;
+    }
+
+    .hero-right-content {
+        width: 75%;
+    }
+
+    .container {
+        max-width: 1800px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: center;
+    }
+    
+    .hero-text {
+        margin-top: 55px;
+        margin-right: 200px;
+        margin-bottom: 0;
+    }
+
+    .credit-calculator-container {
+        display: flex;
+        margin-top: 55px;
+        margin-bottom: 0;
+        margin-left: 300px;
+        height: 80%;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+    
+    .credit-calculator-container .calculator-content,
+    .credit-calculator-container .calculator-field,
+    .credit-calculator-container .input-slider-container,
+    .credit-calculator-container .slider-container,
+    .credit-calculator-container .payment-result {
+        width: 100%;
+    }
+    
+    .credit-calculator-container .irs {
+        width: 100%;
+    }
+    
+    .hero-main-title {
+        font-size: 3.2rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 2.4rem;
+    }
+
+    /* parteners */
+
+        /* Partners Section Responsive Styles for 1920px */
+        .partners-section {
+            padding: 60px 40px;
+        }
+    
+        .partners-section .container {
+            max-width: 1800px;
+            gap: 50px;
+            padding: 0 40px;
+        }
+    
+        .partners-grid {
+            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(335px, 1fr));
+            max-width: 1200px;
+        }
+    
+        .partner-card {
+            padding: 30px;
+            min-height: 200px;
+            border-radius: 12px;
+        }
+    
+        .partner-logo {
+            width: 180px;
+            height: 80px;
+            margin-bottom: 25px;
+        }
+    
+        .partner-name {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+    
+        .partner-desc {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+    
+        .partners-title {
+            font-size: 2.2rem;
+            margin-bottom: 20px;
+        }
+    
+        .partners-subtitle {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+    
+        .partners-text {
+            width: 300px;
+            padding-left: 20px;
+        }
+    
+        /* BT Leasing card special styling for 1920px */
+        .bt-leasing-card .car-image-container {
+            bottom: 60px;
+            right: -220px;
+            width: 480px;
+            height: 220px;
+        }
+    
+        .extending-car {
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.25));
+        }
+    
+        /* Apply button in partners section */
+        .partners-section .apply-button {
+            padding: 20px 40px;
+            font-size: 1.1rem;
+            min-width: 280px;
+            margin-top: 30px;
+        }
+}
+
+
 
