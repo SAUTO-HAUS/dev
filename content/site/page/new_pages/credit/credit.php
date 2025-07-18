@@ -586,7 +586,7 @@ if (file_exists($js_file_path)) {
 <script src="<?php echo $page_js . $js_version; ?>"></script>
 
 <!-- Off-screen Bitrix24 Form Buttons (positioned off-screen but clickable) -->
-<div style="position: absolute;left: -9999px;top: -9999px;">
+<div style="position: absolute;left: -4000px;top: -4000px;">
     <!-- RO Form Button -->
     <div id="bitrix-form-ro" class="btn msg2">
         <script data-b24-form="click/40/ieagmu" data-skip-moving="true">
@@ -623,7 +623,7 @@ if (file_exists($js_file_path)) {
     <!-- Transparent div that covers the entire viewport to catch all mouse events -->
     <div id="scroll-blocker-overlay" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:0;"></div>
     
-    <div class="modal-container" style="position:absolute; top:10%; left:50%; transform:translate(-50%, 0); background:#fff; padding:0; border-radius:5px; box-shadow:0 0 20px rgba(0,0,0,0.5); width:80%; max-width:650px; height:90%; max-height:700px; overflow:hidden; z-index:1;">
+    <div class="modal-container" style="position:absolute; top:10%; left:50%; transform:translate(-50%, 0); background:#fff; padding:0; border-radius:5px; box-shadow:0 0 20px rgba(0,0,0,0.5); width:80%; max-width:550px; height:80%; max-height:600px; overflow:hidden; z-index:1;">
         <div class="modal-body" style="position:relative; height:100%; padding:0; margin:0;">
             <button id="close-modal" style="position:absolute; top:10px; right:15px; z-index:100; background:none; border:none; font-size:36px; line-height:1; cursor:pointer; color:#E74C3C; font-weight:bold;">×</button>
             <!-- Am eliminat overlay-ul transparent din acest loc pentru a permite interacțiunea cu formularul -->
