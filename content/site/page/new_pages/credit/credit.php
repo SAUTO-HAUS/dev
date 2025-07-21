@@ -363,7 +363,7 @@ if (file_exists($js_file_path)) {
                         <p class="partner-desc"><?php echo get_translation('bt_leasing_desc', $current_lang, $lng); ?></p>
                     </div>
                     <div class="car-image-container">
-                        <img src="/content/site/page/new_pages/credit/credit-media/car-1.png" alt="Car" class="extending-car">
+                        <img src="/content/site/page/new_pages/credit/credit-media/car-bt-leasing.png" alt="Car" class="extending-car">
                     </div>
                 </div>
                 

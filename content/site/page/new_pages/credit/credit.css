@@ -744,7 +744,7 @@ body {
 }
 
 .extending-car {
-    max-width: 8rem;
+    max-width: 14rem;
     height: auto;
     opacity: 1;
     object-fit: contain;
@@ -752,7 +752,7 @@ body {
     filter: drop-shadow(0 0.3125rem 0.9375rem rgba(0, 0, 0, 0.1));
     display: block;
     margin-left: auto;
-    transform: translateX(1rem) translateY(-2rem);
+    transform: translateX(6rem) translateY(-2rem);
 }
 
 .extending-car:hover {
