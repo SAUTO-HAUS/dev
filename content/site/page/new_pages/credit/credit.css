@@ -752,11 +752,11 @@ body {
     filter: drop-shadow(0 0.3125rem 0.9375rem rgba(0, 0, 0, 0.1));
     display: block;
     margin-left: auto;
-    transform: translateX(6rem) translateY(-2rem);
+    transform: translateX(1rem) translateY(1rem);
 }
 
 .extending-car:hover {
-    transform: translateX(1rem) translateY(-2rem) scale(1.05);
+    transform: translateX(1rem) translateY(1rem) scale(1.05);
 }
 
 /* Partners text content - 30% width */
