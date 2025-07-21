@@ -34,9 +34,10 @@ if (file_exists($js_file_path)) {
 <section class="hero-section">
     <div class="hero-content">
         <div class="container">
-            <!-- Credit calculator container - positioned higher -->
-            <div class="credit-calculator-container">
-                <h3 class="calculator-title" style="font-size: 32px; font-weight: bold;"><?php echo get_translation('calculator_title', $current_lang, $lng); ?></h3>
+            <!-- Left side - Calculator  -->
+            <div class="hero-left-content">
+                <div class="credit-calculator-container">
+                <h3 class="calculator-title"><?php echo get_translation('calculator_title', $current_lang, $lng); ?></h3>
                 <div class="calculator-content">
                             <div class="calculator-field">
                                 <div class="field-header" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; width: 100%;">
@@ -73,17 +74,19 @@ if (file_exists($js_file_path)) {
                         </div>
                     </div>
                 </div>
-                
-                <div class="hero-right-content">
-                    <div class="hero-text">
-                        <div class="hero-main-title"><?php echo get_translation('hero_main_title', $current_lang, $lng); ?></div>
-                        <div class="hero-subtitle"><?php echo get_translation('hero_subtitle', $current_lang, $lng); ?></div>
-                    </div>
+            </div>
+            
+            <!-- Right side - Text and Car Image  -->
+            <div class="hero-right-content">
+                <div class="hero-text">
+                    <div class="hero-main-title"><?php echo get_translation('hero_main_title', $current_lang, $lng); ?></div>
+                    <div class="hero-subtitle"><?php echo get_translation('hero_subtitle', $current_lang, $lng); ?></div>
                 </div>
                 
                 <div class="car-hero-container">
                     <img src="/content/site/page/new_pages/credit/credit-media/car_red_credit.png" alt="Automobil credit" class="car-hero-image">
                 </div>
+            </div>
             </div>
         </div>
     </div>
