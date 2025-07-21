@@ -446,6 +446,18 @@ body {
 .personal-grid .item6 { grid-row: 2; grid-column: 3; }
 .personal-grid .item7 { grid-row: 2; grid-column: 4; }
 
+.personal-grid .item1,
+.personal-grid .item2,
+.personal-grid .item3,
+.personal-grid .item4,
+.personal-grid .item5,
+.personal-grid .item6,
+.personal-grid .item7
+ {
+    border: 0.1rem solid #d7d8db;
+}
+
+
 /* BUSINESS CATEGORY - 6 section layout */
 .business-grid {
     display: grid;
@@ -468,6 +480,16 @@ body {
 .business-grid .item5 { grid-row: 2; grid-column: 2; }
 .business-grid .item6 { grid-row: 2; grid-column: 3 / span 2; }
 
+.business-grid .item1,
+.business-grid .item2,
+.business-grid .item3,
+.business-grid .item4,
+.business-grid .item5,
+.business-grid .item6 {
+    border: 0.1rem solid #d7d8db;
+}
+
+
 /* LEASING CATEGORY - 5 section layout */
 .leasing-grid {
     display: grid;
@@ -488,6 +510,14 @@ body {
 .leasing-grid .item3 { grid-row: 1; grid-column: 5 / 8; }
 .leasing-grid .item4 { grid-row: 2; grid-column: 2 / 4; }
 .leasing-grid .item5 { grid-row: 2; grid-column: 4 / 8; }
+
+.leasing-grid .item1,
+.leasing-grid .item2,
+.leasing-grid .item3,
+.leasing-grid .item4,
+.leasing-grid .item5 {
+    border: 0.1rem solid #d7d8db;
+}
 
 /* Car image in category cards - Simple flexbox positioning */
 .category-car-image {
@@ -510,6 +540,29 @@ body {
 
 .car-category-image:hover {
     transform: translateY(1rem) scale(1.05);
+}
+
+/* Car-3 image in category cards - Right margin overflow */
+.category-car-image-2 {
+    margin-top: auto;
+    text-align: right;
+    pointer-events: none;
+}
+
+.car-2-category-image {
+    max-width: 14rem;
+    height: auto;
+    opacity: 1;
+    object-fit: contain;
+    pointer-events: none;
+    transition: transform 0.3s ease;
+    display: block;
+    margin-left: auto;
+    transform: translateX(1rem) translateY(-4rem);
+}
+
+.car-2-category-image:hover {
+    transform: translateX(1rem) translateY(-4rem) scale(1.05);
 }
 
 /* Apply button */
