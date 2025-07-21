@@ -282,7 +282,7 @@ body {
 
 .credit-categories-section {
     padding-top: 4rem;
-    padding-bottom: 5rem;
+    padding-bottom: 1rem;
     background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
     position: relative;
     overflow: hidden;
@@ -579,7 +579,7 @@ body {
     text-transform: none;
     letter-spacing: 0;
     display: block;
-    margin: 1.5625rem auto 0 auto;
+    margin: 2rem auto 1rem auto;
     text-align: center;
     width: 15.625rem;
     max-width: 100%;
@@ -587,6 +587,227 @@ body {
 }
 
 .apply-button-categories:hover {
+    background: #c40017;
+    transform: translateY(-0.125rem);
+    box-shadow: 0 0.5rem 1.25rem rgba(226, 0, 26, 0.3);
+}
+
+/* ========================================
+   PARTNERS SECTION
+   ======================================== */
+
+.partners-section {
+    width: 100%;
+    padding: 1rem 0;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    position: relative;
+    overflow: hidden;
+    margin: 0;
+}
+
+.partners-section .container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+    display: block;
+}
+
+.partners-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin: 0 auto;
+    position: relative;
+    padding: 0;
+    width: 100%;
+}
+
+.partners-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 12rem 12rem;
+    height: 25rem;
+    gap: 1rem;
+    width: 70%;
+    margin: 0;
+    justify-content: stretch;
+    padding: 0;
+}
+
+/* Partner positioning - 5 partners total */
+.partners-grid .partner-1 { grid-row: 1; grid-column: 1; }
+.partners-grid .partner-2 { grid-row: 1; grid-column: 2; }
+.partners-grid .partner-3 {
+    grid-row: 1 / span 2;
+    grid-column: 3;
+}
+.partners-grid .partner-4 { grid-row: 2; grid-column: 1; }
+.partners-grid .partner-5 { grid-row: 2; grid-column: 2; }
+
+/* Partner cards styling */
+.partner-card {
+    background: #ffffff;
+    border-radius: 0.75rem;
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: 0 0.25rem 0.9375rem rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 0.0625rem solid #e9ecef;
+    min-height: 100%;
+    width: 100%;
+}
+
+.partner-card:hover {
+    transform: translateY(-0.25rem);
+    box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.12);
+    border-color: #e2001a;
+}
+
+/* Partner logos container */
+.partner-logo {
+    width: 10rem;
+    height: 5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 0.25rem;
+    flex-shrink: 0;
+}
+
+.partner-logo img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    object-position: center;
+    width: auto;
+    height: auto;
+}
+
+/* Partner text content */
+.partner-name {
+    font-size: 1.0625rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0 0 0.5rem 0;
+    text-align: center;
+}
+
+.partner-desc {
+    font-size: 0.875rem;
+    color: #6c757d;
+    line-height: 1.4;
+    margin: 0;
+    text-align: center;
+}
+
+.partner-info {
+    margin-top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
+    justify-content: flex-start;
+}
+
+/* BT Leasing specific positioning */
+.partners-grid .partner-3 .partner-info {
+    margin-top: 2.5rem;
+}
+
+.partners-grid .partner-3 .partner-logo {
+    margin-top: 1.875rem;
+    margin-bottom: 1.875rem;
+}
+
+/* Center other partner cards vertically */
+.partners-grid .partner-1,
+.partners-grid .partner-2,
+.partners-grid .partner-4,
+.partners-grid .partner-5 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Car image in BT Leasing card - flexbox method like other sections */
+.car-image-container {
+    margin-top: auto;
+    margin-left: auto;
+    text-align: right;
+    pointer-events: none;
+    overflow: visible;
+}
+
+.extending-car {
+    max-width: 8rem;
+    height: auto;
+    opacity: 1;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+    filter: drop-shadow(0 0.3125rem 0.9375rem rgba(0, 0, 0, 0.1));
+    display: block;
+    margin-left: auto;
+    transform: translateX(1rem) translateY(-2rem);
+}
+
+.extending-car:hover {
+    transform: translateX(1rem) translateY(-2rem) scale(1.05);
+}
+
+/* Partners text content - 30% width */
+.partners-text {
+    width: 30%;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    flex-direction: column;
+    gap: 0.625rem;
+    padding: 0 1rem 0 0;
+    flex-shrink: 0;
+}
+
+.partners-title {
+    font-size: 1.625rem;
+    font-weight: 700;
+    color: #2c3e50;
+    line-height: 1.2;
+    margin: 0;
+}
+
+.partners-subtitle {
+    font-size: 1rem;
+    color: #6c757d;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* Apply button for partners */
+.apply-button {
+    background: #e2001a;
+    color: white;
+    border: none;
+    padding: 1.125rem 2rem;
+    border-radius: 0.5rem;
+    font-size: 1.125rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: none;
+    letter-spacing: 0;
+    display: block;
+    margin: 1.5625rem 0 0 0;
+    text-align: center;
+    width: 15.625rem;
+    max-width: 100%;
+    white-space: nowrap;
+}
+
+.apply-button:hover {
     background: #c40017;
     transform: translateY(-0.125rem);
     box-shadow: 0 0.5rem 1.25rem rgba(226, 0, 26, 0.3);
