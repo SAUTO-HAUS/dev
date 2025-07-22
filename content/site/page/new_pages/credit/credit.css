@@ -1561,8 +1561,9 @@ body {
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
-        gap: 1.5rem !important;
+        gap: 1rem !important;
         padding: 0 1rem !important;
+        position: relative !important;
     }
     
     .partners-content {
@@ -1570,9 +1571,7 @@ body {
         flex-direction: column !important;
         align-items: center !important;
         width: 100% !important;
-        gap: 1.5rem !important;
-        position: relative !important;
-        padding-bottom: 4rem !important;
+        gap: 1rem !important;
     }
     
     /* Partners text - Title and subtitle */
@@ -1614,7 +1613,7 @@ body {
         scroll-behavior: smooth !important;
         -webkit-overflow-scrolling: touch !important;
         gap: 0.75rem !important;
-        padding: 0.9375rem 1.875rem 0.9375rem 0.9375rem !important;
+        padding: 0.9375rem 1.875rem 0 0.9375rem !important;
         grid-template-columns: none !important;
         grid-template-rows: none !important;
         margin: 0 !important;
@@ -1634,9 +1633,9 @@ body {
     /* Force partner card dimensions - very specific selector */
     @media (max-width: 768px) {
         .partners-section .partners-content .partners-grid .partner-card {
-            height: 14rem !important;
-            min-height: 14rem !important;
-            max-height: 14rem !important;
+            height: 16rem !important;
+            min-height: 16rem !important;
+            max-height: 16rem !important;
             width: 18rem !important;
             min-width: 18rem !important;
             max-width: 18rem !important;
@@ -1723,7 +1722,7 @@ body {
         margin-top: 2rem !important;
     }
     .partner-card.partner-3 .partner-name {
-        margin: 0rem 0 0.25rem 0 !important;
+        margin: 1rem 0 0.25rem 0 !important;
     }
 
 
@@ -1762,10 +1761,10 @@ body {
         grid-column: auto !important;
     }
     
-    /* Position button absolutely after slider */
+    /* Position button absolutely in section container - very close to slider */
     .partners-text .apply-button {
         position: absolute !important;
-        bottom: 0 !important;
+        bottom: 2rem !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
         background: #e2001a !important;
@@ -1782,7 +1781,7 @@ body {
         display: block !important;
         text-align: center !important;
         width: 13.75rem !important;
-        max-width: 75% !important;
+        max-width: 100% !important;
         margin: 0 !important;
         z-index: 10 !important;
     }
@@ -1807,7 +1806,7 @@ body {
     
        @media (max-width: 768px) {
     .comments-section {
-        padding: 1rem 0;
+        padding: 2rem 0.5rem;
     }
     
     .comments-section .container {
@@ -1871,6 +1870,7 @@ body {
         align-items: center;
         justify-content: center;
         transition: all 0.3s ease;
+        margin-bottom: 1rem;
     }
     
     .nav-btn:hover {
