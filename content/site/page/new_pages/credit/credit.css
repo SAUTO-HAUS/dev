@@ -151,6 +151,13 @@ body {
     text-align: left;
 }
 
+/* Mobile styles for calculator title */
+@media (max-width: 768px) {
+    .calculator-title {
+        font-size: 1.7rem;
+    }
+}
+
 .calculator-content {
     padding: 0;
 }
