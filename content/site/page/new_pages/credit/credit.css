@@ -1171,7 +1171,7 @@ body {
         border-bottom: none !important;
         width: calc(100% - 0.625rem) !important;
         margin: 0 auto 0.625rem auto !important;
-        padding: 0.9375rem 0.5rem 0.5rem 0.5rem !important;
+        padding: 0.5rem 0.5rem 0.5rem 0.5rem !important;
         background-color: #f8f9fa !important;
         border-radius: 0.5rem !important;
         border: 0.0625rem solid #e0e0e0 !important;
