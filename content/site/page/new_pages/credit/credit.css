@@ -634,8 +634,8 @@ body {
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 12rem 12rem;
     height: 25rem;
-    gap: 1rem;
-    width: 70%;
+    gap: 0.9375rem;
+    width: 75%;
     margin: 0;
     justify-content: stretch;
     padding: 0;
@@ -655,7 +655,7 @@ body {
 .partner-card {
     background: #ffffff;
     border-radius: 0.75rem;
-    padding: 2rem 1rem;
+    padding: 1rem 1rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -676,8 +676,8 @@ body {
 
 /* Partner logos container */
 .partner-logo {
-    width: 10rem;
-    height: 5rem;
+    width: 14rem;
+    height: 9rem;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -730,15 +730,32 @@ body {
     margin-bottom: 1.875rem;
 }
 
-/* Center other partner cards vertically */
+/* Center other partner cards vertically and position content at top */
 .partners-grid .partner-1,
 .partners-grid .partner-2,
 .partners-grid .partner-4,
 .partners-grid .partner-5 {
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
+}
+
+/* Move partner info content higher up by 4rem */
+.partners-grid .partner-1 .partner-info,
+.partners-grid .partner-2 .partner-info,
+.partners-grid .partner-4 .partner-info,
+.partners-grid .partner-5 .partner-info {
+    margin-top: -1.5rem;
+}
+
+/* Reset logo margin-top for normal partners */
+.partners-grid .partner-1 .partner-logo,
+.partners-grid .partner-2 .partner-logo,
+.partners-grid .partner-4 .partner-logo,
+.partners-grid .partner-5 .partner-logo {
+    margin-top: -2rem;
+    margin-bottom: 0.25rem;
 }
 
 /* Car image in BT Leasing card - flexbox method like other sections */
@@ -747,7 +764,8 @@ body {
     margin-left: auto;
     text-align: right;
     pointer-events: none;
-    overflow: visible;
+    overflow: visible;  
+    margin-bottom: 2rem;
 }
 
 .extending-car {
@@ -766,9 +784,8 @@ body {
     transform: translateX(1rem) translateY(1rem) scale(1.05);
 }
 
-/* Partners text content - 30% width */
 .partners-text {
-    width: 30%;
+    width: 27%;
     display: flex;
     align-items: flex-start;
     justify-content: flex-start;
