@@ -1672,7 +1672,7 @@ body {
         min-width: 13.75rem !important;
         width: 13.75rem !important;
         flex-shrink: 0 !important;
-        height: 4rem !important;
+        height: 5.5rem !important;
         margin-bottom: 0 !important;
         padding: 0.25rem !important;
         box-sizing: border-box !important;
@@ -1691,8 +1691,8 @@ body {
     
     /* Centered content in cards - Adjusted for smaller height */
     .partner-card .partner-logo {
-        width: 8.75rem !important;
-        height: 3.125rem !important;
+        width: 14rem !important;
+        height: 7rem !important;
         margin-bottom: 0.125rem !important;
         display: flex !important;
         justify-content: center !important;
@@ -1735,9 +1735,16 @@ body {
     .partner-card .bt-logo,
     .partner-card .maib-logo,
     .partner-card.partner-4 .partner-logo {
-        width: 11.875rem !important;
-        height: 6.25rem !important;
+        width: 15rem !important;
+        height: 8rem !important;
         margin-bottom: 0.125rem !important;
+    }
+
+    .partner-card .microinvest-logo,
+    .partner-card .victoria-logo,
+    .partner-card .maib-logo,
+    .partner-card.partner-4 .partner-logo {
+margin-top: 2rem !important;
     }
     
     /* Special positioning for BT Leasing text on mobile */
