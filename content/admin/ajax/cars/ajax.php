@@ -282,7 +282,7 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
         define('APP_ID', '1082088863732549');
         define('APP_SECRET', '77368f52ab263907ee1fe3ea72909289');
         define('PAGE_ID', '482777831588669');
-        define('PAGE_TOKEN', 'EAAPYJ3JWk0UBPFbYyIr4DFIganwXlrl1vnEWDBnWWZBZAUZBE0t3dO6qECxmjPOn0lSMXrA9HRlrzp7kKGZB9wCTU8PyF3OADlRCUQEl432SdhZCDlxzISpTiy0u2vvoUNeZCR1HHt4LYaLKVZAcjPyfYdnOqKpt5Hksxbn8GympTi5uak0jmtO1CT5F2EX6huUs1epnnI5m9DZAyyOs4Ujmht0ZCplYaNfLZAV6ti0UavnC7CPJLYkRh3HuUojlMZD');
+        define('PAGE_TOKEN', 'EAAPYJ3JWk0UBPLicKKTyGSX8kvIL5mNu8Pg7q7mvV1YcaDWvrFtBzH2I3eqeG7HGzXmZCKs96lA24tZABFyEc7nze18dLSWDHFQmaZCiBdMczXZAIMMxrkc0x9MulD5IcyrjyS2s9dvDpnOgcTXdkctZBvtH26z49AD8ZC58ZBUFaNWqiwSvW4f06BABhrCHiTsLSRN0mGwAqtMFpyKr10z3ft7');
     }
     else {
         // Subdomain Facebook settings (fallback to same for now)
