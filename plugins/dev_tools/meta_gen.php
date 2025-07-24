@@ -23,6 +23,11 @@ if (!empty($current_host) && strpos($current_host, '.sauto.md') !== false && $cu
 
 $r['ttl']='';$r['h1']='';$r['dsc']='';$r['kwd']='';
 
+// Skip meta generation for credit page - it has custom meta tags
+if ($z2 === 'credit') {
+    return;
+}
+
 $sa['meta']['ttl'] = 'Vînzarea autoturismelor și utilitarelor.';
 $current_lang = isset($_COOKIE['lang']) ? $_COOKIE['lang'] : 'ro';
 
