@@ -44,6 +44,7 @@ switch($current_lang) {
 ?>
 
 <!-- Page Meta Tags -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title><?php echo htmlspecialchars($page_title); ?></title>
 <meta name="description" content="<?php echo htmlspecialchars($page_description); ?>">
 

@@ -623,7 +623,6 @@
 .partners-content {
     display: flex;
     align-items: flex-start;
-    gap: 1rem;
     margin: 0;
     gap: 0.7rem;
     position: relative;
