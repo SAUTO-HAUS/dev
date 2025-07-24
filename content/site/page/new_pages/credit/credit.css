@@ -787,6 +787,7 @@ body {
 .partners-text {
     width: 27%;
     display: flex;
+    gap: 0.625rem;
     align-items: flex-start;
     justify-content: flex-start;
     flex-direction: column;
