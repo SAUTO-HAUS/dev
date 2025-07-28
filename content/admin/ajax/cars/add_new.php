@@ -44,13 +44,102 @@ if (__post('sub') == 'mo_search') {
             $new_br_nm = $car_info ? $car_info['br_nm'] : $r['br_nm'];
             $new_mo_nm = $car_info ? $car_info['mo_nm'] : $r['mo_nm'];
 
+            // Extract price from new POST data (999 features) if available
+            $extracted_price = __post('prc', 0);
+            $extracted_currency = __post('cur');
+            
+            // Debug: log all POST data to see what's being sent
+            error_log("POST data keys: " . implode(', ', array_keys($_POST)));
+            error_log("=== DETAILED PRICE DEBUG ===");
+            $post_prc = __post('prc');
+            $post_cur = __post('cur');
+            error_log("Raw POST prc value: " . var_export($post_prc, true) . " (type: " . gettype($post_prc) . ")");
+            error_log("Raw POST cur value: " . var_export($post_cur, true) . " (type: " . gettype($post_cur) . ")");
+            
+            // Check if there's any conversion happening
+            $original_prc = $post_prc;
+            $converted_prc = (float)$post_prc;
+            $int_prc = (int)$post_prc;
+            
+            error_log("Original prc: " . var_export($original_prc, true));
+            error_log("Float converted prc: " . var_export($converted_prc, true));
+            error_log("Int converted prc: " . var_export($int_prc, true));
+            error_log("=== END DETAILED PRICE DEBUG ===");
+			error_log("Direct prc value from POST: " . __post('prc', 'NOT SET'));
+            error_log("Direct cur value from POST: " . __post('cur', 'NOT SET'));
+            
+            // Try to extract price from various possible POST fields
+            if (!empty($_POST['feature'])) {
+                error_log("Found feature data in POST: " . json_encode($_POST['feature']));
+                foreach ($_POST['feature'] as $feature_id => $feature_value) {
+                    if (!empty($feature_value) && is_numeric($feature_value)) {
+                        // Check if there's a corresponding unit
+                        if (!empty($_POST['feature_units'][$feature_id])) {
+                            $unit = strtolower($_POST['feature_units'][$feature_id]);
+                            if (in_array($unit, ['eur', 'usd', 'mdl', 'ron'])) {
+                                $extracted_price = (float)$feature_value;
+                                $currency_map = ['eur' => 'EUR', 'usd' => 'USD', 'mdl' => 'MDL', 'ron' => 'RON'];
+                                $extracted_currency = $currency_map[$unit] ?? $extracted_currency;
+                                error_log("Extracted NEW price from POST features: $extracted_price $extracted_currency");
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            error_log("Before fallback check - extracted_price: $extracted_price");
+            
+            // Fallback: if no price found in features, try to get from existing 999 data
+            if ($extracted_price == 0 && !empty($r['999'])) {
+                error_log("Entering fallback logic because extracted_price is 0");
+                $car999_data = json_decode($r['999'], true);
+                if (!empty($car999_data['features'])) {
+                    foreach ($car999_data['features'] as $feature) {
+                        if (!empty($feature['value']) && !empty($feature['unit']) && 
+                            is_numeric($feature['value']) && 
+                            in_array(strtolower($feature['unit']), ['eur', 'usd', 'mdl', 'ron'])) {
+                            $extracted_price = (float)$feature['value'];
+                            $currency_map = ['eur' => 'EUR', 'usd' => 'USD', 'mdl' => 'MDL', 'ron' => 'RON'];
+                            $extracted_currency = $currency_map[strtolower($feature['unit'])] ?? $extracted_currency;
+                            error_log("Fallback: Extracted price from existing 999 data: $extracted_price $extracted_currency");
+                            break;
+                        }
+                    }
+                }
+            }
+
+            error_log("FINAL VALUES BEFORE DATABASE UPDATE:");
+            error_log("Final extracted_price: $extracted_price");
+            error_log("Final extracted_currency: $extracted_currency");
+            
+            // Update 999 JSON data with new price
+            $updated_999_data = null;
+            if (!empty($r['999'])) {
+                $car999_data = json_decode($r['999'], true);
+                if (!empty($car999_data['features'])) {
+                    // Update price in 999 features
+                    foreach ($car999_data['features'] as &$feature) {
+                        if (!empty($feature['unit']) && 
+                            in_array(strtolower($feature['unit']), ['eur', 'usd', 'mdl', 'ron'])) {
+                            $feature['value'] = (string)$extracted_price;
+                            $feature['unit'] = strtolower($extracted_currency);
+                            error_log("Updated 999 feature price: {$feature['value']} {$feature['unit']}");
+                            break;
+                        }
+                    }
+                    $updated_999_data = json_encode($car999_data);
+                    error_log("Updated 999 JSON data prepared");
+                }
+            }
+            
             $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET 
                 `gr`=:gr, `br`=:br, `mo`=:mo, `br_nm`=:br_nm, `mo_nm`=:mo_nm, `yr`=:yr,
                 `bt`=:bt, `sts`=:sts, `mlg`=:mlg, `unit`=:unit, `vol`=:vol, `hp`=:hp, `fl`=:fl,
                 `tra`=:tra, `wd`=:wd, `clr`=:clr, `loc`=:loc, `txt`=:txt, 
                 `prc`=:prc, `cur`=:cur, `soon`=:soon, `n_a`=:n_a, `tva`=:tva, `top`=:top,
                 `gift`=:gift, `import_country_id`=:import_country_id,
-                `prc_t`=:prc_t, `prc_n`=:prc_n 
+                `prc_t`=:prc_t, `prc_n`=:prc_n, `999`=:data_999 
                 WHERE `id`=:id');
             $pdo->execute([
                 'id' => __post('id'),
@@ -72,8 +161,8 @@ if (__post('sub') == 'mo_search') {
                 'clr' => __post('clr'),
                 'loc' => __post('loc', 0),
                 'txt' => ( __post('txt')==null?'':__post('txt') ),
-                'prc' => __post('prc', 0),
-                'cur' => __post('cur'),
+                'prc' => $extracted_price,
+                'cur' => $extracted_currency,
                 'soon' => __post('soon', 0),
                 'n_a' => __post('n_a', 0),
                 'tva' => __post('tva', 0),
@@ -81,7 +170,8 @@ if (__post('sub') == 'mo_search') {
                 'gift' => __post('gift', 0),
                 'import_country_id' => __post('import_country_id', 0),
                 'prc_t' => (strtotime(__post('prc_t'))!=''&&strtotime(__post('prc_t'))!=0?strtotime(__post('prc_t')):0),
-                'prc_n' => __post('prc_n', __post('prc', 0))
+                'prc_n' => __post('prc_n', __post('prc', 0)),
+                'data_999' => $updated_999_data
             ]);
 
             //------- DELETE SOME IMGs
@@ -119,6 +209,21 @@ if (__post('sub') == 'mo_search') {
             if (!empty($r['999_id']) && __post('n_a', 0) != $r['n_a']) {
                 $status = __post('n_a', 0) == 1 ? 'private' : 'public';
                 (new Api999Service($r['999_api_id']))->changeAccessPolicy($r, $status);
+            }
+            
+            // Update price on 999.md if 999 data was updated
+            if (!empty($r['999_id']) && !empty($updated_999_data)) {
+                error_log("Updating price on 999.md for advert ID: " . $r['999_id']);
+                try {
+                    $car999_data = json_decode($updated_999_data, true);
+                    if (!empty($car999_data['features'])) {
+                        $api999 = new Api999Service($r['999_api_id']);
+                        $result = $api999->updateAdvert($r['999_id'], $car999_data['features']);
+                        error_log("999.md update result: " . json_encode($result));
+                    }
+                } catch (Exception $e) {
+                    error_log("Error updating price on 999.md: " . $e->getMessage());
+                }
             }
             $last_id = __post('id');
         } else {

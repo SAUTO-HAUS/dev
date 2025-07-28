@@ -391,6 +391,51 @@ $(document).ready(function(){
 			del_img.push($(this).val());
 		});
 
+		// Synchronize price from 999 form to main form before data collection
+		console.log('=== SEARCHING FOR PRICE FIELD ===');
+		let allNumberInputs = $('#main_form_999').find('input[type="number"]');
+		console.log('All number inputs found:', allNumberInputs.length);
+		allNumberInputs.each(function(index) {
+			console.log(`Input ${index}:`, this, 'name:', $(this).attr('name'), 'value:', $(this).val());
+		});
+		
+		let priceField = $('#main_form_999').find('input[type="number"]').filter(function() {
+			return $(this).attr('name') && $(this).attr('name').includes('feature[') && 
+				   $(this).closest('.form-group').find('select[name*="feature_units"]').length > 0;
+		});
+		console.log('Price field after filtering:', priceField.length);
+		
+		if (priceField.length > 0) {
+			let priceValue = priceField.val();
+			let priceUnitSelect = priceField.closest('.form-group').find('select[name*="feature_units"]');
+			let priceUnit = priceUnitSelect.val();
+			
+			console.log('=== PRICE SYNCHRONIZATION DEBUG ===');
+			console.log('Price field found:', priceField.length);
+			console.log('Price field element:', priceField[0]);
+			console.log('Price field name attribute:', priceField.attr('name'));
+			console.log('Price field raw DOM value:', priceField[0].value);
+			console.log('Price field jQuery val():', priceValue, 'type:', typeof priceValue);
+			console.log('Price unit select:', priceUnitSelect[0]);
+			console.log('Price unit value:', priceUnit);
+			
+			// Update the main form's price field
+			if (priceValue && priceUnit) {
+				let prcField = $formSauto.find('input[name="prc"]');
+				let curField = $formSauto.find('select[name="cur"], input[name="cur"]');
+				
+				console.log('Before update - prc field value:', prcField.val());
+				console.log('Before update - cur field value:', curField.val());
+				
+				prcField.val(priceValue);
+				curField.val(priceUnit.toUpperCase());
+				
+				console.log('After update - prc field value:', prcField.val());
+				console.log('After update - cur field value:', curField.val());
+			}
+			console.log('=== END PRICE SYNCHRONIZATION DEBUG ===');
+		}
+		
 		let dataSauto = collectFormDataSauto($formSauto, bx_id);
 		dataSauto.append('main_img', main_img);
 		dataSauto.append('del_img', del_img);
