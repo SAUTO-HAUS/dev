@@ -1,2 +1,10 @@
 User-agent: *
-Disallow: /
+Disallow: /content/admin/
+Disallow: /cache/
+Disallow: /logs/
+Disallow: /tmp/
+
+Sitemap: https://www.sauto.md/sitemap.xml
+
+
+
