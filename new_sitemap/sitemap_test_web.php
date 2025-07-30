@@ -123,16 +123,21 @@
                 echo '<div class="test-section">';
                 echo '<h2>1. 📄 File Existence Test</h2>';
                 
-                $files = ['sitemap.xml', 'sitemap-1.xml', 'sitemap-2.xml', 'sitemap-3.xml'];
+                // Testează sitemap.xml principal
+                $mainSitemap = 'sitemap.xml';
+                $path = $this->baseDir . DIRECTORY_SEPARATOR . $mainSitemap;
+                if (file_exists($path)) {
+                    echo '<div class="success result">✅ ' . htmlspecialchars($mainSitemap) . ' exists (' . $this->formatFileSize($path) . ')</div>';
+                } else {
+                    echo '<div class="error result">❌ ' . htmlspecialchars($mainSitemap) . ' missing</div>';
+                    $this->testResults['errors'][] = "$mainSitemap missing";
+                }
                 
-                foreach ($files as $file) {
+                // Testează fișierele sitemap care există realmente
+                $sitemapFiles = $this->getExistingSitemapFiles();
+                foreach ($sitemapFiles as $file) {
                     $path = $this->baseDir . DIRECTORY_SEPARATOR . $file;
-                    if (file_exists($path)) {
-                        echo '<div class="success result">✅ ' . htmlspecialchars($file) . ' exists (' . $this->formatFileSize($path) . ')</div>';
-                    } else {
-                        echo '<div class="error result">❌ ' . htmlspecialchars($file) . ' missing</div>';
-                        $this->testResults['errors'][] = "$file missing";
-                    }
+                    echo '<div class="success result">✅ ' . htmlspecialchars($file) . ' exists (' . $this->formatFileSize($path) . ')</div>';
                 }
                 echo '</div>';
             }
@@ -141,17 +146,27 @@
                 echo '<div class="test-section">';
                 echo '<h2>2. 🔧 XML Structure Test</h2>';
                 
-                $files = ['sitemap.xml', 'sitemap-1.xml', 'sitemap-2.xml', 'sitemap-3.xml'];
+                // Testează sitemap.xml principal
+                $mainSitemap = 'sitemap.xml';
+                $path = $this->baseDir . DIRECTORY_SEPARATOR . $mainSitemap;
+                if (file_exists($path)) {
+                    if ($this->isValidXML($path)) {
+                        echo '<div class="success result">✅ ' . htmlspecialchars($mainSitemap) . ' - Valid XML</div>';
+                    } else {
+                        echo '<div class="error result">❌ ' . htmlspecialchars($mainSitemap) . ' - Invalid XML</div>';
+                        $this->testResults['errors'][] = "$mainSitemap has invalid XML";
+                    }
+                }
                 
-                foreach ($files as $file) {
+                // Testează fișierele sitemap care există realmente
+                $sitemapFiles = $this->getExistingSitemapFiles();
+                foreach ($sitemapFiles as $file) {
                     $path = $this->baseDir . DIRECTORY_SEPARATOR . $file;
-                    if (file_exists($path)) {
-                        if ($this->isValidXML($path)) {
-                            echo '<div class="success result">✅ ' . htmlspecialchars($file) . ' - Valid XML</div>';
-                        } else {
-                            echo '<div class="error result">❌ ' . htmlspecialchars($file) . ' - Invalid XML</div>';
-                            $this->testResults['errors'][] = "$file has invalid XML";
-                        }
+                    if ($this->isValidXML($path)) {
+                        echo '<div class="success result">✅ ' . htmlspecialchars($file) . ' - Valid XML</div>';
+                    } else {
+                        echo '<div class="error result">❌ ' . htmlspecialchars($file) . ' - Invalid XML</div>';
+                        $this->testResults['errors'][] = "$file has invalid XML";
                     }
                 }
                 echo '</div>';
@@ -170,7 +185,8 @@
                     if (file_exists($path)) {
                         $content = file_get_contents($path);
                         $urlCount = substr_count($content, '<loc>');
-                        $correctDomainCount = substr_count($content, $expectedDomain);
+                        // Numără doar URL-urile din tag-urile <loc>, nu din hreflang
+                        $correctDomainCount = substr_count($content, '<loc>' . $expectedDomain);
                         
                         if ($correctDomainCount == $urlCount && $urlCount > 0) {
                             echo '<div class="success result">✅ ' . htmlspecialchars($file) . ' - ' . $correctDomainCount . '/' . $urlCount . ' URLs have correct domain</div>';
