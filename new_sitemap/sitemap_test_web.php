@@ -3,6 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <?php
+/**
+ * SAUTO Sitemap Web Test Interface
+ * Web-based testing interface for sitemap validation
+ */
+
+// Load configuration
+require_once __DIR__ . '/config.php';
+    ?>
     <title>SAUTO Sitemap Test - Web Interface</title>
     <style>
         body {
@@ -178,7 +187,7 @@
                 
                 // Găsește fișierele sitemap care există realmente
                 $files = $this->getExistingSitemapFiles();
-                $expectedDomain = 'https://www.sauto.md/';
+                $expectedDomain = getSitemapBaseUrl() . '/';
                 
                 foreach ($files as $file) {
                     $path = $this->baseDir . DIRECTORY_SEPARATOR . $file;
@@ -208,7 +217,7 @@
                 
                 // Găsește fișierele sitemap care există realmente
                 $files = $this->getExistingSitemapFiles();
-                $expectedDomain = 'https://www.sauto.md/';
+                $expectedDomain = getSitemapBaseUrl() . '/';
                 
                 foreach ($files as $file) {
                     $path = $this->baseDir . DIRECTORY_SEPARATOR . $file;

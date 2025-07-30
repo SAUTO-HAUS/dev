@@ -5,15 +5,19 @@
  * Follows XML Sitemap Protocol specification
  */
 
+// Load configuration
+require_once __DIR__ . '/config.php';
+
 class SitemapGenerator {
     
-    private $baseUrl = 'https://www.sauto.md';
+    private $baseUrl;
     private $maxUrlsPerFile = 7000;
     private $outputDir = __DIR__ . '/..';
     private $logFile = 'sitemap_generation.log';
     private $languages = ['ro', 'ru', 'en'];
     
     public function __construct() {
+        $this->baseUrl = getSitemapBaseUrl();
         $this->log("Sitemap generation started at " . date('Y-m-d H:i:s'));
     }
     

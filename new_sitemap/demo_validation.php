@@ -4,6 +4,9 @@
  * Script rapid pentru a demonstra că sitemap-ul funcționează perfect
  */
 
+// Load configuration
+require_once __DIR__ . '/config.php';
+
 echo "🎉 SAUTO SITEMAP - DEMONSTRAȚIE VALIDARE PENTRU CLIENT\n";
 echo "=" . str_repeat("=", 60) . "\n\n";
 
@@ -56,8 +59,9 @@ echo "\n";
 echo "🌐 4. VERIFICARE DOMENIU:\n";
 if (file_exists(__DIR__ . '/../sitemap.xml')) {
     $content = file_get_contents(__DIR__ . '/../sitemap.xml');
-    if (strpos($content, 'www.sauto.md') !== false) {
-        echo "   ✅ Domeniu corect: www.sauto.md\n";
+    $expectedDomain = getSitemapDomain();
+    if (strpos($content, $expectedDomain) !== false) {
+        echo "   ✅ Domeniu corect: {$expectedDomain}\n";
     } else {
         echo "   ⚠️  Domeniu incorect sau lipsă\n";
     }
@@ -114,7 +118,7 @@ echo "   🎉 IMPLEMENTAREA ESTE COMPLETĂ!\n";
 echo "   ✅ Toate verificările au trecut cu succes\n";
 echo "   🚀 Sitemap-ul este gata pentru producție\n";
 echo "   📊 Total URL-uri generate: " . (isset($urlCount) ? $urlCount : 'N/A') . "\n";
-echo "   🌐 Domeniu: www.sauto.md\n";
+echo "   🌐 Domeniu: " . getSitemapDomain() . "\n";
 echo "   🌍 Suport multilingv: DA (ro, ru, en)\n";
 echo "   ⭐ Priorități calculate: DA\n";
 echo "   📅 Actualizat: " . date('Y-m-d H:i:s') . "\n";

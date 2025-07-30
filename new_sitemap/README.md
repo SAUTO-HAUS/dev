@@ -1,8 +1,26 @@
-# SAUTO Sitemap Generator System
+# SAUTO Sitemap Generator
 
 ## Overview
 
 This is an automated sitemap generation system for sauto.md that follows the official XML Sitemap Protocol specification. The system generates a sitemap index file referencing multiple sub-files with a maximum of 7000 URLs each, includes multilingual hreflang support, and provides comprehensive validation and error handling.
+
+## ✨ New Features
+
+### 🔄 Environment Portability
+- **Automatic environment detection** between development (`testline8392.sauto.md`) and production (`sauto.md`)
+- **Zero configuration changes** needed when deploying to production
+- **Centralized configuration** in `config.php`
+
+### 🎯 Enhanced Demo Interface
+- **Dynamic sitemap detection** - automatically finds and displays buttons for all sitemap files
+- **Clean URLs** - direct links to sitemap files (e.g., `/sitemap-1.xml`)
+- **Filename-based buttons** - buttons show exact filenames instead of generic labels
+- **Auto-scaling** - supports unlimited sitemap files (sitemap-1.xml, sitemap-2.xml, etc.)
+
+### 🌐 Multi-Environment Support
+- **Development**: `https://www.testline8392.sauto.md`
+- **Production**: `https://www.sauto.md`
+- **Automatic URL generation** based on current environment
 
 ## File Structure
 

@@ -1,19 +1,23 @@
 <?php
 /**
- * SAUTO Sitemap Generator - SAFE REAL DATA VERSION
- * Uses web scraping to get real data without database connection
- * 100% SAFE - Only reads public data, no database access
+ * SAUTO Sitemap Generator - Safe Real Version
+ * This version uses real database connection but with safety checks
+ * Generates actual sitemap files for production use
  */
+
+// Load configuration
+require_once __DIR__ . '/config.php';
 
 class SitemapGeneratorSafeReal {
     
-    private $baseUrl = 'https://www.sauto.md';
+    private $baseUrl;
     private $maxUrlsPerFile = 7000;
     private $outputDir = __DIR__ . '/..';
     private $logFile = 'sitemap_generation_safe_real.log';
     private $languages = ['ro', 'ru', 'en'];
     
     public function __construct() {
+        $this->baseUrl = getSitemapBaseUrl();
         $this->log("Safe real sitemap generation started at " . date('Y-m-d H:i:s'));
     }
     

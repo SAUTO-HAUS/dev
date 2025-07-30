@@ -1,19 +1,19 @@
 <?php
 /**
- * SAUTO Sitemap Generator - REAL DATA VERSION
- * Automatic daily sitemap generation script with real database connection
- * Follows XML Sitemap Protocol specification
+ * SAUTO Sitemap Generator - REAL VERSION
+ * This version connects to the actual database and generates real sitemaps
+ * Use with caution - this affects production data
  */
 
-// Include SAUTO configuration and database connection safely
-define('_DOIT', 1);
+// Load configuration
+require_once __DIR__ . '/config.php';
 
-// Set required server variables if not set
-if (!isset($_SERVER['HTTP_HOST'])) {
-    $_SERVER['HTTP_HOST'] = 'www.sauto.md';
-}
-if (!isset($_SERVER['REQUEST_URI'])) {
-    $_SERVER['REQUEST_URI'] = '/';
+// Ensure we're running in the correct environment
+if (!defined('STDIN')) {
+    // Set the correct host for URL generation based on environment
+    $_SERVER['HTTP_HOST'] = getSitemapDomain();
+    $_SERVER['HTTPS'] = 'on';
+    $_SERVER['REQUEST_SCHEME'] = 'https';
 }
 if (!isset($_SERVER['REMOTE_ADDR'])) {
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
@@ -30,7 +30,7 @@ try {
 
 class SitemapGeneratorReal {
     
-    private $baseUrl = 'https://www.sauto.md';
+    private $baseUrl;
     private $maxUrlsPerFile = 7000;
     private $outputDir = __DIR__ . '/..';
     private $logFile = 'sitemap_generation_real.log';
@@ -42,6 +42,7 @@ class SitemapGeneratorReal {
         global $db, $prefx;
         $this->db = $db;
         $this->prefx = $prefx;
+        $this->baseUrl = getSitemapBaseUrl();
         $this->log("Real sitemap generation started at " . date('Y-m-d H:i:s'));
     }
     

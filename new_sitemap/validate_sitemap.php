@@ -4,6 +4,9 @@
  * Validates generated sitemap files according to XML Sitemap Protocol
  */
 
+// Load configuration
+require_once __DIR__ . '/config.php';
+
 class SitemapValidator {
     
     private $logFile = 'validation.log';
@@ -210,8 +213,9 @@ class SitemapValidator {
                 $errors[] = "Invalid URL: $url";
             }
             
-            if (!preg_match('/^https:\/\/testline8392\.sauto\.md\//', $url)) {
-                $errors[] = "URL must start with https://testline8392.sauto.md/: $url";
+            $expectedDomain = getSitemapBaseUrl() . '/';
+            if (!preg_match('/^' . preg_quote($expectedDomain, '/') . '/', $url)) {
+                $errors[] = "URL must start with {$expectedDomain}: $url";
             }
             
             // Check for duplicates

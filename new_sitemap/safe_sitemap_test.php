@@ -1,13 +1,17 @@
 <?php
 /**
- * SAUTO Safe Sitemap Test - Non-invasive testing
- * Tests sitemap files without affecting main environment
+ * SAUTO Sitemap Test - Safe Version
+ * Tests sitemap generation without affecting production
  */
+
+// Load configuration
+require_once __DIR__ . '/config.php';
 
 class SafeSitemapTest {
     
     private $testResults = [];
     private $baseDir;
+    private $expectedDomain;
     
     public function __construct($baseDir = '..') {
         $this->baseDir = rtrim($baseDir, '/\\');
@@ -77,7 +81,7 @@ class SafeSitemapTest {
         echo "3. Testing URL format...\n";
         
         $files = ['sitemap-1.xml', 'sitemap-2.xml', 'sitemap-3.xml'];
-        $expectedDomain = 'https://www.testline8392.sauto.md/';
+        $expectedDomain = getSitemapBaseUrl() . '/';
         
         foreach ($files as $file) {
             $path = $this->baseDir . DIRECTORY_SEPARATOR . $file;
@@ -103,7 +107,7 @@ class SafeSitemapTest {
         echo "4. Testing hreflang links...\n";
         
         $files = ['sitemap-1.xml', 'sitemap-2.xml', 'sitemap-3.xml'];
-        $expectedDomain = 'https://www.testline8392.sauto.md/';
+        $expectedDomain = getSitemapBaseUrl() . '/';
         
         foreach ($files as $file) {
             $path = $this->baseDir . DIRECTORY_SEPARATOR . $file;
