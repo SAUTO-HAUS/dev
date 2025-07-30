@@ -161,7 +161,8 @@
                 echo '<div class="test-section">';
                 echo '<h2>3. 🌐 URL Format Test</h2>';
                 
-                $files = ['sitemap-1.xml', 'sitemap-2.xml', 'sitemap-3.xml'];
+                // Găsește fișierele sitemap care există realmente
+                $files = $this->getExistingSitemapFiles();
                 $expectedDomain = 'https://www.sauto.md/';
                 
                 foreach ($files as $file) {
@@ -189,7 +190,8 @@
                 echo '<div class="test-section">';
                 echo '<h2>4. 🌍 Hreflang Links Test</h2>';
                 
-                $files = ['sitemap-1.xml', 'sitemap-2.xml', 'sitemap-3.xml'];
+                // Găsește fișierele sitemap care există realmente
+                $files = $this->getExistingSitemapFiles();
                 $expectedDomain = 'https://www.sauto.md/';
                 
                 foreach ($files as $file) {
@@ -216,6 +218,19 @@
                 $content = file_get_contents($file);
                 return strpos($content, '<?xml') !== false && 
                        (strpos($content, '<sitemapindex') !== false || strpos($content, '<urlset') !== false);
+            }
+            
+            private function getExistingSitemapFiles() {
+                $files = [];
+                // Caută fișiere sitemap-N.xml în directorul de bază
+                for ($i = 1; $i <= 10; $i++) {
+                    $filename = "sitemap-{$i}.xml";
+                    $path = $this->baseDir . DIRECTORY_SEPARATOR . $filename;
+                    if (file_exists($path)) {
+                        $files[] = $filename;
+                    }
+                }
+                return $files;
             }
             
             private function formatFileSize($file) {
