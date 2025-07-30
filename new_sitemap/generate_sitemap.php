@@ -7,7 +7,7 @@
 
 class SitemapGenerator {
     
-    private $baseUrl = 'https://testline8392.sauto.md';
+    private $baseUrl = 'https://www.sauto.md';
     private $maxUrlsPerFile = 7000;
     private $outputDir = __DIR__;
     private $logFile = 'sitemap_generation.log';
