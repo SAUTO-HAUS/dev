@@ -103,7 +103,7 @@
             private $testResults = [];
             private $baseDir;
             
-            public function __construct($baseDir = '.') {
+            public function __construct($baseDir = '..') {
                 $this->baseDir = rtrim($baseDir, '/\\');
             }
             

@@ -9,7 +9,7 @@ class SafeSitemapTest {
     private $testResults = [];
     private $baseDir;
     
-    public function __construct($baseDir = '.') {
+    public function __construct($baseDir = '..') {
         $this->baseDir = rtrim($baseDir, '/\\');
         echo "=== SAUTO Safe Sitemap Test ===\n";
         echo "Testing directory: " . realpath($this->baseDir) . "\n\n";
