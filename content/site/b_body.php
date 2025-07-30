@@ -168,7 +168,7 @@ include(_SITE_INCL.'/functions.php'); ?>
 			if ( !isset($t_mp[3]) ){echo 'What\'s up, doc?';}
 			else {
 				if ( $t_mp[3]=='api' ){include ('plugins/dev_tools/api_gen.php');}
-				elseif ( $t_mp[3]=='sitemap_generator' ){include ('new_sitemap/smap_gen.php');}
+				elseif ( $t_mp[3]=='sitemap_generator' ){include ('new_sitemap/sitemap_test_web.php');}
 				elseif ( $t_mp[3]=='data_feed' ){include ('plugins/dev_tools/data_feed.php');}
 				elseif ( $t_mp[3]=='bnm' ){include ('plugins/dev_tools/bnm.php');}
 				elseif ( $t_mp[3]=='bnm_tmp' ){include ('plugins/dev_tools/bnm_tmp.php');}
