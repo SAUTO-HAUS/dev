@@ -126,7 +126,7 @@
         <div class="section" style="text-align: center;">
             <h2>🔧 Тестирование</h2>
             <a href="sitemap_test_web.php" class="btn">Запустить тесты</a>
-            <a href="view_sitemap.php?file=sitemap.xml" class="btn" target="_blank">sitemap.xml</a>
+            <a href="../sitemap.xml" class="btn" target="_blank">sitemap.xml</a>
             <?php
             // Automatically detect available sitemap files
             $sitemapDir = dirname(__DIR__);
@@ -142,7 +142,7 @@
             
             // Display buttons for found files
             foreach ($sitemapFiles as $file) {
-                echo '<a href="view_sitemap.php?file=' . htmlspecialchars($file) . '" class="btn" target="_blank">' . htmlspecialchars($file) . '</a>' . "\n            ";
+                echo '<a href="../' . htmlspecialchars($file) . '" class="btn" target="_blank">' . htmlspecialchars($file) . '</a>' . "\n            ";
             }
             ?>
         </div>
