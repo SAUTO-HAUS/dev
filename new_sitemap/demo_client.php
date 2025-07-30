@@ -126,8 +126,25 @@
         <div class="section" style="text-align: center;">
             <h2>🔧 Тестирование</h2>
             <a href="sitemap_test_web.php" class="btn">Запустить тесты</a>
-            <a href="view_sitemap.php?file=sitemap.xml" class="btn" target="_blank">Основная карта</a>
-            <a href="view_sitemap.php?file=sitemap-1.xml" class="btn" target="_blank">Файл с URL</a>
+            <a href="view_sitemap.php?file=sitemap.xml" class="btn" target="_blank">sitemap.xml</a>
+            <?php
+            // Detectează automat fișierele sitemap disponibile
+            $sitemapDir = dirname(__DIR__);
+            $sitemapFiles = [];
+            
+            // Caută fișiere sitemap-X.xml
+            for ($i = 1; $i <= 10; $i++) {
+                $filename = "sitemap-{$i}.xml";
+                if (file_exists($sitemapDir . DIRECTORY_SEPARATOR . $filename)) {
+                    $sitemapFiles[] = $filename;
+                }
+            }
+            
+            // Afișează butoanele pentru fișierele găsite
+            foreach ($sitemapFiles as $file) {
+                echo '<a href="view_sitemap.php?file=' . htmlspecialchars($file) . '" class="btn" target="_blank">' . htmlspecialchars($file) . '</a>' . "\n            ";
+            }
+            ?>
         </div>
         
     </div>
