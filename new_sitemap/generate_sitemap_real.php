@@ -50,40 +50,51 @@ class SitemapGeneratorReal {
      */
     public function generate() {
         try {
-            // Step 1: Get all pages from real database
-            $allPages = $this->getAllPages();
-            $this->log("Found " . count($allPages) . " total pages from real database");
+            $this->log("Starting sitemap generation...");
             
-            // Step 2: Filter and validate pages
-            $validPages = $this->filterPages($allPages);
-            $this->log("After filtering: " . count($validPages) . " valid pages");
+            // Backup current files before generation
+            $this->backupCurrentFiles();
             
-            // Step 3: Calculate priorities and metadata
-            $processedPages = $this->processPages($validPages);
+            // Get all pages
+            $pages = $this->getAllPages();
+            $this->log("Found " . count($pages) . " total pages");
             
-            // Step 4: Split into sub-files
-            $chunks = array_chunk($processedPages, $this->maxUrlsPerFile);
-            $this->log("Split into " . count($chunks) . " sub-files");
+            // Filter and process pages
+            $pages = $this->filterPages($pages);
+            $pages = $this->removeDuplicateUrls($pages);
+            $pages = $this->processPages($pages);
             
-            // Step 5: Generate sub-files
+            $this->log("Processing " . count($pages) . " unique pages");
+            
+            // Split into sub-files
             $subFiles = [];
+            $chunks = array_chunk($pages, $this->maxUrlsPerFile);
+            
             foreach ($chunks as $index => $chunk) {
                 $fileName = 'sitemap-' . ($index + 1) . '.xml';
                 $this->generateSubFile($fileName, $chunk);
                 $subFiles[] = $fileName;
             }
             
-            // Step 6: Generate main index file
+            // Generate main index file
             $this->generateIndexFile($subFiles);
             
-            // Step 7: Validate all files
-            $this->validateFiles($subFiles);
+            // Validate all files
+            $isValid = $this->validateFiles($subFiles);
             
-            $this->log("Real sitemap generation completed successfully with " . count($processedPages) . " URLs");
+            if (!$isValid) {
+                $this->log("ERROR: Generated files failed validation");
+                $this->fallbackToPreviousVersion();
+                return false;
+            }
+            
+            $this->log("Sitemap generation completed successfully!");
+            return true;
             
         } catch (Exception $e) {
-            $this->log("ERROR: " . $e->getMessage());
+            $this->log("ERROR during generation: " . $e->getMessage());
             $this->fallbackToPreviousVersion();
+            return false;
         }
     }
     
@@ -257,17 +268,72 @@ class SitemapGeneratorReal {
      * Get available translations for a car
      */
     private function getCarTranslations($carId) {
-        // For now, assume all cars have all language versions
-        // This can be enhanced to check actual translations in database
-        return ['ro', 'ru', 'en'];
+        try {
+            // Check which language versions exist for this car
+            $translations = ['ro']; // Romanian is always available
+            
+            // Check if Russian translation exists
+            $sql = "SELECT COUNT(*) as count FROM {$this->prefx}_cars_lang 
+                    WHERE car_id = ? AND lang = 'ru' AND title IS NOT NULL AND title != ''";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$carId]);
+            $result = $stmt->fetch();
+            if ($result && $result['count'] > 0) {
+                $translations[] = 'ru';
+            }
+            
+            // Check if English translation exists
+            $sql = "SELECT COUNT(*) as count FROM {$this->prefx}_cars_lang 
+                    WHERE car_id = ? AND lang = 'en' AND title IS NOT NULL AND title != ''";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$carId]);
+            $result = $stmt->fetch();
+            if ($result && $result['count'] > 0) {
+                $translations[] = 'en';
+            }
+            
+            return $translations;
+            
+        } catch (Exception $e) {
+            $this->log("ERROR getting car translations for ID $carId: " . $e->getMessage());
+            return ['ro']; // Fallback to Romanian only
+        }
     }
     
     /**
      * Get available translations for a tire
      */
     private function getTireTranslations($tireId) {
-        // For now, assume all tires have ro and ru translations
-        return ['ro', 'ru'];
+        try {
+            // Check which language versions exist for this tire
+            $translations = ['ro']; // Romanian is always available
+            
+            // Check if Russian translation exists
+            $sql = "SELECT COUNT(*) as count FROM {$this->prefx}_tyres_lang 
+                    WHERE tyre_id = ? AND lang = 'ru' AND title IS NOT NULL AND title != ''";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$tireId]);
+            $result = $stmt->fetch();
+            if ($result && $result['count'] > 0) {
+                $translations[] = 'ru';
+            }
+            
+            // Check if English translation exists
+            $sql = "SELECT COUNT(*) as count FROM {$this->prefx}_tyres_lang 
+                    WHERE tyre_id = ? AND lang = 'en' AND title IS NOT NULL AND title != ''";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute([$tireId]);
+            $result = $stmt->fetch();
+            if ($result && $result['count'] > 0) {
+                $translations[] = 'en';
+            }
+            
+            return $translations;
+            
+        } catch (Exception $e) {
+            $this->log("ERROR getting tire translations for ID $tireId: " . $e->getMessage());
+            return ['ro']; // Fallback to Romanian only
+        }
     }
     
     // Include all other methods from the original generator
@@ -462,8 +528,274 @@ class SitemapGeneratorReal {
      * Validate generated XML files
      */
     private function validateFiles($subFiles) {
-        // Basic validation implementation
-        $this->log("Validation completed for " . count($subFiles) . " files");
+        $errors = [];
+        
+        // Validate main index file
+        $indexPath = $this->outputDir . '/sitemap.xml';
+        if (!file_exists($indexPath)) {
+            $errors[] = "Main sitemap.xml file not found";
+            $this->log("ERROR: Main sitemap.xml file not found");
+            return false;
+        }
+        
+        $indexErrors = $this->validateXmlFile($indexPath, 'index');
+        if (!empty($indexErrors)) {
+            $errors = array_merge($errors, $indexErrors);
+        }
+        
+        // Validate each sub-file
+        foreach ($subFiles as $subFile) {
+            $subPath = $this->outputDir . '/' . $subFile;
+            if (!file_exists($subPath)) {
+                $errors[] = "Sub-file $subFile not found";
+                continue;
+            }
+            
+            $subErrors = $this->validateXmlFile($subPath, 'urlset');
+            if (!empty($subErrors)) {
+                $errors = array_merge($errors, $subErrors);
+            }
+            
+            // Check URL count limit
+            $urlCount = $this->countUrlsInFile($subPath);
+            if ($urlCount > $this->maxUrlsPerFile) {
+                $errors[] = "$subFile exceeds maximum URLs: $urlCount > {$this->maxUrlsPerFile}";
+            }
+        }
+        
+        if (empty($errors)) {
+            $this->log("All sitemap files validated successfully!");
+            return true;
+        } else {
+            $this->log("Validation errors found:");
+            foreach ($errors as $error) {
+                $this->log("  - $error");
+            }
+            return false;
+        }
+    }
+    
+    /**
+     * Validate individual XML file
+     */
+    private function validateXmlFile($filePath, $type) {
+        $errors = [];
+        
+        // Check if file is readable
+        if (!is_readable($filePath)) {
+            $errors[] = "File $filePath is not readable";
+            return $errors;
+        }
+        
+        // Load and validate XML structure
+        libxml_use_internal_errors(true);
+        $xml = new DOMDocument();
+        $xml->load($filePath);
+        
+        $xmlErrors = libxml_get_errors();
+        if (!empty($xmlErrors)) {
+            foreach ($xmlErrors as $error) {
+                $errors[] = "XML Error in $filePath: " . trim($error->message);
+            }
+            libxml_clear_errors();
+            return $errors;
+        }
+        
+        // Validate structure based on type
+        if ($type === 'index') {
+            $errors = array_merge($errors, $this->validateSitemapIndex($xml, $filePath));
+        } else {
+            $errors = array_merge($errors, $this->validateUrlset($xml, $filePath));
+        }
+        
+        return $errors;
+    }
+    
+    /**
+     * Validate sitemap index structure
+     */
+    private function validateSitemapIndex($xml, $filePath) {
+        $errors = [];
+        
+        // Check root element
+        $root = $xml->documentElement;
+        if ($root->nodeName !== 'sitemapindex') {
+            $errors[] = "$filePath: Root element should be 'sitemapindex', found '{$root->nodeName}'";
+        }
+        
+        // Check namespace
+        if ($root->getAttribute('xmlns') !== 'http://www.sitemaps.org/schemas/sitemap/0.9') {
+            $errors[] = "$filePath: Missing or incorrect xmlns attribute";
+        }
+        
+        // Check sitemap entries
+        $sitemaps = $xml->getElementsByTagName('sitemap');
+        if ($sitemaps->length === 0) {
+            $errors[] = "$filePath: No sitemap entries found";
+        }
+        
+        foreach ($sitemaps as $sitemap) {
+            $loc = $sitemap->getElementsByTagName('loc');
+            $lastmod = $sitemap->getElementsByTagName('lastmod');
+            
+            if ($loc->length === 0) {
+                $errors[] = "$filePath: Sitemap entry missing <loc> tag";
+            } else {
+                $url = $loc->item(0)->textContent;
+                if (!filter_var($url, FILTER_VALIDATE_URL) || !str_starts_with($url, 'https://')) {
+                    $errors[] = "$filePath: Invalid URL in <loc>: $url";
+                }
+            }
+            
+            if ($lastmod->length === 0) {
+                $errors[] = "$filePath: Sitemap entry missing <lastmod> tag";
+            } else {
+                $date = $lastmod->item(0)->textContent;
+                if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+                    $errors[] = "$filePath: Invalid date format in <lastmod>: $date";
+                }
+            }
+        }
+        
+        return $errors;
+    }
+    
+    /**
+     * Validate urlset structure
+     */
+    private function validateUrlset($xml, $filePath) {
+        $errors = [];
+        
+        // Check root element
+        $root = $xml->documentElement;
+        if ($root->nodeName !== 'urlset') {
+            $errors[] = "$filePath: Root element should be 'urlset', found '{$root->nodeName}'";
+        }
+        
+        // Check namespaces
+        $requiredNamespaces = [
+            'xmlns' => 'http://www.sitemaps.org/schemas/sitemap/0.9',
+            'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
+            'xmlns:xhtml' => 'http://www.w3.org/1999/xhtml'
+        ];
+        
+        foreach ($requiredNamespaces as $attr => $expectedValue) {
+            if ($root->getAttribute($attr) !== $expectedValue) {
+                $errors[] = "$filePath: Missing or incorrect $attr attribute";
+            }
+        }
+        
+        // Check URL entries
+        $urls = $xml->getElementsByTagName('url');
+        $seenUrls = [];
+        
+        foreach ($urls as $url) {
+            $urlErrors = $this->validateUrlEntry($url, $filePath);
+            $errors = array_merge($errors, $urlErrors);
+            
+            // Check for duplicates
+            $loc = $url->getElementsByTagName('loc');
+            if ($loc->length > 0) {
+                $urlValue = $loc->item(0)->textContent;
+                if (in_array($urlValue, $seenUrls)) {
+                    $errors[] = "$filePath: Duplicate URL found: $urlValue";
+                } else {
+                    $seenUrls[] = $urlValue;
+                }
+            }
+        }
+        
+        return $errors;
+    }
+    
+    /**
+     * Validate individual URL entry
+     */
+    private function validateUrlEntry($urlNode, $filePath) {
+        $errors = [];
+        $requiredTags = ['loc', 'lastmod', 'changefreq', 'priority'];
+        
+        foreach ($requiredTags as $tag) {
+            $elements = $urlNode->getElementsByTagName($tag);
+            if ($elements->length === 0) {
+                $errors[] = "$filePath: URL entry missing <$tag> tag";
+            } else {
+                $value = $elements->item(0)->textContent;
+                $errors = array_merge($errors, $this->validateTagValue($tag, $value, $filePath));
+            }
+        }
+        
+        // Validate hreflang links
+        $hreflangs = $urlNode->getElementsByTagName('link');
+        foreach ($hreflangs as $hreflang) {
+            if ($hreflang->getAttribute('rel') !== 'alternate') {
+                $errors[] = "$filePath: hreflang link missing rel='alternate'";
+            }
+            
+            $href = $hreflang->getAttribute('href');
+            if (!filter_var($href, FILTER_VALIDATE_URL) || !str_starts_with($href, 'https://')) {
+                $errors[] = "$filePath: Invalid hreflang href: $href";
+            }
+            
+            $lang = $hreflang->getAttribute('hreflang');
+            if (!in_array($lang, $this->languages)) {
+                $errors[] = "$filePath: Invalid hreflang language: $lang";
+            }
+        }
+        
+        return $errors;
+    }
+    
+    /**
+     * Validate individual tag values
+     */
+    private function validateTagValue($tag, $value, $filePath) {
+        $errors = [];
+        
+        switch ($tag) {
+            case 'loc':
+                if (!filter_var($value, FILTER_VALIDATE_URL) || !str_starts_with($value, 'https://')) {
+                    $errors[] = "$filePath: Invalid URL in <loc>: $value";
+                }
+                if (!str_contains($value, '/ro/')) {
+                    $errors[] = "$filePath: URL should contain /ro/ language prefix: $value";
+                }
+                break;
+                
+            case 'lastmod':
+                if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) {
+                    $errors[] = "$filePath: Invalid date format in <lastmod>: $value (should be YYYY-MM-DD)";
+                }
+                break;
+                
+            case 'changefreq':
+                $validFreqs = ['always', 'hourly', 'daily', 'weekly', 'monthly', 'yearly', 'never'];
+                if (!in_array($value, $validFreqs)) {
+                    $errors[] = "$filePath: Invalid <changefreq> value: $value";
+                }
+                break;
+                
+            case 'priority':
+                if (!is_numeric($value) || $value < 0.0 || $value > 1.0) {
+                    $errors[] = "$filePath: Invalid <priority> value: $value (should be 0.0-1.0)";
+                }
+                if ($value == 0.0) {
+                    $errors[] = "$filePath: Priority should never be 0.0: $value";
+                }
+                break;
+        }
+        
+        return $errors;
+    }
+    
+    /**
+     * Count URLs in a sitemap file
+     */
+    private function countUrlsInFile($filePath) {
+        $xml = new DOMDocument();
+        $xml->load($filePath);
+        $urls = $xml->getElementsByTagName('url');
+        return $urls->length;
     }
     
     /**
@@ -471,6 +803,76 @@ class SitemapGeneratorReal {
      */
     private function fallbackToPreviousVersion() {
         $this->log("Attempting fallback to previous valid version");
+        
+        $backupDir = $this->outputDir . '/sitemap_backup';
+        
+        // Check if backup directory exists
+        if (!is_dir($backupDir)) {
+            $this->log("ERROR: No backup directory found at $backupDir");
+            return false;
+        }
+        
+        // Get list of backup files
+        $backupFiles = glob($backupDir . '/sitemap*.xml');
+        if (empty($backupFiles)) {
+            $this->log("ERROR: No backup files found in $backupDir");
+            return false;
+        }
+        
+        $restored = 0;
+        foreach ($backupFiles as $backupFile) {
+            $fileName = basename($backupFile);
+            $targetFile = $this->outputDir . '/' . $fileName;
+            
+            if (copy($backupFile, $targetFile)) {
+                $this->log("Restored: $fileName");
+                $restored++;
+            } else {
+                $this->log("ERROR: Failed to restore $fileName");
+            }
+        }
+        
+        if ($restored > 0) {
+            $this->log("Successfully restored $restored files from backup");
+            return true;
+        } else {
+            $this->log("ERROR: Failed to restore any files from backup");
+            return false;
+        }
+    }
+    
+    /**
+     * Backup current sitemap files before generating new ones
+     */
+    private function backupCurrentFiles() {
+        $backupDir = $this->outputDir . '/sitemap_backup';
+        
+        // Create backup directory if it doesn't exist
+        if (!is_dir($backupDir)) {
+            if (!mkdir($backupDir, 0755, true)) {
+                $this->log("ERROR: Failed to create backup directory: $backupDir");
+                return false;
+            }
+        }
+        
+        // Backup existing sitemap files
+        $sitemapFiles = glob($this->outputDir . '/sitemap*.xml');
+        $backed = 0;
+        
+        foreach ($sitemapFiles as $file) {
+            $fileName = basename($file);
+            $backupFile = $backupDir . '/' . $fileName;
+            
+            if (copy($file, $backupFile)) {
+                $this->log("Backed up: $fileName");
+                $backed++;
+            } else {
+                $this->log("WARNING: Failed to backup $fileName");
+            }
+        }
+        
+        $this->log("Backed up $backed sitemap files");
+        return $backed > 0;
     }
     
     /**
@@ -485,7 +887,85 @@ class SitemapGeneratorReal {
     
     // Helper methods
     private function isCanonicalUrl($url) {
-        return !empty($url) && strpos($url, '?') === false;
+        if (empty($url)) {
+            return false;
+        }
+        
+        // Check for query parameters (filtering, sorting, utm, etc.)
+        if (strpos($url, '?') !== false) {
+            return false;
+        }
+        
+        // Check for fragment identifiers
+        if (strpos($url, '#') !== false) {
+            return false;
+        }
+        
+        // Check for session IDs or tracking parameters in URL path
+        $invalidPatterns = [
+            '/sessionid=/',
+            '/sid=/',
+            '/PHPSESSID=/',
+            '/utm_/',
+            '/ref=/',
+            '/source=/',
+            '/campaign=/',
+            '/sort=/',
+            '/filter=/',
+            '/page=/',
+            '/limit=/',
+            '/offset=/'
+        ];
+        
+        foreach ($invalidPatterns as $pattern) {
+            if (preg_match($pattern, $url)) {
+                return false;
+            }
+        }
+        
+        // Check if URL follows expected structure
+        $validPatterns = [
+            '/\/ro\/cars\/\d+$/',           // /ro/cars/123
+            '/\/ro\/tires\/[a-z0-9-]+$/',    // /ro/tires/tire-slug
+            '/\/ro\/[a-z-]+$/',             // /ro/contact, /ro/about
+            '/\/ro\/$/'                      // /ro/
+        ];
+        
+        foreach ($validPatterns as $pattern) {
+            if (preg_match($pattern, $url)) {
+                return true;
+            }
+        }
+        
+        // If no pattern matches, it's likely not canonical
+        return false;
+    }
+    
+    /**
+     * Check if URL returns HTTP 200 status
+     */
+    private function isUrlAccessible($url) {
+        try {
+            $context = stream_context_create([
+                'http' => [
+                    'method' => 'HEAD',
+                    'timeout' => 5,
+                    'user_agent' => 'SAUTO Sitemap Generator/1.0'
+                ]
+            ]);
+            
+            $headers = get_headers($url, 1, $context);
+            
+            if ($headers && isset($headers[0])) {
+                return strpos($headers[0], '200') !== false;
+            }
+            
+            return false;
+            
+        } catch (Exception $e) {
+            $this->log("WARNING: Could not check URL accessibility for $url: " . $e->getMessage());
+            return true; // Assume accessible to avoid blocking generation
+        }
     }
     
     private function removeDuplicateUrls($pages) {

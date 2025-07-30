@@ -3,10 +3,10 @@
 # Sets up daily automatic sitemap generation
 
 # Add cron job to run daily at 2:00 AM
-CRON_JOB="0 2 * * * /usr/bin/php /path/to/sauto/new_sitemap/generate_sitemap.php >> /path/to/sauto/new_sitemap/cron.log 2>&1"
+CRON_JOB="0 2 * * * /usr/bin/php /var/www/sauto/dev/new_sitemap/generate_sitemap_real.php >> /var/www/sauto/dev/new_sitemap/cron.log 2>&1"
 
 # Check if cron job already exists
-if crontab -l | grep -q "generate_sitemap.php"; then
+if crontab -l | grep -q "generate_sitemap_real.php"; then
     echo "Cron job already exists"
 else
     # Add the cron job
@@ -16,7 +16,7 @@ else
 fi
 
 # Create log directory if it doesn't exist
-mkdir -p /path/to/sauto/new_sitemap/logs
+mkdir -p /var/www/sauto/dev/new_sitemap/logs
 
 echo "Setup complete!"
 echo "To verify cron job: crontab -l"
