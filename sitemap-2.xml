@@ -9,75 +9,75 @@
   
   <!-- Car in stock, 61-120 days old - priority 0.7 -->
   <url>
-    <loc>https://testline8392.sauto.md/ro/cars/10922</loc>
+    <loc>https://www.testline8392.sauto.md/ro/cars/10922</loc>
     <lastmod>2025-04-15</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ro" href="https://testline8392.sauto.md/ro/cars/10922" />
-    <xhtml:link rel="alternate" hreflang="ru" href="https://testline8392.sauto.md/ru/cars/10922" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://testline8392.sauto.md/en/cars/10922" />
+    <xhtml:link rel="alternate" hreflang="ro" href="https://www.testline8392.sauto.md/ro/cars/10922" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.testline8392.sauto.md/ru/cars/10922" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.testline8392.sauto.md/en/cars/10922" />
   </url>
   
   <!-- Tire page - priority 0.2 -->
   <url>
-    <loc>https://testline8392.sauto.md/ro/tires/winter-tire-2</loc>
+    <loc>https://www.testline8392.sauto.md/ro/tires/winter-tire-2</loc>
     <lastmod>2025-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
-    <xhtml:link rel="alternate" hreflang="ro" href="https://testline8392.sauto.md/ro/tires/winter-tire-2" />
-    <xhtml:link rel="alternate" hreflang="ru" href="https://testline8392.sauto.md/ru/tires/winter-tire-2" />
+    <xhtml:link rel="alternate" hreflang="ro" href="https://www.testline8392.sauto.md/ro/tires/winter-tire-2" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.testline8392.sauto.md/ru/tires/winter-tire-2" />
   </url>
   
   <!-- Car in stock, more than 120 days old - priority 0.6 -->
   <url>
-    <loc>https://testline8392.sauto.md/ro/cars/10928</loc>
+    <loc>https://www.testline8392.sauto.md/ro/cars/10928</loc>
     <lastmod>2025-02-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ro" href="https://testline8392.sauto.md/ro/cars/10928" />
-    <xhtml:link rel="alternate" hreflang="ru" href="https://testline8392.sauto.md/ru/cars/10928" />
+    <xhtml:link rel="alternate" hreflang="ro" href="https://www.testline8392.sauto.md/ro/cars/10928" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.testline8392.sauto.md/ru/cars/10928" />
   </url>
   
   <!-- Static page - about us -->
   <url>
-    <loc>https://testline8392.sauto.md/ro/about</loc>
+    <loc>https://www.testline8392.sauto.md/ro/about</loc>
     <lastmod>2025-06-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-    <xhtml:link rel="alternate" hreflang="ro" href="https://testline8392.sauto.md/ro/about" />
-    <xhtml:link rel="alternate" hreflang="ru" href="https://testline8392.sauto.md/ru/about" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://testline8392.sauto.md/en/about" />
+    <xhtml:link rel="alternate" hreflang="ro" href="https://www.testline8392.sauto.md/ro/about" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.testline8392.sauto.md/ru/about" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.testline8392.sauto.md/en/about" />
   </url>
   
   <!-- Car new in stock - priority 1.0 -->
   <url>
-    <loc>https://testline8392.sauto.md/ro/cars/11630</loc>
+    <loc>https://www.testline8392.sauto.md/ro/cars/11630</loc>
     <lastmod>2025-07-28</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="ro" href="https://testline8392.sauto.md/ro/cars/11630" />
-    <xhtml:link rel="alternate" hreflang="ru" href="https://testline8392.sauto.md/ru/cars/11630" />
-    <xhtml:link rel="alternate" hreflang="en" href="https://testline8392.sauto.md/en/cars/11630" />
+    <xhtml:link rel="alternate" hreflang="ro" href="https://www.testline8392.sauto.md/ro/cars/11630" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.testline8392.sauto.md/ru/cars/11630" />
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.testline8392.sauto.md/en/cars/11630" />
   </url>
   
   <!-- Tire category page -->
   <url>
-    <loc>https://testline8392.sauto.md/ro/tires/all-season</loc>
+    <loc>https://www.testline8392.sauto.md/ro/tires/all-season</loc>
     <lastmod>2025-07-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="ro" href="https://testline8392.sauto.md/ro/tires/all-season" />
-    <xhtml:link rel="alternate" hreflang="ru" href="https://testline8392.sauto.md/ru/tires/all-season" />
+    <xhtml:link rel="alternate" hreflang="ro" href="https://www.testline8392.sauto.md/ro/tires/all-season" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.testline8392.sauto.md/ru/tires/all-season" />
   </url>
   
   <!-- Legal page -->
   <url>
-    <loc>https://testline8392.sauto.md/ro/terms-of-service</loc>
+    <loc>https://www.testline8392.sauto.md/ro/terms-of-service</loc>
     <lastmod>2025-05-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="ro" href="https://testline8392.sauto.md/ro/terms-of-service" />
-    <xhtml:link rel="alternate" hreflang="ru" href="https://testline8392.sauto.md/ru/terms-of-service" />
+    <xhtml:link rel="alternate" hreflang="ro" href="https://www.testline8392.sauto.md/ro/terms-of-service" />
+    <xhtml:link rel="alternate" hreflang="ru" href="https://www.testline8392.sauto.md/ru/terms-of-service" />
   </url>
   
 </urlset>
