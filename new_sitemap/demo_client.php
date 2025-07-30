@@ -128,11 +128,11 @@
             <a href="sitemap_test_web.php" class="btn">Запустить тесты</a>
             <a href="view_sitemap.php?file=sitemap.xml" class="btn" target="_blank">sitemap.xml</a>
             <?php
-            // Detectează automat fișierele sitemap disponibile
+            // Automatically detect available sitemap files
             $sitemapDir = dirname(__DIR__);
             $sitemapFiles = [];
             
-            // Caută fișiere sitemap-X.xml
+            // Search for sitemap-X.xml files
             for ($i = 1; $i <= 10; $i++) {
                 $filename = "sitemap-{$i}.xml";
                 if (file_exists($sitemapDir . DIRECTORY_SEPARATOR . $filename)) {
@@ -140,7 +140,7 @@
                 }
             }
             
-            // Afișează butoanele pentru fișierele găsite
+            // Display buttons for found files
             foreach ($sitemapFiles as $file) {
                 echo '<a href="view_sitemap.php?file=' . htmlspecialchars($file) . '" class="btn" target="_blank">' . htmlspecialchars($file) . '</a>' . "\n            ";
             }

@@ -1,15 +1,15 @@
 <?php
 /**
- * Viewer pentru fișierele sitemap cu header-ul XML corect
+ * Sitemap file viewer with correct XML header
  */
 
-// Setează header-ul pentru XML
+// Set XML header
 header('Content-Type: application/xml; charset=utf-8');
 
-// Verifică ce fișier să afișeze
+// Check which file to display
 $file = isset($_GET['file']) ? $_GET['file'] : 'sitemap.xml';
 
-// Lista fișierelor permise
+// List of allowed files
 $allowedFiles = [
     'sitemap.xml',
     'sitemap-1.xml',
@@ -17,24 +17,24 @@ $allowedFiles = [
     'sitemap-3.xml'
 ];
 
-// Verifică dacă fișierul este permis
+// Check if file is allowed
 if (!in_array($file, $allowedFiles)) {
     http_response_code(404);
     echo '<?xml version="1.0" encoding="UTF-8"?><error>File not allowed</error>';
     exit;
 }
 
-// Calea către fișier
+// Path to file
 $filePath = dirname(__DIR__) . DIRECTORY_SEPARATOR . $file;
 
-// Verifică dacă fișierul există
+// Check if file exists
 if (!file_exists($filePath)) {
     http_response_code(404);
     echo '<?xml version="1.0" encoding="UTF-8"?><error>File not found: ' . htmlspecialchars($file) . '</error>';
     exit;
 }
 
-// Citește și afișează conținutul fișierului
+// Read and display file content
 $content = file_get_contents($filePath);
 echo $content;
 ?>
