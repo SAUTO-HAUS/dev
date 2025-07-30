@@ -162,7 +162,7 @@
                 echo '<h2>3. 🌐 URL Format Test</h2>';
                 
                 $files = ['sitemap-1.xml', 'sitemap-2.xml', 'sitemap-3.xml'];
-                $expectedDomain = 'https://www.testline8392.sauto.md/';
+                $expectedDomain = 'https://www.sauto.md/';
                 
                 foreach ($files as $file) {
                     $path = $this->baseDir . DIRECTORY_SEPARATOR . $file;
@@ -190,7 +190,7 @@
                 echo '<h2>4. 🌍 Hreflang Links Test</h2>';
                 
                 $files = ['sitemap-1.xml', 'sitemap-2.xml', 'sitemap-3.xml'];
-                $expectedDomain = 'https://www.testline8392.sauto.md/';
+                $expectedDomain = 'https://www.sauto.md/';
                 
                 foreach ($files as $file) {
                     $path = $this->baseDir . DIRECTORY_SEPARATOR . $file;
