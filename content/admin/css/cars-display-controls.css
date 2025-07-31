@@ -50,7 +50,7 @@
 .display-controls select:focus {
     border-color: #8e0404;
     outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    box-shadow: 0 0 0 0.2rem rgb(255, 0, 0);
 }
 
 .display-controls select:hover {
@@ -58,7 +58,7 @@
 }
 
 .loading-indicator {
-    color: #007bff;
+    color: #ff0000;
     font-size: 16px;
     animation: spin 1s linear infinite;
 }
