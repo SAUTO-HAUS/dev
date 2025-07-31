@@ -47,17 +47,17 @@
 }
 
 .display-controls select:focus {
-    border-color: #ad0000;
+    border-color: #dc3545;
     outline: 0;
-    box-shadow: 0 0 0 0.2rem rgb(255, 0, 0);
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
 }
 
 .display-controls select:hover {
-    border-color: #c50000;
+    border-color: #c82333;
 }
 
 .loading-indicator {
-    color: #b90000a3;
+    color: #dc3545;
     font-size: 16px;
     animation: spin 1s linear infinite;
 }
