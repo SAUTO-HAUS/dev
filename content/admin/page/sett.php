@@ -1,14 +1,8 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
 // Include RBAC system
-if (file_exists('./include/rbac.php')) {
-    require_once './include/rbac.php';
-    require_once './include/rbac_config.php';
-    $rbac_available = true;
-} else {
-    require_once './include/rbac_config.php';
-    $rbac_available = false;
-}
+require_once dirname(__DIR__) . '/include/rbac.php';
+require_once dirname(__DIR__) . '/include/rbac_config.php';
 
 $rtrn = '';
 

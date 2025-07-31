@@ -1,22 +1,8 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
 // Include RBAC system
-if (file_exists('./include/rbac.php')) {
-    require_once './include/rbac.php';
-    require_once './include/rbac_config.php';
-    $rbac_available = true;
-} else {
-    require_once './include/rbac_config.php';
-    $rbac_available = false;
-    // Fallback RBAC class for missing main RBAC file
-    class RBAC {
-        private $user_role = 'gordon';
-        public function __construct($db, $prefx, $user_id = null) {
-            // Simple fallback - assume gordon role
-        }
-        public function getUserRole() { return $this->user_role; }
-    }
-}
+require_once dirname(__DIR__) . '/include/rbac.php';
+require_once dirname(__DIR__) . '/include/rbac_config.php';
 
 // Get user session info
 if (isset($_COOKIE['sess'])) {
