@@ -27,7 +27,7 @@
 /* Clear floats after display controls */
 .ctlg {
     clear: both;
-    margin-top: 10px;
+    margin-top: 20px;
 }
 
 .display-controls label {

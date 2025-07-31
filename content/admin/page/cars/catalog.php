@@ -23,6 +23,8 @@ elseif (isset($_POST['limit'])) {
 
 $i_max = $display_limit;
 $pdo = (new \App\Db\Car())->getCarsCtlg($i_max);
+$total_cars_fetched = count($pdo);
+$has_more_cars = $total_cars_fetched > $i_max;
 $i = 0;
 ?>
 
@@ -318,7 +320,7 @@ $i = 0;
     endforeach; ?>
 </section>
 
-<?php if($i == $i_max) : ?>
+<?php if($has_more_cars && $display_limit != 999) : ?>
     <div id="more_it" data-i="1"><?= $lang_more ?></div>
 <?php endif; ?>
 <div id="it_cnt" data-count="<?= ($i_max+1) ?>" data-pos="<?= $r['id'] ?>"></div>
