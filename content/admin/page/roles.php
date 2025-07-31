@@ -1,12 +1,31 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
 // Include RBAC system
-require_once(_ADM_INCL.'/rbac.php');
+require_once(dirname(__DIR__) . '/include/rbac.php');
+
+// Get user session info
+if (isset($_COOKIE['sess'])) {
+    $sess_parts = explode('|', $_COOKIE['sess']);
+    if (count($sess_parts) >= 2) {
+        $user_id = (int)$sess_parts[0];
+    }
+}
+
+if (!isset($user_id) || !$user_id) {
+    echo '<div style="color: red; padding: 20px;">Eroare: Nu s-a putut identifica utilizatorul. Vă rugăm să vă autentificați din nou.</div>';
+    return;
+}
+
+// Get user role from database
+$pdo = $db->prepare('SELECT role FROM '.$prefx.'_adm_usr WHERE id = ?');
+$pdo->execute([$user_id]);
+$user_data = $pdo->fetch(PDO::FETCH_ASSOC);
+$user_role = $user_data['role'] ?? '';
 
 $rbac = new RBAC($db, $prefx, $user_id);
 
 // Only Gordon can access role management
-if ($rbac->getUserRole() !== 'gordon') {
+if ($user_role !== 'gordon') {
     echo '<div style="color: red; padding: 20px;">Доступ запрещен. Только суперадминистратор может управлять ролями.</div>';
     return;
 }
