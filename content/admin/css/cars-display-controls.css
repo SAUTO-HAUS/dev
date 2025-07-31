@@ -47,12 +47,29 @@
 
 .display-controls select:focus {
     border-color: #8e0404;
+    background-color: #fff !important;
     outline: 0;
     box-shadow: 0 0 0 0.2rem rgb(255, 0, 0);
 }
 
 .display-controls select:hover {
     border-color: #adb5bd;
+    background-color: #fff !important;
+}
+
+.display-controls select:active {
+    background-color: #fff !important;
+    border-color: #8e0404;
+}
+
+.display-controls select option {
+    background-color: #fff !important;
+    color: #495057 !important;
+}
+
+.display-controls select option:checked {
+    background-color: #dc3545 !important;
+    color: #fff !important;
 }
 
 .loading-indicator {
