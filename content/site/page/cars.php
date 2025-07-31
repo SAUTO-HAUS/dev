@@ -138,8 +138,33 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
     // This is a filtered catalogue page
     $card = $car_card('fltr', $cr_lmt, $_GET, 'av');
     
+    // Handle body type filter - set appropriate H1 or hide it
+    if(isset($_GET['bt']) && !isset($_GET['br'])) {
+        // Get body type name from language files
+        $body_type_code = $_GET['bt'];
+        $body_type_name = isset($lng['l']['car']['bt'][$body_type_code]) ? $lng['l']['car']['bt'][$body_type_code] : $body_type_code;
+        
+        // Set language-specific H1 for body type filter with uppercase body type
+        $body_type_upper = mb_strtoupper($body_type_name, 'UTF-8');
+        
+        if ($zlng == 'ro') {
+            $sa['meta']['h1'] = "{$body_type_upper} | În stoc, disponibil pentru vânzare și Trade-In";
+        } elseif ($zlng == 'ru') {
+            $sa['meta']['h1'] = "{$body_type_upper} | В наличии, доступно для продажи и Trade-In";
+        } else { // English
+            $sa['meta']['h1'] = "{$body_type_upper} | In stock, available for sale and Trade-In";
+        }
+        
+        $sa['meta']['ttl'] = $sa['meta']['h1'] . " | Sauto Haus";
+        $sa['meta']['dsc'] = "Automobile de tip {$body_type_name} în stoc și la comandă. Prețuri și oferte actuale.";
+    }
+    // Check if we have other filters without specific handling - hide H1
+    elseif(!isset($_GET['br']) && !isset($_GET['bt'])) {
+        // For general filters without brand or body type, don't show irrelevant H1
+        $sa['meta']['h1'] = '';
+    }
     // Check if we have a brand filter and apply SEO personalized titles
-    if(isset($_GET['br'])) {
+    elseif(isset($_GET['br'])) {
         $brand_code = str_replace('-', '_', $_GET['br']);
         
         // Get the brand name from the database
@@ -211,7 +236,13 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
     
     // No debug display
     $rtrn .= '<div class="gr">';
-    $rtrn .= '<h1 style="font-size: inherit;">'.$sa['meta']['h1'].'</h1>';
+    // Only display H1 if it's not empty and not the default insurance title
+    if (!empty($sa['meta']['h1']) && 
+        strpos($sa['meta']['h1'], 'Автострахование') === false && 
+        strpos($sa['meta']['h1'], 'Car Insurance') === false && 
+        strpos($sa['meta']['h1'], 'Asigurări Auto') === false) {
+        $rtrn .= '<h1 style="font-size: inherit;">'.$sa['meta']['h1'].'</h1>';
+    }
     $rtrn .= '<div class="cnt list">';
     $rtrn .= $card['txt'];
     $rtrn .= '</div>';
