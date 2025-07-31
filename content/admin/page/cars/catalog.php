@@ -26,6 +26,7 @@ $pdo = (new \App\Db\Car())->getCarsCtlg($i_max);
 $total_cars_fetched = count($pdo);
 $has_more_cars = $total_cars_fetched > $i_max;
 $i = 0;
+$last_car_id = 0;
 ?>
 
 <div class="display-controls">
@@ -316,6 +317,7 @@ $i = 0;
         </div>
     <?php
         $i++;
+        $last_car_id = $r['id']; // Track the last car ID
         if($i==$i_max){break;}
     endforeach; ?>
 </section>
@@ -323,4 +325,4 @@ $i = 0;
 <?php if($has_more_cars && $display_limit != 999) : ?>
     <div id="more_it" data-i="1"><?= $lang_more ?></div>
 <?php endif; ?>
-<div id="it_cnt" data-count="<?= ($i_max+1) ?>" data-pos="<?= $r['id'] ?>"></div>
+<div id="it_cnt" data-count="<?= $i ?>" data-pos="<?= $last_car_id ?>"></div>

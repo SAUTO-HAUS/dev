@@ -478,9 +478,9 @@ select:disabled {
 .bx:hover > .adm_menu > .btn.edit {background-image:url('/media/images/site/edit.svg');}
 .bx:hover > .adm_menu > .btn.edit:hover {background-color:rgba(197,255,37,.4)}
 .bx:hover > .adm_menu > .btn[data-fn="av1"] {background-image:url('/media/images/site/favorite.svg');}
-.bx:hover > .adm_menu > .btn[data-fn="av1"]:hover {background-color:rgba(0,124,255,.4);}
+.bx:hover > .adm_menu > .btn[data-fn="av1"]:hover {background-color:rgb(255, 0, 0);}
 .bx:hover > .adm_menu > .btn[data-fn="av0"] {background-image:url('/media/images/site/v2/close.svg'); background-size:auto 20%;}
-.bx:hover > .adm_menu > .btn[data-fn="av0"]:hover {background-color:rgba(0,124,255,.4);}
+.bx:hover > .adm_menu > .btn[data-fn="av0"]:hover {background-color:rgb(255, 0, 0);}
 .bx:hover > .adm_menu > .btn[data-fn="hide"] {background-image:url('/media/images/site/hide.svg');}
 .bx:hover > .adm_menu > .btn[data-fn="hide"]:hover {background-color:rgba(50,50,50,.4);}
 .bx:hover > .adm_menu > .btn[data-fn="reveal"] {background-image:url('/media/images/site/eye.svg');}
