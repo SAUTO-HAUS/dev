@@ -31,7 +31,7 @@
 
 .display-controls label {
     font-weight: 500;
-    color: #495057;
+    color: #2e2e2e;
     margin: 0;
 }
 
@@ -40,7 +40,7 @@
     border: 1px solid #ced4da;
     border-radius: 4px;
     background-color: #fff;
-    color: #495057;
+    color: #313131;
     font-size: 14px;
     cursor: pointer;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
@@ -49,7 +49,7 @@
 .display-controls select:focus {
     border-color: #ad0000;
     outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    box-shadow: 0 0 0 0.2rem rgb(255, 0, 0);
 }
 
 .display-controls select:hover {
@@ -57,7 +57,7 @@
 }
 
 .loading-indicator {
-    color: #b90000;
+    color: #b90000a3;
     font-size: 16px;
     animation: spin 1s linear infinite;
 }
