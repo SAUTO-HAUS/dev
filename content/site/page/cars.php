@@ -144,15 +144,16 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
         $body_type_code = $_GET['bt'];
         $body_type_name = isset($lng['l']['car']['bt'][$body_type_code]) ? $lng['l']['car']['bt'][$body_type_code] : $body_type_code;
         
-        // Set language-specific H1 for body type filter with uppercase body type
+        // Set language-specific H1 for body type filter with uppercase body type and red color
         $body_type_upper = mb_strtoupper($body_type_name, 'UTF-8');
+        $body_type_red = '<span style="color: #ff0000;">'.$body_type_upper.'</span>';
         
         if ($zlng == 'ro') {
-            $sa['meta']['h1'] = "{$body_type_upper} | În stoc, disponibil pentru vânzare și Trade-In";
+            $sa['meta']['h1'] = "{$body_type_red} | În stoc, disponibil pentru vânzare și Trade-In";
         } elseif ($zlng == 'ru') {
-            $sa['meta']['h1'] = "{$body_type_upper} | В наличии, доступно для продажи и Trade-In";
+            $sa['meta']['h1'] = "{$body_type_red} | В наличии, доступно для продажи и Trade-In";
         } else { // English
-            $sa['meta']['h1'] = "{$body_type_upper} | In stock, available for sale and Trade-In";
+            $sa['meta']['h1'] = "{$body_type_red} | In stock, available for sale and Trade-In";
         }
         
         $sa['meta']['ttl'] = $sa['meta']['h1'] . " | Sauto Haus";
