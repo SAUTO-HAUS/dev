@@ -1,8 +1,8 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
 // Include RBAC system
-require_once dirname(__DIR__) . '/include/rbac.php';
-require_once dirname(__DIR__) . '/include/rbac_config.php';
+require_once 'include/rbac.php';
+require_once 'include/rbac_config.php';
 
 $rtrn = '';
 
@@ -116,25 +116,25 @@ if ( isset($t_mp[4]) ){
 			function handleUserAction(action, userId, userName, userLogin) {
 				switch(action) {
 					case "nm":
-						var newName = prompt("Introduce\u021bi numele nou:", userName);
+						var newName = prompt("Введите новое имя:", userName);
 						if (newName && newName !== userName) {
 							updateUser(userId, "name", newName);
 						}
 						break;
 					case "lgn":
-						var newLogin = prompt("Introduce\u021bi login-ul nou:", userLogin);
+						var newLogin = prompt("Введите новый логин:", userLogin);
 						if (newLogin && newLogin !== userLogin) {
 							updateUser(userId, "login", newLogin);
 						}
 						break;
 					case "pass":
-						var newPassword = prompt("Introduce\u021bi parola nou\u0103 pentru " + userName + ":");
+						var newPassword = prompt("Введите новый пароль для " + userName + ":");
 						if (newPassword) {
 							updateUser(userId, "password", newPassword);
 						}
 						break;
 					case "del":
-						if (confirm("Sunte\u021bi sigur c\u0103 dori\u021bi s\u0103 \u0219terge\u021bi utilizatorul \"" + userName + "\"?")) {
+						if (confirm("Вы уверены, что хотите удалить пользователя \"" + userName + "\"?")) {
 							updateUser(userId, "delete", true);
 						}
 						break;
@@ -154,14 +154,14 @@ if ( isset($t_mp[4]) ){
 				.then(function(response) { return response.text(); })
 				.then(function(data) {
 					if (data.indexOf("success") !== -1) {
-						alert("Actualizare reu\u0219it\u0103!");
+						alert("Обновление успешно!");
 						location.reload();
 					} else {
-						alert("Eroare: " + data);
+						alert("Ошибка: " + data);
 					}
 				})
 				.catch(function(error) {
-					alert("A ap\u0103rut o eroare la actualizarea utilizatorului.");
+					alert("Произошла ошибка при обновлении пользователя.");
 				});
 			}
 
