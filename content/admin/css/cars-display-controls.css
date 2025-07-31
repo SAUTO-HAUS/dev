@@ -1,10 +1,4 @@
 /* Display controls for car list pagination */
-.ctlg_dspl_tp {
-    position: relative;
-    z-index: 1;
-    overflow: visible;
-}
-
 .display-controls {
     display: flex;
     align-items: center;
@@ -13,11 +7,8 @@
     background: #f8f9fa;
     border: 1px solid #e9ecef;
     border-radius: 4px;
-    margin: 0 0 15px 0;
+    margin-bottom: 15px;
     font-size: 14px;
-    position: static;
-    clear: both;
-    width: auto;
     max-width: 300px;
 }
 

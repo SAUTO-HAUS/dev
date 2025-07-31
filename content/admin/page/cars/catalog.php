@@ -26,17 +26,16 @@ $pdo = (new \App\Db\Car())->getCarsCtlg($i_max);
 $i = 0;
 ?>
 
-<div class="ctlg_dspl_tp">
-    <div class="display-controls">
-        <label for="cars-display-limit"><?= $lng['adm']['display_limit'] ?? 'Показать:' ?></label>
-        <select id="cars-display-limit" name="limit">
-            <option value="25" <?= $display_limit == 25 ? 'selected' : '' ?>>25</option>
-            <option value="100" <?= $display_limit == 100 ? 'selected' : '' ?>>100</option>
-            <option value="all" <?= $display_limit == 999 ? 'selected' : '' ?>><?= $lng['adm']['all'] ?? 'Все' ?></option>
-        </select>
-        <span class="loading-indicator" id="cars-loading" style="display: none;">⟳</span>
-    </div>
+<div class="display-controls">
+    <label for="cars-display-limit"><?= $lng['adm']['display_limit'] ?? 'Показать:' ?></label>
+    <select id="cars-display-limit" name="limit">
+        <option value="25" <?= $display_limit == 25 ? 'selected' : '' ?>>25</option>
+        <option value="100" <?= $display_limit == 100 ? 'selected' : '' ?>>100</option>
+        <option value="all" <?= $display_limit == 999 ? 'selected' : '' ?>><?= $lng['adm']['all'] ?? 'Все' ?></option>
+    </select>
+    <span class="loading-indicator" id="cars-loading" style="display: none;">⟳</span>
 </div>
+<div class="ctlg_dspl_tp"></div>
 <section class="ctlg">
     <a id="add_new" href="<?= '/'.$_COOKIE['lang'].'/'.$admin_dir.'/cars/detail' ?>" class="bx" title="<?= $lng['adm']['add'] ?>">
         <div></div>
