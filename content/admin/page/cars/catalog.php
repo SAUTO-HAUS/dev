@@ -38,7 +38,9 @@ $i = 0;
 <div class="ctlg_dspl_tp"></div>
 <section class="ctlg">
     <a id="add_new" href="<?= '/'.$_COOKIE['lang'].'/'.$admin_dir.'/cars/detail' ?>" class="bx" title="<?= $lng['adm']['add'] ?>">
-        <div></div>
+        <div>
+            
+        </div>
     </a>
 
     <?php foreach ($pdo as $r) :
