@@ -1,11 +1,42 @@
 <?php
-$i_max = 999;
+// Get display limit from various sources with fallback to default (25)
+$display_limit = 25; // Default fallback
 
+// Check for URL parameter first (for page reload approach)
+if (isset($_GET['limit'])) {
+    $limit_param = $_GET['limit'];
+    if ($limit_param === 'all' || $limit_param === '0') {
+        $display_limit = 999;
+    } elseif (in_array((int)$limit_param, [25, 100])) {
+        $display_limit = (int)$limit_param;
+    }
+}
+// Check for POST parameter (for AJAX approach)
+elseif (isset($_POST['limit'])) {
+    $limit_param = $_POST['limit'];
+    if ($limit_param === 'all' || $limit_param === '0') {
+        $display_limit = 999;
+    } elseif (in_array((int)$limit_param, [25, 100])) {
+        $display_limit = (int)$limit_param;
+    }
+}
+
+$i_max = $display_limit;
 $pdo = (new \App\Db\Car())->getCarsCtlg($i_max);
 $i = 0;
 ?>
 
-<div class="ctlg_dspl_tp"></div>
+<div class="ctlg_dspl_tp">
+    <div class="display-controls">
+        <label for="cars-display-limit"><?= $lng['adm']['display_limit'] ?? 'Показать:' ?></label>
+        <select id="cars-display-limit" name="limit">
+            <option value="25" <?= $display_limit == 25 ? 'selected' : '' ?>>25</option>
+            <option value="100" <?= $display_limit == 100 ? 'selected' : '' ?>>100</option>
+            <option value="all" <?= $display_limit == 999 ? 'selected' : '' ?>><?= $lng['adm']['all'] ?? 'Все' ?></option>
+        </select>
+        <span class="loading-indicator" id="cars-loading" style="display: none;">⟳</span>
+    </div>
+</div>
 <section class="ctlg">
     <a id="add_new" href="<?= '/'.$_COOKIE['lang'].'/'.$admin_dir.'/cars/detail' ?>" class="bx" title="<?= $lng['adm']['add'] ?>">
         <div></div>

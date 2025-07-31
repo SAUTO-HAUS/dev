@@ -150,6 +150,14 @@ window.addEventListener('load', function() {
 });
 
 $(document).ready(function(){
+	// Initialize display limit from localStorage
+	initializeDisplayLimit();
+	
+	// Handle display limit dropdown change
+	$(document).on('change', '#cars-display-limit', function() {
+		handleDisplayLimitChange($(this).val());
+	});
+	
 	$(document).on('click', '.bx > .comment', function(){ overlay('open', $(this).parent().children('.comment_txt'), 'self'); })
 	$(document).on('click', '.bx > .print', function(){ overlay('open', $(this).parent().children('.print_bx'), 'self'); })
 	
@@ -1187,3 +1195,31 @@ $(document).on('change', '.car-checkbox-n_a_new', function() {
 		}
 	});
 });
+
+// Display limit functionality
+function initializeDisplayLimit() {
+	// Get saved preference from localStorage with fallback to default (25)
+	var savedLimit = localStorage.getItem('cars_display_limit');
+	if (savedLimit && ['25', '100', 'all'].includes(savedLimit)) {
+		$('#cars-display-limit').val(savedLimit);
+	} else {
+		// Set default and save it
+		localStorage.setItem('cars_display_limit', '25');
+		$('#cars-display-limit').val('25');
+	}
+}
+
+function handleDisplayLimitChange(newLimit) {
+	// Save preference to localStorage
+	localStorage.setItem('cars_display_limit', newLimit);
+	
+	// Show loading indicator
+	$('#cars-loading').show();
+	
+	// Get current URL and add/update limit parameter
+	var currentUrl = new URL(window.location.href);
+	currentUrl.searchParams.set('limit', newLimit);
+	
+	// Reload page with new limit parameter
+	window.location.href = currentUrl.toString();
+}
