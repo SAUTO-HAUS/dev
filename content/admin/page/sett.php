@@ -96,15 +96,76 @@ if ( isset($t_mp[4]) ){
 			input[name="it_chk"]:checked + .it > .btns_wrp {pointer-events:auto; margin:1rem 0;}
 			input[name="it_chk"]:checked + .it > .btns_wrp > .btns {opacity:1; transition:.3s; transition-delay:.2s;}
 		</style>
-		<script src="../js/user_management.js"></script>
 		<script>
-			setTimeout(function() {
-				if (typeof handleUserAction === "undefined") {
-					alert("JavaScript nu s-a înc\u0103rcat corect!");
-				} else {
-					alert("JavaScript s-a înc\u0103rcat cu succes!");
+			// User management functionality
+			document.addEventListener("DOMContentLoaded", function() {
+				document.addEventListener("click", function(e) {
+					if (e.target.classList.contains("btn")) {
+						e.preventDefault();
+						var action = e.target.getAttribute("data-nm");
+						var userItem = e.target.closest(".it");
+						var userId = userItem.getAttribute("data-id");
+						var userName = userItem.querySelector("[data-login]").textContent;
+						var userLogin = userItem.querySelector("[data-login]").getAttribute("data-login");
+						
+						handleUserAction(action, userId, userName, userLogin);
+					}
+				});
+			});
+			
+			function handleUserAction(action, userId, userName, userLogin) {
+				switch(action) {
+					case "nm":
+						var newName = prompt("Introduce\u021bi numele nou:", userName);
+						if (newName && newName !== userName) {
+							updateUser(userId, "name", newName);
+						}
+						break;
+					case "lgn":
+						var newLogin = prompt("Introduce\u021bi login-ul nou:", userLogin);
+						if (newLogin && newLogin !== userLogin) {
+							updateUser(userId, "login", newLogin);
+						}
+						break;
+					case "pass":
+						var newPassword = prompt("Introduce\u021bi parola nou\u0103 pentru " + userName + ":");
+						if (newPassword) {
+							updateUser(userId, "password", newPassword);
+						}
+						break;
+					case "del":
+						if (confirm("Sunte\u021bi sigur c\u0103 dori\u021bi s\u0103 \u0219terge\u021bi utilizatorul \"" + userName + "\"?")) {
+							updateUser(userId, "delete", true);
+						}
+						break;
 				}
-			}, 1000);
+			}
+			
+			function updateUser(userId, field, value) {
+				var formData = new FormData();
+				formData.append("user_management_action", field);
+				formData.append("user_id", userId);
+				formData.append("user_value", value);
+				
+				fetch(window.location.href, {
+					method: "POST",
+					body: formData
+				})
+				.then(function(response) { return response.text(); })
+				.then(function(data) {
+					if (data.indexOf("success") !== -1) {
+						alert("Actualizare reu\u0219it\u0103!");
+						location.reload();
+					} else {
+						alert("Eroare: " + data);
+					}
+				})
+				.catch(function(error) {
+					alert("A ap\u0103rut o eroare la actualizarea utilizatorului.");
+				});
+			}
+			
+			alert("JavaScript s-a înc\u0103rcat cu succes!");
 		</script>
 		';
 		
