@@ -6,8 +6,20 @@ require_once dirname(__DIR__) . '/include/rbac_config.php';
 
 $rtrn = '';
 
+// Get current user role from session
+$current_user_role = null;
+if (isset($_COOKIE['sess']) && !empty($_COOKIE['sess'])) {
+    $sess = explode("-", $_COOKIE['sess']);
+    $pdo = $db->prepare('SELECT role, type FROM '.$prefx.'_adm_usr WHERE id = :id AND act = "1"');
+    $pdo->execute(['id' => $sess[0]]);
+    $user_data = $pdo->fetch(PDO::FETCH_ASSOC);
+    if ($user_data) {
+        $current_user_role = $user_data['role'] ?? $user_data['type'];
+    }
+}
+
 // Check if user has permission to manage users (Gordon or admin role)
-$can_manage_users = ($user_role === 'gordon' || rbac_has_permission($user_role, 'sett', 'write'));
+$can_manage_users = ($current_user_role === 'gordon' || rbac_has_permission($current_user_role, 'sett', 'write'));
 
 // Process user management actions
 if (isset($_POST['user_management_action']) && $can_manage_users) {
@@ -84,7 +96,9 @@ if ( isset($t_mp[4]) ){
 			input[name="it_chk"]:checked + .it > .btns_wrp {pointer-events:auto; margin:1rem 0;}
 			input[name="it_chk"]:checked + .it > .btns_wrp > .btns {opacity:1; transition:.3s; transition-delay:.2s;}
 		</style>
-		<script src="js/user_management.js"></script>
+		<script>
+			alert("JavaScript loaded!");
+		</script>
 		';
 		
 		$pdo = $db->prepare('SELECT * FROM '.$prefx.'_adm_usr ORDER BY `name` ASC'); // GROUP BY `nm`
