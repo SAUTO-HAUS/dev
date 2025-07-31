@@ -12,7 +12,7 @@ if ($_POST['fn']=='more'){
 	$_POST["it_qu"]--;
 }
 
-$sql .= ' ORDER BY `id` DESC';
+$sql .= ' ORDER BY `vis` DESC, `id` DESC';
 $sql .= ' LIMIT :it_qu';
 $query_args["it_qu"] = ($_POST["it_qu"]+1);
 
