@@ -164,8 +164,7 @@ if ( isset($t_mp[4]) ){
 					alert("A ap\u0103rut o eroare la actualizarea utilizatorului.");
 				});
 			}
-			
-			alert("JavaScript s-a înc\u0103rcat cu succes!");
+
 		</script>
 		';
 		
