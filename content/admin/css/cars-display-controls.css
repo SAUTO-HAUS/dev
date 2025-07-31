@@ -3,13 +3,18 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 15px;
+    padding: 8px 12px;
     background: #f8f9fa;
     border: 1px solid #e9ecef;
     border-radius: 4px;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
     font-size: 14px;
     max-width: 300px;
+}
+
+.ctlg_dspl_tp {
+    margin-top: 0;
+    padding-top: 0;
 }
 
 .display-controls label {
