@@ -4,8 +4,8 @@
     align-items: center;
     gap: 10px;
     padding: 8px 12px;
-    background: #f8f9fa;
-    border: 1px solid #e9ecef;
+    background: #fff;
+    border: 1px solid #dc3545;
     border-radius: 4px;
     margin: 0 0 10px 0;
     font-size: 14px;
@@ -30,33 +30,35 @@
 
 .display-controls label {
     font-weight: 500;
-    color: #495057;
+    color: #dc3545;
     margin: 0;
 }
 
 .display-controls select {
     padding: 6px 12px;
-    border: 1px solid #ced4da;
+    border: 1px solid #dc3545;
     border-radius: 4px;
     background-color: #fff;
-    color: #495057;
+    color: #353535;
     font-size: 14px;
     cursor: pointer;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
 .display-controls select:focus {
-    border-color: #e93939;
+    border-color: #dc3545;
     outline: 0;
-    box-shadow: 0 0 0 0.2rem rgb(255, 0, 0);
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+    background-color: #fff;
 }
 
 .display-controls select:hover {
-    border-color: #adb5bd;
+    border-color: #dc3545;
+    background-color: #fff;
 }
 
 .loading-indicator {
-    color: #ff0000;
+    color: #dc3545;
     font-size: 16px;
     animation: spin 1s linear infinite;
 }
