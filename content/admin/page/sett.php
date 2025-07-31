@@ -212,6 +212,10 @@ if ( isset($t_mp[4]) ){
 			//}
 		}
 	}
+	elseif ( $t_mp[4]=='roles' ){
+		// Include roles management page
+		include dirname(__FILE__) . '/roles.php';
+	}
 	elseif ( $t_mp[4]=='annc' ){
 		if ( isset($t_mp[5]) ){
 			$link_back = ''; $count = count($t_mp);
