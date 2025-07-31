@@ -21,6 +21,7 @@
     padding: 0;
     vertical-align: top;
     margin-left: 10px;
+    float: left;
 }
 
 /* Clear floats after display controls */
@@ -47,17 +48,17 @@
 }
 
 .display-controls select:focus {
-    border-color: #ad0000;
+    border-color: #8e0404;
     outline: 0;
     box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
 }
 
 .display-controls select:hover {
-    border-color: #c50000;
+    border-color: #adb5bd;
 }
 
 .loading-indicator {
-    color: #b90000;
+    color: #007bff;
     font-size: 16px;
     animation: spin 1s linear infinite;
 }
