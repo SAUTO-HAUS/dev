@@ -1,7 +1,8 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
 // Include RBAC system
-require_once(dirname(__DIR__) . '/include/rbac.php');
+require_once 'include/rbac.php';
+require_once 'include/rbac_config.php';
 
 // Get user session info
 if (isset($_COOKIE['sess'])) {
