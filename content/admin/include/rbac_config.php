@@ -7,16 +7,16 @@
 // New role-based menu configuration
 $rbac_admin_menu = [
     'gordon' => [
-        'cars' => ['ctlg', 'br_lst'],
-        'tyres' => ['ctlg', 'br_lst'],
+        'cars' => ['ctlg'],
+        'tyres' => ['ctlg'],
         'seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['create', 'ctlg'],
         'sett' => ['info', 'adm_usr', 'roles']
     ],
     'admin' => [
-        'cars' => ['ctlg', 'br_lst'],
-        'tyres' => ['ctlg', 'br_lst'],
+        'cars' => ['ctlg'],
+        'tyres' => ['ctlg'],
         'seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['create', 'ctlg'],
