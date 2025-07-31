@@ -150,11 +150,14 @@ window.addEventListener('load', function() {
 });
 
 $(document).ready(function(){
-	// Initialize display limit from localStorage
-	initializeDisplayLimit();
+	// Initialize display limit from localStorage after a short delay
+	setTimeout(function() {
+		initializeDisplayLimit();
+	}, 100);
 	
 	// Handle display limit dropdown change
 	$(document).on('change', '#cars-display-limit', function() {
+		console.log('Dropdown changed to:', $(this).val());
 		handleDisplayLimitChange($(this).val());
 	});
 	
@@ -1198,20 +1201,51 @@ $(document).on('change', '.car-checkbox-n_a_new', function() {
 
 // Display limit functionality
 function initializeDisplayLimit() {
+	console.log('Initializing display limit...');
+	
+	// Check if dropdown exists
+	if ($('#cars-display-limit').length === 0) {
+		console.log('Dropdown not found, retrying in 200ms...');
+		setTimeout(initializeDisplayLimit, 200);
+		return;
+	}
+	
 	// Get saved preference from localStorage with fallback to default (25)
 	var savedLimit = localStorage.getItem('cars_display_limit');
-	if (savedLimit && ['25', '100', 'all'].includes(savedLimit)) {
-		$('#cars-display-limit').val(savedLimit);
+	console.log('Saved limit from localStorage:', savedLimit);
+	
+	// Get current limit from URL parameter
+	var urlParams = new URLSearchParams(window.location.search);
+	var urlLimit = urlParams.get('limit');
+	console.log('URL limit parameter:', urlLimit);
+	
+	// Determine which limit to use
+	var limitToUse = urlLimit || savedLimit || '25';
+	
+	if (['25', '100', 'all'].includes(limitToUse)) {
+		$('#cars-display-limit').val(limitToUse);
+		localStorage.setItem('cars_display_limit', limitToUse);
+		console.log('Set dropdown to:', limitToUse);
 	} else {
 		// Set default and save it
 		localStorage.setItem('cars_display_limit', '25');
 		$('#cars-display-limit').val('25');
+		console.log('Set default limit: 25');
 	}
 }
 
 function handleDisplayLimitChange(newLimit) {
+	console.log('Handling limit change to:', newLimit);
+	
+	// Validate the limit
+	if (!['25', '100', 'all'].includes(newLimit)) {
+		console.error('Invalid limit value:', newLimit);
+		return;
+	}
+	
 	// Save preference to localStorage
 	localStorage.setItem('cars_display_limit', newLimit);
+	console.log('Saved to localStorage:', newLimit);
 	
 	// Show loading indicator
 	$('#cars-loading').show();
@@ -1219,6 +1253,8 @@ function handleDisplayLimitChange(newLimit) {
 	// Get current URL and add/update limit parameter
 	var currentUrl = new URL(window.location.href);
 	currentUrl.searchParams.set('limit', newLimit);
+	
+	console.log('Redirecting to:', currentUrl.toString());
 	
 	// Reload page with new limit parameter
 	window.location.href = currentUrl.toString();
