@@ -48,7 +48,7 @@
 
 .display-controls select:focus {
     border-color: #dc3545;
-    background-color: #e8e8e8;
+    background-color: #847c7c;
     color: #fff;
     outline: 0;
     box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
