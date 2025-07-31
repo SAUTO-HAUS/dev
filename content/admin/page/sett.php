@@ -99,9 +99,12 @@ if ( isset($t_mp[4]) ){
 		<script>
 			// User management functionality
 			document.addEventListener("DOMContentLoaded", function() {
+				// Handle button clicks for user management
 				document.addEventListener("click", function(e) {
-					if (e.target.classList.contains("btn")) {
+					if (e.target.classList.contains("btn") && e.target.getAttribute("data-nm")) {
 						e.preventDefault();
+						e.stopPropagation();
+						
 						var action = e.target.getAttribute("data-nm");
 						var userItem = e.target.closest(".it");
 						var userId = userItem.getAttribute("data-id");
@@ -109,6 +112,20 @@ if ( isset($t_mp[4]) ){
 						var userLogin = userItem.querySelector("[data-login]").getAttribute("data-login");
 						
 						handleUserAction(action, userId, userName, userLogin);
+					}
+				});
+				
+				// Handle special case for Active checkbox
+				document.addEventListener("change", function(e) {
+					if (e.target.type === "checkbox" && e.target.closest(".btn[data-nm=\"act\"]")) {
+						e.preventDefault();
+						e.stopPropagation();
+						
+						var userItem = e.target.closest(".it");
+						var userId = userItem.getAttribute("data-id");
+						var isActive = e.target.checked;
+						
+						updateUser(userId, "active", isActive ? "true" : "false");
 					}
 				});
 			});
