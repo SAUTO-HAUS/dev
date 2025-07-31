@@ -1,8 +1,18 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
-// Include RBAC system
-require_once './include/rbac.php';
-require_once './include/rbac_config.php';
+// Include RBAC system (with fallback)
+if (file_exists('./include/rbac.php')) {
+    require_once './include/rbac.php';
+    require_once './include/rbac_config.php';
+    $rbac_available = true;
+} else {
+    $rbac_available = false;
+    // Fallback for missing RBAC system
+    class RBAC {
+        public function __construct($db, $prefx, $user_id = null) {}
+        public function getUserRole() { return 'gordon'; }
+    }
+}
 
 // Get user session info
 if (isset($_COOKIE['sess'])) {

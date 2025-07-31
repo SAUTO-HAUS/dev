@@ -1,8 +1,17 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
-// Include RBAC system
-require_once './include/rbac.php';
-require_once './include/rbac_config.php';
+// Include RBAC system (with fallback)
+if (file_exists('./include/rbac.php')) {
+    require_once './include/rbac.php';
+    require_once './include/rbac_config.php';
+    $rbac_available = true;
+} else {
+    $rbac_available = false;
+    // Fallback function for compatibility
+    function rbac_has_permission($role, $module, $action = 'read') {
+        return ($role === 'gordon' || $role === 'dev');
+    }
+}
 
 $rtrn = '';
 
