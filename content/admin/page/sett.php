@@ -96,9 +96,7 @@ if ( isset($t_mp[4]) ){
 			input[name="it_chk"]:checked + .it > .btns_wrp {pointer-events:auto; margin:1rem 0;}
 			input[name="it_chk"]:checked + .it > .btns_wrp > .btns {opacity:1; transition:.3s; transition-delay:.2s;}
 		</style>
-		<script>
-			alert("JavaScript loaded!");
-		</script>
+		<script src="../js/user_management.js"></script>
 		';
 		
 		$pdo = $db->prepare('SELECT * FROM '.$prefx.'_adm_usr ORDER BY `name` ASC'); // GROUP BY `nm`
