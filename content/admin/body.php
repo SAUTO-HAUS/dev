@@ -15,12 +15,10 @@
 		<div id="action_menu" class="noselect"></div>';
 		include(_ADM_INCL.'/content_box.php');
 		
-		//if ( isset($t_mp[3])&&in_array($t_mp[3], $admin_menu[$user_type], true) ){
-		if ( isset($t_mp[3]) && isset( $admin_menu_dev1[$user_type][ $t_mp[3] ] ) ){
-			if ( file_exists(_ADM.'/js/'.$t_mp[3].'.js') ){
-				echo '<script src="/'._ADM.'/js/'.$t_mp[3].'.js?d='.date("GYimsd", filemtime(_ADM."/js/".$t_mp[3].".js")).'"></script>';
-			}
-		}
+		// Include RBAC system
+		require_once(_ADM_INCL.'/rbac.php');
+		require_once(_ADM_INCL.'/rbac_config.php');
+		$rbac = new RBAC($db, $prefx, $user_id);
 		
 		echo '
 		<div id="main_admin">
@@ -41,8 +39,11 @@
 			</div>
 			
 			<div id="menu" class="dev1">';
-				if ( isset($admin_menu_dev1[$user_type]) ){
-					foreach($admin_menu_dev1[$user_type] as $k => $ar){
+				// Use RBAC menu system
+				$current_menu = rbac_update_admin_menu($user_type, $user_role ?? null);
+				
+				if (!empty($current_menu)) {
+					foreach($current_menu as $k => $ar){
 						$menu_name = isset($adm_lang[$k]) ? $adm_lang[$k] : ucfirst($k);
 						
 						echo '
@@ -77,9 +78,20 @@
 			</div>
 			
 			<div id="content">';
-				if ( isset($admin_menu_dev1[$user_type]) && ( (isset($t_mp[3]) && isset($t_mp[4]) && !isset($restrict_admin_menu[$user_id]['page'][$t_mp[3]][$t_mp[4]])) || !isset($t_mp[3]) ) ){
-					//if ( isset($t_mp[3]) && in_array($t_mp[3], $admin_menu[$user_type], true) ){
-					if ( isset($t_mp[3]) && isset($admin_menu_dev1[$user_type][$t_mp[3]]) ){
+				// Check access using RBAC system
+				$has_access = false;
+				if (isset($t_mp[3])) {
+					$has_access = isset($current_menu[$t_mp[3]]) && (!isset($t_mp[4]) || in_array($t_mp[4], $current_menu[$t_mp[3]]));
+					// Additional RBAC permission check
+					if ($has_access && isset($user_role)) {
+						$has_access = rbac_has_permission($user_role, $t_mp[3], 'read');
+					}
+				} else {
+					$has_access = true; // Allow home page
+				}
+				
+				if ($has_access) {
+					if ( isset($t_mp[3]) && isset($current_menu[$t_mp[3]]) ){
 						if ( in_array($t_mp[3], ['cars','tyres']) ){require_once(_ADM_INCL.'/filter.php');}
 						if ( file_exists(_ADM.'/page/'.$t_mp[3].'.php') ){
 							include(_ADM.'/page/'.$t_mp[3].'.php');
