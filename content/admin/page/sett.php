@@ -97,6 +97,15 @@ if ( isset($t_mp[4]) ){
 			input[name="it_chk"]:checked + .it > .btns_wrp > .btns {opacity:1; transition:.3s; transition-delay:.2s;}
 		</style>
 		<script src="../js/user_management.js"></script>
+		<script>
+			setTimeout(function() {
+				if (typeof handleUserAction === "undefined") {
+					alert("JavaScript nu s-a înc\u0103rcat corect!");
+				} else {
+					alert("JavaScript s-a înc\u0103rcat cu succes!");
+				}
+			}, 1000);
+		</script>
 		';
 		
 		$pdo = $db->prepare('SELECT * FROM '.$prefx.'_adm_usr ORDER BY `name` ASC'); // GROUP BY `nm`
