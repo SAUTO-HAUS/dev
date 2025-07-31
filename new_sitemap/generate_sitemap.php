@@ -179,21 +179,20 @@ class SitemapGenerator {
                 if ($page['status'] === 'out_of_stock') {
                     return 0.2;
                 }
-                
+
                 $daysOld = (time() - strtotime($page['created_at'])) / (24 * 3600);
-                
-                if ($daysOld <= 30) return 1.0;
-                if ($daysOld <= 60) return 0.9;
-                if ($daysOld <= 120) return 0.7;
-                return 0.6;
-                
+
+                if ($daysOld <= 30)  return 1.0;
+                if ($daysOld <= 60)  return 0.8;
+                if ($daysOld <= 90)  return 0.6;
+                return 0.4;
+
             case 'tire':
-                return 0.3;
-                
+                return 0.2;
+
             case 'static':
-                if ($page['page_type'] === 'useful') return 0.5;
-                return 0.3;
-                
+                return 0.5;
+
             default:
                 return 0.5;
         }
