@@ -350,11 +350,11 @@ $(document).ready(function(){
 	//-----------------------------MORE_BUTTON
 	$(document).on('click', '#more_it', function(){
 		// Save to localStorage (from sitescripts.js functionality)
-		localStorage.setItem( 'z_adm_pg_'+reqPage+'_more_btn_clk', $(this).data('i') );
+		localStorage.setItem( 'z_adm_pg_'+getReqPage()+'_more_btn_clk', $(this).data('i') );
 		$(this).data('i', ($(this).data('i') + 1) ).attr('data-i', ($(this).data('i') + 1) );
 		
 		// AJAX call to load more items
-		var data = {}; data['tp'] = reqType; data['pg'] = reqPage; data['fn'] = 'more';
+		var data = {}; data['tp'] = reqType; data['pg'] = getReqPage(); data['fn'] = 'more';
 		data['it_qu'] = $('#it_cnt').data('count');
 		data['it_pos'] = $('#it_cnt').data('pos');
 		
@@ -367,7 +367,7 @@ $(document).ready(function(){
 	
 		$('#search_content .search_select[clicked="1"]').attr('clicked',null);
 		var selectz = $(this).val();
-		var data = {}; data['tp'] = reqType; data['pg'] = reqPage; data['fn'] = 'filter';
+		var data = {}; data['tp'] = reqType; data['pg'] = getReqPage(); data['fn'] = 'filter';
 		
 		$('.s_main').not(this).each(function(){ data[$(this).attr('name')] = $(this).val(); })
 		$(this).attr({'clicked':'1', 'selectz':selectz});
