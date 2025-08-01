@@ -43,14 +43,14 @@ $admin_menu = [
 
 $admin_menu_dev1 = [
 	//'dev' => [ 'cars'=>['ctlg','br_lst'], 'tyres'=>['ctlg','br_lst'], 'seo'=>['ctlg'], 'mail'=>['message', 'order', 'favorites', 'archive'], 'slider'=>['ctlg'], 'docs'=>['ctlg', 'arch'], 'users'=>['ctlg'], 'sett'=>['info','adm_usr']/*, 'settings', 'video', 'team'*/ ],
-	'dev' => [ 'cars'=>['ctlg', 'br_lst'], 'tyres'=>['ctlg','br_lst'], 'seo'=>['ctlg'], 'mail'=>['message', 'order', 'favorites', 'archive'], 'docs'=>['create', 'ctlg'], 'notcrm'=>['app'], 'sett'=>['info', 'annc', 'adm_usr'] ],
-	'sad' => [ 'cars'=>['ctlg'], 'tyres'=>['ctlg'], 'seo'=>['ctlg'], 'mail'=>['message', 'order', 'favorites', 'archive'], 'docs'=>['create', 'ctlg'], 'sett'=>['info'] ],
-	'adm' => [ 'cars'=>['ctlg'], 'tyres'=>['ctlg'], 'seo'=>['ctlg'], 'mail'=>['message', 'order', 'favorites', 'archive'], 'docs'=>['create', 'ctlg'], 'sett'=>['info'] ],
-	'mod' => [ 'cars'=>['ctlg'], 'tyres'=>['ctlg'] ],
-	'mod2' => [ 'cars'=>['ctlg'], 'docs'=>['create', 'ctlg'] ],
-	'seo' => [ 'seo'=>['ctlg'] ],
-	'x1' => [ 'docs'=>['create', 'ctlg'] ],
-	'x2' => [ 'cars'=>['ctlg'], 'docs'=>['create', 'ctlg'], 'sett'=>['info'] ]
+    'dev' => ['cars' => ['ctlg', 'br_lst'], 'tyres' => ['ctlg', 'br_lst'], 'seo' => ['ctlg'], 'mail' => ['message', 'order', 'favorites', 'archive'], 'docs' => ['create', 'ctlg'], 'notcrm' => ['app'], 'sett' => ['info', 'annc', 'adm_usr']],
+    'sad' => ['cars' => ['ctlg'], 'tyres' => ['ctlg'], 'seo' => ['ctlg'], 'mail' => ['message', 'order', 'favorites', 'archive'], 'docs' => ['create', 'ctlg'], 'sett' => ['info']],
+    'adm' => ['cars' => ['ctlg'], 'tyres' => ['ctlg'], 'seo' => ['ctlg'], 'mail' => ['message', 'order', 'favorites', 'archive'], 'docs' => ['create', 'ctlg'], 'sett' => ['info']],
+    'mod' => ['cars' => ['ctlg'], 'tyres' => ['ctlg']],
+    'mod2' => ['cars' => ['ctlg'], 'docs' => ['create', 'ctlg']],
+    'seo' => ['seo' => ['ctlg']],
+    'x1' => ['docs' => ['create', 'ctlg']],
+    'x2' => ['cars' => ['ctlg'], 'docs' => ['create', 'ctlg'], 'sett' => ['info']]
 ];
 
 $hided_admin_menu = ['users', 'settings', 'video', 'team'];
@@ -64,9 +64,40 @@ $restrict_admin_menu = [
 
 //SITE
 //allow urls
-$menu_arr = ['cars'=>'1', 'credit'=>'1','services'=>'1', 'tyres'=>'1', 'rent'=>'0', 'contacts'=>'1'];
-$url_arr = ['', '#', $admin_dir, 'cars', 'services', 'tyres', 'rent', 'credit', 'contacts', 'search', 'about', 'privacy', 'terms', 'warranty', 'dev_tools', 'credit'];
-$sub_urls = ['','cars' /*,'offers'*/];
+$menu_arr = [
+    'cars'      => '1',
+    'credit'    => '1',
+    'services'  => '1',
+    'tradein'   => '1',
+    'tyres'     => '1',
+    'rent'      => '0',
+    'contacts'  => '1',
+
+];
+$url_arr = [
+    '',
+    '#',
+    $admin_dir,
+    'cars',
+    'services',
+    'tyres',
+    'rent',
+    'credit',
+    'contacts',
+    'search',
+    'about',
+    'privacy',
+    'terms',
+    'warranty',
+    'dev_tools',
+    'credit',
+    'tradein'
+];
+$sub_urls = [
+    '',
+    'cars',
+    /*'offers'*/
+];
 
 //split urls 1
 //$sp = rawurldecode( $uri );
