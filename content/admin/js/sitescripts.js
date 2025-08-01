@@ -306,33 +306,22 @@ function ajaxIt(dataX){
         success: function(data){
 			// Dynamic success handler based on current page
 			var currentPage = getReqPage();
-			console.log('AJAX Success - Current page detected:', currentPage);
-			console.log('AJAX Success - URL:', window.location.href);
-			console.log('AJAX Success - ajaxSuccessCars exists:', typeof ajaxSuccessCars === 'function');
-			console.log('AJAX Success - ajaxSuccess exists:', typeof ajaxSuccess === 'function');
 			
 			if (currentPage === 'cars') {
-				console.log('AJAX Success - Using cars handler');
 				if (typeof ajaxSuccessCars === 'function') {
-					console.log('AJAX Success - Calling ajaxSuccessCars');
 					ajaxSuccessCars(data);
 				} else {
-					console.log('AJAX Success - ajaxSuccessCars not found, using ajaxSuccess');
 					ajaxSuccess(data);
 				}
 			} else if (currentPage === 'tyres') {
-				console.log('AJAX Success - Using tyres handler');
 				if (typeof ajaxSuccess === 'function') {
-					console.log('AJAX Success - Calling ajaxSuccess for tyres');
 					ajaxSuccess(data);
 				} else {
 					console.error('ajaxSuccess function not found for tyres');
 				}
 			} else {
-				console.log('AJAX Success - Using default fallback for page:', currentPage);
 				// Default fallback
 				if (typeof ajaxSuccess === 'function') {
-					console.log('AJAX Success - Calling ajaxSuccess (fallback)');
 					ajaxSuccess(data);
 				} else {
 					console.error('No appropriate AJAX success handler found');
