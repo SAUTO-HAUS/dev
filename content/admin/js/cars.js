@@ -353,8 +353,8 @@ $(document).ready(function(){
 		localStorage.setItem( 'z_adm_pg_'+getReqPage()+'_more_btn_clk', $(this).data('i') );
 		$(this).data('i', ($(this).data('i') + 1) ).attr('data-i', ($(this).data('i') + 1) );
 		
-		// AJAX call to load more items
-		var data = {}; data['tp'] = reqType; data['pg'] = getReqPage(); data['fn'] = 'more';
+		// AJAX call to load more items - force 'cars' to avoid tyres.js conflicts
+		var data = {}; data['tp'] = 'adm'; data['pg'] = 'cars'; data['fn'] = 'more';
 		data['it_qu'] = $('#it_cnt').data('count');
 		data['it_pos'] = $('#it_cnt').data('pos');
 		
