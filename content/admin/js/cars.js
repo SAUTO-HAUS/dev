@@ -1,5 +1,14 @@
 var reqType = 'adm';
-var reqPage = 'cars';
+// Dynamic page detection to avoid conflicts with tyres.js
+function getReqPage() {
+	// Check URL to determine if we're on cars page
+	if (window.location.href.indexOf('/cars/') !== -1) {
+		return 'cars';
+	}
+	// Fallback to cars for this file
+	return 'cars';
+}
+var reqPage = getReqPage();
 
 function sendToFacebookCars() {
 	var confirmation = confirm( 'Опубликовать в facebook?' );
