@@ -258,9 +258,10 @@ if ( isset($t_mp[4]) ){
 		
 	}
 	elseif ( $t_mp[4]=='add' ){
+		// Redirect to the main catalog page where Add New functionality is available
 		$redirect_url = '/' . $_COOKIE['lang'] . '/' . $admin_dir . '/tyres/ctlg';
-		header('Location: ' . $redirect_url);
-		exit;
+		$rtrn = '<script>window.location.href = "' . $redirect_url . '";</script>';
+		$rtrn .= '<div style="text-align:center; padding:2rem;">Redirecting to tyres catalog... <a href="' . $redirect_url . '">Click here if not redirected</a></div>';
 	}
 	else {
 		$rtrn = '<span class="err">Check the URL</span>';
