@@ -1062,7 +1062,7 @@ function ajaxMain(data, callback){
 }
 
 //______________________________________________________________________________________________________________END OF READY / AJAX_SUCCESS
-function ajaxSuccess(data){
+function ajaxSuccessCars(data){
 	if (typeof data === "string") {
 		try {
 			data = $.parseJSON(data);
