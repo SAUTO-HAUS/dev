@@ -1,4 +1,20 @@
 var interval;
+// Global function to detect current page for AJAX routing
+function getReqPage() {
+	// Check URL to determine current admin page
+	if (window.location.href.indexOf('/cars/') !== -1) {
+		return 'cars';
+	} else if (window.location.href.indexOf('/tyres/') !== -1) {
+		return 'tyres';
+	} else if (window.location.href.indexOf('/users/') !== -1) {
+		return 'users';
+	} else if (window.location.href.indexOf('/slider/') !== -1) {
+		return 'slider';
+	}
+	// Default fallback
+	return 'unknown';
+}
+
 $(document).ready(function() {
 	
 	if ( typeof Cookies.get('xtype') !== 'undefined' ){ Cookies.remove('xtype', { path: '/' }) }
@@ -277,7 +293,28 @@ function ajaxIt(dataX){
 			}
 		},
         success: function(data){
-			ajaxSuccess(data);
+			// Dynamic success handler based on current page
+			var currentPage = getReqPage();
+			if (currentPage === 'cars') {
+				if (typeof ajaxSuccessCars === 'function') {
+					ajaxSuccessCars(data);
+				} else {
+					ajaxSuccess(data);
+				}
+			} else if (currentPage === 'tyres') {
+				if (typeof ajaxSuccess === 'function') {
+					ajaxSuccess(data);
+				} else {
+					console.error('ajaxSuccess function not found for tyres');
+				}
+			} else {
+				// Default fallback
+				if (typeof ajaxSuccess === 'function') {
+					ajaxSuccess(data);
+				} else {
+					console.error('No appropriate AJAX success handler found');
+				}
+			}
 		}
 	});
 }
