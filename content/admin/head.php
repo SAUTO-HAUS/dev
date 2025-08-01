@@ -32,5 +32,6 @@
 <script src="/<?php e(_DEFAULT)?>/js/sitescripts.js?d=<?php echo date("GYimsd", filemtime(_DEFAULT.'/js/sitescripts.js')); ?>"></script>
 <script src="/<?php e(_ADM)?>/js/sitescripts.js?d=<?php echo date("GYimsd", filemtime(_ADM.'/js/sitescripts.js')); ?>"></script>
 <script src="/<?php e(_ADM)?>/js/cars.js?d=<?php echo date("GYimsd", filemtime(_ADM.'/js/cars.js')); ?>"></script>
+<script src="/<?php e(_ADM)?>/js/tyres.js?d=<?php echo date("GYimsd", filemtime(_ADM.'/js/tyres.js')); ?>"></script>
 
 <title>Admin</title>
