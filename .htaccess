@@ -3,19 +3,6 @@
 #php_value upload_max_filesize 60M
 #php_value post_max_size 60M
 
-# Set correct MIME type for XML files (sitemaps)
-<FilesMatch "\.(xml)$">
-    Header set Content-Type "application/xml; charset=UTF-8"
-</FilesMatch>
-
-# Specific rules for sitemap files
-<Files "sitemap.xml">
-    Header set Content-Type "application/xml; charset=UTF-8"
-</Files>
-<Files "sitemap-*.xml">
-    Header set Content-Type "application/xml; charset=UTF-8"
-</Files>
-
 RewriteEngine On
 # Прямой редирект при обращении к /FordFocus
 RewriteCond %{REQUEST_URI} ^/FordFocus/?$ [NC]
