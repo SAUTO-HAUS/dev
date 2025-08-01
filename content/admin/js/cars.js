@@ -1210,28 +1210,27 @@ function initializeDisplayLimit() {
 		return;
 	}
 	
-	// Get saved preference from localStorage with fallback to default (25)
-	var savedLimit = localStorage.getItem('cars_display_limit');
-	console.log('Saved limit from localStorage:', savedLimit);
-	
 	// Get current limit from URL parameter
 	var urlParams = new URLSearchParams(window.location.search);
 	var urlLimit = urlParams.get('limit');
 	console.log('URL limit parameter:', urlLimit);
 	
-	// Determine which limit to use
-	var limitToUse = urlLimit || savedLimit || '25';
+	// Get saved preference from localStorage only if no URL parameter
+	var savedLimit = localStorage.getItem('cars_display_limit');
+	console.log('Saved limit from localStorage:', savedLimit);
 	
-	if (['25', '100', 'all'].includes(limitToUse)) {
-		$('#cars-display-limit').val(limitToUse);
-		localStorage.setItem('cars_display_limit', limitToUse);
-		console.log('Set dropdown to:', limitToUse);
+	// Determine which limit to use - URL parameter takes priority, otherwise default to 25
+	var limitToUse;
+	if (urlLimit && ['25', '100', 'all'].includes(urlLimit)) {
+		limitToUse = urlLimit;
 	} else {
-		// Set default and save it
-		localStorage.setItem('cars_display_limit', '25');
-		$('#cars-display-limit').val('25');
-		console.log('Set default limit: 25');
+		// Always default to 25 when no valid URL parameter is present
+		limitToUse = '25';
 	}
+	
+	$('#cars-display-limit').val(limitToUse);
+	localStorage.setItem('cars_display_limit', limitToUse);
+	console.log('Set dropdown to:', limitToUse);
 }
 
 function handleDisplayLimitChange(newLimit) {
