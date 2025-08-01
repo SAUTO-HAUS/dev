@@ -9,7 +9,10 @@ if (isset($t_mp[4])) {
     } elseif ($t_mp[4] == 'detail') {
         include _ADM_PAGE.'/cars/car.php';
     } elseif ($t_mp[4] == 'add') {
-        include _ADM_PAGE.'/cars/add_new1.php';
+        // Redirect to the correct detail page for adding a new car
+        $redirect_url = '/' . $_COOKIE['lang'] . '/' . $admin_dir . '/cars/detail';
+        header('Location: ' . $redirect_url);
+        exit;
 	} else {
 		$rtrn = '<span class="err">Check the URL</span>';
 	}
