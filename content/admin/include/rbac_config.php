@@ -25,36 +25,69 @@ $rbac_admin_menu = [
     'publisher' => [
         'cars' => ['ctlg', 'detail', 'catalog'],
         'tyres' => ['ctlg', 'detail', 'catalog']
+        // No access to SEO, Mail, Docs, Settings as per business requirements
     ],
     'publisher_limited' => [
         'cars' => ['ctlg', 'detail', 'catalog'],
         'tyres' => ['ctlg', 'detail', 'catalog']
+        // No access to SEO, Mail, Docs, Settings + branch limited access
     ]
 ];
 
-// Role permissions mapping
+// Role permissions mapping - Updated to match business requirements
 $rbac_permissions = [
+    // Gordon (Суперадминистратор) - Полный доступ ко всем разделам
     'gordon' => [
-        'all' => true
-    ],
-    'admin' => [
-        'cars' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
-        'tyres' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
+        'all' => true,
+        'user_management' => true,
+        'role_management' => true,
+        'system_settings' => true,
+        'all_branches' => true,
+        'cars' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
+        'tyres' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
         'seo' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'mail' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
-        'settings' => ['read' => true, 'update' => true],
-        'all_branches' => true
+        'settings' => ['read' => true, 'update' => true]
     ],
+    // Admin (Администратор) - Почти полный доступ, кроме управления пользователями
+    'admin' => [
+        'user_management' => false,
+        'role_management' => false,
+        'system_settings' => false,
+        'all_branches' => true,
+        'cars' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
+        'tyres' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
+        'seo' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
+        'mail' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
+        'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
+        'settings' => ['read' => true, 'update' => false]
+    ],
+    // Publisher (Публикатор) - Может заливать и редактировать, но не удалять
     'publisher' => [
-        'cars' => ['create' => true, 'read' => true, 'update' => true, 'delete' => false, 'set_unavailable' => true],
-        'tyres' => ['create' => true, 'read' => true, 'update' => true, 'delete' => false],
-        'all_branches' => true
+        'user_management' => false,
+        'role_management' => false,
+        'system_settings' => false,
+        'all_branches' => true,
+        'cars' => ['create' => true, 'read' => true, 'update' => true, 'delete' => false, 'set_unavailable' => true, 'publish' => true],
+        'tyres' => ['create' => true, 'read' => true, 'update' => true, 'delete' => false, 'set_unavailable' => true, 'publish' => true],
+        'seo' => ['read' => false],
+        'mail' => ['read' => false],
+        'docs' => ['read' => false],
+        'settings' => ['read' => false]
     ],
+    // Publisher-Limited (Публикатор Филиал) - Как Publisher, но только для одного филиала
     'publisher_limited' => [
-        'cars' => ['create' => true, 'read' => true, 'update' => true, 'delete' => false, 'set_unavailable' => true],
-        'tyres' => ['create' => true, 'read' => true, 'update' => true, 'delete' => false],
-        'branch_limited' => true
+        'user_management' => false,
+        'role_management' => false,
+        'system_settings' => false,
+        'branch_limited' => true,
+        'cars' => ['create' => true, 'read' => true, 'update' => true, 'delete' => false, 'set_unavailable' => true, 'publish' => true],
+        'tyres' => ['create' => true, 'read' => true, 'update' => true, 'delete' => false, 'set_unavailable' => true, 'publish' => true],
+        'seo' => ['read' => false],
+        'mail' => ['read' => false],
+        'docs' => ['read' => false],
+        'settings' => ['read' => false]
     ]
 ];
 
@@ -69,12 +102,21 @@ function rbac_has_permission($user_role, $module, $action = 'read') {
         return true;
     }
     
+    // Check special permissions first
+    if ($module === 'user_management' || $module === 'role_management' || $module === 'system_settings') {
+        return isset($rbac_permissions[$user_role][$module]) && $rbac_permissions[$user_role][$module] === true;
+    }
+    
     // Check module-specific permissions
     if (isset($rbac_permissions[$user_role][$module])) {
         $module_perms = $rbac_permissions[$user_role][$module];
         
         if ($module_perms === true) {
             return true;
+        }
+        
+        if ($module_perms === false) {
+            return false;
         }
         
         if (is_array($module_perms) && isset($module_perms[$action])) {
@@ -86,24 +128,67 @@ function rbac_has_permission($user_role, $module, $action = 'read') {
 }
 
 /**
+ * Check if user can manage other users (only Gordon)
+ */
+function rbac_can_manage_users($user_role) {
+    return rbac_has_permission($user_role, 'user_management');
+}
+
+/**
+ * Check if user can manage roles (only Gordon)
+ */
+function rbac_can_manage_roles($user_role) {
+    return rbac_has_permission($user_role, 'role_management');
+}
+
+/**
+ * Check if user can access system settings (only Gordon)
+ */
+function rbac_can_access_system_settings($user_role) {
+    return rbac_has_permission($user_role, 'system_settings');
+}
+
+/**
  * Check if user can access specific branch
  */
 function rbac_can_access_branch($user_role, $user_branch_id, $target_branch_id) {
     global $rbac_permissions;
     
+    // Gordon has access to all branches
     if ($user_role === 'gordon') {
         return true;
     }
     
+    // Admin has access to all branches
     if (isset($rbac_permissions[$user_role]['all_branches']) && $rbac_permissions[$user_role]['all_branches']) {
         return true;
     }
     
+    // Publisher has access to all branches
+    if ($user_role === 'publisher' && isset($rbac_permissions[$user_role]['all_branches']) && $rbac_permissions[$user_role]['all_branches']) {
+        return true;
+    }
+    
+    // Publisher-Limited has access only to their branch
     if (isset($rbac_permissions[$user_role]['branch_limited']) && $rbac_permissions[$user_role]['branch_limited']) {
         return $user_branch_id == $target_branch_id;
     }
     
     return true;
+}
+
+/**
+ * Check if user can delete/restore items
+ */
+function rbac_can_delete($user_role, $module) {
+    return rbac_has_permission($user_role, $module, 'delete');
+}
+
+/**
+ * Check if user can set items as unavailable (Publishers)
+ */
+function rbac_can_set_unavailable($user_role, $module) {
+    return rbac_has_permission($user_role, $module, 'set_unavailable');
 }
 
 /**
