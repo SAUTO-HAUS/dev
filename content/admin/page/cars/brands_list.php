@@ -1,5 +1,10 @@
-<?php
-$pdo = (new \App\Db\Car())->getCars();
+<?php defined( '_DOIT' ) or die( 'Restricted access' );
+
+// Use existing database connection instead of App class
+$sql = 'SELECT * FROM '.$prefx.'_car_list ORDER BY `br` ASC, `mo` ASC';
+$pdo_stmt = $db->prepare($sql);
+$pdo_stmt->execute();
+$pdo = $pdo_stmt->fetchAll(PDO::FETCH_ASSOC);
 /*
 $rtrn .= '<div id="add_new" class="bx" title="'.$lng['adm']['add'].'"> <div></div> </div>';
 $br_l = ''; $br_l_ar = []; $mo_l = ''; $ttl = '';
