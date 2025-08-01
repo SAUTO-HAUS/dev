@@ -340,6 +340,11 @@ $(document).ready(function(){
 	
 	//-----------------------------MORE_BUTTON
 	$(document).on('click', '#more_it', function(){
+		// Save to localStorage (from sitescripts.js functionality)
+		localStorage.setItem( 'z_adm_pg_'+reqPage+'_more_btn_clk', $(this).data('i') );
+		$(this).data('i', ($(this).data('i') + 1) ).attr('data-i', ($(this).data('i') + 1) );
+		
+		// AJAX call to load more items
 		var data = {}; data['tp'] = reqType; data['pg'] = reqPage; data['fn'] = 'more';
 		data['it_qu'] = $('#it_cnt').data('count');
 		data['it_pos'] = $('#it_cnt').data('pos');
