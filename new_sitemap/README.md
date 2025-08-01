@@ -59,17 +59,16 @@ Each `<url>` entry contains:
 
 #### Cars
 - **In stock, ≤30 days**: 1.0
-- **In stock, 31-60 days**: 0.9
-- **In stock, 61-120 days**: 0.7
-- **In stock, >120 days**: 0.6
+- **In stock, 31-60 days**: 0.8
+- **In stock, 61-90 days**: 0.6
+- **In stock, >90 days**: 0.4
 - **Out of stock**: 0.2
 
 #### Tires
-- **All tires**: 0.2-0.3
+- **All tires**: 0.2
 
 #### Static Pages
-- **Useful pages**: 0.5
-- **Legal pages**: 0.3
+- **All static pages and categories**: 0.5
 
 ### Change Frequency Rules
 - **Cars**: daily

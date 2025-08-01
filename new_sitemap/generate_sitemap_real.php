@@ -396,31 +396,27 @@ class SitemapGeneratorReal {
     private function calculatePriority($page) {
         switch ($page['type']) {
             case 'car':
+                // Cars that are no longer available always get the lowest priority
                 if ($page['status'] === 'out_of_stock') {
-                    // Out of stock cars: 0.2-0.3 range based on how long they've been out of stock
-                    $daysOld = (time() - strtotime($page['created_at'])) / (24 * 3600);
-                    if ($daysOld <= 60) return 0.3;  // Recently out of stock
-                    if ($daysOld <= 180) return 0.25; // Medium term out of stock
-                    return 0.2; // Long term out of stock
+                    return 0.2;
                 }
-                
-                // In stock cars: priority based on age
+
+                // Age of the car in days
                 $daysOld = (time() - strtotime($page['created_at'])) / (24 * 3600);
-                
-                if ($daysOld <= 30) return 1.0;   // New cars (≤30 days)
-                if ($daysOld <= 60) return 0.9;   // Recent cars (31-60 days)
-                if ($daysOld <= 120) return 0.7;  // Medium age cars (61-120 days)
-                return 0.6;                        // Older cars (>120 days)
-                
+
+                if ($daysOld <= 30)  return 1.0; // 0-30 days
+                if ($daysOld <= 60)  return 0.8; // 31-60 days
+                if ($daysOld <= 90)  return 0.6; // 61-90 days
+                return 0.4;                      // older than 90 days
+
             case 'tire':
-                // Tires always in 0.2-0.3 range (equivalent to old out-of-stock cars)
-                return 0.3;
-                
+                // Non-car items such as tires
+                return 0.2;
+
             case 'static':
-                // Static pages based on usefulness
-                if ($page['page_type'] === 'useful') return 0.5; // Useful pages
-                return 0.3; // Legal/auxiliary pages
-                
+                // Static pages and categories default to medium priority
+                return 0.5;
+
             default:
                 return 0.5;
         }

@@ -185,30 +185,22 @@ class SitemapGeneratorSafeReal {
         switch ($page['type']) {
             case 'car':
                 if ($page['status'] === 'out_of_stock') {
-                    // Out of stock cars: 0.2-0.3 range based on how long they've been out of stock
-                    $daysOld = (time() - strtotime($page['created_at'])) / (24 * 3600);
-                    if ($daysOld <= 60) return 0.3;  // Recently out of stock
-                    if ($daysOld <= 180) return 0.25; // Medium term out of stock
-                    return 0.2; // Long term out of stock
+                    return 0.2; // unavailable cars
                 }
-                
-                // In stock cars: priority based on age
+
                 $daysOld = (time() - strtotime($page['created_at'])) / (24 * 3600);
-                
-                if ($daysOld <= 30) return 1.0;   // New cars (≤30 days)
-                if ($daysOld <= 60) return 0.9;   // Recent cars (31-60 days)
-                if ($daysOld <= 120) return 0.7;  // Medium age cars (61-120 days)
-                return 0.6;                        // Older cars (>120 days)
-                
+
+                if ($daysOld <= 30)  return 1.0;
+                if ($daysOld <= 60)  return 0.8;
+                if ($daysOld <= 90)  return 0.6;
+                return 0.4;
+
             case 'tire':
-                // Tires always in 0.2-0.3 range (equivalent to old out-of-stock cars)
-                return 0.3;
-                
+                return 0.2;
+
             case 'static':
-                // Static pages based on usefulness
-                if ($page['page_type'] === 'useful') return 0.5; // Useful pages
-                return 0.3; // Legal/auxiliary pages
-                
+                return 0.5;
+
             default:
                 return 0.5;
         }
