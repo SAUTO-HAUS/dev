@@ -37,14 +37,14 @@ $lng_credit_page = array(
                 </script>",
         ),
         'advantages_title' => array(
-            'ro' => 'Avantajele Trade-In la Sauto',
+            'ro' => 'Avantajele serviciului Trade-In la Sauto',
             'ru' => 'Преимущества Trade-In в Sauto',
-            'en' => 'Advantages of Trade-In with Sauto',
+            'en' => 'Benefits of Trade-In at Sauto',
         ),
         'advantages_desc' => array(
-            'ro' => '',
+            'ro' => 'De ce schimbul auto la Sauto e convenabil și avantajos?',
             'ru' => 'Почему обмен в Sauto – это выгодно и удобно?',
-            'en' => '',
+            'en' => 'Why is trading in at Sauto convenient and profitable?',
         ),
         'advantages_item1_title' => array(
             'ro' => 'Rapid',
@@ -157,24 +157,24 @@ $lng_credit_page = array(
             'en' => 'Congratulations, the exchange is complete! You hand over your old car keys and receive the keys and documents for your new one. <b>The whole process takes one day</b>, and then you drive home in your "new" car. Have a great ride!',
         ),
         'trust_title' => array(
-            'ro' => 'Păreri de la clienți',
+            'ro' => 'Apreciat de șoferi din toată țara',
             'ru' => 'Нам доверяют автовладельцы',
-            'en' => 'Customer Reviews',
+            'en' => 'Trusted by car owners',
         ),
         'trust_item1_title' => array(
-            'ro' => '',
+            'ro' => 'Dealer auto licențiat',
             'ru' => 'Лицензированный автодилер',
-            'en' => '',
+            'en' => 'Licensed car dealer',
         ),
         'trust_item2_title' => array(
-            'ro' => '',
+            'ro' => 'Contract oficial, tranzacție transparentă',
             'ru' => 'Официальная сделка, договор, прозрачность',
-            'en' => '',
+            'en' => 'Official deal, contract, full transparency',
         ),
         'trust_item3_title' => array(
-            'ro' => '',
+            'ro' => 'Payment by bank transfer or cash',
             'ru' => 'Оплата по безналу или наличными',
-            'en' => '',
+            'en' => 'Plată prin transfer bancar sau cash',
         ),
         'reviews_item1_name' => array(
             'ro' => 'Alexei',
