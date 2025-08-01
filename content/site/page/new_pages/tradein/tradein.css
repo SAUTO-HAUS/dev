@@ -1,0 +1,656 @@
+@font-face {
+    font-family: 'Futura PT Heavy';
+    src: url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Heavy.eot');
+    src: local('Futura PT Heavy'), local('FuturaPT-Heavy'),
+    url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Heavy.eot?#iefix') format('embedded-opentype'),
+    url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Heavy.woff') format('woff'),
+    url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Heavy.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Futura PT Book';
+    src: url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Book.eot');
+    src: local('Futura PT Book'), local('FuturaPT-Book'),
+    url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Book.eot?#iefix') format('embedded-opentype'),
+    url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Book.woff') format('woff'),
+    url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Book.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Futura PT Demi';
+    src: url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Demi.eot');
+    src: local('Futura PT Demi'), local('FuturaPT-Demi'),
+    url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Demi.eot?#iefix') format('embedded-opentype'),
+    url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Demi.woff') format('woff'),
+    url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Demi.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Futura PT Medium';
+    src: url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Medium.eot');
+    src: local('Futura PT Medium'), local('FuturaPT-Medium'),
+    url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Medium.eot?#iefix') format('embedded-opentype'),
+    url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Medium.woff') format('woff'),
+    url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Medium.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
+
+body {
+    background-color: #fff;
+}
+
+#crumbs {
+    display: none;
+}
+
+.trade-in__banner-wrap {
+    background-color: #f6f6f6;
+    padding: 70px 0;
+    position: relative;
+    overflow: hidden;
+    width: 100vw;
+    left: 0;
+    right: 0;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    box-sizing: border-box;
+    margin-top: 0;
+}
+
+.trade-in__banner {
+    width: 80vw;
+    margin: 0 10vw 0;
+    position: relative;
+    float: left;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1.5fr;
+    align-items: center;
+    gap: 34px;
+}
+
+.trade-in__text-title {
+    font-size: 45px;
+    font-family: 'Futura PT Heavy';
+    font-weight: 700;
+    line-height: 47px;
+    text-transform: uppercase;
+    color: #000;
+}
+
+.trade-in__text-title .text-red {
+    color: #FF0304;
+}
+
+.trade-in__text-description {
+    font-size: 17px;
+    font-family: 'Futura PT Book';
+    font-weight: 400;
+    line-height: 1;
+    margin-top: 30px;
+}
+
+.trade-in__pic img {
+    max-width: 100%;
+}
+
+.trade-in__form .b24-form-wrapper {
+    border-radius: 12px;
+    box-shadow: 0 4px 4px -4px rgba(12, 12, 13, 0.05);
+    box-shadow: 0 16px 16px -8px rgba(12, 12, 13, 0.1);
+}
+
+.trade-in__advantages {
+    padding: 70px 0;
+}
+
+.trade-in__title {
+    font-size: 36px;
+    font-family: 'Futura PT Demi';
+    font-weight: 500;
+    line-height: 1.2;
+    text-transform: none;
+    text-align: center;
+}
+
+.trade-in__advantages .trade-in__title {
+    margin-bottom: 5px;
+}
+
+.trade-in__steps .trade-in__title {
+    margin-bottom: 5px;
+}
+
+.trade-in__faq {
+    margin-top: -60px;
+}
+
+.trade-in__faq .trade-in__title {
+    margin-bottom: 5px;
+}
+
+.trade-in__description {
+    color: #515151;
+    font-size: 18px;
+    font-family: 'Futura PT Book';
+    font-weight: 400;
+    text-align: center;
+}
+
+.trade-in__item {
+    display: grid;
+    gap: 12px;
+    background-color: #F6F6F6;
+    border-radius: 12px;
+    padding: 20px 20px 38px;
+    width: 100%;
+}
+
+.trade-in__item-pic {
+    display: flex;
+    align-items: center;
+}
+
+.trade-in__list {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.trade-in__trust .trade-in__list {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.trade-in__item-title {
+    font-family: 'Futura PT Heavy';
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.trade-in__item-description {
+    font-family: 'Futura PT Book';
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.2;
+    color: #515151;
+}
+
+.trade-in__steps {
+    padding-bottom: 70px;
+}
+
+.trade-in__steps-list {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    column-gap: 50px;
+    margin-top: 30px;
+}
+
+.trade-in__steps-item {
+    z-index: 1;
+    position: relative;
+}
+
+.trade-in__steps-item:after {
+    position: absolute;
+    display: block;
+    content: '';
+    width: 12px;
+    height: 23px;
+    background: url(/content/site/page/new_pages/tradein/tradein-media/triangle.svg) 50% no-repeat;
+    top: 33%;
+    right: -27px;
+}
+
+.trade-in__steps-item:last-of-type:after {
+    display: none;
+}
+
+.trade-in__steps-title {
+    font-family: 'Futura PT Heavy';
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.2;
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.trade-in__steps-description {
+    font-family: 'Futura PT Book';
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.2;
+    color: #515151;
+    margin-top: -23px;
+}
+
+.trade-in__steps-list-wrap {
+    position: relative;
+}
+
+.trade-in__steps-line {
+    position: absolute;
+    top: 34px;
+    right: 48px;
+    left: 93px;
+    width: 85%;
+    height: 1px;
+    margin: 5px 0;
+    background-image: linear-gradient(to right, #fff 40%, #E2001A 40%);
+    background-size: 10px 1px;
+    background-repeat: repeat-x;
+    z-index: 0;
+}
+
+.trade-in__steps-pic {
+    display: flex;
+    justify-content: center;
+}
+
+.trade-in__reviews-item {
+    position: relative;
+    display: grid;
+    gap: 15.5px;
+}
+
+.trade-in__reviews-quote {
+    position: absolute;
+    width: 44px;
+    height: 28px;
+    background-image: url(/content/site/page/new_pages/tradein/tradein-media/quote.png);
+    background-position: 50%;
+    background-repeat: no-repeat;
+    background-size: contain;
+    top: -5px;
+    right: -20px;
+    opacity: 0.05;
+}
+
+.trade-in__reviews-list .owl-item.center .trade-in__reviews-quote {
+    width: 55px;
+    height: 40px;
+}
+
+.trade-in__reviews-top {
+    display: flex;
+    align-items: center;
+}
+
+.trade-in__reviews-info {
+    display: grid;
+    gap: 3px;
+}
+
+.trade-in__reviews-pic img {
+    width: 54px !important;
+    height: 54px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15.5px;
+}
+
+.trade-in__reviews-list .owl-item.center .trade-in__reviews-pic img {
+    width: 70px !important;
+    height: 70px;
+    margin-right: 20px;
+}
+
+.trade-in__reviews-list.owl-carousel {
+    padding: 80px 0 150px;
+    overflow: hidden;
+    position: relative;
+}
+
+.trade-in__reviews-list.owl-carousel .owl-stage-outer {
+    overflow: initial;
+}
+
+.trade-in__reviews-list.owl-carousel .owl-stage {
+    display: flex;
+    align-items: center;
+}
+
+.trade-in__reviews-list .owl-item {
+    opacity: 0.75;
+    border: 0.78px solid #CCCCCC;
+    border-radius: 15.5px;
+    padding: 23px 31px;
+}
+
+.trade-in__reviews-list .owl-item.center {
+    margin-right: 42px !important;
+    opacity: 1;
+    box-shadow: 0 50px 100px 0 #4B485140;
+    border: 0;
+    background-color: #fff;
+}
+
+.trade-in__reviews-title {
+    color: #292929;
+    font-family: 'Futura PT Heavy';
+    font-size: 17.05px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.owl-item.center .trade-in__reviews-title {
+    font-size: 22px;
+}
+
+.trade-in__reviews-description {
+    color: #515151;
+    font-family: 'Futura PT Book';
+    font-size: 12.4px;
+    line-height: 1.2;
+}
+
+.owl-item.center .trade-in__reviews-description {
+    font-size: 16px;
+}
+
+.trade-in__reviews .owl-nav {
+    /*position: absolute;*/
+    /*top: 41%;*/
+}
+
+.trade-in__reviews .owl-carousel .owl-nav button.owl-prev,
+.trade-in__reviews .owl-carousel .owl-nav button.owl-next {
+    font-size: 0;
+    background: url(/content/site/page/new_pages/tradein/tradein-media/slider_arrow.svg) 50% no-repeat;
+    width: 48px;
+    height: 48px;
+    position: absolute;
+    top: 41%;
+}
+
+.trade-in__reviews .owl-carousel .owl-nav button.owl-prev {
+    transform: rotate(180deg);
+    left: 30%;
+}
+
+.trade-in__reviews .owl-carousel .owl-nav button.owl-next {
+    right: 30%;
+}
+
+.trade-in__reviews-text {
+    color: #515151;
+    font-family: 'Futura PT Book';
+    font-size: 13.95px;
+    line-height: 1.2;
+}
+
+.owl-item.center .trade-in__reviews-text {
+    font-size: 18px;
+}
+
+.trade-in__faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.trade-in__faq-item {
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    padding: 20px 56px 20px 20px;
+    transition: background-color ease 300ms;
+}
+
+.trade-in__faq-item.active {
+    background-color: #f6f6f6;
+}
+
+.trade-in__faq-title {
+    font-family: 'Futura PT Medium';
+    font-size: 20px;
+    font-weight: 450;
+    line-height: 1.2;
+    cursor: pointer;
+    position: relative;
+}
+
+.trade-in__faq-title:after {
+    position: absolute;
+    display: block;
+    content: '';
+    width: 16px;
+    height: 16px;
+    top: 6px;
+    right: -32px;
+    background: url(/content/site/page/new_pages/tradein/tradein-media/arrow.svg) 50% no-repeat;
+    transition: background ease 300ms;
+}
+
+.trade-in__faq-item.active .trade-in__faq-title:after {
+    transform: rotate(90deg);
+}
+
+.trade-in__faq-description {
+    font-family: 'Futura PT Book';
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.2;
+    opacity: 0;
+    visibility: hidden;
+    height: 0;
+    transition: opacity, visibility, height ease 400ms;
+}
+
+.trade-in__faq-item.active .trade-in__faq-description {
+    opacity: 1;
+    visibility: visible;
+    height: fit-content;
+    padding-top: 18px;
+}
+
+.trade-in__request {
+    background-color: #E2001A;
+    border-radius: 12px;
+    color: #fff;
+    padding: 80px 136px;
+    margin-top: 100px;
+    margin-bottom: 100px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+}
+
+.trade-in__request-info {
+    display: flex;
+    flex-flow: column;
+    gap: 10px;
+    position: relative;
+}
+
+.trade-in__request-info:after {
+    position: absolute;
+    display: block;
+    content: '';
+    background: url(/content/site/page/new_pages/tradein/tradein-media/arrow_form.svg) 50% no-repeat;
+    width: 100px;
+    height: 100px;
+    bottom: -33%;
+    right: -40px;
+}
+
+.trade-in__request-title {
+    font-family: 'Futura PT Heavy';
+    font-size: 45px;
+    font-weight: 700;
+    line-height: 47px;
+}
+
+.trade-in__request-description {
+    font-family: 'Futura PT Book';
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 1;
+}
+
+.owl-carousel .owl-nav.disabled {
+    display: block !important;
+}
+
+@media (max-width: 1200px) {
+    .trade-in__banner {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    .trade-in__list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .trade-in__steps {
+        display: none;
+    }
+
+    .trade-in__request {
+        grid-template-columns: 1fr;
+        gap: 50px;
+        padding: 40px 90px;
+    }
+
+    .trade-in__request-info:after {
+        display: none;
+    }
+}
+
+@media (max-width: 900px) {
+    .trade-in__reviews .owl-carousel .owl-nav button.owl-prev,
+    .trade-in__reviews .owl-carousel .owl-nav button.owl-next {
+        bottom: 16%;
+        top: auto;
+        z-index: 1;
+    }
+
+    .trade-in__reviews .owl-carousel .owl-nav button.owl-prev {
+        left: 36%;
+    }
+
+    .trade-in__reviews .owl-carousel .owl-nav button.owl-next {
+        right: 36%;
+    }
+}
+
+@media (max-width: 700px) {
+    .trade-in__banner-wrap {
+        padding: 44px 0 0;
+        border-radius: 12px;
+    }
+
+    .trade-in__text-title {
+        font-size: 22px;
+        line-height: 1;
+        text-align: center;
+    }
+
+    .trade-in__text-description {
+        font-size: 14px;
+        text-align: center;
+    }
+
+    .trade-in__pic img {
+        max-width: 100%;
+    }
+
+    .trade-in__title {
+        font-size: 24px;
+    }
+
+    .trade-in__description {
+        font-size: 16px;
+    }
+
+    .trade-in__list {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-top: 20px;
+    }
+
+    .trade-in__item {
+        padding: 16px 20px;
+    }
+
+    .trade-in__advantages .trade-in__item {
+        grid-template-columns: auto 1fr;
+        grid-template-rows: repeat(2, 1fr);
+        align-items: center;
+        gap: 5px 12px;
+    }
+
+    .trade-in__advantages .trade-in__item-pic {
+        grid-area: 1 / 1 / 2 / 2;
+    }
+
+    .trade-in__advantages .trade-in__item-title {
+        grid-area: 1 / 2 / 2 / 3;
+        font-size: 16px;
+    }
+
+    .trade-in__advantages .trade-in__item-description {
+        grid-area: 2 / 1 / 3 / 3;
+    }
+
+    .trade-in__advantages {
+        padding: 16px 0;
+    }
+
+    .trade-in__trust .trade-in__list {
+        grid-template-columns: 1fr;
+    }
+
+    .trade-in__trust .trade-in__item {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .trade-in__item-pic {
+        justify-content: center;
+    }
+
+    .trade-in__trust .trade-in__item-title {
+        font-size: 16px;
+    }
+
+    .trade-in__faq-list {
+        gap: 16px;
+    }
+
+    .trade-in__faq-title {
+        font-size: 18px;
+    }
+
+    .trade-in__faq-description {
+        font-size: 14px;
+    }
+
+    .trade-in__faq-title:after {
+        top: 3px;
+    }
+
+    .trade-in__request {
+        padding: 30px;
+        gap: 30px;
+    }
+
+    .trade-in__request-title {
+        font-size: 28px;
+        text-align: center;
+    }
+
+    .trade-in__request-description {
+        font-size: 20px;
+    }
+}
