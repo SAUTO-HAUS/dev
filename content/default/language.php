@@ -1639,6 +1639,7 @@ elseif ($_COOKIE['lang']=='ro'){
 			'map'=>'Harta',
 			'group'=>'Grup',
 			'all'=>'Toate',
+			'more'=>'MAI MULT',
 			'detailed'=>'Filtru detaliat',
 			'simplified'=>'Filtru simplificat',
 			'see_all'=>'Vezi toate',
