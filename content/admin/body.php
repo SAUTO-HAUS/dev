@@ -79,16 +79,20 @@
 			
 			<div id="content">';
 				// Check access using RBAC system
-				$has_access = false;
-				if (isset($t_mp[3])) {
-					$has_access = isset($current_menu[$t_mp[3]]) && (!isset($t_mp[4]) || in_array($t_mp[4], $current_menu[$t_mp[3]]));
-					// Additional RBAC permission check
-					if ($has_access && isset($user_role)) {
-						$has_access = rbac_has_permission($user_role, $t_mp[3], 'read');
-					}
-				} else {
-					$has_access = true; // Allow home page
+			$has_access = false;
+			
+			// Gordon (superadmin) always has full access
+			if (isset($user_role) && $user_role === 'gordon') {
+				$has_access = true;
+			} elseif (isset($t_mp[3])) {
+				$has_access = isset($current_menu[$t_mp[3]]) && (!isset($t_mp[4]) || in_array($t_mp[4], $current_menu[$t_mp[3]]));
+				// Additional RBAC permission check
+				if ($has_access && isset($user_role)) {
+					$has_access = rbac_has_permission($user_role, $t_mp[3], 'read');
 				}
+			} else {
+				$has_access = true; // Allow home page
+			}
 				
 				if ($has_access) {
 					if ( isset($t_mp[3]) && isset($current_menu[$t_mp[3]]) ){
