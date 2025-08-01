@@ -24,7 +24,7 @@ foreach($fltr_ar as $tp => $ar){
 	foreach($fltr_ar[$tp] as $v){
 		if($i==0){ ${'its_'.$tp}[] = '<option value="all">'.$lang_all.'</option>'; }
 				
-		$isSelected = (string)$v == (string)$_POST[$tp."_search"] ? 'selected="selected"' : '';
+		$isSelected = (isset($_POST[$tp."_search"]) && (string)$v == (string)$_POST[$tp."_search"]) ? 'selected="selected"' : '';
 		
 		if( in_array($tp, ['vis', 'act']) ){
 			${'its_'.$tp}[] = '<option value="'.$v.'" '.$isSelected.'>'.${'info_'.$tp}[$v].' ('.$countz[$v].')</option>';
