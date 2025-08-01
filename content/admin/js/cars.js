@@ -1259,3 +1259,5 @@ function handleDisplayLimitChange(newLimit) {
 	// Reload page with new limit parameter
 	window.location.href = currentUrl.toString();
 }
+
+initializeDisplayLimit();
