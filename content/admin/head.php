@@ -20,6 +20,7 @@
 <link rel="stylesheet" type="text/css" href="/<?php e(_DEFAULT)?>/css/default.css?d=<?php echo date("GYimsd", filemtime(_DEFAULT.'/css/default.css')); ?>">
 <link rel="stylesheet" type="text/css" href="/<?php e(_ADM)?>/css/style.css?d=<?php echo date("GYimsd", filemtime(_ADM.'/css/style.css')); ?>">
 <link rel="stylesheet" type="text/css" href="/<?php e(_ADM)?>/css/media.css?d=<?php echo date("GYimsd", filemtime(_ADM.'/css/media.css')); ?>">
+<link rel="stylesheet" type="text/css" href="/<?php e(_ADM)?>/css/cars-display-controls.css?d=<?php echo date("GYimsd", filemtime(_ADM.'/css/cars-display-controls.css')); ?>">
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
@@ -30,5 +31,6 @@
 
 <script src="/<?php e(_DEFAULT)?>/js/sitescripts.js?d=<?php echo date("GYimsd", filemtime(_DEFAULT.'/js/sitescripts.js')); ?>"></script>
 <script src="/<?php e(_ADM)?>/js/sitescripts.js?d=<?php echo date("GYimsd", filemtime(_ADM.'/js/sitescripts.js')); ?>"></script>
+<script src="/<?php e(_ADM)?>/js/cars.js?d=<?php echo date("GYimsd", filemtime(_ADM.'/js/cars.js')); ?>"></script>
 
 <title>Admin</title>

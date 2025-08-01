@@ -1,14 +1,49 @@
 <?php
-$i_max = 999;
+// Get display limit from various sources with fallback to default (25)
+$display_limit = 25; // Default fallback
 
+// Check for URL parameter first (for page reload approach)
+if (isset($_GET['limit'])) {
+    $limit_param = $_GET['limit'];
+    if ($limit_param === 'all' || $limit_param === '0') {
+        $display_limit = 999;
+    } elseif (in_array((int)$limit_param, [25, 100])) {
+        $display_limit = (int)$limit_param;
+    }
+}
+// Check for POST parameter (for AJAX approach)
+elseif (isset($_POST['limit'])) {
+    $limit_param = $_POST['limit'];
+    if ($limit_param === 'all' || $limit_param === '0') {
+        $display_limit = 999;
+    } elseif (in_array((int)$limit_param, [25, 100])) {
+        $display_limit = (int)$limit_param;
+    }
+}
+
+$i_max = $display_limit;
 $pdo = (new \App\Db\Car())->getCarsCtlg($i_max);
+$total_cars_fetched = count($pdo);
+$has_more_cars = $total_cars_fetched > $i_max;
 $i = 0;
+$last_car_id = 0;
 ?>
 
+<div class="display-controls">
+    <label for="cars-display-limit"><?= $lng['w']['show'] ?? 'Показать:' ?></label>
+    <select id="cars-display-limit" name="limit">
+        <option value="25" <?= $display_limit == 25 ? 'selected' : '' ?>>25</option>
+        <option value="100" <?= $display_limit == 100 ? 'selected' : '' ?>>100</option>
+        <option value="all" <?= $display_limit == 999 ? 'selected' : '' ?>><?= $lng['w']['all'] ?? 'Все' ?></option>
+    </select>
+    <span class="loading-indicator" id="cars-loading" style="display: none;">⟳</span>
+</div>
 <div class="ctlg_dspl_tp"></div>
 <section class="ctlg">
     <a id="add_new" href="<?= '/'.$_COOKIE['lang'].'/'.$admin_dir.'/cars/detail' ?>" class="bx" title="<?= $lng['adm']['add'] ?>">
-        <div></div>
+        <div>
+            
+        </div>
     </a>
 
     <?php foreach ($pdo as $r) :
@@ -282,11 +317,12 @@ $i = 0;
         </div>
     <?php
         $i++;
+        $last_car_id = $r['id']; // Track the last car ID
         if($i==$i_max){break;}
     endforeach; ?>
 </section>
 
-<?php if($i == $i_max) : ?>
+<?php if($has_more_cars && $display_limit != 999) : ?>
     <div id="more_it" data-i="1"><?= $lang_more ?></div>
 <?php endif; ?>
-<div id="it_cnt" data-count="<?= ($i_max+1) ?>" data-pos="<?= $r['id'] ?>"></div>
+<div id="it_cnt" data-count="<?= $i ?>" data-pos="<?= $last_car_id ?>"></div>

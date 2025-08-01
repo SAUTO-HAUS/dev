@@ -150,6 +150,17 @@ window.addEventListener('load', function() {
 });
 
 $(document).ready(function(){
+	// Initialize display limit from localStorage after a short delay
+	setTimeout(function() {
+		initializeDisplayLimit();
+	}, 100);
+	
+	// Handle display limit dropdown change
+	$(document).on('change', '#cars-display-limit', function() {
+		console.log('Dropdown changed to:', $(this).val());
+		handleDisplayLimitChange($(this).val());
+	});
+	
 	$(document).on('click', '.bx > .comment', function(){ overlay('open', $(this).parent().children('.comment_txt'), 'self'); })
 	$(document).on('click', '.bx > .print', function(){ overlay('open', $(this).parent().children('.print_bx'), 'self'); })
 	
@@ -391,6 +402,51 @@ $(document).ready(function(){
 			del_img.push($(this).val());
 		});
 
+		// Synchronize price from 999 form to main form before data collection
+		console.log('=== SEARCHING FOR PRICE FIELD ===');
+		let allNumberInputs = $('#main_form_999').find('input[type="number"]');
+		console.log('All number inputs found:', allNumberInputs.length);
+		allNumberInputs.each(function(index) {
+			console.log(`Input ${index}:`, this, 'name:', $(this).attr('name'), 'value:', $(this).val());
+		});
+		
+		let priceField = $('#main_form_999').find('input[type="number"]').filter(function() {
+			return $(this).attr('name') && $(this).attr('name').includes('feature[') && 
+				   $(this).closest('.form-group').find('select[name*="feature_units"]').length > 0;
+		});
+		console.log('Price field after filtering:', priceField.length);
+		
+		if (priceField.length > 0) {
+			let priceValue = priceField.val();
+			let priceUnitSelect = priceField.closest('.form-group').find('select[name*="feature_units"]');
+			let priceUnit = priceUnitSelect.val();
+			
+			console.log('=== PRICE SYNCHRONIZATION DEBUG ===');
+			console.log('Price field found:', priceField.length);
+			console.log('Price field element:', priceField[0]);
+			console.log('Price field name attribute:', priceField.attr('name'));
+			console.log('Price field raw DOM value:', priceField[0].value);
+			console.log('Price field jQuery val():', priceValue, 'type:', typeof priceValue);
+			console.log('Price unit select:', priceUnitSelect[0]);
+			console.log('Price unit value:', priceUnit);
+			
+			// Update the main form's price field
+			if (priceValue && priceUnit) {
+				let prcField = $formSauto.find('input[name="prc"]');
+				let curField = $formSauto.find('select[name="cur"], input[name="cur"]');
+				
+				console.log('Before update - prc field value:', prcField.val());
+				console.log('Before update - cur field value:', curField.val());
+				
+				prcField.val(priceValue);
+				curField.val(priceUnit.toUpperCase());
+				
+				console.log('After update - prc field value:', prcField.val());
+				console.log('After update - cur field value:', curField.val());
+			}
+			console.log('=== END PRICE SYNCHRONIZATION DEBUG ===');
+		}
+		
 		let dataSauto = collectFormDataSauto($formSauto, bx_id);
 		dataSauto.append('main_img', main_img);
 		dataSauto.append('del_img', del_img);
@@ -1142,3 +1198,66 @@ $(document).on('change', '.car-checkbox-n_a_new', function() {
 		}
 	});
 });
+
+// Display limit functionality
+function initializeDisplayLimit() {
+	console.log('Initializing display limit...');
+	
+	// Check if dropdown exists
+	if ($('#cars-display-limit').length === 0) {
+		console.log('Dropdown not found, retrying in 200ms...');
+		setTimeout(initializeDisplayLimit, 200);
+		return;
+	}
+	
+	// Get saved preference from localStorage with fallback to default (25)
+	var savedLimit = localStorage.getItem('cars_display_limit');
+	console.log('Saved limit from localStorage:', savedLimit);
+	
+	// Get current limit from URL parameter
+	var urlParams = new URLSearchParams(window.location.search);
+	var urlLimit = urlParams.get('limit');
+	console.log('URL limit parameter:', urlLimit);
+	
+	// Determine which limit to use
+	var limitToUse = urlLimit || savedLimit || '25';
+	
+	if (['25', '100', 'all'].includes(limitToUse)) {
+		$('#cars-display-limit').val(limitToUse);
+		localStorage.setItem('cars_display_limit', limitToUse);
+		console.log('Set dropdown to:', limitToUse);
+	} else {
+		// Set default and save it
+		localStorage.setItem('cars_display_limit', '25');
+		$('#cars-display-limit').val('25');
+		console.log('Set default limit: 25');
+	}
+}
+
+function handleDisplayLimitChange(newLimit) {
+	console.log('Handling limit change to:', newLimit);
+	
+	// Validate the limit
+	if (!['25', '100', 'all'].includes(newLimit)) {
+		console.error('Invalid limit value:', newLimit);
+		return;
+	}
+	
+	// Save preference to localStorage
+	localStorage.setItem('cars_display_limit', newLimit);
+	console.log('Saved to localStorage:', newLimit);
+	
+	// Show loading indicator
+	$('#cars-loading').show();
+	
+	// Get current URL and add/update limit parameter
+	var currentUrl = new URL(window.location.href);
+	currentUrl.searchParams.set('limit', newLimit);
+	
+	console.log('Redirecting to:', currentUrl.toString());
+	
+	// Reload page with new limit parameter
+	window.location.href = currentUrl.toString();
+}
+
+initializeDisplayLimit();

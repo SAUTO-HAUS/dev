@@ -16,6 +16,8 @@ if ( isset($_COOKIE['sess'])&&!empty($_COOKIE['sess']) ){
 		$i_counts++;
 		$user_id = $r['id'];
 		$user_type = $r['type'];
+		$user_role = $r['role'] ?? $r['type']; // New RBAC role field
+		$user_branch_id = $r['branch_id'];
 		$user_name = $r['name'];
 		$user_login = $r['login'];
 		$user_active = $r['act'];
