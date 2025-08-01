@@ -274,7 +274,14 @@ $(document).ready(function(){
 
 //______________________________________________________________________________________________________________END OF READY / AJAX_SUCCESS
 function ajaxSuccess(data){
-	var data = $.parseJSON(data);
+	if (typeof data === "string") {
+		try {
+			data = $.parseJSON(data);
+		} catch (e) {
+			console.error("Invalid JSON string:", data);
+			return;
+		}
+	}
 	
 	if( data!=null /*$.isArray(data) || data.length*/ ) {
 		
