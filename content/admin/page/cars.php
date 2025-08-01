@@ -8,6 +8,8 @@ if (isset($t_mp[4])) {
         include _ADM_PAGE.'/cars/brands_list.php';
     } elseif ($t_mp[4] == 'detail') {
         include _ADM_PAGE.'/cars/car.php';
+    } elseif ($t_mp[4] == 'add') {
+        include _ADM_PAGE.'/cars/add_new1.php';
 	} else {
 		$rtrn = '<span class="err">Check the URL</span>';
 	}
