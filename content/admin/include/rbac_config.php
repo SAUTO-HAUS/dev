@@ -8,7 +8,7 @@
 $rbac_admin_menu = [
     'gordon' => [
         'cars' => ['add', 'ctlg'],
-        'tyres' => ['add', 'ctlg'],
+        'tyres' => ['ctlg'],
         'seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['create', 'ctlg'],
@@ -16,7 +16,7 @@ $rbac_admin_menu = [
     ],
     'admin' => [
         'cars' => ['add', 'ctlg'],
-        'tyres' => ['add', 'ctlg'],
+        'tyres' => ['ctlg'],
         'seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['create', 'ctlg'],
@@ -24,12 +24,12 @@ $rbac_admin_menu = [
     ],
     'publisher' => [
         'cars' => ['add', 'ctlg'],
-        'tyres' => ['add', 'ctlg']
+        'tyres' => ['ctlg']
         // No access to SEO, Mail, Docs, Settings as per business requirements
     ],
     'publisher_limited' => [
         'cars' => ['add', 'ctlg'],
-        'tyres' => ['add', 'ctlg']
+        'tyres' => ['ctlg']
         // No access to SEO, Mail, Docs, Settings + branch limited access
     ]
 ];
