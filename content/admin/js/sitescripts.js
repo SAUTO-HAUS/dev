@@ -107,10 +107,7 @@ $(document).ready(function() {
 				tg.addClass('fx').delay(300).queue(function(){tg.removeClass('fx'); tg.dequeue();})
 			});
 		}
-		$('#more_it').on('click', function(){
-			localStorage.setItem( 'z_adm_pg_'+reqPage+'_more_btn_clk', $(this).data('i') );
-			$(this).data('i', ($(this).data('i') + 1) ).attr('data-i', ($(this).data('i') + 1) );
-		})
+		// More button handler moved to cars.js to avoid conflicts
 		
 		$('#search_content > .s_main').on('change', function(){
 			var fltrSel = {};

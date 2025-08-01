@@ -41,7 +41,7 @@ class Car
 
     public function getCarsCtlg($limit)
     {
-        $sql = 'SELECT * FROM ' . $this->prefix . '_car_ctlg WHERE `act`="1" ORDER BY `id` DESC LIMIT ' . ($limit+1);
+        $sql = 'SELECT * FROM ' . $this->prefix . '_car_ctlg WHERE `act`="1" ORDER BY `vis` DESC, `id` DESC LIMIT ' . ($limit+1);
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);

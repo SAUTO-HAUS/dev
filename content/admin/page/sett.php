@@ -1,5 +1,71 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
+
+// Include RBAC system
+require_once dirname(__DIR__) . '/include/rbac.php';
+require_once dirname(__DIR__) . '/include/rbac_config.php';
+
 $rtrn = '';
+
+// Get current user role from session
+$current_user_role = null;
+if (isset($_COOKIE['sess']) && !empty($_COOKIE['sess'])) {
+    $sess = explode("-", $_COOKIE['sess']);
+    $pdo = $db->prepare('SELECT role, type FROM '.$prefx.'_adm_usr WHERE id = :id AND act = "1"');
+    $pdo->execute(['id' => $sess[0]]);
+    $user_data = $pdo->fetch(PDO::FETCH_ASSOC);
+    if ($user_data) {
+        $current_user_role = $user_data['role'] ?? $user_data['type'];
+    }
+}
+
+// Check if user has permission to manage users (Gordon or admin role)
+$can_manage_users = ($current_user_role === 'gordon' || rbac_has_permission($current_user_role, 'sett', 'write'));
+
+// Process user management actions
+if (isset($_POST['user_management_action']) && $can_manage_users) {
+    $action = $_POST['user_management_action'];
+    $userId = (int)$_POST['user_id'];
+    $value = $_POST['user_value'];
+    
+    try {
+        switch($action) {
+            case 'name':
+                $pdo = $db->prepare('UPDATE '.$prefx.'_adm_usr SET name = :name WHERE id = :id');
+                $pdo->execute(['name' => $value, 'id' => $userId]);
+                echo 'success';
+                exit;
+                
+            case 'login':
+                $pdo = $db->prepare('UPDATE '.$prefx.'_adm_usr SET login = :login WHERE id = :id');
+                $pdo->execute(['login' => $value, 'id' => $userId]);
+                echo 'success';
+                exit;
+                
+            case 'password':
+                $hashedPassword = password_hash($value, PASSWORD_DEFAULT);
+                $pdo = $db->prepare('UPDATE '.$prefx.'_adm_usr SET password = :password WHERE id = :id');
+                $pdo->execute(['password' => $hashedPassword, 'id' => $userId]);
+                echo 'success';
+                exit;
+                
+            case 'active':
+                $activeValue = ($value === 'true') ? 1 : 0;
+                $pdo = $db->prepare('UPDATE '.$prefx.'_adm_usr SET act = :act WHERE id = :id');
+                $pdo->execute(['act' => $activeValue, 'id' => $userId]);
+                echo 'success';
+                exit;
+                
+            case 'delete':
+                $pdo = $db->prepare('DELETE FROM '.$prefx.'_adm_usr WHERE id = :id');
+                $pdo->execute(['id' => $userId]);
+                echo 'success';
+                exit;
+        }
+    } catch (Exception $e) {
+        echo 'error: ' . $e->getMessage();
+        exit;
+    }
+}
 
 if ( isset($t_mp[4]) ){
 	if ( isset($t_mp[4]) && $t_mp[4]=='adm_usr' ){
@@ -31,7 +97,91 @@ if ( isset($t_mp[4]) ){
 			input[name="it_chk"]:checked + .it > .btns_wrp > .btns {opacity:1; transition:.3s; transition-delay:.2s;}
 		</style>
 		<script>
-		
+			// User management functionality
+			document.addEventListener("DOMContentLoaded", function() {
+				// Handle button clicks for user management
+				document.addEventListener("click", function(e) {
+					if (e.target.classList.contains("btn") && e.target.getAttribute("data-nm")) {
+						e.preventDefault();
+						e.stopPropagation();
+						
+						var action = e.target.getAttribute("data-nm");
+						var userItem = e.target.closest(".it");
+						var userId = userItem.getAttribute("data-id");
+						var userName = userItem.querySelector("[data-login]").textContent;
+						var userLogin = userItem.querySelector("[data-login]").getAttribute("data-login");
+						
+						handleUserAction(action, userId, userName, userLogin);
+					}
+				});
+				
+				// Handle special case for Active checkbox
+				document.addEventListener("change", function(e) {
+					if (e.target.type === "checkbox" && e.target.closest(".btn[data-nm=\"act\"]")) {
+						e.preventDefault();
+						e.stopPropagation();
+						
+						var userItem = e.target.closest(".it");
+						var userId = userItem.getAttribute("data-id");
+						var isActive = e.target.checked;
+						
+						updateUser(userId, "active", isActive ? "true" : "false");
+					}
+				});
+			});
+			
+			function handleUserAction(action, userId, userName, userLogin) {
+				switch(action) {
+					case "nm":
+						var newName = prompt("Введите новое имя:", userName);
+						if (newName && newName !== userName) {
+							updateUser(userId, "name", newName);
+						}
+						break;
+					case "lgn":
+						var newLogin = prompt("Введите новый логин:", userLogin);
+						if (newLogin && newLogin !== userLogin) {
+							updateUser(userId, "login", newLogin);
+						}
+						break;
+					case "pass":
+						var newPassword = prompt("Введите новый пароль для " + userName + ":");
+						if (newPassword) {
+							updateUser(userId, "password", newPassword);
+						}
+						break;
+					case "del":
+						if (confirm("Вы уверены, что хотите удалить пользователя \"" + userName + "\"?")) {
+							updateUser(userId, "delete", true);
+						}
+						break;
+				}
+			}
+			
+			function updateUser(userId, field, value) {
+				var formData = new FormData();
+				formData.append("user_management_action", field);
+				formData.append("user_id", userId);
+				formData.append("user_value", value);
+				
+				fetch(window.location.href, {
+					method: "POST",
+					body: formData
+				})
+				.then(function(response) { return response.text(); })
+				.then(function(data) {
+					if (data.indexOf("success") !== -1) {
+						alert("Обновление успешно!");
+						location.reload();
+					} else {
+						alert("Ошибка: " + data);
+					}
+				})
+				.catch(function(error) {
+					alert("Произошла ошибка при обновлении пользователя.");
+				});
+			}
+
 		</script>
 		';
 		
@@ -61,6 +211,10 @@ if ( isset($t_mp[4]) ){
 				</label>';
 			//}
 		}
+	}
+	elseif ( $t_mp[4]=='roles' ){
+		// Include roles management page
+		include dirname(__FILE__) . '/roles.php';
 	}
 	elseif ( $t_mp[4]=='annc' ){
 		if ( isset($t_mp[5]) ){

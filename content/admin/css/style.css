@@ -478,9 +478,9 @@ select:disabled {
 .bx:hover > .adm_menu > .btn.edit {background-image:url('/media/images/site/edit.svg');}
 .bx:hover > .adm_menu > .btn.edit:hover {background-color:rgba(197,255,37,.4)}
 .bx:hover > .adm_menu > .btn[data-fn="av1"] {background-image:url('/media/images/site/favorite.svg');}
-.bx:hover > .adm_menu > .btn[data-fn="av1"]:hover {background-color:rgba(0,124,255,.4);}
+.bx:hover > .adm_menu > .btn[data-fn="av1"]:hover {background-color:rgba(220,53,69,.4);}
 .bx:hover > .adm_menu > .btn[data-fn="av0"] {background-image:url('/media/images/site/v2/close.svg'); background-size:auto 20%;}
-.bx:hover > .adm_menu > .btn[data-fn="av0"]:hover {background-color:rgba(0,124,255,.4);}
+.bx:hover > .adm_menu > .btn[data-fn="av0"]:hover {background-color:rgba(220,53,69,.4);}
 .bx:hover > .adm_menu > .btn[data-fn="hide"] {background-image:url('/media/images/site/hide.svg');}
 .bx:hover > .adm_menu > .btn[data-fn="hide"]:hover {background-color:rgba(50,50,50,.4);}
 .bx:hover > .adm_menu > .btn[data-fn="reveal"] {background-image:url('/media/images/site/eye.svg');}
@@ -512,7 +512,7 @@ select:disabled {
 
 .on_img {width:100%; line-height:1rem; display:flex; flex-flow:column wrap; font-size:.9rem; position:absolute; bottom:0; left:0;}
 .on_img > span {width:max-content; color:#fff; border-radius:0 .5rem 0 0; padding:0 .25rem;}
-.on_img > span.tva {background-color:#0e2993/*#4a8fd9*/;}
+.on_img > span.tva {background-color:#dc3545/*#4a8fd9*/;}
 .on_img > span.soon {background-color:#1b979d/*#e67d21*/;}
 .on_img > span.not_av {background-color:var(--clr); animation:blinker 1s infinite;}
 .on_img > span.top {background-color:#e8a300}
@@ -545,7 +545,7 @@ select:disabled {
 .ctlg.list .bx > .base_info {width:min-content; min-width:7rem; background-color:transparent; color:#333; position:relative; float:left; margin:0; top:50%; left:0; padding:0 .5rem; transform:translate(0, -50%);}
 .ctlg.list .bx > .base_info > * {width:auto; text-align:left; padding:0;}
 .ctlg.list .bx > .base_info > .date {width:100%;}
-.ctlg.list .bx > .base_info > .views {color:#3477b3; margin-left:.2rem;}
+.ctlg.list .bx > .base_info > .views {color:#dc3545; margin-left:.2rem;}
 .ctlg.list .bx > .base_info > .views > .img {display:none;}
 
 .ctlg.list .bx > .img > .url > .ico {background-size:50%;}

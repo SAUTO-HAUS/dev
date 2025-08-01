@@ -158,7 +158,7 @@ if ($_COOKIE['lang']=='ru'){
 		),
 		
 		'l'=>array(
-			'menu'=>array('home'=>'Главная страница', 'cars'=>'Автомобили', 'services'=>'Услуги', 'tyres'=>'Шины', 'rent'=>'Аренда авто', 'credit'=>'Автокредит', 'contacts'=>'Контакты', 'information'=>'Информация', 'about'=>'О Нас', 'terms'=>'Терминология и условия', 'warranty'=>'Гарантия', 'privacy'=>'Политика конфиденциальности'),
+			'menu'=>array('home'=>'Главная страница', 'cars'=>'Автомобили', 'services'=>'Услуги', 'tyres'=>'Шины', 'rent'=>'Аренда авто', 'credit'=>'Автокредит', 'contacts'=>'Контакты', 'information'=>'Информация', 'about'=>'О Нас', 'terms'=>'Терминология и условия', 'warranty'=>'Гарантия', 'privacy'=>'Политика конфиденциальности', 'tradein'=>'Trade-in'),
 			'extras'=>['fire_ext'=>'Огнетушитель', 'key'=>'Доп. ключи', 'matt'=>'Коврики', 'medkit'=>'Аптечка', 'tools'=>'Инструменты', 'wheel'=>'Запаска'],
 			'car'=>array(
 				'gr'=>array('car'=>'ЛЕГКОВЫЕ АВТОМОБИЛИ', 'com'=>'КОММЕРЧЕСКИЕ АВТОМОБИЛИ'),
@@ -1679,7 +1679,7 @@ elseif ($_COOKIE['lang']=='ro'){
 		),
 		
 		'l'=>array(
-			'menu'=>array('home'=>'Pagina principală', 'cars'=>'Mașini', 'services'=>'Servicii', 'tyres'=>'Anvelope', 'rent'=>'Închiriază o mașină', 'credit'=>'Credit Auto', 'contacts'=>'Contacte', 'information'=>'informație', 'about'=>'Despre noi', 'terms'=>'Terminologie și condiții', 'warranty'=>'Garanție', 'privacy'=>'Politica de Confidențialitate'),
+			'menu'=>array('home'=>'Pagina principală', 'cars'=>'Mașini', 'services'=>'Servicii', 'tyres'=>'Anvelope', 'rent'=>'Închiriază o mașină', 'credit'=>'Credit Auto', 'contacts'=>'Contacte', 'information'=>'informație', 'about'=>'Despre noi', 'terms'=>'Terminologie și condiții', 'warranty'=>'Garanție', 'privacy'=>'Politica de Confidențialitate', 'tradein'=>'Trade-in'),
 			'extras'=>['fire_ext'=>'Extinctor', 'key'=>'Adăugați chei', 'matt'=>'Mags', 'medkit'=>'Trusă de prim ajutor', 'tools'=>'Cric si cheie pentru roti', 'wheel'=>'Spare'],
 			'car'=>array(
 				'gr'=>array('car'=>'AUTOTURISME', 'com'=>'AUTOCOMERCIALE'),
@@ -3139,7 +3139,7 @@ elseif ($_COOKIE['lang']=='en'){
 		),
 		
 		'l'=>array(
-			'menu'=>array('home'=>'Home page', 'cars'=>'Cars', 'credit'=>'Car Loan', 'services'=>'Services', 'tyres'=>'Tyres', 'rent'=>'Rent', 'contacts'=>'Contacts', 'information'=>'Information', 'about'=>'About Us', 'terms'=>'Terminology and terms', 'warranty'=>'Warranty', 'privacy'=>'Privacy Policy'),
+			'menu'=>array('home'=>'Home page', 'cars'=>'Cars', 'credit'=>'Car Loan', 'services'=>'Services', 'tyres'=>'Tyres', 'rent'=>'Rent', 'contacts'=>'Contacts', 'information'=>'Information', 'about'=>'About Us', 'terms'=>'Terminology and terms', 'warranty'=>'Warranty', 'privacy'=>'Privacy Policy', 'tradein'=>'Trade-in'),
 			'extras'=>['fire_ext'=>'Fire ext.', 'key'=>'Extra keys', 'matt'=>'Mats', 'medkit'=>'Medkit', 'tools'=>'Tools', 'wheel'=>'Spare wheel'],
 			'car'=>array(
 				'gr'=>array('car'=>'CARS', 'com'=>'COMERCIAL'),
