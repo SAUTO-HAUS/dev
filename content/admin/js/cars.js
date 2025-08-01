@@ -1063,9 +1063,11 @@ function ajaxMain(data, callback){
 
 //______________________________________________________________________________________________________________END OF READY / AJAX_SUCCESS
 function ajaxSuccessCars(data){
+	console.log('ajaxSuccessCars called with data:', data);
 	if (typeof data === "string") {
 		try {
 			data = $.parseJSON(data);
+			console.log('ajaxSuccessCars parsed JSON data:', data);
 		} catch (e) {
 			console.error("Invalid JSON string:", data);
 		}
@@ -1149,10 +1151,17 @@ function ajaxSuccessCars(data){
 		}
 		
 		if(data.fn=='search'||data.fn=='more'){
+			console.log('ajaxSuccessCars processing search/more with fn:', data.fn);
+			console.log('ajaxSuccessCars data.rtrn content:', data.rtrn);
+			console.log('ajaxSuccessCars data.it_pos:', data.it_pos);
 			$('#it_cnt').data({ 'pos' : data.it_pos }).attr({ 'data-pos' : data.it_pos });
 			
-			if(data.fn=='more'){ $('#content .ctlg').append(data.rtrn); }
+			if(data.fn=='more'){ 
+				console.log('ajaxSuccessCars appending more data to cars catalog');
+				$('#content .ctlg').append(data.rtrn); 
+			}
 			else if(data.fn=='search'){
+				console.log('ajaxSuccessCars replacing search data in cars catalog');
 				var add_new = $('#add_new').prop('outerHTML');
 				$('#content .ctlg').html('').append( add_new + data.rtrn );
 				
