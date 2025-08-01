@@ -161,6 +161,7 @@ include(_SITE_INCL.'/functions.php'); ?>
 		elseif ($t_mp[2]=='services') {include (_SITE_PAGE.'/services.php');}
 		elseif ($t_mp[2]=='tyres') {include (_SITE_PAGE.'/tyres.php');}
 		elseif ($t_mp[2]=='credit') {include (_SITE_PAGE.'/new_pages/credit/credit.php');}
+		elseif ($t_mp[2]=='tradein') {include (_SITE_PAGE.'/new_pages/tradein/tradein.php');}
 		elseif ($t_mp[2]=='rent'&&(!isset($t_mp[3])&&!isset($q_mp[1]))) {include (_SITE_PAGE.'/rent.php');}
 		elseif ( in_array( $t_mp[2], $info_arr ) ) {include (_SITE_PAGE.'/information.php');}
 		elseif ($t_mp[2]=='contacts') {include (_SITE_PAGE.'/contacts.php');}
@@ -169,7 +170,7 @@ include(_SITE_INCL.'/functions.php'); ?>
 			if ( !isset($t_mp[3]) ){echo 'What\'s up, doc?';}
 			else {
 				if ( $t_mp[3]=='api' ){include ('plugins/dev_tools/api_gen.php');}
-				elseif ( $t_mp[3]=='sitemap_generator' ){include ('plugins/dev_tools/smap_gen.php');}
+				elseif ( $t_mp[3]=='sitemap_generator' ){include ('new_sitemap/sitemap_test_web.php');}
 				elseif ( $t_mp[3]=='data_feed' ){include ('plugins/dev_tools/data_feed.php');}
 				elseif ( $t_mp[3]=='bnm' ){include ('plugins/dev_tools/bnm.php');}
 				elseif ( $t_mp[3]=='bnm_tmp' ){include ('plugins/dev_tools/bnm_tmp.php');}
