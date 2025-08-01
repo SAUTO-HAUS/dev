@@ -7,29 +7,29 @@
 // New role-based menu configuration
 $rbac_admin_menu = [
     'gordon' => [
-        'cars' => ['ctlg', 'detail', 'catalog'],
-        'tyres' => ['ctlg', 'detail', 'catalog'],
+        'cars' => ['ctlg', 'detail'],
+        'tyres' => ['ctlg', 'detail'],
         'seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['create', 'ctlg'],
         'sett' => ['info', 'adm_usr', 'roles']
     ],
     'admin' => [
-        'cars' => ['ctlg', 'detail', 'catalog'],
-        'tyres' => ['ctlg', 'detail', 'catalog'],
+        'cars' => ['ctlg', 'detail'],
+        'tyres' => ['ctlg', 'detail'],
         'seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['create', 'ctlg'],
         'sett' => ['info']
     ],
     'publisher' => [
-        'cars' => ['ctlg', 'detail', 'catalog'],
-        'tyres' => ['ctlg', 'detail', 'catalog']
+        'cars' => ['ctlg', 'detail'],
+        'tyres' => ['ctlg', 'detail']
         // No access to SEO, Mail, Docs, Settings as per business requirements
     ],
     'publisher_limited' => [
-        'cars' => ['ctlg', 'detail', 'catalog'],
-        'tyres' => ['ctlg', 'detail', 'catalog']
+        'cars' => ['ctlg', 'detail'],
+        'tyres' => ['ctlg', 'detail']
         // No access to SEO, Mail, Docs, Settings + branch limited access
     ]
 ];
