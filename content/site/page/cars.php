@@ -345,7 +345,8 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
 			
             //Update views
             file_put_contents('view_counter_log.txt', date('Y-m-d H:i:s') . ' - Car ID: ' . $it_id . ' - View incremented' . PHP_EOL, FILE_APPEND);
-            $db->query('UPDATE '.$prefx.'_car_ctlg SET `views` = `views` + 1 WHERE `id` = '.$it_id);
+            $view_update = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `views` = `views` + 1 WHERE `id` = :id');
+            $view_update->execute(['id' => $it_id]);
 
 			$pdo = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg WHERE `id`= :id AND `vis`="1" AND `act`="1" LIMIT 1');
 			$pdo->execute(['id' => $it_id]);
