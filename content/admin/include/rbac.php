@@ -110,14 +110,14 @@ class RBAC {
         if ($this->hasPermission('cars', 'read')) {
             $menu['cars'] = ['ctlg'];
             if ($this->hasPermission('cars', 'create')) {
-                $menu['cars'][] = 'br_lst';
+
             }
         }
         
         if ($this->hasPermission('tyres', 'read')) {
             $menu['tyres'] = ['ctlg'];
             if ($this->hasPermission('tyres', 'create')) {
-                $menu['tyres'][] = 'br_lst';
+
             }
         }
         

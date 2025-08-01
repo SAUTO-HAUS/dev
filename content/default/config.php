@@ -43,7 +43,7 @@ $admin_menu = [
 
 $admin_menu_dev1 = [
 	//'dev' => [ 'cars'=>['ctlg','br_lst'], 'tyres'=>['ctlg','br_lst'], 'seo'=>['ctlg'], 'mail'=>['message', 'order', 'favorites', 'archive'], 'slider'=>['ctlg'], 'docs'=>['ctlg', 'arch'], 'users'=>['ctlg'], 'sett'=>['info','adm_usr']/*, 'settings', 'video', 'team'*/ ],
-    'dev' => ['cars' => ['ctlg', 'br_lst'], 'tyres' => ['ctlg', 'br_lst'], 'seo' => ['ctlg'], 'mail' => ['message', 'order', 'favorites', 'archive'], 'docs' => ['create', 'ctlg'], 'notcrm' => ['app'], 'sett' => ['info', 'annc', 'adm_usr']],
+    'dev' => ['cars' => ['ctlg'], 'tyres' => ['ctlg'], 'seo' => ['ctlg'], 'mail' => ['message', 'order', 'favorites', 'archive'], 'docs' => ['create', 'ctlg'], 'notcrm' => ['app'], 'sett' => ['info', 'annc', 'adm_usr']],
     'sad' => ['cars' => ['ctlg'], 'tyres' => ['ctlg'], 'seo' => ['ctlg'], 'mail' => ['message', 'order', 'favorites', 'archive'], 'docs' => ['create', 'ctlg'], 'sett' => ['info']],
     'adm' => ['cars' => ['ctlg'], 'tyres' => ['ctlg'], 'seo' => ['ctlg'], 'mail' => ['message', 'order', 'favorites', 'archive'], 'docs' => ['create', 'ctlg'], 'sett' => ['info']],
     'mod' => ['cars' => ['ctlg'], 'tyres' => ['ctlg']],
