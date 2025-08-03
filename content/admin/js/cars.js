@@ -1279,11 +1279,20 @@ $(document).on('change', 'select[name="br"], select[name="br_search"]', function
 					}
 					
 					// Add the models returned from server
-					if (data.str) {
-						console.log('Adding models to dropdown:', data.str);
-						modelSelect.append(data.str);
+					// Backend returns data in data.rtrn.str format
+					var modelsHtml = null;
+					if (data.rtrn && data.rtrn.str) {
+						modelsHtml = data.rtrn.str;
+					} else if (data.str) {
+						// Fallback for direct str format
+						modelsHtml = data.str;
+					}
+					
+					if (modelsHtml) {
+						console.log('Adding models to dropdown:', modelsHtml);
+						modelSelect.append(modelsHtml);
 					} else {
-						console.warn('No models returned for brand:', selectedBrand);
+						console.warn('No models returned for brand:', selectedBrand, 'Full response:', data);
 					}
 					
 					// Re-enable the dropdown
