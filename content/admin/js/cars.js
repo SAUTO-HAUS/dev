@@ -1245,13 +1245,13 @@ $(document).on('change', 'select[name="br"], select[name="br_search"]', function
 		modelSelect.html('<option value="">' + defaultText + '</option>');
 	}
 	
-	if (selectedBrand && selectedBrand !== 'all') {
+	if (selectedBrand && selectedBrand !== 'all' && selectedBrand.trim() !== '') {
 		// Show loading state
 		modelSelect.prop('disabled', true);
 		modelSelect.append('<option>Loading...</option>');
 		
 		// Make AJAX call to get models for selected brand
-		console.log('Loading models for brand:', selectedBrand);
+		console.log('Loading models for brand:', selectedBrand, 'Type:', typeof selectedBrand);
 		$.ajax({
 			url: '/ajax.php',
 			method: 'POST',
