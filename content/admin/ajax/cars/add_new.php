@@ -9,11 +9,21 @@ $rtrn = ''; $zY = substr( md5( date('Y') ), 0, 4 ); $zM = substr( md5( date('m')
 
 
 if (__post('sub') == 'mo_search') {
-    $list = (new \App\Db\Car())->getCarListByBrand(__post('br'));
+    $brand = __post('br');
+    error_log("mo_search called for brand: " . $brand);
+    
+    $list = (new \App\Db\Car())->getCarListByBrand($brand);
+    error_log("mo_search found " . count($list) . " models for brand: " . $brand);
+    
+    $models_html = '';
 	foreach ($list as $r) {
-        $rtrn .= '<option value="'.$r['mo'].'">'.$r['mo_nm'].'</option>';
+        $models_html .= '<option value="'.$r['mo'].'">'.$r['mo_nm'].'</option>';
     }
-	$rtrn = ['bx_id' => __post('bx_id'), 'str' => $rtrn];
+    
+    error_log("mo_search generated HTML: " . $models_html);
+    
+	$rtrn = ['bx_id' => __post('bx_id'), 'str' => $models_html];
+	error_log("mo_search returning: " . json_encode($rtrn));
 
 } elseif (__post('sub') == 'end') {
     try {

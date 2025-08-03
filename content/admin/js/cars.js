@@ -1251,6 +1251,7 @@ $(document).on('change', 'select[name="br"], select[name="br_search"]', function
 		modelSelect.append('<option>Loading...</option>');
 		
 		// Make AJAX call to get models for selected brand
+		console.log('Loading models for brand:', selectedBrand);
 		$.ajax({
 			url: '/ajax.php',
 			method: 'POST',
@@ -1263,8 +1264,10 @@ $(document).on('change', 'select[name="br"], select[name="br_search"]', function
 				bx_id: bxId
 			},
 			success: function(response) {
+				console.log('Model AJAX response received:', response);
 				try {
 					var data = typeof response === 'string' ? JSON.parse(response) : response;
+					console.log('Parsed model data:', data);
 					
 					// Clear loading state and add default option
 					if ($(this).attr('name') === 'br_search') {
@@ -1277,13 +1280,17 @@ $(document).on('change', 'select[name="br"], select[name="br_search"]', function
 					
 					// Add the models returned from server
 					if (data.str) {
+						console.log('Adding models to dropdown:', data.str);
 						modelSelect.append(data.str);
+					} else {
+						console.warn('No models returned for brand:', selectedBrand);
 					}
 					
 					// Re-enable the dropdown
 					modelSelect.prop('disabled', false);
+					console.log('Model dropdown re-enabled');
 				} catch (e) {
-					console.error('Error parsing model response:', e);
+					console.error('Error parsing model response:', e, 'Raw response:', response);
 					if ($(this).attr('name') === 'br_search') {
 						modelSelect.html('<option value="all">All</option>');
 					} else {
