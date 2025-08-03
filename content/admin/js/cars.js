@@ -831,19 +831,22 @@ document.addEventListener("DOMContentLoaded", function () {
 	const saveBtn = document.getElementById("saveBooster");
 	const pauseBtn = document.getElementById("pauseBooster");
 
-
+	// Only proceed if booster modal elements exist
+	if (!modal) {
+		console.log('Booster modal not found - skipping booster functionality');
+		return;
+	}
 
 	if (boosterIcon) {
 		boosterIcon.addEventListener("click", function () {
 			modal.style.display = "block";
 		});
 	}
-	if (closeModal && modal) {
+	
+	if (closeModal) {
 		closeModal.addEventListener("click", function () {
 			modal.style.display = "none";
 		});
-	} else {
-		console.error("Элемент .closeBoosterModal или #boosterModal не найден!");
 	}
 
 	window.addEventListener("click", function (event) {
@@ -852,63 +855,65 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 	});
 
-	saveBtn.addEventListener("click", function () {
-		const period = document.getElementById("period").value;
-		const dailyLimit = document.getElementById("dailyLimit").value;
-		const click_price = document.getElementById("click_price").value;
+	if (saveBtn) {
+		saveBtn.addEventListener("click", function () {
+			const period = document.getElementById("period").value;
+			const dailyLimit = document.getElementById("dailyLimit").value;
+			const click_price = document.getElementById("click_price").value;
 
-		if (!period || !dailyLimit) {
-			$('#boosterModal #period').css('background-color', period ? '' : 'rgba(255,0,0,0.1)');
-			$('#boosterModal #dailyLimit').css('background-color', dailyLimit ? '' : 'rgba(255,0,0,0.1)');
-			return;
-		}
-		if(dailyLimit < 10){
-			$('#boosterModal #dailyLimit').css('background-color', dailyLimit ? '' : 'rgba(255,0,0,0.1)');
-			return;
-		}
-		if (click_price > dailyLimit * 100) {
-			$('#boosterModal #period').css('background-color', click_price ? '' : 'rgba(255,0,0,0.1)');
-			return;
-		}
-
-		let dataX = {
-			'tp': reqType,
-			'pg': reqPage,
-			'fn': 'saveBooster',
-			'id': $('#content_box').data('car-id'),
-			'period': period,
-			'daily_limit': dailyLimit * 100,
-			'click_price': click_price
-		};
-
-		$.ajax({
-			url:'/ajax.php', method:'POST', type:'POST', data:dataX, async:true, datatype:'json', enctype:'multipart/form-data',
-			statusCode: {
-				0: function(){
-					alert('No internet connection');
-				},
-				403: function(){
-					alert('Forbidden');
-				},
-				404: function(){
-					alert('Page not found');
-				},
-				500: function(){
-					alert('Internal server error');
-				}
-			},
-			success: function(data){
-				data = $.parseJSON(data);
-				if (data.error) {
-					$('.errorBooster').html('Error: ' + data.error.message);
-				} else {
-					modal.style.display = "none";
-					location.reload();
-					$('.errorBooster').html('');
-				}
+			if (!period || !dailyLimit) {
+				$('#boosterModal #period').css('background-color', period ? '' : 'rgba(255,0,0,0.1)');
+				$('#boosterModal #dailyLimit').css('background-color', dailyLimit ? '' : 'rgba(255,0,0,0.1)');
+				return;
 			}
+			if(dailyLimit < 10){
+				$('#boosterModal #dailyLimit').css('background-color', dailyLimit ? '' : 'rgba(255,0,0,0.1)');
+				return;
+			}
+			if (click_price > dailyLimit * 100) {
+				$('#boosterModal #period').css('background-color', click_price ? '' : 'rgba(255,0,0,0.1)');
+				return;
+			}
+
+			let dataX = {
+				'tp': reqType,
+				'pg': reqPage,
+				'fn': 'saveBooster',
+				'id': $('#content_box').data('car-id'),
+				'period': period,
+				'daily_limit': dailyLimit * 100,
+				'click_price': click_price
+			};
+
+			$.ajax({
+				url:'/ajax.php', method:'POST', type:'POST', data:dataX, async:true, datatype:'json', enctype:'multipart/form-data',
+				statusCode: {
+					0: function(){
+						alert('No internet connection');
+					},
+					403: function(){
+						alert('Forbidden');
+					},
+					404: function(){
+						alert('Page not found');
+					},
+					500: function(){
+						alert('Internal server error');
+					}
+				},
+				success: function(data){
+					data = $.parseJSON(data);
+					if (data.error) {
+						$('.errorBooster').html('Error: ' + data.error.message);
+					} else {
+						modal.style.display = "none";
+						location.reload();
+						$('.errorBooster').html('');
+					}
+				}
+			});
 		});
-	});
+	}
 
 	$('#boosterModal #period, #boosterModal #dailyLimit').on('input', validateBoosterFields);
 
