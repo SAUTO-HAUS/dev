@@ -1215,16 +1215,37 @@ $(document).on('change', '.car-checkbox-n_a_new', function() {
 	});
 });
 
-// Brand change handler for model filtering
-$(document).on('change', 'select[name="br"]', function() {
+// Brand change handler for model filtering (both add form and catalog filter)
+$(document).on('change', 'select[name="br"], select[name="br_search"]', function() {
 	var selectedBrand = $(this).val();
-	var modelSelect = $('select[name="mo"]');
+	var modelSelect;
 	var bxId = $('.bx').data('bx_id') || 'default';
 	
-	// Clear current model options
-	modelSelect.html('<option value="">' + modelSelect.attr('def_text') + '</option>');
+	// Determine which model dropdown to target based on the brand dropdown
+	if ($(this).attr('name') === 'br_search') {
+		// This is the catalog filter
+		modelSelect = $('select[name="mo_search"]');
+	} else {
+		// This is the add/edit form
+		modelSelect = $('select[name="mo"]');
+	}
 	
-	if (selectedBrand) {
+	// Skip if no model dropdown found
+	if (modelSelect.length === 0) {
+		return;
+	}
+	
+	// Clear current model options
+	var defaultText = modelSelect.attr('def_text') || 'Model';
+	if ($(this).attr('name') === 'br_search') {
+		// For filter, use "all" option
+		modelSelect.html('<option value="all">All</option>');
+	} else {
+		// For add form, use default text
+		modelSelect.html('<option value="">' + defaultText + '</option>');
+	}
+	
+	if (selectedBrand && selectedBrand !== 'all') {
 		// Show loading state
 		modelSelect.prop('disabled', true);
 		modelSelect.append('<option>Loading...</option>');
@@ -1246,7 +1267,13 @@ $(document).on('change', 'select[name="br"]', function() {
 					var data = typeof response === 'string' ? JSON.parse(response) : response;
 					
 					// Clear loading state and add default option
-					modelSelect.html('<option value="">' + modelSelect.attr('def_text') + '</option>');
+					if ($(this).attr('name') === 'br_search') {
+						// For filter, use "all" option
+						modelSelect.html('<option value="all">All</option>');
+					} else {
+						// For add form, use default text
+						modelSelect.html('<option value="">' + defaultText + '</option>');
+					}
 					
 					// Add the models returned from server
 					if (data.str) {
@@ -1257,15 +1284,23 @@ $(document).on('change', 'select[name="br"]', function() {
 					modelSelect.prop('disabled', false);
 				} catch (e) {
 					console.error('Error parsing model response:', e);
-					modelSelect.html('<option value="">' + modelSelect.attr('def_text') + '</option>');
+					if ($(this).attr('name') === 'br_search') {
+						modelSelect.html('<option value="all">All</option>');
+					} else {
+						modelSelect.html('<option value="">' + defaultText + '</option>');
+					}
 					modelSelect.prop('disabled', false);
 				}
-			},
+			}.bind(this),
 			error: function(xhr, status, error) {
 				console.error('Error loading models:', error);
-				modelSelect.html('<option value="">' + modelSelect.attr('def_text') + '</option>');
+				if ($(this).attr('name') === 'br_search') {
+					modelSelect.html('<option value="all">All</option>');
+				} else {
+					modelSelect.html('<option value="">' + defaultText + '</option>');
+				}
 				modelSelect.prop('disabled', false);
-			}
+			}.bind(this)
 		});
 	} else {
 		// If no brand selected, just re-enable the model dropdown
