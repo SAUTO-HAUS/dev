@@ -1215,6 +1215,64 @@ $(document).on('change', '.car-checkbox-n_a_new', function() {
 	});
 });
 
+// Brand change handler for model filtering
+$(document).on('change', 'select[name="br"]', function() {
+	var selectedBrand = $(this).val();
+	var modelSelect = $('select[name="mo"]');
+	var bxId = $('.bx').data('bx_id') || 'default';
+	
+	// Clear current model options
+	modelSelect.html('<option value="">' + modelSelect.attr('def_text') + '</option>');
+	
+	if (selectedBrand) {
+		// Show loading state
+		modelSelect.prop('disabled', true);
+		modelSelect.append('<option>Loading...</option>');
+		
+		// Make AJAX call to get models for selected brand
+		$.ajax({
+			url: '/ajax.php',
+			method: 'POST',
+			data: {
+				tp: 'adm',
+				pg: 'cars',
+				fn: 'add_new',
+				sub: 'mo_search',
+				br: selectedBrand,
+				bx_id: bxId
+			},
+			success: function(response) {
+				try {
+					var data = typeof response === 'string' ? JSON.parse(response) : response;
+					
+					// Clear loading state and add default option
+					modelSelect.html('<option value="">' + modelSelect.attr('def_text') + '</option>');
+					
+					// Add the models returned from server
+					if (data.str) {
+						modelSelect.append(data.str);
+					}
+					
+					// Re-enable the dropdown
+					modelSelect.prop('disabled', false);
+				} catch (e) {
+					console.error('Error parsing model response:', e);
+					modelSelect.html('<option value="">' + modelSelect.attr('def_text') + '</option>');
+					modelSelect.prop('disabled', false);
+				}
+			},
+			error: function(xhr, status, error) {
+				console.error('Error loading models:', error);
+				modelSelect.html('<option value="">' + modelSelect.attr('def_text') + '</option>');
+				modelSelect.prop('disabled', false);
+			}
+		});
+	} else {
+		// If no brand selected, just re-enable the model dropdown
+		modelSelect.prop('disabled', false);
+	}
+});
+
 // Display limit functionality
 function initializeDisplayLimit() {
 	console.log('Initializing display limit...');
