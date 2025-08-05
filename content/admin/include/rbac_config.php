@@ -7,7 +7,7 @@
 // New role-based menu configuration
 $rbac_admin_menu = [
     'gordon' => [
-        'cars' => ['ctlg'],
+        'cars' => ['add', 'ctlg'],
         'tyres' => ['ctlg'],
         'seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
@@ -15,7 +15,7 @@ $rbac_admin_menu = [
         'sett' => ['info', 'adm_usr', 'roles']
     ],
     'admin' => [
-        'cars' => ['ctlg'],
+        'cars' => ['add', 'ctlg'],
         'tyres' => ['ctlg'],
         'seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
@@ -23,12 +23,12 @@ $rbac_admin_menu = [
         'sett' => ['info']
     ],
     'publisher' => [
-        'cars' => ['ctlg'],
+        'cars' => ['add', 'ctlg'],
         'tyres' => ['ctlg']
         // No access to SEO, Mail, Docs, Settings as per business requirements
     ],
     'publisher_limited' => [
-        'cars' => ['ctlg'],
+        'cars' => ['add', 'ctlg'],
         'tyres' => ['ctlg']
         // No access to SEO, Mail, Docs, Settings + branch limited access
     ]

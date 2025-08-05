@@ -31,6 +31,21 @@
 
 <script src="/<?php e(_DEFAULT)?>/js/sitescripts.js?d=<?php echo date("GYimsd", filemtime(_DEFAULT.'/js/sitescripts.js')); ?>"></script>
 <script src="/<?php e(_ADM)?>/js/sitescripts.js?d=<?php echo date("GYimsd", filemtime(_ADM.'/js/sitescripts.js')); ?>"></script>
-<script src="/<?php e(_ADM)?>/js/cars.js?d=<?php echo date("GYimsd", filemtime(_ADM.'/js/cars.js')); ?>"></script>
+
+<?php
+// Conditional JavaScript loading to prevent conflicts between pages
+$current_url = $_SERVER['REQUEST_URI'];
+if (strpos($current_url, '/cars/') !== false) {
+    // Load only cars.js for cars pages
+    echo '<script src="/' . _ADM . '/js/cars.js?d=' . date("GYimsd", filemtime(_ADM.'/js/cars.js')) . '"></script>' . "\n";
+} elseif (strpos($current_url, '/tyres/') !== false) {
+    // Load only tyres.js for tyres pages
+    echo '<script src="/' . _ADM . '/js/tyres.js?d=' . date("GYimsd", filemtime(_ADM.'/js/tyres.js')) . '"></script>' . "\n";
+} else {
+    // For other admin pages, load both (fallback)
+    echo '<script src="/' . _ADM . '/js/cars.js?d=' . date("GYimsd", filemtime(_ADM.'/js/cars.js')) . '"></script>' . "\n";
+    echo '<script src="/' . _ADM . '/js/tyres.js?d=' . date("GYimsd", filemtime(_ADM.'/js/tyres.js')) . '"></script>' . "\n";
+}
+?>
 
 <title>Admin</title>

@@ -1,5 +1,14 @@
 var reqType = 'adm';
-var reqPage = 'tyres';
+// Dynamic page detection to avoid conflicts with cars.js
+function getReqPageTyres() {
+	// Check URL to determine if we're on tyres page
+	if (window.location.href.indexOf('/tyres/') !== -1) {
+		return 'tyres';
+	}
+	// Fallback to tyres for this file
+	return 'tyres';
+}
+var reqPage = getReqPageTyres();
 
 $(document).ready(function(){
 	$(document).on('click', '.bx > .comment', function(){ overlay('open', $(this).parent().children('.comment_txt'), 'self'); })
@@ -274,7 +283,14 @@ $(document).ready(function(){
 
 //______________________________________________________________________________________________________________END OF READY / AJAX_SUCCESS
 function ajaxSuccess(data){
-	var data = $.parseJSON(data);
+	if (typeof data === "string") {
+		try {
+			data = $.parseJSON(data);
+		} catch (e) {
+			console.error("Invalid JSON string:", data);
+			return;
+		}
+	}
 	
 	if( data!=null /*$.isArray(data) || data.length*/ ) {
 		

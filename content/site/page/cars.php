@@ -345,11 +345,36 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
 			
             //Update views
             file_put_contents('view_counter_log.txt', date('Y-m-d H:i:s') . ' - Car ID: ' . $it_id . ' - View incremented' . PHP_EOL, FILE_APPEND);
-            $view_update = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `views` = `views` + 1 WHERE `id` = :id');
-            $view_update->execute(['id' => $it_id]);
+            try {
+                $view_update = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `views` = `views` + 1 WHERE `id` = :id');
+                $view_update->execute(['id' => $it_id]);
+            } catch (PDOException $e) {
+                // Log the error but don't crash the page
+                error_log('PDO Error updating views for car ID ' . $it_id . ': ' . $e->getMessage());
+                file_put_contents('view_counter_log.txt', date('Y-m-d H:i:s') . ' - ERROR updating views for Car ID: ' . $it_id . ' - ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
+                
+                // Try to re-establish connection and retry once
+                try {
+                    $view_update = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `views` = `views` + 1 WHERE `id` = :id');
+                    $view_update->execute(['id' => $it_id]);
+                    file_put_contents('view_counter_log.txt', date('Y-m-d H:i:s') . ' - RETRY SUCCESS for Car ID: ' . $it_id . PHP_EOL, FILE_APPEND);
+                } catch (PDOException $e2) {
+                    // If retry also fails, just log and continue
+                    error_log('PDO Error on retry updating views for car ID ' . $it_id . ': ' . $e2->getMessage());
+                    file_put_contents('view_counter_log.txt', date('Y-m-d H:i:s') . ' - RETRY FAILED for Car ID: ' . $it_id . ' - ' . $e2->getMessage() . PHP_EOL, FILE_APPEND);
+                }
+            }
 
-			$pdo = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg WHERE `id`= :id AND `vis`="1" AND `act`="1" LIMIT 1');
-			$pdo->execute(['id' => $it_id]);
+			try {
+				$pdo = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg WHERE `id`= :id AND `vis`="1" AND `act`="1" LIMIT 1');
+				$pdo->execute(['id' => $it_id]);
+			} catch (PDOException $e) {
+				// Log the error but don't crash the page
+				error_log('PDO Error selecting car data for ID ' . $it_id . ': ' . $e->getMessage());
+				file_put_contents('debug_sql.log', "PDO Error selecting car data for ID: {$it_id} - " . $e->getMessage() . "\n", FILE_APPEND);
+				// Create empty result to prevent foreach errors
+				$pdo = [];
+			}
 
 			foreach ($pdo as $r){
 				$chkr_av = 1;

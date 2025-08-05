@@ -1,5 +1,14 @@
 var reqType = 'adm';
-var reqPage = 'cars';
+// Dynamic page detection to avoid conflicts with tyres.js
+function getReqPage() {
+	// Check URL to determine if we're on cars page
+	if (window.location.href.indexOf('/cars/') !== -1) {
+		return 'cars';
+	}
+	// Fallback to cars for this file
+	return 'cars';
+}
+var reqPage = getReqPage();
 
 function sendToFacebookCars() {
 	var confirmation = confirm( 'Опубликовать в facebook?' );
@@ -340,7 +349,12 @@ $(document).ready(function(){
 	
 	//-----------------------------MORE_BUTTON
 	$(document).on('click', '#more_it', function(){
-		var data = {}; data['tp'] = reqType; data['pg'] = reqPage; data['fn'] = 'more';
+		// Save to localStorage (from sitescripts.js functionality)
+		localStorage.setItem( 'z_adm_pg_'+getReqPage()+'_more_btn_clk', $(this).data('i') );
+		$(this).data('i', ($(this).data('i') + 1) ).attr('data-i', ($(this).data('i') + 1) );
+		
+		// AJAX call to load more items - force 'cars' to avoid tyres.js conflicts
+		var data = {}; data['tp'] = 'adm'; data['pg'] = 'cars'; data['fn'] = 'more';
 		data['it_qu'] = $('#it_cnt').data('count');
 		data['it_pos'] = $('#it_cnt').data('pos');
 		
@@ -353,7 +367,7 @@ $(document).ready(function(){
 	
 		$('#search_content .search_select[clicked="1"]').attr('clicked',null);
 		var selectz = $(this).val();
-		var data = {}; data['tp'] = reqType; data['pg'] = reqPage; data['fn'] = 'filter';
+		var data = {}; data['tp'] = reqType; data['pg'] = getReqPage(); data['fn'] = 'filter';
 		
 		$('.s_main').not(this).each(function(){ data[$(this).attr('name')] = $(this).val(); })
 		$(this).attr({'clicked':'1', 'selectz':selectz});
@@ -817,19 +831,22 @@ document.addEventListener("DOMContentLoaded", function () {
 	const saveBtn = document.getElementById("saveBooster");
 	const pauseBtn = document.getElementById("pauseBooster");
 
-
+	// Only proceed if booster modal elements exist
+	if (!modal) {
+		console.log('Booster modal not found - skipping booster functionality');
+		return;
+	}
 
 	if (boosterIcon) {
 		boosterIcon.addEventListener("click", function () {
 			modal.style.display = "block";
 		});
 	}
-	if (closeModal && modal) {
+	
+	if (closeModal) {
 		closeModal.addEventListener("click", function () {
 			modal.style.display = "none";
 		});
-	} else {
-		console.error("Элемент .closeBoosterModal или #boosterModal не найден!");
 	}
 
 	window.addEventListener("click", function (event) {
@@ -838,63 +855,65 @@ document.addEventListener("DOMContentLoaded", function () {
 		}
 	});
 
-	saveBtn.addEventListener("click", function () {
-		const period = document.getElementById("period").value;
-		const dailyLimit = document.getElementById("dailyLimit").value;
-		const click_price = document.getElementById("click_price").value;
+	if (saveBtn) {
+		saveBtn.addEventListener("click", function () {
+			const period = document.getElementById("period").value;
+			const dailyLimit = document.getElementById("dailyLimit").value;
+			const click_price = document.getElementById("click_price").value;
 
-		if (!period || !dailyLimit) {
-			$('#boosterModal #period').css('background-color', period ? '' : 'rgba(255,0,0,0.1)');
-			$('#boosterModal #dailyLimit').css('background-color', dailyLimit ? '' : 'rgba(255,0,0,0.1)');
-			return;
-		}
-		if(dailyLimit < 10){
-			$('#boosterModal #dailyLimit').css('background-color', dailyLimit ? '' : 'rgba(255,0,0,0.1)');
-			return;
-		}
-		if (click_price > dailyLimit * 100) {
-			$('#boosterModal #period').css('background-color', click_price ? '' : 'rgba(255,0,0,0.1)');
-			return;
-		}
-
-		let dataX = {
-			'tp': reqType,
-			'pg': reqPage,
-			'fn': 'saveBooster',
-			'id': $('#content_box').data('car-id'),
-			'period': period,
-			'daily_limit': dailyLimit * 100,
-			'click_price': click_price
-		};
-
-		$.ajax({
-			url:'/ajax.php', method:'POST', type:'POST', data:dataX, async:true, datatype:'json', enctype:'multipart/form-data',
-			statusCode: {
-				0: function(){
-					alert('No internet connection');
-				},
-				403: function(){
-					alert('Forbidden');
-				},
-				404: function(){
-					alert('Page not found');
-				},
-				500: function(){
-					alert('Internal server error');
-				}
-			},
-			success: function(data){
-				data = $.parseJSON(data);
-				if (data.error) {
-					$('.errorBooster').html('Error: ' + data.error.message);
-				} else {
-					modal.style.display = "none";
-					location.reload();
-					$('.errorBooster').html('');
-				}
+			if (!period || !dailyLimit) {
+				$('#boosterModal #period').css('background-color', period ? '' : 'rgba(255,0,0,0.1)');
+				$('#boosterModal #dailyLimit').css('background-color', dailyLimit ? '' : 'rgba(255,0,0,0.1)');
+				return;
 			}
+			if(dailyLimit < 10){
+				$('#boosterModal #dailyLimit').css('background-color', dailyLimit ? '' : 'rgba(255,0,0,0.1)');
+				return;
+			}
+			if (click_price > dailyLimit * 100) {
+				$('#boosterModal #period').css('background-color', click_price ? '' : 'rgba(255,0,0,0.1)');
+				return;
+			}
+
+			let dataX = {
+				'tp': reqType,
+				'pg': reqPage,
+				'fn': 'saveBooster',
+				'id': $('#content_box').data('car-id'),
+				'period': period,
+				'daily_limit': dailyLimit * 100,
+				'click_price': click_price
+			};
+
+			$.ajax({
+				url:'/ajax.php', method:'POST', type:'POST', data:dataX, async:true, datatype:'json', enctype:'multipart/form-data',
+				statusCode: {
+					0: function(){
+						alert('No internet connection');
+					},
+					403: function(){
+						alert('Forbidden');
+					},
+					404: function(){
+						alert('Page not found');
+					},
+					500: function(){
+						alert('Internal server error');
+					}
+				},
+				success: function(data){
+					data = $.parseJSON(data);
+					if (data.error) {
+						$('.errorBooster').html('Error: ' + data.error.message);
+					} else {
+						modal.style.display = "none";
+						location.reload();
+						$('.errorBooster').html('');
+					}
+				}
+			});
 		});
-	});
+	}
 
 	$('#boosterModal #period, #boosterModal #dailyLimit').on('input', validateBoosterFields);
 
@@ -1048,7 +1067,7 @@ function ajaxMain(data, callback){
 }
 
 //______________________________________________________________________________________________________________END OF READY / AJAX_SUCCESS
-function ajaxSuccess(data){
+function ajaxSuccessCars(data){
 	if (typeof data === "string") {
 		try {
 			data = $.parseJSON(data);
@@ -1137,7 +1156,9 @@ function ajaxSuccess(data){
 		if(data.fn=='search'||data.fn=='more'){
 			$('#it_cnt').data({ 'pos' : data.it_pos }).attr({ 'data-pos' : data.it_pos });
 			
-			if(data.fn=='more'){ $('#content .ctlg').append(data.rtrn); }
+			if(data.fn=='more'){ 
+				$('#content .ctlg').append(data.rtrn); 
+			}
 			else if(data.fn=='search'){
 				var add_new = $('#add_new').prop('outerHTML');
 				$('#content .ctlg').html('').append( add_new + data.rtrn );
@@ -1199,6 +1220,115 @@ $(document).on('change', '.car-checkbox-n_a_new', function() {
 	});
 });
 
+// Brand change handler for model filtering (both add form and catalog filter)
+$(document).on('change', 'select[name="br"], select[name="br_search"]', function() {
+	var selectedBrand = $(this).val();
+	var modelSelect;
+	var bxId = $('.bx').data('bx_id') || 'default';
+	
+	// Determine which model dropdown to target based on the brand dropdown
+	if ($(this).attr('name') === 'br_search') {
+		// This is the catalog filter
+		modelSelect = $('select[name="mo_search"]');
+	} else {
+		// This is the add/edit form
+		modelSelect = $('select[name="mo"]');
+	}
+	
+	// Skip if no model dropdown found
+	if (modelSelect.length === 0) {
+		return;
+	}
+	
+	// Clear current model options
+	var defaultText = modelSelect.attr('def_text') || 'Model';
+	if ($(this).attr('name') === 'br_search') {
+		// For filter, use "all" option
+		modelSelect.html('<option value="all">All</option>');
+	} else {
+		// For add form, use default text
+		modelSelect.html('<option value="">' + defaultText + '</option>');
+	}
+	
+	if (selectedBrand && selectedBrand !== 'all' && selectedBrand.trim() !== '') {
+		// Show loading state
+		modelSelect.prop('disabled', true);
+		modelSelect.append('<option>Loading...</option>');
+		
+		// Make AJAX call to get models for selected brand
+		console.log('Loading models for brand:', selectedBrand, 'Type:', typeof selectedBrand);
+		$.ajax({
+			url: '/ajax.php',
+			method: 'POST',
+			data: {
+				tp: 'adm',
+				pg: 'cars',
+				fn: 'add_new',
+				sub: 'mo_search',
+				br: selectedBrand,
+				bx_id: bxId
+			},
+			success: function(response) {
+				console.log('Model AJAX response received:', response);
+				try {
+					var data = typeof response === 'string' ? JSON.parse(response) : response;
+					console.log('Parsed model data:', data);
+					
+					// Clear loading state and add default option
+					if ($(this).attr('name') === 'br_search') {
+						// For filter, use "all" option
+						modelSelect.html('<option value="all">All</option>');
+					} else {
+						// For add form, use default text
+						modelSelect.html('<option value="">' + defaultText + '</option>');
+					}
+					
+					// Add the models returned from server
+					// Backend returns data in data.rtrn.str format
+					var modelsHtml = null;
+					if (data.rtrn && data.rtrn.str) {
+						modelsHtml = data.rtrn.str;
+					} else if (data.str) {
+						// Fallback for direct str format
+						modelsHtml = data.str;
+					}
+					
+					if (modelsHtml) {
+						console.log('Adding models to dropdown:', modelsHtml);
+						modelSelect.append(modelsHtml);
+					} else {
+						console.warn('No models returned for brand:', selectedBrand, 'Full response:', data);
+					}
+					
+					// Re-enable the dropdown
+					modelSelect.prop('disabled', false);
+					console.log('Model dropdown re-enabled');
+				} catch (e) {
+					console.error('Error parsing model response:', e, 'Raw response:', response);
+					if ($(this).attr('name') === 'br_search') {
+						modelSelect.html('<option value="all">All</option>');
+					} else {
+						modelSelect.html('<option value="">' + defaultText + '</option>');
+					}
+					modelSelect.prop('disabled', false);
+				}
+			}.bind(this),
+			error: function(xhr, status, error) {
+				console.error('Error loading models:', error);
+				if ($(this).attr('name') === 'br_search') {
+					modelSelect.html('<option value="all">All</option>');
+				} else {
+					modelSelect.html('<option value="">' + defaultText + '</option>');
+				}
+				modelSelect.prop('disabled', false);
+			}.bind(this)
+		});
+	} else {
+		// If no brand selected, just re-enable the model dropdown
+		modelSelect.prop('disabled', false);
+	}
+});
+
 // Display limit functionality
 function initializeDisplayLimit() {
 	console.log('Initializing display limit...');
@@ -1210,28 +1340,27 @@ function initializeDisplayLimit() {
 		return;
 	}
 	
-	// Get saved preference from localStorage with fallback to default (25)
-	var savedLimit = localStorage.getItem('cars_display_limit');
-	console.log('Saved limit from localStorage:', savedLimit);
-	
 	// Get current limit from URL parameter
 	var urlParams = new URLSearchParams(window.location.search);
 	var urlLimit = urlParams.get('limit');
 	console.log('URL limit parameter:', urlLimit);
 	
-	// Determine which limit to use
-	var limitToUse = urlLimit || savedLimit || '25';
+	// Get saved preference from localStorage only if no URL parameter
+	var savedLimit = localStorage.getItem('cars_display_limit');
+	console.log('Saved limit from localStorage:', savedLimit);
 	
-	if (['25', '100', 'all'].includes(limitToUse)) {
-		$('#cars-display-limit').val(limitToUse);
-		localStorage.setItem('cars_display_limit', limitToUse);
-		console.log('Set dropdown to:', limitToUse);
+	// Determine which limit to use - URL parameter takes priority, otherwise default to 25
+	var limitToUse;
+	if (urlLimit && ['25', '100', 'all'].includes(urlLimit)) {
+		limitToUse = urlLimit;
 	} else {
-		// Set default and save it
-		localStorage.setItem('cars_display_limit', '25');
-		$('#cars-display-limit').val('25');
-		console.log('Set default limit: 25');
+		// Always default to 25 when no valid URL parameter is present
+		limitToUse = '25';
 	}
+	
+	$('#cars-display-limit').val(limitToUse);
+	localStorage.setItem('cars_display_limit', limitToUse);
+	console.log('Set dropdown to:', limitToUse);
 }
 
 function handleDisplayLimitChange(newLimit) {

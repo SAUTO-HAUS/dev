@@ -66,7 +66,7 @@ foreach ($pdo as $r){
 			if( $r['act'] == 1 ){
 				$rtrn .= '
 				<div class="btn" data-fn="edit" title="'.$lng['adm']['edit'].'"> <div></div> </div>
-				<div class="btn fn_av" data-fn="'.($r['av']==1?'av0':'av1').'" title="'.($r['av']==1?'-':'+').'" data-alt="'.($r['av']==1?'+':'-').'"> <div></div> </div>
+				<div class="btn fn_av" data-fn="'.(isset($r['av']) && $r['av']==1?'av0':'av1').'" title="'.(isset($r['av']) && $r['av']==1?'-':'+').'" data-alt="'.(isset($r['av']) && $r['av']==1?'+':'-').'"> <div></div> </div>
 				<div class="btn fn_hr" data-fn="'.($r['vis']==0?'reveal':'hide').'" title="'.$lng['adm'][($r['vis']==0?'reveal':'hide')].'" data-alt="'.$lng['adm'][($r['vis']==0?'hide':'reveal')].'" data-fn> <div></div> </div>
 				<div class="btn fn_dre" data-fn="delete" title="'.$lng['adm']['delete'].'"> <div></div> </div>';
 			} elseif ( $r['act'] == 0 ){

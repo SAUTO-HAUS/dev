@@ -323,6 +323,6 @@ $last_car_id = 0;
 </section>
 
 <?php if($has_more_cars && $display_limit != 999) : ?>
-    <div id="more_it" data-i="1"><?= $lang_more ?></div>
+    <div id="more_it" data-i="1"><?= $lng['w']['more'] ?? 'More' ?></div>
 <?php endif; ?>
 <div id="it_cnt" data-count="<?= $i ?>" data-pos="<?= $last_car_id ?>"></div>

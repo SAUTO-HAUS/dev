@@ -1,4 +1,20 @@
 var interval;
+// Global function to detect current page for AJAX routing
+function getReqPage() {
+	// Check URL to determine current admin page
+	if (window.location.href.indexOf('/cars/') !== -1) {
+		return 'cars';
+	} else if (window.location.href.indexOf('/tyres/') !== -1) {
+		return 'tyres';
+	} else if (window.location.href.indexOf('/users/') !== -1) {
+		return 'users';
+	} else if (window.location.href.indexOf('/slider/') !== -1) {
+		return 'slider';
+	}
+	// Default fallback
+	return 'unknown';
+}
+
 $(document).ready(function() {
 	
 	if ( typeof Cookies.get('xtype') !== 'undefined' ){ Cookies.remove('xtype', { path: '/' }) }
@@ -85,11 +101,22 @@ $(document).ready(function() {
 			if (w_pos>0 && $(window).scrollTop()!=w_pos){$('#prev_w_pos').addClass('act').removeClass('ghost');}
 			$('#prev_w_pos.act').on('click', function(){ 
 				if ( ( w_pos*1 + $(window).height() + 100 ) > $('#content > .ctlg').outerHeight(true) ){
-					var moreBtnClk = parseInt( localStorage.getItem('z_adm_pg_'+reqPage+'_more_btn_clk') ) || 0;
+					// Use dynamic page detection instead of global reqPage
+					var currentPage = getReqPage();
+					var moreBtnClk = parseInt( localStorage.getItem('z_adm_pg_'+currentPage+'_more_btn_clk') ) || 0;
 					if ( moreBtnClk>0 ){
 						var itCnt = $('#car_countz').data('count');
 						$('#car_countz').data('count', moreBtnClk * itCnt);
-						$('#more_it').data('i', moreBtnClk).click();
+						// Only trigger if we're on the correct page to avoid mixed AJAX calls
+						if (currentPage === 'cars' && window.location.href.indexOf('/cars/') !== -1) {
+							console.log('Auto-triggering more button for cars page');
+							$('#more_it').data('i', moreBtnClk).click();
+						} else if (currentPage === 'tyres' && window.location.href.indexOf('/tyres/') !== -1) {
+							console.log('Auto-triggering more button for tyres page');
+							$('#more_it').data('i', moreBtnClk).click();
+						} else {
+							console.log('Skipping auto-trigger - page mismatch:', currentPage, window.location.href);
+						}
 						$('#car_countz').data('count', itCnt);
 						dlay = 300;
 					}
@@ -107,10 +134,7 @@ $(document).ready(function() {
 				tg.addClass('fx').delay(300).queue(function(){tg.removeClass('fx'); tg.dequeue();})
 			});
 		}
-		$('#more_it').on('click', function(){
-			localStorage.setItem( 'z_adm_pg_'+reqPage+'_more_btn_clk', $(this).data('i') );
-			$(this).data('i', ($(this).data('i') + 1) ).attr('data-i', ($(this).data('i') + 1) );
-		})
+		// More button handler moved to cars.js to avoid conflicts
 		
 		$('#search_content > .s_main').on('change', function(){
 			var fltrSel = {};
@@ -280,7 +304,29 @@ function ajaxIt(dataX){
 			}
 		},
         success: function(data){
-			ajaxSuccess(data);
+			// Dynamic success handler based on current page
+			var currentPage = getReqPage();
+			
+			if (currentPage === 'cars') {
+				if (typeof ajaxSuccessCars === 'function') {
+					ajaxSuccessCars(data);
+				} else {
+					ajaxSuccess(data);
+				}
+			} else if (currentPage === 'tyres') {
+				if (typeof ajaxSuccess === 'function') {
+					ajaxSuccess(data);
+				} else {
+					console.error('ajaxSuccess function not found for tyres');
+				}
+			} else {
+				// Default fallback
+				if (typeof ajaxSuccess === 'function') {
+					ajaxSuccess(data);
+				} else {
+					console.error('No appropriate AJAX success handler found');
+				}
+			}
 		}
 	});
 }
