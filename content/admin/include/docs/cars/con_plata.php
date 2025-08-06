@@ -28,7 +28,7 @@ $rtrn = '
 			<div class="flx">
 				<table>
 					<tr><td class="id">№</td><td class="nm txt_up">Denumirea marfuri (serviciilor)<br/>Название товара (услуг)</td><td class="prc">Pret pentru o unitate<br/>Цена за единицу<br/>'.(isset($_POST['cur'])?$_POST['cur']:'MDL').'</td></tr>
-					<tr><td class="id">1</td><td class="nm txt_up"><span>Plata in avans pentru automobilul </span>'.$_POST['br'].' '.$_POST['mo'].(isset($_POST['vin'])?'<br/>VIN: '.$_POST['vin']:'').'</td><td class="prc">'.parseCurr($_POST['prc']).'.00</td></tr>
+					<tr><td class="id">1</td><td class="nm txt_up"><span>Plata in avans pentru automobilul </span>'.(isset($_POST['br']) ? $_POST['br'] : '').' '.(isset($_POST['mo']) ? $_POST['mo'] : '').(isset($_POST['vin'])?'<br/>VIN: '.$_POST['vin']:'').'</td><td class="prc">'.parseCurr($_POST['prc']).'.00</td></tr>
 					<tr><td class="id"></td><td class="nm txt_up">TOTAL</td><td class="prc">'.parseCurr($sum).'.00</td></tr>
 				</table>
 				<div class="buyer">Platitor: <span class="txt_cpt">'.strtolower($_POST['u_nm']).'</span>, '.($_POST['u_tp']=='fiz'?'cp':'cf').' <span class="txt_up">'.$_POST['u_cf_idno'].'</span></div>

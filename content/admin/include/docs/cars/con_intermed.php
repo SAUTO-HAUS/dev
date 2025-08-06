@@ -83,7 +83,7 @@ $rtrn = '
 		</div>
 		<div class="gr">
 			<h3 class="ttl">2. PREȚUL DE VÎNZARE A AUTOVEHICULULUI.</h3>
-			<p><b>2.1.</b> Reieșind din situația pe piață R. Moldova de vânzări a autovehiculelor, la ziua încheierii prezentului contract, Clientul, prin semnarea acestuia, cunoaște prețurile de piață și de comun acord cu Intermediarul au stabilit prețul de vânzare in suma de <span class="ndr_ln">&nbsp;&nbsp;&nbsp;&nbsp;'.parseCurr($_POST['prc']).'&nbsp;&nbsp;&nbsp;&nbsp;</span> Euro autovehiculul <span class="ndr_ln">&nbsp;&nbsp;&nbsp;&nbsp;'.$_POST['br'].' '.$_POST['mo'].'&nbsp;&nbsp;&nbsp;&nbsp;</span> num de inmatriculare <span class="ndr_ln">&nbsp;&nbsp;&nbsp;&nbsp;'.$_POST['vin'].'&nbsp;&nbsp;&nbsp;&nbsp;</span> prețul stabilit de Părți în p.2.1 al prezentului contract poate fi modificat doar prin acord adițional la prezentul contract semnat de părți ce este parte integrantă al prezentului contract.</p>
+			<p><b>2.1.</b> Reieșind din situația pe piață R. Moldova de vânzări a autovehiculelor, la ziua încheierii prezentului contract, Clientul, prin semnarea acestuia, cunoaște prețurile de piață și de comun acord cu Intermediarul au stabilit prețul de vânzare in suma de <span class="ndr_ln">&nbsp;&nbsp;&nbsp;&nbsp;'.parseCurr($_POST['prc']).'&nbsp;&nbsp;&nbsp;&nbsp;</span> Euro autovehiculul <span class="ndr_ln">&nbsp;&nbsp;&nbsp;&nbsp;'.(isset($_POST['br']) ? $_POST['br'] : '').' '.(isset($_POST['mo']) ? $_POST['mo'] : '').'&nbsp;&nbsp;&nbsp;&nbsp;</span> num de inmatriculare <span class="ndr_ln">&nbsp;&nbsp;&nbsp;&nbsp;'.$_POST['vin'].'&nbsp;&nbsp;&nbsp;&nbsp;</span> prețul stabilit de Părți în p.2.1 al prezentului contract poate fi modificat doar prin acord adițional la prezentul contract semnat de părți ce este parte integrantă al prezentului contract.</p>
 		</div>
 		<div class="gr">
 			<h3 class="ttl">3. PREȚUL SERVICIILOR ȘI MODALITATEA DE ACHITARE.</h3>
@@ -182,7 +182,7 @@ $rtrn = '
 				<p>Părțile au încheiat prezentul Act de predare-primire, care confirmă că Clientul a predat, iar intermediarul a primit autovehiculul la parcarea auto situată la adresa: mun. Chișinău, Str. Calea Mosilor 11</p>
 				<p>Descrierea autovehiculului conform prezentului Act:</p>
 				<ol type="l" start="1">
-					<li> Marca și Model: '.$_POST['br'].' '.$_POST['mo'].' '.$_POST['yr'].'</li>
+					<li> Marca și Model: '.(isset($_POST['br']) ? $_POST['br'] : '').' '.(isset($_POST['mo']) ? $_POST['mo'] : '').' '.$_POST['yr'].'</li>
 					<li> Numărul caroseriei: '.$_POST['vin'].'</li>
 					<li> Culoare: '.(isset($lng['l']['car']['clr'][ $_POST['clr'] ])?$lng['l']['car']['clr'][ $_POST['clr'] ]:$_POST['clr']).'</li>
 					<li> 

@@ -8,9 +8,9 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 	require_once (_DEFAULT.'/functions.php');
 	require_once (_DEFAULT.'/config.php');
 	require (_DEFAULT.'/dbi.php');
+	require_once (_DEFAULT.'/language.php');
 	require_once (_DEFAULT.'/arrays.php');
 	
-	require_once (_DEFAULT.'/language.php');
 	$z_site = 'https://www.sauto.md';
 	$abr = '';
 	
@@ -173,7 +173,7 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 		</body>
 	</html>';
 	
-	if ($_POST['save_inf']=='1'){
+	if (isset($_POST['save_inf']) && $_POST['save_inf']=='1'){
 		$u_tp = isset($_POST['u_tp'])&&$_POST['u_tp']!=''?$_POST['u_tp']:'x';
 		$u_nm = isset($_POST['u_nm'])&&$_POST['u_nm']!=''?$_POST['u_nm']:'x';
 		$u_cf_idno = isset($_POST['u_cf_idno'])&&$_POST['u_cf_idno']!=''?$_POST['u_cf_idno']:0;

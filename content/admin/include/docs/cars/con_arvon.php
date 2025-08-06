@@ -62,7 +62,7 @@ $rtrn = '
 			</p>
 		</div>
 		<div class="gr">
-			<p><b>1.</b> Părţile reies din faptul că intenţiile lor corespund cu încheierea contractului de vînzare-cumpărare a autovehiculul de model <span class="txtln">&nbsp;&nbsp;<span class="txt_cpt">'.$_POST['br'].' '.$_POST['mo'].'</span>&nbsp;&nbsp;</span> de pe terenul pentru expunere "SAUTO" SRL.</p>
+			<p><b>1.</b> Părţile reies din faptul că intenţiile lor corespund cu încheierea contractului de vînzare-cumpărare a autovehiculul de model <span class="txtln">&nbsp;&nbsp;<span class="txt_cpt">'.((isset($_POST['br'])?$_POST['br']:'')).' '.((isset($_POST['mo'])?$_POST['mo']:'')).'</span>&nbsp;&nbsp;</span> de pe terenul pentru expunere "SAUTO" SRL.</p>
 		</div>
 		<div class="gr">
 			<p><b>2.</b> În contul viitorului contract de vînzare-cumpărare a autovehicolului domnul si/sau doamna achită, la SAUTO SRL reprezentat de Olarita Sergiu.</p>

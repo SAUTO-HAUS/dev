@@ -229,7 +229,10 @@ if ( isset($t_mp[4]) ){
 								
 								if ( el.length ){
 									if ( tag=="SELECT" ){
-										if ( typeof v === "string" ){ el.val(v).trigger("change"); }
+										if ( typeof v === "string" ){
+											var selectValue = v.indexOf("||") >= 0 ? v.split("||")[0] : v;
+											el.val(selectValue).trigger("change");
+										}
 									} else if ( tag=="INPUT" || tag=="TEXTAREA" ){
 										if ( typeof v === "string" ){ el.val(v); }
 									} else if ( tag=="DIV" ){
@@ -249,7 +252,7 @@ if ( isset($t_mp[4]) ){
 												);
 											} else if (k=="dmg_pos"){
 												var tmpV = tmp[i].split("x");
-												el.append("<div class=\"el\" data-n=\""+(i+1)+"\" style=\"left:calc("+tmpV[0]+"% - 3mm); top:calc("+tmpV[1]+"% - 3mm);\"><span class=\"txt\">"+( i+1 )+"</span><input class=\"pos none\" type=\"text\" name=\"dmg_pos[]\" value=\""+tmpV[0]+"x"+tmpV[1]+"\" /></div>");
+												el.append("<div class=\"el\" data-n=\""+(i+1)+"\" style=\"left:calc("+tmpV[0]+"% - 3mm); top:calc("+tmpV[1]+"% - 3mm);\"><span class=\"txt\">"+(i+1)+"</span><input class=\"pos none\" type=\"text\" name=\"dmg_pos[]\" value=\""+tmpV[0]+"x"+tmpV[1]+"\" /></div>");
 											} else if (k=="dmg_txt"){
 												el.append(""
 												+"<div class=\"lbl\" data-n=\""+(i+1)+"\">"
@@ -299,6 +302,10 @@ if ( isset($t_mp[4]) ){
 							v = "";
 							for (i=0; i<data["inp"][k].length; i++){ v += (i>0?"||":"")+data["inp"][k][i]; }
 							vals.data(k, v).attr("data-"+k, v);
+							// Update visual display for arrays
+							if (k=="br" || k=="mo") {
+								bx.find(".rowz > .col span."+k).text(data["inp"][k].join(", "));
+							}
 						}
 						
 						if (k=="pay_val"){
@@ -313,6 +320,9 @@ if ( isset($t_mp[4]) ){
 						}
 						//console.log(k+"::: "+v)
 					})
+					
+					// Close the overlay after successful save
+					$("#overlay").fadeOut(300);
 				})
 				
 				function getFormData($form){

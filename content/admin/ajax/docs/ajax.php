@@ -26,14 +26,15 @@ if ( $_POST['fn']=='edit_sbmt' ){
 	//GROUP BY `nm`
 	$pdo = $db->prepare('SELECT * FROM '.$prefx.'_docs_u WHERE `cf_idno`=:cf_idno LIMIT 1 ');
 	$pdo->execute([ 'cf_idno'=>$u_cf_idno ]);
-	$i=0;
-	foreach ($pdo as $r){ $i++; }
+	$existing_user = $pdo->fetch(PDO::FETCH_ASSOC);
 	
-	if ($i==0){// IF NOT FOUND - MAKE IT
+	if (!$existing_user){// IF NOT FOUND - MAKE IT
 		$pdo = $db->prepare('INSERT INTO '.$prefx.'_docs_u (`tp`, `nm`, `cf_idno`, `tva_dt`, `iban_dt_tk`, `adr`, `phn`, `eml`) VALUES (:tp, :nm, :cf_idno, :tva_dt, :iban_dt_tk, :adr, :phn, :eml) ');
 		$pdo->execute([ 'tp'=>$u_tp, 'nm'=>$u_nm, 'cf_idno'=>$u_cf_idno, 'tva_dt'=>$u_tva_dt, 'iban_dt_tk'=>$u_iban_dt_tk, 'adr'=>$u_adr, 'phn'=>$u_phn, 'eml'=>$u_eml ]);
 		$u_id = $db->lastInsertId();
 	} else {
+		// User exists - get the ID and update
+		$u_id = $existing_user['id'];
 		$pdo = $db->prepare('UPDATE '.$prefx.'_docs_u SET 
 		`tp`=:tp, `nm`=:nm, `cf_idno`=:cf_idno, `tva_dt`=:tva_dt, `iban_dt_tk`=:iban_dt_tk, `adr`=:adr, `phn`=:phn, `eml`=:eml
 		WHERE `id`=:id');
