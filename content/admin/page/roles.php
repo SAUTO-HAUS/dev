@@ -33,23 +33,47 @@ if ($user_role !== 'gordon') {
 
 echo '<h2>🔐 Управление ролями пользователей</h2>';
 
+// Create admin preferences table if it doesn't exist
+try {
+    $db->exec('CREATE TABLE IF NOT EXISTS '.$prefx.'_admin_preferences (
+        admin_id INT PRIMARY KEY,
+        last_role_selection VARCHAR(50),
+        last_branch_selection INT,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    )');
+} catch (Exception $e) {
+    // Table might already exist, continue
+}
+
 // Handle role updates
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_role'])) {
     $user_id_to_update = (int)$_POST['user_id'];
     $new_role = $_POST['role'];
     $new_branch_id = !empty($_POST['branch_id']) ? (int)$_POST['branch_id'] : null;
     
-    $pdo = $db->prepare('UPDATE '.$prefx.'_adm_usr SET role = :role, branch_id = :branch_id WHERE id = :id');
-    $success = $pdo->execute([
-        'role' => $new_role,
-        'branch_id' => $new_branch_id,
-        'id' => $user_id_to_update
-    ]);
-    
-    if ($success) {
-        echo '<div style="color: green; padding: 10px; background: #d4edda; border-radius: 4px; margin: 10px 0;">Роль пользователя успешно обновлена!</div>';
+    try {
+        // Update user role
+        $pdo = $db->prepare('UPDATE '.$prefx.'_adm_usr SET role = ?, branch_id = ? WHERE id = ?');
+        $pdo->execute([$new_role, $new_branch_id, $user_id_to_update]);
+        
+        // Save admin's last selections for future use
+        $pdo = $db->prepare('INSERT INTO '.$prefx.'_admin_preferences (admin_id, last_role_selection, last_branch_selection) 
+                           VALUES (?, ?, ?) 
+                           ON DUPLICATE KEY UPDATE 
+                           last_role_selection = VALUES(last_role_selection), 
+                           last_branch_selection = VALUES(last_branch_selection)');
+        $pdo->execute([$user_id, $new_role, $new_branch_id]);
+        
+        $success_message = 'Роль пользователя успешно обновлена!';
+    } catch (Exception $e) {
+        $error_message = 'Ошибка при обновлении роли: ' . $e->getMessage();
     }
 }
+
+// Get admin's last selections
+$pdo = $db->prepare('SELECT last_role_selection, last_branch_selection FROM '.$prefx.'_admin_preferences WHERE admin_id = ?');
+$pdo->execute([$user_id]);
+$admin_preferences = $pdo->fetch(PDO::FETCH_ASSOC);
 
 // Get all users
 $pdo = $db->prepare('SELECT * FROM '.$prefx.'_adm_usr ORDER BY name ASC');
@@ -75,11 +99,11 @@ foreach ($users as $user) {
     // Current role display
     $role_display = '';
     switch ($user['role']) {
-        case 'gordon': $role_display = 'Gordon (Суперадмин)'; break;
-        case 'admin': $role_display = 'Admin (Администратор)'; break;
-        case 'publisher': $role_display = 'Publisher (Публикатор)'; break;
-        case 'publisher_limited': $role_display = 'Publisher-Limited (Публикатор Филиал)'; break;
-        default: $role_display = $user['type'] ?? 'Не назначена';
+        case 'gordon': $role_display = 'Root Admin'; break;
+        case 'admin': $role_display = 'Admin'; break;
+        case 'publisher': $role_display = 'Publisher'; break;
+        case 'publisher_limited': $role_display = 'Publisher-Limited'; break;
+        default: $role_display = $user['type'] ?? 'Not assigned';
     }
     
     echo '<div style="margin-bottom: 15px;">Текущая роль: <strong>'.$role_display.'</strong></div>';
@@ -88,23 +112,61 @@ foreach ($users as $user) {
     echo '<form method="post" style="border-top: 1px solid #eee; padding-top: 15px;">';
     echo '<input type="hidden" name="user_id" value="'.$user['id'].'">';
     
+    // Get submitted values for this user if any (check if this user was just updated)
+    $selected_role = '';
+    $selected_branch = '';
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_role']) && (int)$_POST['user_id'] === $user['id']) {
+        $selected_role = $_POST['role'] ?? '';
+        $selected_branch = $_POST['branch_id'] ?? '';
+    } else {
+        // Load admin's saved preferences as default values
+        if ($admin_preferences) {
+            $selected_role = $admin_preferences['last_role_selection'] ?? '';
+            $selected_branch = $admin_preferences['last_branch_selection'] ?? '';
+        }
+    }
+    
     echo '<div style="margin-bottom: 10px;">';
     echo '<label>Новая роль:</label><br>';
-    echo '<select name="role" style="width: 100%; padding: 8px; margin-top: 5px;">';
-    echo '<option value="gordon"'.($user['role'] == 'gordon' ? ' selected' : '').'>Gordon (Суперадминистратор)</option>';
-    echo '<option value="admin"'.($user['role'] == 'admin' ? ' selected' : '').'>Admin (Администратор)</option>';
-    echo '<option value="publisher"'.($user['role'] == 'publisher' ? ' selected' : '').'>Publisher (Публикатор)</option>';
-    echo '<option value="publisher_limited"'.($user['role'] == 'publisher_limited' ? ' selected' : '').'>Publisher-Limited (Публикатор Филиал)</option>';
+    echo '<select name="role" style="width: 100%; padding: 8px; margin-top: 5px;" required>';
+    echo '<option value=""'.($selected_role === '' ? ' selected' : '').'>-- Выберите новую роль --</option>';
+    echo '<option value="gordon"'.($selected_role === 'gordon' ? ' selected' : '').'>Root Admin</option>';
+    echo '<option value="admin"'.($selected_role === 'admin' ? ' selected' : '').'>Admin</option>';
+    echo '<option value="publisher"'.($selected_role === 'publisher' ? ' selected' : '').'>Publisher</option>';
+    echo '<option value="publisher_limited"'.($selected_role === 'publisher_limited' ? ' selected' : '').'>Publisher-Limited</option>';
+    
+    // JavaScript to preserve selected values after form submission
+    if ($selected_role !== '' || $selected_branch !== '') {
+        echo '<script>';
+        echo 'setTimeout(function() {';
+        echo '  var forms = document.querySelectorAll("form");';
+        echo '  for (var i = 0; i < forms.length; i++) {';
+        echo '    var hiddenInput = forms[i].querySelector("input[name=\"user_id\"][value=\"'.$user['id'].'\"]");';
+        echo '    if (hiddenInput) {';
+        if ($selected_role !== '') {
+            echo '      var roleSelect = forms[i].querySelector("select[name=\"role\"]");';
+            echo '      if (roleSelect) roleSelect.value = "'.$selected_role.'";';
+        }
+        if ($selected_branch !== '') {
+            echo '      var branchSelect = forms[i].querySelector("select[name=\"branch_id\"]");';
+            echo '      if (branchSelect) branchSelect.value = "'.$selected_branch.'";';
+        }
+        echo '      break;';
+        echo '    }';
+        echo '  }';
+        echo '}, 100);';
+        echo '</script>';
+    }
     echo '</select>';
     echo '</div>';
     
     echo '<div style="margin-bottom: 10px;">';
     echo '<label>Филиал (для Publisher-Limited):</label><br>';
     echo '<select name="branch_id" style="width: 100%; padding: 8px; margin-top: 5px;">';
-    echo '<option value="">Все филиалы</option>';
+    echo '<option value=""'.($selected_branch === '' ? ' selected' : '').'>-- Выберите филиал (опционально) --</option>';
     foreach ($branches as $branch) {
-        $selected = $user['branch_id'] == $branch['id'] ? ' selected' : '';
-        echo '<option value="'.$branch['id'].'"'.$selected.'>'.$branch['name'].'</option>';
+        $branch_selected = (string)$selected_branch === (string)$branch['id'] ? ' selected' : '';
+        echo '<option value="'.$branch['id'].'"'.$branch_selected.'>'.$branch['name'].'</option>';
     }
     echo '</select>';
     echo '</div>';
@@ -121,10 +183,10 @@ echo '</div>';
 echo '<div style="margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 8px;">';
 echo '<h3>Описание ролей:</h3>';
 echo '<ul>';
-echo '<li><strong>Gordon (Суперадминистратор):</strong> Полный доступ ко всем разделам, включая управление пользователями и системные настройки</li>';
-echo '<li><strong>Admin (Администратор):</strong> Почти полный доступ, кроме управления пользователями и системных настроек</li>';
-echo '<li><strong>Publisher (Публикатор):</strong> Может заливать и редактировать автомобили, работает со всеми филиалами</li>';
-echo '<li><strong>Publisher-Limited (Публикатор Филиал):</strong> Те же права что Publisher, но только для одного филиала</li>';
+echo '<li><strong>Root Admin:</strong> Полный доступ ко всем разделам, включая управление пользователями и системные настройки</li>';
+echo '<li><strong>Admin:</strong> Почти полный доступ, кроме управления пользователями и системных настроек</li>';
+echo '<li><strong>Publisher:</strong> Может заливать и редактировать автомобили, работает со всеми филиалами</li>';
+echo '<li><strong>Publisher-Limited:</strong> Те же права что Publisher, но только для одного филиала</li>';
 echo '</ul>';
 echo '</div>';
 
