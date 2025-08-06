@@ -60,6 +60,33 @@ if (isset($_POST['user_management_action']) && $can_manage_users) {
                 $pdo->execute(['id' => $userId]);
                 echo 'success';
                 exit;
+                
+            case 'add_user':
+                $name = $_POST['user_name'];
+                $login = $_POST['user_login'];
+                $password = $_POST['user_password'];
+                $role = $_POST['user_role'];
+                $branch_id = !empty($_POST['user_branch']) ? (int)$_POST['user_branch'] : null;
+                
+                $checkPdo = $db->prepare('SELECT COUNT(*) FROM '.$prefx.'_adm_usr WHERE login = :login');
+                $checkPdo->execute(['login' => $login]);
+                if ($checkPdo->fetchColumn() > 0) {
+                    echo 'error: Login already exists';
+                    exit;
+                }
+                
+                $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+                $pdo = $db->prepare('INSERT INTO '.$prefx.'_adm_usr (name, login, password, type, role, branch_id, act, created_at) VALUES (:name, :login, :password, :type, :role, :branch_id, 1, NOW())');
+                $pdo->execute([
+                    'name' => $name,
+                    'login' => $login,
+                    'password' => $hashedPassword,
+                    'type' => $role, 
+                    'role' => $role,
+                    'branch_id' => $branch_id
+                ]);
+                echo 'success';
+                exit;
         }
     } catch (Exception $e) {
         echo 'error: ' . $e->getMessage();
@@ -73,24 +100,38 @@ if ( isset($t_mp[4]) ){
 		<style>
 			input[type="checkbox"] {accent-color:var(--clr);}
 		
-			.it {display:flex; flex-flow:row wrap; align-items:center; margin:.5rem 0; transition:margin .3s;}
+			.it {display:flex; flex-flow:row wrap; align-items:center; margin:.3rem 0; padding:.5rem; border:1px solid #ddd; border-radius:4px; transition:all .2s;}
+			.it:hover {border-color:var(--clr); background:#f9f9f9;}
 			
-			.it > .hdr {display:flex; flex-flow:row wrap; align-items:center; cursor:pointer;}
-			.it > .hdr > .stts {padding:.25rem; float:left; border-radius:50%; margin-right:.2rem;}
+			.it > .hdr {display:flex; align-items:center; cursor:pointer; flex:1;}
+			.it > .hdr > .stts {width:8px; height:8px; border-radius:50%; margin-right:.5rem;}
 			.it > .hdr > .stts.on {background-color:#7ea22f;}
 			.it > .hdr > .stts.off {background-color:#aa4c4c;}
 			.it > .hdr > .stts.you {background-color:#407ebf;}
-			.it > .hdr > .sep {margin:.2rem; font-size:.7rem;}
+			.it > .hdr > .sep {margin:0 .4rem; font-size:.75rem; color:#666;}
 			
-			.it > .hdr > .usr.on {}
-			.it > .hdr > .usr.off {color:#aaa;}
+			.it > .hdr > .usr.on {font-size:.9rem;}
+			.it > .hdr > .usr.off {color:#999; font-size:.9rem;}
 			
 			.it > .btns_wrp {width:100%; position:relative; pointer-events:none;}
-			.it > .btns_wrp > .btns {width:100%; height:3rem; display:flex; flex-flow:row wrap; justify-content:left; align-items:center; position:absolute; opacity:0; transition:.1s; transition-delay:unset;}
-			.it > .btns_wrp > .btns > .btn {cursor:pointer; background-color:var(--clr); color:#fff; padding:.3rem .5rem; border-radius:.5rem; margin-right:1rem;}
+			.it > .btns_wrp > .btns {width:100%; height:2.5rem; display:flex; align-items:center; position:absolute; opacity:0; transition:.2s; gap:.5rem;}
+			.it > .btns_wrp > .btns > .btn {cursor:pointer; background-color:var(--clr); color:#fff; padding:.25rem .5rem; border-radius:3px; font-size:.8rem; border:none; transition:all .2s ease;}
+			.it > .btns_wrp > .btns > .btn:hover {background-color:#333; transform:translateY(-1px); box-shadow:0 2px 4px rgba(0,0,0,0.2);}
+			
+			/* Add User Styles */
+			.add-user-container {margin-top:2rem; padding:1rem; border:1px solid #ddd; border-radius:.5rem; background-color:#f9f9f9;}
+			.add-user-form {display:none; margin-top:1rem;}
+			.add-user-form.show {display:block;}
+			.form-row {margin-bottom:1rem;}
+			.form-row label {display:block; margin-bottom:.3rem; font-weight:bold;}
+			.form-row input, .form-row select {width:100%; max-width:300px; padding:.5rem; border:1px solid #ccc; border-radius:.3rem;}
+			.add-user-btn {background-color:var(--clr); color:#fff; padding:.5rem 1rem; border:none; border-radius:.5rem; cursor:pointer; margin-right:.5rem;}
+			.add-user-btn:hover {opacity:.8;}
+			.cancel-btn {background-color:#666; color:#fff; padding:.5rem 1rem; border:none; border-radius:.5rem; cursor:pointer;}
+			.cancel-btn:hover {opacity:.8;}
 			
 			input[name="it_chk"] {display:none;}
-			input[name="it_chk"]:checked + .it {margin:1rem 0 3rem 0;}
+			input[name="it_chk"]:checked + .it {margin:1rem 0 1rem 0;}
 			input[name="it_chk"]:checked + .it > .hdr {cursor:auto;}
 			input[name="it_chk"]:checked + .it > .hdr > .usr {color:var(--clr);}
 			input[name="it_chk"]:checked + .it > .btns_wrp {pointer-events:auto; margin:1rem 0;}
@@ -158,6 +199,8 @@ if ( isset($t_mp[4]) ){
 				}
 			}
 			
+
+			
 			function updateUser(userId, field, value) {
 				var formData = new FormData();
 				formData.append("user_management_action", field);
@@ -179,6 +222,81 @@ if ( isset($t_mp[4]) ){
 				})
 				.catch(function(error) {
 					alert("Произошла ошибка при обновлении пользователя.");
+				});
+			}
+
+			
+			// Add User functionality
+			function showAddUserForm() {
+				// Force clear all fields first
+				document.getElementById("addUserName").value = "";
+				document.getElementById("addUserLogin").value = "";
+				document.getElementById("addUserPassword").value = "";
+				document.getElementById("addUserRole").value = "";
+				document.getElementById("addUserBranch").value = "";
+				
+				// Then show the form
+				document.getElementById("addUserForm").classList.add("show");
+				document.getElementById("showAddUserBtn").style.display = "none";
+				
+				// Force focus to first field to trigger any remaining autocomplete clearing
+				setTimeout(function() {
+					document.getElementById("addUserName").focus();
+					document.getElementById("addUserName").value = "";
+				}, 100);
+			}
+			
+			function hideAddUserForm() {
+				document.getElementById("addUserForm").classList.remove("show");
+				document.getElementById("showAddUserBtn").style.display = "inline-block";
+				// Clear form
+				document.getElementById("addUserName").value = "";
+				document.getElementById("addUserLogin").value = "";
+				document.getElementById("addUserPassword").value = "";
+				document.getElementById("addUserRole").value = "";
+				document.getElementById("addUserBranch").value = "";
+			}
+			
+			function submitAddUser() {
+				var name = document.getElementById("addUserName").value.trim();
+				var login = document.getElementById("addUserLogin").value.trim();
+				var password = document.getElementById("addUserPassword").value;
+				var role = document.getElementById("addUserRole").value;
+				var branch = document.getElementById("addUserBranch").value;
+				
+				if (!name || !login || !password) {
+					alert("Пожалуйста, заполните все обязательные поля (Имя, Логин, Пароль)");
+					return;
+				}
+				
+				if (password.length < 6) {
+					alert("Пароль должен содержать минимум 6 символов");
+					return;
+				}
+				
+				var formData = new FormData();
+				formData.append("user_management_action", "add_user");
+				formData.append("user_name", name);
+				formData.append("user_login", login);
+				formData.append("user_password", password);
+				formData.append("user_role", role);
+				formData.append("user_branch", branch);
+				
+				fetch(window.location.href, {
+					method: "POST",
+					body: formData
+				})
+				.then(function(response) { return response.text(); })
+				.then(function(data) {
+					if (data.indexOf("success") !== -1) {
+						alert("Пользователь успешно добавлен!");
+						location.reload();
+					} else {
+						alert("Ошибка: " + data);
+					}
+				})
+				.catch(function(error) {
+					alert("Произошла ошибка при добавлении пользователя.");
 				});
 			}
 
@@ -210,6 +328,71 @@ if ( isset($t_mp[4]) ){
 					</div>
 				</label>';
 			//}
+		}
+		
+		// Add User interface at the bottom
+		if ($can_manage_users) {
+			$rtrn .= '
+				<div class="add-user-container">
+					<button id="showAddUserBtn" class="add-user-btn" onclick="showAddUserForm()">+ Add User</button>
+					
+					<div id="addUserForm" class="add-user-form">
+						<h3>Add New User</h3>
+						
+						<div class="form-row">
+							<label for="addUserName">Name *</label>
+							<input type="text" id="addUserName" name="add_user_name" placeholder="Enter full name" autocomplete="off" value="" required>
+						</div>
+						
+						<div class="form-row">
+							<label for="addUserLogin">Login *</label>
+							<input type="text" id="addUserLogin" name="add_user_login" placeholder="Enter login username" autocomplete="off" value="" required>
+						</div>
+						
+						<div class="form-row">
+							<label for="addUserPassword">Password *</label>
+							<input type="password" id="addUserPassword" name="add_user_password" placeholder="Enter password (min 6 chars)" autocomplete="new-password" value="" required>
+						</div>
+						
+						<div class="form-row">
+							<label for="addUserRole">Role *</label>
+							<select id="addUserRole">
+								<option value="">Select role...</option>
+								<option value="publisher">Publisher</option>
+								<option value="publisher_limited">Publisher Limited</option>
+								<option value="admin">Admin</option>';
+								
+			// Only Gordon can create other Gordon users
+			if ($current_user_role === 'gordon') {
+				$rtrn .= '<option value="gordon">Gordon (Superadmin)</option>';
+			}
+			
+			$rtrn .= '
+							</select>
+						</div>
+						
+						<div class="form-row">
+							<label for="addUserBranch">Branch (for Publisher Limited)</label>
+							<select id="addUserBranch">
+								<option value="">Select branch (optional)</option>';
+								
+			// Get branches for dropdown
+			$branchPdo = $db->prepare('SELECT * FROM '.$prefx.'_branches WHERE active = 1 ORDER BY name ASC');
+			$branchPdo->execute();
+			foreach ($branchPdo as $branch) {
+				$rtrn .= '<option value="'.$branch['id'].'">'.$branch['name'].'</option>';
+			}
+			
+			$rtrn .= '
+							</select>
+						</div>
+						
+						<div class="form-row">
+							<button type="button" class="add-user-btn" onclick="submitAddUser()">Create User</button>
+							<button type="button" class="cancel-btn" onclick="hideAddUserForm()">Cancel</button>
+						</div>
+					</div>
+				</div>';
 		}
 	}
 	elseif ( $t_mp[4]=='roles' ){
