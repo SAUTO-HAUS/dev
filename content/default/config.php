@@ -91,7 +91,8 @@ $url_arr = [
     'warranty',
     'dev_tools',
     'credit',
-    'tradein'
+    'tradein',
+    'telegram'
 ];
 $sub_urls = [
     '',
