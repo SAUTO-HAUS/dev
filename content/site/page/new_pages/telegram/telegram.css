@@ -37,10 +37,10 @@
 }
 
 .telegram-image {
-    width: 7.5rem;
-    height: 7.5rem;
+    width: 10rem;
+    height: 10rem;
     margin: 0 auto 1.875rem;
-    border-radius: 50%;
+    border-radius: 0.25rem;
     overflow: hidden;
     box-shadow: 0 0.625rem 1.875rem rgba(0,0,0,0.1);
 }
@@ -73,7 +73,7 @@
     font-family: 'Futura PT Book', Arial, sans-serif;
     color: #555;
     line-height: 1.6;
-    margin-bottom: 2.1875rem;
+    margin-bottom: 1.25rem;
 }
 
 .telegram-description ul {
@@ -187,7 +187,7 @@
     .telegram-description {
         font-size: 0.875rem;
     }
-    
+
     .telegram-button {
         padding: 0.875rem 1.875rem;
         font-size: 1rem;

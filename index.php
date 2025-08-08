@@ -74,6 +74,14 @@ $isMobile = isMobile() ? '1' : '0';
 
 //start content
 if ( isset($_COOKIE['lang']) ){//если существует кука lang отвечающая за используемый язык (прописана в файле language.php)
+	
+	// Special routing for Telegram standalone page
+	if (isset($t_mp[2]) && $t_mp[2] == 'telegram') {
+		require_once(_SITE . '/page/new_pages/telegram/telegram.php');
+		$db->connection = null;
+		exit();
+	}
+	
 	echo '
 	<html lang="'.$_COOKIE['lang'].'" >';
 		if (isset($t_mp[2]) && $t_mp[2] == $admin_dir) {//Если запрос к админке
