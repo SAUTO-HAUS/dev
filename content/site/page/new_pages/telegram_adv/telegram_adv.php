@@ -1,5 +1,4 @@
 <?php defined('_DOIT') or die('Restricted access');
-
 // Load translations before any output
 $telegram_lang = require __DIR__ . '/lang_tel.php';
 
@@ -35,6 +34,7 @@ if (!function_exists('telegram_adv_t')) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Telegram</title>
+
     <meta name="description" content="<?php echo telegram_adv_t('meta_description'); ?>">
     <meta name="keywords" content="telegram, auto moldova, mașini, chișinău, canal telegram, auto în vânzare">
     <meta property="og:title" content="<?php echo telegram_adv_t('title'); ?>">
@@ -51,7 +51,6 @@ if (!function_exists('telegram_adv_t')) {
     <link rel="stylesheet" type="text/css" href="/content/site/css/style.css?d=<?php echo date('GYimsd', filemtime(_SITE.'/css/style.css')); ?>">
     <link rel="stylesheet" type="text/css" href="/content/site/css/media.css?d=<?php echo date('GYimsd', filemtime(_SITE.'/css/media.css')); ?>">
     <link rel="stylesheet" type="text/css" href="/content/site/page/new_pages/telegram_adv/telegram_adv.css?d=<?php echo date('GYimsd', filemtime(__DIR__ . '/telegram_adv.css')); ?>">
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
