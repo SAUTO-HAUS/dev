@@ -1,6 +1,4 @@
 <?php defined('_DOIT') or die('Restricted access');
-// reuse language file from telegram page
-include_once(__DIR__ . '/../telegram/lang_tel.php');
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $_COOKIE['lang']; ?>">
@@ -23,8 +21,6 @@ include_once(__DIR__ . '/../telegram/lang_tel.php');
     <link rel="stylesheet" type="text/css" href="/content/default/css/default.css?d=<?php echo date('GYimsd', filemtime(_DEFAULT.'/css/default.css')); ?>">
     <link rel="stylesheet" type="text/css" href="/content/site/css/style.css?d=<?php echo date('GYimsd', filemtime(_SITE.'/css/style.css')); ?>">
     <link rel="stylesheet" type="text/css" href="/content/site/css/media.css?d=<?php echo date('GYimsd', filemtime(_SITE.'/css/media.css')); ?>">
-    <link rel="stylesheet" type="text/css" href="/content/site/page/new_pages/telegram/telegram.css?d=<?php echo date('GYimsd', filemtime(_SITE.'/page/new_pages/telegram/telegram.css')); ?>">
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
