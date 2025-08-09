@@ -92,7 +92,8 @@ $url_arr = [
     'dev_tools',
     'credit',
     'tradein',
-    'telegram'
+    'telegram',
+    'telegram_adv'
 ];
 $sub_urls = [
     '',
