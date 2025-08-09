@@ -1,7 +1,8 @@
 <?php defined('_DOIT') or die('Restricted access');
 
 // Telegram_adv landing page language content (no lottery mention)
-$telegram_lang = [
+return [
+
     'ro' => [
         'title' => '🚘 Mașini de vânzare — direct pe Telegram!',
         'subtitle' => 'Auto Moldova',
@@ -51,4 +52,3 @@ $telegram_lang = [
         'meta_description' => 'Cars for sale right in Telegram! Real channel with daily car listings available in Chișinău. Easy search, quick contact.'
     ]
 ];
-?>

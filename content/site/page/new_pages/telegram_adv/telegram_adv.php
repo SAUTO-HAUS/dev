@@ -1,26 +1,56 @@
 <?php defined('_DOIT') or die('Restricted access');
+// Load translations before any output
+$telegram_lang = require __DIR__ . '/lang_tel.php';
+
+// Determine locale from request URI
+$uriParts = explode('/', trim($_SERVER['REQUEST_URI'] ?? '', '/'));
+$lang = $uriParts[0] ?? 'ru';
+$availableLangs = array_keys($telegram_lang);
+if (!in_array($lang, $availableLangs)) {
+    $lang = 'ru';
+}
+
+// Fallback order for missing keys
+$fallbackOrder = ['ru', 'ro', 'en'];
+
+if (!function_exists('telegram_adv_t')) {
+    function telegram_adv_t(string $key): string {
+        global $lang, $telegram_lang, $fallbackOrder;
+        if (isset($telegram_lang[$lang][$key])) {
+            return $telegram_lang[$lang][$key];
+        }
+        foreach ($fallbackOrder as $fb) {
+            if (isset($telegram_lang[$fb][$key])) {
+                return $telegram_lang[$fb][$key];
+            }
+        }
+        return '';
+    }
+}
 ?>
 <!DOCTYPE html>
-<html lang="<?php echo $_COOKIE['lang']; ?>">
+<html lang="<?php echo htmlspecialchars($lang, ENT_QUOTES, 'UTF-8'); ?>">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Telegram</title>
-    <meta name="description" content="<?php echo $telegram_lang[$_COOKIE['lang']]['meta_description']; ?>">
+
+    <meta name="description" content="<?php echo telegram_adv_t('meta_description'); ?>">
     <meta name="keywords" content="telegram, auto moldova, mașini, chișinău, canal telegram, auto în vânzare">
-    <meta property="og:title" content="<?php echo $telegram_lang[$_COOKIE['lang']]['title']; ?>">
-    <meta property="og:description" content="<?php echo $telegram_lang[$_COOKIE['lang']]['meta_description']; ?>">
+    <meta property="og:title" content="<?php echo telegram_adv_t('title'); ?>">
+    <meta property="og:description" content="<?php echo telegram_adv_t('meta_description'); ?>">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://sauto.md/<?php echo $_COOKIE['lang']; ?>/telegram_adv">
+    <meta property="og:url" content="https://sauto.md/<?php echo $lang; ?>/telegram_adv">
     <meta property="og:image" content="https://sauto.md/content/site/page/new_pages/telegram/telegram-media/telegram-img.png">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="<?php echo $telegram_lang[$_COOKIE['lang']]['title']; ?>">
-    <meta name="twitter:description" content="<?php echo $telegram_lang[$_COOKIE['lang']]['meta_description']; ?>">
+    <meta name="twitter:title" content="<?php echo telegram_adv_t('title'); ?>">
+    <meta name="twitter:description" content="<?php echo telegram_adv_t('meta_description'); ?>">
     <meta name="twitter:image" content="https://sauto.md/content/site/page/new_pages/telegram/telegram-media/telegram-img.png">
 
     <link rel="stylesheet" type="text/css" href="/content/default/css/default.css?d=<?php echo date('GYimsd', filemtime(_DEFAULT.'/css/default.css')); ?>">
     <link rel="stylesheet" type="text/css" href="/content/site/css/style.css?d=<?php echo date('GYimsd', filemtime(_SITE.'/css/style.css')); ?>">
     <link rel="stylesheet" type="text/css" href="/content/site/css/media.css?d=<?php echo date('GYimsd', filemtime(_SITE.'/css/media.css')); ?>">
+    <link rel="stylesheet" type="text/css" href="/content/site/page/new_pages/telegram_adv/telegram_adv.css?d=<?php echo date('GYimsd', filemtime(__DIR__ . '/telegram_adv.css')); ?>">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
@@ -80,22 +110,22 @@
             <div class="telegram-image">
                 <img src="/content/site/page/new_pages/telegram/telegram-media/telegram-img.png" alt="Auto Moldova Telegram" />
             </div>
-            <h1 class="telegram-title">
-                <?php echo $telegram_lang[$_COOKIE['lang']]['title']; ?>
-            </h1>
-            <p class="telegram-subtitle">
-                <?php echo $telegram_lang[$_COOKIE['lang']]['subtitle']; ?>
-            </p>
-            <div class="telegram-description">
-                <?php echo $telegram_lang[$_COOKIE['lang']]['description']; ?>
-            </div>
-            <a href="https://t.me/+9ISpx4Lrvoc3NzIy"
-               class="telegram-button"
-               target="_blank"
-               rel="noopener noreferrer"
-               onclick="gtag('event', 'click', {'event_category': 'telegram', 'event_label': 'join_channel'});">
-                <?php echo $telegram_lang[$_COOKIE['lang']]['button_text']; ?>
-            </a>
+              <h1 class="telegram-title">
+                  <?php echo telegram_adv_t('title'); ?>
+              </h1>
+              <p class="telegram-subtitle">
+                  <?php echo telegram_adv_t('subtitle'); ?>
+              </p>
+              <div class="telegram-description">
+                  <?php echo telegram_adv_t('description'); ?>
+              </div>
+              <a href="https://t.me/+9ISpx4Lrvoc3NzIy"
+                 class="telegram-button"
+                 target="_blank"
+                 rel="noopener noreferrer"
+                 onclick="gtag('event', 'click', {'event_category': 'telegram', 'event_label': 'join_channel'});">
+                  <?php echo telegram_adv_t('button_text'); ?>
+              </a>
         </div>
     </div>
 
@@ -105,7 +135,7 @@
         gtag('event', 'page_view', {
             'page_title': 'Telegram Landing Page',
             'page_location': window.location.href,
-            'page_language': '<?php echo $_COOKIE['lang']; ?>'
+              'page_language': '<?php echo $lang; ?>'
         });
     }
     </script>
