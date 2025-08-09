@@ -1,5 +1,4 @@
 <?php defined('_DOIT') or die('Restricted access');
-
 return [
     'ru' => [
         'title' => 'Авто в продаже - прямо в Telegram',
@@ -44,4 +43,3 @@ return [
         'meta_description' => 'Cars for sale right in Telegram! Real channel with in-stock vehicles in Chișinău.'
     ],
 ];
-

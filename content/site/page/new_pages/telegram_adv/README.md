@@ -6,6 +6,7 @@
 
 ## Managing Languages and Texts
 - Localized strings are defined in `content/site/page/new_pages/telegram_adv/lang_tel.php`.
+
 - The template loads this file into a single `$telegram_lang` array before any output.
 - It reads the locale from the URL (`/ro`, `/ru`, `/en`) and uses that block from the array.
 - If a key is missing, the page falls back in the order `ru → ro → en`.
@@ -25,4 +26,3 @@
 ## Testing
 - Run the smoke test: `php tests/telegram_adv_page_test.php`.
 - The test checks routing, CSS inclusion, localized texts, absence of the word “lottery”, and ensures no navigation or footer is rendered.
-
