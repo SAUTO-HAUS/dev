@@ -41,7 +41,10 @@ if (!defined('_SITE')) {
 
       assert_contains('https://t.me/+9ISpx4Lrvoc3NzIy', $html, "Telegram link missing for $lang");
       assert_contains('telegram_adv.css', $html, "CSS not loaded for $lang");
+      assert_contains('tg-landing', $html, "tg-landing class missing for $lang");
       assert_contains($translations[$lang]['title'], $html, "Title missing for $lang");
+      assert_contains($translations[$lang]['sub'], $html, "Subtitle missing for $lang");
+      assert_contains($translations[$lang]['list'][0]['text'], $html, "List item missing for $lang");
       assert_contains($translations[$lang]['button_text'], $html, "Button text missing for $lang");
       assert_contains($translations[$lang]['meta_description'], $html, "Meta description missing for $lang");
       assert_contains('<meta name="description"', $html, "Meta description tag missing for $lang");

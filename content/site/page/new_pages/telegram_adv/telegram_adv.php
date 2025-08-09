@@ -14,7 +14,7 @@ if (!in_array($lang, $availableLangs)) {
 $fallbackOrder = ['ru', 'ro', 'en'];
 
 if (!function_exists('telegram_adv_t')) {
-    function telegram_adv_t(string $key): string {
+    function telegram_adv_t(string $key) {
         global $lang, $telegram_lang, $fallbackOrder;
         if (isset($telegram_lang[$lang][$key])) {
             return $telegram_lang[$lang][$key];
@@ -34,7 +34,6 @@ if (!function_exists('telegram_adv_t')) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Telegram</title>
-
     <meta name="description" content="<?php echo telegram_adv_t('meta_description'); ?>">
     <meta name="keywords" content="telegram, auto moldova, mașini, chișinău, canal telegram, auto în vânzare">
     <meta property="og:title" content="<?php echo telegram_adv_t('title'); ?>">
@@ -46,6 +45,8 @@ if (!function_exists('telegram_adv_t')) {
     <meta name="twitter:title" content="<?php echo telegram_adv_t('title'); ?>">
     <meta name="twitter:description" content="<?php echo telegram_adv_t('meta_description'); ?>">
     <meta name="twitter:image" content="https://sauto.md/content/site/page/new_pages/telegram/telegram-media/telegram-img.png">
+
+    <link rel="canonical" href="https://www.sauto.md/<?php echo $lang; ?>/telegram_adv">
 
     <link rel="stylesheet" type="text/css" href="/content/default/css/default.css?d=<?php echo date('GYimsd', filemtime(_DEFAULT.'/css/default.css')); ?>">
     <link rel="stylesheet" type="text/css" href="/content/site/css/style.css?d=<?php echo date('GYimsd', filemtime(_SITE.'/css/style.css')); ?>">
@@ -105,29 +106,33 @@ if (!function_exists('telegram_adv_t')) {
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KRRLB4X" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
-    <div class="telegram-wrapper">
-        <div class="telegram-container">
-            <div class="telegram-image">
-                <img src="/content/site/page/new_pages/telegram/telegram-media/telegram-img.png" alt="Auto Moldova Telegram" />
-            </div>
-              <h1 class="telegram-title">
-                  <?php echo telegram_adv_t('title'); ?>
-              </h1>
-              <p class="telegram-subtitle">
-                  <?php echo telegram_adv_t('subtitle'); ?>
-              </p>
-              <div class="telegram-description">
-                  <?php echo telegram_adv_t('description'); ?>
-              </div>
-              <a href="https://t.me/+9ISpx4Lrvoc3NzIy"
-                 class="telegram-button"
-                 target="_blank"
-                 rel="noopener noreferrer"
-                 onclick="gtag('event', 'click', {'event_category': 'telegram', 'event_label': 'join_channel'});">
-                  <?php echo telegram_adv_t('button_text'); ?>
-              </a>
+    <main class="tg-landing wrap">
+      <section class="card" role="region" aria-labelledby="title">
+        <div class="hero">
+          <div class="logo" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M44 24C44 35.046 35.046 44 24 44C12.954 44 4 35.046 4 24C4 12.954 12.954 4 24 4C35.046 4 44 12.954 44 24Z" fill="#38BDF8"/>
+              <path d="M34.3 15.7L11.2 24.2c-1 .4-.96 1.9.08 2.2l5.4 1.7 13.1-9.8c.2-.15.44.12.27.31l-10.6 11.7v3.9c0 1.1 1.3 1.6 2 .85l3.1-3.5 5.8 3.9c.83.56 1.95.14 2.22-.84l4.4-16c.26-.95-.66-1.82-1.75-1.38Z" fill="white"/>
+            </svg>
+          </div>
+          <div>
+            <h1 id="title"><?php echo telegram_adv_t('title'); ?></h1>
+            <p class="sub"><?php echo telegram_adv_t('sub'); ?></p>
+          </div>
         </div>
-    </div>
+
+        <ul class="list" aria-label="<?php echo telegram_adv_t('list_label'); ?>">
+          <?php foreach (telegram_adv_t('list') as $item): ?>
+            <li><span class="dot"><?php echo $item['icon']; ?></span><span><?php echo htmlspecialchars($item['text'], ENT_QUOTES, 'UTF-8'); ?></span></li>
+          <?php endforeach; ?>
+        </ul>
+
+        <div class="cta">
+          <a class="btn" href="https://t.me/+9ISpx4Lrvoc3NzIy" rel="noopener" target="_blank" aria-label="<?php echo telegram_adv_t('button_aria'); ?>"><?php echo telegram_adv_t('button_text'); ?></a>
+        </div>
+      </section>
+    </main>
+
 
     <script>
     // Track page view
