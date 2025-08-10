@@ -122,9 +122,15 @@ if (!function_exists('telegram_adv_t')) {
         </div>
 
         <ul class="list" aria-label="<?php echo telegram_adv_t('list_label'); ?>">
-          <?php foreach (telegram_adv_t('list') as $item): ?>
+          <?php 
+          $list_items = telegram_adv_t('list');
+          if (is_array($list_items) && !empty($list_items)): 
+            foreach ($list_items as $item): ?>
             <li><span class="dot"><?php echo $item['icon']; ?></span><span><?php echo htmlspecialchars($item['text'], ENT_QUOTES, 'UTF-8'); ?></span></li>
-          <?php endforeach; ?>
+          <?php endforeach; 
+          else: ?>
+            <li>Error: List items not found</li>
+          <?php endif; ?>
         </ul>
 
         <div class="cta">
