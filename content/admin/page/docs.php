@@ -280,6 +280,24 @@ if ( isset($t_mp[4]) ){
 								
 							})
 							
+							// After all fields are populated, trigger brand change and then set model value
+							setTimeout(function() {
+								var brandSelect = base.find("select[name=\"br\"]");
+								var modelSelect = base.find("select[name=\"mo\"]");
+								var modelValue = vals.data("mo");
+								
+								if (brandSelect.val() && brandSelect.val() !== ""){
+									brandSelect.trigger("change");
+									
+									// Set model value after brand change completes and model options are loaded
+									setTimeout(function() {
+										if (modelValue && modelValue !== "") {
+											modelSelect.val(modelValue).trigger("change");
+										}
+									}, 300); // Wait for AJAX to complete
+								}
+							}, 50);
+							
 							if ( fn=="show_it" || fn=="print_it" || fn=="save_pdf" ){
 								if ( $(this).find("input[name=\"stamp\"]").is(":checked") ){ base.find("input[name=\"stamp\"]").prop("checked", true); }
 								if ( $(this).find("input[name=\"usr_stamp\"]").is(":checked") ){ base.find("input[name=\"usr_stamp\"]").prop("checked", true); }
@@ -355,7 +373,8 @@ if ( isset($t_mp[4]) ){
 					var br = $(this).val(), n = $(this).data("n");
 					$("select[name=\"mo\"] > option:not(.none), select[name=\"mo[]\"][data-n=\""+n+"\"] > option:not(.none)").addClass("none");
 					$("select[name=\"mo\"] > option[data-br=\""+br+"\"], select[name=\"mo[]\"][data-n=\""+n+"\"] > option[data-br=\""+br+"\"]").removeClass("none");
-				})
+
+				});
 				
 				$(document).on("click", "#overlay .btn[data-fn=\"add_it\"], #content > .tmp_form .btn[data-fn=\"add_it\"]", function(){
 					var bx = $("#its_bx");

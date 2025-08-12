@@ -60,6 +60,24 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 		$cont_y = $_POST['cont_y'];
 		$cont_q = $_POST['cont_q'];
 		$cont_n = $_POST['cont_n'];
+		
+		// Retrieve existing document data from database
+		if ( isset($_POST['id']) && $_POST['id'] != '' ) {
+			$pdo = $db->prepare('SELECT * FROM '.$prefx.'_docs_ctlg WHERE `id`=:id LIMIT 1');
+			$pdo->execute(['id' => $_POST['id']]);
+			$doc_data = $pdo->fetch(PDO::FETCH_ASSOC);
+			
+			if ( $doc_data && $doc_data['inf'] != '' ) {
+				// Parse the stored information string
+				$inf_parts = explode('&&', $doc_data['inf']);
+				foreach ( $inf_parts as $part ) {
+					if ( strpos($part, '==') !== false ) {
+						list($key, $value) = explode('==', $part, 2);
+						$_POST[$key] = $value;
+					}
+				}
+			}
+		}
 	}
 	
 	echo '
