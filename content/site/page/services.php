@@ -168,12 +168,17 @@ if ($t_mp[3] == 'insurance') {
 			<h1>'.$sa['meta']['h1'].'</h1>';
 			include_once($_SERVER['DOCUMENT_ROOT'] . '/content/site/page/insurance.php');
 		} else {
-			echo '
-			<img class="m_img" src="/media/images/site/v2/'.$serv_arr[ $t_mp[3] ]['img'].'" />
-			<h1>'.$sa['meta']['h1'].'</h1>
-			'. $rtrnCalculatorBlock .'
-			<h2 class="ttl">'.$lng['p']['services'][ $t_mp[3] ]['ttl'].'</h2>
-			<div class="txt">'.(isset($lang_offers[ $t_mp[3] ]['text']) ? $lang_offers[ $t_mp[3] ]['text'] : '').'</div>';
+			// New trade-in page
+			if ($t_mp[3] == 'tradein') {
+				include(_SITE_PAGE.'/new_pages/tradein/tradein.php');
+			} else {
+				echo '
+				<img class="m_img" src="/media/images/site/v2/'.$serv_arr[ $t_mp[3] ]['img'].'" />
+				<h1>'.$sa['meta']['h1'].'</h1>
+				'. $rtrnCalculatorBlock .'
+				<h2 class="ttl">'.$lng['p']['services'][ $t_mp[3] ]['ttl'].'</h2>
+				<div class="txt">'.(isset($lang_offers[ $t_mp[3] ]['text']) ? $lang_offers[ $t_mp[3] ]['text'] : '').'</div>';
+			}
 		}
 		}
 		
@@ -240,7 +245,7 @@ if ($t_mp[3] == 'insurance') {
 
 		}
 		
-		if ( in_array($t_mp[3], ['sale', 'credit', 'tradein', 'transportation']) ){
+		if ( in_array($t_mp[3], ['sale', 'credit', 'transportation']) ){
 			echo '<img src="/media/images/site/services/bnr_'.$t_mp[3].'.jpg" style="width:100%; margin:3rem 0; padding:0 2rem;" />';
 		}
 	}
