@@ -16,7 +16,7 @@ $rtrn = '
 <div id="p_cont" class="base">';
 	$sum = 0;
 	for ($i=1;$i<=1;$i++){
-		$sum += $_POST['prc'];
+		$sum += (isset($_POST['prc']) && is_numeric($_POST['prc'])) ? floatval($_POST['prc']) : 0;
 		$rtrn .= '
 		<div class="pg bg">
 			<div class="date">'.$zdate.'</div>
@@ -28,7 +28,7 @@ $rtrn = '
 			<div class="flx">
 				<table>
 					<tr><td class="id">№</td><td class="nm txt_up">Denumirea marfuri (serviciilor)<br/>Название товара (услуг)</td><td class="prc">Pret pentru o unitate<br/>Цена за единицу<br/>'.(isset($_POST['cur'])?$_POST['cur']:'MDL').'</td></tr>
-					<tr><td class="id">1</td><td class="nm txt_up"><span>Plata in avans pentru automobilul </span>'.(isset($_POST['br']) ? $_POST['br'] : '').' '.(isset($_POST['mo']) ? $_POST['mo'] : '').(isset($_POST['vin'])?'<br/>VIN: '.$_POST['vin']:'').'</td><td class="prc">'.parseCurr($_POST['prc']).'.00</td></tr>
+					<tr><td class="id">1</td><td class="nm txt_up"><span>Plata in avans pentru automobilul </span>'.(isset($_POST['br']) ? ucwords(strtolower(str_replace('_', ' ', $_POST['br']))) : '').' '.(isset($_POST['mo']) ? ucwords(str_replace('_', ' ', $_POST['mo'])) : '').(isset($_POST['vin'])?'<br/>VIN: '.$_POST['vin']:'').'</td><td class="prc">'.parseCurr($_POST['prc']).'.00</td></tr>
 					<tr><td class="id"></td><td class="nm txt_up">TOTAL</td><td class="prc">'.parseCurr($sum).'.00</td></tr>
 				</table>
 				<div class="buyer">Platitor: <span class="txt_cpt">'.strtolower($_POST['u_nm']).'</span>, '.($_POST['u_tp']=='fiz'?'cp':'cf').' <span class="txt_up">'.$_POST['u_cf_idno'].'</span></div>

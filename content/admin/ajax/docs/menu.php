@@ -7,9 +7,18 @@ if ( isset($t_mp[5]) || isset($mixall) ){
 	$pdo = $db->prepare('SELECT * FROM '.$prefx.'_car_list ORDER BY `br` ASC, `mo` ASC'); $pdo->execute();
 	foreach ($pdo as $r){ if ($r['br_nm']!=''){ if ($r['mo']!=''){ $it_ar[ $r['br_nm'] ][] = $r['mo_nm']; } } }
 	$br_html = ''; $mo_html = ''; 
+	// Get brand mapping for correct values
+	$brand_map = [];
+	$pdo_brands = $db->prepare('SELECT DISTINCT `br`, `br_nm` FROM '.$prefx.'_car_list WHERE `br_nm` != ""'); 
+	$pdo_brands->execute();
+	foreach ($pdo_brands as $r_brand) {
+		$brand_map[$r_brand['br_nm']] = $r_brand['br'];
+	}
+	
 	foreach($it_ar as $br => $ar){
-		$br_html .= '<option value="'.$br.'">'.$br.'</option>';
-		foreach($ar as $mo){ $mo_html .= '<option value="'.$mo.'" data-br="'.$br.'" class="none">'.$mo.'</option>'; } 
+		$br_value = isset($brand_map[$br]) ? $brand_map[$br] : $br; // Use raw value for backend
+		$br_html .= '<option value="'.$br_value.'">'.$br.'</option>';
+		foreach($ar as $mo){ $mo_html .= '<option value="'.$mo.'" data-br="'.$br_value.'" class="none">'.$mo.'</option>'; } 
 	}
 	$clr_html = ''; foreach ($lng['l']['car']['clr'] as $k => $v){ $clr_html .= '<option value="'.$k.'">'.$v.'</option>'; }
 	

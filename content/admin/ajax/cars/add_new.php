@@ -2,32 +2,22 @@
 
 defined( '_DOIT' ) or die( 'Restricted access' );
 
-// Add debug logging
-error_log("add_new.php called with sub=" . ($_POST['sub'] ?? 'none'));
-
 $rtrn = ''; $zY = substr( md5( date('Y') ), 0, 4 ); $zM = substr( md5( date('m') ), 0, 4 );
-
 
 if (__post('sub') == 'mo_search') {
     $brand = __post('br');
-    error_log("mo_search called for brand: " . $brand);
     
     $list = (new \App\Db\Car())->getCarListByBrand($brand);
-    error_log("mo_search found " . count($list) . " models for brand: " . $brand);
     
     $models_html = '';
 	foreach ($list as $r) {
         $models_html .= '<option value="'.$r['mo'].'">'.$r['mo_nm'].'</option>';
     }
     
-    error_log("mo_search generated HTML: " . $models_html);
-    
 	$rtrn = ['bx_id' => __post('bx_id'), 'str' => $models_html];
-	error_log("mo_search returning: " . json_encode($rtrn));
 
 } elseif (__post('sub') == 'end') {
     try {
-        error_log("Processing 'end' submission");
         $br = __post('br');
         $mo = __post('mo');
 
@@ -41,7 +31,7 @@ if (__post('sub') == 'mo_search') {
         $mo_nm = $result['mo_nm'] ?? NULL;
 
         if (!empty(__post('id'))) {
-            error_log("Updating existing car with ID: " . __post('id'));
+
             $pdo = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg WHERE `id`=:id LIMIT 1');
             $pdo->execute(['id' => __post('id')]);
             $r = $pdo->fetch();
@@ -80,7 +70,7 @@ if (__post('sub') == 'mo_search') {
             
             // Try to extract price from various possible POST fields
             if (!empty($_POST['feature'])) {
-                error_log("Found feature data in POST: " . json_encode($_POST['feature']));
+
                 foreach ($_POST['feature'] as $feature_id => $feature_value) {
                     if (!empty($feature_value) && is_numeric($feature_value)) {
                         // Check if there's a corresponding unit
@@ -90,7 +80,7 @@ if (__post('sub') == 'mo_search') {
                                 $extracted_price = (float)$feature_value;
                                 $currency_map = ['eur' => 'EUR', 'usd' => 'USD', 'mdl' => 'MDL', 'ron' => 'RON'];
                                 $extracted_currency = $currency_map[$unit] ?? $extracted_currency;
-                                error_log("Extracted NEW price from POST features: $extracted_price $extracted_currency");
+
                                 break;
                             }
                         }
@@ -98,11 +88,11 @@ if (__post('sub') == 'mo_search') {
                 }
             }
             
-            error_log("Before fallback check - extracted_price: $extracted_price");
+
             
             // Fallback: if no price found in features, try to get from existing 999 data
             if ($extracted_price == 0 && !empty($r['999'])) {
-                error_log("Entering fallback logic because extracted_price is 0");
+
                 $car999_data = json_decode($r['999'], true);
                 if (!empty($car999_data['features'])) {
                     foreach ($car999_data['features'] as $feature) {
@@ -112,7 +102,7 @@ if (__post('sub') == 'mo_search') {
                             $extracted_price = (float)$feature['value'];
                             $currency_map = ['eur' => 'EUR', 'usd' => 'USD', 'mdl' => 'MDL', 'ron' => 'RON'];
                             $extracted_currency = $currency_map[strtolower($feature['unit'])] ?? $extracted_currency;
-                            error_log("Fallback: Extracted price from existing 999 data: $extracted_price $extracted_currency");
+
                             break;
                         }
                     }
@@ -134,12 +124,12 @@ if (__post('sub') == 'mo_search') {
                             in_array(strtolower($feature['unit']), ['eur', 'usd', 'mdl', 'ron'])) {
                             $feature['value'] = (string)$extracted_price;
                             $feature['unit'] = strtolower($extracted_currency);
-                            error_log("Updated 999 feature price: {$feature['value']} {$feature['unit']}");
+
                             break;
                         }
                     }
                     $updated_999_data = json_encode($car999_data);
-                    error_log("Updated 999 JSON data prepared");
+
                 }
             }
             
@@ -223,21 +213,21 @@ if (__post('sub') == 'mo_search') {
             
             // Update price on 999.md if 999 data was updated
             if (!empty($r['999_id']) && !empty($updated_999_data)) {
-                error_log("Updating price on 999.md for advert ID: " . $r['999_id']);
+
                 try {
                     $car999_data = json_decode($updated_999_data, true);
                     if (!empty($car999_data['features'])) {
                         $api999 = new Api999Service($r['999_api_id']);
                         $result = $api999->updateAdvert($r['999_id'], $car999_data['features']);
-                        error_log("999.md update result: " . json_encode($result));
+
                     }
                 } catch (Exception $e) {
-                    error_log("Error updating price on 999.md: " . $e->getMessage());
+
                 }
             }
             $last_id = __post('id');
         } else {
-            error_log("Inserting new car");
+
             $pdo = $db->prepare('INSERT INTO ' . $prefx . '_car_ctlg (`gr`, `br`, `mo`, `br_nm`, `mo_nm`, `yr`, `bt`, `sts`, `mlg`, `unit`, `vol`, `hp`, `fl`, `tra`, `wd`, `clr`, `loc`, `txt`, `prc`, `cur`, `soon`, `n_a`, `top`, `tva`, `gift`, `import_country_id`, `p_path`, `date`, `author`, `vis`) 
                 VALUES (:gr, :br, :mo, :br_nm, :mo_nm, :yr, :bt, :sts, :mlg, :unit, :vol, :hp, :fl, :tra, :wd, :clr, :loc, :txt, :prc, :cur, :soon, :n_a, :top, :tva, :gift, :import_country_id, :p_path, :date, :author, "1")');//, `vis`, "0"
 
@@ -274,7 +264,7 @@ if (__post('sub') == 'mo_search') {
             ]);
 
             $last_id = $db->lastInsertId();
-            error_log("New car inserted with ID: " . $last_id);
+
 
             //________________ SEO INSERT ________________
             $pdo_v = '';

@@ -473,14 +473,14 @@ if ( isset($t_mp[4]) ){
 					if ( isset($inf['br']) && strpos($inf['br'], '||') !== false && strpos($inf['mo'], '||') !== false ){
 						$br_ar = explode('||', $inf['br']); $mo_ar = explode('||', $inf['mo']); if ( strpos($inf['vin'], '||') !== false ){ $vin_ar = explode('||', $inf['vin']); }
 						foreach ($br_ar as $k => $v){
-							if ( isset($inf['mo'][$k]) ){
+							if ( isset($mo_ar[$k]) ){
 								$br_mo_vin .= ($k>0?', ':'').ucwords(strtolower(str_replace('_', ' ', $v))).' '.ucwords(str_replace('_', ' ', $mo_ar[$k])).( isset($vin_ar[$k])?'['.$vin_ar[$k].']':'' );
 							}
 						}
 					} else {
 						$br_formatted = isset($inf['br']) ? ucwords(strtolower(str_replace('_', ' ', $inf['br']))) : '';
 						$mo_formatted = isset($inf['mo']) ? ucwords(str_replace('_', ' ', $inf['mo'])) : '';
-						$br_mo_vin .= $br_formatted.'</span> <span class="mo">'.$mo_formatted.'</span> <span class="vin">'.(isset($inf['vin'])?'['.$inf['vin'].']':'');
+						$br_mo_vin .= '<span class="br">'.$br_formatted.'</span> <span class="mo">'.$mo_formatted.'</span> <span class="vin">'.(isset($inf['vin'])?'['.$inf['vin'].']':'').'</span>';
 					}
 					
 					if ( $user_type!='dev' && $r['adm']=='5' ){continue;}
@@ -522,7 +522,7 @@ if ( isset($t_mp[4]) ){
 							<div class="col min_med">'.$r['abr'].$r['y'].$r['q'].'/'.$r['n'].'</div>
 							<div class="col max" data-id="'.$r['u_id'].'" data-tp="'.$r['u_tp'].'"><span class="u_nm">'.mb_convert_case($r['u_nm'], MB_CASE_TITLE, 'UTF-8').'</span> <span class="u_cf_idno">'.$r['u_cf_idno'].'</span></div>
 							<div class="col"><span class="prc">'.( isset($inf['prc'])?$inf['prc']:'-' ).'</span></div>
-							<div class="col max"><span class="br">'.$br_mo_vin.'</span></div>
+							<div class="col max">'.$br_mo_vin.'</div>
 							<div class="col min">'.( isset($adm_ar[ $r['adm'] ])?$adm_ar[ $r['adm'] ]:$r['adm'] ).'</div>
 							<div class="col min">-</div>
 							<div class="col min">-</div>

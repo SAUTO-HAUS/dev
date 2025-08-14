@@ -75,7 +75,7 @@ $rtrn = '
 			<h3 class="ttl">1. OBIECTUL CONTRACTULUI.</h3>
 			<p><b>1.1.</b> Obiectul prezentului contract este o unitate de transport:</p>
 			<table class="n1">
-				<tr><td class="n1">Marca</td><td class="n2">'.$_POST['br'].'</td><td class="n1">Model</td><td class="n2">'.$_POST['mo'].'</td></tr>
+				<tr><td class="n1">Marca</td><td class="n2">'.ucwords(strtolower(str_replace('_', ' ', $_POST['br']))).'</td><td class="n1">Model</td><td class="n2">'.ucwords(str_replace('_', ' ', $_POST['mo'])).'</td></tr>
 				<tr><td class="n1">Anul Fabricatiei</td><td class="n2">'.$_POST['yr'].'</td><td class="n1">Culoare</td><td class="n2">'.(isset($lng['l']['car']['clr'][ $_POST['clr'] ])?$lng['l']['car']['clr'][ $_POST['clr'] ]:$_POST['clr']).'</td></tr>
 				<tr><td class="n1">Serie caroserie</td><td class="n2">'.$_POST['vin'].'</td><td class="n1"></td><td class="n2"></td></tr>
 				<tr><td class="n3" rowspan="1" colspan="4">Livrarea automobilului se execută la adresa: '.$lng['t']['x']['address'][$_POST['loc']].'</td></tr>
@@ -185,7 +185,7 @@ $rtrn = '
 				<p><b>SAUTO SRL</b>, reprezentat legal de dl Olăriță Veaceslav, în calitate de administrator, care reprezintă interesele Societăţii în baza Actului Constitutiv și normativelor interne, înregistrată la Camera Înregistrării de Stat cu Numarul de Identificare de Stat – 1017600006845, denunumit în continare <b>Vînzător</b></p>
 				<p><span class="txt_cpt">'.strtolower($_POST['u_nm']).'</span>, '.($_POST['u_tp']=='fiz'?'cp':'cf').' <span class="txt_up">'.$_POST['u_cf_idno'].'</span>, '.$_POST['u_adr'].' in calitate de <b>Cumpărător</b>, au convenit încheierea prezentului contract, după cum urmează am luat cunostinta cu factura și sau specificația din anexa contractului de vânzare cumpărare încheiat cu Vînzătorul, acesta primeşte în proprietate autoturismul descris mai jos, în stare buna de functionare, cu toate accesoriile conform configuratiei:</p>
 				<table class="n1">
-					<tr><td class="n1">Marca</td><td class="n2">'.$_POST['br'].'</td><td class="n1">Model</td><td class="n2">'.$_POST['mo'].'</td></tr>
+					<tr><td class="n1">Marca</td><td class="n2">'.ucwords(strtolower(str_replace('_', ' ', $_POST['br']))).'</td><td class="n1">Model</td><td class="n2">'.ucwords(str_replace('_', ' ', $_POST['mo'])).'</td></tr>
 					<tr><td class="n1">Anul Fabricatiei</td><td class="n2">'.$_POST['yr'].'</td><td class="n1">Culoare</td><td class="n2">'.(isset($lng['l']['car']['clr'][ $_POST['clr'] ])?$lng['l']['car']['clr'][ $_POST['clr'] ]:$_POST['clr']).'</td></tr>
 					<tr><td class="n1">Serie caroserie</td><td class="n2">'.$_POST['vin'].'</td><td class="n1"></td><td class="n2"></td></tr>
 				</table>
