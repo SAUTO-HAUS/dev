@@ -22,6 +22,12 @@ if ( isset($_COOKIE['sess'])&&!empty($_COOKIE['sess']) ){
 		$user_login = $r['login'];
 		$user_active = $r['act'];
 		
+		// Store user info in session for RBAC
+		$_SESSION['user_id'] = $user_id;
+		$_SESSION['user_role'] = $user_role;
+		$_SESSION['user_branch_id'] = $user_branch_id;
+		$_SESSION['user_name'] = $user_name;
+		
 		$hash = md5( time() );
 		$cookie_val = $r['id'].'-'.$hash;
 		

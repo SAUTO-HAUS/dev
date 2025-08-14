@@ -84,8 +84,24 @@
 			// Gordon (superadmin) always has full access
 			if (isset($user_role) && $user_role === 'gordon') {
 				$has_access = true;
+			} elseif (isset($user_role) && in_array($user_role, ['admin', 'publisher', 'publisher_limited']) && isset($t_mp[3]) && in_array($t_mp[3], ['docs', 'cars', 'tyres'])) {
+				// Direct access for admin and publisher roles to their permitted modules
+				$has_access = rbac_has_permission($user_role, $t_mp[3], 'read');
 			} elseif (isset($t_mp[3])) {
-				$has_access = isset($current_menu[$t_mp[3]]) && (!isset($t_mp[4]) || in_array($t_mp[4], $current_menu[$t_mp[3]]));
+				// Check if user has access to the module
+				$has_access = isset($current_menu[$t_mp[3]]);
+				
+				// For specific actions, check internal actions array
+				if ($has_access && isset($t_mp[4])) {
+					global $rbac_internal_actions;
+					if (isset($rbac_internal_actions[$user_role][$t_mp[3]])) {
+						$has_access = in_array($t_mp[4], $rbac_internal_actions[$user_role][$t_mp[3]]);
+					} else {
+						// Fallback to menu check for backward compatibility
+						$has_access = in_array($t_mp[4], $current_menu[$t_mp[3]]);
+					}
+				}
+				
 				// Additional RBAC permission check
 				if ($has_access && isset($user_role)) {
 					$has_access = rbac_has_permission($user_role, $t_mp[3], 'read');

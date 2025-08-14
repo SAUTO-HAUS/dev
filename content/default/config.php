@@ -38,7 +38,9 @@ $admin_menu = [
 	'mod2' => ['cars', 'tyres'],
 	'seo' => ['seo'],
 	'x1'  => ['docs'],
-	'x2'  => ['cars', 'docs']
+	'x2'  => ['cars', 'docs'],
+	'publisher' => ['cars', 'tyres', 'docs'],
+	'publisher_limited' => ['cars', 'tyres', 'docs']
 ];
 
 $admin_menu_dev1 = [
@@ -50,7 +52,9 @@ $admin_menu_dev1 = [
     'mod2' => ['cars' => ['ctlg'], 'docs' => ['create', 'ctlg']],
     'seo' => ['seo' => ['ctlg']],
     'x1' => ['docs' => ['create', 'ctlg']],
-    'x2' => ['cars' => ['ctlg'], 'docs' => ['create', 'ctlg'], 'sett' => ['info']]
+    'x2' => ['cars' => ['ctlg'], 'docs' => ['create', 'ctlg'], 'sett' => ['info']],
+    'publisher' => ['cars' => ['ctlg'], 'tyres' => ['ctlg'], 'docs' => ['create', 'ctlg']],
+    'publisher_limited' => ['cars' => ['ctlg'], 'tyres' => ['ctlg'], 'docs' => ['create', 'ctlg']]
 ];
 
 $hided_admin_menu = ['users', 'settings', 'video', 'team'];

@@ -39,9 +39,20 @@ class Car
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function getCarsCtlg($limit)
+    public function getCarsCtlg($limit, $user_role = null, $user_branch_id = null)
     {
-        $sql = 'SELECT * FROM ' . $this->prefix . '_car_ctlg WHERE `act`="1" ORDER BY `vis` DESC, `id` DESC LIMIT ' . ($limit+1);
+        $sql = 'SELECT * FROM ' . $this->prefix . '_car_ctlg WHERE `act`="1"';
+        
+        // Add branch filtering for publisher_limited users
+        if ($user_role && $user_branch_id !== null) {
+            // Apply branch filtering for publisher_limited role
+            if ($user_role === 'publisher_limited') {
+                $sql .= ' AND loc = ' . (int)$user_branch_id;
+            }
+            // Publisher and other roles with all_branches access see everything (no filter)
+        }
+        
+        $sql .= ' ORDER BY `vis` DESC, `id` DESC LIMIT ' . ($limit+1);
         $stmt = $this->db->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);

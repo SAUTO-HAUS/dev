@@ -13,6 +13,9 @@ if (isset($t_mp[4])) {
         $redirect_url = '/' . $_COOKIE['lang'] . '/' . $admin_dir . '/cars/detail';
         $rtrn = '<script>window.location.href = "' . $redirect_url . '";</script>';
         $rtrn .= '<div style="text-align:center; padding:2rem;">Redirecting to car add page... <a href="' . $redirect_url . '">Click here if not redirected</a></div>';
+    } elseif ($t_mp[4] == 'create') {
+        // Handle create route - redirect to detail page for adding new car
+        include _ADM_PAGE.'/cars/car.php';
 	} else {
 		$rtrn = '<span class="err">Check the URL</span>';
 	}

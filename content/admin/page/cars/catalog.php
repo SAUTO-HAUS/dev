@@ -22,7 +22,12 @@ elseif (isset($_POST['limit'])) {
 }
 
 $i_max = $display_limit;
-$pdo = (new \App\Db\Car())->getCarsCtlg($i_max);
+
+// Get user role and branch info for filtering
+$user_role = $_SESSION['user_role'] ?? $user_role ?? null;
+$user_branch_id = $_SESSION['user_branch_id'] ?? $user_branch_id ?? null;
+
+$pdo = (new \App\Db\Car())->getCarsCtlg($i_max, $user_role, $user_branch_id);
 $total_cars_fetched = count($pdo);
 $has_more_cars = $total_cars_fetched > $i_max;
 $i = 0;
@@ -40,11 +45,14 @@ $last_car_id = 0;
 </div>
 <div class="ctlg_dspl_tp"></div>
 <section class="ctlg">
+    <?php if (rbac_has_permission($user_role, 'cars', 'create')): ?>
     <a id="add_new" href="<?= '/'.$_COOKIE['lang'].'/'.$admin_dir.'/cars/detail' ?>" class="bx" title="<?= $lng['adm']['add'] ?>">
         <div>
-            
+            <span class="add_icon">+</span>
+            <span class="add_text"><?= $lng['adm']['add'] ?></span>
         </div>
     </a>
+    <?php endif; ?>
 
     <?php foreach ($pdo as $r) :
         $on_img =  $r['gift']==1  ? '<span class="top">Cadou</span>' : '';

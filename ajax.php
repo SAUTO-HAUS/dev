@@ -52,13 +52,23 @@ if (__post('tp') == 'adm') {
     $user_id = $user['id'];
     $user_login = $user['login'];
     $user_type = $user['type'];
+    $user_role = $user['role'] ?? $user['type'];
     $user_active = $user['act'];
 
     if ($user_active !== 1) {
         die('User is not active');
     }
 
-    if (!isset($admin_menu[$user_type]) || !in_array($pg, $admin_menu[$user_type], true)) {
+    // Include RBAC system for permission checks
+    require_once(_ADM_INCL.'/rbac_config.php');
+    
+    // Check RBAC permissions instead of old admin_menu
+    // Gordon (superadmin) always has access
+    if ($user_role === 'gordon') {
+        // Allow full access for gordon
+    } elseif (in_array($user_role, ['publisher', 'publisher_limited']) && in_array($pg, ['docs', 'cars', 'tyres'])) {
+        // Allow access for publisher roles to their permitted modules
+    } elseif (!rbac_has_permission($user_role, $pg, 'read')) {
         die('Restricted access');
     }
 

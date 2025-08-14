@@ -24,13 +24,15 @@ $rbac_admin_menu = [
     ],
     'publisher' => [
         'cars' => ['add', 'ctlg'],
-        'tyres' => ['ctlg']
-        // No access to SEO, Mail, Docs, Settings as per business requirements
+        'tyres' => ['ctlg'],
+        'docs' => ['create', 'ctlg']
+        // No access to SEO, Mail, Settings as per business requirements
     ],
     'publisher_limited' => [
         'cars' => ['add', 'ctlg'],
-        'tyres' => ['ctlg']
-        // No access to SEO, Mail, Docs, Settings + branch limited access
+        'tyres' => ['ctlg'],
+        'docs' => ['create', 'ctlg']
+        // No access to SEO, Mail, Settings + branch limited access
     ]
 ];
 
@@ -63,30 +65,30 @@ $rbac_permissions = [
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'settings' => ['read' => true, 'update' => false]
     ],
-    // Publisher (Публикатор) - Может заливать и редактировать, но не удалять
+    // Publisher (Публикатор) - Full access to cars and docs like gordon/admin
     'publisher' => [
         'user_management' => false,
         'role_management' => false,
         'system_settings' => false,
         'all_branches' => true,
-        'cars' => ['create' => true, 'read' => true, 'update' => true, 'delete' => false, 'set_unavailable' => true, 'publish' => true],
-        'tyres' => ['create' => true, 'read' => true, 'update' => true, 'delete' => false, 'set_unavailable' => true, 'publish' => true],
+        'cars' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
+        'tyres' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'set_unavailable' => true, 'publish' => true],
         'seo' => ['read' => false],
         'mail' => ['read' => false],
-        'docs' => ['read' => false],
+        'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'settings' => ['read' => false]
     ],
-    // Publisher-Limited (Публикатор Филиал) - Как Publisher, но только для одного филиала
+    // Publisher-Limited (Публикатор Филиал) - Full access to cars and docs like gordon/admin, but branch limited
     'publisher_limited' => [
         'user_management' => false,
         'role_management' => false,
         'system_settings' => false,
         'branch_limited' => true,
-        'cars' => ['create' => true, 'read' => true, 'update' => true, 'delete' => false, 'set_unavailable' => true, 'publish' => true],
-        'tyres' => ['create' => true, 'read' => true, 'update' => true, 'delete' => false, 'set_unavailable' => true, 'publish' => true],
+        'cars' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
+        'tyres' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'set_unavailable' => true, 'publish' => true],
         'seo' => ['read' => false],
         'mail' => ['read' => false],
-        'docs' => ['read' => false],
+        'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'settings' => ['read' => false]
     ]
 ];
@@ -159,13 +161,8 @@ function rbac_can_access_branch($user_role, $user_branch_id, $target_branch_id) 
         return true;
     }
     
-    // Admin has access to all branches
+    // Check if role has access to all branches (admin, publisher)
     if (isset($rbac_permissions[$user_role]['all_branches']) && $rbac_permissions[$user_role]['all_branches']) {
-        return true;
-    }
-    
-    // Publisher has access to all branches
-    if ($user_role === 'publisher' && isset($rbac_permissions[$user_role]['all_branches']) && $rbac_permissions[$user_role]['all_branches']) {
         return true;
     }
     
@@ -174,7 +171,96 @@ function rbac_can_access_branch($user_role, $user_branch_id, $target_branch_id) 
         return $user_branch_id == $target_branch_id;
     }
     
+    // Default: allow access (for backward compatibility)
     return true;
+}
+
+/**
+ * RBAC Admin Menu Configuration
+ * Maps roles to their allowed admin menu sections
+ */
+$rbac_admin_menu = [
+    'gordon' => [
+        'cars' => ['add', 'ctlg'],
+        'tyres' => ['ctlg'],
+        'seo' => ['ctlg'],
+        'mail' => ['message', 'order', 'favorites', 'archive'],
+        'docs' => ['add', 'ctlg'],
+        'sett' => ['info', 'adm_usr', 'roles']
+    ],
+    'admin' => [
+        'cars' => ['add', 'ctlg'],
+        'tyres' => ['ctlg'],
+        'seo' => ['ctlg'],
+        'mail' => ['message', 'order', 'favorites', 'archive'],
+        'docs' => ['add', 'ctlg'],
+        'sett' => ['info']
+    ],
+    'publisher' => [
+        'cars' => ['add', 'ctlg'], 
+        'tyres' => ['ctlg'], 
+        'docs' => ['add', 'ctlg']
+    ],
+    'publisher_limited' => [
+        'cars' => ['add', 'ctlg'], 
+        'tyres' => ['ctlg'], 
+        'docs' => ['add', 'ctlg']
+    ]
+];
+
+// Additional allowed actions for internal routing (not shown in menu)
+$rbac_internal_actions = [
+    'gordon' => [
+        'cars' => ['add', 'create', 'detail', 'ctlg'],
+        'tyres' => ['add', 'create', 'detail', 'ctlg'],
+        'seo' => ['add', 'create', 'detail', 'ctlg'],
+        'mail' => ['message', 'order', 'favorites', 'archive'],
+        'docs' => ['add', 'create', 'detail', 'ctlg'],
+        'sett' => ['info', 'adm_usr', 'roles']
+    ],
+    'admin' => [
+        'cars' => ['add', 'create', 'detail', 'ctlg'],
+        'tyres' => ['add', 'create', 'detail', 'ctlg'],
+        'seo' => ['add', 'create', 'detail', 'ctlg'],
+        'mail' => ['message', 'order', 'favorites', 'archive'],
+        'docs' => ['add', 'create', 'detail', 'ctlg'],
+        'sett' => ['info']
+    ],
+    'publisher' => [
+        'cars' => ['add', 'create', 'detail', 'ctlg'],
+        'tyres' => ['add', 'create', 'detail', 'ctlg'],
+        'docs' => ['add', 'create', 'detail', 'ctlg']
+    ],
+    'publisher_limited' => [
+        'cars' => ['add', 'create', 'detail', 'ctlg'],
+        'tyres' => ['add', 'create', 'detail', 'ctlg'], 
+        'docs' => ['add', 'create', 'detail', 'ctlg']
+    ]
+];
+
+/**
+ * Get branch filter SQL condition for publisher_limited users
+ * @param string $user_role Current user role
+ * @param int $user_branch_id Current user's branch ID
+ * @param string $table_alias Table alias for the branch_id column (optional)
+ * @return string SQL WHERE condition or empty string
+ */
+function rbac_get_branch_filter_sql($user_role, $user_branch_id, $table_alias = '') {
+    global $rbac_permissions;
+    
+    // No filtering needed for gordon and admin
+    if ($user_role === 'gordon' || 
+        (isset($rbac_permissions[$user_role]['all_branches']) && $rbac_permissions[$user_role]['all_branches'])) {
+        return '';
+    }
+    
+    // Publisher-Limited needs branch filtering
+    if (isset($rbac_permissions[$user_role]['branch_limited']) && $rbac_permissions[$user_role]['branch_limited']) {
+        $column = $table_alias ? $table_alias . '.branch_id' : 'branch_id';
+        return " AND {$column} = " . (int)$user_branch_id;
+    }
+    
+    return '';
 }
 
 /**

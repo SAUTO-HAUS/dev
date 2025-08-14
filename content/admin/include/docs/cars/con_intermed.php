@@ -182,13 +182,17 @@ $rtrn = '
 				<p>Părțile au încheiat prezentul Act de predare-primire, care confirmă că Clientul a predat, iar intermediarul a primit autovehiculul la parcarea auto situată la adresa: mun. Chișinău, Str. Calea Mosilor 11</p>
 				<p>Descrierea autovehiculului conform prezentului Act:</p>
 				<ol type="l" start="1">
-					<li> Marca și Model: '.(isset($_POST['br']) ? $_POST['br'] : '').' '.(isset($_POST['mo']) ? $_POST['mo'] : '').' '.$_POST['yr'].'</li>
+					<li> Marca și Model: '.(isset($_POST['br']) ? ucwords(strtolower($_POST['br'])) : '').' '.(isset($_POST['mo']) ? ucwords(strtolower($_POST['mo'])) : '').' '.(isset($_POST['yr']) ? $_POST['yr'] : '').'</li>
 					<li> Numărul caroseriei: '.$_POST['vin'].'</li>
 					<li> Culoare: '.(isset($lng['l']['car']['clr'][ $_POST['clr'] ])?$lng['l']['car']['clr'][ $_POST['clr'] ]:$_POST['clr']).'</li>
 					<li> 
 						Semne de deteriorare (zgârieturi, îndoituri etc.) 
 						<div id="dmg_txt_bx" style="text-decoration:underline;">';
-							foreach ($_POST['dmg_txt'] as $k => $v){ $rtrn .= ( $v!=''?($k>0?', ':'').'<b>'.($k*1+1).'</b>: '.$v:'' ); }
+							if (isset($_POST['dmg_txt']) && is_array($_POST['dmg_txt'])) {
+								foreach ($_POST['dmg_txt'] as $k => $v){ 
+									$rtrn .= ( $v!=''?($k>0?', ':'').'<b>'.($k*1+1).'</b>: '.$v:'' ); 
+								}
+							}
 							$rtrn .= '
 						</div>
 						<div id="dmg_clk_bx" oncontextmenu="return false;">
@@ -201,7 +205,9 @@ $rtrn = '
 							</div>
 						</div>
 						Împreună cu autovehiculul, Clientul transmite Intermediarului cheile și toate documentele necesare: pașaportul tehnic al autovehiculului, precum și alte necesare exploatării acestuia.<br/>';
-						foreach ($_POST['extras'] as $k => $v){$rtrn .= ($k>0?', ':'Elemente suplimentare: ').(isset($lng['l']['extras'][$v])?$lng['l']['extras'][$v]:$v);}
+						if (isset($_POST['extras']) && is_array($_POST['extras'])) {
+							foreach ($_POST['extras'] as $k => $v){$rtrn .= ($k>0?', ':'Elemente suplimentare: ').(isset($lng['l']['extras'][$v])?$lng['l']['extras'][$v]:$v);}
+						}
 					$rtrn .= '
 					</li>
 				</ol>
