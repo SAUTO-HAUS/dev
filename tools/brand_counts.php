@@ -2,8 +2,6 @@
 require_once __DIR__ . '/../environment.php';
 
 define('_DOIT', 1);
-require_once __DIR__ . '/../content/default/defines.php';
-require_once __DIR__ . '/../content/default/functions.php';
 require_once __DIR__ . '/../content/default/config.php';
 require_once __DIR__ . '/../content/default/dbi.php';
 
