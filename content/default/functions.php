@@ -144,10 +144,12 @@ function usr_agent(){
 
 //Add , . to numbers
 function parseCurr($value) {
-	if ( intval($value) == $value ) {
-		$return = number_format($value, 0, ".", ",");
+	// Convert to float to avoid number_format() warning
+	$numValue = floatval($value);
+	if ( intval($numValue) == $numValue ) {
+		$return = number_format($numValue, 0, ".", ",");
 	}else{
-		$return = number_format($value, 2, ".", ",");
+		$return = number_format($numValue, 2, ".", ",");
 		//$return = rtrim($return, 0);
 	}
 	return $return;

@@ -474,11 +474,13 @@ if ( isset($t_mp[4]) ){
 						$br_ar = explode('||', $inf['br']); $mo_ar = explode('||', $inf['mo']); if ( strpos($inf['vin'], '||') !== false ){ $vin_ar = explode('||', $inf['vin']); }
 						foreach ($br_ar as $k => $v){
 							if ( isset($inf['mo'][$k]) ){
-								$br_mo_vin .= ($k>0?', ':'').$v.' '.$mo_ar[$k].( isset($vin_ar[$k])?'['.$vin_ar[$k].']':'' );
+								$br_mo_vin .= ($k>0?', ':'').ucwords(strtolower(str_replace('_', ' ', $v))).' '.ucwords(str_replace('_', ' ', $mo_ar[$k])).( isset($vin_ar[$k])?'['.$vin_ar[$k].']':'' );
 							}
 						}
 					} else {
-						$br_mo_vin .= (isset($inf['br'])?$inf['br']:'').'</span> <span class="mo">'.(isset($inf['mo'])?$inf['mo']:'').'</span> <span class="vin">'.(isset($inf['vin'])?'['.$inf['vin'].']':'');
+						$br_formatted = isset($inf['br']) ? ucwords(strtolower(str_replace('_', ' ', $inf['br']))) : '';
+						$mo_formatted = isset($inf['mo']) ? ucwords(str_replace('_', ' ', $inf['mo'])) : '';
+						$br_mo_vin .= $br_formatted.'</span> <span class="mo">'.$mo_formatted.'</span> <span class="vin">'.(isset($inf['vin'])?'['.$inf['vin'].']':'');
 					}
 					
 					if ( $user_type!='dev' && $r['adm']=='5' ){continue;}
