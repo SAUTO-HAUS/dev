@@ -43,8 +43,9 @@ class PhoneReplacementService
             return $this->phoneConfig['stock_website'];
         }
         
-        // Priority 3: Status "in transit"
-        if (isset($carData['sts']) && $this->isStatusInTransit($carData['sts'])) {
+        // Priority 3: Status "soon" (la comandă/под заказ) or "in transit"
+        if ((isset($carData['soon']) && $carData['soon'] == 1) || 
+            (isset($carData['sts']) && $this->isStatusInTransit($carData['sts']))) {
             return $this->phoneConfig['on_order'];
         }
         
