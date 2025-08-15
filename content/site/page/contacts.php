@@ -1,5 +1,7 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
+// PhoneHelper functions are already loaded via functions.php in index.php
+
 $form = '<script data-b24-form="inline/4/nj2ojp" data-skip-moving="true">
             (function(w,d,u){
             var s=d.createElement(\'script\');s.async=true;s.src=u+\'?\'+(Date.now()/180000|0);
@@ -120,6 +122,10 @@ echo '
 	})
 </script>
 
+<?php
+$generalPhone = PhoneHelper::getGeneralPhone();
+$formattedPhone = PhoneHelper::formatPhone($generalPhone, "display");
+?>
 
 <div id="cnt">
 	<div class="bx">
@@ -149,9 +155,7 @@ echo '
 				<div class="img"></div>
 				<h2 class="ttl">'.$lng['w']['phones'].'</h2>
 				<div class="txt">
-					<a href="tel:+37369977674">+(373) 69-977-674</a>
-					<br/>
-					<a href="tel:+37368689995">+(373) 68-689-995</a>
+					<a href="tel:'.$generalPhone.'">'.$formattedPhone.'</a>
 				</div>
 			</div>
 			<div class="it eml">

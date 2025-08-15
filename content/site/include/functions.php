@@ -1,5 +1,7 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
+use App\Helper\PhoneHelper;
+
 $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$db, &$img_frmt, &$lng){
 	$ar = [ 'ids'=>[], 'txt'=>'', 'qu'=>0 ];
 	$debug_enabled = false; // Disable debugging
