@@ -49,6 +49,12 @@ class ConsentManager {
 
         // Set up event listeners first
         this.setupEventListeners();
+        
+        // Bind methods to preserve 'this' context
+        this.acceptAll = this.acceptAll.bind(this);
+        this.acceptEssential = this.acceptEssential.bind(this);
+        this.showModal = this.showModal.bind(this);
+        this.saveCustomPreferences = this.saveCustomPreferences.bind(this);
 
         // Load existing consent or show consent interface
         this.loadConsent();
@@ -181,6 +187,9 @@ class ConsentManager {
     }
 
     updateGoogleConsent() {
+        if (typeof gtag === 'undefined') return;
+        if (!this.currentConsent) return;
+        
         const consentUpdate = {};
         
         Object.keys(this.consentTypes).forEach(type => {
@@ -190,17 +199,75 @@ class ConsentManager {
         gtag('consent', 'update', consentUpdate);
     }
 
+    loadTrackingScripts() {
+        console.log('Loading tracking scripts after consent...');
+        
+        // Load Google Analytics if analytics consent is given
+        if (this.currentConsent.analytics_storage && !window._gaLoaded) {
+            const gaScript = document.createElement('script');
+            gaScript.async = true;
+            gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-TP4GJ51GSL';
+            document.head.appendChild(gaScript);
+            
+            gaScript.onload = () => {
+                gtag('config', 'G-TP4GJ51GSL');
+                console.log('Google Analytics loaded and configured');
+            };
+            
+            window._gaLoaded = true;
+        }
+        
+        // Load Facebook Pixel if ad consent is given
+        if (this.currentConsent.ad_storage && !window._fbLoaded) {
+            const fbScript = document.createElement('script');
+            fbScript.async = true;
+            fbScript.src = 'https://connect.facebook.net/en_US/fbevents.js';
+            document.head.appendChild(fbScript);
+            
+            fbScript.onload = () => {
+                fbq('init', '1316635815226956');
+                fbq('track', 'PageView');
+                console.log('Facebook Pixel loaded and configured');
+            };
+            
+            window._fbLoaded = true;
+        }
+        
+        // Load Yandex Metrica if analytics consent is given
+        if (this.currentConsent.analytics_storage && !window._ymLoaded) {
+            const ymScript = document.createElement('script');
+            ymScript.type = 'text/javascript';
+            ymScript.innerHTML = `
+                (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+                m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+                (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+                ym(87984800, "init", {
+                    clickmap:true,
+                    trackLinks:true,
+                    accurateTrackBounce:true,
+                    webvisor:true
+                });
+            `;
+            document.head.appendChild(ymScript);
+            console.log('Yandex Metrica loaded and configured');
+            window._ymLoaded = true;
+        }
+    }
+
     acceptAll() {
         console.log('acceptAll() called');
-        const preferences = {};
+        // Set all consent types to granted
         Object.keys(this.consentTypes).forEach(type => {
-            preferences[type] = true;
+            this.currentConsent[type] = true;
         });
-        console.log('Saving preferences:', preferences);
-        this.saveConsent(preferences);
+        
+        this.saveConsent(this.currentConsent);
+        this.updateGoogleConsent();
+        this.loadTrackingScripts();
         this.hideConsentInterface();
-        this.dispatchConsentEvent('consentAccepted', preferences);
-        console.log('All cookies accepted and saved');
+        
+        // Trigger consent accepted event
+        this.triggerConsentEvent('accepted', this.currentConsent);
     }
 
     acceptEssential() {
