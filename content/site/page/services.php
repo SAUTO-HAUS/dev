@@ -1,5 +1,4 @@
-<?php defined( '_DOIT' ) or die( 'Restricted access' );
-?>
+<?php defined( '_DOIT' ) or die( 'Restricted access' ); ?>
 <style>
 .payment-amount {
     color: #000;
@@ -222,10 +221,13 @@ if ($t_mp[3] == 'insurance') {
             <?php
 		}elseif ($t_mp[3]=='transportation'){
 
+			$transportPhone = \App\Helper\PhoneHelper::getGeneralPhone();
+			$formattedTransportPhone = \App\Helper\PhoneHelper::formatPhone($transportPhone, 'display');
+			
 			echo '
 			<div class="transportation">
 				<h1>'.$lng['t']['services']['transportation']['name'].'</h1>
-				<a href="tel:+37368689995" class="trnsprt_call" title="'.$lng['w']['call'].'">(+373) 68 68 999 5</a>
+				<a href="tel:'.$transportPhone.'" class="trnsprt_call" title="'.$lng['w']['call'].'">'.$formattedTransportPhone.'</a>
 				<img class="m_img" src="/media/images/site/v2/transportation_img.jpg" />
 				<h2>'.$lng['t']['services']['transportation']['ttl_1'].'</h2>
 				<div class="txt">'.$lng['t']['services']['transportation']['txt_1'].'</div>
@@ -239,7 +241,7 @@ if ($t_mp[3] == 'insurance') {
 				</div>
 				<div class="call_now">
 					<img src="/media/images/site/call_now.jpg" />
-					<h3>'.$lng['t']['services']['transportation']['txt_4'].'<br/><a href="tel:+37368689995">(+373) 68 68 999 5</a></h3>
+					<h3>'.$lng['t']['services']['transportation']['txt_4'].'<br/><a href="tel:'.$transportPhone.'">'.$formattedTransportPhone.'</a></h3>
 				</div>
 			</div>';
 

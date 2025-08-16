@@ -1,4 +1,6 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
+
+use App\Helper\PhoneHelper;
 $rtrn = ''; $card = '';
 $cr_lmt = $isMobile=='1' ? 910 : 960;
 
@@ -163,7 +165,7 @@ if ( !isset($t_mp[3]) ){
 						'.$o_prc_bl.'
 					</div>
 					<div class="doit">
-						<a class="btn call" href="tel:+37368500573">'.$lng['w']['call'].'</a>
+						<a class="btn call" href="tel:'.PhoneHelper::getGeneralPhone().'" title="'.PhoneHelper::formatPhone(PhoneHelper::getGeneralPhone(), 'display').'">'.$lng['w']['call'].'</a>
 						
 						<div class="btn msg2" >
 						'.$form.'

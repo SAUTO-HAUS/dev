@@ -1,5 +1,7 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
+use App\Helper\PhoneHelper;
+
 $pdo = $db->prepare('SELECT * FROM '.$prefx.'_offer_catalog WHERE `id`=:id');
 $pdo->execute(array('id' => $t_mp[3]));
 
@@ -62,7 +64,7 @@ echo '
         echo '
         </div>
     </div>
-    <div class="info_contacts">'.$lang_info_contacts.' 068-68-999-5 , 069-977-674 , 079-977-674 , 079-954-375</div>
+    <div class="info_contacts">'.$lang_info_contacts.' '.PhoneHelper::formatPhone(PhoneHelper::getGeneralPhone(), 'display').'</div>
     <div class="info_price" style="text-align:center;">
         <div class="price" title="'.$lang_price.'" style="float:none;">'.$c_price.' <span>'.$info_currency[$c_currency].'</span></div>
     </div>
