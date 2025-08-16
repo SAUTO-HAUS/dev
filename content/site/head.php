@@ -221,20 +221,20 @@ function gtag(){dataLayer.push(arguments);}
 // Backward compatibility functions
 function showPref() {
 	if (window.consentManager) {
-		consentManager.showModal();
+		window.consentManager.showModal();
 	}
 }
 
 function hidePref() {
 	if (window.consentManager) {
-		consentManager.hideConsentInterface();
+		window.consentManager.hideConsentInterface();
 	}
 }
 
 // Legacy setConsent function for backward compatibility
 function setConsent(adCons, usrDtCons, persCons, anaCons) {
 	if (window.consentManager) {
-		consentManager.acceptCustom({
+		window.consentManager.acceptCustom({
 			functionality_storage: true,
 			security_storage: true,
 			ad_storage: adCons,
@@ -248,7 +248,7 @@ function setConsent(adCons, usrDtCons, persCons, anaCons) {
 
 function savePref() {
 	if (window.consentManager) {
-		consentManager.saveCustomPreferences();
+		window.consentManager.saveCustomPreferences();
 	}
 }
 

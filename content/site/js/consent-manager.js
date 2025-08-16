@@ -24,7 +24,16 @@ class ConsentManager {
             personalization_storage: { required: false, default: 'denied' }
         };
 
-        this.currentConsent = {};
+        // Initialize with default values
+        this.currentConsent = {
+            functionality_storage: true,
+            security_storage: true,
+            ad_storage: false,
+            ad_user_data: false,
+            ad_personalization: false,
+            analytics_storage: false,
+            personalization_storage: false
+        };
         this.isInitialized = false;
         
         this.init();
@@ -73,9 +82,14 @@ class ConsentManager {
         console.log('loadConsent() called. Stored data:', stored);
 
         if (stored && this.isValidConsent(stored)) {
-            this.currentConsent = stored.preferences;
+            // Update currentConsent but ensure required cookies are always true
+            this.currentConsent = {
+                ...stored.preferences,
+                functionality_storage: true,
+                security_storage: true
+            };
             this.updateGoogleConsent();
-            console.log('Valid consent found, not showing interface');
+            console.log('Valid consent found, updated currentConsent:', this.currentConsent);
             
             // Ensure no banner is visible
             const existingBanner = document.getElementById('consent-banner');
@@ -226,13 +240,51 @@ class ConsentManager {
         }
     }
 
+
     showModal() {
-        this.createModalHTML();
-        const overlay = document.getElementById('consent-overlay');
-        if (overlay) {
-            setTimeout(() => overlay.classList.add('show'), 100);
-            this.trapFocus(overlay);
+        console.log('showModal() called');
+        
+        let overlay = document.getElementById('consent-overlay');
+        console.log('Modal overlay found:', overlay);
+        
+        if (!overlay) {
+            console.log('Modal not found, creating it...');
+            this.createModalHTML();
+            overlay = document.getElementById('consent-overlay');
         }
+        
+        if (overlay) {
+            console.log('Showing modal');
+            overlay.style.display = 'flex';
+            setTimeout(() => {
+                overlay.classList.add('show');
+                console.log('Modal classes after show:', overlay.className);
+            }, 100);
+            
+            // Update toggle states based on current consent
+            this.updateToggleStates();
+            this.trapFocus(overlay);
+        } else {
+            console.error('Modal overlay still not found after creation attempt');
+        }
+    }
+
+    updateToggleStates() {
+        console.log('Updating toggle states with current consent:', this.currentConsent);
+        
+        Object.keys(this.consentTypes).forEach(type => {
+            const toggle = document.querySelector(`[data-consent="${type}"]`);
+            if (toggle) {
+                const shouldBeActive = this.consentTypes[type].required || this.currentConsent[type];
+                console.log(`Toggle ${type}: shouldBeActive=${shouldBeActive}, required=${this.consentTypes[type].required}`);
+                
+                if (shouldBeActive) {
+                    toggle.classList.add('active');
+                } else {
+                    toggle.classList.remove('active');
+                }
+            }
+        });
     }
 
     hideConsentInterface() {
@@ -275,13 +327,13 @@ class ConsentManager {
                     <a href="/${document.documentElement.lang || 'ro'}/privacy" target="_blank">Politica de confidențialitate</a>
                 </div>
                 <div class="consent-banner-actions">
-                    <button class="consent-btn consent-btn-outline" onclick="consentManager.acceptEssential()">
+                    <button class="consent-btn consent-btn-outline" data-consent-action="accept-essential">
                         Doar esențiale
                     </button>
-                    <button class="consent-btn consent-btn-secondary" onclick="consentManager.showModal()">
+                    <button class="consent-btn consent-btn-secondary" data-consent-action="customize">
                         Personalizează
                     </button>
-                    <button class="consent-btn consent-btn-primary" onclick="consentManager.acceptAll()">
+                    <button class="consent-btn consent-btn-primary" data-consent-action="accept-all">
                         Accept toate
                     </button>
                 </div>
@@ -297,6 +349,7 @@ class ConsentManager {
         const overlay = document.createElement('div');
         overlay.id = 'consent-overlay';
         overlay.className = 'consent-overlay';
+        overlay.style.display = 'none';
         overlay.innerHTML = `
             <div class="consent-modal" role="dialog" aria-labelledby="consent-title" aria-describedby="consent-description">
                 <div class="consent-header">
@@ -316,13 +369,13 @@ class ConsentManager {
                 </div>
                 
                 <div class="consent-actions">
-                    <button class="consent-btn consent-btn-outline" onclick="consentManager.acceptEssential()">
+                    <button class="consent-btn consent-btn-outline" data-consent-action="accept-essential">
                         Doar esențiale
                     </button>
-                    <button class="consent-btn consent-btn-secondary" onclick="consentManager.saveCustomPreferences()">
+                    <button class="consent-btn consent-btn-secondary" data-consent-action="accept-custom">
                         Salvează preferințele
                     </button>
-                    <button class="consent-btn consent-btn-primary" onclick="consentManager.acceptAll()">
+                    <button class="consent-btn consent-btn-primary" data-consent-action="accept-all">
                         Accept toate
                     </button>
                 </div>
@@ -346,59 +399,79 @@ class ConsentManager {
     }
 
     generateConsentOptions() {
-        const options = {
-            functionality_storage: {
-                title: 'Cookie-uri funcționale',
-                description: 'Necesare pentru funcționarea de bază a site-ului (autentificare, preferințe limba)',
-                required: true
-            },
-            analytics_storage: {
-                title: 'Cookie-uri de analiză',
-                description: 'Ne ajută să înțelegem cum folosești site-ul pentru a-l îmbunătăți',
-                required: false
-            },
-            ad_storage: {
-                title: 'Cookie-uri publicitare',
-                description: 'Utilizate pentru afișarea de reclame relevante',
-                required: false
-            },
-            ad_personalization: {
-                title: 'Personalizare reclame',
-                description: 'Personalizează reclamele în funcție de interesele tale',
-                required: false
-            },
-            personalization_storage: {
-                title: 'Cookie-uri de personalizare',
-                description: 'Salvează preferințele tale pentru o experiență personalizată',
-                required: false
-            }
-        };
-
-        return Object.keys(options).map(key => {
-            const option = options[key];
-            const isChecked = this.currentConsent[key] || option.required;
+        let html = '';
+        Object.keys(this.consentTypes).forEach(type => {
+            const config = this.consentTypes[type];
+            const isActive = config.required || this.currentConsent[type];
+            const isDisabled = config.required ? 'disabled' : '';
             
-            return `
-                <div class="consent-option ${option.required ? 'required' : ''}" onclick="consentManager.toggleOption('${key}')">
-                    <div class="consent-toggle ${isChecked ? 'active' : ''}" data-consent="${key}"></div>
-                    <div class="consent-option-content">
-                        <h3 class="consent-option-title">
-                            ${option.title}
-                            ${option.required ? '<span class="consent-required-badge">Obligatoriu</span>' : ''}
-                        </h3>
-                        <p class="consent-option-description">${option.description}</p>
+            html += `
+                <div class="consent-option" data-consent-toggle="${type}">
+                    <div class="consent-option-header">
+                        <h3 class="consent-option-title">${this.getConsentTitle(type)}</h3>
+                        <div class="consent-toggle ${isActive ? 'active' : ''} ${isDisabled}" data-consent="${type}">
+                            <div class="consent-toggle-slider"></div>
+                        </div>
                     </div>
+                    <p class="consent-option-description">${this.getConsentDescription(type)}</p>
                 </div>
             `;
-        }).join('');
+        });
+        return html;
+    }
+
+    getConsentTitle(type) {
+        const titles = {
+            functionality_storage: 'Cookie-uri funcționale',
+            security_storage: 'Cookie-uri de securitate',
+            ad_storage: 'Cookie-uri publicitare',
+            ad_user_data: 'Date utilizator pentru publicitate',
+            ad_personalization: 'Personalizare publicitate',
+            analytics_storage: 'Cookie-uri analitice',
+            personalization_storage: 'Cookie-uri personalizare'
+        };
+        return titles[type] || type;
+    }
+
+    getConsentDescription(type) {
+        const descriptions = {
+            functionality_storage: 'Necesare pentru funcționarea de bază a site-ului',
+            security_storage: 'Protejează site-ul împotriva atacurilor',
+            ad_storage: 'Permit afișarea de publicitate relevantă',
+            ad_user_data: 'Colectează date pentru optimizarea publicitații',
+            ad_personalization: 'Personalizează publicitatea în funcție de interese',
+            analytics_storage: 'Ajută la înțelegerea modului de utilizare a site-ului',
+            personalization_storage: 'Personalizează experiența utilizatorului'
+        };
+        return descriptions[type] || 'Descriere indisponibilă';
     }
 
     toggleOption(consentType) {
-        if (this.consentTypes[consentType]?.required) return;
+        console.log('toggleOption called for:', consentType);
+        console.log('Is required:', this.consentTypes[consentType]?.required);
+        console.log('Current consent state before toggle:', this.currentConsent);
+        
+        if (this.consentTypes[consentType]?.required) {
+            console.log('Cannot toggle required consent type');
+            return;
+        }
         
         const toggle = document.querySelector(`[data-consent="${consentType}"]`);
+        console.log('Toggle element found:', toggle);
         if (toggle) {
+            const wasActive = toggle.classList.contains('active');
+            console.log('Toggle was active before click:', wasActive);
+            
             toggle.classList.toggle('active');
+            const isActiveNow = toggle.classList.contains('active');
+            
+            // Update internal state
+            this.currentConsent[consentType] = isActiveNow;
+            console.log('Toggle is active after click:', isActiveNow);
+            console.log('Toggle classes after click:', toggle.className);
+            console.log('Updated consent state:', this.currentConsent);
+        } else {
+            console.error('Toggle element not found for:', consentType);
         }
     }
 
@@ -428,48 +501,7 @@ class ConsentManager {
                 console.log('Consent click detected on:', e.target, 'Text:', e.target.textContent, 'Classes:', e.target.className);
             }
             
-            // Accept all button - check multiple variations
-            if (e.target && (
-                e.target.matches('.consent-btn-primary') || 
-                e.target.textContent?.includes('Accept') || 
-                e.target.textContent?.includes('Принять') ||
-                e.target.textContent?.includes('toate')
-            )) {
-                console.log('Accept all button clicked');
-                e.preventDefault();
-                e.stopPropagation();
-                this.acceptAll();
-                return;
-            }
-            
-            // Personalize button - check multiple variations and parent elements
-            if (e.target && (
-                e.target.matches('.consent-btn-secondary') || 
-                e.target.textContent?.includes('Personalizează') || 
-                e.target.textContent?.includes('Настроить') ||
-                e.target.textContent?.includes('Personalizeaz') ||
-                e.target.closest('.consent-btn-secondary')
-            )) {
-                console.log('Personalize button clicked');
-                e.preventDefault();
-                e.stopPropagation();
-                this.showModal();
-                return;
-            }
-            
-            // Essential only button
-            if (e.target && (
-                e.target.matches('.consent-btn-outline') || 
-                e.target.textContent?.includes('esențiale') || 
-                e.target.textContent?.includes('необходимые') ||
-                e.target.textContent?.includes('Doar')
-            )) {
-                console.log('Essential only button clicked');
-                e.preventDefault();
-                e.stopPropagation();
-                this.acceptEssential();
-                return;
-            }
+            // Remove all text-based detection - use only data attributes
 
             // Data attribute buttons
             if (e.target && e.target.matches('[data-consent-action="customize"]')) {
@@ -504,10 +536,14 @@ class ConsentManager {
                 return;
             }
 
-            // Toggle consent options
-            if (e.target && e.target.closest('[data-consent-toggle]')) {
-                const toggleElement = e.target.closest('[data-consent-toggle]');
-                const consentType = toggleElement.getAttribute('data-consent-toggle');
+            // Toggle consent options - respond to clicks on toggle or entire option
+            if (e.target && (e.target.matches('[data-consent]') || e.target.closest('[data-consent-toggle]'))) {
+                let consentType;
+                if (e.target.matches('[data-consent]')) {
+                    consentType = e.target.getAttribute('data-consent');
+                } else {
+                    consentType = e.target.closest('[data-consent-toggle]').getAttribute('data-consent-toggle');
+                }
                 console.log('Toggle consent option:', consentType);
                 e.preventDefault();
                 e.stopPropagation();
@@ -587,12 +623,13 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // Check if already initialized to prevent duplicates
-    if (typeof consentManager === 'undefined' || !consentManager) {
-        consentManager = new ConsentManager({
+    if (typeof window.consentManager === 'undefined' || !window.consentManager) {
+        window.consentManager = new ConsentManager({
             showBanner: true,
             showModal: false,
             autoShow: true
         });
+        console.log('ConsentManager initialized on main site:', window.consentManager);
     } else {
         console.log('ConsentManager already exists, skipping initialization');
     }
@@ -600,8 +637,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Global functions for backward compatibility
 function setConsent(ad, userData, personalization, analytics) {
-    if (consentManager) {
-        consentManager.acceptCustom({
+    if (window.consentManager) {
+        window.consentManager.acceptCustom({
             functionality_storage: true,
             security_storage: true,
             ad_storage: ad,
@@ -614,13 +651,13 @@ function setConsent(ad, userData, personalization, analytics) {
 }
 
 function showConsentModal() {
-    if (consentManager) {
-        consentManager.showModal();
+    if (window.consentManager) {
+        window.consentManager.showModal();
     }
 }
 
 function acceptAllConsent() {
-    if (consentManager) {
-        consentManager.acceptAll();
+    if (window.consentManager) {
+        window.consentManager.acceptAll();
     }
 }
