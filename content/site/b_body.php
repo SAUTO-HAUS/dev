@@ -1,5 +1,7 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
+use App\Helper\PhoneHelper;
+
 
 
 include(_SITE_INCL.'/functions.php'); ?>
@@ -97,8 +99,17 @@ include(_SITE_INCL.'/functions.php'); ?>
 				<label for="mm_cbx" class="mm_lb"></label>
 			</nav>
 			
-			<!--<a class="call" href="tel:+37368689995">-->
-			<a class="call" <?php if ( isset($t_mp[2])&&$t_mp[2]=='tyres' ){echo'href="tel:+37368500573" title="(+373) 68 500 573"';}else{echo'href="tel:+37369977674" title="(+373) 699 77 674"';} ?>>
+			<a class="call" <?php 
+				if ( isset($t_mp[2])&&$t_mp[2]=='tyres' ){
+					$tyresPhone = PhoneHelper::getGeneralPhone();
+					echo'href="tel:'.$tyresPhone.'" title="'.PhoneHelper::formatPhone($tyresPhone, 'display').'"';
+				} elseif ( isset($t_mp[2])&&$t_mp[2]=='services'&&isset($t_mp[3])&&$t_mp[3]=='order' ) {
+					$orderPhone = PhoneHelper::getOrderPhone();
+					echo'href="tel:'.$orderPhone.'" title="'.PhoneHelper::formatPhone($orderPhone, 'display').'"';
+				} else {
+					$generalPhone = PhoneHelper::getGeneralPhone();
+					echo'href="tel:'.$generalPhone.'" title="'.PhoneHelper::formatPhone($generalPhone, 'display').'"';
+				} ?>>
 				<div class="txt"><?php echo $lng['w']['call']; ?></div>
 				<div class="img"></div>
 			</a>
@@ -219,8 +230,11 @@ include(_SITE_INCL.'/functions.php'); ?>
 		?>
 		<div class="col cnts">
 			<div class="ttl"><?php echo $lng['w']['contacts']; ?></div>
-			<a href="tel:+37369977674" class="phone">+(373)69-977-674</a>
-			<a href="tel:+37368689995" class="phone">+(373)68-689-995</a>
+			<?php 
+			$generalPhone = PhoneHelper::getGeneralPhone();
+			$formattedPhone = PhoneHelper::formatPhone($generalPhone, 'display');
+			?>
+			<a href="tel:<?php echo $generalPhone; ?>" class="phone"><?php echo $formattedPhone; ?></a>
 			<p>
 				<?php echo $lng['t']['x']['address'][0].'
 				<ul>

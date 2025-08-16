@@ -1,6 +1,8 @@
 <?php
 defined( '_DOIT' ) or die( 'Restricted access' );
 
+use App\Helper\PhoneHelper;
+
 /**
  * Get country name by ID in the specified language
  * @param int $countryId - ID of the country
@@ -594,6 +596,9 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                 $o_prc_bl = '';
                             }
 
+                            // Get dynamic phone number based on car data and context
+                            $dynamicPhone = PhoneHelper::getCarPhone($r, 'car_page');
+                            
                             $rtrn .= '
                             <div class="prc">
                                 <span class="val" title="'.$lng['w']['prc'].'">'.( $r['prc']>500 ? '<span class="i">'.parseCurr($prc).'</span> <span class="cur">'.( symb_rplc($r['cur']) ).'</span>' : '<span style="font-size: 1.5rem;">'.$lng['w']['negociabil'] ).'</span></span>
@@ -601,7 +606,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                             </div>
                             <div class="doit">
                                 <!--<a class="btn call" href="tel:'.$phone['orange'][ rand(0,1) ]['tel'].'">'.$lng['w']['call'].'</a>-->
-                                <a class="btn call" href="tel:+37369977674">'.$lng['w']['call'].'</a>
+                                <a class="btn call" href="tel:'.$dynamicPhone.'">'.$lng['w']['call'].'</a>
                                 
                                  <div class="btn msg2">
                                   <script data-b24-form="click/6/ijhsqr" data-skip-moving="true">

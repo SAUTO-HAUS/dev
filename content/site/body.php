@@ -1,6 +1,6 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
-
+use App\Helper\PhoneHelper;
 
 include(_SITE_INCL.'/functions.php'); ?>
 
@@ -97,8 +97,12 @@ include(_SITE_INCL.'/functions.php'); ?>
 				<label for="mm_cbx" class="mm_lb"></label>
 			</nav>
 			
-			<!--<a class="call" href="tel:+37368689995">-->
-			<a class="call" <?php if ( isset($t_mp[2])&&$t_mp[2]=='tyres' ){echo'href="tel:+37368500573" title="(+373) 68 500 573"';}else{echo'href="tel:+37369977674" title="(+373) 699 77 674"';} ?>>
+			<?php 
+			// Get contextual phone number
+			$contextualPhone = PhoneHelper::getContextualPhone($t_mp);
+			$formattedPhone = PhoneHelper::formatPhone($contextualPhone, 'display');
+			?>
+			<a class="call" href="tel:<?php echo $contextualPhone; ?>" title="<?php echo $formattedPhone; ?>">
 				<div class="txt"><?php echo $lng['w']['call']; ?></div>
 				<div class="img"></div>
 			</a>
@@ -214,8 +218,11 @@ include(_SITE_INCL.'/functions.php'); ?>
 		?>
 		<div class="col cnts">
 			<div class="ttl"><?php echo $lng['w']['contacts']; ?></div>
-			<a href="tel:+37369977674" class="phone">+(373)69-977-674</a>
-			<a href="tel:+37368689995" class="phone">+(373)68-689-995</a>
+			<?php 
+			$generalPhone = PhoneHelper::getGeneralPhone();
+			$formattedGeneralPhone = PhoneHelper::formatPhone($generalPhone, 'display');
+			?>
+			<a href="tel:<?php echo $generalPhone; ?>" class="phone"><?php echo $formattedGeneralPhone; ?></a>
 			<p>
 				<?php echo $lng['t']['x']['address'][0].'
 				<ul>

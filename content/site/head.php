@@ -1,4 +1,6 @@
-<?php defined( '_DOIT' ) or die( 'Restricted access' );?>
+<?php defined( '_DOIT' ) or die( 'Restricted access' );
+
+use App\Helper\PhoneHelper;?>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
@@ -119,7 +121,7 @@ include('plugins/dev_tools/meta_gen.php');
 						"postalCode":"MD2024",
 						"addressLocality":"Chisinau"
 					},
-					"telephone":"+373 68 689 995 , +373 69 977 674",
+					"telephone":"<?php echo PhoneHelper::getGeneralPhone(); ?>",
 					"name":"Sauto SRL"
 				}
 			}
@@ -158,7 +160,7 @@ include('plugins/dev_tools/meta_gen.php');
 						"postalCode":"MD2024",
 						"addressLocality":"Chisinau"
 					},
-					"telephone":"+373 68 689 995 , +373 69 977 674",
+					"telephone":"<?php echo PhoneHelper::getGeneralPhone(); ?>",
 					"name":"Sauto SRL"
 				}
 			}
@@ -174,7 +176,7 @@ include('plugins/dev_tools/meta_gen.php');
 			"name": "Sauto.md",
 			"image": "https://www.sauto.md/media/images/site/sauto_new_logo.png",
 			"legalName": "Sauto SRL",
-			"telephone": "+373 68 689 995 , +373 69 977 674",
+			"telephone": "<?php echo PhoneHelper::getGeneralPhone(); ?>",
 			"address": "Moldova, Chisinau, Str. Calea Mosilor 11, MD2024",
 			"makesOffer" : {
 				"@type": "Offer",
