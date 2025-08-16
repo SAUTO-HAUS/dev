@@ -206,92 +206,63 @@ include('plugins/dev_tools/meta_gen.php');
 }
 ?>
 
-<style>
-    .cons_bx {
-		position:fixed; bottom:0; left:0; right:0;
-		background-color:#333d;
-		padding:2rem 5rem;
-		display:flex;
-		justify-content:space-between;
-		align-items:center;
-		z-index:1000;
-		color:#fff;
-		font-family:"def_l";
-		font-size:1.1rem;
-	}
-    .cons_btns {display:flex; gap:10px;}
-	.cons_btns > button {padding:.7rem 1rem; background-color:#fff9; color:#333; font-family:"def"; font-size:1rem; border:none; border-radius:50px; transition:background-color .3s;}
-	.cons_btns > button:hover {background-color:#fff;}
-	.cons_bx input[type="checkbox"] {accent-color:#e2001a; margin:0 .2rem 0 1rem;}
-	
-	#pref_bx .ttl {border-bottom:1px solid #e2001a; font-size:1.3rem; margin:0 0 .5rem; padding:0 0 0 .2rem;}
-	
-	#pref_bx label {position:relative; padding-left:1rem; cursor:pointer;}
-	#pref_bx label > input {display:none;}
-	
-	#pref_bx label > .txt {border-bottom:1px solid transparent;}
-	#pref_bx label:hover > .txt {border-bottom-color:#fff;}
-	
-	#pref_bx .chk_bx {width:3rem; height:1.5rem; background-color:#333; position:absolute; right:-3.5rem; display:inline-block; border-radius:5rem; padding:.1rem; transition:background-color .3s;}
-	#pref_bx .chk_bx.def {cursor:not-allowed;}
-	#pref_bx .chk_bx > .dot {width:1.3rem; height:1.3rem; background-color:#fff; border-radius:50%; margin-left:0; transition:margin-left .3s;}
-	
-	#pref_bx input:checked ~ .chk_bx, #pref_bx .chk_bx.def {background-color:#e2001a;}
-	#pref_bx input:checked ~ .chk_bx > .dot, #pref_bx .chk_bx.def > .dot {margin-left:calc(100% - 1.3rem);}
-</style>
+
+<!-- Modern Consent Manager CSS -->
+<link rel="stylesheet" href="/content/site/css/consent-modal.css">
+
+<!-- Modern Consent Manager JavaScript -->
+<script src="/content/site/js/consent-manager.js"></script>
+
 <script>
+// Legacy support for existing consent functions
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
-gtag('consent', 'default', {
-	'ad_storage': 'denied',
-	'ad_user_data': 'denied',
-	'ad_personalization': 'denied',
-	'analytics_storage': 'denied'
-});
 
-function showPref(){document.getElementById('cons_bx').style.display = 'none'; document.getElementById('pref_bx').style.display = 'flex';}
-function hidePref(){document.getElementById('pref_bx').style.display = 'none'; document.getElementById('cons_bx').style.display = 'flex';}
+// Backward compatibility functions
+function showPref() {
+	if (window.consentManager) {
+		consentManager.showModal();
+	}
+}
 
+function hidePref() {
+	if (window.consentManager) {
+		consentManager.hideConsentInterface();
+	}
+}
+
+// Legacy setConsent function for backward compatibility
 function setConsent(adCons, usrDtCons, persCons, anaCons) {
-	updateConsent(adCons, usrDtCons, persCons, anaCons);
-	document.getElementById('cons_bx').style.display = 'none';
+	if (window.consentManager) {
+		consentManager.acceptCustom({
+			functionality_storage: true,
+			security_storage: true,
+			ad_storage: adCons,
+			ad_user_data: usrDtCons,
+			ad_personalization: persCons,
+			analytics_storage: anaCons,
+			personalization_storage: anaCons
+		});
+	}
 }
 
 function savePref() {
-	const adCons = document.getElementById('ad-storage').checked;
-	const usrDtCons = document.getElementById('ad-user-data').checked;
-	const persCons = document.getElementById('ad-personalization').checked;
-	const anaCons = document.getElementById('analytics-storage').checked;
-	setConsent(adCons, usrDtCons, persCons, anaCons);
-	document.getElementById('pref_bx').style.display = 'none';
-}
-
-function updateConsent(ad_cons, usr_dt_cons, pers_cons, ana_cons ) {
-	gtag('consent', 'update', {
-		'ad_storage': ad_cons ? 'granted' : 'denied',
-		'ad_user_data': usr_dt_cons ? 'granted' : 'denied',
-		'ad_personalization': pers_cons ? 'granted' : 'denied',
-		'analytics_storage': ana_cons ? 'granted' : 'denied'
-	});
-	localStorage.setItem( 'z_cks_alwd', '{"ad":'+(ad_cons?'true':'false')+', "usrDt":'+(usr_dt_cons?'true':'false')+', "prsn":'+(pers_cons?'true':'false')+', "ana":'+(ana_cons?'true':'false')+'}' );
-	localStorage.setItem( 'z_cks_alwd_t', unixTime() );
-	localStorage.setItem( 'z_cks_alwd_v', '20325' );
-}
-
-$(document).ready(function(){
-	
-	if ( localStorage.getItem('z_cks_alwd') !== null && (localStorage.getItem('z_cks_alwd_t') !== null && parseInt( localStorage.getItem('z_cks_alwd_t') )>=1719846403) && (localStorage.getItem('z_cks_alwd_v') !== null && localStorage.getItem('z_cks_alwd_v')=='20325') ){
-		const cksAlwdObj = JSON.parse( localStorage.getItem('z_cks_alwd') );
-		var adCks = cksAlwdObj['ad']?true:false; var usrDtCks = cksAlwdObj['usrDt']?true:false; var prsnCks = cksAlwdObj['prsn']?true:false; var anaCks = cksAlwdObj['ana']?true:false;
-		updateConsent(adCks, usrDtCks, prsnCks, anaCks);
-		//if ( unixTime() >= localStorage.getItem('z_cks_alwd_t') ){}
-	}else{
-		if (localStorage.getItem('z_cks_alwd') !== null){localStorage.removeItem( 'z_cks_alwd' );}
-		if (localStorage.getItem('z_cks_alwd_t') !== null){localStorage.removeItem( 'z_cks_alwd_t' );}
-		if (localStorage.getItem('z_cks_alwd_v') !== null){localStorage.removeItem( 'z_cks_alwd_v' );}
-		document.getElementById('cons_bx').style.display = 'flex';
+	if (window.consentManager) {
+		consentManager.saveCustomPreferences();
 	}
-})
+}
+
+// ConsentManager will be initialized by the included JS file
+
+// Clean up old consent data on page load
+$(document).ready(function(){
+	// Remove old consent storage keys
+	['z_cks_alwd', 'z_cks_alwd_t', 'z_cks_alwd_v'].forEach(key => {
+		if (localStorage.getItem(key) !== null) {
+			localStorage.removeItem(key);
+		}
+	});
+});
 </script>
 
 <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
