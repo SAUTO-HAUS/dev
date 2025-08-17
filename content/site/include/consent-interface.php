@@ -10,12 +10,12 @@ $consentStrings = [
         'title' => 'Setări Cookie-uri',
         'subtitle' => 'Controlează cum sunt utilizate datele tale',
         'description' => 'Respectăm confidențialitatea ta. Alege ce tipuri de cookie-uri să accepti.',
-        'privacy_link' => 'Citește politica de confidențialitate',
-        'banner_text' => 'Folosim cookie-uri pentru a îmbunătăți experiența ta pe site.',
+        'privacy_link' => 'Politica de confidențialitate',
+        'banner_text' => 'Folosim cookie-uri pentru experiența ta.',
         'accept_all' => 'Accept toate',
-        'accept_essential' => 'Doar esențiale',
+        'accept_essential' => 'Esențiale',
         'customize' => 'Personalizează',
-        'save_preferences' => 'Salvează preferințele',
+        'save_preferences' => 'Salvează',
         'footer_text' => 'Poți modifica aceste setări oricând din',
         'footer_link' => 'pagina de confidențialitate',
         'required_badge' => 'Obligatoriu',
@@ -51,7 +51,7 @@ $consentStrings = [
         'accept_all' => 'Принять все',
         'accept_essential' => 'Только необходимые',
         'customize' => 'Настроить',
-        'save_preferences' => 'Сохранить настройки',
+        'save_preferences' => 'Сохранить',
         'footer_text' => 'Вы можете изменить эти настройки в любое время на',
         'footer_link' => 'странице конфиденциальности',
         'required_badge' => 'Обязательно',
@@ -87,7 +87,7 @@ $consentStrings = [
         'accept_all' => 'Accept All',
         'accept_essential' => 'Essential Only',
         'customize' => 'Customize',
-        'save_preferences' => 'Save Preferences',
+        'save_preferences' => 'Save',
         'footer_text' => 'You can change these settings anytime from the',
         'footer_link' => 'privacy page',
         'required_badge' => 'Required',
@@ -189,14 +189,8 @@ function generateConsentOptions($strings) {
         </div>
         
         <div class="consent-actions">
-            <button class="consent-btn consent-btn-outline" data-consent-action="accept-essential">
-                <?php echo $strings['accept_essential']; ?>
-            </button>
             <button class="consent-btn consent-btn-secondary" data-consent-action="accept-custom">
                 <?php echo $strings['save_preferences']; ?>
-            </button>
-            <button class="consent-btn consent-btn-primary" data-consent-action="accept-all">
-                <?php echo $strings['accept_all']; ?>
             </button>
         </div>
         

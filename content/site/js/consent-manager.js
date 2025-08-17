@@ -5,13 +5,55 @@
 class ConsentManager {
     constructor(options = {}) {
         this.options = {
-            storageKey: 'sauto_consent_preferences',
+            storageKey: 'sauto_consent_v2',
             storageVersion: '2.1',
             expiryDays: 365,
             showBanner: true,
             showModal: false,
             autoShow: true,
             ...options
+        };
+        
+        this.languageTexts = {
+            'ro': {
+                'title': 'Setări Cookie-uri',
+                'subtitle': 'Controlează cum sunt utilizate datele tale',
+                'description': 'Respectăm confidențialitatea ta. Alege ce tipuri de cookie-uri să accepti.',
+                'privacy_link': 'Politica de confidențialitate',
+                'banner_text': 'Folosim cookie-uri pentru a îmbunătăți experiența ta pe site.',
+                'accept_all': 'Accept toate',
+                'accept_essential': 'Esențiale',
+                'customize': 'Personalizează',
+                'save_preferences': 'Salvează',
+                'footer_text': 'Poți modifica aceste setări oricând din',
+                'footer_link': 'pagina de confidențialitate'
+            },
+            'ru': {
+                'title': 'Настройки Cookie',
+                'subtitle': 'Контролируйте использование ваших данных',
+                'description': 'Мы уважаем вашу конфиденциальность. Выберите типы файлов cookie для принятия.',
+                'privacy_link': 'Политика конфиденциальности',
+                'banner_text': 'Мы используем файлы cookie для улучшения вашего опыта на сайте.',
+                'accept_all': 'Принять все',
+                'accept_essential': 'Основные',
+                'customize': 'Настроить',
+                'save_preferences': 'Сохранить',
+                'footer_text': 'Вы можете изменить эти настройки в любое время на',
+                'footer_link': 'странице конфиденциальности'
+            },
+            'en': {
+                'title': 'Cookie Settings',
+                'subtitle': 'Control how your data is used',
+                'description': 'We respect your privacy. Choose which types of cookies to accept.',
+                'privacy_link': 'Privacy Policy',
+                'banner_text': 'We use cookies to improve your experience on our site.',
+                'accept_all': 'Accept All',
+                'accept_essential': 'Essential',
+                'customize': 'Customize',
+                'save_preferences': 'Save',
+                'footer_text': 'You can change these settings anytime from',
+                'footer_link': 'privacy page'
+            }
         };
 
         this.consentTypes = {
@@ -55,6 +97,7 @@ class ConsentManager {
         this.acceptEssential = this.acceptEssential.bind(this);
         this.showModal = this.showModal.bind(this);
         this.saveCustomPreferences = this.saveCustomPreferences.bind(this);
+        this.getLanguageTexts = this.getLanguageTexts.bind(this);
 
         // Load existing consent or show consent interface
         this.loadConsent();
@@ -322,17 +365,45 @@ class ConsentManager {
         
         if (overlay) {
             console.log('Showing modal');
+            
+            document.body.style.overflow = 'hidden';
+            document.documentElement.style.overflow = 'hidden';
+            document.body.style.position = 'fixed';
+            document.body.style.width = '100%';
+            
             overlay.style.display = 'flex';
             setTimeout(() => {
                 overlay.classList.add('show');
                 console.log('Modal classes after show:', overlay.className);
             }, 100);
             
+            // Add click outside to close functionality
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) {
+                    this.hideModal();
+                }
+            });
+            
             // Update toggle states based on current consent
             this.updateToggleStates();
             this.trapFocus(overlay);
         } else {
             console.error('Modal overlay still not found after creation attempt');
+        }
+    }
+
+    hideModal() {
+        const overlay = document.getElementById('consent-overlay');
+        if (overlay) {
+            overlay.classList.remove('show');
+            setTimeout(() => {
+                overlay.style.display = 'none';
+                // Restore body scrolling
+                document.body.style.overflow = '';
+                document.documentElement.style.overflow = '';
+                document.body.style.position = '';
+                document.body.style.width = '';
+            }, 400);
         }
     }
 
@@ -387,21 +458,24 @@ class ConsentManager {
         const banner = document.createElement('div');
         banner.id = 'consent-banner';
         banner.className = 'consent-banner';
+        const lang = document.documentElement.lang || 'ro';
+        const texts = this.getLanguageTexts(lang);
+        
         banner.innerHTML = `
             <div class="consent-banner-content">
                 <div class="consent-banner-text">
-                    Folosim cookie-uri pentru a îmbunătăți experiența ta pe site. 
-                    <a href="/${document.documentElement.lang || 'ro'}/privacy" target="_blank">Politica de confidențialitate</a>
+                    ${texts.banner_text} 
+                    <a href="/${lang}/privacy" target="_blank">${texts.privacy_link}</a>
                 </div>
                 <div class="consent-banner-actions">
-                    <button class="consent-btn consent-btn-outline" data-consent-action="accept-essential">
-                        Doar esențiale
+                    <button class="consent-btn consent-btn-secondary" data-consent-action="accept-essential">
+                        ${texts.accept_essential}
                     </button>
                     <button class="consent-btn consent-btn-secondary" data-consent-action="customize">
-                        Personalizează
+                        ${texts.customize}
                     </button>
                     <button class="consent-btn consent-btn-primary" data-consent-action="accept-all">
-                        Accept toate
+                        ${texts.accept_all}
                     </button>
                 </div>
             </div>
@@ -417,39 +491,36 @@ class ConsentManager {
         overlay.id = 'consent-overlay';
         overlay.className = 'consent-overlay';
         overlay.style.display = 'none';
+        const lang = document.documentElement.lang || 'ro';
+        const texts = this.getLanguageTexts(lang);
+        
         overlay.innerHTML = `
-            <div class="consent-modal" role="dialog" aria-labelledby="consent-title" aria-describedby="consent-description">
+            <div class="consent-modal">
                 <div class="consent-header">
-                    <h2 id="consent-title" class="consent-title">Setări Cookie-uri</h2>
-                    <p class="consent-subtitle">Controlează cum sunt utilizate datele tale</p>
+                    <h2 id="consent-title" class="consent-title">${texts.title}</h2>
+                    <p class="consent-subtitle">${texts.subtitle}</p>
                 </div>
                 
                 <div class="consent-body">
                     <p id="consent-description" class="consent-description">
-                        Respectăm confidențialitatea ta. Alege ce tipuri de cookie-uri să accepti. 
-                        <a href="/${document.documentElement.lang || 'ro'}/privacy" target="_blank">Citește politica de confidențialitate</a>
+                        ${texts.description} 
+                        <a href="/${lang}/privacy" target="_blank">${texts.privacy_link}</a>
                     </p>
                     
                     <div class="consent-options">
-                        ${this.generateConsentOptions()}
+                        ${this.generateConsentOptions(lang)}
                     </div>
                 </div>
                 
                 <div class="consent-actions">
-                    <button class="consent-btn consent-btn-outline" data-consent-action="accept-essential">
-                        Doar esențiale
-                    </button>
                     <button class="consent-btn consent-btn-secondary" data-consent-action="accept-custom">
-                        Salvează preferințele
-                    </button>
-                    <button class="consent-btn consent-btn-primary" data-consent-action="accept-all">
-                        Accept toate
+                        ${texts.save_preferences}
                     </button>
                 </div>
                 
                 <div class="consent-footer">
                     <p class="consent-footer-text">
-                        Poți modifica aceste setări oricând din <a href="/${document.documentElement.lang || 'ro'}/privacy">pagina de confidențialitate</a>
+                        ${texts.footer_text} <a href="/${lang}/privacy">${texts.footer_link}</a>
                     </p>
                 </div>
             </div>
@@ -465,7 +536,11 @@ class ConsentManager {
         });
     }
 
-    generateConsentOptions() {
+    getLanguageTexts(lang) {
+        return this.languageTexts[lang] || this.languageTexts['ro'];
+    }
+
+    generateConsentOptions(lang = 'ro') {
         let html = '';
         Object.keys(this.consentTypes).forEach(type => {
             const config = this.consentTypes[type];
