@@ -14,7 +14,7 @@ $consentStrings = [
         'banner_text' => 'Folosim cookie-uri pentru experiența ta.',
         'accept_all' => 'Accept toate',
         'accept_essential' => 'Esențiale',
-        'customize' => 'Personalizează',
+        'customize' => 'Setează',
         'save_preferences' => 'Salvează',
         'required_badge' => 'Obligatoriu',
         'consent_types' => [
@@ -185,6 +185,12 @@ function generateConsentOptions($strings) {
         <div class="consent-actions">
             <button class="consent-btn consent-btn-secondary" data-consent-action="accept-custom">
                 <?php echo $strings['save_preferences']; ?>
+            </button>
+            <button class="consent-btn consent-btn-outline mobile-only" data-consent-action="accept-essential">
+                <?php echo $strings['accept_essential']; ?>
+            </button>
+            <button class="consent-btn consent-btn-primary mobile-only" data-consent-action="accept-all">
+                <?php echo $strings['accept_all']; ?>
             </button>
         </div>
     </div>

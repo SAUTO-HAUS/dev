@@ -56,15 +56,19 @@
     <link rel="stylesheet" href="/content/site/css/consent-modal.css">
     <script src="/content/site/js/consent-manager.js" onload="console.log('consent-manager.js loaded successfully')" onerror="console.error('Failed to load consent-manager.js')"></script>
     <script>
-        // Initialize ConsentManager for testing
+        // Initialize ConsentManager for testing (avoid double initialization)
         document.addEventListener('DOMContentLoaded', function() {
             if (typeof ConsentManager !== 'undefined') {
-                window.consentManager = new ConsentManager({
-                    autoShow: false,
-                    showBanner: false,
-                    showModal: false
-                });
-                console.log('ConsentManager initialized for testing');
+                if (!window.consentManager) {
+                    window.consentManager = new ConsentManager({
+                        autoShow: false,
+                        showBanner: false,
+                        showModal: false
+                    });
+                    console.log('ConsentManager initialized for testing');
+                } else {
+                    console.log('Using existing ConsentManager (skip re-init)');
+                }
             }
         });
 

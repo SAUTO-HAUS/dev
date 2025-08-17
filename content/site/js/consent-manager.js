@@ -23,7 +23,7 @@ class ConsentManager {
                 'banner_text': 'Folosim cookie-uri pentru a îmbunătăți experiența ta pe site.',
                 'accept_all': 'Accept toate',
                 'accept_essential': 'Esențiale',
-                'customize': 'Personalizează',
+                'customize': 'Setează',
                 'save_preferences': 'Salvează'
             },
             'ru': {
@@ -117,6 +117,38 @@ class ConsentManager {
             'ad_personalization': 'denied',
             'analytics_storage': 'denied',
             'personalization_storage': 'denied'
+        });
+    }
+
+    attachToggleHandlers() {
+        const overlay = document.getElementById('consent-overlay');
+        if (!overlay) return;
+        // Remove any previous handlers by cloning (simple safe reset)
+        // Not strictly necessary, but prevents duplicates on repeated opens
+        const toggles = overlay.querySelectorAll('[data-consent]');
+        const containers = overlay.querySelectorAll('[data-consent-toggle]');
+
+        toggles.forEach(el => {
+            // Ensure pointer events are allowed
+            el.style.pointerEvents = 'auto';
+            el.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const type = el.getAttribute('data-consent');
+                this.toggleOption(type);
+            }, { passive: false });
+        });
+
+        containers.forEach(el => {
+            el.style.cursor = 'pointer';
+            el.addEventListener('click', (e) => {
+                // Avoid double-trigger if clicking directly on the toggle
+                if (e.target.closest('[data-consent]')) return;
+                e.preventDefault();
+                e.stopPropagation();
+                const type = el.getAttribute('data-consent-toggle');
+                this.toggleOption(type);
+            }, { passive: false });
         });
     }
 
@@ -380,6 +412,8 @@ class ConsentManager {
             
             // Update toggle states based on current consent
             this.updateToggleStates();
+            // Attach direct handlers to ensure clicks are captured
+            this.attachToggleHandlers();
             this.trapFocus(overlay);
         } else {
             console.error('Modal overlay still not found after creation attempt');
