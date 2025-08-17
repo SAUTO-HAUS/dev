@@ -1,4 +1,3 @@
-/* Modern Consent Modal Styles */
 .consent-overlay {
     position: fixed;
     top: 0;
@@ -62,7 +61,7 @@
 }
 
 .consent-title {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     font-weight: 800;
     color: white;
     margin: 0 0 0.5rem 0;
@@ -73,10 +72,10 @@
 }
 
 .consent-subtitle {
-    font-size: 1.1rem;
+    font-size: 1rem;
     color: rgba(255, 255, 255, 0.9);
     margin: 0;
-    line-height: 1.5;
+    line-height: 1.2;
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     position: relative;
     z-index: 1;
@@ -166,10 +165,12 @@
     background: linear-gradient(145deg, #e2e8f0, #cbd5e1);
     border-radius: 1rem;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: background-color 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
     flex-shrink: 0;
     box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(0, 0, 0, 0.1);
+    box-sizing: border-box; 
+    line-height: 0; 
 }
 
 .consent-toggle.disabled {
@@ -185,19 +186,21 @@
 .consent-toggle::after {
     content: '';
     position: absolute;
-    top: 0.125rem;
+    top: 50%;
     left: 0.125rem;
     width: 1.5rem;
     height: 1.5rem;
     background: linear-gradient(145deg, #ffffff, #f1f5f9);
     border-radius: 50%;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: transform 150ms cubic-bezier(0.2, 0, 0.2, 1);
     z-index: 1;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.2);
+    transform: translateY(-50%); 
+    will-change: transform; 
 }
 
 .consent-toggle.active::after {
-    transform: translateX(1.75rem);
+    transform: translate(1.75rem, -50%);
     background: linear-gradient(145deg, #ffffff, #fef7f7);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.3);
 }
