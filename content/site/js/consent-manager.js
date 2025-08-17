@@ -25,8 +25,8 @@ class ConsentManager {
                 'accept_essential': 'Esențiale',
                 'customize': 'Personalizează',
                 'save_preferences': 'Salvează',
-                'footer_text': 'Poți modifica aceste setări oricând din',
-                'footer_link': 'pagina de confidențialitate'
+                'footer_text': '',
+                'footer_link': ''
             },
             'ru': {
                 'title': 'Настройки Cookie',
@@ -38,8 +38,8 @@ class ConsentManager {
                 'accept_essential': 'Основные',
                 'customize': 'Настроить',
                 'save_preferences': 'Сохранить',
-                'footer_text': 'Вы можете изменить эти настройки в любое время на',
-                'footer_link': 'странице конфиденциальности'
+                'footer_text': '',
+                'footer_link': ''
             },
             'en': {
                 'title': 'Cookie Settings',
@@ -51,8 +51,8 @@ class ConsentManager {
                 'accept_essential': 'Essential',
                 'customize': 'Customize',
                 'save_preferences': 'Save',
-                'footer_text': 'You can change these settings anytime from',
-                'footer_link': 'privacy page'
+                'footer_text': '',
+                'footer_link': ''
             }
         };
 

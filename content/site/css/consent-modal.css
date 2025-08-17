@@ -28,7 +28,7 @@
     box-shadow: 0 2rem 4rem rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(255, 255, 255, 0.1);
     max-width: 42rem;
     width: 90%;
-    max-height: 85vh;
+    max-height: 70vh;
     overflow-y: auto;
     position: relative;
     transform: translateY(2rem) scale(0.95);
@@ -83,7 +83,9 @@
 }
 
 .consent-body {
-    padding: 2rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    padding-top: 1.5rem;
     background: linear-gradient(to bottom, #ffffff, #f8fafc);
 }
 
@@ -233,16 +235,15 @@
 
 .consent-actions {
     display: flex;
-    gap: 1rem;
-    padding: 0 2rem 2rem;
     flex-wrap: wrap;
+    justify-content: center;
     background: linear-gradient(to top, #f8fafc, #ffffff);
     border-radius: 0 0 1.5rem 1.5rem;
 }
 
 .consent-btn {
-    flex: 1;
-    min-width: 9rem;
+    flex: 0.5;
+    min-width: 4rem;
     padding: 1rem 2rem;
     border: none;
     border-radius: 0.75rem;
@@ -365,8 +366,13 @@
 @media (max-width: 48rem) {
     .consent-modal {
         width: 95%;
-        margin: 1rem;
-        max-height: 90vh;
+        margin: 0rem 0.5rem 0.5rem 0.5rem;
+        max-height: 95vh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        position: relative;
+        display: flex;
+        flex-direction: column;
     }
     
     .consent-header,
@@ -411,7 +417,7 @@
     bottom: 0;
     left: 0;
     right: 0;
-    background: #808080;
+    background: rgba(128, 128, 128, 0.8);
     border-top: none;
     box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.15), 0 -2px 8px rgba(226, 0, 26, 0.1);
     padding: 2rem;
@@ -485,6 +491,7 @@
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     border-bottom: 1px solid transparent;
     transition: all 0.3s ease;
+    white-space: nowrap;
 }
 
 .consent-banner-text a:hover {
@@ -528,37 +535,98 @@
 
 @media (max-width: 48rem) {
     .consent-banner {
-        padding: 1.5rem !important;
+        padding: 0.75rem !important;
         border-radius: 1rem 1rem 0 0 !important;
+        background: rgba(128, 128, 128, 0.8) !important;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        z-index: 10000;
+        max-height: none;
+        height: auto;
+        overflow: visible;
+        transform: translateY(-10px);
     }
     
     .consent-banner-content {
         flex-direction: column;
         align-items: stretch;
         text-align: center;
-        gap: 1.5rem;
+        gap: 0.75rem;
     }
     
     .consent-banner-content::before {
-        position: static;
-        transform: none;
-        align-self: center;
-        margin-bottom: 0.5rem;
+        display: none;
     }
     
     .consent-banner-text {
         padding-left: 0;
         min-width: auto;
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+    
+    .consent-banner-text a {
+        white-space: nowrap;
     }
     
     .consent-banner-actions {
         justify-content: center;
-        gap: 0.75rem;
+        gap: 0.5rem;
+        flex-wrap: nowrap;
+        width: 100%;
     }
     
     .consent-banner .consent-btn {
         flex: 1;
         min-width: auto;
+        max-width: 45%;
+        font-size: 0.8rem;
+        padding: 0.5rem 0.75rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .consent-options {
+        gap: 0.25rem;
+    }
+    
+    .consent-option {
+        padding: 0.75rem;
+    }
+    
+    .consent-option-title {
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .consent-option-description {
+        font-size: 0.8rem;
+        line-height: 1.3;
+    }
+    
+    .consent-description {
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+    
+    .consent-header {
+        padding-top: 1rem;
+        padding-bottom: 0.75rem;
+    }
+    
+    .consent-body {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    .consent-actions {
+        padding-top: 0rem;
+        padding-bottom: 4.5rem;
     }
 }
-
