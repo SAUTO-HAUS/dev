@@ -16,8 +16,6 @@ $consentStrings = [
         'accept_essential' => 'Esențiale',
         'customize' => 'Personalizează',
         'save_preferences' => 'Salvează',
-        'footer_text' => '',
-        'footer_link' => '',
         'required_badge' => 'Obligatoriu',
         'consent_types' => [
             'functionality_storage' => [
@@ -52,8 +50,6 @@ $consentStrings = [
         'accept_essential' => 'Только необходимые',
         'customize' => 'Настроить',
         'save_preferences' => 'Сохранить',
-        'footer_text' => '',
-        'footer_link' => '',
         'required_badge' => 'Обязательно',
         'consent_types' => [
             'functionality_storage' => [
@@ -88,8 +84,6 @@ $consentStrings = [
         'accept_essential' => 'Essential Only',
         'customize' => 'Customize',
         'save_preferences' => 'Save',
-        'footer_text' => '',
-        'footer_link' => '',
         'required_badge' => 'Required',
         'consent_types' => [
             'functionality_storage' => [
@@ -192,12 +186,6 @@ function generateConsentOptions($strings) {
             <button class="consent-btn consent-btn-secondary" data-consent-action="accept-custom">
                 <?php echo $strings['save_preferences']; ?>
             </button>
-        </div>
-        
-        <div class="consent-footer">
-            <p class="consent-footer-text">
-                <?php echo $strings['footer_text']; ?> <a href="<?php echo $privacyUrl; ?>"><?php echo $strings['footer_link']; ?></a>
-            </p>
         </div>
     </div>
 </div>
