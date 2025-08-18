@@ -419,8 +419,13 @@ class ConsentManager {
             
             // Update toggle states based on current consent
             this.updateToggleStates();
-            // Attach direct handlers to ensure clicks are captured
-            this.attachToggleHandlers();
+            // Preset UI: show all non-required categories as active by default in settings
+            this.presetAllNonRequiredActive();
+            // Attach direct handlers once to ensure clicks are captured (avoid duplicates)
+            if (!overlay.dataset.handlersAttached) {
+                this.attachToggleHandlers();
+                overlay.dataset.handlersAttached = '1';
+            }
             this.trapFocus(overlay);
         } else {
             console.error('Modal overlay still not found after creation attempt');
@@ -457,6 +462,16 @@ class ConsentManager {
                     toggle.classList.remove('active');
                 }
             }
+        });
+    }
+
+    // UI-only preset: mark all non-required toggles as active in the settings modal
+    // Does NOT modify this.currentConsent until user clicks Save
+    presetAllNonRequiredActive() {
+        Object.keys(this.consentTypes).forEach(type => {
+            if (this.consentTypes[type].required) return;
+            const toggle = document.querySelector(`[data-consent="${type}"]`);
+            if (toggle) toggle.classList.add('active');
         });
     }
 
@@ -785,21 +800,6 @@ class ConsentManager {
                 e.preventDefault();
                 e.stopPropagation();
                 this.saveCustomPreferences();
-                return;
-            }
-
-            // Toggle consent options - respond to clicks on toggle or entire option
-            if (e.target && (e.target.matches('[data-consent]') || e.target.closest('[data-consent-toggle]'))) {
-                let consentType;
-                if (e.target.matches('[data-consent]')) {
-                    consentType = e.target.getAttribute('data-consent');
-                } else {
-                    consentType = e.target.closest('[data-consent-toggle]').getAttribute('data-consent-toggle');
-                }
-                console.log('Toggle consent option:', consentType);
-                e.preventDefault();
-                e.stopPropagation();
-                this.toggleOption(consentType);
                 return;
             }
         });
