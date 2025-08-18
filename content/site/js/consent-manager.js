@@ -645,6 +645,8 @@ class ConsentManager {
     generateConsentOptions(lang = 'ro') {
         let html = '';
         Object.keys(this.consentTypes).forEach(type => {
+            // Hide ad_user_data from UI; it will follow ad_storage internally
+            if (type === 'ad_user_data') return;
             const config = this.consentTypes[type];
             const isActive = config.required || this.currentConsent[type];
             const isDisabled = config.required ? 'disabled' : '';
@@ -723,6 +725,12 @@ class ConsentManager {
         const preferences = {};
         
         Object.keys(this.consentTypes).forEach(type => {
+            // ad_user_data is hidden; map it to ad_storage
+            if (type === 'ad_user_data') {
+                const adToggle = document.querySelector('[data-consent="ad_storage"]');
+                preferences[type] = adToggle ? adToggle.classList.contains('active') : false;
+                return;
+            }
             const toggle = document.querySelector(`[data-consent="${type}"]`);
             preferences[type] = toggle ? toggle.classList.contains('active') : this.consentTypes[type].required;
         });
