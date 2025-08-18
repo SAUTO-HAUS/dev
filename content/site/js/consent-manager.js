@@ -13,6 +13,7 @@ class ConsentManager {
             autoShow: true,
             ...options
         };
+        this.bannerTriggerStorageKey = 'sauto_consent_banner_triggered';
         
         this.languageTexts = {
             'ro': {
@@ -174,17 +175,18 @@ class ConsentManager {
             }
             return;
         }
+        // If banner was previously triggered, show immediately and keep it until user decides
+        const wasTriggered = this.getBannerTriggered();
+        if (wasTriggered) {
+            console.log('Banner was previously triggered; showing immediately.');
+            this.triggerBanner('persisted');
+            return;
+        }
 
-        // Show consent interface immediately if no valid consent
-        console.log('No valid consent found, showing interface. Options:', this.options);
+        // Delayed auto-show mechanism: 15s timer or early user interaction
+        console.log('No valid consent found. Setting up delayed banner (15s) with early interaction trigger. Options:', this.options);
         if (this.options.autoShow) {
-            if (this.options.showModal) {
-                console.log('Showing modal...');
-                this.showModal();
-            } else if (this.options.showBanner) {
-                console.log('Showing banner...');
-                this.showBanner();
-            }
+            this.setupAutoShowMechanism();
         } else {
             console.log('AutoShow is disabled');
         }
@@ -334,6 +336,8 @@ class ConsentManager {
         this.updateGoogleConsent();
         this.loadTrackingScripts();
         this.hideConsentInterface();
+        this.cleanupAutoShowListeners?.();
+        this.clearBannerTriggered();
         
         // Trigger consent accepted event
         this.triggerConsentEvent('accepted', this.currentConsent);
@@ -346,6 +350,8 @@ class ConsentManager {
         });
         this.saveConsent(preferences);
         this.hideConsentInterface();
+        this.cleanupAutoShowListeners?.();
+        this.clearBannerTriggered();
         this.dispatchConsentEvent('consentAccepted', preferences);
     }
 
@@ -358,6 +364,7 @@ class ConsentManager {
         });
         this.saveConsent(preferences);
         this.hideConsentInterface();
+        this.cleanupAutoShowListeners?.();
         this.dispatchConsentEvent('consentAccepted', preferences);
     }
 
@@ -506,6 +513,78 @@ class ConsentManager {
         `;
         
         document.body.appendChild(banner);
+    }
+
+    // --- Delayed auto-show logic ---
+    setupAutoShowMechanism() {
+        // Prevent multiple setups
+        if (this.bannerTriggered) {
+            return;
+        }
+
+        this.bannerTriggered = false;
+        // 15 seconds delay
+        this.bannerTimerId = window.setTimeout(() => {
+            this.triggerBanner('timer');
+        }, 15000);
+
+        // Early interaction: on first user click/tap/keydown (Enter/Space) show instantly
+        this._earlyInteractionHandler = (e) => {
+            // Ignore interactions that originate from the (currently nonexistent) consent UI
+            if (e.target && (e.target.closest && (e.target.closest('#consent-banner') || e.target.closest('#consent-overlay')))) {
+                return;
+            }
+            this.triggerBanner('interaction');
+        };
+
+        // Use capture to catch earliest
+        document.addEventListener('click', this._earlyInteractionHandler, true);
+        document.addEventListener('pointerdown', this._earlyInteractionHandler, true);
+        document.addEventListener('keydown', (this._earlyKeyHandler = (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                this._earlyInteractionHandler(e);
+            }
+        }), true);
+    }
+
+    triggerBanner(reason = 'unknown') {
+        if (this.bannerTriggered) return;
+        this.bannerTriggered = true;
+        if (this.bannerTimerId) {
+            clearTimeout(this.bannerTimerId);
+            this.bannerTimerId = null;
+        }
+        console.log(`Triggering cookie banner due to: ${reason}`);
+        this.setBannerTriggered();
+        // Always show banner per requirement, regardless of showModal option
+        if (this.options.showBanner !== false) {
+            this.showBanner();
+        } else {
+            // Fallback to banner even if modal was configured
+            this.showBanner();
+        }
+        this.cleanupAutoShowListeners();
+    }
+
+    cleanupAutoShowListeners() {
+        if (this._earlyInteractionHandler) {
+            document.removeEventListener('click', this._earlyInteractionHandler, true);
+            document.removeEventListener('pointerdown', this._earlyInteractionHandler, true);
+        }
+        if (this._earlyKeyHandler) {
+            document.removeEventListener('keydown', this._earlyKeyHandler, true);
+        }
+    }
+
+    // --- Persistence helpers for banner triggered state ---
+    setBannerTriggered() {
+        try { localStorage.setItem(this.bannerTriggerStorageKey, '1'); } catch (e) { /* ignore */ }
+    }
+    clearBannerTriggered() {
+        try { localStorage.removeItem(this.bannerTriggerStorageKey); } catch (e) { /* ignore */ }
+    }
+    getBannerTriggered() {
+        try { return localStorage.getItem(this.bannerTriggerStorageKey) === '1'; } catch (e) { return false; }
     }
 
     createModalHTML() {
