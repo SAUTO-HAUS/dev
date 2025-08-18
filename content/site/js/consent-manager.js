@@ -539,7 +539,6 @@ class ConsentManager {
 
         // Use capture to catch earliest
         document.addEventListener('click', this._earlyInteractionHandler, true);
-        document.addEventListener('pointerdown', this._earlyInteractionHandler, true);
         document.addEventListener('keydown', (this._earlyKeyHandler = (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 this._earlyInteractionHandler(e);
