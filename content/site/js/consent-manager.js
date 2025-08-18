@@ -467,12 +467,8 @@ class ConsentManager {
         }
         
         if (overlay) {
-            overlay.classList.remove('show');
-            setTimeout(() => {
-                if (overlay.parentNode) {
-                    overlay.remove();
-                }
-            }, 300);
+            this.hideModal();
+            return;
         }
     }
 
