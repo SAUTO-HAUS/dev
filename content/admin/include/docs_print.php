@@ -56,7 +56,7 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 		$info_exist = 1;
 	}
 	
-	if ( isset($_POST['doc_view']) && $_POST['doc_view']=='1' && $info_exist == 1 ){
+	if ( isset($_POST['doc_view']) && $_POST['doc_view']=='1' ){
 		$cont_y = $_POST['cont_y'];
 		$cont_q = $_POST['cont_q'];
 		$cont_n = $_POST['cont_n'];
@@ -73,7 +73,31 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 				foreach ( $inf_parts as $part ) {
 					if ( strpos($part, '==') !== false ) {
 						list($key, $value) = explode('==', $part, 2);
-						$_POST[$key] = $value;
+						// Restore fields according to document type
+						if ( in_array($key, ['br','mo','vin'], true) ) {
+							$hasList = (strpos($value, '||') !== false);
+							if ( isset($_POST['doc_f']) && $_POST['doc_f'] === 'com_transport' ) {
+								// com_transport expects arrays
+								$_POST[$key] = $hasList ? explode('||', $value) : [$value];
+							} else {
+								// other docs expect scalars
+								$_POST[$key] = $hasList ? explode('||', $value)[0] : $value;
+							}
+						} else {
+							$_POST[$key] = $value;
+						}
+					}
+				}
+				// Map brand codes to names for display (works for array or scalar)
+				if ( isset($_POST['br']) ){
+					$brand_map = [];
+					$pdo_brands = $db->prepare('SELECT DISTINCT `br`, `br_nm` FROM '.$prefx.'_car_list WHERE `br_nm` != ""');
+					$pdo_brands->execute();
+					foreach ($pdo_brands as $r_brand) { $brand_map[$r_brand['br']] = $r_brand['br_nm']; }
+					if ( is_array($_POST['br']) ){
+						foreach ($_POST['br'] as $i_b => $b_val){ if (isset($brand_map[$b_val])) { $_POST['br'][$i_b] = $brand_map[$b_val]; } }
+					} else {
+						if (isset($brand_map[$_POST['br']])) { $_POST['br'] = $brand_map[$_POST['br']]; }
 					}
 				}
 			}

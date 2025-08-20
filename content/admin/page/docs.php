@@ -232,6 +232,12 @@ if ( isset($t_mp[4]) ){
 										if ( typeof v === "string" ){
 											var selectValue = v.indexOf("||") >= 0 ? v.split("||")[0] : v;
 											el.val(selectValue).trigger("change");
+											// Fallback: if no option matched by value (legacy data stored as text), try match by text
+											if (!el.val() || el.val() === null || el.val() === "" || el.find("option:selected").length === 0){
+												var lowered = selectValue.toString().toLowerCase();
+												var opt = el.find("option").filter(function(){ return $(this).text().toLowerCase() === lowered; }).first();
+												if (opt.length){ el.val(opt.val()).trigger("change"); }
+											}
 										}
 									} else if ( tag=="INPUT" || tag=="TEXTAREA" ){
 										if ( typeof v === "string" ){ el.val(v); }
@@ -239,29 +245,18 @@ if ( isset($t_mp[4]) ){
 										v = v + "";
 										var tmp = v.split("||");
 										for (var i = 0; i < tmp.length; i++){
-											if( el.data("qu") ){ el.data("qu", (el.data("qu")+1) ).attr("data-qu", el.data("qu") ); }
-											if (k=="pays"){
-												var tmpV = tmp[i].split("=>");
-												el.append(""
-													+"<label class=\"lbl\"><span class=\"ttl\">Value</span><input type=\"text\" class=\"need\" name=\"pay_val[]\" title=\"Pay value#"+el.data("qu")+"\" value=\""+tmpV[0]+"\" /></label>"
-													+"<label class=\"lbl\"><span class=\"ttl\">Date, Text</span><input class=\"need dt\" type=\"text\" name=\"pay_date[]\" title=\"Pay date / Text #"+el.data("qu")+"\" value=\""+tmpV[1]+"\" /></label>"
-												);
-											} else if (k=="grnt_txt"){
-												el.append(""
-													+"<label class=\"lbl max\"><span class=\"ttl\">6."+el.data("qu")+".</span><textarea class=\"need\" name=\"grnt_txt[]\" title=\"Group 6 text\" rows=\"1\" />"+tmp[i]+"</textarea></label>"
-												);
-											} else if (k=="dmg_pos"){
-												var tmpV = tmp[i].split("x");
-												el.append("<div class=\"el\" data-n=\""+(i+1)+"\" style=\"left:calc("+tmpV[0]+"% - 3mm); top:calc("+tmpV[1]+"% - 3mm);\"><span class=\"txt\">"+(i+1)+"</span><input class=\"pos none\" type=\"text\" name=\"dmg_pos[]\" value=\""+tmpV[0]+"x"+tmpV[1]+"\" /></div>");
-											} else if (k=="dmg_txt"){
-												el.append(""
-												+"<div class=\"lbl\" data-n=\""+(i+1)+"\">"
-													+"<span class=\"ttl\">"+(i+1)+"</span>"
-													+"<input class=\"txt\" type=\"text\" name=\"dmg_txt[]\" value=\""+(tmp[i]=="0"?"":tmp[i])+"\" />"
-												+"</label>"
-												);
-											} else if (k=="extras"){
-												el.find(".it > input[value=\""+tmp[i]+"\"]").prop("checked", true);
+											if (vals.data("doc")=="com_transport"){
+												if ( k=="br" && i<(tmp.length-1) ){base.find(".btn[data-fn=\"add_it\"]").trigger("click");}
+												var arrEl = base.find("[name=\""+k+"[]\"][data-n=\""+i+"\"]");
+												arrEl.val(tmp[i]).trigger("change");
+												// Fallback by option text for legacy values
+												if (arrEl.prop("tagName") === "SELECT"){ 
+													if (!arrEl.val() || arrEl.val() === null || arrEl.val() === "" || arrEl.find("option:selected").length === 0){
+														var lowered = tmp[i].toString().toLowerCase();
+														var opt = arrEl.find("option").filter(function(){ return $(this).text().toLowerCase() === lowered; }).first();
+														if (opt.length){ arrEl.val(opt.val()).trigger("change"); }
+													}
+												}
 											}
 										}
 									}
@@ -274,6 +269,14 @@ if ( isset($t_mp[4]) ){
 										if (vals.data("doc")=="com_transport"){
 											if ( k=="br" && i<(tmp.length-1) ){base.find(".btn[data-fn=\"add_it\"]").trigger("click");}
 											base.find("[name=\""+k+"[]\"][data-n=\""+i+"\"]").val(tmp[i]).trigger("change");
+											// Fallback by option text for legacy values
+											if (base.find("[name=\""+k+"[]\"][data-n=\""+i+"\"]").prop("tagName") === "SELECT"){ 
+												if (!base.find("[name=\""+k+"[]\"][data-n=\""+i+"\"]").val() || base.find("[name=\""+k+"[]\"][data-n=\""+i+"\"]").val() === null || base.find("[name=\""+k+"[]\"][data-n=\""+i+"\"]").val() === "" || base.find("[name=\""+k+"[]\"][data-n=\""+i+"\"]").find("option:selected").length === 0){
+													var lowered = tmp[i].toString().toLowerCase();
+													var opt = base.find("[name=\""+k+"[]\"][data-n=\""+i+"\"]").find("option").filter(function(){ return $(this).text().toLowerCase() === lowered; }).first();
+													if (opt.length){ base.find("[name=\""+k+"[]\"][data-n=\""+i+"\"]").val(opt.val()).trigger("change"); }
+												}
+											}
 										}
 									}
 								}
@@ -286,16 +289,18 @@ if ( isset($t_mp[4]) ){
 								var modelSelect = base.find("select[name=\"mo\"]");
 								var modelValue = vals.data("mo");
 								
-								if (brandSelect.val() && brandSelect.val() !== ""){
-									brandSelect.trigger("change");
-									
-									// Set model value after brand change completes and model options are loaded
-									setTimeout(function() {
-										if (modelValue && modelValue !== "") {
-											modelSelect.val(modelValue).trigger("change");
+								if (brandSelect.length){ brandSelect.trigger("change"); }
+								// Set model value after brand change completes and model options are (visually) filtered
+								setTimeout(function() {
+									if (modelSelect.length && modelValue && modelValue !== "") {
+										modelSelect.val(modelValue).trigger("change");
+										if (!modelSelect.val() || modelSelect.find("option:selected").length === 0){
+											var lowered = modelValue.toString().toLowerCase();
+											var opt = modelSelect.find("option").filter(function(){ return $(this).text().toLowerCase() === lowered; }).first();
+											if (opt.length){ modelSelect.val(opt.val()).trigger("change"); }
 										}
-									}, 300); // Wait for AJAX to complete
-								}
+									}
+								}, 300);
 							}, 50);
 							
 							if ( fn=="show_it" || fn=="print_it" || fn=="save_pdf" ){
