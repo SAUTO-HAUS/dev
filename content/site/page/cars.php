@@ -605,7 +605,6 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                 '.$o_prc_bl.'
                             </div>
                             <div class="doit">
-                                <!--<a class="btn call" href="tel:'.$phone['orange'][ rand(0,1) ]['tel'].'">'.$lng['w']['call'].'</a>-->
                                 <a class="btn call" href="tel:'.$dynamicPhone.'">'.$lng['w']['call'].'</a>
                                 
                                  <div class="btn msg2">

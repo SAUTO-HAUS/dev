@@ -28,8 +28,39 @@ ON DUPLICATE KEY UPDATE
 -- Verify configuration was created
 SELECT * FROM phone_config;
 
--- Check what columns exist in common tables (run these one by one)
--- DESCRIBE gh3sp_car_ctlg;
--- DESCRIBE gh3sp_car_list; 
--- DESCRIBE gh3sp_adverts;
+-- Search for any phone numbers in gh3sp_car_ctlg (broader search)
+SELECT id, 
+       SUBSTRING(inf, LOCATE('+373', inf), 13) as phone_in_inf,
+       SUBSTRING(txt, LOCATE('+373', txt), 13) as phone_in_txt
+FROM gh3sp_car_ctlg 
+WHERE inf LIKE '%+373%' OR txt LIKE '%+373%'
+LIMIT 10;
+
+-- Count total phone numbers in database
+SELECT 'gh3sp_car_ctlg' as table_name, COUNT(*) as total_phones FROM gh3sp_car_ctlg 
+WHERE inf REGEXP '\\+373[0-9]{8}' OR txt REGEXP '\\+373[0-9]{8}';
+
+-- Search for specific unauthorized numbers with different patterns
+SELECT id, inf, txt FROM gh3sp_car_ctlg 
+WHERE inf LIKE '%68689995%' OR inf LIKE '%69977674%' OR inf LIKE '%79977674%' 
+   OR inf LIKE '%79954375%' OR inf LIKE '%79600446%' OR inf LIKE '%68500573%'
+   OR txt LIKE '%68689995%' OR txt LIKE '%69977674%' OR txt LIKE '%79977674%'
+   OR txt LIKE '%79954375%' OR txt LIKE '%79600446%' OR txt LIKE '%68500573%'
+LIMIT 10;
+
+-- Check other important tables for phone numbers
+DESCRIBE gh3sp_adverts;
+DESCRIBE gh3sp_car_list;
+
+-- First check what columns exist in gh3sp_adverts
+DESCRIBE gh3sp_adverts;
+
+-- First check what columns exist in gh3sp_car_list  
+DESCRIBE gh3sp_car_list;
+
+-- Simple search in gh3sp_adverts (will update after seeing columns)
+SELECT id FROM gh3sp_adverts LIMIT 1;
+
+-- Simple search in gh3sp_car_list (will update after seeing columns)
+SELECT id FROM gh3sp_car_list LIMIT 1;
 
