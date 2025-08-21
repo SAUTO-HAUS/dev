@@ -91,9 +91,20 @@ foreach ($users as $user) {
     $is_current = isset($_COOKIE['usr']) && $_COOKIE['usr'] == $user['login'];
     
     echo '<div style="border: 1px solid #ddd; padding: 20px; border-radius: 8px; background: white;">';
+    // Define role colors
+    $role_colors = [
+        'gordon' => '#6f42c1',        
+        'admin' => '#007bff',         
+        'publisher' => '#28a745',     
+        'publisher_limited' => '#dc3545', 
+    ];
+    
+    $role_color = $role_colors[$user['role']] ?? '#6c757d'; // Default gray
+    
     echo '<div style="display: flex; align-items: center; margin-bottom: 15px;">';
     echo '<div style="width: 12px; height: 12px; border-radius: 50%; margin-right: 10px; background: '.($is_current ? '#007bff' : ($user['act'] == 1 ? '#28a745' : '#dc3545')).';"></div>';
-    echo '<strong>'.$user['name'].'</strong> <span style="color: #666; margin-left: 10px;">'.$user['login'].'</span>';
+    echo '<strong style="background-color: '.$role_color.'20; color: '.$role_color.'; padding: 4px 8px; border-radius: 4px; margin-right: 10px; border: 1px solid '.$role_color.';">'.$user['name'].'</strong>';
+    echo '<span style="background-color: '.$role_color.'20; color: '.$role_color.'; padding: 4px 8px; border-radius: 4px; border: 1px solid '.$role_color.';">'.$user['login'].'</span>';
     echo '</div>';
     
     // Current role display
@@ -119,11 +130,9 @@ foreach ($users as $user) {
         $selected_role = $_POST['role'] ?? '';
         $selected_branch = $_POST['branch_id'] ?? '';
     } else {
-        // Load admin's saved preferences as default values
-        if ($admin_preferences) {
-            $selected_role = $admin_preferences['last_role_selection'] ?? '';
-            $selected_branch = $admin_preferences['last_branch_selection'] ?? '';
-        }
+        // Default to user's current role to preserve existing assignments
+        $selected_role = $user['role'] ?? '';
+        $selected_branch = $user['branch_id'] ?? '';
     }
     
     echo '<div style="margin-bottom: 10px;">';

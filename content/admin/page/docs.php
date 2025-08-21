@@ -528,9 +528,13 @@ if ( isset($t_mp[4]) ){
                     $user_branch_id = $_SESSION['user_branch_id'] ?? $user_branch_id ?? null;
                     $user_id = $_SESSION['user_id'] ?? $user_id ?? null;
 
-                    // For publisher_limited: behave like regular publisher — show only own documents
+                    // Role-based document filtering
                     if ( $user_role === 'publisher_limited' ){
+                        // Publisher Limited: show only own documents
                         if ( $user_id !== null && intval($r['adm']) !== intval($user_id) ){ continue; }
+                    } elseif ( $user_role === 'publisher' ){
+                        // Publisher: show ALL documents (no filtering)
+                        // Continue without any filtering
                     } else {
                         // Default ownership rule: show only own docs (except for gordon)
                         if ( $user_role !== 'gordon' && $user_id !== null && intval($r['adm']) !== intval($user_id) ){ continue; }
@@ -539,6 +543,7 @@ if ( isset($t_mp[4]) ){
 					$rtrn .= '
 					<label class="bx '.( $i%2>0?'odd':'even' ).'" data-id="'.$r['id'].'" data-u_id="'.$r['u_id'].'" data-tags="'.strtr(mb_strtolower( $r['u_nm'].' '.$r['u_cf_idno'].' '.$r['u_tp'].' '.$r['abr'].$r['y'].$r['q'].'/'.$r['n'].' '.( isset($inf['br'])?$inf['br']:'' ).' '.( isset($inf['mo'])?$inf['mo']:'' ).' '.( isset($inf['vin'])?$inf['vin']:'' ).' '.( isset($inf['prc'])?$inf['prc']:'' ).' '.date( 'd.m.Y', strtotime( $r['date'] ) ).' '.$r['f'].' '.( isset($adm_ar[ $r['adm'] ])?$adm_ar[ $r['adm'] ]:$r['adm'] ), 'UTF-8' ), ['ă'=>'a', 'â'=>'a', 'î'=>'i', 'ș'=>'s', 'ț'=>'t', '_'=>' ']).'">
 						<div class="values"
+{{ ... }}
 							data-id="'.$r['id'].'" data-doc="'.$r['f'].'" data-gr="'.$r['gr'].'"
 							data-cont_y="'.$r['y'].'" data-cont_q="'.$r['q'].'" data-cont_n="'.$r['n'].'" 
 							data-u_id="'.$r['u_id'].'" data-u_cf_idno="'.$r['u_cf_idno'].'" data-u_nm="'.$r['u_nm'].'" data-date="'.$r['date'].'" 

@@ -23,16 +23,14 @@ $rbac_admin_menu = [
         'sett' => ['info']
     ],
     'publisher' => [
-        'cars' => ['add', 'ctlg'],
-        'tyres' => ['ctlg'],
+        'cars' => ['add'],
         'docs' => ['create', 'ctlg']
-        // No access to SEO, Mail, Settings as per business requirements
+        // No access to SEO, Mail, Settings, Cars catalog as per business requirements
     ],
     'publisher_limited' => [
-        'cars' => ['add', 'ctlg'],
-        'tyres' => ['ctlg'],
+        'cars' => ['add'],
         'docs' => ['create', 'ctlg']
-        // No access to SEO, Mail, Settings + branch limited access
+        // No access to SEO, Mail, Settings, Cars catalog + branch limited access
     ]
 ];
 
@@ -65,27 +63,26 @@ $rbac_permissions = [
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'settings' => ['read' => true, 'update' => false]
     ],
-    // Publisher (Публикатор) - Full access to cars and docs like gordon/admin
+    // Publisher (Публикатор) - Can only add new cars, no catalog management, full docs access to ALL branches
     'publisher' => [
         'user_management' => false,
         'role_management' => false,
         'system_settings' => false,
         'all_branches' => true,
-        'cars' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
-        'tyres' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'set_unavailable' => true, 'publish' => true],
+        'branch_limited' => false,
+        'cars' => ['create' => true, 'read' => false, 'update' => false, 'delete' => false, 'restore' => false],
         'seo' => ['read' => false],
         'mail' => ['read' => false],
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'settings' => ['read' => false]
     ],
-    // Publisher-Limited (Публикатор Филиал) - Full access to cars and docs like gordon/admin, but branch limited
+    // Publisher-Limited (Публикатор Филиал) - Can only add new cars, no catalog management, docs access limited to own branch
     'publisher_limited' => [
         'user_management' => false,
         'role_management' => false,
         'system_settings' => false,
         'branch_limited' => true,
-        'cars' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
-        'tyres' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'set_unavailable' => true, 'publish' => true],
+        'cars' => ['create' => true, 'read' => false, 'update' => false, 'delete' => false, 'restore' => false],
         'seo' => ['read' => false],
         'mail' => ['read' => false],
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
@@ -197,13 +194,11 @@ $rbac_admin_menu = [
         'sett' => ['info']
     ],
     'publisher' => [
-        'cars' => ['add', 'ctlg'], 
-        'tyres' => ['ctlg'], 
+        'cars' => ['add'], 
         'docs' => ['add', 'ctlg']
     ],
     'publisher_limited' => [
-        'cars' => ['add', 'ctlg'], 
-        'tyres' => ['ctlg'], 
+        'cars' => ['add'], 
         'docs' => ['add', 'ctlg']
     ]
 ];
@@ -227,13 +222,11 @@ $rbac_internal_actions = [
         'sett' => ['info']
     ],
     'publisher' => [
-        'cars' => ['add', 'create', 'detail', 'ctlg'],
-        'tyres' => ['add', 'create', 'detail', 'ctlg'],
+        'cars' => ['add', 'create', 'detail'],
         'docs' => ['add', 'create', 'detail', 'ctlg']
     ],
     'publisher_limited' => [
-        'cars' => ['add', 'create', 'detail', 'ctlg'],
-        'tyres' => ['add', 'create', 'detail', 'ctlg'], 
+        'cars' => ['add', 'create', 'detail'],
         'docs' => ['add', 'create', 'detail', 'ctlg']
     ]
 ];

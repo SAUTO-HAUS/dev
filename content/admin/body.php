@@ -86,7 +86,16 @@
 				$has_access = true;
 			} elseif (isset($user_role) && in_array($user_role, ['admin', 'publisher', 'publisher_limited']) && isset($t_mp[3]) && in_array($t_mp[3], ['docs', 'cars', 'tyres'])) {
 				// Direct access for admin and publisher roles to their permitted modules
-				$has_access = rbac_has_permission($user_role, $t_mp[3], 'read');
+				// Check appropriate permission based on action
+				$required_permission = 'read';
+				if (isset($t_mp[4]) && in_array($t_mp[4], ['add', 'create', 'detail'])) {
+					$required_permission = 'create';
+				} elseif (isset($t_mp[4]) && in_array($t_mp[4], ['edit', 'update'])) {
+					$required_permission = 'update';
+				} elseif (isset($t_mp[4]) && in_array($t_mp[4], ['delete'])) {
+					$required_permission = 'delete';
+				}
+				$has_access = rbac_has_permission($user_role, $t_mp[3], $required_permission);
 			} elseif (isset($t_mp[3])) {
 				// Check if user has access to the module
 				$has_access = isset($current_menu[$t_mp[3]]);
