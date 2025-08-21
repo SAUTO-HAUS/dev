@@ -493,14 +493,18 @@ if ( isset($t_mp[4]) ){
 					//if ( $user_type=='dev' && ( $r['f']!='con_intermed' || ( $r['f']=='con_intermed' && ( !isset($inf['loc']) || $inf['loc']!='2' ) ) ) ){continue;}
 					if ( $user_type=='x2' && ( !isset($inf['loc']) || $inf['loc']!='2' ) ){continue;}
 					
-					// Branch filtering for publisher_limited role
-					$user_role = $_SESSION['user_role'] ?? $user_role ?? null;
-					$user_branch_id = $_SESSION['user_branch_id'] ?? $user_branch_id ?? null;
-					$user_id = $_SESSION['user_id'] ?? $user_id ?? null;
-					if ( $user_role === 'publisher_limited' && $user_branch_id !== null && ( !isset($inf['loc']) || $inf['loc'] != $user_branch_id ) ){continue;}
-					
-					// User ownership filtering - show only documents created by the logged-in user (except for gordon)
-					if ( $user_role !== 'gordon' && $user_id !== null && intval($r['adm']) !== intval($user_id) ){continue;}
+					// Role and ownership filtering
+                    $user_role = $_SESSION['user_role'] ?? $user_role ?? null;
+                    $user_branch_id = $_SESSION['user_branch_id'] ?? $user_branch_id ?? null;
+                    $user_id = $_SESSION['user_id'] ?? $user_id ?? null;
+
+                    // For publisher_limited: behave like regular publisher — show only own documents
+                    if ( $user_role === 'publisher_limited' ){
+                        if ( $user_id !== null && intval($r['adm']) !== intval($user_id) ){ continue; }
+                    } else {
+                        // Default ownership rule: show only own docs (except for gordon)
+                        if ( $user_role !== 'gordon' && $user_id !== null && intval($r['adm']) !== intval($user_id) ){ continue; }
+                    }
 					
 					$rtrn .= '
 					<label class="bx '.( $i%2>0?'odd':'even' ).'" data-id="'.$r['id'].'" data-u_id="'.$r['u_id'].'" data-tags="'.strtr(mb_strtolower( $r['u_nm'].' '.$r['u_cf_idno'].' '.$r['u_tp'].' '.$r['abr'].$r['y'].$r['q'].'/'.$r['n'].' '.( isset($inf['br'])?$inf['br']:'' ).' '.( isset($inf['mo'])?$inf['mo']:'' ).' '.( isset($inf['vin'])?$inf['vin']:'' ).' '.( isset($inf['prc'])?$inf['prc']:'' ).' '.date( 'd.m.Y', strtotime( $r['date'] ) ).' '.$r['f'].' '.( isset($adm_ar[ $r['adm'] ])?$adm_ar[ $r['adm'] ]:$r['adm'] ), 'UTF-8' ), ['ă'=>'a', 'â'=>'a', 'î'=>'i', 'ș'=>'s', 'ț'=>'t', '_'=>' ']).'">

@@ -288,7 +288,9 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 			INSERT INTO '.$prefx.'_docs_ctlg (`gr`, `f`, `abr`, `y`, `q`, `n`, `cd`, `inf`, `u`, `date`, `adm`, `crtd`)
 			VALUES (:gr, :f, :abr, :y, :q, :n, :cd, :inf, :u, :date, :adm, :crtd)
 		');
-		$pdo->execute([ 'gr'=>$_POST['doc_gr'], 'f'=>$_POST['doc_f'], 'abr'=>$abr, 'y'=>$cont_y, 'q'=>$cont_q, 'n'=>$cont_n, 'cd'=>$it_cd, 'inf'=>$inf, 'u'=>$u_id, 'date'=>$doc_date, 'adm'=>$_COOKIE['usr_id'], 'crtd'=>date('Y-m-d') ]);
+		        // Determine creator (adm) from session primarily; fallback to cookie if necessary
+        $adm_creator = isset($_SESSION) && isset($_SESSION['user_id']) && $_SESSION['user_id'] !== '' ? $_SESSION['user_id'] : ( $_COOKIE['usr_id'] ?? 0 );
+        $pdo->execute([ 'gr'=>$_POST['doc_gr'], 'f'=>$_POST['doc_f'], 'abr'=>$abr, 'y'=>$cont_y, 'q'=>$cont_q, 'n'=>$cont_n, 'cd'=>$it_cd, 'inf'=>$inf, 'u'=>$u_id, 'date'=>$doc_date, 'adm'=>$adm_creator, 'crtd'=>date('Y-m-d') ]);
 		
 		if ($info_exist == 1){
 			$pdo = $db->prepare('UPDATE '.$prefx.'_info SET `value`=`value`+1 WHERE `name`=:name AND `x1`=:x1 AND `x2`=:x2 ');
