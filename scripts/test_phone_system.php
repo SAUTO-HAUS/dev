@@ -115,7 +115,7 @@ echo "\n";
 echo "Test 5: Text Replacement\n";
 echo "------------------------\n";
 
-$testText = 'Call us at +37369977674 or +37368689995 for more information.';
+$testText = 'Call us at +37379600361 for more information.';
 $replacedText = $phoneService->replacePhoneNumbers($testText, 'general');
 echo "Original text: $testText\n";
 echo "Replaced text: $replacedText\n";

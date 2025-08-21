@@ -916,7 +916,7 @@ if ($_COOKIE['lang']=='ru'){
 			</ul>
 			<p>В любой момент по Вашей просьбе мы можем изменить или удалить из нашей базы данных любую информацию, которую Вы нам предоставили.</p>
 			<p>Если вы хотите изменить или удалить Ваши личные данные, которыми мы обладаем, пожалуйста, свяжитесь с нами по электронной почте на <a href="mailto:sautomd@gmail.com"><b>sautomd@gmail.com</b></a>.</p>
-			<p>Мы рады получить Ваши вопросы и комментарии относительно любого аспекта конфиденциальности. Если у Вас есть такие комментарии, или Вы хотите сформулировать жалобу относительно способа, в котором мы используем Ваши персональные данные, пожалуйста, свяжитесь с нами по телефону: <a href="tel:+37369977674"><b>069-977-674</b></a> или по электронной почте на <a href="mailto:sautomd@gmail.com"><b>sautomd@gmail.com</b></a>.</p>
+			<p>Мы рады получить Ваши вопросы и комментарии относительно любого аспекта конфиденциальности. Если у Вас есть такие комментарии, или Вы хотите сформулировать жалобу относительно способа, в котором мы используем Ваши персональные данные, пожалуйста, свяжитесь с нами по телефону: <a href="tel:+37379600361"><b>079-600-361</b></a> или по электронной почте на <a href="mailto:sautomd@gmail.com"><b>sautomd@gmail.com</b></a>.</p>
 		',
 		'credit' => '
 		<h1>Покупайте автомобиль с лёгкостью: Кредит и Лизинг в Молдове</h1>
@@ -1073,11 +1073,11 @@ if ($_COOKIE['lang']=='ru'){
 			</ul>
 			<b>Условия действия гарантии SAUTO:</b>
 			<ul>
-				<li>Для обеспечения гарантийного обслуживания, клиент должен обратиться и проинформировать об обнаруженной неисправности в течении <b>24 часов (или 48 часов если неисправность обнаружена в субботу)</b> по номерам телефонов <a href="tel:+37369977674"><b>069-977-674</b></a> / <a href="tel:+37368689995"><b>068-68-999-5</b></a>.</li>
+				<li>Для обеспечения гарантийного обслуживания, клиент должен обратиться и проинформировать об обнаруженной неисправности в течении <b>24 часов (или 48 часов если неисправность обнаружена в субботу)</b> по номерам телефонов <a href="tel:+37379600361"><b>079-600-361</b></a>.</li>
 				<li><b>SAUTO S.R.L.</b> оставляет за собой право реагировать на уведомление в первый рабочий день с момента его получения.</li>
 				<li><b>SAUTO S.R.L.</b> является компанией, которая осуществляет ремонт или замену неисправных деталей в гарантийный период. Затраты на техническое обслуживание и ремонт автомобиля, понесенные в период действия гарантии, в других автосервисах без согласия нашей компании клиенту возвращены не будут.</li>
 			</ul>
-			<p>Более подробную информацию о гарантии, Вы можете узнать позвонив нам по телефонам <a href="tel:+37369977674"><b>069-977-674</b></a> / <a href="tel:+37368689995"><b>068-68-999-5</b></a></p>
+			<p>Более подробную информацию о гарантии, Вы можете узнать позвонив нам по телефонам <a href="tel:+37379600361"><b>079-600-361</b></a></p>
 			</div>
 		'
 	);
@@ -2402,7 +2402,7 @@ $lang_xtra_page = array(
         <b>Cookie-uri</b>
 		<p>cookieuri și anume cookie Google Analytics și cookie Facebook Pixel. Informațiile colectate sunt anonimizate și stocate pentru noi de către Google, respectiv Facebook. Aceste informații sunt păstrate timp de maxim 90 de zile și apoi sunt șterse, singurul scop al acestor informații fiind de a ne oferi o înțelegere mai bună asupra nevoilor clienților noștri, pentru a putea astfel permanent îmbunătăți oferta noastră și oferi o experiență cît mai plăcută pe site utilizatorilor.</p>
 		<p>În orice moment puteți modifica sau șterge din baza noastră de date informațiile pe care ni le-ați oferit. Dacă doriți să modificați sau ștergeți datele dumneavoa stră personale aflate în posesia noastră, vă rugăm să ne contactați prin email la <a href="mailto:sautomd@gmail.com"><b>sautomd@gmail.com</b></a></p>
-        <p>Suntem bucuroși să primim întrebările și comentariile dumneavoastră referitoare la orice aspect de confidențialitate. În cazul în care aveți asemenea comentarii sau în cazul în care doriți să formulați o reclamație referitoare la modul în care utilizăm datele dumneavoastră personale, vă rugăm să ne contactați prin telefon la numarul: <a href="tel:+37369977674"><b>069-977-674</b></a> sau email la <a href="mailto:sautomd@gmail.com"><b>sautomd@gmail.com</b></a></p>
+        <p>Suntem bucuroși să primim întrebările și comentariile dumneavoastră referitoare la orice aspect de confidențialitate. În cazul în care aveți asemenea comentarii sau în cazul în care doriți să formulați o reclamație referitoare la modul în care utilizăm datele dumneavoastră personale, vă rugăm să ne contactați prin telefon la numarul: <a href="tel:+37379600361"><b>079-600-361</b></a> sau email la <a href="mailto:sautomd@gmail.com"><b>sautomd@gmail.com</b></a></p>
 	',
 	'credit' => '
 <h1>Cumpărați un automobil cu ușurință: Credit și Leasing în Moldova</h1>
@@ -2540,10 +2540,10 @@ $lang_xtra_page = array(
 		</ul>
 		<h2><b>Condițiile de aplicare a garanției SAUTO:</b></h2>
 		<ul>
-			<li>Pentru a beneficia de garanția SAUTO, clientul trebuie să se adreseze și să semnaleze defecțiunea în cel mult 24 de ore (sau 48 de ore dacă defectiunea se constată sîmbăta) sau la numarul de telefon <a href="tel:+37369977674"><b>069-977-674</b></a> / <a href="tel:+37368689995"><b>068-68-999-5</b></a>. SAUTO SRL își rezervă dreptul de a răspunde sesizării în prima zi lucrătoare de la primirea acesteia</li>
+			<li>Pentru a beneficia de garanția SAUTO, clientul trebuie să se adreseze și să semnaleze defecțiunea în cel mult 24 de ore (sau 48 de ore dacă defectiunea se constată sîmbăta) sau la numarul de telefon <a href="tel:+37379600361"><b>079-600-361</b></a>. SAUTO SRL își rezervă dreptul de a răspunde sesizării în prima zi lucrătoare de la primirea acesteia</li>
 			<li>SAUTO SRL este singurul abilitat să realizeze reparația sau să înlocuiască piesele defecte. Cheltuielile de întreținere și reparații realizate în perioada de garanție a vehiculului în alte centre fără acordul SAUTO nu se restituie clientului.</li>
 		</ul>
-		<p>Mai multe detalii legate de Garanție poți afla contactîndune la numarul de telefon <a href="tel:+37369977674"><b>069-977-674</b></a> / <a href="tel:+37368689995"><b>068-68-999-5</b></a></p>
+		<p>Mai multe detalii legate de Garanție poți afla contactîndune la numarul de telefon <a href="tel:+37379600361"><b>079-600-361</b></a></p>
 		</div>
 	'
 );
@@ -3867,7 +3867,7 @@ $lang_xtra_page = array(
         <h2><b>Cookies</b></h2>
 		<p>This site uses cookies to improve your browsing experience and to calculate and control website traffic. We use a limited number of cookies, namely Google Analytics and Facebook Pixel. The information collected is anonymous and is stored for us on Google, respectively on Facebook. This information is stored no more than 90 days and is deleted after the expiration date. The only purpose of this information is that it gives us the opportunity to better understand the needs of our customers so that we can constantly improve our offers and provide our users with the most pleasant experience on our site.</p>
         <p>At any time, upon your request, you can change or delete any information that you have provided to us from our database. If you want to change or delete your personal data that we possess, please contact us by email at <a href="mailto:sautomd@gmail.com"><b>sautomd@gmail.com</b> </a>.</p>
-		<p>We welcome your questions and comments regarding any aspect of privacy. If you have such comments, or if you want to formulate a complaint regarding the way in which we use your personal data, please contact us by phone: <a href="tel:+37369977674"><b>069-977-674</b></a> or by emailing <a href="mailto:sautomd@gmail.com"><b>sautomd@gmail.com</b></a>.</p>
+		<p>We welcome your questions and comments regarding any aspect of privacy. If you have such comments, or if you want to formulate a complaint regarding the way in which we use your personal data, please contact us by phone: <a href="tel:+37379600361"><b>079-600-361</b></a> or by emailing <a href="mailto:sautomd@gmail.com"><b>sautomd@gmail.com</b></a>.</p>
 	',
 	'credit' => '
 		<h1>Buy a Car with Ease: Auto Credit and Leasing in Moldova</h1>
@@ -4007,10 +4007,10 @@ $lang_xtra_page = array(
 		</ul>
 		<h2><b>Conditions of application of warranty SAUTO:</b></h2>
 		<ul>
-			<li>In order to benefit from the warranty SAUTO, customer must appeal and inform about detected malfunctions within 24 hours (or in 48 hours if a malfunction was found on Saturday) or at the phone number <a href="tel:+37369977674"><b>069-977-674</b></a> / <a href="tel:+37368689995"><b>068-68-999-5</b></a>. SAUTO SRL reserves the right to react on referral on the first working day following its receipt.</li>
+			<li>In order to benefit from the warranty SAUTO, customer must appeal and inform about detected malfunctions within 24 hours (or in 48 hours if a malfunction was found on Saturday) or at the phone number <a href="tel:+37379600361"><b>079-600-361</b></a>. SAUTO SRL reserves the right to react on referral on the first working day following its receipt.</li>
 			<li>SAUTO SRL is the only one company that entitled to carry out the repair or replace defective details in a warranty period.The costs of maintenance and repairs carried out during the warranty period of the car in the other car servises, without the consent of the SAUTO will not be refunded to the customer.</li>
 		</ul>
-		<p>More details related to warranty you can find out if you contact us at the phone numbers <a href="tel:+37369977674"><b>069-977-674</b></a> / <a href="tel:+37368689995"><b>068-68-999-5</b></a></p>
+		<p>More details related to warranty you can find out if you contact us at the phone numbers <a href="tel:+37379600361"><b>079-600-361</b></a></p>
 	'
 );
 

@@ -32,20 +32,10 @@ $phonePatterns = [
     '/373\d{8}/'
 ];
 
-// Replacement mapping for specific contexts
-$replacements = [
-    // General site phone numbers (headers, footers, etc.)
-    'general' => '+37379600361',
-    
-    // Tyres page specific
-    'tyres' => '+37368500573',
-    
-    // Transportation service
-    'transportation' => '+37368689995',
-    
-    // Contacts page
-    'contacts' => ['+37369977674', '+37368689995']
-];
+// Use only approved 5-group phone system - no additional groups allowed
+// All replacements should use PhoneReplacementService methods
+$phoneService = new PhoneReplacementService();
+$approvedPhones = $phoneService->getAllPhones();
 
 echo "Starting phone number replacement...\n";
 
@@ -58,24 +48,9 @@ foreach ($templateFiles as $file) {
     $content = file_get_contents($file);
     $originalContent = $content;
     
-    // Replace phone numbers based on file context
-    if (strpos($file, 'tyres.php') !== false) {
-        // Keep tyres page phone as is or replace with specific number
-        $content = preg_replace('/\+37368500573/', '+37368500573', $content);
-    } elseif (strpos($file, 'services.php') !== false) {
-        // Replace transportation phone numbers
-        $content = preg_replace('/\+37368689995/', '+37368689995', $content);
-    } elseif (strpos($file, 'contacts.php') !== false) {
-        // Replace with general phone
-        foreach ($phonePatterns as $pattern) {
-            $content = preg_replace($pattern, '+37379600361', $content);
-        }
-    } else {
-        // Replace all other phone numbers with general phone
-        foreach ($phonePatterns as $pattern) {
-            $content = preg_replace($pattern, '+37379600361', $content);
-        }
-    }
+    // Replace all phone numbers with approved numbers using PhoneReplacementService
+    // No special cases - all unauthorized numbers must be replaced
+    $content = $phoneService->replacePhoneNumbers($content, 'general');
     
     if ($content !== $originalContent) {
         file_put_contents($file, $content);
@@ -114,16 +89,21 @@ CREATE TABLE IF NOT EXISTS {$prefx}_phone_config (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Insert phone configuration
+-- Insert only approved 5-group phone configuration
 INSERT INTO {$prefx}_phone_config (context, phone_number, description) VALUES
 ('prunkul', '+37379600747', 'Prunkul Branch'),
 ('stock_website', '+37379600386', 'Website-Stock'),
 ('on_order', '+37379500735', 'Website-On-Order (in transit + on order)'),
-('website_all', '+37379600361', 'Website-All (general number)')
+('website_all', '+37379600361', 'Website-All (general number)'),
+('admin_default', '+37379600361', 'Admin default (replaces +37379600446)')
 ON DUPLICATE KEY UPDATE 
     phone_number = VALUES(phone_number),
     description = VALUES(description),
     updated_at = CURRENT_TIMESTAMP;
+
+-- Remove any unauthorized phone numbers from database
+-- UPDATE tables to replace unauthorized numbers with approved ones
+-- These queries should be run manually after reviewing your database structure
 ";
 
 file_put_contents('../sql_scripts/phone_replacement_migration.sql', $sqlScript);

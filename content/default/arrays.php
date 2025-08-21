@@ -40,15 +40,11 @@ $foo_arr = [
 	'information'=>['about', 'credit', 'terms', 'warranty', 'privacy', 'contacts']
 ];
 
+// Phone numbers moved to PhoneReplacementService - use approved 5-group system only
+// Legacy phone array kept for reference but should not be used
 $phone = [
-	'orange'=>[
-		['tel'=>'+37368689995', 'def'=>'068-689-995'],
-		['tel'=>'+37369977674', 'def'=>'069-977-674']
-	],
-	'moldcell'=>[
-		['tel'=>'+37379977674', 'def'=>'079-977-674'],
-		['tel'=>'+37379954375', 'def'=>'079-954-375']
-	]
+	// All phone numbers now managed through PhoneReplacementService
+	// Approved numbers: +37379600747, +37379600386, +37379500735, +37379600361
 ];
 
 $email = ['def'=>'info@sauto.md'];

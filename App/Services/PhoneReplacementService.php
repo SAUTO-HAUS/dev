@@ -94,12 +94,36 @@ class PhoneReplacementService
      */
     private function isStatusInTransit($status)
     {
-        // TODO: Replace with actual "in transit" status IDs from database
-        // This is a placeholder - you need to check your database for the correct status ID(s)
-        return in_array($status, [3, 4]) || // Example IDs
-               strpos(strtolower($status), 'в пути') !== false ||
-               strpos(strtolower($status), 'transit') !== false ||
-               strpos(strtolower($status), 'in transit') !== false;
+        // Query database for actual "in transit" status IDs
+        try {
+            $query = "SELECT id FROM {$this->prefix}_car_status WHERE 
+                     LOWER(name_ro) LIKE '%în drum%' OR 
+                     LOWER(name_ru) LIKE '%в пути%' OR 
+                     LOWER(name_en) LIKE '%in transit%' OR
+                     LOWER(name_ro) LIKE '%transport%' OR
+                     LOWER(name_ru) LIKE '%транспорт%'";
+            
+            $result = $this->db->query($query);
+            $transitIds = [];
+            
+            if ($result) {
+                while ($row = $result->fetch_assoc()) {
+                    $transitIds[] = (int)$row['id'];
+                }
+            }
+            
+            // Check if current status is in transit IDs
+            return in_array((int)$status, $transitIds) ||
+                   strpos(strtolower($status), 'в пути') !== false ||
+                   strpos(strtolower($status), 'transit') !== false ||
+                   strpos(strtolower($status), 'în drum') !== false;
+                   
+        } catch (\Exception $e) {
+            // Fallback to string matching if database query fails
+            return strpos(strtolower($status), 'в пути') !== false ||
+                   strpos(strtolower($status), 'transit') !== false ||
+                   strpos(strtolower($status), 'în drum') !== false;
+        }
     }
     
     /**
@@ -111,11 +135,33 @@ class PhoneReplacementService
      */
     public function replacePhoneNumbers($text, $context = 'general', $carData = null)
     {
-        // Phone number patterns to match
+        // Enhanced phone number patterns to match ALL possible formats
         $patterns = [
-            '/(\+373|00373)?\s?(\(?\d{2,3}\)?[\s\-]?)[\d\s\-]{5,}/',
-            '/\+373\s?\d{2}\s?\d{3}\s?\d{3}/',
-            '/\(\+373\)\s?\d{2}[\s\-]?\d{3}[\s\-]?\d{3}/',
+            // Standard formats with various separators (spaces, dashes, dots, brackets)
+            '/\+373[\s\-\.\(\)\/\'\"]*\d{2}[\s\-\.\(\)\/\'\"]*\d{3}[\s\-\.\(\)\/\'\"]*\d{3}/',
+            '/\(\+373\)[\s\-\.\/\'\"]*\d{2}[\s\-\.\/\'\"]*\d{3}[\s\-\.\/\'\"]*\d{3}/',
+            '/00373[\s\-\.\/\'\"]*\d{2}[\s\-\.\/\'\"]*\d{3}[\s\-\.\/\'\"]*\d{3}/',
+            '/373[\s\-\.\/\'\"]*\d{2}[\s\-\.\/\'\"]*\d{3}[\s\-\.\/\'\"]*\d{3}/',
+            // Compact formats
+            '/\+373\d{8}/',
+            '/00373\d{8}/',
+            '/373\d{8}/',
+            // Specific unauthorized numbers (exact matches)
+            '/\+37368689995/',
+            '/\+37369977674/',
+            '/\+37379977674/',
+            '/\+37379954375/',
+            '/\+37379600446/',
+            '/\+37368500573/',
+            // Numbers with any separators
+            '/\+373[\s\-\.\/\'\"_]*68[\s\-\.\/\'\"_]*689[\s\-\.\/\'\"_]*995/',
+            '/\+373[\s\-\.\/\'\"_]*69[\s\-\.\/\'\"_]*977[\s\-\.\/\'\"_]*674/',
+            '/\+373[\s\-\.\/\'\"_]*79[\s\-\.\/\'\"_]*977[\s\-\.\/\'\"_]*674/',
+            '/\+373[\s\-\.\/\'\"_]*79[\s\-\.\/\'\"_]*954[\s\-\.\/\'\"_]*375/',
+            '/\+373[\s\-\.\/\'\"_]*79[\s\-\.\/\'\"_]*600[\s\-\.\/\'\"_]*446/',
+            '/\+373[\s\-\.\/\'\"_]*68[\s\-\.\/\'\"_]*500[\s\-\.\/\'\"_]*573/',
+            // Legacy broad pattern for any Moldova number format
+            '/(\+373|00373|373)[\s\-\.\/\'\"_]*\d{2}[\s\-\.\/\'\"_]*\d{3}[\s\-\.\/\'\"_]*\d{3}/',
         ];
         
         $replacementPhone = '';
@@ -184,5 +230,28 @@ class PhoneReplacementService
         if (isset($this->phoneConfig[$key])) {
             $this->phoneConfig[$key] = $phone;
         }
+    }
+    
+    /**
+     * Validate if phone number is from approved list
+     * @param string $phone
+     * @return bool
+     */
+    public function isApprovedPhone($phone)
+    {
+        $approvedNumbers = array_values($this->phoneConfig);
+        return in_array($phone, $approvedNumbers);
+    }
+    
+    /**
+     * Get list of unauthorized phone numbers that should be replaced
+     * @return array
+     */
+    public function getUnauthorizedPhones()
+    {
+        return [
+            '+37368689995', '+37369977674', '+37379977674', 
+            '+37379954375', '+37379600446', '+37368500573'
+        ];
     }
 }
