@@ -283,6 +283,35 @@ if ( isset($t_mp[4]) ){
 								
 							})
 							
+							// Handle payment stages data for vinzare_avans
+							if (vals.data("doc") == "vinzare_avans" && vals.data("pays")) {
+								var paysData = vals.data("pays").toString();
+								if (paysData && paysData !== "") {
+									var payStages = paysData.split("||");
+									for (var i = 0; i < payStages.length; i++) {
+										if (payStages[i] && payStages[i].indexOf("=>") >= 0) {
+											// Add new payment stage field
+											base.find(".btn[data-fn=\"add_date_pay\"]").trigger("click");
+											
+											var parts = payStages[i].split("=>");
+											var value = parts[0] || "";
+											var dateText = parts[1] || "";
+											
+											// Populate the fields
+											var payValInputs = base.find("input[name=\"pay_val[]\"]");
+											var payDateInputs = base.find("input[name=\"pay_date[]\"]");
+											
+											if (payValInputs.length > i) {
+												payValInputs.eq(i).val(value);
+											}
+											if (payDateInputs.length > i) {
+												payDateInputs.eq(i).val(dateText);
+											}
+										}
+									}
+								}
+							}
+							
 							// After all fields are populated, trigger brand change and then set model value
 							setTimeout(function() {
 								var brandSelect = base.find("select[name=\"br\"]");
@@ -404,8 +433,9 @@ if ( isset($t_mp[4]) ){
 					var bx = $("#date_pay_bx");
 					bx.data("qu", (bx.data("qu")+1) ).attr("data-qu", bx.data("qu") );
 					$("#date_pay_bx").append(""
-						+"<input class=\"need dt\" type=\"date\" name=\"pay_date[]\" max=\"2099-12-31\" min=\"1900-01-01\" title=\"Pay date #"+bx.data("qu")+"\">"
-						+"<label class=\"lbl max\"><input type=\"number\" class=\"need\" name=\"pay_val[]\" title=\"Pay value #"+bx.data("qu")+"\" /></label>");
+						+"<label class=\"lbl\"><span class=\"ttl\">Value</span><input type=\"text\" class=\"need\" name=\"pay_val[]\" title=\"Pay value\" /></label>"
+						+"<label class=\"lbl\"><span class=\"ttl\">Date, Text</span><input class=\"need dt\" type=\"text\" name=\"pay_date[]\" title=\"Pay date / Text\" /></label>"
+					);
 				})
 				
 				$(document).on("click", "#overlay .btn[data-fn=\"add_grnt_fld\"]", function(){

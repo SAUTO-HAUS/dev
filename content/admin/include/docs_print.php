@@ -83,6 +83,21 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 								// other docs expect scalars
 								$_POST[$key] = $hasList ? explode('||', $value)[0] : $value;
 							}
+						} elseif ( $key === 'pays' ) {
+							// Handle payment stages data: "value1=>date1||value2=>date2"
+							$payStages = explode('||', $value);
+							$_POST['pay_val'] = [];
+							$_POST['pay_date'] = [];
+							foreach ( $payStages as $stage ) {
+								if ( strpos($stage, '=>') !== false ) {
+									list($val, $date) = explode('=>', $stage, 2);
+									$_POST['pay_val'][] = $val;
+									$_POST['pay_date'][] = $date;
+								}
+							}
+						} elseif ( $key === 'grnt_txt' ) {
+							// Handle warranty text data
+							$_POST['grnt_txt'] = explode('||', $value);
 						} else {
 							$_POST[$key] = $value;
 						}
