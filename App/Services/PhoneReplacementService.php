@@ -12,17 +12,47 @@ class PhoneReplacementService
      * Phone number configuration for different contexts
      * @var array
      */
-    private $phoneConfig = [
-        'prunkul' => '+37379600747',        // Prunkul Branch
-        'stock_website' => '+37379600386',   // Website-Stock
-        'on_order' => '+37379500735',        // Website-On-Order (in transit + on order)
-        'website_all' => '+37379600361'      // Website-All (general number)
-    ];
+    private $phoneConfig = [];
     
     public function __construct()
     {
         $this->db = Container::get('db');
         $this->prefix = Container::get('prefix');
+        $this->loadPhoneConfig();
+    }
+    
+    /**
+     * Load phone configuration from database
+     */
+    private function loadPhoneConfig()
+    {
+        try {
+            $query = "SELECT context, phone_number FROM phone_config";
+            $stmt = $this->db->prepare($query);
+            $stmt->execute();
+            
+            while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+                $this->phoneConfig[$row['context']] = $row['phone_number'];
+            }
+            
+            // Fallback to default values if database is empty
+            if (empty($this->phoneConfig)) {
+                $this->phoneConfig = [
+                    'prunkul' => '+37379600747',
+                    'stock_website' => '+37379600386',
+                    'on_order' => '+37379500735',
+                    'website_all' => '+37379600361'
+                ];
+            }
+        } catch (\Exception $e) {
+            // Fallback to default values on error
+            $this->phoneConfig = [
+                'prunkul' => '+37379600747',
+                'stock_website' => '+37379600386',
+                'on_order' => '+37379500735',
+                'website_all' => '+37379600361'
+            ];
+        }
     }
     
     /**

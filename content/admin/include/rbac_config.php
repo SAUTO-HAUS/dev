@@ -12,7 +12,7 @@ $rbac_admin_menu = [
         'seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['create', 'ctlg'],
-        'sett' => ['info', 'adm_usr', 'roles']
+        'sett' => ['info', 'adm_usr', 'roles', 'phone_config']
     ],
     'admin' => [
         'cars' => ['add', 'ctlg'],
@@ -183,7 +183,7 @@ $rbac_admin_menu = [
         'seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['add', 'ctlg'],
-        'sett' => ['info', 'adm_usr', 'roles']
+        'sett' => ['info', 'adm_usr', 'roles', 'phone_config']
     ],
     'admin' => [
         'cars' => ['add', 'ctlg'],
@@ -211,7 +211,7 @@ $rbac_internal_actions = [
         'seo' => ['add', 'create', 'detail', 'ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['add', 'create', 'detail', 'ctlg'],
-        'sett' => ['info', 'adm_usr', 'roles']
+        'sett' => ['info', 'adm_usr', 'roles', 'phone_config']
     ],
     'admin' => [
         'cars' => ['add', 'create', 'detail', 'ctlg'],
