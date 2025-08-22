@@ -1,15 +1,16 @@
 /* Display controls for car list pagination */
 .display-controls {
-    display: inline-flex;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 10px;
+    width: 100%;
     padding: 8px 12px;
     background: #fff;
     border: 1px solid #dc3545;
     border-radius: 4px;
     margin: 0 0 10px 0;
     font-size: 14px;
-    max-width: 300px;
+    max-width: none;
     vertical-align: top;
     clear: both;
 }

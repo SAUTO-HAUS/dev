@@ -302,6 +302,15 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                     </select>
                 </div>
 
+                <!-----VIN CODE----->
+                <div class="form-group col-md-6">
+                    <input class="vin no_need form-control" type="text" name="vin" tabindex="15"
+                           value="<?= $car['vin'] ?? '' ?>"
+                           placeholder="VIN КОД"
+                           title="VIN КОД"
+                           maxlength="255">
+                </div>
+
                 <!-----PRICE--->
                 <div class="form-group col-md-90">
                     <input class="price need nmb form-control" type="text" name="prc" tabindex="16"

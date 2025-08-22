@@ -154,6 +154,9 @@ if ( $_POST['sub']=='start' ){//************************************************
 			foreach ($lng['l']['car']['clr'] as $k => $v){ $rtrn .= '<option value="'.$k.'" '.($k==$r['clr']?'selected':'').'>'.$v.'</option>'; }
 			$rtrn .= '</select>';
 			
+			//---VIN CODE---
+			$rtrn .= '<input class="vin no_need" name="vin" size="16" tabindex="11" placeholder="VIN КОД" type="text" title="VIN КОД" value="'.$r['vin'].'">';
+			
 			//---LOCATION---
 			$rtrn .= '<select class="location need" name="loc" title="'.$lng['w']['address'].'" tabindex="12">';
 			foreach ($lng['t']['x']['address'] as $k => $v){ $v = ($k==0) ? $lng['w']['not_sel'] : $v; $rtrn .= '<option value="'.$k.'" '.($k==$r['loc']?'selected':'').'>'.$v.'</option>'; }

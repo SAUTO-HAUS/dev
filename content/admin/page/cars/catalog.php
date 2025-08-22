@@ -21,27 +21,43 @@ elseif (isset($_POST['limit'])) {
     }
 }
 
+// Get VIN search parameter
+$vin_search = trim($_GET['vin_search'] ?? $_POST['vin_search'] ?? '');
+
 $i_max = $display_limit;
 
 // Get user role and branch info for filtering
 $user_role = $_SESSION['user_role'] ?? $user_role ?? null;
 $user_branch_id = $_SESSION['user_branch_id'] ?? $user_branch_id ?? null;
 
-$pdo = (new \App\Db\Car())->getCarsCtlg($i_max, $user_role, $user_branch_id);
+$pdo = (new \App\Db\Car())->getCarsCtlg($i_max, $user_role, $user_branch_id, $vin_search);
 $total_cars_fetched = count($pdo);
 $has_more_cars = $total_cars_fetched > $i_max;
 $i = 0;
 $last_car_id = 0;
 ?>
 
-<div class="display-controls">
-    <label for="cars-display-limit"><?= $lng['w']['show'] ?? 'Показать:' ?></label>
-    <select id="cars-display-limit" name="limit">
-        <option value="25" <?= $display_limit == 25 ? 'selected' : '' ?>>25</option>
-        <option value="100" <?= $display_limit == 100 ? 'selected' : '' ?>>100</option>
-        <option value="all" <?= $display_limit == 999 ? 'selected' : '' ?>><?= $lng['w']['all'] ?? 'Все' ?></option>
-    </select>
-    <span class="loading-indicator" id="cars-loading" style="display: none;">⟳</span>
+<div class="display-controls" style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="display: flex; align-items: center;">
+        <label for="cars-display-limit"><?= $lng['w']['show'] ?? 'Показать:' ?></label>
+        <select id="cars-display-limit" name="limit" style="margin-left: 5px;">
+            <option value="25" <?= $display_limit == 25 ? 'selected' : '' ?>>25</option>
+            <option value="100" <?= $display_limit == 100 ? 'selected' : '' ?>>100</option>
+            <option value="all" <?= $display_limit == 999 ? 'selected' : '' ?>><?= $lng['w']['all'] ?? 'Все' ?></option>
+        </select>
+        <span class="loading-indicator" id="cars-loading" style="display: none; margin-left: 10px;">⟳</span>
+    </div>
+    
+    <div class="vin-search-container" style="display: flex; align-items: center; margin-left: auto; margin-right:70px;">
+        <label for="vin-search"><?= $lng['w']['vin_search'] ?? 'Поиск по VIN:' ?></label>
+        <input type="text" id="vin-search" name="vin_search" placeholder="<?= $lng['w']['vin_placeholder'] ?? 'Введите VIN или его часть' ?>" 
+               value="<?= htmlspecialchars($_GET['vin_search'] ?? $_POST['vin_search'] ?? '') ?>" 
+               style="padding: 5px; margin-left: 5px; width: 200px;">
+        <button type="button" id="vin-search-btn" style="margin-left: 5px; padding: 5px 10px;"><?= $lng['w']['search'] ?? 'Найти' ?></button>
+        <?php if (!empty($_GET['vin_search']) || !empty($_POST['vin_search'])): ?>
+            <button type="button" id="vin-clear-btn" style="margin-left: 5px; padding: 5px 10px;"><?= $lng['w']['clear'] ?? 'Очистить' ?></button>
+        <?php endif; ?>
+    </div>
 </div>
 <div class="ctlg_dspl_tp"></div>
 <section class="ctlg">
@@ -333,4 +349,42 @@ $last_car_id = 0;
 <?php if($has_more_cars && $display_limit != 999) : ?>
     <div id="more_it" data-i="1"><?= $lng['w']['more'] ?? 'More' ?></div>
 <?php endif; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const vinSearchBtn = document.getElementById('vin-search-btn');
+    const vinClearBtn = document.getElementById('vin-clear-btn');
+    const vinSearchInput = document.getElementById('vin-search');
+    
+    // VIN search functionality
+    if (vinSearchBtn) {
+        vinSearchBtn.addEventListener('click', function() {
+            const vinValue = vinSearchInput.value.trim();
+            if (vinValue) {
+                const currentUrl = new URL(window.location);
+                currentUrl.searchParams.set('vin_search', vinValue);
+                window.location.href = currentUrl.toString();
+            }
+        });
+    }
+    
+    // VIN clear functionality
+    if (vinClearBtn) {
+        vinClearBtn.addEventListener('click', function() {
+            const currentUrl = new URL(window.location);
+            currentUrl.searchParams.delete('vin_search');
+            window.location.href = currentUrl.toString();
+        });
+    }
+    
+    // Enter key support for VIN search
+    if (vinSearchInput) {
+        vinSearchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                vinSearchBtn.click();
+            }
+        });
+    }
+});
+</script>
 <div id="it_cnt" data-count="<?= $i ?>" data-pos="<?= $last_car_id ?>"></div>

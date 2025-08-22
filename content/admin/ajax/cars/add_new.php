@@ -136,7 +136,7 @@ if (__post('sub') == 'mo_search') {
             $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET 
                 `gr`=:gr, `br`=:br, `mo`=:mo, `br_nm`=:br_nm, `mo_nm`=:mo_nm, `yr`=:yr,
                 `bt`=:bt, `sts`=:sts, `mlg`=:mlg, `unit`=:unit, `vol`=:vol, `hp`=:hp, `fl`=:fl,
-                `tra`=:tra, `wd`=:wd, `clr`=:clr, `loc`=:loc, `txt`=:txt, 
+                `tra`=:tra, `wd`=:wd, `clr`=:clr, `loc`=:loc, `txt`=:txt, `vin`=:vin,
                 `prc`=:prc, `cur`=:cur, `soon`=:soon, `n_a`=:n_a, `tva`=:tva, `top`=:top,
                 `gift`=:gift, `import_country_id`=:import_country_id,
                 `prc_t`=:prc_t, `prc_n`=:prc_n, `999`=:data_999 
@@ -161,6 +161,7 @@ if (__post('sub') == 'mo_search') {
                 'clr' => __post('clr'),
                 'loc' => __post('loc', 0),
                 'txt' => ( __post('txt')==null?'':__post('txt') ),
+                'vin' => __post('vin', ''),
                 'prc' => $extracted_price,
                 'cur' => $extracted_currency,
                 'soon' => __post('soon', 0),
