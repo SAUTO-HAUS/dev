@@ -23,14 +23,14 @@ $rbac_admin_menu = [
         'sett' => ['info']
     ],
     'publisher' => [
-        'cars' => ['add'],
+        'cars' => ['add', 'ctlg'],
         'docs' => ['create', 'ctlg']
-        // No access to SEO, Mail, Settings, Cars catalog as per business requirements
+        // Can view cars catalog for sales purposes but only add new cars
     ],
     'publisher_limited' => [
-        'cars' => ['add'],
+        'cars' => ['add', 'ctlg'],
         'docs' => ['create', 'ctlg']
-        // No access to SEO, Mail, Settings, Cars catalog + branch limited access
+        // Can view cars catalog for sales purposes but only add new cars + branch limited access
     ]
 ];
 
@@ -63,26 +63,26 @@ $rbac_permissions = [
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'settings' => ['read' => true, 'update' => false]
     ],
-    // Publisher (Публикатор) - Can only add new cars, no catalog management, full docs access to ALL branches
+    // Publisher (Публикатор) - Can view and add cars for sales purposes, full docs access to ALL branches
     'publisher' => [
         'user_management' => false,
         'role_management' => false,
         'system_settings' => false,
         'all_branches' => true,
         'branch_limited' => false,
-        'cars' => ['create' => true, 'read' => false, 'update' => false, 'delete' => false, 'restore' => false],
+        'cars' => ['create' => true, 'read' => true, 'update' => false, 'delete' => false, 'restore' => false],
         'seo' => ['read' => false],
         'mail' => ['read' => false],
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'settings' => ['read' => false]
     ],
-    // Publisher-Limited (Публикатор Филиал) - Can only add new cars, no catalog management, docs access limited to own branch
+    // Publisher-Limited (Публикатор Филиал) - Can view and add cars for sales purposes, docs access limited to own branch
     'publisher_limited' => [
         'user_management' => false,
         'role_management' => false,
         'system_settings' => false,
         'branch_limited' => true,
-        'cars' => ['create' => true, 'read' => false, 'update' => false, 'delete' => false, 'restore' => false],
+        'cars' => ['create' => true, 'read' => true, 'update' => false, 'delete' => false, 'restore' => false],
         'seo' => ['read' => false],
         'mail' => ['read' => false],
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
@@ -194,11 +194,11 @@ $rbac_admin_menu = [
         'sett' => ['info']
     ],
     'publisher' => [
-        'cars' => ['add'], 
+        'cars' => ['add', 'ctlg'], 
         'docs' => ['add', 'ctlg']
     ],
     'publisher_limited' => [
-        'cars' => ['add'], 
+        'cars' => ['add', 'ctlg'], 
         'docs' => ['add', 'ctlg']
     ]
 ];
@@ -222,11 +222,11 @@ $rbac_internal_actions = [
         'sett' => ['info']
     ],
     'publisher' => [
-        'cars' => ['add', 'create', 'detail'],
+        'cars' => ['add', 'create', 'detail', 'ctlg'],
         'docs' => ['add', 'create', 'detail', 'ctlg']
     ],
     'publisher_limited' => [
-        'cars' => ['add', 'create', 'detail'],
+        'cars' => ['add', 'create', 'detail', 'ctlg'],
         'docs' => ['add', 'create', 'detail', 'ctlg']
     ]
 ];

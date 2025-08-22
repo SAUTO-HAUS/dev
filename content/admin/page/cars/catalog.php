@@ -114,7 +114,7 @@ $last_car_id = 0;
             }
         }
         ?>
-        <div class="bx<?= $stts ?>" data-id="<?= $r['id'] ?>">
+        <div class="bx<?= $stts ?><?= (!rbac_has_permission($user_role, 'cars', 'update') && !rbac_has_permission($user_role, 'cars', 'delete')) ? ' no-admin-hover' : '' ?>" data-id="<?= $r['id'] ?>">
             <div class="log_sauto_999">
                 <?php if (!empty($r['br'])) : ?>
                     <img src="/media/images/site/v2/logo_b.svg" class="log_sauto" title="Published on 999" alt="Published on SAUTO"/>
@@ -238,25 +238,37 @@ $last_car_id = 0;
             </div>
             <div class="adm_menu">
                 <?php if( $r['act'] == 1 ) : ?>
+                    <?php if (rbac_has_permission($user_role, 'cars', 'update')): ?>
                     <a class="btn edit" href="<?= '/'.$_COOKIE['lang'].'/'.$admin_dir.'/cars/detail?id=' . $r['id'] ?>" title="<?= $lng['adm']['edit'] ?>">
                         <div></div>
                     </a>
+                    <?php endif; ?>
+                    <?php if (rbac_has_permission($user_role, 'cars', 'update')): ?>
                     <div class="btn fn_av" data-fn="<?= ($r['n_a']==0 ? 'av0' : 'av1') ?>" title="<?= ($r['n_a']==0?'Нет в наличии':'Есть в наличии') ?>" data-alt="<?= ($r['n_a']==0 ? '+' : '-') ?>">
                         <div></div>
                     </div>
+                    <?php endif; ?>
+                    <?php if (rbac_has_permission($user_role, 'cars', 'update')): ?>
                     <div class="btn fn_hr" data-fn="<?= ($r['vis']==0 ? 'reveal' : 'hide')?>" title="<?= $lng['adm'][($r['vis']==0 ? 'reveal' : 'hide')] ?>" data-alt="<?= $lng['adm'][($r['vis']==0?'hide':'reveal')] ?>">
                         <div></div>
                     </div>
+                    <?php endif; ?>
+                    <?php if (rbac_has_permission($user_role, 'cars', 'delete')): ?>
                     <div class="btn fn_dre" data-fn="delete" title="<?= $lng['adm']['delete'] ?>">
                         <div></div>
                     </div>
+                    <?php endif; ?>
                 <?php elseif ( $r['act'] == 0 ) : ?>
+                    <?php if (rbac_has_permission($user_role, 'cars', 'restore')): ?>
                     <div class="btn fn_dre" data-fn="restore" title="<?= $lng['adm']['restore'] ?>">
                         <div></div>
                     </div>
+                    <?php endif; ?>
+                    <?php if (rbac_has_permission($user_role, 'cars', 'delete')): ?>
                     <div class="btn fn_dre" data-fn="erase" title="<?= $lng['adm']['delete'] ?>">
                         <div></div>
                     </div>
+                    <?php endif; ?>
                 <?php endif; ?>
             </div>
 
