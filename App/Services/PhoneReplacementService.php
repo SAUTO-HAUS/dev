@@ -14,6 +14,12 @@ class PhoneReplacementService
      */
     private $phoneConfig = [];
     
+    /**
+     * Cached transit status IDs
+     * @var array
+     */
+    private $transitStatusIds = null;
+    
     public function __construct()
     {
         $this->db = Container::get('db');
@@ -118,13 +124,14 @@ class PhoneReplacementService
     }
     
     /**
-     * Check if status indicates "in transit"
-     * @param mixed $status
-     * @return bool
+     * Load and cache transit status IDs
      */
-    private function isStatusInTransit($status)
+    private function loadTransitStatusIds()
     {
-        // Query database for actual "in transit" status IDs
+        if ($this->transitStatusIds !== null) {
+            return $this->transitStatusIds;
+        }
+        
         try {
             $query = "SELECT id FROM {$this->prefix}_car_status WHERE 
                      LOWER(name_ro) LIKE '%în drum%' OR 
@@ -133,27 +140,34 @@ class PhoneReplacementService
                      LOWER(name_ro) LIKE '%transport%' OR
                      LOWER(name_ru) LIKE '%транспорт%'";
             
-            $result = $this->db->query($query);
-            $transitIds = [];
+            $stmt = $this->db->prepare($query);
+            $stmt->execute();
             
-            if ($result) {
-                while ($row = $result->fetch_assoc()) {
-                    $transitIds[] = (int)$row['id'];
-                }
+            $this->transitStatusIds = [];
+            while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+                $this->transitStatusIds[] = (int)$row['id'];
             }
             
-            // Check if current status is in transit IDs
-            return in_array((int)$status, $transitIds) ||
-                   strpos(strtolower($status), 'в пути') !== false ||
-                   strpos(strtolower($status), 'transit') !== false ||
-                   strpos(strtolower($status), 'în drum') !== false;
-                   
         } catch (\Exception $e) {
-            // Fallback to string matching if database query fails
-            return strpos(strtolower($status), 'в пути') !== false ||
-                   strpos(strtolower($status), 'transit') !== false ||
-                   strpos(strtolower($status), 'în drum') !== false;
+            $this->transitStatusIds = [];
         }
+        
+        return $this->transitStatusIds;
+    }
+    
+    /**
+     * Check if status indicates "in transit"
+     * @param mixed $status
+     * @return bool
+     */
+    private function isStatusInTransit($status)
+    {
+        $transitIds = $this->loadTransitStatusIds();
+        
+        return in_array((int)$status, $transitIds) ||
+               strpos(strtolower($status), 'в пути') !== false ||
+               strpos(strtolower($status), 'transit') !== false ||
+               strpos(strtolower($status), 'în drum') !== false;
     }
     
     /**
@@ -176,20 +190,6 @@ class PhoneReplacementService
             '/\+373\d{8}/',
             '/00373\d{8}/',
             '/373\d{8}/',
-            // Specific unauthorized numbers (exact matches)
-            '/\+37368689995/',
-            '/\+37369977674/',
-            '/\+37379977674/',
-            '/\+37379954375/',
-            '/\+37379600446/',
-            '/\+37368500573/',
-            // Numbers with any separators
-            '/\+373[\s\-\.\/\'\"_]*68[\s\-\.\/\'\"_]*689[\s\-\.\/\'\"_]*995/',
-            '/\+373[\s\-\.\/\'\"_]*69[\s\-\.\/\'\"_]*977[\s\-\.\/\'\"_]*674/',
-            '/\+373[\s\-\.\/\'\"_]*79[\s\-\.\/\'\"_]*977[\s\-\.\/\'\"_]*674/',
-            '/\+373[\s\-\.\/\'\"_]*79[\s\-\.\/\'\"_]*954[\s\-\.\/\'\"_]*375/',
-            '/\+373[\s\-\.\/\'\"_]*79[\s\-\.\/\'\"_]*600[\s\-\.\/\'\"_]*446/',
-            '/\+373[\s\-\.\/\'\"_]*68[\s\-\.\/\'\"_]*500[\s\-\.\/\'\"_]*573/',
             // Legacy broad pattern for any Moldova number format
             '/(\+373|00373|373)[\s\-\.\/\'\"_]*\d{2}[\s\-\.\/\'\"_]*\d{3}[\s\-\.\/\'\"_]*\d{3}/',
         ];
@@ -274,14 +274,11 @@ class PhoneReplacementService
     }
     
     /**
-     * Get list of unauthorized phone numbers that should be replaced
+     * Get list of authorized phone numbers from database
      * @return array
      */
-    public function getUnauthorizedPhones()
+    public function getAuthorizedPhones()
     {
-        return [
-            '+37368689995', '+37369977674', '+37379977674', 
-            '+37379954375', '+37379600446', '+37368500573'
-        ];
+        return array_values($this->phoneConfig);
     }
 }

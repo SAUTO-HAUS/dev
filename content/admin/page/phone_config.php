@@ -11,11 +11,7 @@ if (!isset($user_role) || $user_role !== 'gordon') {
     return;
 }
 
-require_once(_ROOT . '/App/Services/PhoneReplacementService.php');
-require_once(_ROOT . '/App/Helper/PhoneHelper.php');
-
 use App\Services\PhoneReplacementService;
-use App\Helper\PhoneHelper;
 
 $phoneService = new PhoneReplacementService();
 
