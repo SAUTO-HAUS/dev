@@ -1,4 +1,4 @@
-USE sautom_test_db;
+USE sautom_db;
 
 -- Show all tables in database (alternative method)
 SHOW TABLES;
