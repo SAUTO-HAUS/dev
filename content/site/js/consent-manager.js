@@ -6,7 +6,7 @@ class ConsentManager {
     constructor(options = {}) {
         this.options = {
             storageKey: 'sauto_consent_v2',
-            storageVersion: '2.1',
+            storageVersion: '2.3',
             expiryDays: 365,
             showBanner: true,
             showModal: false,
