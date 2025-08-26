@@ -57,7 +57,7 @@ class ConsentManager {
             ad_storage: { required: false, default: 'denied' },
             ad_user_data: { required: false, default: 'denied' },
             ad_personalization: { required: false, default: 'denied' },
-            analytics_storage: { required: false, default: 'denied' },
+            analytics_storage: { required: false, default: 'granted' },
             personalization_storage: { required: false, default: 'denied' }
         };
 
@@ -68,7 +68,7 @@ class ConsentManager {
             ad_storage: false,
             ad_user_data: false,
             ad_personalization: false,
-            analytics_storage: false,
+            analytics_storage: true,
             personalization_storage: false
         };
         this.isInitialized = false;
@@ -109,14 +109,14 @@ class ConsentManager {
             window.gtag = function() { dataLayer.push(arguments); };
         }
 
-        // Set default consent states (denied for all non-essential)
+        // Set default consent states (analytics granted by default)
         gtag('consent', 'default', {
             'functionality_storage': 'granted',
             'security_storage': 'granted',
             'ad_storage': 'denied',
             'ad_user_data': 'denied',
             'ad_personalization': 'denied',
-            'analytics_storage': 'denied',
+            'analytics_storage': 'granted',
             'personalization_storage': 'denied'
         });
     }

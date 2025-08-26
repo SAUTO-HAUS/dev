@@ -8,22 +8,21 @@ use App\Helper\PhoneHelper;?>
 
 <script src="/<?php e(_DEFAULT)?>/js/js.cookie.min.js"></script>
 
-<!-- Google Tag Manager - COMPLETELY DISABLED UNTIL CONSENT -->
+<!-- Google Tag Manager - Disabled (using GA4 directly) -->
 <script>
-// GTM will be loaded only after explicit consent via ConsentManager
-console.log('GTM blocked until consent is given');
+// Using GA4 directly instead of GTM for better consent control
+console.log('Using GA4 directly for analytics tracking');
 </script>
-<!-- End Google Tag Manager -->
 
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
 
 <script src="/<?php e(_DEFAULT)?>/js/sitescripts.js?d=<?php echo date("GYimsd", filemtime(_DEFAULT.'/js/sitescripts.js')); ?>"></script>
 <script src="/<?php e(_SITE)?>/js/sitescripts.js?d=<?php echo date("GYimsd", filemtime(_SITE.'/js/sitescripts.js')); ?>"></script>
 
-<!-- Google Ads - COMPLETELY DISABLED UNTIL CONSENT -->
+<!-- Google Ads - Load after ad consent -->
 <script>
-// Google Ads will be loaded only after explicit consent via ConsentManager
-console.log('Google Ads blocked until consent is given');
+// Google Ads will be loaded only after ad consent via ConsentManager
+console.log('Google Ads will load after ad consent is given');
 </script>
 
 <?php //<link rel="alternate" href="http://www.example.com/" hreflang="x-default">
@@ -206,31 +205,45 @@ include('plugins/dev_tools/meta_gen.php');
 <!-- Modern Consent Manager CSS -->
 <link rel="stylesheet" href="/content/site/css/consent-modal.css">
 
-<!-- GDPR PROTECTION - Block all tracking until consent -->
+<!-- Google Analytics - Load immediately with consent mode -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TP4GJ51GSL"></script>
 <script>
-// Block all tracking functions until consent is given
 window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
 
-// Override tracking functions until consent is given
-window.gtag = function() {
-    if (window.consentManager && 
-        (window.consentManager.getConsent('analytics_storage') || 
-         window.consentManager.getConsent('ad_storage'))) {
-        window.dataLayer.push(arguments);
-        // Load Google Analytics after consent
-        if (!window._gaLoaded && window.consentManager.getConsent('analytics_storage')) {
-            const script = document.createElement('script');
-            script.async = true;
-            script.src = 'https://www.googletagmanager.com/gtag/js?id=G-TP4GJ51GSL';
-            document.head.appendChild(script);
-            window._gaLoaded = true;
-            console.log('Google Analytics loaded after consent');
-        }
-    } else {
-        console.log('gtag blocked - no consent');
-    }
-};
+// Initialize with analytics granted by default
+gtag('consent', 'default', {
+    'functionality_storage': 'granted',
+    'security_storage': 'granted', 
+    'ad_storage': 'denied',
+    'ad_user_data': 'denied',
+    'ad_personalization': 'denied',
+    'analytics_storage': 'granted',
+    'personalization_storage': 'denied'
+});
 
+gtag('config', 'G-TP4GJ51GSL');
+console.log('Google Analytics loaded with analytics consent granted by default');
+</script>
+
+<!-- Yandex.Metrica - Load immediately -->
+<script type="text/javascript">
+(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+ym(87984800, "init", {
+    clickmap:true,
+    trackLinks:true,
+    accurateTrackBounce:true,
+    webvisor:true
+});
+console.log('Yandex Metrica loaded immediately');
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/87984800" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+
+<!-- Facebook Pixel - Block until ad consent -->
+<script>
 // Override fbq to block calls without consent  
 window.fbq = function() {
     if (window.consentManager && window.consentManager.getConsent('ad_storage')) {
@@ -238,20 +251,7 @@ window.fbq = function() {
             window._fbq_real.apply(this, arguments);
         }
     } else {
-        console.log('fbq blocked - no consent');
-    }
-};
-
-// Block Yandex Metrica
-window.yaCounter87984800 = {
-    reachGoal: function() {
-        if (window.consentManager && window.consentManager.getConsent('analytics_storage')) {
-            if (window._ym_real) {
-                window._ym_real.reachGoal.apply(this, arguments);
-            }
-        } else {
-            console.log('Yandex Metrica blocked - no consent');
-        }
+        console.log('fbq blocked - no ad consent');
     }
 };
 </script>
@@ -313,9 +313,4 @@ $(document).ready(function(){
 <script async src="https://cdn.ampproject.org/v0.js"></script>
 <script src="//code.jivosite.com/widget/TZSdzj6D1H" async></script>
 
-<!-- Facebook Pixel - COMPLETELY DISABLED UNTIL CONSENT -->
-<script>
-// Facebook Pixel will be loaded only after explicit consent via ConsentManager
-console.log('Facebook Pixel blocked until consent is given');
-</script>
-<!-- End Facebook Pixel Code -->
+<!-- Facebook Pixel handled above with consent check -->

@@ -1,8 +1,8 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' ); ?>
 
-<!-- Google AdWords Conversion & Remarketing - COMPLETELY DISABLED UNTIL CONSENT -->
+<!-- Google AdWords Conversion & Remarketing - Will load after ad consent -->
 <script>
-// All Google AdWords tracking blocked until consent is given
-console.log('Google AdWords conversion and remarketing blocked until consent is given');
+// Google AdWords tracking will load after ad consent is given
+console.log('Google AdWords will load after ad consent is given');
 </script>
 <!-- End Google AdWords -->

@@ -10,12 +10,7 @@ include(_SITE_INCL.'/functions.php'); ?>
 	<?php include(_SITE.'/head.php'); ?>
 </head>
 
-<!-- Google tag (gtag.js) -->
-<!-- Google Analytics - COMPLETELY DISABLED UNTIL CONSENT -->
-<script>
-// Google Analytics will be loaded only after explicit consent via ConsentManager
-console.log('Google Analytics G-TP4GJ51GSL blocked until consent is given');
-</script>
+<!-- Google Analytics loaded in head.php with immediate consent -->
 
 <body class="ffd" <?php /*class="noselect ffd"*/ echo ' data-mbl="'.$isMobile.'" data-lng="'.$_COOKIE['lang'].'"'; ?> data-js="0" data-host="SAUTO">
 	
