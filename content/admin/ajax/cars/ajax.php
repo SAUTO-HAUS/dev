@@ -271,9 +271,9 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
 
     $_COOKIE['lang']='ro';
     require (_DEFAULT.'/language.php');
-
+  
     // Use PhoneReplacementService for dynamic phone numbers
-    require_once '../../../App/Services/PhoneReplacementService.php';
+    require_once 'App/Services/PhoneReplacementService.php';
     $phoneService = new \App\Services\PhoneReplacementService();
     $phone = $phoneService->getGeneralPhone();
     $car_title_name = "";
