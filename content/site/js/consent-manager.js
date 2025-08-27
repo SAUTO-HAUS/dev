@@ -103,22 +103,9 @@ class ConsentManager {
     }
 
     initGoogleConsentMode() {
-        // Initialize gtag if not available
-        if (typeof gtag === 'undefined') {
-            window.dataLayer = window.dataLayer || [];
-            window.gtag = function() { dataLayer.push(arguments); };
-        }
-
-        // Set default consent states (analytics granted by default)
-        gtag('consent', 'default', {
-            'functionality_storage': 'granted',
-            'security_storage': 'granted',
-            'ad_storage': 'denied',
-            'ad_user_data': 'denied',
-            'ad_personalization': 'denied',
-            'analytics_storage': 'granted',
-            'personalization_storage': 'denied'
-        });
+        // Google Consent Mode is already initialized in head.php
+        // No need to duplicate initialization here
+        console.log('Google Consent Mode already initialized in head.php with analytics_storage: granted');
     }
 
     attachToggleHandlers() {
@@ -264,29 +251,23 @@ class ConsentManager {
         const consentUpdate = {};
         
         Object.keys(this.consentTypes).forEach(type => {
-            consentUpdate[type] = this.currentConsent[type] ? 'granted' : 'denied';
+            // Always keep analytics_storage as granted to ensure tracking works
+            if (type === 'analytics_storage') {
+                consentUpdate[type] = 'granted';
+            } else {
+                consentUpdate[type] = this.currentConsent[type] ? 'granted' : 'denied';
+            }
         });
 
         gtag('consent', 'update', consentUpdate);
+        console.log('Google Consent updated:', consentUpdate);
     }
 
     loadTrackingScripts() {
-        console.log('Loading tracking scripts after consent...');
+        console.log('Analytics scripts are already loaded in head.php - no additional loading needed');
         
-        // Load Google Analytics if analytics consent is given
-        if (this.currentConsent.analytics_storage && !window._gaLoaded) {
-            const gaScript = document.createElement('script');
-            gaScript.async = true;
-            gaScript.src = 'https://www.googletagmanager.com/gtag/js?id=G-TP4GJ51GSL';
-            document.head.appendChild(gaScript);
-            
-            gaScript.onload = () => {
-                gtag('config', 'G-TP4GJ51GSL');
-                console.log('Google Analytics loaded and configured');
-            };
-            
-            window._gaLoaded = true;
-        }
+        // Google Analytics and Yandex.Metrica are loaded immediately in head.php
+        // Only Facebook Pixel needs consent-based loading
         
         // Load Facebook Pixel if ad consent is given
         if (this.currentConsent.ad_storage && !window._fbLoaded) {
@@ -296,32 +277,14 @@ class ConsentManager {
             document.head.appendChild(fbScript);
             
             fbScript.onload = () => {
-                fbq('init', '1316635815226956');
+                // Enable real Facebook Pixel
+                window._fbq_real = window.fbq;
+                fbq('init', '701415057290990');
                 fbq('track', 'PageView');
                 console.log('Facebook Pixel loaded and configured');
             };
             
             window._fbLoaded = true;
-        }
-        
-        // Load Yandex Metrica if analytics consent is given
-        if (this.currentConsent.analytics_storage && !window._ymLoaded) {
-            const ymScript = document.createElement('script');
-            ymScript.type = 'text/javascript';
-            ymScript.innerHTML = `
-                (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-                m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-                (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-                ym(87984800, "init", {
-                    clickmap:true,
-                    trackLinks:true,
-                    accurateTrackBounce:true,
-                    webvisor:true
-                });
-            `;
-            document.head.appendChild(ymScript);
-            console.log('Yandex Metrica loaded and configured');
-            window._ymLoaded = true;
         }
     }
 
