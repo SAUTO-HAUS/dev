@@ -7,22 +7,27 @@ use App\Helper\PhoneHelper;?>
 <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
 
 <script src="/<?php e(_DEFAULT)?>/js/js.cookie.min.js"></script>
-
-<!-- Google Tag Manager - Disabled (using GA4 directly) -->
-<script>
-// Using GA4 directly instead of GTM for better consent control
-console.log('Using GA4 directly for analytics tracking');
-</script>
-
 <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js"></script>
 
 <script src="/<?php e(_DEFAULT)?>/js/sitescripts.js?d=<?php echo date("GYimsd", filemtime(_DEFAULT.'/js/sitescripts.js')); ?>"></script>
 <script src="/<?php e(_SITE)?>/js/sitescripts.js?d=<?php echo date("GYimsd", filemtime(_SITE.'/js/sitescripts.js')); ?>"></script>
 
-<!-- Google Ads - Load after ad consent -->
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-KRRLB4X');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-964347386"></script>
 <script>
-// Google Ads will be loaded only after ad consent via ConsentManager
-console.log('Google Ads will load after ad consent is given');
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'AW-964347386');
 </script>
 
 <?php //<link rel="alternate" href="http://www.example.com/" hreflang="x-default">
@@ -201,116 +206,112 @@ include('plugins/dev_tools/meta_gen.php');
 }
 ?>
 
-
-<!-- Modern Consent Manager CSS -->
-<link rel="stylesheet" href="/content/site/css/consent-modal.css">
-
-<!-- Google Analytics - Load immediately with consent mode -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-TP4GJ51GSL"></script>
+<style>
+    .cons_bx {
+		position:fixed; bottom:0; left:0; right:0;
+		background-color:#333d;
+		padding:2rem 5rem;
+		display:flex;
+		justify-content:space-between;
+		align-items:center;
+		z-index:1000;
+		color:#fff;
+		font-family:"def_l";
+		font-size:1.1rem;
+	}
+    .cons_btns {display:flex; gap:10px;}
+	.cons_btns > button {padding:.7rem 1rem; background-color:#fff9; color:#333; font-family:"def"; font-size:1rem; border:none; border-radius:50px; transition:background-color .3s;}
+	.cons_btns > button:hover {background-color:#fff;}
+	.cons_bx input[type="checkbox"] {accent-color:#e2001a; margin:0 .2rem 0 1rem;}
+	
+	#pref_bx .ttl {border-bottom:1px solid #e2001a; font-size:1.3rem; margin:0 0 .5rem; padding:0 0 0 .2rem;}
+	
+	#pref_bx label {position:relative; padding-left:1rem; cursor:pointer;}
+	#pref_bx label > input {display:none;}
+	
+	#pref_bx label > .txt {border-bottom:1px solid transparent;}
+	#pref_bx label:hover > .txt {border-bottom-color:#fff;}
+	
+	#pref_bx .chk_bx {width:3rem; height:1.5rem; background-color:#333; position:absolute; right:-3.5rem; display:inline-block; border-radius:5rem; padding:.1rem; transition:background-color .3s;}
+	#pref_bx .chk_bx.def {cursor:not-allowed;}
+	#pref_bx .chk_bx > .dot {width:1.3rem; height:1.3rem; background-color:#fff; border-radius:50%; margin-left:0; transition:margin-left .3s;}
+	
+	#pref_bx input:checked ~ .chk_bx, #pref_bx .chk_bx.def {background-color:#e2001a;}
+	#pref_bx input:checked ~ .chk_bx > .dot, #pref_bx .chk_bx.def > .dot {margin-left:calc(100% - 1.3rem);}
+</style>
 <script>
 window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
-
-// Initialize with analytics granted by default
 gtag('consent', 'default', {
-    'functionality_storage': 'granted',
-    'security_storage': 'granted', 
-    'ad_storage': 'denied',
-    'ad_user_data': 'denied',
-    'ad_personalization': 'denied',
-    'analytics_storage': 'granted',
-    'personalization_storage': 'denied'
+	'ad_storage': 'denied',
+	'ad_user_data': 'denied',
+	'ad_personalization': 'denied',
+	'analytics_storage': 'denied'
 });
 
-gtag('config', 'G-TP4GJ51GSL');
-console.log('Google Analytics loaded with analytics consent granted by default');
-</script>
+function showPref(){document.getElementById('cons_bx').style.display = 'none'; document.getElementById('pref_bx').style.display = 'flex';}
+function hidePref(){document.getElementById('pref_bx').style.display = 'none'; document.getElementById('cons_bx').style.display = 'flex';}
 
-<!-- Yandex.Metrica - Load immediately -->
-<script type="text/javascript">
-(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-(window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-
-ym(87984800, "init", {
-    clickmap:true,
-    trackLinks:true,
-    accurateTrackBounce:true,
-    webvisor:true
-});
-console.log('Yandex Metrica loaded immediately');
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/87984800" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-
-<!-- Facebook Pixel - Block until ad consent -->
-<script>
-// Override fbq to block calls without consent  
-window.fbq = function() {
-    if (window.consentManager && window.consentManager.getConsent('ad_storage')) {
-        if (window._fbq_real) {
-            window._fbq_real.apply(this, arguments);
-        }
-    } else {
-        console.log('fbq blocked - no ad consent');
-    }
-};
-</script>
-
-<!-- Modern Consent Manager JavaScript -->
-<script src="/content/site/js/consent-manager.js"></script>
-
-<script>
-// Legacy support for existing consent functions
-
-// Backward compatibility functions
-function showPref() {
-	if (window.consentManager) {
-		window.consentManager.showModal();
-	}
-}
-
-function hidePref() {
-	if (window.consentManager) {
-		window.consentManager.hideConsentInterface();
-	}
-}
-
-// Legacy setConsent function for backward compatibility
 function setConsent(adCons, usrDtCons, persCons, anaCons) {
-	if (window.consentManager) {
-		window.consentManager.acceptCustom({
-			functionality_storage: true,
-			security_storage: true,
-			ad_storage: adCons,
-			ad_user_data: usrDtCons,
-			ad_personalization: persCons,
-			analytics_storage: anaCons,
-			personalization_storage: anaCons
-		});
-	}
+	updateConsent(adCons, usrDtCons, persCons, anaCons);
+	document.getElementById('cons_bx').style.display = 'none';
 }
 
 function savePref() {
-	if (window.consentManager) {
-		window.consentManager.saveCustomPreferences();
-	}
+	const adCons = document.getElementById('ad-storage').checked;
+	const usrDtCons = document.getElementById('ad-user-data').checked;
+	const persCons = document.getElementById('ad-personalization').checked;
+	const anaCons = document.getElementById('analytics-storage').checked;
+	setConsent(adCons, usrDtCons, persCons, anaCons);
+	document.getElementById('pref_bx').style.display = 'none';
 }
 
-// ConsentManager will be initialized by the included JS file
-
-// Clean up old consent data on page load
-$(document).ready(function(){
-	// Remove old consent storage keys
-	['z_cks_alwd', 'z_cks_alwd_t', 'z_cks_alwd_v'].forEach(key => {
-		if (localStorage.getItem(key) !== null) {
-			localStorage.removeItem(key);
-		}
+function updateConsent(ad_cons, usr_dt_cons, pers_cons, ana_cons ) {
+	gtag('consent', 'update', {
+		'ad_storage': ad_cons ? 'granted' : 'denied',
+		'ad_user_data': usr_dt_cons ? 'granted' : 'denied',
+		'ad_personalization': pers_cons ? 'granted' : 'denied',
+		'analytics_storage': ana_cons ? 'granted' : 'denied'
 	});
-});
+	localStorage.setItem( 'z_cks_alwd', '{"ad":'+(ad_cons?'true':'false')+', "usrDt":'+(usr_dt_cons?'true':'false')+', "prsn":'+(pers_cons?'true':'false')+', "ana":'+(ana_cons?'true':'false')+'}' );
+	localStorage.setItem( 'z_cks_alwd_t', unixTime() );
+	localStorage.setItem( 'z_cks_alwd_v', '20325' );
+}
+
+$(document).ready(function(){
+	
+	if ( localStorage.getItem('z_cks_alwd') !== null && (localStorage.getItem('z_cks_alwd_t') !== null && parseInt( localStorage.getItem('z_cks_alwd_t') )>=1719846403) && (localStorage.getItem('z_cks_alwd_v') !== null && localStorage.getItem('z_cks_alwd_v')=='20325') ){
+		const cksAlwdObj = JSON.parse( localStorage.getItem('z_cks_alwd') );
+		var adCks = cksAlwdObj['ad']?true:false; var usrDtCks = cksAlwdObj['usrDt']?true:false; var prsnCks = cksAlwdObj['prsn']?true:false; var anaCks = cksAlwdObj['ana']?true:false;
+		updateConsent(adCks, usrDtCks, prsnCks, anaCks);
+		//if ( unixTime() >= localStorage.getItem('z_cks_alwd_t') ){}
+	}else{
+		if (localStorage.getItem('z_cks_alwd') !== null){localStorage.removeItem( 'z_cks_alwd' );}
+		if (localStorage.getItem('z_cks_alwd_t') !== null){localStorage.removeItem( 'z_cks_alwd_t' );}
+		if (localStorage.getItem('z_cks_alwd_v') !== null){localStorage.removeItem( 'z_cks_alwd_v' );}
+		document.getElementById('cons_bx').style.display = 'flex';
+	}
+})
 </script>
 
 <style amp-boilerplate>body{-webkit-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-moz-animation:-amp-start 8s steps(1,end) 0s 1 normal both;-ms-animation:-amp-start 8s steps(1,end) 0s 1 normal both;animation:-amp-start 8s steps(1,end) 0s 1 normal both}@-webkit-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-moz-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-ms-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@-o-keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}@keyframes -amp-start{from{visibility:hidden}to{visibility:visible}}</style><noscript><style amp-boilerplate>body{-webkit-animation:none;-moz-animation:none;-ms-animation:none;animation:none}</style></noscript>
 <script async src="https://cdn.ampproject.org/v0.js"></script>
 <script src="//code.jivosite.com/widget/TZSdzj6D1H" async></script>
 
-<!-- Facebook Pixel handled above with consent check -->
+<!-- Facebook Pixel Code -->
+<script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '701415057290990');
+  fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=701415057290990&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Facebook Pixel Code -->

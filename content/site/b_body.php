@@ -3,14 +3,21 @@
 use App\Helper\PhoneHelper;
 
 
-
 include(_SITE_INCL.'/functions.php'); ?>
 
 <head>
 	<?php include(_SITE.'/head.php'); ?>
 </head>
 
-<!-- Google Analytics loaded in head.php with immediate consent -->
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-TP4GJ51GSL"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-TP4GJ51GSL');
+</script>
 
 <body class="ffd" <?php /*class="noselect ffd"*/ echo ' data-mbl="'.$isMobile.'" data-lng="'.$_COOKIE['lang'].'"'; ?> data-js="0" data-host="SAUTO">
 	
@@ -25,10 +32,31 @@ include(_SITE_INCL.'/functions.php'); ?>
 	
 	<!--<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-MG9WJ9" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>-->
 	
-	<?php 
-	// Include the new modern consent interface
-	include(_SITE_INCL.'/consent-interface.php'); 
-	?>
+	<div id="cons_bx" class="cons_bx" style="display:none;">
+		<div style="max-width:50%; padding:0 1rem 0 0;">
+			<p><?php echo $lng['l']['consent']['base_txt'][0].'<span style="border-bottom:1px solid #e2001a;">'.$lng['l']['consent']['acpt_all'].'</span>'.$lng['l']['consent']['base_txt'][1].' <a href="/'.$_COOKIE['lang'].'/privacy" target="_blank" style="color:#000;">"'.$lng['l']['menu']['privacy'].'"</a>'; ?></p>
+		</div>
+		<div class="cons_btns">
+			<button onclick="setConsent(true, true, true, true)"><?php echo $lng['l']['consent']['acpt_all']; ?></button>
+			<?php /*<button onclick="setConsent(true, false, false, false)">*/ ?><?php /*echo $lng['l']['consent']['essent'];*/ ?><?php /*</button>*/ ?>
+			<button onclick="showPref()"><?php echo $lng['l']['consent']['cstm']; ?></button>
+		</div>
+	</div>
+	
+	<div id="pref_bx" class="cons_bx cons_pref" style="display:none;">
+		<div style="display:flex; flex-flow:column; gap:10px;">
+			<p class="ttl"><?php echo $lng['l']['consent']['cstmztn']; ?></p>
+			<label> <span class="txt"><?php echo $lng['l']['consent']['func_ck']; ?></span> <div class="chk_bx def"><div class="dot"></div></div></label>
+			<label><input checked="checked" type="checkbox" id="ad-storage" /> <span class="txt"><?php echo $lng['l']['consent']['ad_ck']; ?></span> <div class="chk_bx"><div class="dot"></div></div></label>
+			<label><input checked="checked" type="checkbox" id="ad-user-data" /> <span class="txt"><?php echo $lng['l']['consent']['usr_dt_ck']; ?></span> <div class="chk_bx"><div class="dot"></div></div></label>
+			<label><input checked="checked" type="checkbox" id="ad-personalization" /> <span class="txt"><?php echo $lng['l']['consent']['prsn_ck']; ?></span> <div class="chk_bx"><div class="dot"></div></div></label>
+			<label><input checked="checked" type="checkbox" id="analytics-storage" /> <span class="txt"><?php echo $lng['l']['consent']['ana_ck']; ?></span> <div class="chk_bx"><div class="dot"></div></div></label>
+		</div>
+		<div class="cons_btns">
+			<button onclick="savePref()"><?php echo $lng['l']['consent']['acpt_sel']; ?></button>
+			<button onclick="hidePref()"><?php echo $lng['l']['consent']['back']; ?></button>
+		</div>
+	</div>
 	
 	<div id="overlay" class="noselect">
 		<div class="close"></div> <div class="bg"></div> <div class="content"></div>
@@ -259,7 +287,18 @@ include(_SITE_INCL.'/functions.php'); ?>
 	</script>';
 	?>
 	<script type="text/javascript">
+		/* <![CDATA[ */
+		var google_conversion_id = 865017510; 
+		var google_custom_params = window.google_tag_params;
+		var google_remarketing_only = true;
+		/* ]]> */
 	</script>
+	<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js"></script>
+	<noscript>
+		<div style="display:inline;">
+			<img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/865017510/?value=0&amp;guid=ON&amp;script=0"/><?php //991949120 ?>
+		</div>
+	</noscript>
 	<!-- End Google AdWords -->
 	
 </body>
