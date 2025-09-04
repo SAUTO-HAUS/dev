@@ -11,6 +11,15 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 	require_once (_DEFAULT.'/language.php');
 	require_once (_DEFAULT.'/arrays.php');
 	
+	// Include App classes for PhoneHelper
+	require_once ($_SERVER['DOCUMENT_ROOT'].'/App/Core/Container.php');
+	require_once ($_SERVER['DOCUMENT_ROOT'].'/App/Helper/PhoneHelper.php');
+	require_once ($_SERVER['DOCUMENT_ROOT'].'/App/Services/PhoneReplacementService.php');
+	
+	// Initialize Container with database connection
+	App\Core\Container::set('db', $db);
+	App\Core\Container::set('prefix', $prefx);
+	
 	$z_site = 'https://www.sauto.md';
 	$abr = '';
 	

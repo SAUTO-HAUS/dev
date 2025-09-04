@@ -737,7 +737,8 @@ if ( isset($t_mp[4]) ){
 					
 					$rtrn .= '
 					<br/>
-					<label '.($user_type=='dev'?'':'class="none"').'>Save? <input type="checkbox" name="save_inf" value="1" '.(/*myIp()=='188.244.20.158'*/$user_type=='dev'?'':'checked="checked"').' style="accent-color:#e2001a;" /></label>
+					<label '.($user_type=='dev'?'':'style="display:none;"').'>Save? <input type="checkbox" name="save_inf" value="1" '.(/*myIp()=='188.244.20.158'*/$user_type=='dev'?'':'checked="checked"').' style="accent-color:#e2001a;" /></label>
+					'.($user_type!='dev'?'<input type="hidden" name="save_inf" value="1" />':'').'
 					<label style="margin:0 0 0 1rem;">Print<input type="checkbox" name="fn" value="print_it" checked="checked" style="accent-color:#e2001a;" /></label>
 					<label style="margin:0 0 0 1rem;">Stampila<input type="checkbox" name="stamp" value="1" style="accent-color:#e2001a;" /></label> <!--checked="checked"-->
 					<label style="margin:0 0 0 1rem;">Stampila client<input type="checkbox" name="usr_stamp" value="1" style="accent-color:#e2001a;" /></label>
