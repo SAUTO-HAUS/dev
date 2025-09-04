@@ -507,7 +507,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 					}
 					
 					// Add monthly payment after the specs
-					if($r['prc'] > 500) {
+					if($r['prc'] > 100) {
 						$monthly_payment = floor($r['prc'] * (9.2/1200) / (1 - pow(1 + (9.2/1200), -60)));
 						$ar['txt'] .= '
 						<p class="ar">
@@ -584,7 +584,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 				$ar['txt'] .= '
 				</div>
 				
-				<div class="prc" style="'.$price_margin_style.'"> <strong class="val">'.$prc.' &#8364;</strong> '.$o_prc_bl.'</div>
+				<div class="prc" style="'.$price_margin_style.'"> <strong class="val">'.($r['prc'] > 100 ? $prc.' &#8364;' : $lng['w']['negociabil']).'</strong> '.$o_prc_bl.'</div>
 			</div>
 		</a>';
 		
