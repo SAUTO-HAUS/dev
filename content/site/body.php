@@ -33,14 +33,12 @@ include(_SITE_INCL.'/functions.php'); ?>
 	<!--<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-MG9WJ9" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>-->
 	
 	<div id="cons_bx" class="cons_bx" style="display:none;">
-		<div class="close-banner" onclick="setConsent(true, false, false, false);">×</div>
-		<div>
+		<div class="close-banner" onclick="setConsent(true, true, true, true);">×</div>
+		<div style="display: flex; align-items: center; justify-content: center; flex: 1;">
 			<p><?php echo $lng['l']['consent']['base_txt'][0].'<span style="border-bottom:1px solid #e2001a;">'.$lng['l']['consent']['acpt_all'].'</span>'.$lng['l']['consent']['base_txt'][1].' <a href="/'.$_COOKIE['lang'].'/privacy" target="_blank" style="color:#000;">"'.$lng['l']['menu']['privacy'].'"</a>'; ?></p>
 		</div>
 		<div class="cons_btns">
-			<button onclick="setConsent(true, true, true, true)"><?php echo $lng['l']['consent']['acpt_all']; ?></button>
-			<?php /*<button onclick="setConsent(true, false, false, false)">*/ ?><?php /*echo $lng['l']['consent']['essent'];*/ ?><?php /*</button>*/ ?>
-			<button onclick="showPref()"><?php echo $lng['l']['consent']['cstm']; ?></button>
+			<button onclick="setConsent(true, true, true, true)" style="background: linear-gradient(135deg, #e2001a, #b8001a) !important; color: white !important; border: 1px solid #e2001a !important; padding: 1rem 3rem !important; font-size: 1.2rem !important; display: flex !important; align-items: center !important; justify-content: center !important; line-height: 1 !important; border-radius: 1.5rem !important;"><?php echo $lng['l']['consent']['acpt_all']; ?></button>
 		</div>
 	</div>
 	

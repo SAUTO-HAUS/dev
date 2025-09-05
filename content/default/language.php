@@ -205,7 +205,7 @@ if ($_COOKIE['lang']=='ru'){
 			],
 			'consent'=>[
 				'base_txt'=>[0=>'Данный веб-сайт использует различные файлы cookie. Сайт запомнит Ваш выбор на время будущих посещений. Нажимая «', 1=>'», Вы соглашаетесь с использованием файлов cookie (в том числе для аналитических, функциональных и маркетинговых целей).'], 
-				'acpt_all'=>'Принять все', 'essent'=>'Только необходимое', 'cstm'=>'Настроить', 'cstmztn'=>'Индивидуальная настройка', 'func_ck'=>'Функциональные cookie', 'ad_ck'=>'Рекламные cookie', 'usr_dt_ck'=>'Cookie пользовательских данных', 'prsn_ck'=>'Персонализированные cookie', 'ana_ck'=>'Аналитические cookie', 'acpt_sel'=>'Принять выбранное', 'back'=>'Назад'
+				'acpt_all'=>'Принять', 'essent'=>'Только необходимое', 'cstm'=>'Настроить', 'cstmztn'=>'Индивидуальная настройка', 'func_ck'=>'Функциональные cookie', 'ad_ck'=>'Рекламные cookie', 'usr_dt_ck'=>'Cookie пользовательских данных', 'prsn_ck'=>'Персонализированные cookie', 'ana_ck'=>'Аналитические cookie', 'acpt_sel'=>'Принять выбранное', 'back'=>'Назад'
 			]
 		),
 		
@@ -1730,7 +1730,7 @@ elseif ($_COOKIE['lang']=='ro'){
 			],
 			'consent'=>[
 				'base_txt'=>[0=>'Acest site folosește diverse cookie-uri. Alegerile tale vor fi reținute în timpul vizitelor viitoare. Făcând clic pe „', 1=>'”, sunteți de acord cu utilizarea cookie-urilor (inclusiv în scopuri analitice, funcționale și de marketing).'], 
-				'acpt_all'=>'Accepta toate', 'essent'=>'Doar necesarul', 'cstm'=>'Personalizați', 'cstmztn'=>'Personalizare', 'func_ck'=>'Cookie-uri esențiale', 'ad_ck'=>'Cookie-uri de marketing', 'usr_dt_ck'=>'Cookie-uri de date utilizator', 'prsn_ck'=>'Cookie-uri personalizate', 'ana_ck'=>'Cookie-uri de analiză', 'acpt_sel'=>'Acceptați selectat', 'back'=>'Înapoi'
+				'acpt_all'=>'Acceptă', 'essent'=>'Doar necesarul', 'cstm'=>'Personalizați', 'cstmztn'=>'Personalizare', 'func_ck'=>'Cookie-uri esențiale', 'ad_ck'=>'Cookie-uri de marketing', 'usr_dt_ck'=>'Cookie-uri de date utilizator', 'prsn_ck'=>'Cookie-uri personalizate', 'ana_ck'=>'Cookie-uri de analiză', 'acpt_sel'=>'Acceptați selectat', 'back'=>'Înapoi'
 			]
 		),
 		
@@ -3194,7 +3194,7 @@ elseif ($_COOKIE['lang']=='en'){
 			],
 			'consent'=>[
 				'base_txt'=>[0=>'This website uses various cookies. Your choices will be remembered during future visits. By clicking “', 1=>'”, you are agreeing with the use of cookies (including for analytical, functional, and marketing purposes).'], 
-				'acpt_all'=>'Accept all', 'essent'=>'Essentials only', 'cstm'=>'Customize', 'cstmztn'=>'Customization', 'func_ck'=>'Essential cookies', 'ad_ck'=>'Marketing cookies', 'usr_dt_ck'=>'User data cookies', 'prsn_ck'=>'Personalized cookies', 'ana_ck'=>'Analytics cookies', 'acpt_sel'=>'Accept selected', 'back'=>'Back'
+				'acpt_all'=>'Accept', 'essent'=>'Essentials only', 'cstm'=>'Customize', 'cstmztn'=>'Customization', 'func_ck'=>'Essential cookies', 'ad_ck'=>'Marketing cookies', 'usr_dt_ck'=>'User data cookies', 'prsn_ck'=>'Personalized cookies', 'ana_ck'=>'Analytics cookies', 'acpt_sel'=>'Accept selected', 'back'=>'Back'
 			]
 		),
 		
