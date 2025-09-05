@@ -35,7 +35,7 @@ include(_SITE_INCL.'/functions.php'); ?>
 	<div id="cons_bx" class="cons_bx" style="display:none;">
 		<div class="close-banner" onclick="setConsent(true, true, true, true);">×</div>
 		<div style="display: flex; align-items: center; justify-content: center; flex: 1;">
-			<p><?php echo $lng['l']['consent']['base_txt'][0].'<span style="border-bottom:1px solid #e2001a;">'.$lng['l']['consent']['acpt_all'].'</span>'.$lng['l']['consent']['base_txt'][1].' <a href="/'.$_COOKIE['lang'].'/privacy" target="_blank" style="color:#000;">"'.$lng['l']['menu']['privacy'].'"</a>'; ?></p>
+			<p><?php echo $lng['l']['consent']['base_txt'][0].$lng['l']['consent']['acpt_all'].$lng['l']['consent']['base_txt'][1].' <a href="/'.$_COOKIE['lang'].'/privacy" target="_blank" style="color:#000; border-bottom:1px solid #e2001a;">"'.$lng['l']['menu']['privacy'].'"</a>'; ?></p>
 		</div>
 		<div class="cons_btns">
 			<button onclick="setConsent(true, true, true, true)" style="background: linear-gradient(135deg, #e2001a, #b8001a) !important; color: white !important; border: 1px solid #e2001a !important; padding: 1rem 3rem !important; font-size: 1.2rem !important; display: flex !important; align-items: center !important; justify-content: center !important; line-height: 1 !important; border-radius: 1.5rem !important;"><?php echo $lng['l']['consent']['acpt_all']; ?></button>
