@@ -26,7 +26,7 @@
     left: 0;
     right: 0;
     z-index: 1000;
-    padding: 2rem 5rem;
+    padding: 1rem 8rem;
     background: linear-gradient(135deg, var(--glass-bg), rgba(255, 255, 255, 0.05));
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
@@ -87,7 +87,6 @@
     display: flex;
     gap: 1rem;
     justify-content: flex-start;
-    padding-left: 3rem;
 }
 
 .cons_btns > button {
@@ -428,9 +427,41 @@
         padding: 1.5rem;
     }
     
+    .cons_bx > div:not(.close-banner) {
+        max-width: 100% !important;
+        width: 100% !important;
+        flex: 1 !important;
+    }
+    
+    .cons_bx p {
+        width: 100% !important;
+        margin: 0;
+        padding: 1rem 0 0 0;
+        max-width: none !important;
+        font-weight: 600;
+    }
+    
+    .cons_bx .close-banner {
+        top: 0.25rem;
+        right: 0.5rem;
+        width: 2rem;
+        height: 2rem;
+        font-size: 1.2rem;
+    }
+    
     .cons_btns {
         justify-content: center;
-        flex-wrap: wrap;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+        width: 100%;
+    }
+    
+    .cons_btns > button {
+        width: 100%;
+        max-width: 280px;
+        padding: 1rem 1.5rem;
+        font-size: 1.1rem;
     }
     
     #pref_bx.cons_pref {
@@ -447,7 +478,13 @@
     
     #pref_bx label > .txt {
         padding-right: 1rem;
-        font-size: 0.9rem;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+    
+    #pref_bx .ttl {
+        font-size: 1.3rem;
+        font-weight: 700;
     }
     
     #pref_bx .chk_bx {
