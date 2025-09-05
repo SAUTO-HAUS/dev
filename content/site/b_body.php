@@ -33,6 +33,7 @@ include(_SITE_INCL.'/functions.php'); ?>
 	<!--<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-MG9WJ9" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>-->
 	
 	<div id="cons_bx" class="cons_bx" style="display:none;">
+		<div class="close-banner" onclick="setConsent(true, false, false, false);">×</div>
 		<div style="max-width:50%; padding:0 1rem 0 0;">
 			<p><?php echo $lng['l']['consent']['base_txt'][0].'<span style="border-bottom:1px solid #e2001a;">'.$lng['l']['consent']['acpt_all'].'</span>'.$lng['l']['consent']['base_txt'][1].' <a href="/'.$_COOKIE['lang'].'/privacy" target="_blank" style="color:#000;">"'.$lng['l']['menu']['privacy'].'"</a>'; ?></p>
 		</div>
