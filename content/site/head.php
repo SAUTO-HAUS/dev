@@ -56,6 +56,7 @@ foreach ($lang_arr as $lang){
 <link rel="stylesheet" type="text/css" href="/<?php e(_DEFAULT)?>/css/default.css?d=<?php echo date("GYimsd", filemtime(_DEFAULT.'/css/default.css')); ?>">
 <link rel="stylesheet" type="text/css" href="/<?php e(_SITE)?>/css/style.css?d=<?php echo date("GYimsd", filemtime(_SITE.'/css/style.css')); ?>">
 <link rel="stylesheet" type="text/css" href="/<?php e(_SITE)?>/css/media.css?d=<?php echo date("GYimsd", filemtime(_SITE.'/css/media.css')); ?>">
+<link rel="stylesheet" href="/<?php e(_SITE)?>/css/consent-modal-v2.css?d=<?php echo date("GYimsd", filemtime(_SITE.'/css/consent-modal-v2.css')); ?>">
 <!--
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -207,37 +208,7 @@ include('plugins/dev_tools/meta_gen.php');
 ?>
 
 <style>
-    .cons_bx {
-		position:fixed; bottom:0; left:0; right:0;
-		background-color:#333d;
-		padding:2rem 5rem;
-		display:flex;
-		justify-content:space-between;
-		align-items:center;
-		z-index:1000;
-		color:#fff;
-		font-family:"def_l";
-		font-size:1.1rem;
-	}
-    .cons_btns {display:flex; gap:10px;}
-	.cons_btns > button {padding:.7rem 1rem; background-color:#fff9; color:#333; font-family:"def"; font-size:1rem; border:none; border-radius:50px; transition:background-color .3s;}
-	.cons_btns > button:hover {background-color:#fff;}
-	.cons_bx input[type="checkbox"] {accent-color:#e2001a; margin:0 .2rem 0 1rem;}
-	
-	#pref_bx .ttl {border-bottom:1px solid #e2001a; font-size:1.3rem; margin:0 0 .5rem; padding:0 0 0 .2rem;}
-	
-	#pref_bx label {position:relative; padding-left:1rem; cursor:pointer;}
-	#pref_bx label > input {display:none;}
-	
-	#pref_bx label > .txt {border-bottom:1px solid transparent;}
-	#pref_bx label:hover > .txt {border-bottom-color:#fff;}
-	
-	#pref_bx .chk_bx {width:3rem; height:1.5rem; background-color:#333; position:absolute; right:-3.5rem; display:inline-block; border-radius:5rem; padding:.1rem; transition:background-color .3s;}
-	#pref_bx .chk_bx.def {cursor:not-allowed;}
-	#pref_bx .chk_bx > .dot {width:1.3rem; height:1.3rem; background-color:#fff; border-radius:50%; margin-left:0; transition:margin-left .3s;}
-	
-	#pref_bx input:checked ~ .chk_bx, #pref_bx .chk_bx.def {background-color:#e2001a;}
-	#pref_bx input:checked ~ .chk_bx > .dot, #pref_bx .chk_bx.def > .dot {margin-left:calc(100% - 1.3rem);}
+
 </style>
 <script>
 window.dataLayer = window.dataLayer || [];
@@ -249,8 +220,8 @@ gtag('consent', 'default', {
 	'analytics_storage': 'denied'
 });
 
-function showPref(){document.getElementById('cons_bx').style.display = 'none'; document.getElementById('pref_bx').style.display = 'flex';}
-function hidePref(){document.getElementById('pref_bx').style.display = 'none'; document.getElementById('cons_bx').style.display = 'flex';}
+function showPref(){document.getElementById('cons_bx').style.display = 'none'; var prefBox = document.getElementById('pref_bx'); prefBox.style.display = 'flex'; prefBox.style.visibility = 'visible'; prefBox.style.opacity = '1'; prefBox.style.alignItems = 'center'; prefBox.style.justifyContent = 'center';}
+function hidePref(){document.getElementById('pref_bx').style.display = 'none'; document.getElementById('pref_bx').style.visibility = 'hidden'; document.getElementById('pref_bx').style.opacity = '0'; document.getElementById('cons_bx').style.display = 'flex';}
 
 function setConsent(adCons, usrDtCons, persCons, anaCons) {
 	updateConsent(adCons, usrDtCons, persCons, anaCons);
@@ -264,6 +235,8 @@ function savePref() {
 	const anaCons = document.getElementById('analytics-storage').checked;
 	setConsent(adCons, usrDtCons, persCons, anaCons);
 	document.getElementById('pref_bx').style.display = 'none';
+	document.getElementById('pref_bx').style.visibility = 'hidden';
+	document.getElementById('pref_bx').style.opacity = '0';
 }
 
 function updateConsent(ad_cons, usr_dt_cons, pers_cons, ana_cons ) {
