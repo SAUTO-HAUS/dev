@@ -1,7 +1,7 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
 $is_https = 1;
-$is_www = 1;
+$is_www = 0;
 $default_lang = 'ro';
 
 //Maintenance work
