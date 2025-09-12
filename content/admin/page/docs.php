@@ -121,7 +121,7 @@ if ( isset($t_mp[4]) ){
 			
 			.bx > .info {width:100%; min-height:3rem;}
 			
-			.bx > .btns {width:0; height:100%; overflow:hidden; display:flex; flex-flow:row wrap; justify-content:center; opacity:0; position:absolute; top:0; right:0; background-color:#f4e0e0ee; transition:.5s;}
+			.bx > .btns {width:0; height:100%; overflow:hidden; display:flex; flex-flow:row wrap; justify-content:center; opacity:0; position:absolute; top:0; right:0; background-color:#f4e0e0ee; transition:.1s;}
 			.bx > input[name="btns_act"]:checked ~ .btns {width:100%; opacity:1;}
 			.bx > .btns > input[type="submit"] {background:none; color:inherit; border:none; font:inherit; outline:inherit;}
 			.bx > .btns > .btn {height:inherit; align-items:center; display:flex; padding:0 1rem; cursor:pointer; align-self:center; border-radius:.75rem; margin:0 1rem; transition:.25s;}
@@ -156,6 +156,21 @@ if ( isset($t_mp[4]) ){
 			$(document).ready(function(){
 				var reqType = "adm";
 				var reqPage = "docs";
+				
+				// Check if we need to keep buttons visible after reload
+				var keepVisible = localStorage.getItem("keepButtonsVisible");
+				if (keepVisible) {
+					var editedDoc = $(".docs > .list > .bx[data-id=\"" + keepVisible + "\"]");
+					if (editedDoc.length) {
+						editedDoc.find("input[name=\"btns_act\"]").prop("checked", true);
+						// Force immediate visibility without transition delay
+						editedDoc.find(".btns").css("transition", "none").addClass("instant-show");
+						setTimeout(function() {
+							editedDoc.find(".btns").css("transition", ".1s").removeClass("instant-show");
+						}, 1);
+					}
+					localStorage.removeItem("keepButtonsVisible");
+				}
 				
 				$(".docs > .find.user select[name=\"tp\"]").on("change", function(){
 					var tp = $(this).val(), l = $(".docs > .find.user select[name=\"list\"]");
@@ -373,8 +388,12 @@ if ( isset($t_mp[4]) ){
 						//console.log(k+"::: "+v)
 					})
 					
-					// Close the overlay after successful save
-					$("#overlay").fadeOut(300);
+					// Store the edited document ID before reload
+					localStorage.setItem("keepButtonsVisible", data["inp"]["id"]);
+					
+					// Close the overlay after successful save - instant
+					$("#overlay").hide();
+					window.location.reload();
 				})
 				
 				function getFormData($form){
