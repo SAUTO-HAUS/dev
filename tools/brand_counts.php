@@ -21,7 +21,7 @@ $sql = "SELECT
     br_nm,
     COUNT(*) AS cnt_total,
     SUM(CASE WHEN loc = '1' THEN 1 ELSE 0 END) AS cnt_main,
-    SUM(CASE WHEN loc = '2' THEN 1 ELSE 0 END) AS cnt_pruntul
+    SUM(CASE WHEN loc = '2' THEN 1 ELSE 0 END) AS cnt_pruncul
 FROM {$prefx}_car_ctlg 
 WHERE n_a = 0 AND vis = 1 AND act = 1 
 GROUP BY br_nm 
@@ -31,11 +31,11 @@ $brands = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $totalCars = 0;
 $totalMain = 0;
-$totalPruntul = 0;
+$totalPruncul = 0;
 foreach ($brands as $row) {
     $totalCars += (int)$row['cnt_total'];
     $totalMain += (int)$row['cnt_main'];
-    $totalPruntul += (int)$row['cnt_pruntul'];
+    $totalPruncul += (int)$row['cnt_pruncul'];
 }
 $brandCount = count($brands);
 
@@ -47,9 +47,9 @@ foreach ($brands as $row) {
     $brand = htmlspecialchars($row['br_nm'], ENT_QUOTES, 'UTF-8');
     $countTotal = $row['cnt_total'];
     $countMain = $row['cnt_main'];
-    $countPruntul = $row['cnt_pruntul'];
-    echo "<tr><td>{$brand}</td><td>{$countTotal}</td><td>{$countMain}</td><td>{$countPruntul}</td></tr>";
+    $countPruncul = $row['cnt_pruncul'];
+    echo "<tr><td>{$brand}</td><td>{$countTotal}</td><td>{$countMain}</td><td>{$countPruncul}</td></tr>";
 }
-echo "<tr><th>Всего брендов: {$brandCount}</th><th>{$totalCars}</th><th>{$totalMain}</th><th>{$totalPruntul}</th></tr>";
+echo "<tr><th>Всего брендов: {$brandCount}</th><th>{$totalCars}</th><th>{$totalMain}</th><th>{$totalPruncul}</th></tr>";
 echo '</table></body></html>';
 ?>

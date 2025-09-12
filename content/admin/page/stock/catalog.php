@@ -12,7 +12,7 @@ try {
         br_nm,
         COUNT(*) AS cnt_total,
         SUM(CASE WHEN loc = '1' THEN 1 ELSE 0 END) AS cnt_main,
-        SUM(CASE WHEN loc = '2' THEN 1 ELSE 0 END) AS cnt_pruntul
+        SUM(CASE WHEN loc = '2' THEN 1 ELSE 0 END) AS cnt_pruncul
     FROM {$prefx}_car_ctlg 
     WHERE n_a = 0 AND vis = 1 AND act = 1 
     GROUP BY br_nm 
@@ -24,11 +24,11 @@ try {
     
     $totalCars = 0;
     $totalMain = 0;
-    $totalPruntul = 0;
+    $totalPruncul = 0;
     foreach ($brands as $row) {
         $totalCars += (int)$row['cnt_total'];
         $totalMain += (int)$row['cnt_main'];
-        $totalPruntul += (int)$row['cnt_pruntul'];
+        $totalPruncul += (int)$row['cnt_pruncul'];
     }
     $brandCount = count($brands);
     
@@ -51,7 +51,7 @@ try {
         </div>
         <div class="summary-item">
             <span class="summary-label"><?= $stock_lang['pruntul_branch'] ?>:</span>
-            <span class="summary-value"><?= $totalPruntul ?></span>
+            <span class="summary-value"><?= $totalPruncul ?></span>
         </div>
     </div>
 </div>
@@ -60,26 +60,26 @@ try {
     <thead>
         <tr>
             <th><?= $stock_lang['table_brand'] ?></th>
-            <th><?= $stock_lang['table_total'] ?></th>
             <th><?= $stock_lang['table_main_branch'] ?></th>
             <th><?= $stock_lang['table_pruncul_branch'] ?></th>
+            <th><?= $stock_lang['table_total'] ?></th>
         </tr>
     </thead>
     <tbody>
         <?php foreach ($brands as $row): ?>
             <tr>
                 <td><?= htmlspecialchars($row['br_nm'], ENT_QUOTES, 'UTF-8') ?></td>
-                <td><?= $row['cnt_total'] ?></td>
                 <td><?= $row['cnt_main'] ?></td>
-                <td><?= $row['cnt_pruntul'] ?></td>
+                <td><?= $row['cnt_pruncul'] ?></td>
+                <td><?= $row['cnt_total'] ?></td>
             </tr>
         <?php endforeach; ?>
         
         <tr class="total-row">
             <td><strong><?= $stock_lang['total_brands'] ?>: <?= $brandCount ?></strong></td>
-            <td><strong><?= $totalCars ?></strong></td>
             <td><strong><?= $totalMain ?></strong></td>
-            <td><strong><?= $totalPruntul ?></strong></td>
+            <td><strong><?= $totalPruncul ?></strong></td>
+            <td><strong><?= $totalCars ?></strong></td>
         </tr>
     </tbody>
 </table>
