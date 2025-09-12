@@ -78,7 +78,7 @@ if ( isset($t_mp[5]) || isset($mixall) ){
 			<option value="" class="def" disabled selected>-</option>';
 			foreach ($lng['t']['x']['address'] as $k => $v){if($k==0){continue;} $rtrn .= '<option value="'.$k.'">'.$v.'</option>';}
 		$rtrn .= '</select></label>
-		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="number" name="prc" title="Price" /></label>
+		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="text" name="prc" title="Price" /></label>
 		<label class="lbl"><span class="ttl">Avans</span><input type="number" name="prc_av" title="Avans" placeholder="0" /></label>
 		<label class="lbl"><span class="ttl">Termen de livrare, zile</span><input class="need" type="text" name="term_livr" title="Termen de livrare" min="0" step="1" placeholder="35" /></label>
 		<label class="lbl"><span class="ttl">Din ce surse</span>
@@ -134,7 +134,7 @@ if ( isset($t_mp[5]) || isset($mixall) ){
 			<option value="" class="def" disabled selected>-</option>';
 			foreach ($lng['t']['x']['address'] as $k => $v){if($k==0){continue;} $rtrn .= '<option value="'.$k.'">'.$v.'</option>';}
 		$rtrn .= '</select></label>
-		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="number" name="prc" title="Price" /></label>
+		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="text" name="prc" title="Price" /></label>
 		<label class="lbl"><span class="ttl">Avans</span><input type="number" name="prc_av" title="Avans" placeholder="0" /></label>
 		<label class="lbl"><span class="ttl">Termen de livrare, zile</span><input class="need" type="text" name="term_livr" title="Termen de livrare" min="0" step="1" placeholder="35" /></label>
 		
@@ -176,7 +176,7 @@ if ( isset($t_mp[5]) || isset($mixall) ){
 			<option value="" class="def" disabled selected>-</option>';
 			foreach ($lng['t']['x']['address'] as $k => $v){if($k==0){continue;} $rtrn .= '<option value="'.$k.'">'.$v.'</option>';}
 		$rtrn .= '</select></label>
-		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="number" name="prc" title="Price" /></label>
+		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="text" name="prc" title="Price" /></label>
 		<label class="lbl"><span class="ttl">Termen de livrare, zile</span><input class="need" type="text" name="term_livr" title="Termen de livrare" min="0" step="1" placeholder="35" /></label>
 		<label class="lbl"><span class="ttl">Din ce surse</span>
 			<select name="orig">
@@ -242,7 +242,7 @@ if ( isset($t_mp[5]) || isset($mixall) ){
 			<option value="" class="def" disabled selected>-</option>';
 			foreach ($lng['t']['x']['address'] as $k => $v){if($k==0){continue;} $rtrn .= '<option value="'.$k.'">'.$v.'</option>';}
 		$rtrn .= '</select></label>
-		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="number" name="prc" title="Price" /></label>
+		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="text" name="prc" title="Price" /></label>
 		<label class="lbl"><span class="ttl">Termen de livrare, zile</span><input class="need" type="text" name="term_livr" title="Termen de livrare" min="0" step="1" placeholder="35" /></label>
 		<label class="lbl"><span class="ttl">Din ce surse</span>
 			<select name="orig">
