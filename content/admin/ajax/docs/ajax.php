@@ -78,8 +78,9 @@ if ( $_POST['fn']=='edit_sbmt' ){
 	//__________________
 	
 	//UPDATE INFO CTLG
-	$pdo = $db->prepare('UPDATE '.$prefx.'_docs_ctlg SET `cd`=:cd, `inf`=:inf, `u`=:u, `date`=:date WHERE `id`=:id');
-	$pdo->execute([ 'cd'=>$it_cd, 'inf'=>$inf, 'u'=>$u_id, 'date'=>$doc_date, 'id'=>$it_id ]);
+	$last_edited_by = isset($_SESSION) && isset($_SESSION['user_id']) && $_SESSION['user_id'] !== '' ? $_SESSION['user_id'] : ( $_COOKIE['usr_id'] ?? 0 );
+	$pdo = $db->prepare('UPDATE '.$prefx.'_docs_ctlg SET `cd`=:cd, `inf`=:inf, `u`=:u, `date`=:date, `last_edited_by`=:last_edited_by WHERE `id`=:id');
+	$pdo->execute([ 'cd'=>$it_cd, 'inf'=>$inf, 'u'=>$u_id, 'date'=>$doc_date, 'last_edited_by'=>$last_edited_by, 'id'=>$it_id ]);
 	
 	$returnIt = [ 'fn'=>$_POST['fn'], 'rtrn'=>$rtrn ];
 }

@@ -228,6 +228,26 @@ if ( isset($t_mp[4]) ){
 								var base = $("#content > .tmp_form");
 							} else if ( fn=="edit_it" ){
 								overlay( "open", "#content > .docs > .list > .copy > .menu_"+vals.data("doc"), "self" );
+								
+								// Add user info header
+								var createdBy = vals.data("adm") && typeof window.adm_ar !== "undefined" && window.adm_ar[vals.data("adm")] ? window.adm_ar[vals.data("adm")] : (vals.data("adm") || "Unknown");
+								var lastEditedBy = vals.data("last_edited_by") && typeof window.adm_ar !== "undefined" && window.adm_ar[vals.data("last_edited_by")] ? window.adm_ar[vals.data("last_edited_by")] : (vals.data("last_edited_by") || vals.data("adm") || "Unknown");
+								
+								$("#overlay > .content > form").prepend(""
+									+"<div class=\"doc_info\" style=\"margin-bottom: 1.5rem; padding: 1rem; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 8px; border-left: 4px solid #e2001a; box-shadow: 0 2px 4px rgba(0,0,0,0.1);\">"
+									+"<div style=\"display: flex; align-items: center; gap: 2rem; font-size: 0.85rem;\">"
+									+"<div style=\"display: flex; align-items: center; gap: 0.5rem;\">"
+									+"<span style=\"color: #6c757d; font-weight: 500;\">📝 Created by:</span>"
+									+"<span style=\"color: #e2001a; font-weight: 600; background-color: rgba(226,0,26,0.1); padding: 0.25rem 0.5rem; border-radius: 4px;\">"+createdBy+"</span>"
+									+"</div>"
+									+"<div style=\"display: flex; align-items: center; gap: 0.5rem;\">"
+									+"<span style=\"color: #6c757d; font-weight: 500;\">✏️ Last edited by:</span>"
+									+"<span style=\"color: #495057; font-weight: 600; background-color: rgba(73,80,87,0.1); padding: 0.25rem 0.5rem; border-radius: 4px;\">"+lastEditedBy+"</span>"
+									+"</div>"
+									+"</div>"
+									+"</div>"
+								);
+								
 								$("#overlay > .content > form").append(""
 									+"<input type=\"hidden\" name=\"doc_gr\" value=\""+vals.data("gr")+"\" />"
 									+"<input type=\"hidden\" name=\"doc_f\" value=\""+vals.data("doc")+"\" />"
@@ -489,10 +509,14 @@ if ( isset($t_mp[4]) ){
 				$pdo = $db->prepare('SELECT * FROM '.$prefx.'_adm_usr ORDER BY `id` ASC'); $pdo->execute();
 				foreach ($pdo as $r){ $adm_ar[ $r['id'] ] = $r['name']; }
 				
+				// Make admin array available to JavaScript
+				$rtrn .= '<script>window.adm_ar = '.json_encode($adm_ar).';</script>';
+				
 				$i=1; $date = '';
 				$pdo = $db->prepare('SELECT 
 					u.id u_id, u.nm u_nm, u.tp u_tp, u.cf_idno u_cf_idno, u.tva_dt u_tva_dt, u.iban_dt_tk u_iban_dt_tk, u.adr u_adr, u.phn u_phn, u.eml u_eml, 
-					c.* 
+					c.*, 
+					c.last_edited_by
 					FROM 
 						'.$prefx.'_docs_u AS u 
 						INNER JOIN 
@@ -578,6 +602,7 @@ if ( isset($t_mp[4]) ){
 							'.(isset($inf['extras'])?'data-extras="'.$inf['extras'].'"':'').' '.(isset($inf['dmg_pos'])?'data-dmg_pos="'.$inf['dmg_pos'].'"':'').' '.(isset($inf['dmg_txt'])?'data-dmg_txt="'.$inf['dmg_txt'].'"':'').'
 							'.(isset($inf['orig'])?'data-orig="'.$inf['orig'].'"':'').' 
 							data-u_tp="'.$r['u_tp'].'" 
+							data-adm="'.$r['adm'].'" data-last_edited_by="'.($r['last_edited_by'] ?? $r['adm']).'"
 						></div>
 						<div class="rowz info">
 							<div class="col"><span class="date">'.date( 'd.m.y', strtotime( $r['date'] ) ).'</span></div>
