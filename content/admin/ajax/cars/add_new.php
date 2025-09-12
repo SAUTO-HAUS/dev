@@ -229,8 +229,8 @@ if (__post('sub') == 'mo_search') {
             $last_id = __post('id');
         } else {
 
-            $pdo = $db->prepare('INSERT INTO ' . $prefx . '_car_ctlg (`gr`, `br`, `mo`, `br_nm`, `mo_nm`, `yr`, `bt`, `sts`, `mlg`, `unit`, `vol`, `hp`, `fl`, `tra`, `wd`, `clr`, `loc`, `txt`, `prc`, `cur`, `soon`, `n_a`, `top`, `tva`, `gift`, `import_country_id`, `p_path`, `date`, `author`, `vis`) 
-                VALUES (:gr, :br, :mo, :br_nm, :mo_nm, :yr, :bt, :sts, :mlg, :unit, :vol, :hp, :fl, :tra, :wd, :clr, :loc, :txt, :prc, :cur, :soon, :n_a, :top, :tva, :gift, :import_country_id, :p_path, :date, :author, "1")');//, `vis`, "0"
+            $pdo = $db->prepare('INSERT INTO ' . $prefx . '_car_ctlg (`gr`, `br`, `mo`, `br_nm`, `mo_nm`, `yr`, `vin`,`bt`, `sts`, `mlg`, `unit`, `vol`, `hp`, `fl`, `tra`, `wd`, `clr`, `loc`, `txt`, `prc`, `cur`, `soon`, `n_a`, `top`, `tva`, `gift`, `import_country_id`, `p_path`, `date`, `author`, `vis`) 
+                VALUES (:gr, :br, :mo, :br_nm, :mo_nm, :yr, :vin, :bt, :sts, :mlg, :unit, :vol, :hp, :fl, :tra, :wd, :clr, :loc, :txt, :prc, :cur, :soon, :n_a, :top, :tva, :gift, :import_country_id, :p_path, :date, :author, "1")');//, `vis`, "0"
 
             $pdo->execute([
                 'gr' => __post('gr'),
@@ -239,6 +239,7 @@ if (__post('sub') == 'mo_search') {
                 'br_nm' => $br_nm,
                 'mo_nm' => $mo_nm,
                 'yr' => __post('yr'),
+                'vin' => __post('vin', ''),
                 'bt' => __post('bt'),
                 'sts' => __post('sts') ,
                 'mlg' => __post('mlg'),
