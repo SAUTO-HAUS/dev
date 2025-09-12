@@ -17,25 +17,39 @@ if (!isset($_GET['token']) || $_GET['token'] !== ACCESS_TOKEN) {
 
 header('Content-Type: text/html; charset=UTF-8');
 
-$sql = "SELECT br_nm, COUNT(*) AS cnt FROM {$prefx}_car_ctlg WHERE n_a = 0 AND vis = 1 AND act = 1 GROUP BY br_nm ORDER BY cnt DESC, br_nm ASC";
+$sql = "SELECT 
+    br_nm,
+    COUNT(*) AS cnt_total,
+    SUM(CASE WHEN loc = '1' THEN 1 ELSE 0 END) AS cnt_main,
+    SUM(CASE WHEN loc = '2' THEN 1 ELSE 0 END) AS cnt_pruntul
+FROM {$prefx}_car_ctlg 
+WHERE n_a = 0 AND vis = 1 AND act = 1 
+GROUP BY br_nm 
+ORDER BY cnt_total DESC, br_nm ASC";
 $stmt = $db->query($sql);
 $brands = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $totalCars = 0;
+$totalMain = 0;
+$totalPruntul = 0;
 foreach ($brands as $row) {
-    $totalCars += (int)$row['cnt'];
+    $totalCars += (int)$row['cnt_total'];
+    $totalMain += (int)$row['cnt_main'];
+    $totalPruntul += (int)$row['cnt_pruntul'];
 }
 $brandCount = count($brands);
 
 echo '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Доступные автомобили по брендам</title></head><body>';
 echo '<h1>Доступные автомобили по брендам</h1>';
 echo '<table border="1" cellpadding="5" cellspacing="0">';
-echo '<tr><th>Марка</th><th>Количество</th></tr>';
+echo '<tr><th>Марка</th><th>Количество всего</th><th>Количество (основной филиал)</th><th>Количество (филиал "Прунтул")</th></tr>';
 foreach ($brands as $row) {
     $brand = htmlspecialchars($row['br_nm'], ENT_QUOTES, 'UTF-8');
-    $count = $row['cnt'];
-    echo "<tr><td>{$brand}</td><td>{$count}</td></tr>";
+    $countTotal = $row['cnt_total'];
+    $countMain = $row['cnt_main'];
+    $countPruntul = $row['cnt_pruntul'];
+    echo "<tr><td>{$brand}</td><td>{$countTotal}</td><td>{$countMain}</td><td>{$countPruntul}</td></tr>";
 }
-echo "<tr><th>Всего брендов: {$brandCount}</th><th>{$totalCars}</th></tr>";
+echo "<tr><th>Всего брендов: {$brandCount}</th><th>{$totalCars}</th><th>{$totalMain}</th><th>{$totalPruntul}</th></tr>";
 echo '</table></body></html>';
 ?>
