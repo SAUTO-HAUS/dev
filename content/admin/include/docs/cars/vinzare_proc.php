@@ -71,7 +71,7 @@ $rtrn = '
 				<tr><td class="n1">Marca</td><td class="n2">'.(isset($_POST['br']) ? ucwords(strtolower(str_replace('_', ' ', $_POST['br']))) : '').'</td><td class="n1">Model</td><td class="n2">'.(isset($_POST['mo']) ? ucwords(str_replace('_', ' ', $_POST['mo'])) : '').'</td></tr>
 				<tr><td class="n1">Anul Fabricatiei</td><td class="n2">'.$_POST['yr'].'</td><td class="n1">Culoare</td><td class="n2">'.(isset($lng['l']['car']['clr'][ $_POST['clr'] ])?$lng['l']['car']['clr'][ $_POST['clr'] ]:$_POST['clr']).'</td></tr>
 				<tr><td class="n1">Serie caroserie</td><td class="n2">'.$_POST['vin'].'</td><td class="n1"></td><td class="n2"></td></tr>
-				<tr><td class="n3" rowspan="1" colspan="4">Livrarea automobilului se execută la adresa: '.$lng['t']['x']['address'][$_POST['loc']].'</td></tr>
+				<tr><td class="n3" rowspan="1" colspan="4">Livrarea automobilului se execută la adresa: '.(isset($_POST['loc']) && isset($lng['t']['x']['address'][$_POST['loc']]) ? $lng['t']['x']['address'][$_POST['loc']] : 'Adresa de livrare va fi specificată').'</td></tr>
 			</table>
 			<p><b>1.2.</b> Vânzătorul se obligă să transfere în proprietatea Cumpărătorului, iar Cumpărătorul se obligă să preia/accepte și să achite prețul pentru automobilul/automobilele.</p>
 		</div>
