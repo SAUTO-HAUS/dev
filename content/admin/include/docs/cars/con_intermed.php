@@ -197,9 +197,11 @@ $rtrn = '
 						</div>
 						<div id="dmg_clk_bx" oncontextmenu="return false;">
 							<div class="img"><img class="ghost" src="/media/images/site/blueprint/sdn.jpg" height="100%" />';
-								foreach ($_POST['dmg_pos'] as $k => $v){
-									$v = explode("x", $v);
-									$rtrn .= '<div class="el" style="left:calc('.$v[0].'% - 3mm); top:calc('.$v[1].'% - 3mm);">'.($k*1+1).'</div>';
+								if (isset($_POST['dmg_pos']) && is_array($_POST['dmg_pos'])) {
+									foreach ($_POST['dmg_pos'] as $k => $v){
+										$v = explode("x", $v);
+										$rtrn .= '<div class="el" style="left:calc('.$v[0].'% - 3mm); top:calc('.$v[1].'% - 3mm);">'.($k*1+1).'</div>';
+									}
 								}
 							$rtrn .= '
 							</div>
