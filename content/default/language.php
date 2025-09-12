@@ -2581,7 +2581,6 @@ $adm_lang = array(
 'tyres'=>'Anvelope',
 'team'=>'Echipa',
 'slider'=>'Slider',
-'stock'=>'Stoc Sauto',
 'mail'=>'Poștă',
 'users'=>'Utilizatori',
 'settings'=>'Setări',

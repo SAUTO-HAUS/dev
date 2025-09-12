@@ -1,7 +1,10 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
+// Include stock translations
+require_once dirname(__FILE__) . '/stock_translations.php';
+
 // Stock management - View only for director
-echo '<div class="page_title">Stoc Sauto - Raport Filiale</div>';
+echo '<div class="page_title">' . $stock_lang['stock'] . ' - ' . $stock_lang['stock_report'] . '</div>';
 
 // Get stock data by locations
 try {
@@ -75,9 +78,9 @@ try {
     
     // Summary section
     echo '<div class="stock_summary">';
-    echo '<h3>Rezumat Total</h3>';
+    echo '<h3>' . $stock_lang['stock_summary'] . '</h3>';
     echo '<table class="stock_table">';
-    echo '<thead><tr><th>Locație</th><th>Total Mașini</th></tr></thead>';
+    echo '<thead><tr><th>' . $stock_lang['location'] . '</th><th>' . $stock_lang['total_cars'] . '</th></tr></thead>';
     echo '<tbody>';
     
     $grand_total = 0;
@@ -92,7 +95,7 @@ try {
     }
     
     echo '<tr class="total_row">';
-    echo '<td><strong>TOTAL GENERAL</strong></td>';
+    echo '<td><strong>' . $stock_lang['total_general'] . '</strong></td>';
     echo '<td><strong>' . $grand_total . '</strong></td>';
     echo '</tr>';
     echo '</tbody></table>';
@@ -105,7 +108,7 @@ try {
         echo '<div class="location_section">';
         echo '<h3>📍 ' . htmlspecialchars($location_name) . '</h3>';
         echo '<table class="stock_table detailed">';
-        echo '<thead><tr><th>Marcă</th><th>Model</th><th>Cantitate</th></tr></thead>';
+        echo '<thead><tr><th>' . $stock_lang['brand'] . '</th><th>' . $stock_lang['model'] . '</th><th>' . $stock_lang['quantity'] . '</th></tr></thead>';
         echo '<tbody>';
         
         $location_total = 0;
@@ -119,7 +122,7 @@ try {
         }
         
         echo '<tr class="location_total">';
-        echo '<td colspan="2"><strong>Total ' . htmlspecialchars($location_name) . '</strong></td>';
+        echo '<td colspan="2"><strong>' . $stock_lang['total'] . ' ' . htmlspecialchars($location_name) . '</strong></td>';
         echo '<td><strong>' . $location_total . '</strong></td>';
         echo '</tr>';
         echo '</tbody></table>';
