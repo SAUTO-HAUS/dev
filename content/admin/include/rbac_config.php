@@ -12,6 +12,7 @@ $rbac_admin_menu = [
         'seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['create', 'ctlg'],
+        'stock' => ['ctlg'],
         'sett' => ['info', 'adm_usr', 'roles', 'phone_config']
     ],
     'admin' => [
@@ -48,6 +49,7 @@ $rbac_permissions = [
         'seo' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'mail' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
+        'stock' => ['read' => true],
         'settings' => ['read' => true, 'update' => true]
     ],
     // Admin (Администратор) - Почти полный доступ, кроме управления пользователями
@@ -183,6 +185,7 @@ $rbac_admin_menu = [
         'seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['add', 'ctlg'],
+        'stock' => ['ctlg'],
         'sett' => ['info', 'adm_usr', 'roles', 'phone_config']
     ],
     'admin' => [
@@ -211,6 +214,7 @@ $rbac_internal_actions = [
         'seo' => ['add', 'create', 'detail', 'ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['add', 'create', 'detail', 'ctlg'],
+        'stock' => ['ctlg'],
         'sett' => ['info', 'adm_usr', 'roles', 'phone_config']
     ],
     'admin' => [
