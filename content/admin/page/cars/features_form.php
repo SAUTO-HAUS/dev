@@ -282,17 +282,16 @@ if (!isset($new999)) $new999 = true;
         </div>
     </div>
 <!--    --><?php //if (!empty($car['999_id'])): ?>
-        <input type="checkbox" class="car-checkbox-n_a_new" data-car-id="<?= $car['id'] ?>"
-            <?= ($car['n_a_new'] == 1) ? 'checked' : '' ?>>
+        <input type="checkbox" class="car-checkbox-n_a_new" data-car-id="<?= isset($car['id']) ? $car['id'] : '' ?>"
+            <?= (isset($car['n_a_new']) && $car['n_a_new'] == 1) ? 'checked' : '' ?>>
         <span class="status-text">
-    <?= ($car['n_a_new'] === null ? 'Не задано, (по дефолту в наличии)' : ($car['n_a_new'] == 0 ? 'Есть в наличии' : 'Нет в наличии')) ?>
+    <?= (!isset($car['n_a_new']) || $car['n_a_new'] === null ? 'Не задано, (по дефолту в наличии)' : ($car['n_a_new'] == 0 ? 'Есть в наличии' : 'Нет в наличии')) ?>
         </span>
 <!--    --><?php //endif; ?>
     <button class="confirm_999" data-processing="<?= __('cars.processing') ?>..."
             data-origin="<?= mb_strtoupper(__('cars.confirm_publish_999'), "UTF-8") ?>"
             data-fn="public_999">
-        <?= (!empty($car['999_id'])) ? mb_strtoupper(__('cars.edit_publish_999'), "UTF-8") : mb_strtoupper(__('cars.confirm_publish_999'), "UTF-8") ?>
-    </button>
+        <?= (isset($car['999_id']) && !empty($car['999_id'])) ? mb_strtoupper(__('cars.edit_publish_999'), "UTF-8") : mb_strtoupper(__('cars.confirm_publish_999'), "UTF-8") ?>
 </div>
 
 <script>
