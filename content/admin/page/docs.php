@@ -578,6 +578,9 @@ if ( isset($t_mp[4]) ){
                     } elseif ( $user_role === 'publisher' ){
                         // Publisher: show ALL documents (no filtering)
                         // Continue without any filtering
+                    } elseif ( $user_role === 'admin' ){
+                        // Admin: show ALL documents (no filtering)
+                        // Continue without any filtering
                     } else {
                         // Default ownership rule: show only own docs (except for gordon)
                         if ( $user_role !== 'gordon' && $user_id !== null && intval($r['adm']) !== intval($user_id) ){ continue; }

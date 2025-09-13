@@ -52,7 +52,7 @@ $rbac_permissions = [
         'stock' => ['read' => true],
         'settings' => ['read' => true, 'update' => true]
     ],
-    // Admin (Администратор) - Почти полный доступ, кроме управления пользователями
+    // Admin (Администратор) - Полный доступ ко всем документам и почти полный доступ к остальному, кроме управления пользователями
     'admin' => [
         'user_management' => false,
         'role_management' => false,
@@ -62,7 +62,7 @@ $rbac_permissions = [
         'tyres' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
         'seo' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'mail' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
-        'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
+        'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
         'settings' => ['read' => true, 'update' => false]
     ],
     // Publisher (Публикатор) - Can view and add cars for sales purposes, full docs access to ALL branches
