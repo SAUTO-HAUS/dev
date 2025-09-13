@@ -247,7 +247,7 @@ function updateConsent(ad_cons, usr_dt_cons, pers_cons, ana_cons ) {
 		'analytics_storage': ana_cons ? 'granted' : 'denied'
 	});
 	// Cookie version system - increment this number to force all users to see consent banner again
-	const CONSENT_VERSION = 2;
+	const CONSENT_VERSION = 3;
 	localStorage.setItem( 'z_cks_alwd', '{"ad":'+(ad_cons?'true':'false')+', "usrDt":'+(usr_dt_cons?'true':'false')+', "prsn":'+(pers_cons?'true':'false')+', "ana":'+(ana_cons?'true':'false')+', "version":'+CONSENT_VERSION+'}' );
 	localStorage.setItem( 'z_cks_alwd_t', unixTime() );
 	localStorage.setItem( 'z_cks_alwd_v', '20325' );
@@ -259,7 +259,7 @@ $(document).ready(function(){
 		const cksAlwdObj = JSON.parse( localStorage.getItem('z_cks_alwd') );
 		
 		// Check consent version - if version doesn't match, show banner again
-		const CURRENT_VERSION = 2;
+		const CURRENT_VERSION = 3;
 		const storedVersion = cksAlwdObj['version'] || 1;
 		
 		if (storedVersion >= CURRENT_VERSION) {
