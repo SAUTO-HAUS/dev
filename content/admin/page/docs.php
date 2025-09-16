@@ -176,12 +176,12 @@ if ( isset($t_mp[4]) ){
 							setTimeout(function() {
 								window.scrollTo(0, parseInt(scrollPosition));
 								localStorage.removeItem("docsScrollPosition");
-							}, 100);
+							}, 1);
 						} else {
 							// Fallback: scroll to the edited document
 							setTimeout(function() {
 								editedDoc[0].scrollIntoView({ behavior: "smooth", block: "center" });
-							}, 100);
+							}, 1);
 						}
 					}
 					localStorage.removeItem("keepButtonsVisible");
@@ -190,7 +190,7 @@ if ( isset($t_mp[4]) ){
 					setTimeout(function() {
 						window.scrollTo(0, parseInt(scrollPosition));
 						localStorage.removeItem("docsScrollPosition");
-					}, 100);
+					}, 1);
 				}
 				
 				$(".docs > .find.user select[name=\"tp\"]").on("change", function(){
