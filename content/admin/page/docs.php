@@ -159,6 +159,8 @@ if ( isset($t_mp[4]) ){
 				
 				// Check if we need to keep buttons visible after reload
 				var keepVisible = localStorage.getItem("keepButtonsVisible");
+				var scrollPosition = localStorage.getItem("docsScrollPosition");
+				
 				if (keepVisible) {
 					var editedDoc = $(".docs > .list > .bx[data-id=\"" + keepVisible + "\"]");
 					if (editedDoc.length) {
@@ -168,8 +170,27 @@ if ( isset($t_mp[4]) ){
 						setTimeout(function() {
 							editedDoc.find(".btns").css("transition", ".1s").removeClass("instant-show");
 						}, 1);
+						
+						// Restore scroll position to the edited document
+						if (scrollPosition) {
+							setTimeout(function() {
+								window.scrollTo(0, parseInt(scrollPosition));
+								localStorage.removeItem("docsScrollPosition");
+							}, 100);
+						} else {
+							// Fallback: scroll to the edited document
+							setTimeout(function() {
+								editedDoc[0].scrollIntoView({ behavior: "smooth", block: "center" });
+							}, 100);
+						}
 					}
 					localStorage.removeItem("keepButtonsVisible");
+				} else if (scrollPosition) {
+					// Restore scroll position even without edited document
+					setTimeout(function() {
+						window.scrollTo(0, parseInt(scrollPosition));
+						localStorage.removeItem("docsScrollPosition");
+					}, 100);
 				}
 				
 				$(".docs > .find.user select[name=\"tp\"]").on("change", function(){
@@ -180,7 +201,7 @@ if ( isset($t_mp[4]) ){
 				
 				$(".docs > .find.user input[type=\"submit\"]").on("click", function(){})
 				
-				$(document).on("input", ".docs > .find.doc input.srch", function(){
+				$(document).on("input", ".docs > .find input.srch", function(){
 					var srchV = $(this).val().toLowerCase().replace("ă","a").replace("â","a").replace("î","i").replace("ș","s").replace("ț","t").replace("_"," ");
 					if (srchV != ""){ $(".sep").addClass("none"); }else{ $(".sep").removeClass("none"); }
 					$(".docs > .list > .bx").each(function(){ if ( $(this).data("tags").indexOf( srchV ) === -1 ){ $(this).addClass("none") }else{ $(this).removeClass("none"); } })
@@ -408,8 +429,9 @@ if ( isset($t_mp[4]) ){
 						//console.log(k+"::: "+v)
 					})
 					
-					// Store the edited document ID before reload
+					// Store the edited document ID and scroll position before reload
 					localStorage.setItem("keepButtonsVisible", data["inp"]["id"]);
+					localStorage.setItem("docsScrollPosition", window.pageYOffset || document.documentElement.scrollTop);
 					
 					// Close the overlay after successful save - instant
 					$("#overlay").hide();
