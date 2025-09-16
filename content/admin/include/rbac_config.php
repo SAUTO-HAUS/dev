@@ -48,7 +48,7 @@ $rbac_permissions = [
         'tyres' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
         'seo' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'mail' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
-        'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
+        'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
         'stock' => ['read' => true],
         'settings' => ['read' => true, 'update' => true]
     ],
