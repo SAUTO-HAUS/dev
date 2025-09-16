@@ -115,7 +115,6 @@ if ( isset($t_mp[4]) ){
 			.bx:hover {background-color:#f4e0e0;}
 			
 			.bx .u > .nm {text-transform:capitalize;}
-			.bx .u > .idno,
 			.bx .nr > .date,
 			.bx .it > .vin	{color:#9f9f9f; font-size:.7rem;}
 			
@@ -126,6 +125,11 @@ if ( isset($t_mp[4]) ){
 			.bx > .btns > input[type="submit"] {background:none; color:inherit; border:none; font:inherit; outline:inherit;}
 			.bx > .btns > .btn {height:inherit; align-items:center; display:flex; padding:0 1rem; cursor:pointer; align-self:center; border-radius:.75rem; margin:0 1rem; transition:.25s;}
 			.bx > .btns > .btn:hover {background-color:#bf4040; color:#fff;}
+			
+			/* Special styling for buttons after edit operation */
+			.bx.edited > .btns {background-color:#e2001a;}
+			.bx.edited > .btns > input[type="submit"] {color:#fff;}
+			.bx.edited > .btns > .btn {color:#fff;}
 			
 			#overlay label > input, #overlay label > select {width:100%; padding:1rem; border:1px solid #eee; background-color:#fff; transition:.2s;}
 			
@@ -164,9 +168,12 @@ if ( isset($t_mp[4]) ){
 				if (keepVisible) {
 					var editedDoc = $(".docs > .list > .bx[data-id=\"" + keepVisible + "\"]");
 					if (editedDoc.length) {
+						// Apply edited class immediately before showing buttons
+						editedDoc.addClass("edited");
 						editedDoc.find("input[name=\"btns_act\"]").prop("checked", true);
-						// Force immediate visibility without transition delay
-						editedDoc.find(".btns").css("transition", "none").addClass("instant-show");
+						// Force immediate visibility without any transition
+						editedDoc.find(".btns").css({"transition": "none", "background-color": "#e2001a"}).addClass("instant-show");
+						editedDoc.find(".btns > .btn, .btns > input[type='submit']").css("color", "#fff");
 						setTimeout(function() {
 							editedDoc.find(".btns").css("transition", ".1s").removeClass("instant-show");
 						}, 1);
