@@ -173,7 +173,7 @@ if ( isset($t_mp[4]) ){
 						editedDoc.find("input[name=\"btns_act\"]").prop("checked", true);
 						// Force immediate visibility without any transition
 						editedDoc.find(".btns").css({"transition": "none", "background-color": "#e2001a"}).addClass("instant-show");
-						editedDoc.find(".btns > .btn, .btns > input[type='submit']").css("color", "#fff");
+						editedDoc.find(".btns > .btn, .btns > input[type=\"submit\"]").css("color", "#fff");
 						setTimeout(function() {
 							editedDoc.find(".btns").css("transition", ".1s").removeClass("instant-show");
 						}, 1);
