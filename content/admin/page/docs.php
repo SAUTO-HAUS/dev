@@ -131,6 +131,14 @@ if ( isset($t_mp[4]) ){
 			.bx.edited > .btns > input[type="submit"] {color:#fff;}
 			.bx.edited > .btns > .btn {color:#fff;}
 			
+			/* Hide buttons initially for edited documents to prevent flash */
+			.bx.edited > .btns {
+				visibility: hidden;
+			}
+			.bx.edited.ready > .btns {
+				visibility: visible;
+			}
+			
 			#overlay label > input, #overlay label > select {width:100%; padding:1rem; border:1px solid #eee; background-color:#fff; transition:.2s;}
 			
 			#overlay .content {text-align:left;}
@@ -168,14 +176,13 @@ if ( isset($t_mp[4]) ){
 				if (keepVisible) {
 					var editedDoc = $(".docs > .list > .bx[data-id=\"" + keepVisible + "\"]");
 					if (editedDoc.length) {
-						// Apply edited class immediately before showing buttons
+						// Apply edited class first (this hides buttons via CSS)
 						editedDoc.addClass("edited");
 						editedDoc.find("input[name=\"btns_act\"]").prop("checked", true);
-						// Force immediate visibility without any transition
-						editedDoc.find(".btns").css({"transition": "none", "background-color": "#e2001a"}).addClass("instant-show");
-						editedDoc.find(".btns > .btn, .btns > input[type=\"submit\"]").css("color", "#fff");
+						
+						// Minimal delay to ensure CSS is applied, then show with ready class
 						setTimeout(function() {
-							editedDoc.find(".btns").css("transition", ".1s").removeClass("instant-show");
+							editedDoc.addClass("ready");
 						}, 1);
 						
 						// Restore scroll position to the edited document
