@@ -168,11 +168,13 @@ if ($t_mp[3] == 'insurance') {
 			include_once($_SERVER['DOCUMENT_ROOT'] . '/content/site/page/insurance.php');
 		} else {
 			// New trade-in page
-			if ($t_mp[3] == 'tradein') {
-				include(_SITE_PAGE.'/new_pages/tradein/tradein.php');
-			} else {
-				echo '
-				<img class="m_img" src="/media/images/site/v2/'.$serv_arr[ $t_mp[3] ]['img'].'" />
+                        if ($t_mp[3] == 'tradein') {
+                                include(_SITE_PAGE.'/new_pages/tradein/tradein.php');
+                        } elseif ($t_mp[3] == 'sale') {
+                                include(_SITE_PAGE.'/new_pages/sale/sale.php');
+                        } else {
+                                echo '
+                                <img class="m_img" src="/media/images/site/v2/'.$serv_arr[ $t_mp[3] ]['img'].'" />
 				<h1>'.$sa['meta']['h1'].'</h1>
 				'. $rtrnCalculatorBlock .'
 				<h2 class="ttl">'.$lng['p']['services'][ $t_mp[3] ]['ttl'].'</h2>
