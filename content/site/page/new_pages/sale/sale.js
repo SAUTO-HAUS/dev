@@ -1,6 +1,18 @@
 document.addEventListener('DOMContentLoaded', function () {
-    var animated = document.querySelectorAll('.sale-animate');
-    if ('IntersectionObserver' in window) {
+    var root = document.getElementById('sale-root');
+    if (!root) {
+        return;
+    }
+
+    var animatedNodes = root.querySelectorAll('.sale-animate');
+    var prefersReducedMotion = false;
+    try {
+        prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    } catch (error) {
+        prefersReducedMotion = false;
+    }
+
+    if (!prefersReducedMotion && 'IntersectionObserver' in window) {
         var observer = new IntersectionObserver(function (entries) {
             entries.forEach(function (entry) {
                 if (entry.isIntersecting) {
@@ -9,112 +21,107 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             });
         }, {
-            threshold: 0.2,
+            threshold: 0.18,
             rootMargin: '0px 0px -10% 0px'
         });
-        animated.forEach(function (element) {
-            observer.observe(element);
+
+        animatedNodes.forEach(function (node) {
+            observer.observe(node);
         });
     } else {
-        animated.forEach(function (element) {
-            element.classList.add('is-visible');
+        animatedNodes.forEach(function (node) {
+            node.classList.add('is-visible');
         });
     }
 
-    var scrollButtons = document.querySelectorAll('[data-sale-scroll]');
-    scrollButtons.forEach(function (button) {
-        button.addEventListener('click', function (event) {
-            var selector = button.getAttribute('data-sale-scroll');
-            if (!selector) {
-                return;
+    var formSection = root.querySelector('#sale-form');
+    if (formSection) {
+        var formTriggers = root.querySelectorAll('[data-sale-form-trigger]');
+        var revealForm = function () {
+            if (formSection.hasAttribute('hidden')) {
+                formSection.removeAttribute('hidden');
             }
-            var target = document.querySelector(selector);
-            if (target) {
-                event.preventDefault();
-                if (typeof target.scrollIntoView === 'function') {
-                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                } else {
-                    window.scrollTo({ top: target.offsetTop, behavior: 'smooth' });
-                }
+            formSection.setAttribute('aria-hidden', 'false');
+            formSection.classList.add('is-visible');
+            if (typeof formSection.scrollIntoView === 'function') {
+                formSection.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' });
             }
-        });
-    });
+        };
 
-    var formWrapper = document.querySelector('#sale-form');
-    var formTriggers = document.querySelectorAll('[data-sale-form-trigger]');
-    if (formWrapper && formTriggers.length) {
         formTriggers.forEach(function (trigger) {
             trigger.addEventListener('click', function (event) {
                 event.preventDefault();
-                if (formWrapper.hasAttribute('hidden')) {
-                    formWrapper.removeAttribute('hidden');
-                    formWrapper.setAttribute('aria-hidden', 'false');
-                    formWrapper.classList.add('is-open');
-                    formWrapper.classList.add('is-visible');
-                }
-                if (typeof formWrapper.scrollIntoView === 'function') {
-                    formWrapper.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                } else {
-                    window.scrollTo({ top: formWrapper.offsetTop, behavior: 'smooth' });
+                revealForm();
+            });
+            trigger.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    revealForm();
                 }
             });
         });
     }
 
-    var scrollables = document.querySelectorAll('[data-sale-scrollable]');
-    scrollables.forEach(function (list) {
-        list.setAttribute('tabindex', '0');
-        var pointerActive = false;
-        var startX = 0;
-        var scrollLeft = 0;
+    var scrollableBlocks = root.querySelectorAll('[data-sale-scrollable]');
+    scrollableBlocks.forEach(function (block) {
+        block.setAttribute('tabindex', '0');
+        block.style.scrollBehavior = 'smooth';
+        var isPointerActive = false;
+        var pointerStartX = 0;
+        var storedScrollLeft = 0;
 
-        list.addEventListener('pointerdown', function (event) {
-            pointerActive = true;
-            startX = event.clientX;
-            scrollLeft = list.scrollLeft;
-            list.setPointerCapture(event.pointerId);
-            list.classList.add('is-dragging');
+        block.addEventListener('pointerdown', function (event) {
+            if (event.pointerType === 'mouse' || event.pointerType === 'touch' || event.pointerType === 'pen') {
+                isPointerActive = true;
+                pointerStartX = event.clientX;
+                storedScrollLeft = block.scrollLeft;
+                block.classList.add('is-dragging');
+                block.setPointerCapture(event.pointerId);
+                block.style.cursor = 'grabbing';
+            }
         });
 
-        list.addEventListener('pointermove', function (event) {
-            if (!pointerActive) {
+        block.addEventListener('pointermove', function (event) {
+            if (!isPointerActive) {
                 return;
             }
-            var dx = startX - event.clientX;
-            list.scrollLeft = scrollLeft + dx;
+            var deltaX = pointerStartX - event.clientX;
+            block.scrollLeft = storedScrollLeft + deltaX;
         });
 
-        var cancelPointer = function (event) {
-            if (!pointerActive) {
+        var releasePointer = function (event) {
+            if (!isPointerActive) {
                 return;
             }
-            pointerActive = false;
-            if (typeof list.releasePointerCapture === 'function' && typeof list.hasPointerCapture === 'function' && list.hasPointerCapture(event.pointerId)) {
-                list.releasePointerCapture(event.pointerId);
+            isPointerActive = false;
+            block.classList.remove('is-dragging');
+            block.style.cursor = '';
+            if (typeof block.releasePointerCapture === 'function' && block.hasPointerCapture(event.pointerId)) {
+                block.releasePointerCapture(event.pointerId);
             }
-            list.classList.remove('is-dragging');
         };
 
-        list.addEventListener('pointerup', cancelPointer);
-        list.addEventListener('pointercancel', cancelPointer);
-        list.addEventListener('pointerleave', cancelPointer);
+        block.addEventListener('pointerup', releasePointer);
+        block.addEventListener('pointercancel', releasePointer);
+        block.addEventListener('pointerleave', releasePointer);
 
-        list.addEventListener('keydown', function (event) {
+        block.addEventListener('keydown', function (event) {
             if (event.key === 'ArrowRight') {
-                list.scrollBy({ left: 200, behavior: 'smooth' });
+                block.scrollBy({ left: 220, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
             } else if (event.key === 'ArrowLeft') {
-                list.scrollBy({ left: -200, behavior: 'smooth' });
+                block.scrollBy({ left: -220, behavior: prefersReducedMotion ? 'auto' : 'smooth' });
             }
         });
     });
 
-    var faqItems = document.querySelectorAll('.sale-faq__item');
+    var faqItems = root.querySelectorAll('.sale-faq__item');
     faqItems.forEach(function (item) {
         var question = item.querySelector('.sale-faq__question');
         var answer = item.querySelector('.sale-faq__answer');
         if (!question || !answer) {
             return;
         }
+
         question.addEventListener('click', function () {
             var expanded = question.getAttribute('aria-expanded') === 'true';
             question.setAttribute('aria-expanded', String(!expanded));
