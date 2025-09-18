@@ -46,6 +46,14 @@ function getImportCountryName($countryId, $language = 'ro') {
     font-weight: bold;
 }
 </style>
+
+
+<?php // webs25 ?>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5/dist/carousel/carousel.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5/dist/fancybox/fancybox.css" />
+
+    <link rel="stylesheet" href="/content/site/css/cars_gallery.css" />
+
 <?php
 
 // Debug log for all parameters
@@ -481,9 +489,100 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                             //$z_src = (@getimagesize($site_url.$z_src)?$z_src:'');
                             $rtrn .= '<div class="big_pht" role="img" aria-label="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' large photo" data-pos="1" data-cnt="'.$img_cnt.'" style="background-image:url('.$z_src.');" data-src="'.$z_src.'"></div>';
                             $rtrn .= '</div>';
+
+                $cur = $r['cur'];
+                if ( $r['prc_t']!=0 && $r['prc_t']>time() ){
+                    $prc = $r['prc_n'];
+                    $o_prc = $r['prc'];
+                    $o_prc_bl = '<span class="o_val" title="'.$lng['w']['o_prc'].'"><span class="i">'.parseCurr($o_prc).'</span> '.( symb_rplc($r['cur']) ).'</span>';
+                }else{
+                    $prc = $r['prc'];
+                    $o_prc = 0;
+                    $o_prc_bl = '';
+                }
+
+                // var_dump( $spec_ar);
+                ?>
+                <?php // webs25  ?>
+                <div class="wrapf-carousel">
+                    <div class="f-carousel" id="heroCarousel">
+
+                        <?
+                        if(empty($img) || !$img['main'] ) {
+                            ?>
+                            <div class="f-carousel__slide">
+                                <a href="/media/images/placeholder_car.png" data-fancybox="product" data-id="p<?=$img_cnt?>"
+                                   data-title="<?=$r['br']?> <?=$r['mo']?> <?=$r['yr']?> <?=$r['mlg']?> <?=$lng['l']['car']['fl'][$r['fl']]?> <?=$lng['l']['car']['fl'][$r['tra']]?>"
+                                   data-price="<?=$prc?> <?=$cur?>">
+                                    <img src="/media/images/placeholder_car.png" loading="lazy" class="lazy" alt="<?=$img_cnt?>">
+                                </a>
+                            </div>
+                            <?
+                        }
+
+                        if(!empty($img) ) {
+                            $img_cnt = 0;
+                            foreach($img['all'] as $k => $v){
+                                $img_cnt++;
+                                $z_src = '/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/med/'.$v['name'].$img_frmt;
+
+                                $z_src2 = isset($img['main'])?'/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/high/'.$v['name'].$img_frmt:'';
+                                ?>
+                                <div class="f-carousel__slide">
+                                    <a href="<?=$z_src2?>" data-fancybox="product" data-id="p<?=$img_cnt?>"
+                                       data-title="<?=$r['br']?> <?=$r['mo']?> <?=$r['yr']?> <?=$r['mlg']?> <?=$lng['l']['car']['fl'][$r['fl']]?> <?=$lng['l']['car']['fl'][$r['tra']]?>"
+                                       data-price="<?=$prc?> <?=$cur?>">
+                                        <img src="<?=$z_src?>" loading="lazy" class="lazy" alt="<?=$img_cnt?>">
+                                    </a>
+                                </div>
+                                <?
+                            }
+                        } ?>
+
+                    </div>
+                </div>
+
+
+
+                <!-- Скрытый триггер для Fancybox (будет последним слайдом в модалке) -->
+                <a hidden data-fancybox="product"
+                   data-src="#moreLinks"
+                   href="javascript:;"
+                   data-id="more"
+                   data-title="Смотреть ещё"
+                   data-price="">
+                    <div class="more-slide"></div>
+                </a>
+
+                <?php
+                $card = $car_card('smlr', 6, $r);
+                // var_dump( $card);
+                ?>
+                <div style="display:none">
+                    <div id="moreLinks" class="more-grid">
+
+                        <?=$card['txt']?>
+                    </div>
+                </div>
+
+
+
+
+                <?php
+
+
+
                             $rtrn .= '<div class="spc_bx">';
                             $rtrn .= '<h1 class="name">'.$r['br_nm'].' '.$r['mo_nm'].' <span class="fl">'.$lng['l']['car']['fl'][$r['fl']].'</span></h1>';
+
+                $rtrn .= ' <div class="prc pricemobile">
+                                        <span class="val" title="'.$lng['w']['prc'].'">'.( $r['prc']>100 ? '<span class="i">'.parseCurr($prc).'</span> <span class="cur">'.( symb_rplc($r['cur']) ).'</span>' : '<span style="font-size: 1.5rem;">'.$lng['w']['negociabil'] ).'</span></span>
+                                        '.$o_prc_bl.'
+                                    </div> 
                             
+                            <div class="clear"> </div>
+                            ';
+
                             // Colectăm informațiile despre țara de import
                             $import_country_id = isset($r['import_country_id']) ? $r['import_country_id'] : null;
                             
@@ -600,7 +699,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                             $dynamicPhone = PhoneHelper::getCarPhone($r, 'car_page');
                             
                             $rtrn .= '
-                            <div class="prc">
+                            <div class="prc  desktop">
                                 <span class="val" title="'.$lng['w']['prc'].'">'.( $r['prc']>100 ? '<span class="i">'.parseCurr($prc).'</span> <span class="cur">'.( symb_rplc($r['cur']) ).'</span>' : '<span style="font-size: 1.5rem;">'.$lng['w']['negociabil'] ).'</span></span>
                                 '.$o_prc_bl.'
                             </div>
