@@ -358,9 +358,8 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                 <div class="txt">
                     <div class="button"> Характеристики </div>
                     <div class="content">
+
                         <?
-
-
                         $ICON_SVG_PARAMS = [
                             /* Год выпуска (календарь) */
                             'year' => '
@@ -475,11 +474,9 @@ SVG
   <path d="M6 12h3M15 12h3"></path>
 </svg>'
                         ];
-
-
-
-
                         ?>
+
+
                         <?php // webs25 ?>
                         <script>
                             /* ============================
@@ -682,7 +679,7 @@ SVG
                             <?
 
                             $html = '';
-                            if($car) {
+                            if(@$car) {
                                 // webs25
                                 $pdo = $db->prepare('SELECT * FROM ' . $prefx . '_seo2 WHERE `it_id`=:it_id AND lng = :lng LIMIT 1');
                                 $pdo->execute(['it_id' => $car['id'], 'lng' => $v]);
@@ -699,7 +696,7 @@ SVG
                             /* нормализуем переносы строк */
                             $normalized = str_replace(["\r\n", "\r"], "\n", $html);
 
-                            $textareaSafe = htmlspecialchars($normalized, ENT_NOQUOTES, 'UTF-8');
+                            // $textareaSafe = htmlspecialchars($normalized, ENT_NOQUOTES, 'UTF-8');
 
                             // var_dump( $rseo);
 

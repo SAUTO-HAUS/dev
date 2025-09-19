@@ -494,9 +494,132 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' ) ) {
 
         </div>
 
+        <?
+        $ICON_SVG_PARAMS = [
+            /* Год выпуска (календарь) */
+            'year' => '
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+  <path d="M8 2v4M16 2v4M3 10h18"></path>
+</svg>',
+
+            /* Пробег (спидометр/одометр) */
+            'mileage' => <<<'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M20 13a8 8 0 10-16 0"></path>
+  <path d="M12 13l3-4"></path>
+  <rect x="6" y="14.5" width="12" height="3" rx="1"></rect>
+</svg>
+SVG
+            ,
+
+            /* Объём двигателя (мотор) */
+            'engine' => <<<'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <rect x="3" y="8" width="13" height="8" rx="2"></rect>
+  <path d="M16 10h2l3 3v3h-3"></path>
+  <path d="M7 6v2M11 6v2M7 16v2M11 16v2"></path>
+</svg>
+SVG
+            ,
+
+            /* Трансмиссия (двунаправленные стрелки) */
+            'transmission' => <<<'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M7 4v8a3 3 0 003 3h4"></path>
+  <path d="M14 4l3 3-3 3"></path>
+  <path d="M10 20l-3-3 3-3"></path>
+  <path d="M14 15h3v5h-3"></path>
+</svg>
+SVG
+            ,
+
+            /* Тип топлива (колонка) */
+            'fuel' => <<<'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <rect x="3" y="3" width="10" height="18" rx="2"></rect>
+  <path d="M13 7H3"></path>
+  <path d="M16 7l3 3v7a2 2 0 01-2 2h-1"></path>
+  <path d="M18 13c0-1.5-1-2-2-2"></path>
+</svg>
+SVG
+            ,
+
+            /* Климат-контроль (термометр/снежинка) */
+            'climate' => <<<'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M12 2v8"></path>
+  <path d="M9 6h6"></path>
+  <circle cx="12" cy="15" r="4"></circle>
+  <path d="M12 11v8"></path>
+</svg>
+SVG
+            ,
+
+            /* Круиз-контроль (компас) */
+            'cruise' => <<<'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <circle cx="12" cy="12" r="9"></circle>
+  <path d="M15 9l-3 6-3-1.5L15 9z"></path>
+</svg>
+SVG
+            ,
+
+            /* Парктроники (буква P + дуги) */
+            'parking' => <<<'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M6 20V4h6a4 4 0 010 8H6"></path>
+  <path d="M17 8.5c1.5 1.2 1.5 3.8 0 5"></path>
+  <path d="M19.5 7c2.4 2.2 2.4 6.8 0 9"></path>
+</svg>
+SVG
+            ,
+
+            /* Навигация (пин на карте/стрела) */
+            'navigation' => <<<'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <circle cx="12" cy="10" r="3.5"></circle>
+  <path d="M12 21c4-3.8 6-6.8 6-9a6 6 0 10-12 0c0 2.2 2 5.2 6 9z"></path>
+</svg>
+SVG
+            ,
+
+            /* Подогрев сидений (кресло + волны) */
+            'heated_seat' => <<<'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M6 12v3a3 3 0 003 3h7"></path>
+  <path d="M8 12V8a2 2 0 012-2h1a2 2 0 012 2v4"></path>
+  <path d="M5 7c1 1 1 2 0 3M9 7c1 1 1 2 0 3M13 7c1 1 1 2 0 3"></path>
+</svg>
+SVG
+            ,
+
+            /* Bluetooth */
+            'bluetooth' => '
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M7 7l10 10-5 5V2l5 5L7 17"></path>
+</svg>',
+
+            /* USB (трезубец) */
+            'usb' => '
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M12 3v12"></path>
+  <path d="M9 6l3-3 3 3"></path>
+  <circle cx="12" cy="18" r="3"></circle>
+  <path d="M6 12h3M15 12h3"></path>
+</svg>'
+        ];
+        ?>
+
         <h1 class="name"> <?=$r['br_nm']?> <?=$r['mo_nm']?> <span class="fl"> <?=$lng['l']['car']['fl'][$r['fl']]?> </span> </h1>
         <div class="block_txt_params">
             <? if(trim($rseo['params_html']) != '') { ?>
+
+                <?
+                foreach ($ICON_SVG_PARAMS AS $code => $svg ) {
+                    $rseo['params_html'] = str_replace('#'.$code, $svg, $rseo['params_html']);
+                }
+                ?>
                 <?=$rseo['params_html']?>
             <? } else {?>
                 <h2> <?=$lng['w']['not_params_w']?> </h2>
