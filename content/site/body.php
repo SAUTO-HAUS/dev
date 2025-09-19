@@ -6,329 +6,329 @@ use App\Helper\PhoneHelper;
 include(_SITE_INCL.'/functions.php'); ?>
 
 <head>
-	<?php include(_SITE.'/head.php'); ?>
+    <?php include(_SITE.'/head.php'); ?>
 </head>
 
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-TP4GJ51GSL"></script>
 <script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
 
-  gtag('config', 'G-TP4GJ51GSL');
+    gtag('config', 'G-TP4GJ51GSL');
 </script>
 
 <body class="ffd" <?php /*class="noselect ffd"*/ echo ' data-mbl="'.$isMobile.'" data-lng="'.$_COOKIE['lang'].'"'; ?> data-js="0" data-host="SAUTO">
-	
-	<!-- Google Tag Manager (noscript) -->
-	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KRRLB4X" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-	<!-- End Google Tag Manager (noscript) -->
-	
-	<?php /*
-	<!-- Yandex.Metrika informer --> <a style="display:none;" href="https://metrika.yandex.ru/stat/?id=87984800&amp;from=informer" target="_blank" rel="nofollow"><img src="https://metrika-informer.com/informer/87984800/3_1_FFFFFFFF_EFEFEFFF_0_pageviews" style="width:88px; height:31px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры, визиты и уникальные посетители)" class="ym-advanced-informer" data-cid="87984800" data-lang="ru" /></a> <!-- /Yandex.Metrika informer --> 
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KRRLB4X" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<?php /*
+	<!-- Yandex.Metrika informer --> <a style="display:none;" href="https://metrika.yandex.ru/stat/?id=87984800&amp;from=informer" target="_blank" rel="nofollow"><img src="https://metrika-informer.com/informer/87984800/3_1_FFFFFFFF_EFEFEFFF_0_pageviews" style="width:88px; height:31px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры, визиты и уникальные посетители)" class="ym-advanced-informer" data-cid="87984800" data-lang="ru" /></a> <!-- /Yandex.Metrika informer -->
 	<!-- Yandex.Metrika counter --> <script type="text/javascript" > (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter87984800 = new Ya.Metrika({ id:87984800, clickmap:true, trackLinks:true, accurateTrackBounce:true, trackHash:true, ecommerce:"dataLayer" }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://cdn.jsdelivr.net/npm/yandex-metrica-watch/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks"); </script> <!-- /Yandex.Metrika counter -->
 	*/ ?>
-	
-	<!--<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-MG9WJ9" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>-->
-	
-	<div id="cons_bx" class="cons_bx" style="display:none;">
-		<div class="close-banner" onclick="setConsent(true, true, true, true);">×</div>
-		<div style="display: flex; align-items: center; justify-content: center; flex: 1;">
-			<p><?php echo $lng['l']['consent']['base_txt'][0].$lng['l']['consent']['acpt_all'].$lng['l']['consent']['base_txt'][1].' <a href="/'.$_COOKIE['lang'].'/privacy" target="_blank" style="color:#000; border-bottom:1px solid #e2001a;">"'.$lng['l']['menu']['privacy'].'"</a>'; ?></p>
-		</div>
-		<div class="cons_btns">
-			<button onclick="setConsent(true, true, true, true)" style="background: linear-gradient(135deg, #e2001a, #b8001a) !important; color: white !important; border: 1px solid #e2001a !important; padding: 1rem 3rem !important; font-size: 1.2rem !important; display: flex !important; align-items: center !important; justify-content: center !important; line-height: 1 !important; border-radius: 1.5rem !important;"><?php echo $lng['l']['consent']['acpt_all']; ?></button>
-		</div>
-	</div>
-	
-	<div id="pref_bx" class="cons_bx cons_pref" style="display:none;">
-		<div style="display:flex; flex-flow:column; gap:10px;">
-			<p class="ttl"><?php echo $lng['l']['consent']['cstmztn']; ?></p>
-			<label> <span class="txt"><?php echo $lng['l']['consent']['func_ck']; ?></span> <div class="chk_bx def"><div class="dot"></div></div></label>
-			<label><input checked="checked" type="checkbox" id="ad-storage" /> <span class="txt"><?php echo $lng['l']['consent']['ad_ck']; ?></span> <div class="chk_bx"><div class="dot"></div></div></label>
-			<label><input checked="checked" type="checkbox" id="ad-user-data" /> <span class="txt"><?php echo $lng['l']['consent']['usr_dt_ck']; ?></span> <div class="chk_bx"><div class="dot"></div></div></label>
-			<label><input checked="checked" type="checkbox" id="ad-personalization" /> <span class="txt"><?php echo $lng['l']['consent']['prsn_ck']; ?></span> <div class="chk_bx"><div class="dot"></div></div></label>
-			<label><input checked="checked" type="checkbox" id="analytics-storage" /> <span class="txt"><?php echo $lng['l']['consent']['ana_ck']; ?></span> <div class="chk_bx"><div class="dot"></div></div></label>
-		</div>
-		<div class="cons_btns">
-			<button onclick="savePref()"><?php echo $lng['l']['consent']['acpt_sel']; ?></button>
-			<button onclick="hidePref()"><?php echo $lng['l']['consent']['back']; ?></button>
-		</div>
-	</div>
-	
-	<div id="overlay" class="noselect">
-		<div class="close"></div> <div class="bg"></div> <div class="content"></div>
-	</div>
-	
-	<?php 
-	echo '
+
+<!--<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-MG9WJ9" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>-->
+
+<div id="cons_bx" class="cons_bx" style="display:none;">
+    <div class="close-banner" onclick="setConsent(true, true, true, true);">×</div>
+    <div style="display: flex; align-items: center; justify-content: center; flex: 1;">
+        <p><?php echo $lng['l']['consent']['base_txt'][0].$lng['l']['consent']['acpt_all'].$lng['l']['consent']['base_txt'][1].' <a href="/'.$_COOKIE['lang'].'/privacy" target="_blank" style="color:#000; border-bottom:1px solid #e2001a;">"'.$lng['l']['menu']['privacy'].'"</a>'; ?></p>
+    </div>
+    <div class="cons_btns">
+        <button onclick="setConsent(true, true, true, true)" style="background: linear-gradient(135deg, #e2001a, #b8001a) !important; color: white !important; border: 1px solid #e2001a !important; padding: 1rem 3rem !important; font-size: 1.2rem !important; display: flex !important; align-items: center !important; justify-content: center !important; line-height: 1 !important; border-radius: 1.5rem !important;"><?php echo $lng['l']['consent']['acpt_all']; ?></button>
+    </div>
+</div>
+
+<div id="pref_bx" class="cons_bx cons_pref" style="display:none;">
+    <div style="display:flex; flex-flow:column; gap:10px;">
+        <p class="ttl"><?php echo $lng['l']['consent']['cstmztn']; ?></p>
+        <label> <span class="txt"><?php echo $lng['l']['consent']['func_ck']; ?></span> <div class="chk_bx def"><div class="dot"></div></div></label>
+        <label><input checked="checked" type="checkbox" id="ad-storage" /> <span class="txt"><?php echo $lng['l']['consent']['ad_ck']; ?></span> <div class="chk_bx"><div class="dot"></div></div></label>
+        <label><input checked="checked" type="checkbox" id="ad-user-data" /> <span class="txt"><?php echo $lng['l']['consent']['usr_dt_ck']; ?></span> <div class="chk_bx"><div class="dot"></div></div></label>
+        <label><input checked="checked" type="checkbox" id="ad-personalization" /> <span class="txt"><?php echo $lng['l']['consent']['prsn_ck']; ?></span> <div class="chk_bx"><div class="dot"></div></div></label>
+        <label><input checked="checked" type="checkbox" id="analytics-storage" /> <span class="txt"><?php echo $lng['l']['consent']['ana_ck']; ?></span> <div class="chk_bx"><div class="dot"></div></div></label>
+    </div>
+    <div class="cons_btns">
+        <button onclick="savePref()"><?php echo $lng['l']['consent']['acpt_sel']; ?></button>
+        <button onclick="hidePref()"><?php echo $lng['l']['consent']['back']; ?></button>
+    </div>
+</div>
+
+<div id="overlay" class="noselect">
+    <div class="close"></div> <div class="bg"></div> <div class="content"></div>
+</div>
+
+<?php
+echo '
 	<div id="show_img">
 		<div class="status"></div>
 		<div class="close"></div>
 		<div class="left"></div>
 		<div class="right"></div>
 	</div>';
-	//echo substr( md5('22') , 0, 4 );
-	?>
-	
-	<div id="to_top" title="<?php echo $lang_to_top; ?>"></div>
-	
-	<header>
-		<div class="def">
-			<a id="top_logo" href="/<?php echo $_COOKIE['lang']; ?>/" title="<?php echo $lang_top_info; ?>" style="width:12rem;"><img src="/<?php echo _SITE_IMG; ?>/v2/logo_b.svg" alt="<?php echo $lang_main_logo; ?>" width="100%" /></a>
-			
-			<input type="checkbox" id="mm_cbx" />
-			<nav id="main_menu" role="navigation">
-				<div class="menu">
-					<?php 
-					foreach ($menu_arr as $k => $v){
-						if ($v == '1'){
-							echo '<a class="'.$k.' button '; if( isset($t_mp[2])&&$t_mp[2]==$k ){echo ' active';} echo '" href="/'.$_COOKIE['lang'].'/'.$k.'"><div>'.$lng['l']['menu'][$k].'</div></a>';
-						}
-					}
-					?>
-				</div>
-				<div class="lang">
-					<?php foreach( array_reverse($language) as $k => $v ){ 
-						echo '<a href="/'.$k.$lang_mp.'" hreflang="'.$k.'" class="'.$k.' button '; if($t_mp[1]==$k){echo ' active';} echo'" title="'.$v.'"><div>'.strtoupper($k).'</div></a>';
-					} ?>
-				</div>
-				<label for="mm_cbx" class="mm_lb"></label>
-			</nav>
-			
-				<?php 
-			// Get contextual phone number
-			$contextualPhone = PhoneHelper::getContextualPhone($t_mp);
-			$formattedPhone = PhoneHelper::formatPhone($contextualPhone, 'display');
-			?>
-			<a class="call" href="tel:<?php echo $contextualPhone; ?>" title="<?php echo $formattedPhone; ?>">
-				<div class="txt"><?php echo $lng['w']['call']; ?></div>
-				<div class="img"></div>
-			</a>
-		</div>
-	</header>
-	
-	<div id="crumbs" data-lng-c="<?php echo $lng['w']['copied']; ?>">
-		<?php 
-		if ( isset($t_mp[2])&&$t_mp[2]!='' ){
-			echo '<a href="/'.$_COOKIE['lang'].'/">'.$lng['w']['home_page'].'</a>';
-			$t_2_val = isset( $lng['l']['menu'][ $t_mp[2] ] ) ? $lng['l']['menu'][ $t_mp[2] ] : $t_mp[2];
-			
-			if ( (isset($t_mp[3])&&$t_mp[3]!='')||(isset( $_GET['tg'] )) ){
-				echo ' - <a href="/'.$_COOKIE['lang'].'/'.$t_mp[2].'">'.$t_2_val.'</a>';
-				
-				
-				if ( $t_mp[2]=='services' && isset( $lng['p']['services'][ $t_mp[3] ]['name'] ) ){$t_3_val = $lng['p']['services'][ $t_mp[3] ]['name'];}
-				elseif ( isset($_GET['tg'] ) && $_GET['tg']=='fltr' ){$t_3_val = $lng['w']['search'];} // strpos($t_mp[3], 'tg=fltr')
-				elseif ( isset($t_mp[3])&&$t_mp[3]!='' ) {$t_3_val = $t_mp[3];}
-				else {$t_3_val = '<span>#</span>';}
+//echo substr( md5('22') , 0, 4 );
+?>
 
-				echo ' - <span class="crnt cp_url" title="'.($t_mp[2]!='cars'?$lng['w']['copy'].' URL':$lng['w']['fnd_smlr']).'">'.$t_3_val.'</span>';
-			}elseif ( isset($t_mp[3])&&$t_mp[3]=='' ){
-				echo ' - <span class="crnt cp_url" title="'.$lng['w']['copy'].' URL">#</span>';
-			}else{
-				echo ' - <span class="crnt cp_url" title="'.$lng['w']['copy'].' URL">'.$t_2_val.'</span>';
-			}
-		}
-		?>
-	</div>
-	
-	<?php 	
-	if ( !isset($t_mp[2]) || $t_mp[2]==''){
-		echo '
+<div id="to_top" title="<?php echo $lang_to_top; ?>"></div>
+
+<header>
+    <div class="def">
+        <a id="top_logo" href="/<?php echo $_COOKIE['lang']; ?>/" title="<?php echo $lang_top_info; ?>" style="width:12rem;"><img src="/<?php echo _SITE_IMG; ?>/v2/logo_b.svg" alt="<?php echo $lang_main_logo; ?>" width="100%" /></a>
+
+        <input type="checkbox" id="mm_cbx" />
+        <nav id="main_menu" role="navigation">
+            <div class="menu">
+                <?php
+                foreach ($menu_arr as $k => $v){
+                    if ($v == '1'){
+                        echo '<a class="'.$k.' button '; if( isset($t_mp[2])&&$t_mp[2]==$k ){echo ' active';} echo '" href="/'.$_COOKIE['lang'].'/'.$k.'"><div>'.$lng['l']['menu'][$k].'</div></a>';
+                    }
+                }
+                ?>
+            </div>
+            <div class="lang">
+                <?php foreach( array_reverse($language) as $k => $v ){
+                    echo '<a href="/'.$k.$lang_mp.'" hreflang="'.$k.'" class="'.$k.' button '; if($t_mp[1]==$k){echo ' active';} echo'" title="'.$v.'"><div>'.strtoupper($k).'</div></a>';
+                } ?>
+            </div>
+            <label for="mm_cbx" class="mm_lb"></label>
+        </nav>
+
+        <?php
+        // Get contextual phone number
+        $contextualPhone = PhoneHelper::getContextualPhone($t_mp);
+        $formattedPhone = PhoneHelper::formatPhone($contextualPhone, 'display');
+        ?>
+        <a class="call" href="tel:<?php echo $contextualPhone; ?>" title="<?php echo $formattedPhone; ?>">
+            <div class="txt"><?php echo $lng['w']['call']; ?></div>
+            <div class="img"></div>
+        </a>
+    </div>
+</header>
+
+<div id="crumbs" data-lng-c="<?php echo $lng['w']['copied']; ?>">
+    <?php
+    if ( isset($t_mp[2])&&$t_mp[2]!='' ){
+        echo '<a href="/'.$_COOKIE['lang'].'/">'.$lng['w']['home_page'].'</a>';
+        $t_2_val = isset( $lng['l']['menu'][ $t_mp[2] ] ) ? $lng['l']['menu'][ $t_mp[2] ] : $t_mp[2];
+
+        if ( (isset($t_mp[3])&&$t_mp[3]!='')||(isset( $_GET['tg'] )) ){
+            echo ' - <a href="/'.$_COOKIE['lang'].'/'.$t_mp[2].'">'.$t_2_val.'</a>';
+
+
+            if ( $t_mp[2]=='services' && isset( $lng['p']['services'][ $t_mp[3] ]['name'] ) ){$t_3_val = $lng['p']['services'][ $t_mp[3] ]['name'];}
+            elseif ( isset($_GET['tg'] ) && $_GET['tg']=='fltr' ){$t_3_val = $lng['w']['search'];} // strpos($t_mp[3], 'tg=fltr')
+            elseif ( isset($t_mp[3])&&$t_mp[3]!='' ) {$t_3_val = $t_mp[3];}
+            else {$t_3_val = '<span>#</span>';}
+
+            echo ' - <span class="crnt cp_url" title="'.($t_mp[2]!='cars'?$lng['w']['copy'].' URL':$lng['w']['fnd_smlr']).'">'.$t_3_val.'</span>';
+        }elseif ( isset($t_mp[3])&&$t_mp[3]=='' ){
+            echo ' - <span class="crnt cp_url" title="'.$lng['w']['copy'].' URL">#</span>';
+        }else{
+            echo ' - <span class="crnt cp_url" title="'.$lng['w']['copy'].' URL">'.$t_2_val.'</span>';
+        }
+    }
+    ?>
+</div>
+
+<?php
+if ( !isset($t_mp[2]) || $t_mp[2]==''){
+    echo '
 		<div id="ann">';
-			include(_SITE_INCL.'/slider.php');
-			if ( $isMobile!='1' ){
-				include(_SITE_INCL.'/mini.php');
-			}
-		echo '
+    include(_SITE_INCL.'/slider.php');
+    if ( $isMobile!='1' ){
+        include(_SITE_INCL.'/mini.php');
+    }
+    echo '
 		</div>';
-	}
-	
-	if ( !isset($t_mp[2]) || $t_mp[2]=='' || ( ($t_mp[2]=='cars' || $t_mp[2]=='tyres' || $t_mp[2]=='rent') && (!isset($t_mp[3]) || $t_mp[3]=='' || (($t_mp[2]=='cars') && isset($t_mp[3]))) ) ){ include(_SITE_INCL.'/filter.php'); }
-	?>
-	
-	<main role="main">
-		<?php
+}
 
-/*
-        // var_dump( _SITE_PAGE);
-        echo "<pre>";
-            var_dump( $t_mp);
-        echo "</pre>";
-        // exit(); */
+if ( !isset($t_mp[2]) || $t_mp[2]=='' || ( ($t_mp[2]=='cars' || $t_mp[2]=='tyres' || $t_mp[2]=='rent') && (!isset($t_mp[3]) || $t_mp[3]=='' || (($t_mp[2]=='cars') && isset($t_mp[3]))) ) ){ include(_SITE_INCL.'/filter.php'); }
+?>
 
-		if ( !isset($t_mp[2]) || $t_mp[2]=='') {include (_SITE_PAGE.'/home.php');}
-		
-		elseif ($t_mp[2]=='cars') {include (_SITE_PAGE.'/cars.php');}
-		elseif ($t_mp[2]=='services') {include (_SITE_PAGE.'/services.php');}
-		elseif ($t_mp[2]=='tyres') {include (_SITE_PAGE.'/tyres.php');}
-		elseif ($t_mp[2]=='credit') {include (_SITE_PAGE.'/new_pages/credit/credit.php');}
-		elseif ($t_mp[2]=='tradein') {include (_SITE_PAGE.'/new_pages/tradein/tradein.php');}
-		elseif ($t_mp[2]=='rent'&&(!isset($t_mp[3])&&!isset($q_mp[1]))) {include (_SITE_PAGE.'/rent.php');}
-		elseif ( in_array( $t_mp[2], $info_arr ) ) {include (_SITE_PAGE.'/information.php');}
-		elseif ($t_mp[2]=='contacts') {include (_SITE_PAGE.'/contacts.php');}
-		elseif ($t_mp[2]=='telegram') {include (_SITE_PAGE.'/new_pages/telegram/telegram.php');}
-		
-		elseif ($t_mp[2]=='dev_tools'){
-			if ( !isset($t_mp[3]) ){echo 'What\'s up, doc?';}
-			else {
-				if ( $t_mp[3]=='api' ){include ('plugins/dev_tools/api_gen.php');}
-				elseif ( $t_mp[3]=='sitemap_generator' ){include ('new_sitemap/sitemap_test_web.php');}
-				elseif ( $t_mp[3]=='data_feed' ){include ('plugins/dev_tools/data_feed.php');}
-				elseif ( $t_mp[3]=='bnm' ){include ('plugins/dev_tools/bnm.php');}
-				elseif ( $t_mp[3]=='bnm_tmp' ){include ('plugins/dev_tools/bnm_tmp.php');}
-				elseif ( $t_mp[3]=='devtest_hdsaj21kqiwncac23' ){include ('plugins/dev_tools/devtest.php');}
-				elseif ( $t_mp[3]=='games_uwqjshdd204mdk9kladc' ){
-					if ( isset($t_mp[4]) && file_exists('plugins/games/'.$t_mp[4].'/index.php') ){ include ('plugins/games/'.$t_mp[4].'/index.php'); }
-					else {echo 'Games';}
-				}
-			}
-		}
-		
-		?>
-		<div class="clear"></div>
-	</main>
-	
-	<footer>
-		<div class="col logo">
-			<a href="/<?php echo $_COOKIE['lang']; ?>/">
-				<img src="/<?php echo _SITE_IMG; ?>/v2/logo_w.svg" alt="SAUTO" />
-			</a>
-			</a>
-			<p class="txt"><?php echo $lng['t']['x']['logo_txt']; ?></p>
-		</div>
-		<?php 
-		foreach($foo_arr as $l => $a){
-			$zttl = (isset($lng['w'][$l])) ? $lng['w'][$l] : $l;
-			echo '
+<main role="main">
+    <?php
+
+    /*
+            // var_dump( _SITE_PAGE);
+            echo "<pre>";
+                var_dump( $t_mp);
+            echo "</pre>";
+            // exit(); */
+
+    if ( !isset($t_mp[2]) || $t_mp[2]=='') {include (_SITE_PAGE.'/home.php');}
+
+    elseif ($t_mp[2]=='cars') {include (_SITE_PAGE.'/cars.php');}
+    elseif ($t_mp[2]=='services') {include (_SITE_PAGE.'/services.php');}
+    elseif ($t_mp[2]=='tyres') {include (_SITE_PAGE.'/tyres.php');}
+    elseif ($t_mp[2]=='credit') {include (_SITE_PAGE.'/new_pages/credit/credit.php');}
+    elseif ($t_mp[2]=='tradein') {include (_SITE_PAGE.'/new_pages/tradein/tradein.php');}
+    elseif ($t_mp[2]=='rent'&&(!isset($t_mp[3])&&!isset($q_mp[1]))) {include (_SITE_PAGE.'/rent.php');}
+    elseif ( in_array( $t_mp[2], $info_arr ) ) {include (_SITE_PAGE.'/information.php');}
+    elseif ($t_mp[2]=='contacts') {include (_SITE_PAGE.'/contacts.php');}
+    elseif ($t_mp[2]=='telegram') {include (_SITE_PAGE.'/new_pages/telegram/telegram.php');}
+
+    elseif ($t_mp[2]=='dev_tools'){
+        if ( !isset($t_mp[3]) ){echo 'What\'s up, doc?';}
+        else {
+            if ( $t_mp[3]=='api' ){include ('plugins/dev_tools/api_gen.php');}
+            elseif ( $t_mp[3]=='sitemap_generator' ){include ('new_sitemap/sitemap_test_web.php');}
+            elseif ( $t_mp[3]=='data_feed' ){include ('plugins/dev_tools/data_feed.php');}
+            elseif ( $t_mp[3]=='bnm' ){include ('plugins/dev_tools/bnm.php');}
+            elseif ( $t_mp[3]=='bnm_tmp' ){include ('plugins/dev_tools/bnm_tmp.php');}
+            elseif ( $t_mp[3]=='devtest_hdsaj21kqiwncac23' ){include ('plugins/dev_tools/devtest.php');}
+            elseif ( $t_mp[3]=='games_uwqjshdd204mdk9kladc' ){
+                if ( isset($t_mp[4]) && file_exists('plugins/games/'.$t_mp[4].'/index.php') ){ include ('plugins/games/'.$t_mp[4].'/index.php'); }
+                else {echo 'Games';}
+            }
+        }
+    }
+
+    ?>
+    <div class="clear"></div>
+</main>
+
+<footer>
+    <div class="col logo">
+        <a href="/<?php echo $_COOKIE['lang']; ?>/">
+            <img src="/<?php echo _SITE_IMG; ?>/v2/logo_w.svg" alt="SAUTO" />
+        </a>
+        </a>
+        <p class="txt"><?php echo $lng['t']['x']['logo_txt']; ?></p>
+    </div>
+    <?php
+    foreach($foo_arr as $l => $a){
+        $zttl = (isset($lng['w'][$l])) ? $lng['w'][$l] : $l;
+        echo '
 			<div class="col">
 				<div class="ttl">'.$zttl.'</div>';
-				foreach($a as $k){
-					if ($l=='vehicles'){$v=isset($lng['l']['car']['bt'][$k]) ? $lng['l']['car']['bt'][$k] : $k; $k = 'cars?tg=fltr&bt='.$k;}
-					elseif ($l=='services'){$v=$lng['p']['services'][$k]['name']; $k='services/'.$k;}
-					elseif ($l=='information'){$v=$lng['p']['information'][$k]['name'];}
-					//$k = $a=='services'?'services/'.$k:$k;
-					echo '<a href="/'.$_COOKIE['lang'].'/'.$k.'">'.$v.'</a>';
-				}
-			echo '
+        foreach($a as $k){
+            if ($l=='vehicles'){$v=isset($lng['l']['car']['bt'][$k]) ? $lng['l']['car']['bt'][$k] : $k; $k = 'cars?tg=fltr&bt='.$k;}
+            elseif ($l=='services'){$v=$lng['p']['services'][$k]['name']; $k='services/'.$k;}
+            elseif ($l=='information'){$v=$lng['p']['information'][$k]['name'];}
+            //$k = $a=='services'?'services/'.$k:$k;
+            echo '<a href="/'.$_COOKIE['lang'].'/'.$k.'">'.$v.'</a>';
+        }
+        echo '
 			</div>';
-		}
-		?>
-		<div class="col cnts">
-			<div class="ttl"><?php echo $lng['w']['contacts']; ?></div>
-			<?php 
-			$generalPhone = PhoneHelper::getGeneralPhone();
-			$formattedGeneralPhone = PhoneHelper::formatPhone($generalPhone, 'display');
-			?>
-			<a href="tel:<?php echo $generalPhone; ?>" class="phone"><?php echo $formattedGeneralPhone; ?></a>
-			<p>
-				<?php echo $lng['t']['x']['address'][0].'
+    }
+    ?>
+    <div class="col cnts">
+        <div class="ttl"><?php echo $lng['w']['contacts']; ?></div>
+        <?php
+        $generalPhone = PhoneHelper::getGeneralPhone();
+        $formattedGeneralPhone = PhoneHelper::formatPhone($generalPhone, 'display');
+        ?>
+        <a href="tel:<?php echo $generalPhone; ?>" class="phone"><?php echo $formattedGeneralPhone; ?></a>
+        <p>
+            <?php echo $lng['t']['x']['address'][0].'
 				<ul>
 					<li><a onclick="navigate(47.03038049808741, 28.855162562579835)" style="cursor:pointer;" >'.$lng['t']['x']['address'][1].'</a>
 					<li><a onclick="navigate(47.05765228741261, 28.77507935382036)" style="cursor:pointer;" >'.$lng['t']['x']['address'][2].'</a></li>
 				</ul>'; ?>
-			</p>
-			<p><?php echo $lng['l']['date']['day']['mon']['l'].' - '.$lng['l']['date']['day']['fri']['l'].' 8:00 - 18:00<br/>'.$lng['l']['date']['day']['sat']['l'].' - '.$lng['l']['date']['day']['sun']['l'].' 9:00 - 16:00'; ?></p>
-			<a href="mailto:info@sauto.md" class="mail">info@sauto.md</a>
-			<p><?php echo isset($lng['w']['social']) ? $lng['w']['social'] : 'Social Media'; ?></p>
-			<div class="sc">
-				<?php
-				foreach ($sc_ar as $k => $v){
-					echo '<a class="'.$k.'" href="'.$v['url'].'" target="_blank" title="'.$v['name'].'" style="background-image:url(/media/images/site/social/'.$v['img']['w'].');"></a>';
-				}
-				?>
-			</div>
-		</div>
-	
-			<?php 
-			//foreach($footer_arr as $k){
-				//echo '<a class="'; if( $t_mp[2]==$k ){echo ' active';} echo '" href="/'.$_COOKIE['lang'].'/'.$k.'">'.$lang_xtra_menu[$k].'</a>';
-			//}
-			?>
-		<div id="copyrights"><?php echo date('Y') ?> <span title="Copyrighted"> Sauto S.R.L.</span></div>
-	</footer>
-	
-	<?php 
-	// Initialize AdWords variables with default values
-	$adw_itemid = '';
-	$adw_pagetype = 'other';
-	$adw_totalvalue = '0';
+        </p>
+        <p><?php echo $lng['l']['date']['day']['mon']['l'].' - '.$lng['l']['date']['day']['fri']['l'].' 8:00 - 18:00<br/>'.$lng['l']['date']['day']['sat']['l'].' - '.$lng['l']['date']['day']['sun']['l'].' 9:00 - 16:00'; ?></p>
+        <a href="mailto:info@sauto.md" class="mail">info@sauto.md</a>
+        <p><?php echo isset($lng['w']['social']) ? $lng['w']['social'] : 'Social Media'; ?></p>
+        <div class="sc">
+            <?php
+            foreach ($sc_ar as $k => $v){
+                echo '<a class="'.$k.'" href="'.$v['url'].'" target="_blank" title="'.$v['name'].'" style="background-image:url(/media/images/site/social/'.$v['img']['w'].');"></a>';
+            }
+            ?>
+        </div>
+    </div>
 
-	if (isset($t_mp[2])) {
-		if ($t_mp[2]=='cars' && isset($t_mp[3]) && isset($url_id)) {
-			$pdo = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg WHERE id=:id'); 
-			$pdo->execute(array('id' => $url_id));
-			foreach ($pdo as $r) {
-				$adw_itemid = $r['id']; 
-				$adw_totalvalue = ($r['prc']*1).' '.$r['cur']; 
-				$adw_pagetype = 'offerdetail';
-			}
-		} elseif ($t_mp[2]=='tyres' && isset($t_mp[3]) && isset($url_id)) {
-			$pdo = $db->prepare('SELECT * FROM '.$prefx.'_tyre_ctlg WHERE id=:id'); 
-			$pdo->execute(array('id' => $url_id));
-			foreach ($pdo as $r) {
-				$adw_itemid = $r['id']; 
-				$adw_totalvalue = ($r['prc']*1).' '.$r['cur']; 
-				$adw_pagetype = 'offerdetail';
-			}
-		} elseif ($t_mp[2]=='' || $t_mp[2]=='index.php') {
-			if (isset($t_mp[1]) && in_array($t_mp[1], $lang_arr, true)) {
-				$adw_pagetype = 'home';
-			}
-		}
-	} else {
-		if (isset($t_mp[1]) && in_array($t_mp[1], $lang_arr, true)) {
-			$adw_pagetype = 'home';
-		}
-	}
-	?>
-	<!-- Google AdWords -->
-	<script type="text/javascript">
-		var google_tag_params = {
-			dynx_itemid: "<?php echo $adw_itemid; ?>",
-			dynx_pagetype: "<?php echo $adw_pagetype; ?>",
-			dynx_totalvalue: "<?php echo $adw_totalvalue; ?>"
-		};
-	</script>
-	<script type="text/javascript">
-		/* <![CDATA[ */
-		var google_conversion_id = 865017510; 
-		var google_custom_params = window.google_tag_params;
-		var google_remarketing_only = true;
-		/* ]]> */
-	</script>
-	<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js"></script>
-	<noscript>
-		<div style="display:inline;">
-			<img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/865017510/?value=0&amp;guid=ON&amp;script=0"/><?php //991949120 ?>
-		</div>
-	</noscript>
-	<!-- End Google AdWords -->
+    <?php
+    //foreach($footer_arr as $k){
+    //echo '<a class="'; if( $t_mp[2]==$k ){echo ' active';} echo '" href="/'.$_COOKIE['lang'].'/'.$k.'">'.$lang_xtra_menu[$k].'</a>';
+    //}
+    ?>
+    <div id="copyrights"><?php echo date('Y') ?> <span title="Copyrighted"> Sauto S.R.L.</span></div>
+</footer>
 
-    <?php if (empty($_COOKIE['lang']) || ($_COOKIE['lang'] == 'ru')):?>
-        <script>
-            (function(w,d,u){
-                var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/60000|0);
-                var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-            })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/site_button/loader_2_ydxvti.js');
-        </script>
-    <?php elseif($_COOKIE['lang'] == 'en'):?>
-        <script>
-            (function(w,d,u){
-                var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/60000|0);
-                var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-            })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/site_button/loader_6_kv018j.js');
-        </script>
-    <?php elseif($_COOKIE['lang'] == 'ro'):?>
-        <script>
-            (function(w,d,u){
-                var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/60000|0);
-                var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-            })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/site_button/loader_8_l03bx1.js');
-        </script>
-    <?php endif;?>
+<?php
+// Initialize AdWords variables with default values
+$adw_itemid = '';
+$adw_pagetype = 'other';
+$adw_totalvalue = '0';
+
+if (isset($t_mp[2])) {
+    if ($t_mp[2]=='cars' && isset($t_mp[3]) && isset($url_id)) {
+        $pdo = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg WHERE id=:id');
+        $pdo->execute(array('id' => $url_id));
+        foreach ($pdo as $r) {
+            $adw_itemid = $r['id'];
+            $adw_totalvalue = ($r['prc']*1).' '.$r['cur'];
+            $adw_pagetype = 'offerdetail';
+        }
+    } elseif ($t_mp[2]=='tyres' && isset($t_mp[3]) && isset($url_id)) {
+        $pdo = $db->prepare('SELECT * FROM '.$prefx.'_tyre_ctlg WHERE id=:id');
+        $pdo->execute(array('id' => $url_id));
+        foreach ($pdo as $r) {
+            $adw_itemid = $r['id'];
+            $adw_totalvalue = ($r['prc']*1).' '.$r['cur'];
+            $adw_pagetype = 'offerdetail';
+        }
+    } elseif ($t_mp[2]=='' || $t_mp[2]=='index.php') {
+        if (isset($t_mp[1]) && in_array($t_mp[1], $lang_arr, true)) {
+            $adw_pagetype = 'home';
+        }
+    }
+} else {
+    if (isset($t_mp[1]) && in_array($t_mp[1], $lang_arr, true)) {
+        $adw_pagetype = 'home';
+    }
+}
+?>
+<!-- Google AdWords -->
+<script type="text/javascript">
+    var google_tag_params = {
+        dynx_itemid: "<?php echo $adw_itemid; ?>",
+        dynx_pagetype: "<?php echo $adw_pagetype; ?>",
+        dynx_totalvalue: "<?php echo $adw_totalvalue; ?>"
+    };
+</script>
+<script type="text/javascript">
+    /* <![CDATA[ */
+    var google_conversion_id = 865017510;
+    var google_custom_params = window.google_tag_params;
+    var google_remarketing_only = true;
+    /* ]]> */
+</script>
+<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js"></script>
+<noscript>
+    <div style="display:inline;">
+        <img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/865017510/?value=0&amp;guid=ON&amp;script=0"/><?php //991949120 ?>
+    </div>
+</noscript>
+<!-- End Google AdWords -->
+
+<?php if (empty($_COOKIE['lang']) || ($_COOKIE['lang'] == 'ru')):?>
+    <script>
+        (function(w,d,u){
+            var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/60000|0);
+            var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
+        })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/site_button/loader_2_ydxvti.js');
+    </script>
+<?php elseif($_COOKIE['lang'] == 'en'):?>
+    <script>
+        (function(w,d,u){
+            var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/60000|0);
+            var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
+        })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/site_button/loader_6_kv018j.js');
+    </script>
+<?php elseif($_COOKIE['lang'] == 'ro'):?>
+    <script>
+        (function(w,d,u){
+            var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/60000|0);
+            var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
+        })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/site_button/loader_8_l03bx1.js');
+    </script>
+<?php endif;?>
 </body>
 
 <?php
@@ -380,7 +380,7 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' || ($t_mp[2]=='services' && isset($t_mp[
                 },
                 onChange: function (data) {
                     $input_termen_creditului.prop("value", data.from);
-                    
+
                     clearTimeout(updateRateTimeout); // сбрасываем предыдущий таймер
                     updateRateTimeout = setTimeout(updateRate, 1500); // устанавливаем новый
                     <?php /* console.log("Срок изменен:", data.from);
@@ -427,16 +427,16 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' || ($t_mp[2]=='services' && isset($t_mp[
 
                 <?php /* // Тут можешь вызвать свою логику перерасчета RATA LUNARĂ */ ?>
 
-                    const formData = new FormData();
-                    formData.append("tp", 'ste');
-                    formData.append("fn", 'calculator');
-                    formData.append("suma", suma);
-                    formData.append("termen", termen);
+                const formData = new FormData();
+                formData.append("tp", 'ste');
+                formData.append("fn", 'calculator');
+                formData.append("suma", suma);
+                formData.append("termen", termen);
 
-                    fetch( "/ajax.php", {
-                        method: "POST",
-                        body: formData
-                    })
+                fetch( "/ajax.php", {
+                    method: "POST",
+                    body: formData
+                })
                     .then(async response => {
                         const data = await response.text(); // response.json()
                         var datajson = JSON.parse( data);
@@ -475,9 +475,17 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' ) ) {
         }
     </script>
     <div class="block_txt_params_pop">
-        <div class="block_pop_close" onclick=" openParamsPopAuto('hide') ">
-            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="none" viewBox="0 0 16 16" data-testid="Curtain__closer" class="IconSvg IconSvg_name_SvgCrossS IconSvg_size_24 Curtain__closer Curtain__closer_small"><path fill="currentColor" d="m6.94 8-4.76 4.77 1.06 1.06L8 9.062l4.76 4.768 1.06-1.06L9.06 8l4.76-4.77-1.06-1.06L8 6.938 3.24 2.17 2.18 3.23z"></path></svg>
+        <div class="param_pop_header">
+            <div class="blk_pop_logo">
+                <img src="/media/images/site/v2/logo_b.svg" alt="Sauto, автомобили из Европы." width="100%">
+            </div>
+
+            <div class="block_pop_close" onclick=" openParamsPopAuto('hide') ">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="none" viewBox="0 0 16 16" data-testid="Curtain__closer" class="IconSvg IconSvg_name_SvgCrossS IconSvg_size_24 Curtain__closer Curtain__closer_small"><path fill="currentColor" d="m6.94 8-4.76 4.77 1.06 1.06L8 9.062l4.76 4.768 1.06-1.06L9.06 8l4.76-4.77-1.06-1.06L8 6.938 3.24 2.17 2.18 3.23z"></path></svg>
+            </div>
+
         </div>
+
         <h1 class="name"> <?=$r['br_nm']?> <?=$r['mo_nm']?> <span class="fl"> <?=$lng['l']['car']['fl'][$r['fl']]?> </span> </h1>
         <div class="block_txt_params">
             <h2>Общая информация</h2>
@@ -486,7 +494,7 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' ) ) {
             <h2>Технические характеристики</h2>
             <ul>
                 <li>Год выпуска: 2018</li>
-                <li>Пробег: 124 000 км</li>
+                <li>🚗 Пробег: 124 000 км</li>
                 <li>Объем двигателя: 1.6 л</li>
                 <li>Трансмиссия: Автомат</li>
                 <li>Тип топлива: Дизель</li>
@@ -546,7 +554,7 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' ) ) {
                 Arrows: false,
                 Dots: false
             });
-            heroCarousel.on('ready', () => {
+            heroCarousel.on('ready', ()=>{
 
                 heroEl.classList.remove('is-booting');
                 heroEl.classList.add('is-ready');
@@ -572,9 +580,6 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' ) ) {
             });
 
 
-            <?
-
-            ?>
             function createInfoBar(fb){
                 const bar = document.createElement('div');
                 bar.className = 'fbx-info';
@@ -753,11 +758,30 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' ) ) {
                 Carousel.Plugins.Thumbs.defaults.showOnStart = false;
             }
             */
+            /* FIX: готовим «HTML-строку» для последнего слайда один раз на старте */
+            (function prepareMoreLinksAsHtml(){
+                /* находим триггер «more» и исходный блок-контент */
+                const moreTrig = document.querySelector('[data-fancybox="product"][data-id="more"]');
+                const moreSrc  = document.getElementById('moreLinks');
+                if (!moreTrig || !moreSrc) return;
+
+                /* Берём HTML содержимое, чтобы Fancybox не трогал живой DOM узел */
+                const html = moreSrc.innerHTML;        /* содержимое сетки 2×3 */
+                const wrapper = `<div class="more-grid">${html}</div>`; /* сохраняем класс-обёртку */
+
+                /* Переключаем триггер на тип html + src = строка HTML
+                   => Fancybox будет рендерить КОПИЮ, а не переносить живой #moreLinks */
+                moreTrig.setAttribute('data-type', 'html');
+                moreTrig.setAttribute('data-src', wrapper);
+
+                /* Чтобы не было конфликтов, уберём href на #moreLinks */
+                moreTrig.removeAttribute('href');
+            })();
+
 
             /* ОДИН общий bind — вверх = открыть миниатюры, вниз = закрыть модалку */
             Fancybox.bind('[data-fancybox="product"]', {
-                /* выключаем штатное закрытие по вертикальному жесту,
-                   чтобы не конфликтовало с нашим «вверх/вниз» */
+                // groupAll: true,
                 dragToClose: false,
 
                 /* Отключаем все действия, связанные с зумом/панорамированием */
@@ -766,12 +790,11 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' ) ) {
                 Images: {
                     /* подстраховка: просим не создавать panzoom/zoom */
                     Panzoom: {
-                        zoom: false,       /* запрет на программный/дабл-тап зум (если поддерживается сборкой) */
-                        touch: false,      /* запрет панорамирования контента внутри кадра */
-                        panOnlyZoomed: false
+                        zoom: true,       /* запрет на программный/дабл-тап зум (если поддерживается сборкой) */
+                        touch: true,      /* запрет панорамирования контента внутри кадра */
+                        panOnlyZoomed: true
                     }
                 },
-
                 /* v5: встроенный счётчик называется infobar */
                 Toolbar: {
                     enabled: true,
@@ -781,19 +804,44 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' ) ) {
                         right: []
                     }
                 },
-
                 /* миниатюры подключены, но старт скрытый */
                 Carousel: {
                     Arrows: false, // убирает стрелки «влево/вправо»
                     Dots: false    // убирает точки
                 },
-                Thumbs: {
-                    //  showOnStart: false
-                },
-
-
 
                 on: {
+                    /* FIX: использовать событие v5 — работаем со слайдами через carousel */
+                    'Carousel.init': (fb, carousel) => {
+                        /* /* определяем наш inline-слайд */
+                        const isMore = (s) => {
+                            if (!s) return false;
+                            if (s.triggerEl?.dataset?.id === 'more') return true;
+                            const src = s.src;
+                            if (typeof src === 'string') return src === '#moreLinks';
+                            return src?.nodeType === 1 && src.id === 'moreLinks';
+                        };
+
+                        /* 1) находим индекс inline-слайда, если он уже попал */
+                        let idx = carousel.slides.findIndex(isMore);
+
+                        /* 2) если не попал — добавляем из нашего скрытого триггера */
+                        if (idx === -1) {
+                            const tr = document.querySelector('#heroCarousel [data-fancybox="product"][data-id="more"]');
+                            if (tr) {
+                                carousel.addSlide({ type: 'html', src: '#moreLinks', triggerEl: tr });
+                                idx = carousel.slides.length - 1;
+                            }
+                        }
+
+                        /* 3) если есть, но не последний — переносим в конец */
+                        if (idx > -1 && idx !== carousel.slides.length - 1) {
+                            const slide = carousel.slides[idx];
+                            carousel.removeSlide(idx);
+                            carousel.addSlide(slide);
+                        }
+                    },
+
                     /* готово: создаём плашку, обновляем и прячем миниатюры */
                     ready: (fb) => {
                         console.log('---- .ready');
@@ -809,7 +857,6 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' ) ) {
                         hideThumbs(fb);
                         // hideThumbs(fb); /* гарантированно скрыть превью на старте */
 
-
                         /* ===== КНОПКА ИЗБРАННОГО (правый верх) ===== */
                         const fav = document.createElement('button');
                         fav.className = 'fav-btn';
@@ -822,24 +869,10 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' ) ) {
                         fb._favBtn = fav;
                         updateFavBtn(fb);
 
-
                         /* ===========================
                            РЕГИСТРИРУЕМ ЖЕСТЫ НА КОНТЕЙНЕРЕ
                            =========================== */
                         const el = fb.container;
-
-                        // === Разрешаем системный pinch-zoom в модалке (2+ пальцев) ===
-                        function allowNativePinchMove(e){
-                            if (e.touches && e.touches.length > 1) {
-                                // Не предотвращаем поведение, просто не даём Fancybox увидеть событие
-                                // => браузер обработает pinch-zoom страницы
-                                e.stopImmediatePropagation();
-                            }
-                        }
-                        // слушаем раньше Fancybox (capture:true), пассивно (чтобы мы сами ничего не блокировали)
-                        el.addEventListener('touchmove', allowNativePinchMove, { capture: true, passive: true });
-                        fb.__allowNativePinchMove = allowNativePinchMove;
-
 
                         const THRESH = 40; /* порог в пикселях */
                         let activeId = null, startX = 0, startY = 0;
@@ -879,7 +912,6 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' ) ) {
                             const absX = Math.abs(dx);
                             const absY = Math.abs(dy);
                             const THRESH_V = 40;   /* вертикальный порог */
-                            const THRESH_H = 50;   /* горизонтальный порог */
 
                             /* текущий слайд и его panzoom (v5 разные поля) */
                             const slide = fb.getSlide && fb.getSlide();
@@ -937,7 +969,6 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' ) ) {
                                 }
                             }
 
-
                             activeId = null;
                         };
 
@@ -964,14 +995,15 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' ) ) {
 
                         // разовый дебаг — посмотри в консоль при первом открытии:
                         const t = getThumbsPlugin(fb);
-
                     },
+
                     load: (fb) => {
                         console.log('Carousel.load');
 
                         updateInfoBar(fb);
                         updateFavBtn(fb);
                     },
+
                     done: (fb) => {
                         console.log('Carousel.done');
 
@@ -988,14 +1020,6 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' ) ) {
                             if (fb.__onTouchEnd)   el.removeEventListener('touchcancel', fb.__onTouchEnd);
                         } catch(_){}
 
-                        try {
-                            const el = fb.container;
-                            if (fb.__allowNativePinchMove) {
-                                el.removeEventListener('touchmove', fb.__allowNativePinchMove, { capture: true });
-                                fb.__allowNativePinchMove = null;
-                            }
-                        } catch(_) {}
-
                         if (fb._favBtn) {
                             try { fb._favBtn.remove(); } catch(_){}
                             fb._favBtn = null;
@@ -1007,5 +1031,69 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' ) ) {
             });
         });
 
+    </script>
+
+    <script>
+        /* нормализуем URL без #hash для корректного сравнения */
+        function stripHash(u){
+            try {
+                const x = new URL(u, window.location.href);
+                return x.origin + x.pathname + x.search; /* без hash */
+            } catch(_){
+                return ''; /* если referrer кривой/пустой */
+            }
+        }
+
+        /* тип захода (Navigation Timing v2) с фолбэком */
+        function getNavType(){
+            try {
+                const nav = performance.getEntriesByType('navigation')[0];
+                if (nav && nav.type) return nav.type; /* 'navigate' | 'reload' | 'back_forward' | 'prerender' */
+            } catch(_){}
+            if (performance && performance.navigation) {
+                switch (performance.navigation.type) {
+                    case 0: return 'navigate';
+                    case 1: return 'reload';
+                    case 2: return 'back_forward';
+                }
+            }
+            return 'navigate';
+        }
+
+        /* основная логика автопоказа */
+        (function autoOpenGalleryOnce(){
+            const navType = getNavType();           /* ожидаем 'navigate' при переходе по ссылке */
+            const ref     = document.referrer || '';/* откуда пришли */
+            const here    = stripHash(window.location.href);
+            const from    = stripHash(ref);
+
+            /* УСЛОВИЯ:
+               1) пришли по навигации (НЕ reload, НЕ back/forward)
+               2) referrer существует (не прямой заход) И это не та же страница
+               3) ещё не открывали в этой сессии (чтобы не надоедать при повторных переходах внутри SPA/сайта)
+            */
+            const okByType   = (navType === 'navigate');
+            const hasRef     = !!from;
+            const isSamePage = hasRef && (from === here);
+            //const already    = sessionStorage.getItem('autoGalleryShown') === '1';
+
+            if (okByType && hasRef && !isSamePage) {
+                setTimeout(function () {
+
+                    const slides = Array.from(document.querySelectorAll('.f-carousel__slide.is-selected'));
+                    console.log('slides');
+                    console.log( slides);
+
+                    if (slides.length) {
+                        location.href = '#product-1';
+                        console.log('slides 2');
+                        // Fancybox.show(slides, { startIndex: 0 });
+                        // $('.f-carousel__slide.is-selected a').click();
+
+                        // sessionStorage.setItem('autoGalleryShown', '1');
+                    }
+                },500);
+            }
+        })();
     </script>
 <?php } ?>
