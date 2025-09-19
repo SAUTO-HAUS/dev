@@ -77,7 +77,7 @@ body {
 }
 
 .sale-section {
-    padding: 110px 0;
+    padding: 80px 0;
     position: relative;
 }
 
@@ -90,11 +90,16 @@ body {
 }
 
 .sale-section.sale-intro {
-    padding-top: 140px;
-    padding-bottom: 120px;
+    padding-top: 110px;
+    padding-bottom: 90px;
     background: linear-gradient(135deg, rgba(12, 17, 25, 0.96) 0%, rgba(16, 24, 32, 0.9) 100%);
     color: #ffffff;
     overflow: hidden;
+}
+
+.sale-section.sale-cta {
+    padding-top: 70px;
+    padding-bottom: 70px;
 }
 
 .sale-background {
@@ -126,7 +131,7 @@ body {
 .sale-intro .sale-container {
     display: grid;
     grid-template-columns: minmax(0, 480px) minmax(0, 1fr);
-    gap: 60px;
+    gap: 44px;
     align-items: stretch;
 }
 
@@ -229,7 +234,7 @@ body {
 }
 
 .sale-section__header {
-    margin-bottom: 48px;
+    margin-bottom: 40px;
 }
 
 .sale-section__header h2 {
@@ -263,13 +268,13 @@ body {
 .sale-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 28px;
+    gap: 24px;
 }
 
 .sale-card {
     background: #ffffff;
     border-radius: var(--sale-radius);
-    padding: 32px;
+    padding: 28px;
     box-shadow: var(--sale-shadow);
     position: relative;
     overflow: hidden;
@@ -285,17 +290,21 @@ body {
     inset: auto -60px -120px;
     width: 160px;
     height: 160px;
-    background: radial-gradient(circle, rgba(255, 3, 4, 0.2) 0%, transparent 70%);
-    transition: transform 0.6s ease;
+    background: radial-gradient(circle, rgba(255, 3, 4, 0.24) 0%, transparent 72%);
+    opacity: 0;
+    transition: transform 0.5s ease, opacity 0.45s ease;
 }
 
-.sale-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 40px 80px -40px rgba(16, 24, 32, 0.45);
+.sale-card:hover,
+.sale-card:focus-within {
+    transform: translateY(-14px) scale(1.02);
+    box-shadow: 0 46px 90px -48px rgba(16, 24, 32, 0.55), 0 20px 40px -30px rgba(255, 3, 4, 0.2);
 }
 
-.sale-card:hover::after {
-    transform: translate(-10px, -10px);
+.sale-card:hover::after,
+.sale-card:focus-within::after {
+    opacity: 1;
+    transform: translate(-16px, -16px) scale(1.08);
 }
 
 .sale-card__icon,
@@ -341,14 +350,14 @@ body {
 .sale-steps {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 24px;
+    gap: 20px;
     position: relative;
 }
 
 .sale-step {
     background: #ffffff;
     border-radius: 28px;
-    padding: 28px;
+    padding: 26px;
     box-shadow: var(--sale-shadow);
     display: flex;
     flex-direction: column;
@@ -363,21 +372,22 @@ body {
     color: var(--sale-text);
 }
 
-.sale-step:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 30px 60px -40px rgba(16, 24, 32, 0.45);
+.sale-step:hover,
+.sale-step:focus-within {
+    transform: translateY(-10px) scale(1.01);
+    box-shadow: 0 40px 80px -46px rgba(16, 24, 32, 0.5), 0 18px 34px -26px rgba(255, 3, 4, 0.16);
 }
 
 .sale-compare__grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 22px;
+    gap: 20px;
 }
 
 .sale-compare__card {
     border-radius: 26px;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.92), rgba(246, 247, 251, 0.92));
-    padding: 28px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(246, 247, 251, 0.96));
+    padding: 26px;
     box-shadow: var(--sale-shadow);
     display: flex;
     flex-direction: column;
@@ -391,9 +401,10 @@ body {
     line-height: 1.6;
 }
 
-.sale-compare__card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 32px 60px -42px rgba(16, 24, 32, 0.5);
+.sale-compare__card:hover,
+.sale-compare__card:focus-within {
+    transform: translateY(-12px) scale(1.015);
+    box-shadow: 0 42px 86px -48px rgba(16, 24, 32, 0.55), 0 18px 34px -28px rgba(255, 3, 4, 0.18);
 }
 
 .sale-security__content p {
@@ -466,8 +477,10 @@ body {
 .sale-cta__content p {
     font-size: 24px;
     line-height: 1.6;
-    margin-bottom: 32px;
+    margin-bottom: 20px;
     text-align: center;
+    font-family: 'Futura PT Demi', 'Futura PT', sans-serif;
+    color: var(--sale-red);
 }
 
 .sale-form--bottom .b24-form-wrapper {
@@ -478,7 +491,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 28px;
+    gap: 20px;
 }
 
 .copy-block p {
@@ -497,16 +510,8 @@ body {
 }
 
 .spin-on-scroll.is-visible {
-    animation: spinCard 10s linear infinite;
-}
-
-@keyframes spinCard {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
+    animation: none;
+    transform: none;
 }
 
 .glow-on-scroll.is-visible {
@@ -680,7 +685,7 @@ body {
 
 @media (max-width: 900px) {
     .sale-section {
-        padding: 80px 0;
+        padding: 56px 0;
     }
 
     .sale-hero {
@@ -703,13 +708,13 @@ body {
 
     .sale-grid,
     .sale-compare__grid {
-        gap: 20px;
+        gap: 18px;
     }
 
     .sale-step,
     .sale-card,
     .sale-compare__card {
-        padding: 24px;
+        padding: 22px;
     }
 
     .sale-security__content p {
@@ -720,11 +725,29 @@ body {
     .sale-cta__content p {
         font-size: 22px;
     }
+
+    .sale-section.sale-intro {
+        padding-top: 96px;
+        padding-bottom: 72px;
+    }
+
+    .sale-section.sale-cta {
+        padding: 52px 0;
+    }
 }
 
 @media (max-width: 680px) {
     .sale-section {
-        padding: 70px 0;
+        padding: 52px 0;
+    }
+
+    .sale-section.sale-cta {
+        padding: 48px 0;
+    }
+
+    .sale-section.sale-intro {
+        padding-top: 82px;
+        padding-bottom: 60px;
     }
 
     .sale-container {
@@ -764,13 +787,14 @@ body {
         display: flex;
         overflow-x: auto;
         scroll-snap-type: x mandatory;
-        gap: 18px;
-        padding-bottom: 16px;
+        gap: 16px;
+        padding-bottom: 14px;
     }
 
     .sale-step {
-        min-width: 260px;
+        min-width: 230px;
         scroll-snap-align: start;
+        padding: 20px;
     }
 
     .sale-steps::after {
@@ -791,10 +815,28 @@ body {
 
     .sale-cta__content p {
         font-size: 20px;
+        margin-bottom: 18px;
+    }
+
+    .sale-cta .sale-container {
+        gap: 16px;
     }
 }
 
 @media (max-width: 520px) {
+    .sale-section {
+        padding: 46px 0;
+    }
+
+    .sale-section.sale-cta {
+        padding: 42px 0;
+    }
+
+    .sale-section.sale-intro {
+        padding-top: 70px;
+        padding-bottom: 52px;
+    }
+
     .sale-hero {
         padding: 28px 20px;
     }
@@ -819,6 +861,11 @@ body {
 
     .sale-cta__content p {
         font-size: 18px;
+        margin-bottom: 16px;
+    }
+
+    .sale-cta .sale-container {
+        gap: 14px;
     }
 
     .section-pretitle {
