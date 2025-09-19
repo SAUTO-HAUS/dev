@@ -1084,7 +1084,7 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' ) ) {
                     console.log('slides');
                     console.log( slides);
 
-                    if (slides.length) {
+                    if (slides.length && $(window).width() < 640 ) {
                         location.href = '#product-1';
                         console.log('slides 2');
                         // Fancybox.show(slides, { startIndex: 0 });
