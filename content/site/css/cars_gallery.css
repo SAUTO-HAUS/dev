@@ -300,6 +300,14 @@ html.with-fancybox body {
     }
 }
 @media (max-width:640px){
+    .block_txt_params .lng {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: center;
+        gap: 15px;
+        font-size: 22px;
+    }
     .ttl.desktop {
         display: none;
     }
