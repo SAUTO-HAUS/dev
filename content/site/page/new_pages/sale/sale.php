@@ -1,4 +1,55 @@
-<?php defined( '_DOIT' ) or die( 'Restricted access' );
+<?php defined('_DOIT') or die('Restricted access');
+
+$saleTranslations = require __DIR__ . '/sale_lang.php';
+
+$uriParts = explode('/', trim($_SERVER['REQUEST_URI'] ?? '', '/'));
+$requestedLang = $uriParts[0] ?? ($_COOKIE['lang'] ?? 'ru');
+$availableLocales = array_keys($saleTranslations);
+if (!in_array($requestedLang, $availableLocales, true)) {
+    $requestedLang = $_COOKIE['lang'] ?? 'ru';
+}
+if (!isset($saleTranslations[$requestedLang])) {
+    $requestedLang = 'ru';
+}
+
+$currentSaleTranslations = $saleTranslations[$requestedLang];
+$fallbackSaleTranslations = $saleTranslations['ru'];
+
+$saleTranslate = function (array $path) use ($currentSaleTranslations, $fallbackSaleTranslations) {
+    $value = $currentSaleTranslations;
+    foreach ($path as $segment) {
+        if (is_array($value) && array_key_exists($segment, $value)) {
+            $value = $value[$segment];
+        } else {
+            $value = $fallbackSaleTranslations;
+            foreach ($path as $fallbackSegment) {
+                if (is_array($value) && array_key_exists($fallbackSegment, $value)) {
+                    $value = $value[$fallbackSegment];
+                } else {
+                    return '';
+                }
+            }
+            return $value;
+        }
+    }
+
+    return $value;
+};
+
+$introParagraphs = $saleTranslate(['intro', 'paragraphs']);
+$introParagraphs = is_array($introParagraphs) ? $introParagraphs : [];
+
+$benefitItems = $saleTranslate(['benefits', 'items']);
+$benefitItems = is_array($benefitItems) ? $benefitItems : [];
+
+$howSteps = $saleTranslate(['how', 'steps']);
+$howSteps = is_array($howSteps) ? $howSteps : [];
+
+$compareItems = $saleTranslate(['compare', 'items']);
+$compareItems = is_array($compareItems) ? $compareItems : [];
+
+$faqItems = $saleTranslate(['faq', 'items']);
+$faqItems = is_array($faqItems) ? $faqItems : [];
 ?>
 <link rel="stylesheet" type="text/css" href="/content/site/page/new_pages/sale/sale.css?<?=rand(0,999)?>">
 <script src="/content/site/page/new_pages/sale/sale.js?<?=rand(0,999)?>" defer></script>
@@ -39,9 +90,10 @@
                             </svg>
                         </div>
                     </div>
-                    <h1>Продайте свой автомобиль через Sauto Haus – быстро, выгодно и без хлопот</h1>
-                    <p>Вы привозите машину – мы берём всё на себя: оценку, рекламу, показы, оформление сделки. Деньги получаете вы.</p>
-                    <p>Продавать машину самому – значит тратить время, общаться с десятками «смотрящих», рисковать с документами и ценой. Мы решаем все эти задачи за вас: профессионально выставляем автомобиль, приводим покупателей и оформляем сделку так, чтобы вы остались в плюсе и без лишних нервов.</p>
+                    <h1><?=htmlspecialchars($saleTranslate(['intro', 'title']), ENT_QUOTES, 'UTF-8')?></h1>
+                    <?php foreach ($introParagraphs as $paragraph): ?>
+                        <p><?=htmlspecialchars($paragraph, ENT_QUOTES, 'UTF-8')?></p>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
@@ -50,29 +102,29 @@
     <section class="sale-section sale-benefits sale-animated">
         <div class="sale-container">
             <div class="sale-section__header">
-                <div class="section-pretitle">Преимущества</div>
-                <h2>Почему комиссионная продажа в Sauto Haus — это win-win</h2>
+                <div class="section-pretitle"><?=htmlspecialchars($saleTranslate(['benefits', 'pretitle']), ENT_QUOTES, 'UTF-8')?></div>
+                <h2><?=htmlspecialchars($saleTranslate(['benefits', 'title']), ENT_QUOTES, 'UTF-8')?></h2>
             </div>
             <div class="sale-grid sale-benefits__grid">
                 <article class="sale-card spin-on-scroll">
                     <div class="sale-card__icon sale-icon--badge"></div>
-                    <h3>Реальная рыночная цена – продаём дороже, чем перекупы.</h3>
+                    <h3><?=htmlspecialchars($benefitItems[0] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
                 </article>
                 <article class="sale-card glow-on-scroll">
                     <div class="sale-card__icon sale-icon--contract"></div>
-                    <h3>Полная прозрачность: договор, официальные расчёты.</h3>
+                    <h3><?=htmlspecialchars($benefitItems[1] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
                 </article>
                 <article class="sale-card pulse-on-scroll">
                     <div class="sale-card__icon sale-icon--shield"></div>
-                    <h3>Ваш автомобиль в безопасности – стоит у нас на охраняемой площадке.</h3>
+                    <h3><?=htmlspecialchars($benefitItems[2] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
                 </article>
                 <article class="sale-card sway-on-scroll">
                     <div class="sale-card__icon sale-icon--speaker"></div>
-                    <h3>Мы берём на себя рекламу, звонки, показы.</h3>
+                    <h3><?=htmlspecialchars($benefitItems[3] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
                 </article>
                 <article class="sale-card shimmer-on-scroll">
                     <div class="sale-card__icon sale-icon--rocket"></div>
-                    <h3>Быстрое оформление: деньги получаете сразу после продажи.</h3>
+                    <h3><?=htmlspecialchars($benefitItems[4] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
                 </article>
             </div>
         </div>
@@ -81,37 +133,37 @@
     <section class="sale-section sale-how sale-animated">
         <div class="sale-container">
             <div class="sale-section__header">
-                <div class="section-pretitle">Как это работает</div>
-                <h2>От привоза до денег — чёткая схема без суеты</h2>
+                <div class="section-pretitle"><?=htmlspecialchars($saleTranslate(['how', 'pretitle']), ENT_QUOTES, 'UTF-8')?></div>
+                <h2><?=htmlspecialchars($saleTranslate(['how', 'title']), ENT_QUOTES, 'UTF-8')?></h2>
             </div>
             <div class="sale-steps" data-mobile-snap>
                 <div class="sale-step">
                     <div class="sale-step__icon sale-icon--garage"></div>
-                    <p>Вы привозите автомобиль к нам в автосалон.</p>
+                    <p><?=htmlspecialchars($howSteps[0] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
                 <div class="sale-step">
                     <div class="sale-step__icon sale-icon--inspection"></div>
-                    <p>Мы проводим визуальный осмотр и тест-драйв.</p>
+                    <p><?=htmlspecialchars($howSteps[1] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
                 <div class="sale-step">
                     <div class="sale-step__icon sale-icon--pen"></div>
-                    <p>Подписываем договор на оказание услуги.</p>
+                    <p><?=htmlspecialchars($howSteps[2] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
                 <div class="sale-step">
                     <div class="sale-step__icon sale-icon--wash"></div>
-                    <p>Авто проходит мойку и фотосъёмку.</p>
+                    <p><?=htmlspecialchars($howSteps[3] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
                 <div class="sale-step">
                     <div class="sale-step__icon sale-icon--megaphone"></div>
-                    <p>Размещаем объявления на 999.md, Facebook, Instagram, Telegram, TikTok.</p>
+                    <p><?=htmlspecialchars($howSteps[4] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
                 <div class="sale-step">
                     <div class="sale-step__icon sale-icon--handshake"></div>
-                    <p>Ведём переговоры и показываем автомобиль покупателям.</p>
+                    <p><?=htmlspecialchars($howSteps[5] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
                 <div class="sale-step">
                     <div class="sale-step__icon sale-icon--cash"></div>
-                    <p>Организуем сделку и передаём вам деньги.</p>
+                    <p><?=htmlspecialchars($howSteps[6] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
             </div>
         </div>
@@ -120,25 +172,25 @@
     <section class="sale-section sale-compare sale-animated">
         <div class="sale-container">
             <div class="sale-section__header">
-                <div class="section-pretitle">Почему это выгоднее, чем продавать самому</div>
-                <h2>Берегите время и нервы, а мы сделаем остальное</h2>
+                <div class="section-pretitle"><?=htmlspecialchars($saleTranslate(['compare', 'pretitle']), ENT_QUOTES, 'UTF-8')?></div>
+                <h2><?=htmlspecialchars($saleTranslate(['compare', 'title']), ENT_QUOTES, 'UTF-8')?></h2>
             </div>
             <div class="sale-compare__grid">
                 <div class="sale-compare__card">
                     <div class="sale-compare__icon sale-icon--clock"></div>
-                    <p>Не тратите время на звонки и встречи.</p>
+                    <p><?=htmlspecialchars($compareItems[0] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
                 <div class="sale-compare__card">
                     <div class="sale-compare__icon sale-icon--security"></div>
-                    <p>Избегаете риска с поддельными деньгами и серыми схемами.</p>
+                    <p><?=htmlspecialchars($compareItems[1] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
                 <div class="sale-compare__card">
                     <div class="sale-compare__icon sale-icon--deal"></div>
-                    <p>Мы умеем торговаться и получаем лучшую цену.</p>
+                    <p><?=htmlspecialchars($compareItems[2] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
                 <div class="sale-compare__card">
                     <div class="sale-compare__icon sale-icon--trust"></div>
-                    <p>Покупатель доверяет автосалону больше, чем частнику.</p>
+                    <p><?=htmlspecialchars($compareItems[3] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
             </div>
         </div>
@@ -147,12 +199,11 @@
     <section class="sale-section sale-security sale-animated">
         <div class="sale-container">
             <div class="sale-section__header">
-                <div class="section-pretitle">Безопасность сделки</div>
-                <h2>Работаем по белому, храним под охраной</h2>
+                <div class="section-pretitle"><?=htmlspecialchars($saleTranslate(['security', 'pretitle']), ENT_QUOTES, 'UTF-8')?></div>
+                <h2><?=htmlspecialchars($saleTranslate(['security', 'title']), ENT_QUOTES, 'UTF-8')?></h2>
             </div>
             <div class="sale-security__content copy-block">
-                <p>Мы работаем только официально: договор комиссии, все расчёты через банк или наличными под отчёт.
-Автомобиль хранится на нашей охраняемой стоянке.</p>
+                <p><?=htmlspecialchars($saleTranslate(['security', 'text']), ENT_QUOTES, 'UTF-8')?></p>
             </div>
         </div>
     </section>
@@ -160,22 +211,16 @@
     <section class="sale-section sale-faq sale-animated">
         <div class="sale-container">
             <div class="sale-section__header">
-                <div class="section-pretitle">FAQ</div>
-                <h2>Ответы на горячие вопросы</h2>
+                <div class="section-pretitle"><?=htmlspecialchars($saleTranslate(['faq', 'pretitle']), ENT_QUOTES, 'UTF-8')?></div>
+                <h2><?=htmlspecialchars($saleTranslate(['faq', 'title']), ENT_QUOTES, 'UTF-8')?></h2>
             </div>
             <div class="sale-faq__tabs" role="tablist">
-                <button class="sale-faq__tab" role="tab" aria-expanded="true">
-                    <span class="sale-faq__question">– Сколько стоит услуга?</span>
-                    <span class="sale-faq__answer">Мы работаем по договору комиссии: процент только после продажи.</span>
-                </button>
-                <button class="sale-faq__tab" role="tab" aria-expanded="false">
-                    <span class="sale-faq__question">– Сколько времени занимает продажа?</span>
-                    <span class="sale-faq__answer">В среднем от нескольких дней до пары недель – зависит от модели и состояния.</span>
-                </button>
-                <button class="sale-faq__tab" role="tab" aria-expanded="false">
-                    <span class="sale-faq__question">– Что если машина не продастся?</span>
-                    <span class="sale-faq__answer">Вы в любой момент можете забрать авто обратно, без штрафов.</span>
-                </button>
+                <?php foreach ($faqItems as $index => $faq): ?>
+                    <button class="sale-faq__tab" role="tab" aria-expanded="<?=($index === 0) ? 'true' : 'false'?>">
+                        <span class="sale-faq__question"><?=htmlspecialchars($faq['question'] ?? '', ENT_QUOTES, 'UTF-8')?></span>
+                        <span class="sale-faq__answer"><?=htmlspecialchars($faq['answer'] ?? '', ENT_QUOTES, 'UTF-8')?></span>
+                    </button>
+                <?php endforeach; ?>
             </div>
         </div>
     </section>
@@ -183,7 +228,7 @@
     <section class="sale-section sale-cta sale-animated">
         <div class="sale-container">
             <div class="sale-cta__content copy-block">
-                <p>Привезите свой автомобиль сегодня – и уже завтра он появится в продаже на всех площадках.<br>Оставьте заявку прямо сейчас!</p>
+                <p><?=htmlspecialchars($saleTranslate(['cta', 'line1']), ENT_QUOTES, 'UTF-8')?><br><?=htmlspecialchars($saleTranslate(['cta', 'line2']), ENT_QUOTES, 'UTF-8')?></p>
             </div>
             <div class="sale-form sale-form--bottom">
                 <script data-b24-form="inline/42/u65756" data-skip-moving="true">

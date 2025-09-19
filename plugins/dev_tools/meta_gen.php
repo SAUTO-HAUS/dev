@@ -408,6 +408,28 @@ if ($z2 == 'cars' && !is_numeric($z3) && isset($t_mp[3]) && !empty($t_mp[3]) && 
     }
 }
 
+if ($z2 === 'services' && $z3 === 'sale') {
+    $saleTranslationsPath = dirname(__DIR__, 2) . '/content/site/page/new_pages/sale/sale_lang.php';
+    if (is_file($saleTranslationsPath)) {
+        $saleTranslations = include $saleTranslationsPath;
+        if (is_array($saleTranslations)) {
+            $metaLocale = $saleTranslations[$zlng]['meta'] ?? $saleTranslations['ru']['meta'] ?? [];
+            if (!empty($metaLocale['title'])) {
+                $sa['meta']['ttl'] = $metaLocale['title'];
+            }
+            if (!empty($metaLocale['h1'])) {
+                $sa['meta']['h1'] = $metaLocale['h1'];
+            }
+            if (!empty($metaLocale['description'])) {
+                $sa['meta']['dsc'] = $metaLocale['description'];
+            }
+            if (!empty($metaLocale['keywords'])) {
+                $sa['meta']['kwd'] = $metaLocale['keywords'];
+            }
+        }
+    }
+}
+
 // Regular title output if we didn't use our forced title
 echo '<title>'.$sa['meta']['ttl'].'</title>
 <meta property="og:title" content="'.$sa['meta']['ttl'].'">
