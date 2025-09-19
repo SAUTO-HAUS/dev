@@ -501,7 +501,6 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                     $o_prc_bl = '';
                 }
 
-
                 // var_dump( $spec_ar);
                 ?>
                 <?php // webs25  ?>
