@@ -45,6 +45,7 @@ if ($_COOKIE['lang']=='ru'){
 	//w - WORD, l - LIST, t - TEXT, x - NO CATEGORY, p - PAGE, u - UNIT, i - ITEM
 	$lng = array(
 		'w'=>array(
+            'not_params_w'=>'Informațiile nu sunt disponibile în această limbă.',
 			'home_page'=>'Главная',
 			'404'=>'Страница не найдена',
 			'qu'=>'Количество',
@@ -1570,6 +1571,7 @@ elseif ($_COOKIE['lang']=='ro'){
 	//w - WORD, l - LIST, t - TEXT, x - NO CATEGORY, p - PAGE, u - UNIT, i - ITEM
 	$lng = array(
 		'w'=>array(
+            'not_params_w'=>'Информация недоступна на этом языке',
 			'home_page'=>'Pagina principala',
 			'404'=>'Pagina nu a fost găsită',
 			'qu'=>'Cantitate',
@@ -3035,6 +3037,7 @@ elseif ($_COOKIE['lang']=='en'){
 	//w - WORD, l - LIST, t - TEXT, x - NO CATEGORY, p - PAGE, u - UNIT, i - ITEM
 	$lng = array(
 		'w'=>array(
+            'not_params_w'=>'Information is not available in this language.',
 			'home_page'=>'Homepage',
 			'404'=>'Page not found',
 			'qu'=>'Quantity',
