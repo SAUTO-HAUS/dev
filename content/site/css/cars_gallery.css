@@ -189,11 +189,12 @@ img.lazy.is-loaded{ filter:none; transform:none; opacity:1; }
 /*
 html.with-fancybox body {
     touch-action: pan-x pan-y pinch-zoom !important;
-}
+}*/
+/*
 .fancybox__container.is-native-pinch * {
     pointer-events: none !important;
-}*/
-
+}
+*/
 @supports (-webkit-touch-callout: none) {
     .fancybox__container,
     .fancybox__viewport {
@@ -294,9 +295,17 @@ html.with-fancybox body {
     .prc.pricemobile {
         display: none;
     }
-
+    .btn_params.mobile {
+        display: none;
+    }
 }
 @media (max-width:640px){
+    .ttl.desktop {
+        display: none;
+    }
+    .param_line_desktop {
+        display: none !important;
+    }
     .fancybox__container .fav-btn{ top: 10px; right: 10px; width: 34px; height: 34px; font-size: 18px; }
 
     main > .spc_bx, main > .inf_bx {
@@ -457,7 +466,7 @@ html.with-fancybox body {
 .block_txt_params ul li::before {
     content: "";
     display: inline-block;
-    width: 22px;
+    width: 5px;
     height: 22px;
     margin-right: 10px;
     background-size: contain;
@@ -537,4 +546,14 @@ html.with-fancybox body {
     color: #515151;
     border: 1px solid #515151;
     float: right;
+}
+.blk_pop_logo {
+    max-width: 30%;
+}
+.param_pop_header {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
 }
