@@ -49,7 +49,7 @@ img.lazy.is-loaded{ filter:none; transform:none; opacity:1; }
 }
 
 @media (max-width:640px){
-    .f-carousel__slide{ width:88% !important; margin:0 8px; border-radius:10px; }
+    .f-carousel__slide{ width:88% !important; margin:0 2px; border-radius:10px; }
     .more-slide{ min-height:180px; }
     .mini-grid{ gap:10px; padding:10px; }
 }
@@ -313,8 +313,8 @@ html.with-fancybox body {
         margin-left: 0px;
     }
     main > .spc_bx > .prc {
-        margin-top: 0px;
-        margin-bottom: 10px;
+        margin-top: 10px;
+        margin-bottom: 0px;
     }
     main > .spc_bx > .doit {
         display: flex;
@@ -322,6 +322,10 @@ html.with-fancybox body {
         flex-wrap: nowrap;
         align-items: center;
         gap: 10px;
+    }
+    main > .spc_bx > .name {
+        margin-top: 10px;
+        margin-bottom: 10px;
     }
 }
 
@@ -417,4 +421,74 @@ html.with-fancybox body {
 /* Эффект при клике */
 .call-link:active {
     transform: scale(0.9);
+}
+
+
+
+.block_txt_params {
+    color: #222;
+}
+
+/* Заголовки */
+.block_txt_params h2 {
+    font-size: 18px;
+    margin: 20px 0 12px;
+    font-weight: bold;
+}
+
+/* Общий стиль списка */
+.block_txt_params ul {
+    list-style: none; /* убираем стандартные маркеры */
+    margin: 0;
+    padding: 0;
+}
+
+/* Элемент списка */
+.block_txt_params ul li {
+    display: flex;
+    align-items: center;
+    margin-bottom: 14px;
+    font-size: 15px;
+}
+
+/* Иконка слева */
+.block_txt_params ul li::before {
+    content: "";
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    margin-right: 10px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    /* сюда можно подставлять разные иконки по классу родителя */
+}
+
+/* Значение параметра */
+.block_txt_params ul li {
+    font-weight: 600; /* верхняя строка – выделено жирным */
+    line-height: 1.2;
+}
+
+/* Подпись (вторая строка) */
+.block_txt_params ul li span {
+    display: block;
+    font-size: 13px;
+    color: #666;
+    font-weight: normal;
+}
+.block_txt_params p {
+    font-size: 15px;
+}
+/*
+.block_txt_params ul li:nth-child(1)::before {
+    background-image: url('icons/calendar.svg');
+}
+.block_txt_params ul li:nth-child(2)::before {
+    background-image: url('icons/speed.svg');
+}
+
+*/
+.block_txt_params_pop {
+    display: none;
 }
