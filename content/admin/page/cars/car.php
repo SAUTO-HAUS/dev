@@ -351,6 +351,392 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                         <?php endforeach; ?>
                     </div>
                 </div>
+
+
+
+                <? // webs25 ?>
+                <div class="txt">
+                    <div class="button"> Характеристики </div>
+                    <div class="content">
+                        <?
+
+
+                        $ICON_SVG_PARAMS = [
+                            /* Год выпуска (календарь) */
+                            'year' => '
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+  <path d="M8 2v4M16 2v4M3 10h18"></path>
+</svg>',
+
+                            /* Пробег (спидометр/одометр) */
+                            'mileage' => <<<'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M20 13a8 8 0 10-16 0"></path>
+  <path d="M12 13l3-4"></path>
+  <rect x="6" y="14.5" width="12" height="3" rx="1"></rect>
+</svg>
+SVG
+                            ,
+
+                            /* Объём двигателя (мотор) */
+                            'engine' => <<<'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <rect x="3" y="8" width="13" height="8" rx="2"></rect>
+  <path d="M16 10h2l3 3v3h-3"></path>
+  <path d="M7 6v2M11 6v2M7 16v2M11 16v2"></path>
+</svg>
+SVG
+                            ,
+
+                            /* Трансмиссия (двунаправленные стрелки) */
+                            'transmission' => <<<'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M7 4v8a3 3 0 003 3h4"></path>
+  <path d="M14 4l3 3-3 3"></path>
+  <path d="M10 20l-3-3 3-3"></path>
+  <path d="M14 15h3v5h-3"></path>
+</svg>
+SVG
+                            ,
+
+                            /* Тип топлива (колонка) */
+                            'fuel' => <<<'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <rect x="3" y="3" width="10" height="18" rx="2"></rect>
+  <path d="M13 7H3"></path>
+  <path d="M16 7l3 3v7a2 2 0 01-2 2h-1"></path>
+  <path d="M18 13c0-1.5-1-2-2-2"></path>
+</svg>
+SVG
+                            ,
+
+                            /* Климат-контроль (термометр/снежинка) */
+                            'climate' => <<<'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M12 2v8"></path>
+  <path d="M9 6h6"></path>
+  <circle cx="12" cy="15" r="4"></circle>
+  <path d="M12 11v8"></path>
+</svg>
+SVG
+                            ,
+
+                            /* Круиз-контроль (компас) */
+                            'cruise' => <<<'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <circle cx="12" cy="12" r="9"></circle>
+  <path d="M15 9l-3 6-3-1.5L15 9z"></path>
+</svg>
+SVG
+                            ,
+
+                            /* Парктроники (буква P + дуги) */
+                            'parking' => <<<'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M6 20V4h6a4 4 0 010 8H6"></path>
+  <path d="M17 8.5c1.5 1.2 1.5 3.8 0 5"></path>
+  <path d="M19.5 7c2.4 2.2 2.4 6.8 0 9"></path>
+</svg>
+SVG
+                            ,
+
+                            /* Навигация (пин на карте/стрела) */
+                            'navigation' => <<<'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <circle cx="12" cy="10" r="3.5"></circle>
+  <path d="M12 21c4-3.8 6-6.8 6-9a6 6 0 10-12 0c0 2.2 2 5.2 6 9z"></path>
+</svg>
+SVG
+                            ,
+
+                            /* Подогрев сидений (кресло + волны) */
+                            'heated_seat' => <<<'SVG'
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M6 12v3a3 3 0 003 3h7"></path>
+  <path d="M8 12V8a2 2 0 012-2h1a2 2 0 012 2v4"></path>
+  <path d="M5 7c1 1 1 2 0 3M9 7c1 1 1 2 0 3M13 7c1 1 1 2 0 3"></path>
+</svg>
+SVG
+                            ,
+
+                            /* Bluetooth */
+                            'bluetooth' => '
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M7 7l10 10-5 5V2l5 5L7 17"></path>
+</svg>',
+
+                            /* USB (трезубец) */
+                            'usb' => '
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+  <path d="M12 3v12"></path>
+  <path d="M9 6l3-3 3 3"></path>
+  <circle cx="12" cy="18" r="3"></circle>
+  <path d="M6 12h3M15 12h3"></path>
+</svg>'
+                        ];
+
+
+
+
+                        ?>
+                        <?php // webs25 ?>
+                        <script>
+                            /* ============================
+                       Константы проверки
+                       ============================ */
+                            const FORBIDDEN_TAGS = ['script','iframe','embed','object'];  /* Вставка скриптов и фреймов запрещена + общие опасные */
+                            const IMG_EXT_HOST_RE = /^https?:\/\//i;                      /* Внешние изображения */
+                            const ABS_URL_RE = /^https?:\/\//i;                           /* Проверка внешних ссылок */
+                            const JS_URL_RE  = /^\s*javascript\s*:/i;                     /* javascript: в href/src запрещено */
+                            const UNSAFE_STYLE_RE = /(expression\s*\(|url\s*\(\s*javascript\s*:)/i; /* опасные inline-стили */
+
+                            /* ============================
+                               sanitizeAndValidateHtml(inputHtml)
+                               - чистит HTML (удаляет запрещённое)
+                               - собирает сообщения по каждому случаю
+                               - возвращает { cleanHtml, messages }
+                               ============================ */
+                            function sanitizeAndValidateHtml(inputHtml) {
+                                const messages = [];            /* Сюда складываем сообщения по каждому найденному случаю */
+                                const externalLinks = [];       /* Соберём внешние ссылки для отчёта */
+
+                                /* Парсим как HTML-фрагмент в <template> */
+                                const tpl = document.createElement('template');
+                                tpl.innerHTML = inputHtml;
+
+                                /* Пройдёмся по wszystkim элементам */
+                                const walker = document.createTreeWalker(tpl.content, NodeFilter.SHOW_ELEMENT);
+
+                                const toRemove = []; /* сюда сложим элементы, которые удалим после прохода */
+
+                                while (walker.nextNode()) {
+                                    const el = walker.currentNode;
+                                    const tag = el.tagName ? el.tagName.toLowerCase() : '';
+
+                                    /* 1) Запрещённые теги: script/iframe/embed/object */
+                                    if (FORBIDDEN_TAGS.indexOf(tag) !== -1) {
+                                        messages.push({
+                                            type: 'error',
+                                            rule: 'forbiddenTag',
+                                            text: `Запрещённый тег <${tag}>`
+                                        });
+                                        toRemove.push(el);
+                                        continue; /* к следующему элементу */
+                                    }
+
+                                    /* 2) Удаляем inline-обработчики on* (инлайн-скрипты) */
+                                    [...el.attributes].forEach(attr => {
+                                        const name = attr.name.toLowerCase();
+                                        const value = attr.value || '';
+
+                                        /* on* атрибуты (onclick, onload, ...) */
+                                        if (name.startsWith('on')) {
+                                            messages.push({
+                                                type: 'error',
+                                                rule: 'inlineHandler',
+                                                text: ` инлайн-обработчик "${name}" на теге <${tag}>.`
+                                            });
+                                            el.removeAttribute(attr.name);
+                                            return;
+                                        }
+
+                                        /* javascript: в href/src */
+                                        if ((name === 'href' || name === 'src') && JS_URL_RE.test(value)) {
+                                            messages.push({
+                                                type: 'error',
+                                                rule: 'javascriptUrl',
+                                                text: `Атрибут ${name} с "javascript:"  на теге <${tag}>.`
+                                            });
+                                            el.removeAttribute(attr.name);
+                                            return;
+                                        }
+
+                                        /* опасные inline-стили (expression(), url(javascript:)) */
+                                        if (name === 'style' && UNSAFE_STYLE_RE.test(value)) {
+                                            messages.push({
+                                                type: 'error',
+                                                rule: 'unsafeStyle',
+                                                text: `Опасный inline-style  на теге <${tag}>.`
+                                            });
+                                            el.removeAttribute('style');
+                                            return;
+                                        }
+                                    });
+
+                                    /* 3) Проверка внешних изображений */
+                                    if (tag === 'img') {
+                                        const src = (el.getAttribute('src') || '').trim();
+
+                                        /* внешнее изображение: http/https → запрещено */
+                                        if (IMG_EXT_HOST_RE.test(src)) {
+                                            messages.push({
+                                                type: 'error',
+                                                rule: 'externalImage',
+                                                text: `Внешнее изображение запрещено и удалено: ${src}`
+                                            });
+                                            toRemove.push(el);
+                                            continue;
+                                        }
+                                        /* data:, относительные пути — оставляем */
+                                    }
+
+                                    /* 4) Проверка внешних ссылок (не запрещаем, но фиксируем) */
+                                    if (tag === 'a') {
+                                        const href = (el.getAttribute('href') || '').trim();
+
+                                        if (JS_URL_RE.test(href)) {
+                                            /* javascript: в ссылке уже снят выше, но на всякий — сообщение */
+                                            messages.push({
+                                                type: 'error',
+                                                rule: 'javascriptUrl',
+                                                text: `Атрибут href с "javascript:"  на теге <a>.`
+                                            });
+                                            el.removeAttribute('href');
+                                        } else if (ABS_URL_RE.test(href)) {
+                                            /* абсолютная внешняя ссылка — просто сообщаем */
+                                            externalLinks.push(href);
+                                        }
+                                    }
+                                }
+
+                                /* Удаляем накопленные элементы */
+                                toRemove.forEach(node => node.remove());
+
+                                /* Если есть внешние ссылки — выводим инфо по каждой */
+                                externalLinks.forEach(url => {
+                                    messages.push({
+                                        type: 'info',
+                                        rule: 'externalLink',
+                                        text: `Найдена внешняя ссылка: ${url}`
+                                    });
+                                });
+
+                                /* Готовый очищенный HTML */
+                                const cleanHtml = tpl.innerHTML;
+
+                                return { cleanHtml, messages };
+                            }
+
+                            /* ============================
+                               attachTextareaValidation(textareaEl, messagesEl, onCleaned)
+                               - навешивает проверку при вводе
+                               - выводит сообщения в messagesEl
+                               - колбэк onCleaned(cleanHtml) получит очищенный HTML
+                               ============================ */
+                            function attachTextareaValidation(textareaEl, messagesEl, onCleaned) {
+                                function renderMessages(msgs) {
+                                    /* Очищаем контейнер и рендерим список сообщений как текстовые строки */
+                                    messagesEl.innerHTML = '';
+                                    msgs.forEach(m => {
+                                        const p = document.createElement('div');
+                                        p.textContent = (m.type.toUpperCase()) + ': ' + m.text;
+                                        /* можно стилизовать по типам: error/info */
+                                        p.setAttribute('data-type', m.type);
+                                        messagesEl.appendChild(p);
+                                    });
+                                }
+
+                                function handle() {
+                                    const { cleanHtml, messages } = sanitizeAndValidateHtml(textareaEl.value);
+                                    renderMessages(messages);
+                                    if (typeof onCleaned === 'function') {
+                                        onCleaned(cleanHtml);
+                                    }
+                                }
+
+                                /* первая прогонка + реагируем на ввод */
+                                handle();
+                                textareaEl.addEventListener('input', handle);
+                            }
+
+                        </script>
+
+
+                        <div class="iconsblklist" style="display: flex
+;
+    gap: 15px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    align-items: center;">
+                            <?
+                            foreach ($ICON_SVG_PARAMS AS $code => $svg ) {
+
+                                ?>
+                                <div class="iconsvg">
+                                    <div class="iconsvgvg">
+                                        <?=$svg?>
+                                    </div>
+                                    <div class="codesvg">
+                                        <b>#<?=$code?></b>
+                                    </div>
+                                </div>
+                                <?
+
+                            }
+                            ?>
+                        </div>
+                        <?php foreach($lang_arr as $v) : ?>
+                            <?
+
+                            // webs25
+                            $pdo = $db->prepare('SELECT * FROM ' . $prefx . '_seo2 WHERE `it_id`=:it_id AND lng = :lng LIMIT 1');
+                            $pdo->execute(['it_id' => $car['id'], 'lng' => $v]);
+                            $rseo = $pdo->fetch();
+                            // var_dump( $rseo);
+
+                            $html = $rseo['params_html'];
+
+                            /* убираем экранирование сущностей */
+                            $html = htmlspecialchars_decode($html, ENT_QUOTES);
+
+                            /* нормализуем переносы строк */
+                            $normalized = str_replace(["\r\n", "\r"], "\n", $html);
+
+                            $textareaSafe = htmlspecialchars($normalized, ENT_NOQUOTES, 'UTF-8');
+
+                            // var_dump( $rseo);
+
+                            /* Для вывода ВНУТРИ textarea обязательно экранируем HTML-сущности */
+                            $textareaSafe = htmlspecialchars($normalized, ENT_QUOTES, 'UTF-8');
+
+                            /* Для вывода в обычный <div> с видимыми переносами — используем nl2br */
+                            //  $divSafe = nl2br(htmlspecialchars($normalized, ENT_QUOTES, 'UTF-8'));
+
+                            ?>
+                            <div class="lang_txt"><?= mb_strtoupper($v, "UTF-8") ?></div>
+                            <label class="comment" data-changed="0">
+                                <textarea class="comment no_need" name="params_html_<?= $v ?>" id="params_html_<?= $v ?>" size="11" tabindex="1" wrap="soft" placeholder="Характеристики"><?php echo $textareaSafe; ?></textarea>
+
+
+
+                                <!-- Куда выводить сообщения -->
+                                <div style="color: red" id="html_checks_<?= $v ?>"></div>
+
+                                <!-- (необязательно) предпросмотр очищенного HTML -->
+                                <div id="clean_preview_<?= $v ?>"></div>
+
+                                <script>
+                                    /* Привязка валидатора к textarea */
+                                    var ta = document.getElementById('params_html_<?= $v ?>');
+                                    var out = document.getElementById('html_checks_<?= $v ?>');
+                                    var preview = document.getElementById('clean_preview_<?= $v ?>');
+
+                                    /* Колбэк: показываем очищенный HTML в превью (как innerHTML) */
+                                    attachTextareaValidation(ta, out);
+                                    /*
+                                    attachTextareaValidation(ta, out, function(cleanHtml) {
+                                        preview.innerHTML = cleanHtml;
+                                    }); */
+                                </script>
+                            </label>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+
+
                 <!-----COMMENT--->
                 <div class="txt">
                     <div class="button"><?= $lng['w']['comment'] ?></div>
