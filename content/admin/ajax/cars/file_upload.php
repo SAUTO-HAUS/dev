@@ -48,9 +48,10 @@ foreach ($_FILES as $inp => $ar){//________________Цикл по типу фай
 		$path = $zDir.'/'.$zY.'/'.$zM.'/'.$last_id;
 		// $n_nm = substr( md5( microtime() ), 0, 10 );
 
+        /*
         ini_set('error_reporting', E_ALL);
         ini_set('display_errors', 1);
-        ini_set('display_startup_errors', 1);
+        ini_set('display_startup_errors', 1); */
 
         $pdo2 = $db->prepare('SELECT * FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id order by pos desc limit 1 ');
         $pdo2->execute(['it_id'=> $last_id ]);
