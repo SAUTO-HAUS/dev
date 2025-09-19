@@ -656,7 +656,37 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                             $rtrn .= '</div>';
                             // Add red line between title and specifications - make it thicker and more visible
                             $rtrn .= '<hr style="border: none; height: 1.5px; background-color: #ff0000; margin-top: 8px; margin-bottom: 15px; width: 100%;">';
-                            
+
+                                // webs25
+                                $rtrn .= '
+                                <div class="block_txt_params_pop">
+                                 <div class="block_txt_params">
+                                    <h2>Общая информация</h2>
+                                    <p>Просторный семейный автомобиль с надёжным дизельным двигателем и автоматической коробкой передач.</p>
+                                    
+                                    <h2>Технические характеристики</h2>
+                                    <ul>
+                                      <li>Год выпуска: 2018</li>
+                                      <li>Пробег: 124 000 км</li>
+                                      <li>Объем двигателя: 1.6 л</li>
+                                      <li>Трансмиссия: Автомат</li>
+                                      <li>Тип топлива: Дизель</li>
+                                    </ul>
+                                    
+                                    <h2>Комплектация</h2>
+                                    <ul>
+                                      <li>Климат-контроль</li>
+                                      <li>Круиз-контроль</li>
+                                      <li>Парктроники</li>
+                                      <li>Навигация</li>
+                                      <li>Подогрев сидений</li>
+                                      <li>Bluetooth и USB</li>
+                                    </ul>
+                                </div>
+                             </div>
+                             ';
+
+                            /*
                             foreach ($spec_ar as $v){
                                 if ($v=='loc' && $r[$v]=='0'){continue;}
                                 // Skip import_country_id in the list because we already displayed it above
@@ -683,7 +713,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                         <span class="val">'.$v_lng.'</span>
                                     </p>';
                                 }
-                            }
+                            } */
 
                             if ( $r['prc_t']!=0 && $r['prc_t']>time() ){
                                 $prc = $r['prc_n'];
