@@ -475,6 +475,14 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' ) ) {
         }
     </script>
     <div class="block_txt_params_pop">
+        <?php
+        // webs25
+        $pdo = $db->prepare('SELECT * FROM ' . $prefx . '_seo2 WHERE `it_id`=:it_id AND lng = :lng LIMIT 1');
+        $pdo->execute(['it_id' => $r['id'], 'lng' => $_COOKIE['lang'] ]);
+        $rseo = $pdo->fetch();
+        // var_dump( $rseo);
+        $rseo['params_html'] = (html_entity_decode($rseo['params_html']));
+        ?>
         <div class="param_pop_header">
             <div class="blk_pop_logo">
                 <img src="/media/images/site/v2/logo_b.svg" alt="Sauto, автомобили из Европы." width="100%">
@@ -488,7 +496,28 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' ) ) {
 
         <h1 class="name"> <?=$r['br_nm']?> <?=$r['mo_nm']?> <span class="fl"> <?=$lng['l']['car']['fl'][$r['fl']]?> </span> </h1>
         <div class="block_txt_params">
-            <h2>Общая информация</h2>
+            <? if(trim($rseo['params_html']) != '') { ?>
+                <?=$rseo['params_html']?>
+            <? } else {?>
+                <h2> <?=$lng['w']['not_params_w']?> </h2>
+
+                <div class="lng">
+                    <?
+                    //var_dump( $language);
+
+                    foreach($language as $k => $v){
+                        $pdo = $db->prepare('SELECT * FROM ' . $prefx . '_seo2 WHERE `it_id`=:it_id AND lng = :lng LIMIT 1');
+                        $pdo->execute(['it_id' => $r['id'], 'lng' => $k ]);
+                        $rseo = $pdo->fetch();
+                        if(trim($rseo['params_html']) != '') {
+                            echo '<a href="/'.$k.$lang_mp.'" class="'.$k.' btn '.($t_mp[1]==$k?'act':'').'" title="'.$v.'">'.strtoupper($k).'</a>';
+                        }
+                    }
+
+                    ?>
+                </div>
+            <?} ?>
+            <?/*<h2>Общая информация</h2>
             <p>Просторный семейный автомобиль с надёжным дизельным двигателем и автоматической коробкой передач.</p>
 
             <h2>Технические характеристики</h2>
@@ -508,7 +537,7 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' ) ) {
                 <li>Навигация</li>
                 <li>Подогрев сидений</li>
                 <li>Bluetooth и USB</li>
-            </ul>
+            </ul> */?>
         </div>
     </div>
 
