@@ -46,7 +46,22 @@ foreach ($_FILES as $inp => $ar){//________________Цикл по типу фай
 		
 		$tmp_f = 'tmp/'.$nm[0];
 		$path = $zDir.'/'.$zY.'/'.$zM.'/'.$last_id;
-		$n_nm = substr( md5( microtime() ), 0, 10 );
+		// $n_nm = substr( md5( microtime() ), 0, 10 );
+
+
+
+        $pdo2 = $db->prepare('SELECT `name`, `main` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id order by pos desc limit 1 ');
+        $pdo2->execute(['it_id'=> $last_id ]);
+        $photo = $pdo2->fetch();
+
+        if ($photo['pos'] != 0) {
+            $pos = $photo['pos'] + 1;
+        } else {
+            $pos = 0;
+        }
+        $n_nm = 'car_'. $last_id .'_'. $pos;
+
+
 		
 		//______________Если input type="file" name = img[] или bg[]
 		if ($inp=='img') {
