@@ -52,7 +52,7 @@ function getImportCountryName($countryId, $language = 'ro') {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5/dist/carousel/carousel.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5/dist/fancybox/fancybox.css" />
 
-    <link rel="stylesheet" href="/content/site/css/cars_gallery.css" />
+    <link rel="stylesheet" href="/content/site/css/cars_gallery.css?v=<?=time()?>" />
 
 <?php
 
