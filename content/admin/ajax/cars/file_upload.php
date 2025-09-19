@@ -54,11 +54,7 @@ foreach ($_FILES as $inp => $ar){//________________Цикл по типу фай
         $pdo2->execute(['it_id'=> $last_id ]);
         $photo = $pdo2->fetch();
 
-        if ($photo['pos'] != 0) {
-            $pos = $photo['pos'] + 1;
-        } else {
-            $pos = 0;
-        }
+        $pos = $photo['pos'] + 1;
         $n_nm = 'car_'. $last_id .'_'. $pos;
 
 
@@ -102,11 +98,11 @@ foreach ($_FILES as $inp => $ar){//________________Цикл по типу фай
                             $photoPdo->execute(['it_id'=>$last_id]);
                             $photo = $photoPdo->fetch();
 
-                            if ($photo['pos'] != 0) {
+                            //if ($photo['pos'] == 0) {
                                 $pos = $photo['pos'] + 1;
-                            } else {
-                                $pos = 0;
-                            }
+                            //} else {
+                              //  $pos = 0;
+                            //}
 
 							$pdo = $db->prepare('INSERT INTO '.$prefx.'_car_pht (`it_id`, `tp`, `path`, `name`, `ff`, `main`, `pos`) 
 							    VALUES (:it_id, :tp, :path, :name, :ff, :main, :pos)');
