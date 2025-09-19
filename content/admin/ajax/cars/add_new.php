@@ -226,7 +226,64 @@ if (__post('sub') == 'mo_search') {
 
                 }
             }
+            // $last_id = __post('id');
+
             $last_id = __post('id');
+
+            // webs25
+            $sqlUpdate = '
+              UPDATE '.$prefx.'_seo2
+              SET
+                `ttl` = :ttl,
+                `h1`  = :h1,
+                `dsc` = :dsc,
+                `kwd` = :kwd,
+                `txt` = :txt,
+                `params_html` = :params_html
+              WHERE
+                `it_id` = :it_id
+                AND `tp` = :tp
+                AND `p1` = :p1
+                AND `lng` = :lng
+              LIMIT 1
+             ';
+
+            $upd = $db->prepare($sqlUpdate);
+
+            $tp_fixed  = 'item';   /* как у тебя */
+            $p1_fixed  = 'cars';   /* как у тебя */
+            $it_fixed  = $last_id; /* искомый it_id */
+
+            $updated_total = 0;
+            $missed = [];          /* сюда сложим языки, где строка не нашлась */
+
+            foreach ($lang_arr as $i => $lng) {
+                /* Собираем значения из POST, как у тебя */
+                $params = [
+                    'ttl'         => __post('title_'.$lng, ''),
+                    'h1'          => __post('h1_'.$lng, ''),
+                    'dsc'         => __post('meta_desc_'.$lng, ''),
+                    'kwd'         => __post('meta_key_'.$lng, ''),
+                    'txt'         => '', /* оставил как у тебя; подставь если нужно */
+                    'params_html' => __post('params_html_'.$lng, ''),
+                    'it_id'       => $it_fixed,
+                    'tp'          => $tp_fixed,
+                    'p1'          => $p1_fixed,
+                    'lng'         => $lng,
+                ];
+
+
+                $r = $upd->execute($params);
+
+
+                /* Если строки нет — rowCount будет 0. Мы НИЧЕГО не вставляем, просто отмечаем факт. */
+                if ($upd->rowCount() > 0) {
+                    $updated_total += $upd->rowCount();
+                } else {
+                    $missed[] = $lng; /* для отчёта */
+                }
+            }
+
         } else {
 
             $pdo = $db->prepare('INSERT INTO ' . $prefx . '_car_ctlg (`gr`, `br`, `mo`, `br_nm`, `mo_nm`, `yr`, `vin`,`bt`, `sts`, `mlg`, `unit`, `vol`, `hp`, `fl`, `tra`, `wd`, `clr`, `loc`, `txt`, `prc`, `cur`, `soon`, `n_a`, `top`, `tva`, `gift`, `import_country_id`, `p_path`, `date`, `author`, `vis`) 
@@ -272,7 +329,7 @@ if (__post('sub') == 'mo_search') {
             $pdo_v = '';
             $pdo_ar = [];
             foreach($lang_arr as $i => $v){
-                $pdo_v .= ($i > 0 ? ',' : '').'(:lng_'.$i.', :tp_'.$i.', :p1_'.$i.', :p2_'.$i.', :qr_'.$i.', :it_id_'.$i.', :ttl_'.$i.', :h1_'.$i.', :dsc_'.$i.', :kwd_'.$i.', :txt_'.$i.')';
+                $pdo_v .= ($i > 0 ? ',' : '').'(:lng_'.$i.', :tp_'.$i.', :p1_'.$i.', :p2_'.$i.', :qr_'.$i.', :it_id_'.$i.', :ttl_'.$i.', :h1_'.$i.', :dsc_'.$i.', :kwd_'.$i.', :txt_'.$i.', :params_html_'.$i.')';
                 $pdo_ar += [
                     'lng_'.$i=>$v,
                     'tp_'.$i=>'item',
@@ -284,10 +341,11 @@ if (__post('sub') == 'mo_search') {
                     'h1_'.$i => __post('h1_'.$v, ''),
                     'dsc_'.$i => __post('meta_desc_'.$v, ''),
                     'kwd_'.$i => __post('meta_key_'.$v, ''),
-                    'txt_'.$i => ''
+                    'txt_'.$i => '',
+                    'params_html_'.$i => __post('params_html_'.$v, '')
                 ];
             }
-            $pdo = $db->prepare('INSERT INTO '.$prefx.'_seo2 (`lng`, `tp`, `p1`, `p2`, `qr`, `it_id`, `ttl`, `h1`, `dsc`, `kwd`, `txt`) VALUES '.$pdo_v);
+            $pdo = $db->prepare('INSERT INTO '.$prefx.'_seo2 (`lng`, `tp`, `p1`, `p2`, `qr`, `it_id`, `ttl`, `h1`, `dsc`, `kwd`, `txt`, `params_html`) VALUES '.$pdo_v);
             $pdo->execute($pdo_ar);
         }
         $rtrn = [
