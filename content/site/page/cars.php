@@ -504,7 +504,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 // var_dump( $spec_ar);
                 ?>
                 <?php // webs25  ?>
-                <div class="wrapf-carousel">
+                <div class="wrapf-carousel 11">
                     <div class="f-carousel" id="heroCarousel">
 
                         <?
