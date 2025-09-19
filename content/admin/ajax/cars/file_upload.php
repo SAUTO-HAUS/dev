@@ -50,7 +50,7 @@ foreach ($_FILES as $inp => $ar){//________________Цикл по типу фай
 
 
 
-        $pdo2 = $db->prepare('SELECT `name`, `main` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id order by pos desc limit 1 ');
+        $pdo2 = $db->prepare('SELECT * FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id order by pos desc limit 1 ');
         $pdo2->execute(['it_id'=> $last_id ]);
         $photo = $pdo2->fetch();
 
