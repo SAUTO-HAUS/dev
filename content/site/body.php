@@ -460,6 +460,510 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' || ($t_mp[2]=='services' && isset($t_mp[
 
 <?php } ?>
 
-<script>
 
-</script>
+<?php
+if(isset($t_mp[2]) && ($t_mp[2]=='cars' ) ) {
+    ?>
+    <?php // webs25 ?>
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5/dist/carousel/carousel.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5/dist/fancybox/fancybox.umd.js"></script>
+    <script>
+        /* ГАЛЕРЕЯ/КАРУСЕЛЬ ДЛЯ heroCarousel
+        Требования:
+        1) свайпы влево/вправо
+        2) «кусочки» соседних слайдов видны (делаем slidesPerPage:'auto' + центрирование)
+        3) клик по фото открывает Fancybox
+        4) внутри Fancybox — свайпы
+        5) внутри Fancybox — наш блок с названием/ценой (плашка)
+        6) внутри Fancybox — индикатор количества
+        7) последний слайд — HTML 2×3 сетка (#moreLinks) как у тебя
+        8) горизонтальные свайпы листают
+        9) вертикальный вниз — закрывает (dragToClose:true)
+        10) вертикальный вверх — открывает миниатюры (делаю жест через Panzoom)
+        11) pinch-to-zoom — по умолчанию у Fancybox
+        12) возврат на тот же слайд — синхронизация встроена
+        */
+
+        $(function(){
+            const heroEl = document.getElementById('heroCarousel');
+
+            if (heroEl) {
+                heroEl.classList.add('is-booting');  /* прячем все, кроме первого */
+            }
+
+            const heroCarousel = new Carousel(heroEl, {
+                /* показываем по ширине элемента слайдов */
+                slidesPerPage: 'auto',
+                /* выравниваем по центру, чтобы были видны «кусочки» слева/справа */
+                center: true,
+                /* бесконечность выключена, чтобы отрабатывать «последний слайд-заглушку» */
+                infinite: false,
+                /* немного «вязкости» для приятного ощущение свайпа */
+                friction: 0.12,
+                /* без стрелок и точек — они не нужны в твоём дизайне */
+                Arrows: false,
+                Dots: false
+            });
+            heroCarousel.on('ready', () => {
+
+                heroEl.classList.remove('is-booting');
+                heroEl.classList.add('is-ready');
+
+                // берём все картинки с классом .lazy внутри карусели
+                const imgs = heroEl.querySelectorAll('img.lazy');
+
+                imgs.forEach((img) => {
+                    // если картинка уже загружена (например из кэша)
+                    if (img.complete && img.naturalWidth > 0) {
+                        img.classList.remove('lazy');
+                    } else {
+                        // иначе ждём событие загрузки
+                        img.addEventListener('load', () => {
+                            img.classList.remove('lazy');
+                        }, { once: true });
+
+                        img.addEventListener('error', () => {
+                            img.classList.remove('lazy'); // даже если ошибка загрузки
+                        }, { once: true });
+                    }
+                });
+            });
+
+
+            <?
+
+            ?>
+            function createInfoBar(fb){
+                const bar = document.createElement('div');
+                bar.className = 'fbx-info';
+                bar.innerHTML = `
+                <div class="fbx-info__row">
+                    <div class="fbx-info__price"></div>
+                    <div class="fbx-info__title"></div>
+                </div>
+
+                            <div class="call-block">
+                                <a href="tel:<?=$dynamicPhone?>" class="call-link">
+                                  <svg xmlns="http://www.w3.org/2000/svg"
+                                       viewBox="0 0 24 24"
+                                       width="28" height="28"
+                                       fill="white">
+                                    <path d="M6.62 10.79a15.464 15.464 0 006.59 6.59l2.2-2.2a1
+                                             1 0 011.01-.24c1.12.37 2.33.57 3.58.57.55 0 1
+                                             .45 1 1v3.5c0 .55-.45 1-1 1C10.07 21 3 13.93
+                                             3 5.5c0-.55.45-1 1-1H7.5c.55 0 1 .45
+                                             1 1 0 1.25.2 2.46.57 3.58.11.33.03.7-.24
+                                             1.01l-2.21 2.2z"/>
+                                  </svg>
+                                </a>
+                          </div>
+              `;
+                fb.container.appendChild(bar);
+                fb._infoBar = bar;
+            }
+
+            function updateInfoBar(fb){
+                const bar = fb._infoBar;
+                if (!bar) return;
+
+                const slide = fb.getSlide && fb.getSlide();
+
+                if (!slide) {
+                    /* карусель ещё не отдала текущий слайд — попробуем на следующем тике */
+                    requestAnimationFrame(() => updateInfoBar(fb));
+                    return;
+                }
+
+                /* html-слайд типа «Смотреть ещё» — плашку прячем */
+                if (slide.type !== 'image') {
+                    bar.style.display = 'none';
+                    return;
+                }
+
+                /* ВАЖНО: когда снова image — обратно показываем плашку */
+                bar.style.display = '';
+
+                /* ===== название/цена из data-* текущего триггера ===== */
+                const trg   = slide.triggerEl || slide.el || null;
+                const title = trg?.dataset?.title || '';
+                const price = trg?.dataset?.price || '';
+                bar.querySelector('.fbx-info__title').textContent = title;
+                bar.querySelector('.fbx-info__price').textContent = price;
+
+                /* ===== считаем по DOM, а не по внутренним массивам ===== */
+                const group = (trg?.getAttribute('data-fancybox') || 'product');
+                const all   = Array.from(document.querySelectorAll(`[data-fancybox="${group}"]`));
+                const isImage = (a) => ((a.getAttribute('data-type') || 'image').toLowerCase() === 'image');
+                const total = all.filter(isImage).length;
+
+                const currentGlobalIndex = slide.index; /* 0-based */
+                let pos = 0;
+                for (let i = 0; i < all.length; i++){
+                    if (isImage(all[i])) pos++;
+                    if (i === currentGlobalIndex) break;
+                }
+
+                if (!Number.isFinite(pos) || pos < 1) pos = 1;
+                if (!Number.isFinite(total) || total < 1) pos = total = 0;
+
+                /* если нужна надпись pos/total — раскомментируй свой вывод тут */
+                // bar.querySelector('.fbx-info__count').textContent = `${pos} / ${total}`;
+            }
+
+
+            /* читаем Set избранного из localStorage */
+            function favLoad(){
+                try{
+                    const raw = localStorage.getItem('favSet');
+                    const arr = raw ? JSON.parse(raw) : [];
+                    return new Set(Array.isArray(arr) ? arr : []);
+                }catch(_){ return new Set(); }
+            }
+
+            /* сохраняем Set в localStorage */
+            function favSave(set){
+                try{
+                    localStorage.setItem('favSet', JSON.stringify(Array.from(set)));
+                }catch(_){}
+            }
+
+            /* получаем id текущего слайда (из data-id у триггера) */
+            function getCurrentId(fb){
+                const slide = fb.getSlide && fb.getSlide();
+                const trg = slide && (slide.triggerEl || slide.el);
+                return trg?.dataset?.id || null;
+            }
+
+            /* обновляем состояние/вид кнопки под текущий слайд */
+            function updateFavBtn(fb){
+                const btn = fb._favBtn;
+                if (!btn) return;
+
+                const slide = fb.getSlide && fb.getSlide();
+                if (!slide) {
+                    /* карусель ещё не отдала текущий слайд — пробуем на следующем тике */
+                    requestAnimationFrame(() => updateFavBtn(fb));
+                    return;
+                }
+
+                if (slide.type !== 'image') {
+                    btn.style.display = 'none';
+                    return;
+                }
+
+                const trg = slide.triggerEl || slide.el || null;
+                const id  = trg?.dataset?.id || null;
+                if (!id) {
+                    btn.style.display = 'none';
+                    return;
+                }
+
+                btn.style.display = '';
+                const set   = favLoad();
+                const isFav = set.has(id);
+                btn.classList.toggle('is-active', isFav);
+                btn.setAttribute('aria-pressed', String(isFav));
+                btn.title = isFav ? 'Убрать из избранного' : 'Добавить в избранное';
+            }
+
+
+
+            /* обработчик клика по кнопке */
+            function onFavClick(fb){
+                const id = getCurrentId(fb);
+                if (!id) return;
+
+                const set = favLoad();
+                if (set.has(id)) set.delete(id); else set.add(id);
+                favSave(set);
+                updateFavBtn(fb);
+            }
+
+
+
+            function getThumbsPlugin(fb){
+                // в Fancybox v5 плагин живёт в fb.plugins (а не только в fb.Carousel.plugins)
+                // return fb?.plugins?.Thumbs || fb?.carousel?.plugins?.Thumbs || null;
+                return fb?.plugins?.Thumbs || null;
+            }
+
+            function showThumbs(fb){
+                const thumbs = getThumbsPlugin(fb);
+                if (!thumbs) return;
+                fb.container.classList.add('is-thumbs'); // даём CSS разрешение показывать
+                thumbs.show?.();                         // плагин уже строит/показывает ленту
+
+                console.log(" add('is-thumbs') ");
+            }
+
+            function hideThumbs(fb){
+                const thumbs = getThumbsPlugin(fb);
+                thumbs?.hide?.();
+                fb.container.classList.remove('is-thumbs');
+
+                console.log(" remove('is-thumbs') ");
+            }
+
+
+
+            /*
+            if (window.Carousel?.Plugins?.Thumbs) {
+                Carousel.Plugins.Thumbs.defaults.showOnStart = false;
+            }
+            */
+
+            /* ОДИН общий bind — вверх = открыть миниатюры, вниз = закрыть модалку */
+            Fancybox.bind('[data-fancybox="product"]', {
+                /* выключаем штатное закрытие по вертикальному жесту,
+                   чтобы не конфликтовало с нашим «вверх/вниз» */
+                dragToClose: false,
+
+                /* Отключаем все действия, связанные с зумом/панорамированием */
+                contentClick: false,   /* по клику по контенту ничего не делать (v5 по умолчанию мог toggleZoom) */
+                wheel: false,          /* колесо мыши не масштабирует и не листает */
+                Images: {
+                    /* подстраховка: просим не создавать panzoom/zoom */
+                    Panzoom: {
+                        zoom: false,       /* запрет на программный/дабл-тап зум (если поддерживается сборкой) */
+                        touch: false,      /* запрет панорамирования контента внутри кадра */
+                        panOnlyZoomed: false
+                    }
+                },
+
+                /* v5: встроенный счётчик называется infobar */
+                Toolbar: {
+                    enabled: true,
+                    display: {
+                        left: ['close'],
+                        middle: ['infobar'],
+                        right: []
+                    }
+                },
+
+                /* миниатюры подключены, но старт скрытый */
+                Carousel: {
+                    Arrows: false, // убирает стрелки «влево/вправо»
+                    Dots: false    // убирает точки
+                },
+                Thumbs: {
+                    //  showOnStart: false
+                },
+
+
+
+                on: {
+                    /* готово: создаём плашку, обновляем и прячем миниатюры */
+                    ready: (fb) => {
+                        console.log('---- .ready');
+
+                        /* на всякий случай сбросим флаг и спрячем превью как только они появятся */
+                        fb.container.classList.remove('is-thumbs');
+
+                        createInfoBar(fb);
+
+                        /* первый апдейт — на следующий тик (когда карусель уже будет инициализирована) */
+                        requestAnimationFrame(() => updateInfoBar(fb));
+
+                        hideThumbs(fb);
+                        // hideThumbs(fb); /* гарантированно скрыть превью на старте */
+
+
+                        /* ===== КНОПКА ИЗБРАННОГО (правый верх) ===== */
+                        const fav = document.createElement('button');
+                        fav.className = 'fav-btn';
+                        fav.type = 'button';
+                        fav.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>';
+                        fav.setAttribute('aria-label', 'Добавить в избранное');
+                        /* pointer-events у контейнера выключен — поэтому кнопка должна быть кликабельна сама */
+                        fav.addEventListener('click', (e) => { e.stopPropagation(); onFavClick(fb); });
+                        fb.container.appendChild(fav);
+                        fb._favBtn = fav;
+                        updateFavBtn(fb);
+
+
+                        /* ===========================
+                           РЕГИСТРИРУЕМ ЖЕСТЫ НА КОНТЕЙНЕРЕ
+                           =========================== */
+                        const el = fb.container;
+
+                        // === Разрешаем системный pinch-zoom в модалке (2+ пальцев) ===
+                        function allowNativePinchMove(e){
+                            if (e.touches && e.touches.length > 1) {
+                                // Не предотвращаем поведение, просто не даём Fancybox увидеть событие
+                                // => браузер обработает pinch-zoom страницы
+                                e.stopImmediatePropagation();
+                            }
+                        }
+                        // слушаем раньше Fancybox (capture:true), пассивно (чтобы мы сами ничего не блокировали)
+                        el.addEventListener('touchmove', allowNativePinchMove, { capture: true, passive: true });
+                        fb.__allowNativePinchMove = allowNativePinchMove;
+
+
+                        const THRESH = 40; /* порог в пикселях */
+                        let activeId = null, startX = 0, startY = 0;
+
+                        /* сохраняем обработчики на инстансе, чтобы потом снять */
+                        fb.__onTouchStart = function(ev){
+                            /* игнорируем, если касание началось на ленте миниатюр */
+                            if (ev.target.closest('.f-thumbs')) return;
+
+                            const t = ev.touches && ev.touches[0];
+                            if (!t) return;
+
+                            /* игнор pinch: если 2+ пальца, не трогаем */
+                            if (ev.touches.length !== 1) { activeId = null; return; }
+
+                            activeId = t.identifier;
+                            startX = t.clientX;
+                            startY = t.clientY;
+                        };
+
+                        fb.__onTouchEnd = function(ev){
+                            if (activeId === null) return;
+
+                            /* найдём именно тот палец, который начался на touchstart */
+                            let t = null;
+                            if (ev.changedTouches){
+                                for (let i = 0; i < ev.changedTouches.length; i++){
+                                    if (ev.changedTouches[i].identifier === activeId){
+                                        t = ev.changedTouches[i]; break;
+                                    }
+                                }
+                            }
+                            if (!t) { activeId = null; return; }
+
+                            const dx = t.clientX - startX;
+                            const dy = t.clientY - startY;
+                            const absX = Math.abs(dx);
+                            const absY = Math.abs(dy);
+                            const THRESH_V = 40;   /* вертикальный порог */
+                            const THRESH_H = 50;   /* горизонтальный порог */
+
+                            /* текущий слайд и его panzoom (v5 разные поля) */
+                            const slide = fb.getSlide && fb.getSlide();
+                            const pz = slide && (slide.Panzoom || slide.panzoom || slide._Panzoom || slide._panzoom || null);
+                            const scale = (pz && (pz.content?.scale ?? pz.scale)) || 1;
+
+                            /* 1) Вертикальный жест доминирует */
+                            if (absY > absX && absY > THRESH_V){
+                                if (dy < 0){
+                                    /* ВВЕРХ — показать миниатюры */
+                                    showThumbs(fb);
+                                } else {
+                                    /* ВНИЗ — закрыть галерею */
+                                    fb.close();
+                                }
+                                activeId = null;
+                                return;
+                            }
+
+                            /* 2) ГОРИЗОНТАЛЬ: листать только если в зуме И жест доминирует по X И мы у края */
+                            if (scale > 1 && absX > absY) {
+                                const THRESH_H = 90;      /* порог по горизонтали (был 50) — делаем менее чувствительным */
+                                const RATIO_DOM = 1.25;   /* X должен быть заметно больше Y */
+                                const EDGE_TOL = 16;      /* допускаем маленький люфт у края, px */
+
+                                if (absX > THRESH_H && absX > absY * RATIO_DOM) {
+                                    /* проверяем: упрёмся ли в край в сторону жеста */
+                                    let atEdge = false;
+
+                                    /* Попытка «умного» способа — если у Panzoom есть координаты и границы */
+                                    const c = pz && pz.content;
+                                    if (c && typeof c.x === 'number' && typeof c.minX === 'number' && typeof c.maxX === 'number') {
+                                        /* dx < 0 — тянем влево, у края слева => x <= minX + EDGE_TOL */
+                                        if (dx < 0) atEdge = (c.x <= c.minX + EDGE_TOL);
+                                        /* dx > 0 — тянем вправо, у края справа => x >= maxX - EDGE_TOL */
+                                        else       atEdge = (c.x >= c.maxX - EDGE_TOL);
+                                    } else {
+                                        /* Фолбэк: если не можем прочитать границы — требуем ещё больший свайп */
+                                        atEdge = absX > 140;
+                                    }
+
+                                    if (atEdge) {
+                                        /* мгновенно сбрасываем зум/пан, чтобы листалка не конфликтовала */
+                                        try { pz && pz.reset && pz.reset(0); } catch(_) {}
+
+                                        const goNext = dx < 0;
+                                        requestAnimationFrame(function(){
+                                            if (goNext && typeof fb.next === 'function') fb.next();
+                                            else if (!goNext && typeof fb.prev === 'function') fb.prev();
+                                        });
+
+                                        activeId = null;
+                                        return;
+                                    }
+                                }
+                            }
+
+
+                            activeId = null;
+                        };
+
+                        /* вешаем слушатели (passive:true — чтобы не ломать скроллы/перформанс) */
+                        el.addEventListener('touchstart', fb.__onTouchStart, { passive: true });
+                        el.addEventListener('touchend',   fb.__onTouchEnd,   { passive: true });
+                        el.addEventListener('touchcancel',fb.__onTouchEnd,   { passive: true });
+                    },
+
+                    /* обновляем плашку при смене кадра */
+                    'Carousel.change': (fb) => {
+                        console.log('Carousel.change');
+
+                        updateInfoBar(fb);
+                        updateFavBtn(fb);
+                    },
+
+                    /* подстраховка: если Fancybox вдруг показал ленту сам — спрячем */
+                    'Carousel.ready': (fb) => {
+                        console.log('Carousel.ready');
+                        hideThumbs(fb);
+                        updateInfoBar(fb); /* ← гарантируем апдейт сразу после готовности карусели */
+                        updateFavBtn(fb);
+
+                        // разовый дебаг — посмотри в консоль при первом открытии:
+                        const t = getThumbsPlugin(fb);
+
+                    },
+                    load: (fb) => {
+                        console.log('Carousel.load');
+
+                        updateInfoBar(fb);
+                        updateFavBtn(fb);
+                    },
+                    done: (fb) => {
+                        console.log('Carousel.done');
+
+                        updateInfoBar(fb);
+                        updateFavBtn(fb);
+                    },
+
+                    /* снимаем слушатели и сбрасываем флаг при закрытии */
+                    closing: (fb) => {
+                        try {
+                            const el = fb.container;
+                            if (fb.__onTouchStart) el.removeEventListener('touchstart', fb.__onTouchStart);
+                            if (fb.__onTouchEnd)   el.removeEventListener('touchend', fb.__onTouchEnd);
+                            if (fb.__onTouchEnd)   el.removeEventListener('touchcancel', fb.__onTouchEnd);
+                        } catch(_){}
+
+                        try {
+                            const el = fb.container;
+                            if (fb.__allowNativePinchMove) {
+                                el.removeEventListener('touchmove', fb.__allowNativePinchMove, { capture: true });
+                                fb.__allowNativePinchMove = null;
+                            }
+                        } catch(_) {}
+
+                        if (fb._favBtn) {
+                            try { fb._favBtn.remove(); } catch(_){}
+                            fb._favBtn = null;
+                        }
+
+                        fb.container.classList.remove('is-thumbs');
+                    }
+                }
+            });
+        });
+
+    </script>
+<?php } ?>
