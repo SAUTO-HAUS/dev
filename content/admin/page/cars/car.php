@@ -678,16 +678,20 @@ SVG
                             ?>
                         </div>
                         <?php foreach($lang_arr as $v) : ?>
-                        ss
+
                             <?
 
-                            // webs25
-                            $pdo = $db->prepare('SELECT * FROM ' . $prefx . '_seo2 WHERE `it_id`=:it_id AND lng = :lng LIMIT 1');
-                            $pdo->execute(['it_id' => $car['id'], 'lng' => $v]);
-                            $rseo = $pdo->fetch();
-                            // var_dump( $rseo);
+                            $html = '';
+                            if($car) {
+                                // webs25
+                                $pdo = $db->prepare('SELECT * FROM ' . $prefx . '_seo2 WHERE `it_id`=:it_id AND lng = :lng LIMIT 1');
+                                $pdo->execute(['it_id' => $car['id'], 'lng' => $v]);
+                                $rseo = $pdo->fetch();
+                                // var_dump( $rseo);
 
-                            $html = $rseo['params_html'];
+                                $html = $rseo['params_html'];
+
+                            }
 
                             /* убираем экранирование сущностей */
                             $html = htmlspecialchars_decode($html, ENT_QUOTES);
