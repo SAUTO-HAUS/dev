@@ -638,7 +638,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                 $rtrn .= '<div style="text-align: right; margin-bottom: -5px; margin-top: -20px; margin-right: -5px;">' . $flag_html . '</div>';
                             }
                             // Title and import country text aligned horizontally
-                            $rtrn .= '<div style="display: flex; justify-content: space-between; align-items: center; margin: 0; padding: 0;">';
+                            $rtrn .= '<div style="display: flex; justify-content: flex-end; align-items: center; margin: 0; padding: 0;">';
                             
                             // Smaller title font for Russian and English to fit better
                             $title_style = '';
