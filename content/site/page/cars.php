@@ -657,36 +657,6 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                             // Add red line between title and specifications - make it thicker and more visible
                             $rtrn .= '<hr style="border: none; height: 1.5px; background-color: #ff0000; margin-top: 8px; margin-bottom: 15px; width: 100%;">';
 
-                                // webs25
-                                $rtrn .= '
-                                <div class="block_txt_params_pop">
-                                <h1 class="name">'.$r['br_nm'].' '.$r['mo_nm'].' <span class="fl">'.$lng['l']['car']['fl'][$r['fl']].'</span></h1>
-                                 <div class="block_txt_params">
-                                    <h2>Общая информация</h2>
-                                    <p>Просторный семейный автомобиль с надёжным дизельным двигателем и автоматической коробкой передач.</p>
-                                    
-                                    <h2>Технические характеристики</h2>
-                                    <ul>
-                                      <li>Год выпуска: 2018</li>
-                                      <li>Пробег: 124 000 км</li>
-                                      <li>Объем двигателя: 1.6 л</li>
-                                      <li>Трансмиссия: Автомат</li>
-                                      <li>Тип топлива: Дизель</li>
-                                    </ul>
-                                    
-                                    <h2>Комплектация</h2>
-                                    <ul>
-                                      <li>Климат-контроль</li>
-                                      <li>Круиз-контроль</li>
-                                      <li>Парктроники</li>
-                                      <li>Навигация</li>
-                                      <li>Подогрев сидений</li>
-                                      <li>Bluetooth и USB</li>
-                                    </ul>
-                                </div>
-                             </div>
-                             ';
-
                             /*
                             foreach ($spec_ar as $v){
                                 if ($v=='loc' && $r[$v]=='0'){continue;}
@@ -735,7 +705,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                 '.$o_prc_bl.'
                             </div>
                             <div class="doit">
-                                <div class="btn msg" onclick=" openParamsPopAuto()" > '.$lng['w']['characteristics'].' </div>
+                                <div class="btn_params" onclick=" openParamsPopAuto(\'open\')  " > '.$lng['w']['characteristics'].' </div>
                                 
                                 <a class="btn call" href="tel:'.$dynamicPhone.'">'.$lng['w']['call'].'</a>
                                 
