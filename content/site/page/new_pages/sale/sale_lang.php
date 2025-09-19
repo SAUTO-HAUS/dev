@@ -17,7 +17,7 @@ return [
         ],
         'benefits' => [
             'pretitle' => 'Преимущества',
-            'title' => 'Почему комиссионная продажа в Sauto Haus — это win-win',
+            'title' => 'Почему продать машину через Sauto Haus проще и выгоднее, чем самому париться',
             'items' => [
                 'Реальная рыночная цена – продаём дороже, чем перекупы.',
                 'Полная прозрачность: договор, официальные расчёты.',
@@ -93,7 +93,7 @@ return [
         ],
         'benefits' => [
             'pretitle' => 'Avantaje',
-            'title' => 'De ce vânzarea în consignație la Sauto Haus este un win-win',
+            'title' => 'De ce să vinzi mașina prin Sauto Haus e mai simplu și mai avantajos decât să-ți bați capul singur',
             'items' => [
                 'Preț real de piață – vindem mai scump decât samsarii.',
                 'Transparență totală: contract și plăți oficiale.',
@@ -169,7 +169,7 @@ return [
         ],
         'benefits' => [
             'pretitle' => 'Benefits',
-            'title' => 'Why consignment with Sauto Haus is a win-win',
+            'title' => 'Why selling your car through Sauto Haus is easier and more profitable than stressing on your own',
             'items' => [
                 'Real market price – we sell for more than quick resellers.',
                 'Complete transparency: formal contract and official payments.',
