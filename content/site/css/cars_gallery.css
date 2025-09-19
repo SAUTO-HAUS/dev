@@ -434,6 +434,8 @@ html.with-fancybox body {
     font-size: 18px;
     margin: 20px 0 12px;
     font-weight: bold;
+    border-bottom: 1px solid #ff0000;
+    padding-bottom: 6px;
 }
 
 /* Общий стиль списка */
