@@ -464,6 +464,48 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' || ($t_mp[2]=='services' && isset($t_mp[
 <?php
 if(isset($t_mp[2]) && ($t_mp[2]=='cars' ) ) {
     ?>
+    <script>
+        function openParamsPopAuto(type) {
+            if(type == 'open') {
+                $('.block_txt_params_pop').addClass('active');
+            }
+            else {
+                $('.block_txt_params_pop').removeClass('active');
+            }
+        }
+    </script>
+    <div class="block_txt_params_pop">
+        <div class="block_pop_close" onclick=" openParamsPopAuto('hide') ">
+            <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" fill="none" viewBox="0 0 16 16" data-testid="Curtain__closer" class="IconSvg IconSvg_name_SvgCrossS IconSvg_size_24 Curtain__closer Curtain__closer_small"><path fill="currentColor" d="m6.94 8-4.76 4.77 1.06 1.06L8 9.062l4.76 4.768 1.06-1.06L9.06 8l4.76-4.77-1.06-1.06L8 6.938 3.24 2.17 2.18 3.23z"></path></svg>
+        </div>
+        <h1 class="name"> <?=$r['br_nm']?> <?=$r['mo_nm']?> <span class="fl"> <?=$lng['l']['car']['fl'][$r['fl']]?> </span> </h1>
+        <div class="block_txt_params">
+            <h2>Общая информация</h2>
+            <p>Просторный семейный автомобиль с надёжным дизельным двигателем и автоматической коробкой передач.</p>
+
+            <h2>Технические характеристики</h2>
+            <ul>
+                <li>Год выпуска: 2018</li>
+                <li>Пробег: 124 000 км</li>
+                <li>Объем двигателя: 1.6 л</li>
+                <li>Трансмиссия: Автомат</li>
+                <li>Тип топлива: Дизель</li>
+            </ul>
+
+            <h2>Комплектация</h2>
+            <ul>
+                <li>Климат-контроль</li>
+                <li>Круиз-контроль</li>
+                <li>Парктроники</li>
+                <li>Навигация</li>
+                <li>Подогрев сидений</li>
+                <li>Bluetooth и USB</li>
+            </ul>
+        </div>
+    </div>
+
+
+
     <?php // webs25 ?>
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5/dist/carousel/carousel.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5/dist/fancybox/fancybox.umd.js"></script>
