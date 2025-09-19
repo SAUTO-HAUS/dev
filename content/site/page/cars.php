@@ -512,7 +512,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                             ?>
                             <div class="f-carousel__slide">
                                 <a href="/media/images/placeholder_car.png" data-fancybox="product" data-id="p<?=$img_cnt?>"
-                                   data-title="<?=$r['br']?> <?=$r['mo']?> <?=$r['yr']?> <?=$r['mlg']?> <?=$lng['l']['car']['fl'][$r['fl']]?> <?=$lng['l']['car']['tra'][$r['tra']]?>"
+                                   data-title="<?=$r['br']?> <?=$r['mo']?>, <?=$r['yr']?>, <?=$r['mlg']?>, <?=$lng['l']['car']['fl'][$r['fl']]?> <?=$lng['l']['car']['tra'][$r['tra']]?>"
                                    data-price="<?=$prc?> <?=$cur?>">
                                     <img src="/media/images/placeholder_car.png" loading="lazy" class="lazy" alt="<?=$img_cnt?>">
                                 </a>
@@ -530,7 +530,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                 ?>
                                 <div class="f-carousel__slide">
                                     <a href="<?=$z_src2?>" data-fancybox="product" data-id="p<?=$img_cnt?>"
-                                       data-title="<?=$r['br']?> <?=$r['mo']?> <?=$r['yr']?> <?=$r['mlg']?> <?=$lng['l']['car']['fl'][$r['fl']]?> <?=$lng['l']['car']['tra'][$r['tra']]?>"
+                                       data-title="<?=$r['br']?> <?=$r['mo']?>, <?=$r['yr']?>, <?=$r['mlg']?>, <?=$lng['l']['car']['fl'][$r['fl']]?> <?=$lng['l']['car']['tra'][$r['tra']]?>"
                                        data-price="<?=$prc?> <?=$cur?>">
                                         <img src="<?=$z_src?>" loading="lazy" class="lazy" alt="<?=$img_cnt?>">
                                     </a>
