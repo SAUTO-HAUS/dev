@@ -46,7 +46,7 @@ foreach ($_FILES as $inp => $ar){//________________Цикл по типу фай
 		
 		$tmp_f = 'tmp/'.$nm[0];
 		$path = $zDir.'/'.$zY.'/'.$zM.'/'.$last_id;
-		// $n_nm = substr( md5( microtime() ), 0, 10 );
+		 $n_nm = substr( md5( microtime() ), 0, 10 );
 
 
 
@@ -59,7 +59,7 @@ foreach ($_FILES as $inp => $ar){//________________Цикл по типу фай
         } else {
             $pos = 0;
         }
-        $n_nm = 'car_'. $last_id .'_'. $pos;
+        // $n_nm = 'car_'. $last_id .'_'. $pos;
 
 
 		
