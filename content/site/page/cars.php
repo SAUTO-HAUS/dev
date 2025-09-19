@@ -575,12 +575,12 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                             $rtrn .= '<div class="spc_bx">';
                             $rtrn .= '<h1 class="name">'.$r['br_nm'].' '.$r['mo_nm'].' <span class="fl">'.$lng['l']['car']['fl'][$r['fl']].'</span></h1>';
 
-                $rtrn .= ' <div class="prc pricemobile">
+                            $rtrn .= ' <div class="prc pricemobile">
                                         <span class="val" title="'.$lng['w']['prc'].'">'.( $r['prc']>100 ? '<span class="i">'.parseCurr($prc).'</span> <span class="cur">'.( symb_rplc($r['cur']) ).'</span>' : '<span style="font-size: 1.5rem;">'.$lng['w']['negociabil'] ).'</span></span>
                                         '.$o_prc_bl.'
                                     </div> 
                             
-                            <div class="clear"> </div>
+                                    <div class="clear"> </div>
                             ';
 
                             // Colectăm informațiile despre țara de import
@@ -648,7 +648,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                 $title_style = ' style="margin: 0; padding: 0;"';
                             }
                             
-                            $rtrn .= '<h2 class="ttl"'.$title_style.'>'.$lng['w']['characteristics'].'</h2>';
+                            // $rtrn .= '<h2 class="ttl"'.$title_style.'>'.$lng['w']['characteristics'].'</h2>';
                             if (!empty($import_country_text)) {
                                 $rtrn .= $import_country_text;
                             }
@@ -660,6 +660,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                 // webs25
                                 $rtrn .= '
                                 <div class="block_txt_params_pop">
+                                <h1 class="name">'.$r['br_nm'].' '.$r['mo_nm'].' <span class="fl">'.$lng['l']['car']['fl'][$r['fl']].'</span></h1>
                                  <div class="block_txt_params">
                                     <h2>Общая информация</h2>
                                     <p>Просторный семейный автомобиль с надёжным дизельным двигателем и автоматической коробкой передач.</p>
