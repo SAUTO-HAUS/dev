@@ -174,17 +174,6 @@ class SitemapGeneratorReal {
     }
 
     /**
-     * Return DateTimeImmutable representing the cutoff for sold vehicles
-     */
-    private function getSixMonthsAgo() {
-        try {
-            return (new DateTimeImmutable('now'))->sub(new DateInterval('P6M'));
-        } catch (Exception $e) {
-            return new DateTimeImmutable('now');
-        }
-    }
-
-    /**
      * Localise an URL path to a specific language
      */
     private function localizeUrl($path, $language) {
@@ -226,11 +215,6 @@ class SitemapGeneratorReal {
 
                 if (!empty($page['status']) && $page['status'] === 'sold') {
                     if (empty($page['sold_at']) || !($page['sold_at'] instanceof DateTimeInterface)) {
-                        return false;
-                    }
-
-                    $sixMonthsAgo = $this->getSixMonthsAgo();
-                    if ($page['sold_at'] < $sixMonthsAgo) {
                         return false;
                     }
                 }
@@ -763,7 +747,7 @@ class SitemapGeneratorReal {
         switch ($page['type']) {
             case 'car':
                 if (!empty($page['status']) && $page['status'] === 'sold') {
-                    return 0.3;
+                    return 0.2;
                 }
 
                 $createdAt = $page['created_at'] ?? null;
