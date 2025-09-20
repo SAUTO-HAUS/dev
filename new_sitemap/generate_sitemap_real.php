@@ -37,6 +37,7 @@ class SitemapGeneratorReal {
     private $languages = ['ro', 'ru', 'en'];
     private $db;
     private $prefx;
+    private $tableColumnsCache = [];
     
     public function __construct() {
         global $db, $prefx;
@@ -44,6 +45,260 @@ class SitemapGeneratorReal {
         $this->prefx = $prefx;
         $this->baseUrl = getSitemapBaseUrl();
         $this->log("Real sitemap generation started at " . date('Y-m-d H:i:s'));
+    }
+
+    /**
+     * Check if a database table exists
+     */
+    private function tableExists($tableName) {
+        try {
+            $stmt = $this->db->prepare('SHOW TABLES LIKE ?');
+            $stmt->execute([$tableName]);
+            return $stmt->fetchColumn() !== false;
+        } catch (Exception $e) {
+            $this->log("WARNING: Unable to verify table existence for {$tableName}: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Get (and cache) column list for a table
+     */
+    private function getTableColumns($tableName) {
+        if (isset($this->tableColumnsCache[$tableName])) {
+            return $this->tableColumnsCache[$tableName];
+        }
+
+        if (!$this->tableExists($tableName)) {
+            $this->tableColumnsCache[$tableName] = [];
+            return [];
+        }
+
+        try {
+            $stmt = $this->db->query("SHOW COLUMNS FROM `{$tableName}`");
+            $columns = [];
+            foreach ($stmt as $column) {
+                if (!empty($column['Field'])) {
+                    $columns[] = $column['Field'];
+                }
+            }
+            $this->tableColumnsCache[$tableName] = $columns;
+            return $columns;
+        } catch (Exception $e) {
+            $this->log("WARNING: Unable to fetch columns for {$tableName}: " . $e->getMessage());
+            $this->tableColumnsCache[$tableName] = [];
+            return [];
+        }
+    }
+
+    /**
+     * Determine if a column exists in a table
+     */
+    private function columnExists($tableName, $columnName) {
+        return in_array($columnName, $this->getTableColumns($tableName), true);
+    }
+
+    /**
+     * Attempt to parse a column value into a DateTimeImmutable instance
+     */
+    private function parseDateValue($value) {
+        if ($value === null || $value === '' || $value === '0000-00-00' || $value === '0000-00-00 00:00:00') {
+            return null;
+        }
+
+        try {
+            if (is_numeric($value)) {
+                $numeric = (int)$value;
+                if ($numeric <= 0) {
+                    return null;
+                }
+
+                // Detect milliseconds timestamps
+                if ($numeric > 2000000000 && $numeric < 2000000000000) {
+                    $numeric = (int)round($numeric / 1000);
+                }
+
+                $date = (new DateTimeImmutable('@' . $numeric))->setTimezone(new DateTimeZone(date_default_timezone_get()));
+                return $date;
+            }
+
+            $date = new DateTimeImmutable($value);
+            return $date;
+        } catch (Exception $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Extract the first valid date from row data using preferred column order
+     */
+    private function extractDateTime(array $row, array $preferredKeys) {
+        foreach ($preferredKeys as $key) {
+            if (array_key_exists($key, $row)) {
+                $date = $this->parseDateValue($row[$key]);
+                if ($date instanceof DateTimeImmutable) {
+                    return $date;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Format DateTimeImmutable to sitemap string format
+     */
+    private function formatDate($date) {
+        if ($date instanceof DateTimeInterface) {
+            return $date->format('Y-m-d');
+        }
+        return date('Y-m-d');
+    }
+
+    /**
+     * Normalise translation language codes to allowed set
+     */
+    private function normalizeLanguages(array $languages) {
+        $normalized = [];
+        foreach ($languages as $lang) {
+            $lang = strtolower(trim($lang));
+            if (in_array($lang, $this->languages, true) && !in_array($lang, $normalized, true)) {
+                $normalized[] = $lang;
+            }
+        }
+
+        if (empty($normalized)) {
+            $normalized[] = 'ro';
+        }
+
+        return $normalized;
+    }
+
+    /**
+     * Return DateTimeImmutable representing the cutoff for sold vehicles
+     */
+    private function getSixMonthsAgo() {
+        try {
+            return (new DateTimeImmutable('now'))->sub(new DateInterval('P6M'));
+        } catch (Exception $e) {
+            return new DateTimeImmutable('now');
+        }
+    }
+
+    /**
+     * Localise an URL path to a specific language
+     */
+    private function localizeUrl($path, $language) {
+        if (!str_starts_with($path, '/')) {
+            $path = '/' . ltrim($path, '/');
+        }
+
+        if (preg_match('#^/[a-z]{2}/#', $path)) {
+            return '/' . $language . substr($path, 3);
+        }
+
+        // Ensure we always have language prefix
+        return '/' . $language . (str_starts_with($path, '/') ? $path : '/' . $path);
+    }
+
+    /**
+     * Get last modification time for a relative file path
+     */
+    private function getFileLastmod($relativePath) {
+        $fullPath = dirname(__DIR__) . '/' . ltrim($relativePath, '/');
+        if (file_exists($fullPath)) {
+            $timestamp = filemtime($fullPath);
+            if ($timestamp !== false) {
+                return (new DateTimeImmutable('@' . $timestamp))->setTimezone(new DateTimeZone(date_default_timezone_get()));
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Determine if a page record should be kept in sitemap
+     */
+    private function shouldIncludePage(array $page) {
+        switch ($page['type']) {
+            case 'car':
+                if (!empty($page['is_archived']) || !empty($page['is_deleted'])) {
+                    return false;
+                }
+
+                if (!empty($page['status']) && $page['status'] === 'sold') {
+                    if (empty($page['sold_at']) || !($page['sold_at'] instanceof DateTimeInterface)) {
+                        return false;
+                    }
+
+                    $sixMonthsAgo = $this->getSixMonthsAgo();
+                    if ($page['sold_at'] < $sixMonthsAgo) {
+                        return false;
+                    }
+                }
+                return true;
+
+            case 'tire':
+                if (!empty($page['is_archived']) || !empty($page['is_deleted'])) {
+                    return false;
+                }
+                return true;
+
+            case 'static':
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
+    /**
+     * Retrieve available translations for an entity
+     */
+    private function getItemTranslations($type, $itemId) {
+        $table = $this->prefx . '_seo2';
+        if (!$this->tableExists($table)) {
+            return $this->languages;
+        }
+
+        try {
+            $stmt = $this->db->prepare("SELECT DISTINCT `lng` FROM `{$table}` WHERE `tp` = :tp AND `p1` = :p1 AND `it_id` = :id");
+            $stmt->execute([
+                ':tp' => 'item',
+                ':p1' => $type,
+                ':id' => $itemId
+            ]);
+
+            $languages = [];
+            foreach ($stmt as $row) {
+                if (!empty($row['lng'])) {
+                    $languages[] = $row['lng'];
+                }
+            }
+
+            $languages = $this->normalizeLanguages($languages);
+
+            if (!in_array('ro', $languages, true)) {
+                array_unshift($languages, 'ro');
+            }
+
+            return $languages;
+        } catch (Exception $e) {
+            $this->log("WARNING: Unable to fetch translations for {$type} #{$itemId}: " . $e->getMessage());
+            return $this->languages;
+        }
+    }
+
+    /**
+     * Remove obsolete sitemap files that are no longer generated
+     */
+    private function cleanupOldSitemaps(array $generatedFiles) {
+        $existing = glob($this->outputDir . '/sitemap-*.xml');
+        $generatedSet = array_map(fn($file) => $this->outputDir . '/' . $file, $generatedFiles);
+
+        foreach ($existing as $filePath) {
+            if (!in_array($filePath, $generatedSet, true)) {
+                @unlink($filePath);
+            }
+        }
     }
     
     /**
@@ -88,10 +343,12 @@ class SitemapGeneratorReal {
                 $this->fallbackToPreviousVersion();
                 return false;
             }
-            
+
+            $this->cleanupOldSitemaps($subFiles);
+
             $this->log("Sitemap generation completed successfully!");
             return true;
-            
+
         } catch (Exception $e) {
             $this->log("ERROR during generation: " . $e->getMessage());
             $this->fallbackToPreviousVersion();
@@ -104,241 +361,339 @@ class SitemapGeneratorReal {
      */
     private function getAllPages() {
         $pages = [];
-        
-        // Get cars from real database
-        $cars = $this->getCarsFromDatabase();
-        foreach ($cars as $car) {
-            $pages[] = [
-                'type' => 'car',
-                'url' => '/ro/cars/' . $car['id'],
-                'lastmod' => $car['updated_at'] ?: $car['created_at'],
-                'status' => $car['status'],
-                'created_at' => $car['created_at'],
-                'translations' => $this->getCarTranslations($car['id'])
-            ];
-        }
-        
-        // Get tires from real database
-        $tires = $this->getTiresFromDatabase();
-        foreach ($tires as $tire) {
-            $pages[] = [
-                'type' => 'tire',
-                'url' => '/ro/tires/' . $tire['slug'],
-                'lastmod' => $tire['updated_at'] ?: $tire['created_at'],
-                'status' => 'active',
-                'translations' => $this->getTireTranslations($tire['id'])
-            ];
-        }
-        
-        // Get static pages
-        $staticPages = $this->getStaticPages();
-        foreach ($staticPages as $page) {
-            $pages[] = [
-                'type' => 'static',
-                'url' => $page['url'],
-                'lastmod' => $page['updated_at'],
-                'status' => 'active',
-                'page_type' => $page['type'],
-                'translations' => $page['translations']
-            ];
-        }
-        
+        $pages = array_merge($pages, $this->getCarsFromDatabase());
+        $pages = array_merge($pages, $this->getTiresFromDatabase());
+        $pages = array_merge($pages, $this->getStaticPages());
         return $pages;
     }
     
     /**
-     * Get cars from real SAUTO database
+     * Retrieve car entries from the database with filtering applied
      */
     private function getCarsFromDatabase() {
+        $pages = [];
+
         try {
-            // Query to get all cars (active and recently sold for SEO)
-            $sql = "SELECT 
-                        id, 
-                        created_at, 
-                        updated_at,
-                        status,
-                        sold_date
-                    FROM {$this->prefx}_cars 
-                    WHERE deleted = 0 
-                    AND (status = 'active' OR (status = 'sold' AND sold_date > DATE_SUB(NOW(), INTERVAL 6 MONTH)))
-                    ORDER BY created_at DESC";
-            
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute();
-            $results = $stmt->fetchAll();
-            
-            $cars = [];
-            foreach ($results as $row) {
-                $cars[] = [
-                    'id' => $row['id'],
-                    'created_at' => $row['created_at'],
-                    'updated_at' => $row['updated_at'],
-                    'status' => $row['status'] === 'active' ? 'in_stock' : 'out_of_stock'
-                ];
+            if ($this->tableExists('cars')) {
+                $pages = array_merge($pages, $this->fetchCarsFromModernTable());
             }
-            
-            $this->log("Retrieved " . count($cars) . " cars from database");
-            return $cars;
-            
+
+            if (empty($pages)) {
+                $pages = array_merge($pages, $this->fetchCarsFromLegacyCatalog());
+            }
+
+            $this->log('Retrieved ' . count($pages) . ' cars for sitemap inclusion');
         } catch (Exception $e) {
-            $this->log("ERROR getting cars: " . $e->getMessage());
-            return [];
+            $this->log('ERROR retrieving cars: ' . $e->getMessage());
         }
+
+        return $pages;
     }
     
     /**
-     * Get tires from real SAUTO database
+     * Retrieve tyre entries from the database
      */
     private function getTiresFromDatabase() {
+        $pages = [];
+        $table = $this->prefx . '_tyre_ctlg';
+
         try {
-            $sql = "SELECT 
-                        id,
-                        slug,
-                        created_at,
-                        updated_at
-                    FROM {$this->prefx}_tyres 
-                    WHERE deleted = 0 
-                    AND status = 'active'
-                    ORDER BY created_at DESC";
-            
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute();
-            $results = $stmt->fetchAll();
-            
-            $this->log("Retrieved " . count($results) . " tires from database");
-            return $results;
-            
+            $columns = $this->getTableColumns($table);
+            if (empty($columns)) {
+                return [];
+            }
+
+            $preferred = [
+                'n_a', 'act', 'vis', 'created_at', 'created', 'date', 'updated_at',
+                'updated', 'upd', 'modified_at', 'last_update', 'deleted', 'it'
+            ];
+
+            $selectColumns = array_unique(array_merge(['id'], array_intersect($preferred, $columns)));
+            $columnList = implode(', ', array_map(fn($col) => "`$col`", $selectColumns));
+
+            $sql = "SELECT {$columnList} FROM `{$table}` WHERE 1=1";
+            if (in_array('act', $columns, true)) {
+                $sql .= " AND `act` = 1";
+            }
+            if (in_array('vis', $columns, true)) {
+                $sql .= " AND `vis` = 1";
+            }
+            if (in_array('deleted', $columns, true)) {
+                $sql .= " AND (`deleted` = 0 OR `deleted` IS NULL)";
+            }
+            if (in_array('it', $columns, true)) {
+                $sql .= " AND (`it` IS NULL OR `it` != 'it_arh')";
+            }
+
+            $stmt = $this->db->query($sql);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($rows as $row) {
+                $pages[] = $this->mapTyreRowToPage($row);
+            }
+
+            $this->log('Retrieved ' . count($pages) . ' tyres for sitemap inclusion');
         } catch (Exception $e) {
-            $this->log("ERROR getting tires: " . $e->getMessage());
-            return [];
+            $this->log('ERROR retrieving tyres: ' . $e->getMessage());
         }
+
+        return $pages;
     }
     
     /**
-     * Get static pages
+     * Build static pages metadata
      */
     private function getStaticPages() {
-        // Static pages that should be in sitemap
+        $staticPages = [
+            ['path' => '/ro/', 'file' => 'content/site/page/home.php', 'category' => 'core'],
+            ['path' => '/ro/cars', 'file' => 'content/site/page/cars.php', 'category' => 'core'],
+            ['path' => '/ro/tyres', 'file' => 'content/site/page/tyres.php', 'category' => 'core'],
+            ['path' => '/ro/services', 'file' => 'content/site/page/services.php', 'category' => 'core'],
+            ['path' => '/ro/contacts', 'file' => 'content/site/page/contacts.php', 'category' => 'core'],
+            ['path' => '/ro/about', 'file' => 'content/site/page/about.php', 'category' => 'core'],
+            ['path' => '/ro/credit', 'file' => 'content/site/page/credit.php', 'category' => 'core'],
+            ['path' => '/ro/tradein', 'file' => 'content/site/page/new_pages/tradein/tradein.php', 'category' => 'core'],
+            ['path' => '/ro/privacy', 'file' => 'content/site/page/privacy.php', 'category' => 'legal'],
+            ['path' => '/ro/terms', 'file' => 'content/site/page/terms.php', 'category' => 'legal'],
+            ['path' => '/ro/warranty', 'file' => 'content/site/page/warranty.php', 'category' => 'support']
+        ];
+
+        $pages = [];
+        foreach ($staticPages as $page) {
+            $lastmod = $this->getFileLastmod($page['file']);
+            if (!$lastmod) {
+                $lastmod = new DateTimeImmutable('now');
+            }
+
+            $pages[] = [
+                'type' => 'static',
+                'url' => $page['path'],
+                'created_at' => $lastmod,
+                'lastmod' => $lastmod,
+                'status' => 'active',
+                'page_type' => $page['category'],
+                'is_archived' => false,
+                'is_deleted' => false,
+                'translations' => $this->languages
+            ];
+        }
+
+        return $pages;
+    }
+    
+    
+    /**
+     * Fetch cars from modern table structure
+     */
+    private function fetchCarsFromModernTable() {
+        $table = 'cars';
+        $columns = $this->getTableColumns($table);
+        if (empty($columns)) {
+            return [];
+        }
+
+        $preferred = [
+            'slug', 'status', 'is_deleted', 'deleted', 'deleted_at', 'is_archived', 'archived', 'archived_at',
+            'availability', 'available', 'visibility', 'created_at', 'created', 'date', 'updated_at', 'updated',
+            'modified_at', 'last_update', 'sold_at', 'sold_date', 'sale_date', 'sold_time', 'sold_timestamp',
+            'sold_on', 'status_changed_at'
+        ];
+
+        $selectColumns = array_unique(array_merge(['id'], array_intersect($preferred, $columns)));
+        $columnList = implode(', ', array_map(fn($col) => "`$col`", $selectColumns));
+
+        $sql = "SELECT {$columnList} FROM `{$table}`";
+        $conditions = [];
+
+        if (in_array('is_deleted', $columns, true)) {
+            $conditions[] = '`is_deleted` = 0';
+        }
+        if (in_array('deleted', $columns, true)) {
+            $conditions[] = '`deleted` = 0';
+        }
+        if (in_array('deleted_at', $columns, true)) {
+            $conditions[] = "(`deleted_at` IS NULL OR `deleted_at` = '0000-00-00 00:00:00')";
+        }
+        if (in_array('is_archived', $columns, true)) {
+            $conditions[] = '`is_archived` = 0';
+        }
+        if (in_array('archived', $columns, true)) {
+            $conditions[] = '`archived` = 0';
+        }
+        if (in_array('archived_at', $columns, true)) {
+            $conditions[] = "(`archived_at` IS NULL OR `archived_at` = '0000-00-00 00:00:00')";
+        }
+        if (in_array('visibility', $columns, true)) {
+            $conditions[] = "(`visibility` IS NULL OR `visibility` IN ('public', 'visible', ''))";
+        }
+        if (in_array('status', $columns, true)) {
+            $conditions[] = "`status` IN ('active', 'sold', 'available', 'not_available', 'out_of_stock')";
+        }
+
+        if (!empty($conditions)) {
+            $sql .= ' WHERE ' . implode(' AND ', $conditions);
+        }
+
+        $stmt = $this->db->query($sql);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $pages = [];
+        foreach ($rows as $row) {
+            $pages[] = $this->mapCarRowToPage($row);
+        }
+
+        return $pages;
+    }
+
+    /**
+     * Fetch cars from legacy catalog structure
+     */
+    private function fetchCarsFromLegacyCatalog() {
+        $table = $this->prefx . '_car_ctlg';
+        $columns = $this->getTableColumns($table);
+        if (empty($columns)) {
+            return [];
+        }
+
+        $preferred = [
+            'n_a', 'act', 'vis', 'it', 'created_at', 'created', 'date', 'updated_at', 'updated', 'upd',
+            'modified_at', 'last_update', 'time_shift', 'sold_at', 'sold_date', 'sale_date', 'sold_time',
+            'sold_timestamp', 'sold_on', 'n_a_date', 'n_a_time', 'n_a_updated', 'n_a_updated_at', 'deleted'
+        ];
+
+        $selectColumns = array_unique(array_merge(['id'], array_intersect($preferred, $columns)));
+        $columnList = implode(', ', array_map(fn($col) => "`$col`", $selectColumns));
+
+        $sql = "SELECT {$columnList} FROM `{$table}` WHERE 1=1";
+        if (in_array('act', $columns, true)) {
+            $sql .= " AND `act` = 1";
+        }
+        if (in_array('vis', $columns, true)) {
+            $sql .= " AND `vis` = 1";
+        }
+        if (in_array('it', $columns, true)) {
+            $sql .= " AND (`it` IS NULL OR `it` != 'it_arh')";
+        }
+        if (in_array('deleted', $columns, true)) {
+            $sql .= " AND (`deleted` = 0 OR `deleted` IS NULL)";
+        }
+
+        $stmt = $this->db->query($sql);
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $pages = [];
+        foreach ($rows as $row) {
+            $pages[] = $this->mapCarRowToPage($row, true);
+        }
+
+        return $pages;
+    }
+
+    /**
+     * Map car row to sitemap page definition
+     */
+    private function mapCarRowToPage(array $row, $legacy = false) {
+        $id = (int)$row['id'];
+
+        $status = 'active';
+        if (isset($row['status'])) {
+            $rawStatus = strtolower(trim((string)$row['status']));
+            if (in_array($rawStatus, ['sold', 'not_available', 'out_of_stock', 'unavailable'], true)) {
+                $status = 'sold';
+            }
+        } elseif (isset($row['n_a'])) {
+            $status = ((int)$row['n_a'] === 1) ? 'sold' : 'active';
+        } elseif (isset($row['available'])) {
+            $status = ((int)$row['available'] === 1) ? 'active' : 'sold';
+        }
+
+        $soldAt = $this->extractDateTime($row, [
+            'sold_at', 'sold_date', 'sale_date', 'sold_time', 'sold_timestamp', 'sold_on',
+            'status_changed_at', 'n_a_date', 'n_a_time', 'n_a_updated', 'n_a_updated_at'
+        ]);
+        if ($status !== 'sold') {
+            $soldAt = null;
+        }
+
+        $createdAt = $this->extractDateTime($row, ['created_at', 'created', 'date', 'added_at', 'd']);
+        if (!$createdAt) {
+            $createdAt = $this->extractDateTime($row, ['updated_at', 'updated', 'upd', 'modified_at', 'last_update', 'time_shift']);
+        }
+        if (!$createdAt) {
+            $createdAt = new DateTimeImmutable('now');
+        }
+
+        $updatedAt = $this->extractDateTime($row, ['updated_at', 'updated', 'upd', 'modified_at', 'last_update', 'time_shift']);
+        if (!$updatedAt) {
+            $updatedAt = $soldAt ?: $createdAt;
+        }
+
+        $isDeleted = false;
+        if (isset($row['is_deleted'])) {
+            $isDeleted = (bool)$row['is_deleted'];
+        } elseif (isset($row['deleted'])) {
+            $isDeleted = (bool)$row['deleted'];
+        } elseif (isset($row['act']) && (int)$row['act'] !== 1) {
+            $isDeleted = true;
+        }
+
+        $isArchived = false;
+        if (isset($row['is_archived'])) {
+            $isArchived = (bool)$row['is_archived'];
+        } elseif (isset($row['archived'])) {
+            $isArchived = (bool)$row['archived'];
+        } elseif (isset($row['it']) && $row['it'] === 'it_arh') {
+            $isArchived = true;
+        }
+
         return [
-            [
-                'url' => '/ro/',
-                'updated_at' => date('Y-m-d'),
-                'type' => 'useful',
-                'translations' => ['ro', 'ru', 'en']
-            ],
-            [
-                'url' => '/ro/cars',
-                'updated_at' => date('Y-m-d'),
-                'type' => 'useful',
-                'translations' => ['ro', 'ru', 'en']
-            ],
-            [
-                'url' => '/ro/tires',
-                'updated_at' => date('Y-m-d'),
-                'type' => 'useful',
-                'translations' => ['ro', 'ru', 'en']
-            ],
-            [
-                'url' => '/ro/contacts',
-                'updated_at' => date('Y-m-d', strtotime('-30 days')),
-                'type' => 'useful',
-                'translations' => ['ro', 'ru', 'en']
-            ],
-            [
-                'url' => '/ro/about',
-                'updated_at' => date('Y-m-d', strtotime('-60 days')),
-                'type' => 'useful',
-                'translations' => ['ro', 'ru', 'en']
-            ],
-            [
-                'url' => '/ro/privacy-policy',
-                'updated_at' => date('Y-m-d', strtotime('-90 days')),
-                'type' => 'legal',
-                'translations' => ['ro', 'ru']
-            ],
-            [
-                'url' => '/ro/terms',
-                'updated_at' => date('Y-m-d', strtotime('-90 days')),
-                'type' => 'legal',
-                'translations' => ['ro', 'ru']
-            ]
+            'type' => 'car',
+            'id' => $id,
+            'url' => '/ro/cars/' . $id,
+            'created_at' => $createdAt,
+            'lastmod' => $updatedAt,
+            'status' => $status,
+            'sold_at' => $soldAt,
+            'is_archived' => $isArchived,
+            'is_deleted' => $isDeleted,
+            'translations' => $this->getItemTranslations('cars', $id)
         ];
     }
-    
+
     /**
-     * Get available translations for a car
+     * Map tyre row to sitemap page definition
      */
-    private function getCarTranslations($carId) {
-        try {
-            // Check which language versions exist for this car
-            $translations = ['ro']; // Romanian is always available
-            
-            // Check if Russian translation exists
-            $sql = "SELECT COUNT(*) as count FROM {$this->prefx}_cars_lang 
-                    WHERE car_id = ? AND lang = 'ru' AND title IS NOT NULL AND title != ''";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute([$carId]);
-            $result = $stmt->fetch();
-            if ($result && $result['count'] > 0) {
-                $translations[] = 'ru';
-            }
-            
-            // Check if English translation exists
-            $sql = "SELECT COUNT(*) as count FROM {$this->prefx}_cars_lang 
-                    WHERE car_id = ? AND lang = 'en' AND title IS NOT NULL AND title != ''";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute([$carId]);
-            $result = $stmt->fetch();
-            if ($result && $result['count'] > 0) {
-                $translations[] = 'en';
-            }
-            
-            return $translations;
-            
-        } catch (Exception $e) {
-            $this->log("ERROR getting car translations for ID $carId: " . $e->getMessage());
-            return ['ro']; // Fallback to Romanian only
+    private function mapTyreRowToPage(array $row) {
+        $id = (int)$row['id'];
+
+        $status = 'active';
+        if (isset($row['n_a']) && (int)$row['n_a'] === 1) {
+            $status = 'out_of_stock';
         }
-    }
-    
-    /**
-     * Get available translations for a tire
-     */
-    private function getTireTranslations($tireId) {
-        try {
-            // Check which language versions exist for this tire
-            $translations = ['ro']; // Romanian is always available
-            
-            // Check if Russian translation exists
-            $sql = "SELECT COUNT(*) as count FROM {$this->prefx}_tyres_lang 
-                    WHERE tyre_id = ? AND lang = 'ru' AND title IS NOT NULL AND title != ''";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute([$tireId]);
-            $result = $stmt->fetch();
-            if ($result && $result['count'] > 0) {
-                $translations[] = 'ru';
-            }
-            
-            // Check if English translation exists
-            $sql = "SELECT COUNT(*) as count FROM {$this->prefx}_tyres_lang 
-                    WHERE tyre_id = ? AND lang = 'en' AND title IS NOT NULL AND title != ''";
-            $stmt = $this->db->prepare($sql);
-            $stmt->execute([$tireId]);
-            $result = $stmt->fetch();
-            if ($result && $result['count'] > 0) {
-                $translations[] = 'en';
-            }
-            
-            return $translations;
-            
-        } catch (Exception $e) {
-            $this->log("ERROR getting tire translations for ID $tireId: " . $e->getMessage());
-            return ['ro']; // Fallback to Romanian only
+
+        $createdAt = $this->extractDateTime($row, ['created_at', 'created', 'date']);
+        if (!$createdAt) {
+            $createdAt = new DateTimeImmutable('now');
         }
+
+        $updatedAt = $this->extractDateTime($row, ['updated_at', 'updated', 'upd', 'modified_at', 'last_update']);
+        if (!$updatedAt) {
+            $updatedAt = $createdAt;
+        }
+
+        return [
+            'type' => 'tire',
+            'id' => $id,
+            'url' => '/ro/tyres/' . $id,
+            'created_at' => $createdAt,
+            'lastmod' => $updatedAt,
+            'status' => $status,
+            'sold_at' => null,
+            'is_archived' => false,
+            'is_deleted' => false,
+            'translations' => $this->getItemTranslations('tyres', $id)
+        ];
     }
-    
-    // Include all other methods from the original generator
-    // (filterPages, processPages, calculatePriority, etc.)
     
     /**
      * Filter pages according to inclusion rules
@@ -347,23 +702,18 @@ class SitemapGeneratorReal {
         $filtered = [];
         
         foreach ($pages as $page) {
-            // Skip deleted items
-            if ($page['status'] === 'deleted') {
+            if (!$this->shouldIncludePage($page)) {
                 continue;
             }
-            
-            // Basic URL validation
+
             if (!$this->isCanonicalUrl($page['url'])) {
                 continue;
             }
-            
+
             $filtered[] = $page;
         }
-        
-        // Remove duplicates
-        $filtered = $this->removeDuplicateUrls($filtered);
-        
-        return $filtered;
+
+        return $this->removeDuplicateUrls($filtered);
     }
     
     /**
@@ -372,21 +722,37 @@ class SitemapGeneratorReal {
     private function processPages($pages) {
         $processed = [];
         
+        $seenLoc = [];
+
         foreach ($pages as $page) {
-            $processedPage = [
-                'loc' => $this->baseUrl . $page['url'],
-                'lastmod' => date('Y-m-d', strtotime($page['lastmod'])),
+            $loc = $this->baseUrl . $page['url'];
+            if (isset($seenLoc[$loc])) {
+                continue;
+            }
+            $seenLoc[$loc] = true;
+
+            $lastmodDate = null;
+            if (isset($page['lastmod']) && $page['lastmod'] instanceof DateTimeInterface) {
+                $lastmodDate = $page['lastmod'];
+            } else {
+                $lastmodDate = $this->parseDateValue($page['lastmod'] ?? null);
+            }
+            if (!$lastmodDate) {
+                $lastmodDate = new DateTimeImmutable('now');
+            }
+
+            $priorityValue = $this->calculatePriority($page);
+            $priorityValue = max(0.1, min(1.0, $priorityValue));
+
+            $processed[] = [
+                'loc' => $loc,
+                'lastmod' => $lastmodDate->format('Y-m-d'),
                 'changefreq' => $this->getChangeFreq($page),
-                'priority' => $this->calculatePriority($page),
+                'priority' => number_format($priorityValue, 1, '.', ''),
                 'hreflang' => $this->getHrefLangLinks($page)
             ];
-            
-            $processed[] = $processedPage;
         }
-        
-        // Shuffle for mixed content
-        shuffle($processed);
-        
+
         return $processed;
     }
     
@@ -396,25 +762,42 @@ class SitemapGeneratorReal {
     private function calculatePriority($page) {
         switch ($page['type']) {
             case 'car':
-                // Cars that are no longer available always get the lowest priority
-                if ($page['status'] === 'out_of_stock') {
-                    return 0.2;
+                if (!empty($page['status']) && $page['status'] === 'sold') {
+                    return 0.3;
                 }
 
-                // Age of the car in days
-                $daysOld = (time() - strtotime($page['created_at'])) / (24 * 3600);
+                $createdAt = $page['created_at'] ?? null;
+                if (!($createdAt instanceof DateTimeInterface)) {
+                    $createdAt = $this->parseDateValue($createdAt);
+                }
+                if (!$createdAt instanceof DateTimeInterface) {
+                    $createdAt = new DateTimeImmutable('now');
+                }
 
-                if ($daysOld <= 30)  return 1.0; // 0-30 days
-                if ($daysOld <= 60)  return 0.8; // 31-60 days
-                if ($daysOld <= 90)  return 0.6; // 61-90 days
-                return 0.4;                      // older than 90 days
+                $daysOld = (new DateTimeImmutable('now'))->diff($createdAt)->days;
+
+                if ($daysOld <= 30) {
+                    return 1.0;
+                }
+                if ($daysOld <= 60) {
+                    return 0.9;
+                }
+                if ($daysOld <= 120) {
+                    return 0.7;
+                }
+                return 0.6;
 
             case 'tire':
-                // Non-car items such as tires
-                return 0.2;
+                return (!empty($page['status']) && $page['status'] === 'out_of_stock') ? 0.2 : 0.3;
 
             case 'static':
-                // Static pages and categories default to medium priority
+                $category = $page['page_type'] ?? 'core';
+                if ($category === 'legal') {
+                    return 0.3;
+                }
+                if ($category === 'support') {
+                    return 0.4;
+                }
                 return 0.5;
 
             default:
@@ -442,20 +825,28 @@ class SitemapGeneratorReal {
      * Get hreflang links for multilingual support
      */
     private function getHrefLangLinks($page) {
-        $links = [];
-        
-        if (isset($page['translations']) && is_array($page['translations'])) {
-            foreach ($page['translations'] as $lang) {
-                if (in_array($lang, $this->languages)) {
-                    $url = str_replace('/ro/', "/$lang/", $page['url']);
-                    $links[] = [
-                        'hreflang' => $lang,
-                        'href' => $this->baseUrl . $url
-                    ];
-                }
-            }
+        $translations = $page['translations'] ?? $this->languages;
+        if (!is_array($translations)) {
+            $translations = $this->languages;
         }
-        
+
+        $translations = $this->normalizeLanguages($translations);
+        $links = [];
+
+        foreach ($translations as $lang) {
+            $links[] = [
+                'hreflang' => $lang,
+                'href' => $this->baseUrl . $this->localizeUrl($page['url'], $lang)
+            ];
+        }
+
+        if (!empty($translations)) {
+            $links[] = [
+                'hreflang' => 'x-default',
+                'href' => $this->baseUrl . $this->localizeUrl($page['url'], $translations[0])
+            ];
+        }
+
         return $links;
     }
     
@@ -485,7 +876,7 @@ class SitemapGeneratorReal {
             
             // Add hreflang links
             foreach ($page['hreflang'] as $link) {
-                $hrefLang = $xml->createElement('xhtml:link');
+                $hrefLang = $xml->createElementNS('http://www.w3.org/1999/xhtml', 'xhtml:link');
                 $hrefLang->setAttribute('rel', 'alternate');
                 $hrefLang->setAttribute('hreflang', $link['hreflang']);
                 $hrefLang->setAttribute('href', htmlspecialchars($link['href']));
@@ -534,6 +925,8 @@ class SitemapGeneratorReal {
     private function validateFiles($subFiles) {
         $errors = [];
         
+        $globalUrls = [];
+
         // Validate main index file
         $indexPath = $this->outputDir . '/sitemap.xml';
         if (!file_exists($indexPath)) {
@@ -554,14 +947,23 @@ class SitemapGeneratorReal {
                 $errors[] = "Sub-file $subFile not found";
                 continue;
             }
-            
+
             $subErrors = $this->validateXmlFile($subPath, 'urlset');
             if (!empty($subErrors)) {
                 $errors = array_merge($errors, $subErrors);
             }
-            
+
+            $urlsInFile = $this->extractUrlsFromFile($subPath);
+            foreach ($urlsInFile as $urlValue) {
+                if (isset($globalUrls[$urlValue])) {
+                    $errors[] = "Duplicate URL found across sitemap files: $urlValue (in {$globalUrls[$urlValue]} and $subFile)";
+                } else {
+                    $globalUrls[$urlValue] = $subFile;
+                }
+            }
+
             // Check URL count limit
-            $urlCount = $this->countUrlsInFile($subPath);
+            $urlCount = count($urlsInFile);
             if ($urlCount > $this->maxUrlsPerFile) {
                 $errors[] = "$subFile exceeds maximum URLs: $urlCount > {$this->maxUrlsPerFile}";
             }
@@ -742,11 +1144,15 @@ class SitemapGeneratorReal {
             }
             
             $lang = $hreflang->getAttribute('hreflang');
-            if (!in_array($lang, $this->languages)) {
+            if ($lang === 'x-default') {
+                continue;
+            }
+
+            if (!in_array($lang, $this->languages, true)) {
                 $errors[] = "$filePath: Invalid hreflang language: $lang";
             }
         }
-        
+
         return $errors;
     }
     
@@ -795,11 +1201,31 @@ class SitemapGeneratorReal {
     /**
      * Count URLs in a sitemap file
      */
+    private function extractUrlsFromFile($filePath) {
+        $urls = [];
+        $previousState = libxml_use_internal_errors(true);
+
+        try {
+            $xml = new DOMDocument();
+            if ($xml->load($filePath)) {
+                $urlNodes = $xml->getElementsByTagName('url');
+                foreach ($urlNodes as $urlNode) {
+                    $loc = $urlNode->getElementsByTagName('loc');
+                    if ($loc->length > 0) {
+                        $urls[] = trim($loc->item(0)->textContent);
+                    }
+                }
+            }
+        } finally {
+            libxml_clear_errors();
+            libxml_use_internal_errors($previousState);
+        }
+
+        return $urls;
+    }
+
     private function countUrlsInFile($filePath) {
-        $xml = new DOMDocument();
-        $xml->load($filePath);
-        $urls = $xml->getElementsByTagName('url');
-        return $urls->length;
+        return count($this->extractUrlsFromFile($filePath));
     }
     
     /**
