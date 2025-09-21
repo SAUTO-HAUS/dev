@@ -5,21 +5,57 @@
  * Use with caution - this affects production data
  */
 
+// Normalise host context before loading configuration so environment detection works in CLI
+$productionHost = 'www.sauto.md';
+$httpsScheme = 'https';
+
+if (PHP_SAPI === 'cli') {
+    // When running from CLI there is no HTTP context, so force production host to ensure
+    // that configuration picks the correct environment.
+    $_SERVER['HTTP_HOST'] = $productionHost;
+    $_SERVER['HTTPS'] = 'on';
+    $_SERVER['REQUEST_SCHEME'] = $httpsScheme;
+    $_SERVER['SERVER_PORT'] = 443;
+    $_SERVER['HTTP_USER_AGENT'] = $_SERVER['HTTP_USER_AGENT'] ?? 'CLI';
+} elseif (!isset($_SERVER['HTTP_HOST']) || $_SERVER['HTTP_HOST'] === '') {
+    // Fallback for other non-web contexts
+    $_SERVER['HTTP_HOST'] = $productionHost;
+}
+
+if (!isset($_SERVER['REQUEST_URI'])) {
+    $_SERVER['REQUEST_URI'] = '/';
+}
+if (!isset($_SERVER['HTTP_USER_AGENT'])) {
+    $_SERVER['HTTP_USER_AGENT'] = 'CLI';
+}
+
 // Load configuration
 require_once __DIR__ . '/config.php';
 
-// Ensure we're running in the correct environment
-if (!defined('STDIN')) {
-    // Set the correct host for URL generation based on environment
+// Ensure we're running in the correct environment after configuration is loaded
+if (!isset($_SERVER['HTTP_HOST']) || $_SERVER['HTTP_HOST'] !== getSitemapDomain()) {
     $_SERVER['HTTP_HOST'] = getSitemapDomain();
-    $_SERVER['HTTPS'] = 'on';
-    $_SERVER['REQUEST_SCHEME'] = 'https';
 }
+
+if (isProductionEnvironment()) {
+    $_SERVER['HTTPS'] = 'on';
+    $_SERVER['REQUEST_SCHEME'] = $httpsScheme;
+    $_SERVER['SERVER_PORT'] = 443;
+}
+
 if (!isset($_SERVER['REMOTE_ADDR'])) {
     $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 }
 
 try {
+    if (!defined('_DOIT')) {
+        define('_DOIT', 1);
+    }
+    if (!function_exists('usr_agent')) {
+        function usr_agent() {
+            return 'CLI';
+        }
+    }
     require_once __DIR__ . '/../content/default/config.php';
     require_once __DIR__ . '/../content/default/dbi.php';
 } catch (Exception $e) {
