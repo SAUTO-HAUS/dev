@@ -5,57 +5,39 @@
  * Use with caution - this affects production data
  */
 
-// Normalise host context before loading configuration so environment detection works in CLI
-$productionHost = 'www.sauto.md';
-$httpsScheme = 'https';
+// Define required constant for SAUTO framework
+define('_DOIT', 1);
 
-if (PHP_SAPI === 'cli') {
-    // When running from CLI there is no HTTP context, so force production host to ensure
-    // that configuration picks the correct environment.
-    $_SERVER['HTTP_HOST'] = $productionHost;
-    $_SERVER['HTTPS'] = 'on';
-    $_SERVER['REQUEST_SCHEME'] = $httpsScheme;
-    $_SERVER['SERVER_PORT'] = 443;
-    $_SERVER['HTTP_USER_AGENT'] = $_SERVER['HTTP_USER_AGENT'] ?? 'CLI';
-} elseif (!isset($_SERVER['HTTP_HOST']) || $_SERVER['HTTP_HOST'] === '') {
-    // Fallback for other non-web contexts
-    $_SERVER['HTTP_HOST'] = $productionHost;
+// Set up CLI environment variables
+$_SERVER['HTTP_HOST'] = $_SERVER['HTTP_HOST'] ?? 'www.sauto.md';
+$_SERVER['REQUEST_URI'] = $_SERVER['REQUEST_URI'] ?? '/';
+$_SERVER['HTTPS'] = 'on';
+$_SERVER['REQUEST_SCHEME'] = 'https';
+$_SERVER['REMOTE_ADDR'] = $_SERVER['REMOTE_ADDR'] ?? '127.0.0.1';
+$_SERVER['HTTP_USER_AGENT'] = $_SERVER['HTTP_USER_AGENT'] ?? 'SAUTO-Sitemap-Generator/1.0';
+
+// Include environment configuration for SQL constants
+require_once __DIR__ . '/../environment.php';
+
+// Add compatibility functions for older PHP versions
+if (!function_exists('str_starts_with')) {
+    function str_starts_with($haystack, $needle) {
+        return strpos($haystack, $needle) === 0;
+    }
 }
 
-if (!isset($_SERVER['REQUEST_URI'])) {
-    $_SERVER['REQUEST_URI'] = '/';
-}
-if (!isset($_SERVER['HTTP_USER_AGENT'])) {
-    $_SERVER['HTTP_USER_AGENT'] = 'CLI';
+if (!function_exists('str_contains')) {
+    function str_contains($haystack, $needle) {
+        return strpos($haystack, $needle) !== false;
+    }
 }
 
 // Load configuration
 require_once __DIR__ . '/config.php';
 
-// Ensure we're running in the correct environment after configuration is loaded
-if (!isset($_SERVER['HTTP_HOST']) || $_SERVER['HTTP_HOST'] !== getSitemapDomain()) {
-    $_SERVER['HTTP_HOST'] = getSitemapDomain();
-}
-
-if (isProductionEnvironment()) {
-    $_SERVER['HTTPS'] = 'on';
-    $_SERVER['REQUEST_SCHEME'] = $httpsScheme;
-    $_SERVER['SERVER_PORT'] = 443;
-}
-
-if (!isset($_SERVER['REMOTE_ADDR'])) {
-    $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-}
-
 try {
-    if (!defined('_DOIT')) {
-        define('_DOIT', 1);
-    }
-    if (!function_exists('usr_agent')) {
-        function usr_agent() {
-            return 'CLI';
-        }
-    }
+    // Include functions first to define usr_agent() and other functions
+    require_once __DIR__ . '/../content/default/functions.php';
     require_once __DIR__ . '/../content/default/config.php';
     require_once __DIR__ . '/../content/default/dbi.php';
 } catch (Exception $e) {
@@ -88,8 +70,8 @@ class SitemapGeneratorReal {
      */
     private function tableExists($tableName) {
         try {
-            $stmt = $this->db->prepare('SHOW TABLES LIKE ?');
-            $stmt->execute([$tableName]);
+            $stmt = $this->db->prepare("SHOW TABLES LIKE '{$tableName}'");
+            $stmt->execute();
             return $stmt->fetchColumn() !== false;
         } catch (Exception $e) {
             $this->log("WARNING: Unable to verify table existence for {$tableName}: " . $e->getMessage());
@@ -249,11 +231,8 @@ class SitemapGeneratorReal {
                     return false;
                 }
 
-                if (!empty($page['status']) && $page['status'] === 'sold') {
-                    if (empty($page['sold_at']) || !($page['sold_at'] instanceof DateTimeInterface)) {
-                        return false;
-                    }
-                }
+                // Include all sold cars for SEO benefits (they get priority 0.2)
+                // No need to check sold_at - all sold cars are valuable for SEO
                 return true;
 
             case 'tire':

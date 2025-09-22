@@ -7,52 +7,19 @@
  */
 
 // Environment detection
-$environment = null;
-
-// 1. Allow explicit override via constant
-if (defined('SITEMAP_ENV_OVERRIDE') && is_string(SITEMAP_ENV_OVERRIDE)) {
-    $environment = strtolower(trim(SITEMAP_ENV_OVERRIDE));
-}
-
-// 2. Allow override via environment variable
-if ($environment === null) {
-    $envFromEnv = getenv('SITEMAP_ENV');
-    if (is_string($envFromEnv) && $envFromEnv !== '') {
-        $environment = strtolower(trim($envFromEnv));
-    }
-}
-
-// 3. Allow override via server variable (useful for CLI scripts bootstrapping $_SERVER)
-if ($environment === null && isset($_SERVER['SITEMAP_ENV'])) {
-    $envFromServer = $_SERVER['SITEMAP_ENV'];
-    if (is_string($envFromServer) && $envFromServer !== '') {
-        $environment = strtolower(trim($envFromServer));
-    }
-}
-
-// Fallback to host detection if no override provided
-if ($environment === null) {
-    $environment = (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] === 'www.sauto.md')
-        ? 'production'
-        : 'development';
-}
-
-// Normalise to expected values
-if ($environment !== 'production') {
-    $environment = 'development';
-}
-
-define('SITEMAP_ENV', $environment);
+$isProduction = (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] === 'www.sauto.md');
 
 // Domain configuration
-if (SITEMAP_ENV === 'production') {
+if ($isProduction) {
     // Production environment
     define('SITEMAP_BASE_URL', 'https://www.sauto.md');
     define('SITEMAP_DOMAIN', 'www.sauto.md');
+    define('SITEMAP_ENV', 'production');
 } else {
     // Development environment
     define('SITEMAP_BASE_URL', 'https://www.testline8392.sauto.md');
     define('SITEMAP_DOMAIN', 'www.testline8392.sauto.md');
+    define('SITEMAP_ENV', 'development');
 }
 
 // Common configuration
