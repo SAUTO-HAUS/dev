@@ -685,21 +685,6 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 ?>
 
                 <?php
-
-                /* Файл (предложение): icons.php
-                   Что сделать:
-                   1) Заменить старое объявление $iconTelegramParams на этот блок.
-                   2) Убедиться, что при выводе SVG вы не экранируете его (echo без htmlspecialchars),
-                      т.к. SVG должен быть вставлен как raw HTML.
-                   3) Если нужно менять цвет и размер иконок — используйте CSS:
-                       .icon { color: #d00; font-size:18px; }
-                или задавайте width / height прямо в SVG . */
-
-
-/* Массив иконок — значения содержат inline SVG (строки).
-   Все SVG используют stroke="currentColor", поэтому иконки наследуют цвет текста/элемента.
-   Для изменения размера используйте CSS (font-size) на обёртке или редактируйте атрибуты width/height. */
-
 $iconTelegramParams = array(
     /* 'yr'  => год выпуска (календарь) */
     'yr' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" role="img" >

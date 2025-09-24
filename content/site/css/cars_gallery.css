@@ -14,6 +14,7 @@ main .param_b .ar {
     justify-content: space-between;
     align-items: center;
     margin: .25rem 0;
+    margin-bottom: 13px;
 }
 main .param_b .name {
     color: #515151;
@@ -24,7 +25,7 @@ main .param_b .space {
     height: .9rem;
 }
 main .param_b .val {
-    font-size: 1.05rem;
+    font-size: 17px;
 }
 
 .f-carousel__slide{
@@ -350,6 +351,10 @@ html.with-fancybox body {
         justify-content: flex-start !important;
         gap: 10px;
         align-items: flex-start !important;
+    }
+    .icon_param_line svg {
+        width: 24px;
+        height: auto;
     }
     .right_param_l {
         display: flex;
