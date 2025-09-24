@@ -685,6 +685,107 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 ?>
 
                 <?php
+
+                /* Файл (предложение): icons.php
+                   Что сделать:
+                   1) Заменить старое объявление $iconTelegramParams на этот блок.
+                   2) Убедиться, что при выводе SVG вы не экранируете его (echo без htmlspecialchars),
+                      т.к. SVG должен быть вставлен как raw HTML.
+                   3) Если нужно менять цвет и размер иконок — используйте CSS:
+                       .icon { color: #d00; font-size:18px; }
+                или задавайте width / height прямо в SVG . */
+
+
+/* Массив иконок — значения содержат inline SVG (строки).
+   Все SVG используют stroke="currentColor", поэтому иконки наследуют цвет текста/элемента.
+   Для изменения размера используйте CSS (font-size) на обёртке или редактируйте атрибуты width/height. */
+
+$iconTelegramParams = array(
+    /* 'yr'  => год выпуска (календарь) */
+    'yr' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" role="img" >
+                <rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                <line x1="16" y1="3" x2="16" y2="7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                <line x1="8" y1="3" x2="8" y2="7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                <line x1="3" y1="11" x2="21" y2="11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>',
+
+    /* 'bt'  => тип кузова (автомобиль) */
+    'bt' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
+                <path d="M3 13 L5 8 H19 L21 13 V17 H19 A1 1 0 0 1 17 15 H7 A1 1 0 0 1 5 17 H3 z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+                <circle cx="7.5" cy="17.5" r="1.4" fill="none" stroke="currentColor" stroke-width="1.4"/>
+                <circle cx="16.5" cy="17.5" r="1.4" fill="none" stroke="currentColor" stroke-width="1.4"/>
+              </svg>',
+
+    /* 'mlg' => пробег (дорога / счётчик) */
+    'mlg' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
+                <path d="M3 17 L21 17" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                <path d="M6 17 L9 8 L12 14 L15 9 L18 17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="12" cy="10" r="1.2" fill="currentColor"/>
+              </svg>',
+
+    /* 'vol' => объём двигателя (значок блока/двигателя) */
+    'vol' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
+                <rect x="3.5" y="7" width="17" height="10" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/>
+                <rect x="6" y="4" width="3" height="4" rx="0.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+                <line x1="9.5" y1="9.5" x2="14.5" y2="9.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                <line x1="9.5" y1="12.5" x2="14.5" y2="12.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+              </svg>',
+
+    /* 'hp'  => мощность (измеритель / стрелка) */
+    'hp' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
+                <path d="M12 3 A9 9 0 1 0 21 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M12 12 L16 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="12" cy="12" r="1.2" fill="currentColor"/>
+              </svg>',
+
+    /* 'fl'  => топливо (электричество / заряд) */
+    'fl' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
+                <rect x="3.5" y="5" width="13" height="14" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/>
+                <path d="M21 9 v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M9 9 L12 12 L10.5 12 L13 15 L9 15 L11.5 11.5 Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                <rect x="6.5" y="7" width="6" height="3" rx="0.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
+              </svg>',
+
+    /* 'tra' => КПП (шестерня / трансмиссия) */
+    'tra' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
+                <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/>
+                <g stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+                  <line x1="12" y1="2" x2="12" y2="5"/>
+                  <line x1="12" y1="19" x2="12" y2="22"/>
+                  <line x1="2" y1="12" x2="5" y2="12"/>
+                  <line x1="19" y1="12" x2="22" y2="12"/>
+                </g>
+              </svg>',
+
+    /* 'wd'  => привод (стрелка/ось — задний/передний/полный можно менять цвет) */
+    'wd' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
+                <circle cx="6" cy="17" r="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+                <circle cx="18" cy="17" r="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
+                <path d="M6 17 L10 10 L14 14 L18 10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>',
+
+    /* 'clr' => цвет (капля краски) */
+    'clr' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
+                <path d="M12 2 C14.5 6 18 9 18 12 A6 6 0 1 1 6 12 C6 9 9.5 6 12 2 Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                <circle cx="12" cy="15" r="0.9" fill="currentColor"/>
+              </svg>',
+
+    /* 'sts' => количество мест (иконки людей) */
+    'sts' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
+                <circle cx="8" cy="8" r="1.6" fill="none" stroke="currentColor" stroke-width="1.3"/>
+                <path d="M6 12 C6 11 7 10 8 10 C9 10 10 11 10 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+                <circle cx="16" cy="8" r="1.6" fill="none" stroke="currentColor" stroke-width="1.3"/>
+                <path d="M14 12 C14 11 15 10 16 10 C17 10 18 11 18 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+              </svg>',
+
+    /* 'loc' => адрес (маркер местоположения) */
+    'loc' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
+                <path d="M12 2 C8 2 5 5.5 5 9.5 C5 14.5 12 22 12 22 C12 22 19 14.5 19 9.5 C19 5.5 16 2 12 2 Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                <circle cx="12" cy="10" r="1.4" fill="currentColor"/>
+              </svg>',
+);
+
+
                 $rtrn .= '<div class="param_b  param_bl">';
                 foreach ($spec_ar as $v){
                     if ($v=='loc' && $r[$v]=='0'){continue;}
@@ -707,7 +808,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                         $rtrn .= '
                             <p class="ar '.$v.'  param_line_mobile">
                                 <span class="icon_param_line">
-                                    <img src="/media/images/flags/mt.svg" alt="Мальта flag" style="width: 38px; height: 32px; display: block; margin-left: auto;">
+                                    '. $iconTelegramParams[ $v ] .'
                                 </span>
                                 <span class="right_param_l">
                                     <span class="val">'.$v_lng.'</span>
