@@ -652,7 +652,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
 
                 ?>
 
-                <div class="param_b">
+                <div class="param_b  param_bl">
                     <?php
                     foreach ($spec_ar as $v){
                         if ($v=='loc' && $r[$v]=='0'){continue;}
