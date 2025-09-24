@@ -345,7 +345,7 @@ html.with-fancybox body {
         display: none !important;
     }
     .param_line_mobile {
-        display: flex;
+        display: flex !important;
         flex: 0 0 calc(50% - 12px);
         justify-content: flex-start !important;
         gap: 10px;
