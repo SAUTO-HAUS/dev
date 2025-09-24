@@ -1,5 +1,10 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
+// Helper function to safely get POST values
+function getPost($key, $default = '') {
+    return isset($_POST[$key]) ? $_POST[$key] : $default;
+}
+
 /*
 нужно создать в документах еще один документ, это должна быть как 5 страница контракта - когда это нужно,и возможность создания 
 отдельно как документа
@@ -72,17 +77,12 @@ $rtrn = '
 	<div class="pg d1 p1 bg">
 		<div class="head">
 			<!--<div class="nr">CONTRACT nr. '.$abr.$cont_y.$cont_q.'/'.$cont_n.'</div>--> <!--CONTRACT nr. VC33/2715 [VC - vinzare cumparare, 3 - year last digit, 3 - quarter of the year, 2715 = 2700 + number of contract of this year (now 15)]-->
-			<div class="ttl">Anexa nr la Contract de vinzare cumparare '.strtoupper($_POST['cont_nr']).' din '.$zdate.'</div>
+			<div class="ttl">Anexa nr. '.getPost('annexa_nr', 'CS-'.date('Y').'-001').' la Contract de vinzare cumparare '.strtoupper(getPost('cont_nr')).' din '.$zdate.'</div>
 		</div>
 		<div class="who">
-			<p>În baza p 4.17 a prezentului contract SAUTO SRL transfera către Ceban Maxim creanta de la Ceban Natalia în sumă de 402000,00lei</p>
-			<br/><p>Ceban Maxim primește de la SAUTO SRL creanta lui Ceban Natalia in suma de 402000,00lei</p>
-			<br/><p>Ceban Maxim se obliga sa achite companiei SAUTO SRL sumă de 402000,00lei</p>
-			
-			<!--
-			<b>SAUTO SRL</b>, reprezentat legal de dl Olăriță Veaceslav, în calitate de administrator, care reprezintă interesele Societăţii în baza Actului Constitutiv și normativelor interne, înregistrată la Camera Înregistrării de Stat cu Numarul de Identificare de Stat – 1017600006845, denunumit în continare <b>Vînzător</b>
-			<br/><br/><span class="txt_cpt">'.strtolower($_POST['u_nm']).'</span>, '.($_POST['u_tp']=='fiz'?'cp':'cf').': <span class="txt_up">'.$_POST['u_cf_idno'].'</span>, '.$_POST['u_adr'].' în calitate de <b>Cumparator</b>, au convenit încheierea prezentului contract, după cum urmează
-			-->
+			<p>În baza p 4.17 a prezentului contract SAUTO SRL transferă către <strong class="txt_cpt">'.strtolower(getPost('cesionar_nm')).'</strong> creanța de la <strong class="txt_cpt">'.strtolower(getPost('u_nm')).'</strong> în sumă de <strong>'.number_format(floatval(getPost('cesionar_suma', 0)), 2).' '.getPost('cur', 'MDL').'</strong></p>
+			<br/><p><strong class="txt_cpt">'.strtolower(getPost('cesionar_nm')).'</strong> primește de la SAUTO SRL creanța de la <strong class="txt_cpt">'.strtolower(getPost('u_nm')).'</strong> în suma de <strong>'.number_format(floatval(getPost('cesionar_suma', 0)), 2).' '.getPost('cur', 'MDL').'</strong></p>
+			<br/><p><strong class="txt_cpt">'.strtolower(getPost('cesionar_nm')).'</strong> se obligă să achite companiei SAUTO SRL suma de <strong>'.number_format(floatval(getPost('cesionar_suma', 0)), 2).' '.getPost('cur', 'MDL').'</strong></p>
 		</div>
 		
 		<div class="flx">
@@ -103,8 +103,8 @@ $rtrn = '
 				<tr><td>VINZATOR</td><td>CUMPARATOR</td><td>CESIONAR</td></tr>
 				<tr>
 					<td>'.$zcont.'</td>
-					<td><b class="txt_cpt">'.strtolower($_POST['u_nm']).'</b><br/>'.$_POST['u_adr'].'</br>'.($_POST['u_tp']=='fiz'?'cp':'cf').': <span class="txt_up">'.$_POST['u_cf_idno'].'</span><br/>'.($_POST['u_tp']=='fiz'?'dat.nast.: '.date( 'd.m.Y', strtotime( $_POST['u_tva_dt'] ) ):'TVA: '.$_POST['u_tva_dt']).'<br/>'.($_POST['u_tp']=='fiz'?'dat.el.: '.date( 'd.m.Y', strtotime( $_POST['u_iban_dt_tk'] ) ):'IBAN: '.$_POST['u_iban_dt_tk']).'</td>
-					<td><b class="txt_cpt">'.strtolower($_POST['u_nm']).'</b><br/>'.$_POST['u_adr'].'</br>'.($_POST['u_tp']=='fiz'?'cp':'cf').': <span class="txt_up">'.$_POST['u_cf_idno'].'</span><br/>'.($_POST['u_tp']=='fiz'?'dat.nast.: '.date( 'd.m.Y', strtotime( $_POST['u_tva_dt'] ) ):'TVA: '.$_POST['u_tva_dt']).'<br/>'.($_POST['u_tp']=='fiz'?'dat.el.: '.date( 'd.m.Y', strtotime( $_POST['u_iban_dt_tk'] ) ):'IBAN: '.$_POST['u_iban_dt_tk']).'</td>
+					<td><b class="txt_cpt">'.strtolower(getPost('u_nm')).'</b><br/>'.getPost('u_adr').'</br>'.(getPost('u_tp')=='fiz'?'cp':'cf').': <span class="txt_up">'.getPost('u_cf_idno').'</span>'.(getPost('u_tva_dt') ? '<br/>'.(getPost('u_tp')=='fiz'?'dat.nast.: '.date( 'd.m.Y', strtotime( getPost('u_tva_dt') ) ):'TVA: '.getPost('u_tva_dt')) : '').(getPost('u_iban_dt_tk') ? '<br/>'.(getPost('u_tp')=='fiz'?'dat.el.: '.date( 'd.m.Y', strtotime( getPost('u_iban_dt_tk') ) ):'IBAN: '.getPost('u_iban_dt_tk')) : '').'</td>
+					<td><b class="txt_cpt">'.strtolower(getPost('cesionar_nm', getPost('u_nm'))).'</b><br/>'.getPost('cesionar_adr', getPost('u_adr')).'</br>'.(getPost('cesionar_tp', getPost('u_tp'))=='fiz'?'cp':'cf').': <span class="txt_up">'.getPost('cesionar_cf_idno', getPost('u_cf_idno')).'</span>'.(getPost('cesionar_tva_dt', getPost('u_tva_dt')) ? '<br/>'.(getPost('cesionar_tp', getPost('u_tp'))=='fiz'?'dat.nast.: '.date( 'd.m.Y', strtotime( getPost('cesionar_tva_dt', getPost('u_tva_dt')) ) ):'TVA: '.getPost('cesionar_tva_dt', getPost('u_tva_dt'))) : '').(getPost('cesionar_iban_dt_tk', getPost('u_iban_dt_tk')) ? '<br/>'.(getPost('cesionar_tp', getPost('u_tp'))=='fiz'?'dat.el.: '.date( 'd.m.Y', strtotime( getPost('cesionar_iban_dt_tk', getPost('u_iban_dt_tk')) ) ):'IBAN: '.getPost('cesionar_iban_dt_tk', getPost('u_iban_dt_tk'))) : '').'</td>
 				</tr>
 			</table>
 			<div class="ws" style="max-height:20mm;"></div>
