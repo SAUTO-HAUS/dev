@@ -34,13 +34,13 @@ $rtrn = '
 	.head > .inf > .pos {float:left;}
 	.head > .inf > .date {float:right;}
 	
-	.who {margin-top:1rem; text-align:justify;}
+	.who {margin-top:5mm; margin-bottom:10mm; text-align:justify;}
 	
 	.gr {margin-top:7mm; text-align:justify;}
 	.gr > .ttl {text-align:center; font-weight:bold;}
 	.gr > .sb {padding-left:10mm;}
 	
-	table {margin-top:1mm;}
+	table {margin-top:5mm;}
 	
 	table.n1 tr > td.n1 {width:20%;}
 	table.n1 tr > td.n2 {width:30%;}
@@ -52,7 +52,7 @@ $rtrn = '
 	
 	.pg > .gr:first-of-type {margin-top:0;}
 	
-	.pg.d1 > .flx {min-height:240mm;}
+	.pg.d1 > .flx {min-height:auto;}
 	.pg.d1 > .flx > .sign {margin-top:10mm;}
 	
 	.pg.d2 > .flx {min-height:280mm;}
@@ -104,7 +104,7 @@ $rtrn = '
 				<tr>
 					<td>'.$zcont.'</td>
 					<td><b class="txt_cpt">'.strtolower(getPost('u_nm')).'</b><br/>'.getPost('u_adr').'</br>'.(getPost('u_tp')=='fiz'?'cp':'cf').': <span class="txt_up">'.getPost('u_cf_idno').'</span>'.(getPost('u_tva_dt') ? '<br/>'.(getPost('u_tp')=='fiz'?'dat.nast.: '.date( 'd.m.Y', strtotime( getPost('u_tva_dt') ) ):'TVA: '.getPost('u_tva_dt')) : '').(getPost('u_iban_dt_tk') ? '<br/>'.(getPost('u_tp')=='fiz'?'dat.el.: '.date( 'd.m.Y', strtotime( getPost('u_iban_dt_tk') ) ):'IBAN: '.getPost('u_iban_dt_tk')) : '').'</td>
-					<td><b class="txt_cpt">'.strtolower(getPost('cesionar_nm', getPost('u_nm'))).'</b><br/>'.getPost('cesionar_adr', getPost('u_adr')).'</br>'.(getPost('cesionar_tp', getPost('u_tp'))=='fiz'?'cp':'cf').': <span class="txt_up">'.getPost('cesionar_cf_idno', getPost('u_cf_idno')).'</span>'.(getPost('cesionar_tva_dt', getPost('u_tva_dt')) ? '<br/>'.(getPost('cesionar_tp', getPost('u_tp'))=='fiz'?'dat.nast.: '.date( 'd.m.Y', strtotime( getPost('cesionar_tva_dt', getPost('u_tva_dt')) ) ):'TVA: '.getPost('cesionar_tva_dt', getPost('u_tva_dt'))) : '').(getPost('cesionar_iban_dt_tk', getPost('u_iban_dt_tk')) ? '<br/>'.(getPost('cesionar_tp', getPost('u_tp'))=='fiz'?'dat.el.: '.date( 'd.m.Y', strtotime( getPost('cesionar_iban_dt_tk', getPost('u_iban_dt_tk')) ) ):'IBAN: '.getPost('cesionar_iban_dt_tk', getPost('u_iban_dt_tk'))) : '').'</td>
+					<td><b class="txt_cpt">'.strtolower(getPost('cesionar_nm')).'</b><br/>'.getPost('cesionar_adr').'</br>'.(getPost('cesionar_tp')=='fiz'?'cp':'cf').': <span class="txt_up">'.getPost('cesionar_cf_idno').'</span>'.(getPost('cesionar_tva_dt') ? '<br/>'.(getPost('cesionar_tp')=='fiz'?'dat.nast.: '.date( 'd.m.Y', strtotime( getPost('cesionar_tva_dt') ) ):'TVA: '.getPost('cesionar_tva_dt')) : '').(getPost('cesionar_iban_dt_tk') ? '<br/>'.(getPost('cesionar_tp')=='fiz'?'dat.el.: '.date( 'd.m.Y', strtotime( getPost('cesionar_iban_dt_tk') ) ):'IBAN: '.getPost('cesionar_iban_dt_tk')) : '').'</td>
 				</tr>
 			</table>
 			<div class="ws" style="max-height:20mm;"></div>

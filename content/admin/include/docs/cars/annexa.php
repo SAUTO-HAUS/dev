@@ -30,13 +30,13 @@ $rtrn = '
 	.head > .inf > .pos {float:left;}
 	.head > .inf > .date {float:right;}
 	
-	.who {margin-top:1rem; text-align:justify;}
+	.who {margin-top:5mm; margin-bottom:10mm; text-align:justify;}
 	
 	.gr {margin-top:7mm; text-align:justify;}
 	.gr > .ttl {text-align:center; font-weight:bold;}
 	.gr > .sb {padding-left:10mm;}
 	
-	table {margin-top:1mm;}
+	table {margin-top:5mm;}
 	
 	table.n1 tr > td.n1 {width:20%;}
 	table.n1 tr > td.n2 {width:30%;}
@@ -48,7 +48,7 @@ $rtrn = '
 	
 	.pg > .gr:first-of-type {margin-top:0;}
 	
-	.pg.d1 > .flx {min-height:240mm;}
+	.pg.d1 > .flx {min-height:auto;}
 	.pg.d1 > .flx > .sign {margin-top:10mm;}
 	
 	.pg.d2 > .flx {min-height:280mm;}
@@ -77,7 +77,7 @@ $rtrn = '
 	<div class="pg d1 p1 bg">
 		<div class="head">
 			<div class="nr">ANNEXA nr. '.$annexa_number.'</div>
-			<div class="ttl">Anexa nr. 2 la Contract de vânzare-cumpărare / Contract de avans '.strtoupper($_POST['cont_nr']).' din '.$zdate.'</div>
+			<div class="ttl">Anexa nr. 2 la Contract de vânzare-cumpărare / Contract de avans '.strtoupper(isset($_POST['cont_nr']) ? $_POST['cont_nr'] : '').' din '.$zdate.'</div>
 		</div>
 		<div class="who">
 			<p><strong>În baza punctului 4.17 al contractului de mai sus</strong>, prin prezenta anexă se stabilește cesiunea dreptului de plată pentru autovehiculul specificat în contract.</p>';
@@ -87,9 +87,9 @@ if ($has_cesionar) {
 	$currency = isset($_POST['cur']) ? $_POST['cur'] : 'MDL';
 	
 	$rtrn .= '
-			<br/><p><strong>SAUTO SRL</strong> transferă către <strong class="txt_cpt">'.strtolower($_POST['cesionar_nm']).'</strong> creanța de la <strong class="txt_cpt">'.strtolower($_POST['u_nm']).'</strong> în sumă de <strong>'.$cesionar_suma.' '.$currency.'</strong>.</p>
-			<br/><p><strong class="txt_cpt">'.strtolower($_POST['cesionar_nm']).'</strong> primește de la SAUTO SRL creanța de la <strong class="txt_cpt">'.strtolower($_POST['u_nm']).'</strong> în suma de <strong>'.$cesionar_suma.' '.$currency.'</strong>.</p>
-			<br/><p><strong class="txt_cpt">'.strtolower($_POST['cesionar_nm']).'</strong> se obligă să achite companiei SAUTO SRL suma de <strong>'.$cesionar_suma.' '.$currency.'</strong> conform termenilor stabiliți.</p>';
+			<br/><p><strong>SAUTO SRL</strong> transferă către <strong class="txt_cpt">'.strtolower(isset($_POST['cesionar_nm']) ? $_POST['cesionar_nm'] : '').'</strong> creanța de la <strong class="txt_cpt">'.strtolower(isset($_POST['u_nm']) ? $_POST['u_nm'] : '').'</strong> în sumă de <strong>'.$cesionar_suma.' '.$currency.'</strong>.</p>
+			<br/><p><strong class="txt_cpt">'.strtolower(isset($_POST['cesionar_nm']) ? $_POST['cesionar_nm'] : '').'</strong> primește de la SAUTO SRL creanța de la <strong class="txt_cpt">'.strtolower(isset($_POST['u_nm']) ? $_POST['u_nm'] : '').'</strong> în suma de <strong>'.$cesionar_suma.' '.$currency.'</strong>.</p>
+			<br/><p><strong class="txt_cpt">'.strtolower(isset($_POST['cesionar_nm']) ? $_POST['cesionar_nm'] : '').'</strong> se obligă să achite companiei SAUTO SRL suma de <strong>'.$cesionar_suma.' '.$currency.'</strong> conform termenilor stabiliți.</p>';
 } else {
 	$rtrn .= '
 			<br/><p>Prezenta anexă confirmă transferul drepturilor de plată conform contractului de bază, fără implicarea unei terțe părți (cesionar).</p>
@@ -108,7 +108,7 @@ $rtrn .= '
 				</tr>
 				<tr>
 					<td>'.$zcont.'</td>
-					<td><b class="txt_cpt">'.strtolower($_POST['u_nm']).'</b><br/>'.$_POST['u_adr'].'<br/>'.(isset($_POST['u_tp']) && $_POST['u_tp']=='fiz'?'cp':'cf').': <span class="txt_up">'.$_POST['u_cf_idno'].'</span>';
+					<td><b class="txt_cpt">'.strtolower(isset($_POST['u_nm']) ? $_POST['u_nm'] : '').'</b><br/>'.(isset($_POST['u_adr']) ? $_POST['u_adr'] : '').'<br/>'.(isset($_POST['u_tp']) && $_POST['u_tp']=='fiz'?'cp':'cf').': <span class="txt_up">'.(isset($_POST['u_cf_idno']) ? $_POST['u_cf_idno'] : '').'</span>';
 
 if (isset($_POST['u_tva_dt']) && $_POST['u_tva_dt'] != '') {
 	$rtrn .= '<br/>'.(isset($_POST['u_tp']) && $_POST['u_tp']=='fiz'?'dat.nașterii: '.$_POST['u_tva_dt']:'TVA: '.$_POST['u_tva_dt']);
@@ -138,13 +138,13 @@ if ($has_cesionar) {
 			<div class="ttl">Cesionar - Terță parte care primește dreptul de plată</div>
 		</div>
 		<div class="who">
-			<p><strong>În baza punctului 4.17 al contractului '.strtoupper($_POST['cont_nr']).'</strong>, prin prezenta se confirmă cesiunea dreptului de plată către terța parte:</p>
+			<p><strong>În baza punctului 4.17 al contractului '.strtoupper(isset($_POST['cont_nr']) ? $_POST['cont_nr'] : '').'</strong>, prin prezenta se confirmă cesiunea dreptului de plată către terța parte:</p>
 			
-			<p><strong>SAUTO SRL</strong> transferă către <strong class="txt_cpt">'.strtolower($_POST['cesionar_nm']).'</strong> creanța de la <strong class="txt_cpt">'.strtolower($_POST['u_nm']).'</strong> în sumă de <strong>'.$cesionar_suma.' '.$currency.'</strong>.</p>
+			<p><strong>SAUTO SRL</strong> transferă către <strong class="txt_cpt">'.strtolower(isset($_POST['cesionar_nm']) ? $_POST['cesionar_nm'] : '').'</strong> creanța de la <strong class="txt_cpt">'.strtolower(isset($_POST['u_nm']) ? $_POST['u_nm'] : '').'</strong> în sumă de <strong>'.$cesionar_suma.' '.$currency.'</strong>.</p>
 			
-			<p><strong class="txt_cpt">'.strtolower($_POST['cesionar_nm']).'</strong> primește de la SAUTO SRL creanța de la <strong class="txt_cpt">'.strtolower($_POST['u_nm']).'</strong> în suma de <strong>'.$cesionar_suma.' '.$currency.'</strong>.</p>
+			<p><strong class="txt_cpt">'.strtolower(isset($_POST['cesionar_nm']) ? $_POST['cesionar_nm'] : '').'</strong> primește de la SAUTO SRL creanța de la <strong class="txt_cpt">'.strtolower(isset($_POST['u_nm']) ? $_POST['u_nm'] : '').'</strong> în suma de <strong>'.$cesionar_suma.' '.$currency.'</strong>.</p>
 			
-			<p><strong class="txt_cpt">'.strtolower($_POST['cesionar_nm']).'</strong> se obligă să achite companiei SAUTO SRL suma de <strong>'.$cesionar_suma.' '.$currency.'</strong> conform termenilor stabiliți.</p>
+			<p><strong class="txt_cpt">'.strtolower(isset($_POST['cesionar_nm']) ? $_POST['cesionar_nm'] : '').'</strong> se obligă să achite companiei SAUTO SRL suma de <strong>'.$cesionar_suma.' '.$currency.'</strong> conform termenilor stabiliți.</p>
 		</div>
 		
 		<div class="flx">
@@ -156,22 +156,22 @@ if ($has_cesionar) {
 				</tr>
 				<tr>
 					<td>'.$zcont.'</td>
-					<td><b class="txt_cpt">'.strtolower($_POST['cesionar_nm']).'</b><br/>'.$_POST['cesionar_adr'].'<br/>'.(isset($_POST['cesionar_tp']) && $_POST['cesionar_tp']=='fiz'?'cp':'cf').': <span class="txt_up">'.$_POST['cesionar_cf_idno'].'</span>';
+					<td><b class="txt_cpt">'.strtolower(isset($_POST['cesionar_nm']) ? $_POST['cesionar_nm'] : '').'</b><br/>'.(isset($_POST['cesionar_adr']) ? $_POST['cesionar_adr'] : '').'<br/>'.(isset($_POST['cesionar_tp']) && $_POST['cesionar_tp']=='fiz'?'cp':'cf').': <span class="txt_up">'.(isset($_POST['cesionar_cf_idno']) ? $_POST['cesionar_cf_idno'] : '').'</span>';
 	
 	if (isset($_POST['cesionar_tva_dt']) && $_POST['cesionar_tva_dt'] != '') {
-		$rtrn .= '<br/>'.(isset($_POST['cesionar_tp']) && $_POST['cesionar_tp']=='fiz'?'dat.nașterii: '.$_POST['cesionar_tva_dt']:'TVA: '.$_POST['cesionar_tva_dt']);
+		$rtrn .= '<br/>'.(isset($_POST['cesionar_tp']) && $_POST['cesionar_tp']=='fiz'?'dat.nașterii: '.htmlspecialchars($_POST['cesionar_tva_dt']):'TVA: '.htmlspecialchars($_POST['cesionar_tva_dt']));
 	}
 	if (isset($_POST['cesionar_iban_dt_tk']) && $_POST['cesionar_iban_dt_tk'] != '') {
-		$rtrn .= '<br/>'.(isset($_POST['cesionar_tp']) && $_POST['cesionar_tp']=='fiz'?'dat.eliberării: '.$_POST['cesionar_iban_dt_tk']:'IBAN: '.$_POST['cesionar_iban_dt_tk']);
+		$rtrn .= '<br/>'.(isset($_POST['cesionar_tp']) && $_POST['cesionar_tp']=='fiz'?'dat.eliberării: '.htmlspecialchars($_POST['cesionar_iban_dt_tk']):'IBAN: '.htmlspecialchars($_POST['cesionar_iban_dt_tk']));
 	}
 	if (isset($_POST['cesionar_account']) && $_POST['cesionar_account'] != '') {
-		$rtrn .= '<br/>Cont: '.$_POST['cesionar_account'];
+		$rtrn .= '<br/>Cont: '.htmlspecialchars($_POST['cesionar_account']);
 	}
 	if (isset($_POST['cesionar_phn']) && $_POST['cesionar_phn'] != '') {
-		$rtrn .= '<br/>Tel: '.$_POST['cesionar_phn'];
+		$rtrn .= '<br/>Tel: '.htmlspecialchars($_POST['cesionar_phn']);
 	}
 	if (isset($_POST['cesionar_eml']) && $_POST['cesionar_eml'] != '') {
-		$rtrn .= '<br/>Email: '.$_POST['cesionar_eml'];
+		$rtrn .= '<br/>Email: '.htmlspecialchars($_POST['cesionar_eml']);
 	}
 	
 	$rtrn .= '</td>
@@ -180,7 +180,7 @@ if ($has_cesionar) {
 			
 			<div class="gr">
 				<p><strong>În sumă de: '.$cesionar_suma.' '.$currency.'</strong></p>
-				<p>Referință la contractul principal: <strong>'.strtoupper($_POST['cont_nr']).'</strong></p>
+				<p>Referință la contractul principal: <strong>'.strtoupper(isset($_POST['cont_nr']) ? $_POST['cont_nr'] : '').'</strong></p>
 				<p>Data anexei: <strong>'.$zdate.'</strong></p>
 			</div>
 			
