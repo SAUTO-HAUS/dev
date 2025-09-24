@@ -1,8 +1,10 @@
 .param_b {
-
+    flex-wrap: wrap;
+    display: flex
+;
 }
 .param_line_mobile {
-    display: none;
+    display: none !important;
 }
 main .param_b .ar {
     width: 100%;
@@ -344,6 +346,13 @@ html.with-fancybox body {
     }
     .param_line_mobile {
         display: flex;
+        flex: 0 0 calc(50% - 12px);
+        justify-content: flex-start !important;
+        gap: 10px;
+        align-items: flex-start !important;
+    }
+    main .param_b .name {
+        font-size: 14px;
     }
     .fancybox__container .fav-btn{ top: 10px; right: 10px; width: 34px; height: 34px; font-size: 18px; }
 
