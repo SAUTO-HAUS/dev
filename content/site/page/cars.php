@@ -664,7 +664,6 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                         $v_lng = $v == 'hp' ? $r[$v].' '.$lng['l']['unit']['hp'].' ('.( round($r['hp']*0.735,0) ).' '.$lng['l']['unit']['kw'].')' : $v_lng;
                         $v_lng = $v == 'clr' ? $v_lng.( isset($clr_arr[$r[$v]])?'<span class="crcl" style="background-image:linear-gradient(135deg, '.$clr_arr[$r[$v]].')"></span>':'' ) : $v_lng;
                         $v_lng = $v == 'loc' ? $lng['t']['x']['address'][$r[$v]] : $v_lng;
-
                         if ($v == 'import_country_id' && !empty($r[$v])) {
                             $country_name = getImportCountryName($r[$v], $_COOKIE['lang']);
                             if (!empty($country_name)) {
