@@ -13,6 +13,7 @@ if ( isset($t_mp[4]) ){
 				'cars'=>[
 					'sell'=>[ 
 						'con_plata'=>'Cont de plata'
+						,'invoice'=>'Invoice'
 						,'vinzare_proc'=>'Contract de vânzare-cumpărare'
 						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
 						,'con_arvon'=>'Contract de arvună'
@@ -37,6 +38,7 @@ if ( isset($t_mp[4]) ){
 				'cars'=>[
 					'sell'=>[ 
 						'con_plata'=>'Cont de plata'
+						,'invoice'=>'Invoice'
 						,'vinzare_proc'=>'Contract de vânzare-cumpărare'
 						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
 						,'con_arvon'=>'Contract de arvună'

@@ -273,7 +273,7 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 		
 		//__________________INFO generator
 		$inf=''; $qu=0;
-		$inf_ar = ['br', 'mo', 'vin', 'yr', 'clr', 'prc', 'cur', 'prc_eur', 'prc_av', 'loc', 'term_livr', 'cntr_fr', 'cntr_to', 'adr_to', 't2pay', 'plate', 'extras', 'orig'];
+		$inf_ar = ['br', 'mo', 'vin', 'yr', 'clr', 'prc', 'cur', 'prc_eur', 'prc_av', 'loc', 'term_livr', 'cntr_fr', 'cntr_to', 'adr_to', 't2pay', 'plate', 'extras', 'orig', 'description', 'dealer', 'sauto_role', 'seller_name', 'seller_vat', 'seller_account', 'seller_address', 'buyer_name', 'buyer_vat', 'buyer_account', 'buyer_address'];
 		$inf_up_ar = ['vin'];
 		foreach ($inf_ar as $k => $v){
 			if ( isset($_POST[$v])&&$_POST[$v]!='' ){

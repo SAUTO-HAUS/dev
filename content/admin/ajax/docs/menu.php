@@ -51,6 +51,120 @@ if ( isset($t_mp[5]) || isset($mixall) ){
 		'.( isset($mixall)?'</form>':'' );
 		//}
 	}
+
+	//__________________________________________________________________________________________INVOICE
+	if ( $t_mp[5]=='invoice' || isset($mixall) ){
+		$rtrn .= ( isset($mixall)?'<form class="menu_invoice">':'' ).'
+		<div class="ttl">Document</div>
+		<label class="lbl"><span class="ttl">Date</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Date" /></label>
+		
+		<div class="ttl">Auto</div>
+		<label class="lbl"><span class="ttl">Brand</span><select name="br" title="Brand">
+			<option value="x" class="def" disabled selected>-</option>
+			'.$br_html.'
+		</select></label>
+		<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model">
+			<option value="x" data-br="" class="def" disabled selected>-</option>
+			'.$mo_html.'
+		</select></label>
+		<label class="lbl"><span class="ttl">VIN code</span><input type="text" name="vin" title="VIN code" value="'.(isset($_POST['vin']) ? htmlspecialchars($_POST['vin']) : '').'" /></label>
+		<label class="lbl"><span class="ttl">Price</span><input class="need" type="number" name="prc" title="Price" value="'.(isset($_POST['prc']) ? $_POST['prc'] : '').'" /></label>
+		<label class="lbl"><span class="ttl">Currency</span><select name="cur" title="Currency">
+			<option value="MDL"'.(isset($_POST['cur']) && $_POST['cur'] == 'MDL' ? ' selected' : (!isset($_POST['cur']) ? ' selected' : '')).'>MDL</option>
+			<option value="EUR"'.(isset($_POST['cur']) && $_POST['cur'] == 'EUR' ? ' selected' : '').'>EUR</option>
+		</select></label>
+		
+		<div class="ttl">Descriere & Dealer</div>
+		<label class="lbl max"><span class="ttl">Descriere</span><textarea name="description" title="Description" rows="3">'.(isset($_POST['description']) ? htmlspecialchars($_POST['description']) : '').'</textarea></label>
+		<label class="lbl"><span class="ttl">Dealer</span><input type="text" name="dealer" title="Dealer" value="'.(isset($_POST['dealer']) ? htmlspecialchars($_POST['dealer']) : 'Sauto').'" /></label>
+		
+		<div class="ttl">Sauto Role</div>
+		<label class="lbl"><span class="ttl">Sauto este</span><select name="sauto_role" title="Sauto Role">
+		    <option value="seller"'.(isset($_POST['sauto_role']) && $_POST['sauto_role'] == 'seller' ? ' selected' : (!isset($_POST['sauto_role']) ? ' selected' : '')).'>Vânzător</option>
+			<option value="buyer"'.(isset($_POST['sauto_role']) && $_POST['sauto_role'] == 'buyer' ? ' selected' : '').'>Cumpărător</option>
+		</select></label>
+		
+		<div class="ttl">Cumpărător</div>
+		<label class="lbl"><span class="ttl">Name</span><input class="need" type="text" name="buyer_name" title="Buyer Name" value="'.(isset($_POST['buyer_name']) ? htmlspecialchars($_POST['buyer_name']) : '').'" /></label>
+		<label class="lbl"><span class="ttl">VAT/IDNO</span><input type="text" name="buyer_vat" title="Buyer VAT/IDNO" value="'.(isset($_POST['buyer_vat']) ? htmlspecialchars($_POST['buyer_vat']) : '').'" /></label>
+		<label class="lbl"><span class="ttl">Cont bancar</span><input type="text" name="buyer_account" title="Buyer Account" value="'.(isset($_POST['buyer_account']) ? htmlspecialchars($_POST['buyer_account']) : '').'" /></label>
+		<label class="lbl max"><span class="ttl">Legal Address</span><textarea name="buyer_address" title="Buyer Address" rows="2">'.(isset($_POST['buyer_address']) ? htmlspecialchars($_POST['buyer_address']) : '').'</textarea></label>
+		
+		<div class="ttl">Vânzător</div>
+		<label class="lbl"><span class="ttl">Name</span><input class="need" type="text" name="seller_name" title="Seller Name" value="'.(isset($_POST['seller_name']) ? htmlspecialchars($_POST['seller_name']) : '').'" /></label>
+		<label class="lbl"><span class="ttl">VAT/IDNO</span><input type="text" name="seller_vat" title="Seller VAT/IDNO" value="'.(isset($_POST['seller_vat']) ? htmlspecialchars($_POST['seller_vat']) : '').'" /></label>
+		<label class="lbl"><span class="ttl">Cont bancar</span><input type="text" name="seller_account" title="Seller Account" value="'.(isset($_POST['seller_account']) ? htmlspecialchars($_POST['seller_account']) : '').'" /></label>
+		<label class="lbl max"><span class="ttl">Legal Address</span><textarea name="seller_address" title="Seller Address" rows="2">'.(isset($_POST['seller_address']) ? htmlspecialchars($_POST['seller_address']) : '').'</textarea></label>
+		
+		'.( isset($mixall)?'</form>':'' ).'
+		
+		<script>
+		// S-Auto company data
+		var sAutoData = {
+			name: "Sauto SRL",
+			vat: "1017600006845",
+			account_mdl: "MD64VI022512000000171MDL",
+			account_eur: "MD51VI022512000000094EUR", 
+			address: "Republica Moldova, MD-2084, mun.Chișinău, or.Cricova, str.Chisinaului 84, ap.(of.) 39"
+		};
+		
+		// Function to auto-fill S-Auto data based on role
+		function fillSAutoData() {
+			var sautoRole = document.querySelector(\'select[name="sauto_role"]\').value;
+			var currency = document.querySelector(\'select[name="cur"]\').value;
+			var account = currency === \'EUR\' ? sAutoData.account_eur : sAutoData.account_mdl;
+			
+			// Clear all fields first
+			document.querySelector(\'input[name="seller_name"]\').value = "";
+			document.querySelector(\'input[name="seller_vat"]\').value = "";
+			document.querySelector(\'input[name="seller_account"]\').value = "";
+			document.querySelector(\'textarea[name="seller_address"]\').value = "";
+			document.querySelector(\'input[name="buyer_name"]\').value = "";
+			document.querySelector(\'input[name="buyer_vat"]\').value = "";
+			document.querySelector(\'input[name="buyer_account"]\').value = "";
+			document.querySelector(\'textarea[name="buyer_address"]\').value = "";
+			
+			if (sautoRole === \'seller\') {
+				// Sauto as seller - fill seller fields
+				document.querySelector(\'input[name="seller_name"]\').value = sAutoData.name;
+				document.querySelector(\'input[name="seller_vat"]\').value = sAutoData.vat;
+				document.querySelector(\'input[name="seller_account"]\').value = account;
+				document.querySelector(\'textarea[name="seller_address"]\').value = sAutoData.address;
+			} else if (sautoRole === \'buyer\') {
+				// Sauto as buyer - fill buyer fields
+				document.querySelector(\'input[name="buyer_name"]\').value = sAutoData.name;
+				document.querySelector(\'input[name="buyer_vat"]\').value = sAutoData.vat;
+				document.querySelector(\'input[name="buyer_account"]\').value = account;
+				document.querySelector(\'textarea[name="buyer_address"]\').value = sAutoData.address;
+			}
+		}
+		
+		// Update account when currency changes
+		function updateSAutoAccount() {
+			var sautoRole = document.querySelector(\'select[name="sauto_role"]\').value;
+			var currency = document.querySelector(\'select[name="cur"]\').value;
+			var account = currency === \'EUR\' ? sAutoData.account_eur : sAutoData.account_mdl;
+			
+			if (sautoRole === \'seller\') {
+				document.querySelector(\'input[name="seller_account"]\').value = account;
+			} else if (sautoRole === \'buyer\') {
+				document.querySelector(\'input[name="buyer_account"]\').value = account;
+			}
+		}
+		
+		// Event listeners
+		document.addEventListener(\'DOMContentLoaded\', function() {
+			// Auto-fill on page load
+			fillSAutoData();
+			
+			// Auto-fill when S-Auto role changes
+			document.querySelector(\'select[name="sauto_role"]\').addEventListener(\'change\', fillSAutoData);
+			
+			// Update account when currency changes
+			document.querySelector(\'select[name="cur"]\').addEventListener(\'change\', updateSAutoAccount);
+		});
+		</script>';
+	}
 	
 	//__________________________________________________________________________________________CONTRACT JURIDICE
 	if ( $t_mp[5]=='vinzare_proc' || isset($mixall) ){
