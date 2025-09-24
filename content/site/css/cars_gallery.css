@@ -2,6 +2,26 @@
 
 }
 
+main .param_b .ar {
+    width: 100%;
+    float: left;
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: .25rem 0;
+}
+main .param_b .name {
+    color: #515151;
+}
+main .param_b .space {
+    flex-grow: 1;
+    border-bottom: 1px dashed #d7d7d7;
+    height: .9rem;
+}
+main .param_b .val {
+    font-size: 1.05rem;
+}
 
 .f-carousel__slide{
     flex: 0 0 auto;
