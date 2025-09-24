@@ -654,7 +654,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
 
 
                     <?php
-                    $rtrn .= '<div class="param_b  param_bl">';
+
                     foreach ($spec_ar as $v){
                         if ($v=='loc' && $r[$v]=='0'){continue;}
                         // Skip import_country_id in the list because we already displayed it above
@@ -681,6 +681,41 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                             </p>';
                         }
                     }
+
+                ?>
+
+                <?php
+                $rtrn .= '<div class="param_b  param_bl">';
+                foreach ($spec_ar as $v){
+                    if ($v=='loc' && $r[$v]=='0'){continue;}
+                    // Skip import_country_id in the list because we already displayed it above
+                    if ($v == 'import_country_id') {continue;}
+                    $v_lng = isset($lng['l']['car'][$v][$r[$v]]) ? $lng['l']['car'][$v][$r[$v]] : $r[$v];
+                    $v_lng = $v == 'mlg' ? parseCurr($r[$v]).' '.$lng['l']['unit'][ $r['unit'] ] : $v_lng;
+                    $v_lng = $v == 'vol' ? $r[$v].' '.$lng['l']['unit']['cm3'] : $v_lng;
+                    $v_lng = $v == 'hp' ? $r[$v].' '.$lng['l']['unit']['hp'].' ('.( round($r['hp']*0.735,0) ).' '.$lng['l']['unit']['kw'].')' : $v_lng;
+                    $v_lng = $v == 'clr' ? $v_lng.( isset($clr_arr[$r[$v]])?'<span class="crcl" style="background-image:linear-gradient(135deg, '.$clr_arr[$r[$v]].')"></span>':'' ) : $v_lng;
+                    $v_lng = $v == 'loc' ? $lng['t']['x']['address'][$r[$v]] : $v_lng;
+                    if ($v == 'import_country_id' && !empty($r[$v])) {
+                        $country_name = getImportCountryName($r[$v], $_COOKIE['lang']);
+                        if (!empty($country_name)) {
+                            $v_lng = $country_name;
+                        }
+                    }
+
+                    if (isset($r[$v])&&$r[$v]!=''){
+                        $rtrn .= '
+                            <p class="ar '.$v.'  param_line_mobile">
+                                <span class="icon_param_line">
+                                    <img src="/media/images/flags/mt.svg" alt="Мальта flag" style="width: 38px; height: 32px; display: block; margin-left: auto;">
+                                </span>
+                                <span class="right_param_l">
+                                    <span class="val">'.$v_lng.'</span>
+                                    <span class="name">'.($v == 'import_country_id' ? ($_COOKIE['lang'] == 'ru' ? 'Страна импорта' : ($_COOKIE['lang'] == 'en' ? 'Import country' : 'Țara de import')) : $lng['l']['car']['spec'][$v]).'</span>
+                                </span>
+                            </p>';
+                    }
+                }
                 $rtrn .= '</div>';
                 ?>
 

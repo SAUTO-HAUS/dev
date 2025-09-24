@@ -1,7 +1,9 @@
 .param_b {
 
 }
-
+.param_line_mobile {
+    display: none;
+}
 main .param_b .ar {
     width: 100%;
     float: left;
@@ -336,10 +338,13 @@ html.with-fancybox body {
     .ttl.desktop {
         display: none;
     }
-    /*
+
     .param_line_desktop {
         display: none !important;
-    }*/
+    }
+    .param_line_mobile {
+        display: flex;
+    }
     .fancybox__container .fav-btn{ top: 10px; right: 10px; width: 34px; height: 34px; font-size: 18px; }
 
     main > .spc_bx, main > .inf_bx {
