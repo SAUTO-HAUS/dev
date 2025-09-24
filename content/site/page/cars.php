@@ -652,8 +652,9 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
 
                 ?>
 
-                <div class="param_b  param_bl">
+
                     <?php
+                    $rtrn .= '<div class="param_b  param_bl">';
                     foreach ($spec_ar as $v){
                         if ($v=='loc' && $r[$v]=='0'){continue;}
                         // Skip import_country_id in the list because we already displayed it above
@@ -680,8 +681,9 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                             </p>';
                         }
                     }
-                    ?>
-                </div>
+                $rtrn .= '</div>';
+                ?>
+
 
                 <?
                 if ( $r['prc_t']!=0 && $r['prc_t']>time() ){
