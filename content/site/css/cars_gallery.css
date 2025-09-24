@@ -1,3 +1,8 @@
+.param_b {
+
+}
+
+
 .f-carousel__slide{
     flex: 0 0 auto;
     width: clamp(260px, 78%, 820px) !important;

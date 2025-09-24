@@ -650,40 +650,47 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 // Add red line between title and specifications - make it thicker and more visible
                 $rtrn .= '<hr style="border: none; height: 1.5px; background-color: #ff0000; margin-top: 8px; margin-bottom: 15px; width: 100%;">';
 
+                ?>
 
-                foreach ($spec_ar as $v){
-                    if ($v=='loc' && $r[$v]=='0'){continue;}
-                    // Skip import_country_id in the list because we already displayed it above
-                    if ($v == 'import_country_id') {continue;}
-                    $v_lng = isset($lng['l']['car'][$v][$r[$v]]) ? $lng['l']['car'][$v][$r[$v]] : $r[$v];
-                    $v_lng = $v == 'mlg' ? parseCurr($r[$v]).' '.$lng['l']['unit'][ $r['unit'] ] : $v_lng;
-                    $v_lng = $v == 'vol' ? $r[$v].' '.$lng['l']['unit']['cm3'] : $v_lng;
-                    $v_lng = $v == 'hp' ? $r[$v].' '.$lng['l']['unit']['hp'].' ('.( round($r['hp']*0.735,0) ).' '.$lng['l']['unit']['kw'].')' : $v_lng;
-                    $v_lng = $v == 'clr' ? $v_lng.( isset($clr_arr[$r[$v]])?'<span class="crcl" style="background-image:linear-gradient(135deg, '.$clr_arr[$r[$v]].')"></span>':'' ) : $v_lng;
-                    $v_lng = $v == 'loc' ? $lng['t']['x']['address'][$r[$v]] : $v_lng;
+                <div class="param_b">
+                    <?php
+                    foreach ($spec_ar as $v){
+                        if ($v=='loc' && $r[$v]=='0'){continue;}
+                        // Skip import_country_id in the list because we already displayed it above
+                        if ($v == 'import_country_id') {continue;}
+                        $v_lng = isset($lng['l']['car'][$v][$r[$v]]) ? $lng['l']['car'][$v][$r[$v]] : $r[$v];
+                        $v_lng = $v == 'mlg' ? parseCurr($r[$v]).' '.$lng['l']['unit'][ $r['unit'] ] : $v_lng;
+                        $v_lng = $v == 'vol' ? $r[$v].' '.$lng['l']['unit']['cm3'] : $v_lng;
+                        $v_lng = $v == 'hp' ? $r[$v].' '.$lng['l']['unit']['hp'].' ('.( round($r['hp']*0.735,0) ).' '.$lng['l']['unit']['kw'].')' : $v_lng;
+                        $v_lng = $v == 'clr' ? $v_lng.( isset($clr_arr[$r[$v]])?'<span class="crcl" style="background-image:linear-gradient(135deg, '.$clr_arr[$r[$v]].')"></span>':'' ) : $v_lng;
+                        $v_lng = $v == 'loc' ? $lng['t']['x']['address'][$r[$v]] : $v_lng;
 
-                    if ($v == 'import_country_id' && !empty($r[$v])) {
-                        $country_name = getImportCountryName($r[$v], $_COOKIE['lang']);
-                        if (!empty($country_name)) {
-                            $v_lng = $country_name;
+                        if ($v == 'import_country_id' && !empty($r[$v])) {
+                            $country_name = getImportCountryName($r[$v], $_COOKIE['lang']);
+                            if (!empty($country_name)) {
+                                $v_lng = $country_name;
+                            }
+                        }
+
+                        if (isset($r[$v])&&$r[$v]!=''){
+                            $rtrn .= '
+                            <p class="ar '.$v.'  param_line_desktop">
+                                <span class="name">'.($v == 'import_country_id' ? ($_COOKIE['lang'] == 'ru' ? 'Страна импорта' : ($_COOKIE['lang'] == 'en' ? 'Import country' : 'Țara de import')) : $lng['l']['car']['spec'][$v]).'</span>
+                                <span class="space"></span>
+                                <span class="val">'.$v_lng.'</span>
+                            </p>';
                         }
                     }
+                    ?>
+                </div>
 
-                    if (isset($r[$v])&&$r[$v]!=''){
-                        $rtrn .= '
-                        <p class="ar '.$v.'  param_line_desktop">
-                            <span class="name">'.($v == 'import_country_id' ? ($_COOKIE['lang'] == 'ru' ? 'Страна импорта' : ($_COOKIE['lang'] == 'en' ? 'Import country' : 'Țara de import')) : $lng['l']['car']['spec'][$v]).'</span>
-                            <span class="space"></span>
-                            <span class="val">'.$v_lng.'</span>
-                        </p>';
-                    }
-                }
-
+                <?
                 if ( $r['prc_t']!=0 && $r['prc_t']>time() ){
                     $prc = $r['prc_n'];
                     $o_prc = $r['prc'];
                     $o_prc_bl = '<span class="o_val" title="'.$lng['w']['o_prc'].'"><span class="i">'.parseCurr($o_prc).'</span> '.( symb_rplc($r['cur']) ).'</span>';
-                }else{
+                }
+                else{
                     $prc = $r['prc'];
                     $o_prc = 0;
                     $o_prc_bl = '';
