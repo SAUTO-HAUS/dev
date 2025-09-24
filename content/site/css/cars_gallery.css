@@ -351,6 +351,10 @@ html.with-fancybox body {
         gap: 10px;
         align-items: flex-start !important;
     }
+    .right_param_l {
+        display: flex;
+        flex-direction: column;
+    }
     main .param_b .name {
         font-size: 14px;
     }
