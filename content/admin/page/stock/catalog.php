@@ -15,7 +15,9 @@ try {
         yr,
         inf,
         loc,
-        vis
+        vis,
+        vol,
+        mlg
     FROM {$prefx}_car_ctlg 
     WHERE act = 1 AND n_a = 0 AND loc IN ('1', '2')
     ORDER BY br_nm ASC, mo_nm ASC, yr DESC, id DESC";
@@ -180,10 +182,14 @@ try {
                                 if (!empty($car['inf'])) {
                                     $carTitle .= ' - ' . substr(strip_tags($car['inf']), 0, 30) . '...';
                                 }
+                                
+                                // Format engine and mileage
+                                $engine = !empty($car['vol']) ? $car['vol'] : 'N/A';
+                                $mileage = !empty($car['mlg']) ? number_format($car['mlg']) . ' km' : 'N/A';
                             ?>
                                 <a href="/adminsauto/cars/detail?id=<?= $car['id'] ?>" 
                                    class="car-link" title="<?= htmlspecialchars($carTitle, ENT_QUOTES, 'UTF-8') ?>">
-                                   ID <?= $car['id'] ?> - <?= $car['yr'] ?> <?= htmlspecialchars($model['mo_nm'], ENT_QUOTES, 'UTF-8') ?>
+                                   ID <?= $car['id'] ?> - <?= $car['yr'] ?> - <?= $engine ?> - <?= $mileage ?>
                                 </a>
                             <?php endforeach; ?>
                         </div>
@@ -235,14 +241,18 @@ try {
 .stock-brands-table td:nth-child(3),
 .stock-brands-table td:nth-child(4),
 .stock-brands-table td:nth-child(5),
-.stock-brands-table td:nth-child(6),
 .stock-brands-table th:nth-child(2),
 .stock-brands-table th:nth-child(3),
 .stock-brands-table th:nth-child(4),
-.stock-brands-table th:nth-child(5),
-.stock-brands-table th:nth-child(6) {
+.stock-brands-table th:nth-child(5) {
     text-align: center;
     width: 100px;
+}
+
+.stock-brands-table td:nth-child(6),
+.stock-brands-table th:nth-child(6) {
+    text-align: center;
+    width: 250px;
 }
 
 .brand-row {
@@ -311,7 +321,7 @@ try {
     color: #007bff !important;
     text-decoration: none;
     padding: 1px 0;
-    font-size: 10px;
+    font-size: 16px;
 }
 
 .car-link:hover {
