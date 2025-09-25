@@ -41,8 +41,8 @@ if ( $t_mp[5]=='invoice' || isset($mixall) ){
 	<label class="lbl"><span class="ttl">VIN code</span><input type="text" name="vin" title="VIN code" value="'.(isset($_POST['vin']) ? htmlspecialchars($_POST['vin']) : '').'" /></label>
 	<label class="lbl"><span class="ttl">Price</span><input class="need" type="number" name="prc" title="Price" value="'.(isset($_POST['prc']) ? $_POST['prc'] : '').'" /></label>
 	<label class="lbl"><span class="ttl">Currency</span><select name="cur" title="Currency">
-		<option value="MDL"'.(isset($_POST['cur']) && $_POST['cur'] == 'MDL' ? ' selected' : (!isset($_POST['cur']) ? ' selected' : '')).'>MDL</option>
-		<option value="EUR"'.(isset($_POST['cur']) && $_POST['cur'] == 'EUR' ? ' selected' : '').'>EUR</option>
+		<option value="EUR"'.(isset($_POST['cur']) && $_POST['cur'] == 'EUR' ? ' selected' : (!isset($_POST['cur']) ? ' selected' : '')).'>EUR</option>
+		<option value="USD"'.(isset($_POST['cur']) && $_POST['cur'] == 'USD' ? ' selected' : '').'>USD</option>
 	</select></label>
 	
 	<div class="ttl">Descriere & Dealer</div>
@@ -74,8 +74,8 @@ if ( $t_mp[5]=='invoice' || isset($mixall) ){
 	var sAutoData = {
 		name: "Sauto SRL",
 		vat: "1017600006845",
-		account_mdl: "MD64VI022512000000171MDL",
-		account_eur: "MD51VI022512000000094EUR", 
+		account_eur: "MD51VI022512000000094EUR",
+		account_usd: "MD51VI022512000000094USD", 
 		address: "Republica Moldova, MD-2084, mun.Chișinău, or.Cricova, str.Chisinaului 84, ap.(of.) 39"
 	};
 	
@@ -83,7 +83,7 @@ if ( $t_mp[5]=='invoice' || isset($mixall) ){
 	function fillSAutoData() {
 		var sautoRole = document.querySelector(\'select[name="sauto_role"]\').value;
 		var currency = document.querySelector(\'select[name="cur"]\').value;
-		var account = currency === \'EUR\' ? sAutoData.account_eur : sAutoData.account_mdl;
+		var account = currency === \'EUR\' ? sAutoData.account_eur : sAutoData.account_usd;
 		
 		// Clear all fields first
 		document.querySelector(\'input[name="seller_name"]\').value = "";
@@ -114,7 +114,7 @@ if ( $t_mp[5]=='invoice' || isset($mixall) ){
 	function updateSAutoAccount() {
 		var sautoRole = document.querySelector(\'select[name="sauto_role"]\').value;
 		var currency = document.querySelector(\'select[name="cur"]\').value;
-		var account = currency === \'EUR\' ? sAutoData.account_eur : sAutoData.account_mdl;
+		var account = currency === \'EUR\' ? sAutoData.account_eur : sAutoData.account_usd;
 		
 		if (sautoRole === \'seller\') {
 			document.querySelector(\'input[name="seller_account"]\').value = account;
