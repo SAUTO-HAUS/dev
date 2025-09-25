@@ -1,28 +1,37 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const animatedSections = document.querySelectorAll('#sale-page .sale-section.sale-animated');
-    const accentElements = document.querySelectorAll('#sale-page .sale-card, #sale-page .sale-step, #sale-page .sale-compare__card');
+    const observerOptions = {
+        rootMargin: '50px',
+        threshold: 0.1
+    };
 
-    const sectionObserver = new IntersectionObserver((entries) => {
+    const observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
             if (entry.isIntersecting) {
                 entry.target.classList.add('is-visible');
-                sectionObserver.unobserve(entry.target);
+                
+                if (entry.target.classList.contains('sale-faq')) {
+                    initializeFAQ(entry.target);
+                }
+                
+                
+                if (entry.target.classList.contains('sale-section')) {
+                    observer.unobserve(entry.target);
+                }
             }
         });
-    }, { threshold: 0.2 });
+    }, observerOptions);
 
-    const accentObserver = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-            } else {
-                entry.target.classList.remove('is-visible');
-            }
-        });
-    }, { threshold: 0.4 });
+  
+    function initializeFAQ(faqSection) {
+        const firstTab = faqSection.querySelector('.sale-faq__tab');
+        if (firstTab && !firstTab.hasAttribute('data-initialized')) {
+            firstTab.setAttribute('aria-expanded', 'true');
+            firstTab.setAttribute('data-initialized', 'true');
+        }
+    }
 
-    animatedSections.forEach((section) => sectionObserver.observe(section));
-    accentElements.forEach((element) => accentObserver.observe(element));
+    const animatedElements = document.querySelectorAll('#sale-page .sale-section.sale-animated, #sale-page .sale-card, #sale-page .sale-step, #sale-page .sale-compare__card');
+    animatedElements.forEach((element) => observer.observe(element));
 
     const tabs = document.querySelectorAll('#sale-page .sale-faq__tab');
     tabs.forEach((tab) => {
@@ -49,30 +58,34 @@ document.addEventListener('DOMContentLoaded', function () {
     const snapContainers = document.querySelectorAll('#sale-page [data-mobile-snap]');
     snapContainers.forEach((container) => {
         let isDown = false;
-        let startX;
-        let scrollLeft;
+        let startX, scrollLeft;
 
-        container.addEventListener('mousedown', (e) => {
+        const handleStart = (e) => {
             isDown = true;
             container.classList.add('is-dragging');
-            startX = e.pageX - container.offsetLeft;
+            startX = (e.pageX || e.touches[0].pageX) - container.offsetLeft;
             scrollLeft = container.scrollLeft;
-        });
-        container.addEventListener('mouseleave', () => {
+        };
+
+        const handleEnd = () => {
             isDown = false;
             container.classList.remove('is-dragging');
-        });
-        container.addEventListener('mouseup', () => {
-            isDown = false;
-            container.classList.remove('is-dragging');
-        });
-        container.addEventListener('mousemove', (e) => {
+        };
+
+        const handleMove = (e) => {
             if (!isDown) return;
             e.preventDefault();
-            const x = e.pageX - container.offsetLeft;
-            const walk = (x - startX) * 1.2;
-            container.scrollLeft = scrollLeft - walk;
-        });
+            const x = (e.pageX || e.touches[0].pageX) - container.offsetLeft;
+            container.scrollLeft = scrollLeft - (x - startX);
+        };
+
+        container.addEventListener('mousedown', handleStart);
+        container.addEventListener('touchstart', handleStart, { passive: true });
+        container.addEventListener('mouseleave', handleEnd);
+        container.addEventListener('mouseup', handleEnd);
+        container.addEventListener('touchend', handleEnd);
+        container.addEventListener('mousemove', handleMove);
+        container.addEventListener('touchmove', handleMove, { passive: false });
     });
 
     const touchElements = document.querySelectorAll('#sale-page .sale-card, #sale-page .sale-step, #sale-page .sale-compare__card');

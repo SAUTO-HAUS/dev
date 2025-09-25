@@ -1,45 +1,34 @@
+/* Optimized font loading - only load what we need */
 @font-face {
-    font-family: 'Futura PT Bold';
-    src: url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Bold.eot');
-    src: local('Futura PT Bold'), local('FuturaPT-Bold'),
-        url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Bold.eot?#iefix') format('embedded-opentype'),
-        url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Bold.woff') format('woff'),
-        url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Bold.ttf') format('truetype');
-    font-weight: 700;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Futura PT Demi';
-    src: url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Demi.eot');
-    src: local('Futura PT Demi'), local('FuturaPT-Demi'),
-        url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Demi.eot?#iefix') format('embedded-opentype'),
-        url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Demi.woff') format('woff'),
-        url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Demi.ttf') format('truetype');
-    font-weight: 600;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: 'Futura PT Book';
-    src: url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Book.eot');
-    src: local('Futura PT Book'), local('FuturaPT-Book'),
-        url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Book.eot?#iefix') format('embedded-opentype'),
-        url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Book.woff') format('woff'),
-        url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Book.ttf') format('truetype');
+    font-family: 'Futura PT';
+    src: url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Book.woff') format('woff');
     font-weight: 400;
     font-style: normal;
+    font-display: swap;
 }
 
 @font-face {
-    font-family: 'Futura PT Medium';
-    src: url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Medium.eot');
-    src: local('Futura PT Medium'), local('FuturaPT-Medium'),
-        url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Medium.eot?#iefix') format('embedded-opentype'),
-        url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Medium.woff') format('woff'),
-        url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Medium.ttf') format('truetype');
+    font-family: 'Futura PT';
+    src: url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Medium.woff') format('woff');
     font-weight: 500;
     font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Futura PT';
+    src: url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Demi.woff') format('woff');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Futura PT';
+    src: url('/content/site/page/new_pages/tradein/fonts/Futura PT/FuturaPT-Bold.woff') format('woff');
+    font-weight: 700;
+    font-style: normal;
+    font-display: swap;
 }
 
 :root {
@@ -64,7 +53,8 @@ body {
 
 #sale-page {
     position: relative;
-    font-family: 'Futura PT Book', 'Futura PT', 'Montserrat', Arial, sans-serif;
+    font-family: 'Futura PT', 'Montserrat', Arial, sans-serif;
+    font-weight: 400;
     color: var(--sale-text);
     overflow: hidden;
 }
@@ -114,17 +104,11 @@ body {
 }
 
 @keyframes saleGlow {
-    0% {
-        transform: scale(1) translate3d(0, 0, 0);
-        opacity: 0.65;
+    0%, 100% {
+        opacity: 0.7;
     }
     50% {
-        transform: scale(1.05) translate3d(2%, -1%, 0);
         opacity: 0.9;
-    }
-    100% {
-        transform: scale(1.02) translate3d(-1%, 2%, 0);
-        opacity: 0.7;
     }
 }
 
@@ -219,7 +203,8 @@ body {
 }
 
 .sale-hero h1 {
-    font-family: 'Futura PT Bold', 'Futura PT', sans-serif;
+    font-family: 'Futura PT', sans-serif;
+    font-weight: 700;
     font-size: clamp(30px, 4vw, 46px);
     line-height: 1.15;
     margin-bottom: 20px;
@@ -238,14 +223,16 @@ body {
 }
 
 .sale-section__header h2 {
-    font-family: 'Futura PT Bold', 'Futura PT', sans-serif;
+    font-family: 'Futura PT', sans-serif;
+    font-weight: 700;
     font-size: clamp(30px, 3vw, 40px);
     color: var(--sale-ink);
     line-height: 1.2;
 }
 
 .section-pretitle {
-    font-family: 'Futura PT Demi', 'Futura PT', sans-serif;
+    font-family: 'Futura PT', sans-serif;
+    font-weight: 600;
     font-size: 16px;
     text-transform: uppercase;
     letter-spacing: 0.2em;
@@ -340,7 +327,8 @@ body {
 }
 
 .sale-card h3 {
-    font-family: 'Futura PT Demi', 'Futura PT', sans-serif;
+    font-family: 'Futura PT', sans-serif;
+    font-weight: 600;
     font-size: 20px;
     line-height: 1.45;
     color: var(--sale-ink);
@@ -449,7 +437,8 @@ body {
 }
 
 .sale-faq__question {
-    font-family: 'Futura PT Demi', 'Futura PT', sans-serif;
+    font-family: 'Futura PT', sans-serif;
+    font-weight: 600;
     font-size: 20px;
     color: var(--sale-ink);
 }
@@ -479,7 +468,8 @@ body {
     line-height: 1.6;
     margin-bottom: 20px;
     text-align: center;
-    font-family: 'Futura PT Demi', 'Futura PT', sans-serif;
+    font-family: 'Futura PT', sans-serif;
+    font-weight: 600;
     color: var(--sale-red);
 }
 
@@ -668,6 +658,7 @@ body {
 @media (max-width: 1200px) {
     .sale-intro .sale-container {
         grid-template-columns: minmax(0, 1fr);
+        gap: 32px;
     }
 
     .sale-intro__form {
@@ -679,7 +670,12 @@ body {
     }
 
     .sale-hero {
-        margin-top: 40px;
+        margin-top: 20px;
+        padding: 32px;
+    }
+    
+    .sale-container {
+        width: min(1180px, 95vw);
     }
 }
 
@@ -843,6 +839,12 @@ body {
 
     .sale-hero__icons {
         justify-content: flex-start;
+        gap: 15px;
+    }
+
+    .sale-hero__icon {
+        width: 60px;
+        height: 60px;
     }
 
     .sale-hero__icon svg {
@@ -871,6 +873,15 @@ body {
     .section-pretitle {
         font-size: 14px;
         letter-spacing: 0.18em;
+    }
+    
+    .sale-form .b24-form-wrapper {
+        border-radius: 16px;
+    }
+    
+    .sale-steps {
+        padding-bottom: 20px;
+        -webkit-overflow-scrolling: touch;
     }
 }
 

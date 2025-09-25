@@ -1,15 +1,29 @@
 <?php defined('_DOIT') or die('Restricted access');
 
+// Load translations
 $saleTranslations = require __DIR__ . '/sale_lang.php';
 
+// Fix language detection order
+$requestedLang = $_COOKIE['lang'] ?? 'ru';
 $uriParts = explode('/', trim($_SERVER['REQUEST_URI'] ?? '', '/'));
-$requestedLang = $uriParts[0] ?? ($_COOKIE['lang'] ?? 'ru');
+if (isset($uriParts[0]) && in_array($uriParts[0], ['ro', 'ru', 'en'])) {
+    $requestedLang = $uriParts[0];
+}
+
 $availableLocales = array_keys($saleTranslations);
 if (!in_array($requestedLang, $availableLocales, true)) {
-    $requestedLang = $_COOKIE['lang'] ?? 'ru';
+    $requestedLang = 'ru';
 }
 if (!isset($saleTranslations[$requestedLang])) {
     $requestedLang = 'ru';
+}
+
+// Set SEO meta data based on current language
+if (isset($saleTranslations[$requestedLang]['meta'])) {
+    $seo_title = $saleTranslations[$requestedLang]['meta']['title'];
+    $seo_description = $saleTranslations[$requestedLang]['meta']['description'];
+    $seo_keywords = $saleTranslations[$requestedLang]['meta']['keywords'];
+    $seo_h1 = $saleTranslations[$requestedLang]['meta']['h1'];
 }
 
 $currentSaleTranslations = $saleTranslations[$requestedLang];
@@ -51,28 +65,44 @@ $compareItems = is_array($compareItems) ? $compareItems : [];
 $faqItems = $saleTranslate(['faq', 'items']);
 $faqItems = is_array($faqItems) ? $faqItems : [];
 ?>
-<link rel="stylesheet" type="text/css" href="/content/site/page/new_pages/sale/sale.css?<?=rand(0,999)?>">
-<script src="/content/site/page/new_pages/sale/sale.js?<?=rand(0,999)?>" defer></script>
+<link rel="stylesheet" type="text/css" href="/content/site/page/new_pages/sale/sale.css?v=1.2">
+<script src="/content/site/page/new_pages/sale/sale.js?v=1.2" defer></script>
+
+<!-- Structured Data for SEO -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Service",
+    "name": "<?=htmlspecialchars($saleTranslate(['intro', 'title']), ENT_QUOTES, 'UTF-8')?>",
+    "description": "<?=htmlspecialchars($saleTranslate(['intro', 'paragraphs'])[0] ?? '', ENT_QUOTES, 'UTF-8')?>",
+    "provider": {
+        "@type": "Organization",
+        "name": "Sauto Haus",
+        "url": "https://sauto.md"
+    },
+    "serviceType": "<?=$saleTranslate(['meta', 'keywords'])?>",
+    "areaServed": {
+        "@type": "Country",
+        "name": "Moldova"
+    }
+}
+</script>
 
 <div id="sale-page">
     <section class="sale-section sale-intro sale-animated">
         <div class="sale-background"></div>
         <div class="sale-container">
             <div class="sale-intro__form">
-                <div class="sale-form">
-                    <script data-b24-form="inline/42/u65756" data-skip-moving="true">
-                    (function(w,d,u){
-                    var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
-                    var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-                    })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_42.js');
-                    </script>
+                <div class="sale-form" id="bitrix-form-top">
+                    <!-- Bitrix24 form will be loaded here -->
                 </div>
             </div>
             <div class="sale-intro__content">
                 <div class="sale-hero copy-block">
                     <div class="sale-hero__icons">
-                        <div class="sale-hero__icon sale-icon--wheel">
-                            <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <div class="sale-hero__icon sale-icon--wheel" aria-label="<?=$saleTranslate(['intro', 'icon_wheel']) ?: 'Автомобильное колесо'?>">
+                            <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img">
+                                <title><?=$saleTranslate(['intro', 'icon_wheel']) ?: 'Автомобильное колесо'?></title>
                                 <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="4" />
                                 <circle cx="60" cy="60" r="36" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="8" />
                                 <path d="M60 12 L68 60 L60 108 L52 60 Z" fill="rgba(255,255,255,0.45)" />
@@ -80,8 +110,9 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
                                 <circle cx="60" cy="60" r="8" fill="#FF0304" />
                             </svg>
                         </div>
-                        <div class="sale-hero__icon sale-icon--speed">
-                            <svg viewBox="0 0 160 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <div class="sale-hero__icon sale-icon--speed" aria-label="<?=$saleTranslate(['intro', 'icon_speed']) ?: 'Скорость'?>">
+                            <svg viewBox="0 0 160 100" xmlns="http://www.w3.org/2000/svg" role="img">
+                                <title><?=$saleTranslate(['intro', 'icon_speed']) ?: 'Скорость'?></title>
                                 <path d="M20 80 Q80 10 140 80" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="10" stroke-linecap="round" />
                                 <circle cx="140" cy="80" r="10" fill="#FF0304" />
                                 <path d="M80 80 L110 40" stroke="#FF0304" stroke-width="8" stroke-linecap="round" />
@@ -231,13 +262,36 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
                 <p><?=htmlspecialchars($saleTranslate(['cta', 'line1']), ENT_QUOTES, 'UTF-8')?><br><?=htmlspecialchars($saleTranslate(['cta', 'line2']), ENT_QUOTES, 'UTF-8')?></p>
             </div>
             <div class="sale-form sale-form--bottom">
-                <script data-b24-form="inline/42/u65756" data-skip-moving="true">
-                (function(w,d,u){
-                var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
-                var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-                })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_42.js');
-                </script>
+                <div id="bitrix-form-bottom"></div>
             </div>
         </div>
     </section>
 </div>
+
+<script>
+(function() {
+ 
+    if (!window.b24FormLoaded) {
+        window.b24FormLoaded = true;
+        var script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_42.js?' + Math.floor(Date.now()/180000);
+        script.onload = function() {
+           
+            if (window.BX24 && window.BX24.loadForm) {
+                // Top form
+                window.BX24.loadForm('inline/42/u65756', {
+                    id: 'bitrix-form-top',
+                    skipMoving: true
+                });
+                // Bottom form  
+                window.BX24.loadForm('inline/42/u65756', {
+                    id: 'bitrix-form-bottom',
+                    skipMoving: true
+                });
+            }
+        };
+        document.head.appendChild(script);
+    }
+})();
+</script>
