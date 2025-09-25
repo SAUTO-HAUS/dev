@@ -46,8 +46,13 @@ $rtrn = '
 	table.n1 tr > td.n2 {width:30%;}
 	
 	table.n2 tr {height:10mm;}
-	table.n2 tr > td {width:33%; vertical-align:middle; text-align:center; position:relative;}
+	table.n2 tr > td {vertical-align:middle; text-align:center; position:relative;}
 	table.n2 tr > td .signature {position:absolute; bottom:2mm; left:50%; transform:translateX(-50%);}
+	
+	/* 3 columns for cesionar table */
+	table.n2.cesionar tr > td {width:33%;}
+	/* 2 columns for normal annexa table */  
+	table.n2.normal tr > td {width:50%;}
 	
 	.pg:not(.d2) tr > td {padding:2mm;}
 	
@@ -80,10 +85,24 @@ $rtrn = '
 			<!--<div class="nr">CONTRACT nr. '.$abr.$cont_y.$cont_q.'/'.$cont_n.'</div>--> <!--CONTRACT nr. VC33/2715 [VC - vinzare cumparare, 3 - year last digit, 3 - quarter of the year, 2715 = 2700 + number of contract of this year (now 15)]-->
 			<div class="ttl">Anexa nr. '.getPost('annexa_nr', 'CS-'.date('Y').'-001').' la Contract de vinzare cumparare '.strtoupper(getPost('cont_nr')).' din '.$zdate.'</div>
 		</div>
-		<div class="who">
-			<p>În baza p 4.17 a prezentului contract SAUTO SRL transferă către <strong>'.getPost('cesionar_nm').'</strong> cp <strong>'.getPost('cesionar_cf_idno').'</strong> creanța de la <strong>'.getPost('u_nm').'</strong> cp <strong>'.getPost('u_cf_idno').'</strong> în sumă de <strong>'.number_format(floatval(getPost('cesionar_suma', 0)), 2).'lei</strong></p>
-			<br/><p><strong>'.getPost('cesionar_nm').'</strong> cp <strong>'.getPost('cesionar_cf_idno').'</strong> primește de la SAUTO SRL creanța de la <strong>'.getPost('u_nm').'</strong> <strong>'.getPost('u_cf_idno').'</strong> (pf) în suma de <strong>'.number_format(floatval(getPost('cesionar_suma', 0)), 2).'lei</strong></p>
-			<br/><p><strong>'.getPost('cesionar_nm').'</strong>, cp <strong>'.getPost('cesionar_cf_idno').'</strong> se obligă să achite companiei SAUTO SRL sumă de <strong>'.number_format(floatval(getPost('cesionar_suma', 0)), 2).'lei</strong></p>
+		<div class="who">';
+		
+		// Check if cesionar is enabled
+		if (getPost('add_cesionar') == '1' && !empty(getPost('cesionar_nm'))) {
+			// ANNEXA CU CESIONAR - Referință la punctul 4.17
+			$rtrn .= '
+			<p>În baza punctului 4.17 a prezentului contract SAUTO SRL transferă către <strong>'.getPost('cesionar_nm').'</strong> cp <strong>'.getPost('cesionar_cf_idno').'</strong> creanța de la <strong>'.getPost('u_nm').'</strong> cp <strong>'.getPost('u_cf_idno').'</strong> în sumă de <strong>'.number_format(floatval(getPost('cesionar_suma', 0)), 2).' '.getPost('cur', 'MDL').'</strong></p>
+			<br/><p><strong>'.getPost('cesionar_nm').'</strong> cp <strong>'.getPost('cesionar_cf_idno').'</strong> primește de la SAUTO SRL creanța de la <strong>'.getPost('u_nm').'</strong> cp <strong>'.getPost('u_cf_idno').'</strong> în suma de <strong>'.number_format(floatval(getPost('cesionar_suma', 0)), 2).' '.getPost('cur', 'MDL').'</strong></p>
+			<br/><p><strong>'.getPost('cesionar_nm').'</strong>, cp <strong>'.getPost('cesionar_cf_idno').'</strong> se obligă să achite companiei SAUTO SRL suma de <strong>'.number_format(floatval(getPost('cesionar_suma', 0)), 2).' '.getPost('cur', 'MDL').'</strong></p>';
+		} else {
+			// ANNEXA NORMALĂ - fără cesionar
+			$rtrn .= '
+			<p>Prezenta anexă se referă la contractul de vânzare-cumpărare nr. <strong>'.strtoupper(getPost('cont_nr')).'</strong> din <strong>'.$zdate.'</strong></p>
+			<br/><p>Cumpărătorul <strong>'.getPost('u_nm').'</strong> cp <strong>'.getPost('u_cf_idno').'</strong> confirmă primirea bunurilor conform contractului menționat mai sus.</p>
+			<br/><p>Toate condițiile contractului rămân în vigoare și sunt respectate de ambele părți.</p>';
+		}
+		
+		$rtrn .= '
 		</div>
 		
 		<div class="flx">
@@ -99,13 +118,29 @@ $rtrn = '
 				$rtrn .= '
 				</div>
 			<div class="ws"></div>
-			<table class="n2">
+			';
+			
+			// Check if cesionar is enabled for signature table
+			if (getPost('add_cesionar') == '1' && !empty(getPost('cesionar_nm'))) {
+				// TABLE WITH CESIONAR - 3 columns
+				$rtrn .= '<table class="n2 cesionar">
 				<tr><td>VINZATOR</td><td>CUMPARATOR</td><td>CESIONAR</td></tr>
 				<tr>
 					<td>'.$zcont.'</td>
 					<td><b>'.getPost('u_nm').'</b><br/>cp <strong>'.getPost('u_cf_idno').'</strong><div class="signature">_____________________</div></td>
 					<td><b>'.getPost('cesionar_nm').'</b><br/>cp <strong>'.getPost('cesionar_cf_idno').'</strong><div class="signature">_____________________</div></td>
-				</tr>
+				</tr>';
+			} else {
+				// TABLE WITHOUT CESIONAR - 2 columns
+				$rtrn .= '<table class="n2 normal">
+				<tr><td>VINZATOR</td><td>CUMPARATOR</td></tr>
+				<tr>
+					<td>'.$zcont.'</td>
+					<td><b>'.getPost('u_nm').'</b><br/>cp <strong>'.getPost('u_cf_idno').'</strong><div class="signature">_____________________</div></td>
+				</tr>';
+			}
+			
+			$rtrn .= '
 			</table>
 			<div class="ws" style="max-height:20mm;"></div>
 		</div>

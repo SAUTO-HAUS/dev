@@ -21,7 +21,7 @@ if ( isset($t_mp[4]) ){
 						,'com_transport'=>'Comanda pentru transport'
 						,'con_intermed'=>'Contract de intermediere [TEST]'
 						,'vinzare_sauto'=>'Contract de vânzare-cumpărare ( Sauto cumparator )'
-						,'cesionar'=>'Cesionar'
+						,'cesionar'=>'Annexa (Cesiune drept de plată)'
 					]
 				]
 			];
@@ -46,7 +46,7 @@ if ( isset($t_mp[4]) ){
 						,'com_transport'=>'Comanda pentru transport'
 						,'con_intermed'=>'Contract de intermediere [TEST]'
 						,'vinzare_sauto'=>'Contract de vânzare-cumpărare ( Sauto cumparator )'
-						,'cesionar'=>'Cesionar'
+						,'cesionar'=>'Annexa (Cesiune drept de plată)'
 					]//,'contract_de_intermediere'=>'Contract de intermediere'
 				]
 			];
