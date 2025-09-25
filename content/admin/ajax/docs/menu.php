@@ -222,115 +222,7 @@ if ( isset($t_mp[5]) || isset($mixall) ){
 		'.( isset($mixall)?'</form>':'' );
 	}
 	
-	//__________________________________________________________________________________________CONTRACT JURIDICE
-	if ( $t_mp[5]=='vinzare_sauto' || isset($mixall) ){
-		$rtrn .= ( isset($mixall)?'<form class="menu_vinzare_sauto">':'' ).'
-		<div class="ttl">Document</div>
-		<label class="lbl"><span class="ttl">Date</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Date" /></label>
-		
-		<div class="ttl">Auto</div>
-		<label class="lbl"><span class="ttl">Brand</span><select name="br" title="Brand">
-			<option value="x" class="def" disabled selected>-</option>
-			'.$br_html.'
-		</select></label>
-		<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model">
-			<option value="x" data-br="" class="def" disabled selected>-</option>
-			'.$mo_html.'
-		</select></label>
-		<label class="lbl"><span class="ttl">Year</span><input class="need" type="text" name="yr" title="Year" /></label>
-		<label class="lbl"><span class="ttl">Color</span><select name="clr" title="Color">
-			<option value="" selected>-</option>
-			'.$clr_html.'
-		</select></label>
-		<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" /></label>';
-		//---LOCATION---
-		$rtrn .= '<label class="lbl"><span class="ttl">'.$lng['w']['address'].'</span><select class="need" name="loc" title="'.$lng['w']['address'].'" tabindex="12" title="Location">
-			<option value="" class="def" disabled selected>-</option>';
-			foreach ($lng['t']['x']['address'] as $k => $v){if($k==0){continue;} $rtrn .= '<option value="'.$k.'">'.$v.'</option>';}
-		$rtrn .= '</select></label>
-		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="text" name="prc" title="Price" /></label>
-		<label class="lbl"><span class="ttl">Avans</span><input type="number" name="prc_av" title="Avans" placeholder="0" /></label>
-		<label class="lbl"><span class="ttl">Termen de livrare, zile</span><input class="need" type="text" name="term_livr" title="Termen de livrare" min="0" step="1" placeholder="35" /></label>
-		
-		<div class="ttl">Vinzator</div>
-		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp"><option value="fiz">Fizic</option><option value="jur">Juridic</option></select></label>
-		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" /></label>
-		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" /></label>
-		<label class="lbl"><span class="ttl">Data nasterii</span><input class="need fj dt" type="text" name="u_tva_dt" min="1900-01-01" max="2099-12-31" title="Data nasterii" data-fiz="Data nasterii" data-jur="TVA" /></label> <!--onfocus=\'(this.type="date")\'-->
-		<label class="lbl"><span class="ttl">Data elibirat</span><input class="need fj dt" type="text" name="u_iban_dt_tk" min="1900-01-01" max="2099-12-31" title="Data elibirat" data-fiz="Data elibirat" data-jur="IBAN" /></label>
-		<label class="lbl"><span class="ttl">Adress</span><input class="need" type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" /></label>
-		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" /></label>
-		<label class="lbl"><span class="ttl">Email</span><input type="text" name="u_eml" title="Email" /></label>
-		'.( isset($mixall)?'</form>':'' );
-	}
-	
-	//__________________________________________________________________________________________CONTRACT JURIDICE (AVANS)
-	if ( $t_mp[5]=='vinzare_avans' || isset($mixall) ){
-		$rtrn .= ( isset($mixall)?'<form class="menu_vinzare_avans">':'' ).'
-		<div class="ttl">Document</div>
-		<label class="lbl"><span class="ttl">Date</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Date" /></label>
-		
-		<div class="ttl">Auto</div>
-		<label class="lbl"><span class="ttl">Brand</span><select name="br" title="Brand">
-			<option value="x" class="def" disabled selected>-</option>
-			'.$br_html.'
-		</select></label>
-		<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model">
-			<option value="x" data-br="" class="def" disabled selected>-</option>
-			'.$mo_html.'
-		</select></label>
-		<label class="lbl"><span class="ttl">Year</span><input class="need" type="text" name="yr" title="Year" /></label>
-		<label class="lbl"><span class="ttl">Color</span><select name="clr" title="Color">
-			<option value="" selected>-</option>
-			'.$clr_html.'
-		</select></label>
-		<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" /></label>';
-		//---LOCATION---
-		$rtrn .= '<label class="lbl"><span class="ttl">'.$lng['w']['address'].'</span><select class="need" name="loc" title="'.$lng['w']['address'].'" tabindex="12" title="Location">
-			<option value="" class="def" disabled selected>-</option>';
-			foreach ($lng['t']['x']['address'] as $k => $v){if($k==0){continue;} $rtrn .= '<option value="'.$k.'">'.$v.'</option>';}
-		$rtrn .= '</select></label>
-		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="text" name="prc" title="Price" /></label>
-		<label class="lbl"><span class="ttl">Termen de livrare, zile</span><input class="need" type="text" name="term_livr" title="Termen de livrare" min="0" step="1" placeholder="35" /></label>
-		<label class="lbl"><span class="ttl">Din ce surse</span>
-			<select name="orig">
-				<option value="0">-</option>
-				<option value="999">999.md</option>
-				<option value="ste">De pe sait SAUTO.MD</option>
-				<option value="poz">Pozitionare(de pe strada)</option>
-				<option value="rec">Prin recomandare (cunostinte)</option>
-				<option value="buy">Am procurat în anterior</option>
-				<option value="knw">Cunosc de mult compania</option>
-				<option value="fb">Facebook</option>
-				<option value="ig">Instagram</option>
-				<option value="tt">TikTok</option>
-			</select>
-		</label>
-		
-		<div class="ttl">Etapele achitarii</div>
-		<div id="date_pay_bx" name="pays" data-qu="0"></div>
-		<div class="btn" data-fn="add_date_pay">Adăugati</div>
-		
-		<div class="ttl">Cumparator</div>
-		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp"><option value="fiz">Fizic</option><option value="jur">Juridic</option></select></label>
-		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" /></label>
-		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" /></label>
-		<label class="lbl"><span class="ttl">Data nasterii</span><input class="need fj dt" type="text" name="u_tva_dt" min="1900-01-01" max="2099-12-31" title="Data nasterii" data-fiz="Data nasterii" data-jur="TVA" /></label> <!--onfocus=\'(this.type="date")\'-->
-		<label class="lbl"><span class="ttl">Data elibirat</span><input class="need fj dt" type="text" name="u_iban_dt_tk" min="1900-01-01" max="2099-12-31" title="Data elibirat" data-fiz="Data elibirat" data-jur="IBAN" /></label>
-		<label class="lbl"><span class="ttl">Adress</span><input class="need" type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" /></label>
-		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" /></label>
-		<label class="lbl"><span class="ttl">Email</span><input type="text" name="u_eml" title="Email" /></label>
-		
-		<div class="ttl">Extra</div>
-		<label class="lbl"><span class="ttl">EUR</span><input type="number" name="u_eur" title="EUR" value="0" min="0" step="100" /></label>
-		
-		<div class="ttl">"Garanție", text suplimentar</div>
-		<div id="grnt_fld_bx" name="grnt_txt" data-qu="0"></div>
-		<div class="btn" data-fn="add_grnt_fld">Adăugati</div>
-		'.( isset($mixall)?'</form>':'' );
-	}
-
-	//__________________________________________________________________________________________CESIONAR
+//__________________________________________________________________________________________CESIONAR
 if ( $t_mp[5]=='cesionar' || isset($mixall) ){
 	// Auto-generate Cesionar number CS-YYYY-XXX with database counter
 	$cesionar_year = date('Y');
@@ -357,56 +249,16 @@ if ( $t_mp[5]=='cesionar' || isset($mixall) ){
 	<label class="lbl"><span class="ttl">Numărul Anexa</span><input class="need" type="text" name="annexa_nr" title="Numărul Anexa" value="'.(isset($_POST['annexa_nr']) ? htmlspecialchars($_POST['annexa_nr']) : $cesionar_number).'" /></label>
 	<label class="lbl"><span class="ttl">Număr contract</span><input class="need" type="text" name="cont_nr" title="Număr contract" value="'.(isset($_POST['cont_nr']) ? htmlspecialchars($_POST['cont_nr']) : '').'" /></label>
 	
-	<div class="ttl">Auto</div>
-	<label class="lbl"><span class="ttl">Brand</span><select name="br" title="Brand">
-		<option value="x" class="def" disabled selected>-</option>
-		'.$br_html.'
-	</select></label>
-	<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model">
-		<option value="x" data-br="" class="def" disabled selected>-</option>
-		'.$mo_html.'
-	</select></label>
-	<label class="lbl"><span class="ttl">Year</span><input class="need" type="text" name="yr" title="Year" value="'.(isset($_POST['yr']) ? htmlspecialchars($_POST['yr']) : '').'" /></label>
-	<label class="lbl"><span class="ttl">Color</span><select name="clr" title="Color">
-		<option value="" selected>-</option>
-		'.$clr_html.'
-	</select></label>
-	<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" value="'.(isset($_POST['vin']) ? htmlspecialchars($_POST['vin']) : '').'" /></label>
-	<label class="lbl"><span class="ttl">Price</span><input class="need" type="number" name="prc" title="Price" value="'.(isset($_POST['prc']) ? $_POST['prc'] : '').'" /></label>
-	<label class="lbl"><span class="ttl">Currency</span><select name="cur" title="Currency">
-		<option value="MDL"'.(isset($_POST['cur']) && $_POST['cur'] == 'MDL' ? ' selected' : (!isset($_POST['cur']) ? ' selected' : '')).'>MDL</option>
-		<option value="EUR"'.(isset($_POST['cur']) && $_POST['cur'] == 'EUR' ? ' selected' : '').'>EUR</option>
-	</select></label>
+	<div class="ttl">Cumpărător (din contract original)</div>
+	<label class="lbl"><span class="ttl">Nume cumpărător</span><input class="need" type="text" name="u_nm" title="Nume cumpărător" value="'.(isset($_POST['u_nm']) ? htmlspecialchars($_POST['u_nm']) : '').'" /></label>
+	<label class="lbl"><span class="ttl">IDNO/CF cumpărător</span><input class="need" type="text" name="u_cf_idno" title="IDNO/CF cumpărător" value="'.(isset($_POST['u_cf_idno']) ? htmlspecialchars($_POST['u_cf_idno']) : '').'" /></label>
 	
-	<div class="ttl">Cumpărător</div>
-	<label class="lbl"><span class="ttl">Tip</span><select name="u_tp">
-		<option value="fiz"'.(isset($_POST['u_tp']) && $_POST['u_tp'] == 'fiz' ? ' selected' : (!isset($_POST['u_tp']) ? ' selected' : '')).'>Fizic</option>
-		<option value="jur"'.(isset($_POST['u_tp']) && $_POST['u_tp'] == 'jur' ? ' selected' : '').'>Juridic</option>
-	</select></label>
-	<label class="lbl"><span class="ttl">IDNO/CF</span><input class="need" type="text" name="u_cf_idno" title="IDNO/CF" value="'.(isset($_POST['u_cf_idno']) ? htmlspecialchars($_POST['u_cf_idno']) : '').'" /></label>
-	<label class="lbl"><span class="ttl">Name</span><input class="need" type="text" name="u_nm" title="Name" value="'.(isset($_POST['u_nm']) ? htmlspecialchars($_POST['u_nm']) : '').'" /></label>
-	<label class="lbl"><span class="ttl">Data nasterii/TVA</span><input type="text" name="u_tva_dt" title="Data nasterii" value="'.(isset($_POST['u_tva_dt']) ? htmlspecialchars($_POST['u_tva_dt']) : '').'" /></label>
-	<label class="lbl"><span class="ttl">Data eliberării/IBAN</span><input type="text" name="u_iban_dt_tk" title="Data eliberării" value="'.(isset($_POST['u_iban_dt_tk']) ? htmlspecialchars($_POST['u_iban_dt_tk']) : '').'" /></label>
-	<label class="lbl max"><span class="ttl">Adresă</span><textarea name="u_adr" title="Adresă" rows="2">'.(isset($_POST['u_adr']) ? htmlspecialchars($_POST['u_adr']) : 'Republica Moldova, mun.Chișinău, or.Chișinău, str.').'</textarea></label>
-	<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" title="Phone" value="'.(isset($_POST['u_phn']) ? htmlspecialchars($_POST['u_phn']) : '+373').'" /></label>
-	<label class="lbl"><span class="ttl">Email</span><input type="text" name="u_eml" title="Email" value="'.(isset($_POST['u_eml']) ? htmlspecialchars($_POST['u_eml']) : '').'" /></label>
+	<div class="ttl">Cesionar (terța parte care primește dreptul de plată)</div>
+	<label class="lbl"><span class="ttl">Nume cesionar</span><input class="need" type="text" name="cesionar_nm" title="Nume cesionar" value="'.(isset($_POST['cesionar_nm']) ? htmlspecialchars($_POST['cesionar_nm']) : '').'" /></label>
+	<label class="lbl"><span class="ttl">IDNO/CF cesionar</span><input class="need" type="text" name="cesionar_cf_idno" title="IDNO/CF cesionar" value="'.(isset($_POST['cesionar_cf_idno']) ? htmlspecialchars($_POST['cesionar_cf_idno']) : '').'" /></label>
+	<label class="lbl"><span class="ttl">Sumă cesiune * (în lei)</span><input class="need" type="number" name="cesionar_suma" title="Sumă cesiune" value="'.(isset($_POST['cesionar_suma']) ? $_POST['cesionar_suma'] : '').'" step="0.01" min="0.01" /></label>
 	
-	<div class="ttl">Cesionar (terță parte care primește dreptul de plată)</div>
-	<label class="lbl"><span class="ttl">Tip</span><select name="cesionar_tp" class="cesionar-field">
-		<option value="fiz"'.(isset($_POST['cesionar_tp']) && $_POST['cesionar_tp'] == 'fiz' ? ' selected' : (!isset($_POST['cesionar_tp']) ? ' selected' : '')).'>Fizic</option>
-		<option value="jur"'.(isset($_POST['cesionar_tp']) && $_POST['cesionar_tp'] == 'jur' ? ' selected' : '').'>Juridic</option>
-	</select></label>
-	<label class="lbl"><span class="ttl">IDNO/CF</span><input class="need" type="text" name="cesionar_cf_idno" class="cesionar-field" title="Cesionar IDNO/CF" value="'.(isset($_POST['cesionar_cf_idno']) ? htmlspecialchars($_POST['cesionar_cf_idno']) : '').'" /></label>
-	<label class="lbl"><span class="ttl">Name *</span><input class="need" type="text" name="cesionar_nm" class="cesionar-field" title="Cesionar Name" value="'.(isset($_POST['cesionar_nm']) ? htmlspecialchars($_POST['cesionar_nm']) : '').'" /></label>
-	<label class="lbl"><span class="ttl">Data nasterii/TVA</span><input type="text" name="cesionar_tva_dt" class="cesionar-field" title="Cesionar Data nasterii" value="'.(isset($_POST['cesionar_tva_dt']) ? htmlspecialchars($_POST['cesionar_tva_dt']) : '').'" /></label>
-	<label class="lbl"><span class="ttl">Data eliberării/IBAN</span><input type="text" name="cesionar_iban_dt_tk" class="cesionar-field" title="Cesionar Data eliberării" value="'.(isset($_POST['cesionar_iban_dt_tk']) ? htmlspecialchars($_POST['cesionar_iban_dt_tk']) : '').'" /></label>
-	<label class="lbl"><span class="ttl">Cont bancar</span><input type="text" name="cesionar_account" class="cesionar-field" title="Cesionar Account" value="'.(isset($_POST['cesionar_account']) ? htmlspecialchars($_POST['cesionar_account']) : '').'" /></label>
-	<label class="lbl max"><span class="ttl">Adresă</span><textarea name="cesionar_adr" class="cesionar-field" title="Cesionar Adresă" rows="2">'.(isset($_POST['cesionar_adr']) ? htmlspecialchars($_POST['cesionar_adr']) : 'Republica Moldova, mun.Chișinău, or.Chișinău, str.').'</textarea></label>
-	<label class="lbl"><span class="ttl">Phone</span><input type="text" name="cesionar_phn" class="cesionar-field" title="Cesionar Phone" value="'.(isset($_POST['cesionar_phn']) ? htmlspecialchars($_POST['cesionar_phn']) : '+373').'" /></label>
-	<label class="lbl"><span class="ttl">Email</span><input type="text" name="cesionar_eml" class="cesionar-field" title="Cesionar Email" value="'.(isset($_POST['cesionar_eml']) ? htmlspecialchars($_POST['cesionar_eml']) : '').'" /></label>
-	<label class="lbl"><span class="ttl">Sumă cesiune * (în valuta contractului)</span><input class="need" type="number" name="cesionar_suma" class="cesionar-field" title="Sumă cesiune" value="'.(isset($_POST['cesionar_suma']) ? $_POST['cesionar_suma'] : '').'" step="0.01" min="0.01" /></label>
-	
-	<div class="ttl">"Garanție", text suplimentar</div>
+	<div class="ttl">Text suplimentar (opțional)</div>
 	<div id="grnt_fld_bx" name="grnt_txt" data-qu="0"></div>
 	<div class="btn" data-fn="add_grnt_fld">Adăugați</div>
 	

@@ -20,10 +20,10 @@ $abr = 'VCA';
 $zcont = '
 <b>“SAUTO” SRL</b><br/>
 <span>Republica Moldova, MD-2084, mun.Chişinau</span><br/>
-<span>or.Cricova, str.Chisinaului 84, ap.(of.) 39</span><br/>
+<span>or.Cricova, str.Chisinaului 84, of. 39</span><br/>
 <span>IBAN: <b>MD64VI022512000000171MDL</b></span><br/>
 <span>în B.C.“VICTORIABANK S.A.”, <b>VICBMD2XXXX</b></span><br/>
-<span>c/f <b>1017600006845</b>, c/TVA <b>0609417</b></span>';
+<span>c/f <b>1017600006845</b>,<br/>c/TVA <b>0609417</b></span><br/><br/>_____________________';
 
 $rtrn = '
 <style>
@@ -46,7 +46,8 @@ $rtrn = '
 	table.n1 tr > td.n2 {width:30%;}
 	
 	table.n2 tr {height:10mm;}
-	table.n2 tr > td {width:33%;}
+	table.n2 tr > td {width:33%; vertical-align:middle; text-align:center; position:relative;}
+	table.n2 tr > td .signature {position:absolute; bottom:2mm; left:50%; transform:translateX(-50%);}
 	
 	.pg:not(.d2) tr > td {padding:2mm;}
 	
@@ -80,9 +81,9 @@ $rtrn = '
 			<div class="ttl">Anexa nr. '.getPost('annexa_nr', 'CS-'.date('Y').'-001').' la Contract de vinzare cumparare '.strtoupper(getPost('cont_nr')).' din '.$zdate.'</div>
 		</div>
 		<div class="who">
-			<p>În baza p 4.17 a prezentului contract SAUTO SRL transferă către <strong class="txt_cpt">'.strtolower(getPost('cesionar_nm')).'</strong> creanța de la <strong class="txt_cpt">'.strtolower(getPost('u_nm')).'</strong> în sumă de <strong>'.number_format(floatval(getPost('cesionar_suma', 0)), 2).' '.getPost('cur', 'MDL').'</strong></p>
-			<br/><p><strong class="txt_cpt">'.strtolower(getPost('cesionar_nm')).'</strong> primește de la SAUTO SRL creanța de la <strong class="txt_cpt">'.strtolower(getPost('u_nm')).'</strong> în suma de <strong>'.number_format(floatval(getPost('cesionar_suma', 0)), 2).' '.getPost('cur', 'MDL').'</strong></p>
-			<br/><p><strong class="txt_cpt">'.strtolower(getPost('cesionar_nm')).'</strong> se obligă să achite companiei SAUTO SRL suma de <strong>'.number_format(floatval(getPost('cesionar_suma', 0)), 2).' '.getPost('cur', 'MDL').'</strong></p>
+			<p>În baza p 4.17 a prezentului contract SAUTO SRL transferă către <strong>'.getPost('cesionar_nm').'</strong> cp <strong>'.getPost('cesionar_cf_idno').'</strong> creanța de la <strong>'.getPost('u_nm').'</strong> cp <strong>'.getPost('u_cf_idno').'</strong> în sumă de <strong>'.number_format(floatval(getPost('cesionar_suma', 0)), 2).'lei</strong></p>
+			<br/><p><strong>'.getPost('cesionar_nm').'</strong> cp <strong>'.getPost('cesionar_cf_idno').'</strong> primește de la SAUTO SRL creanța de la <strong>'.getPost('u_nm').'</strong> <strong>'.getPost('u_cf_idno').'</strong> (pf) în suma de <strong>'.number_format(floatval(getPost('cesionar_suma', 0)), 2).'lei</strong></p>
+			<br/><p><strong>'.getPost('cesionar_nm').'</strong>, cp <strong>'.getPost('cesionar_cf_idno').'</strong> se obligă să achite companiei SAUTO SRL sumă de <strong>'.number_format(floatval(getPost('cesionar_suma', 0)), 2).'lei</strong></p>
 		</div>
 		
 		<div class="flx">
@@ -97,20 +98,18 @@ $rtrn = '
 					}
 				$rtrn .= '
 				</div>
-			</div>
 			<div class="ws"></div>
 			<table class="n2">
 				<tr><td>VINZATOR</td><td>CUMPARATOR</td><td>CESIONAR</td></tr>
 				<tr>
 					<td>'.$zcont.'</td>
-					<td><b class="txt_cpt">'.strtolower(getPost('u_nm')).'</b><br/>'.getPost('u_adr').'</br>'.(getPost('u_tp')=='fiz'?'cp':'cf').': <span class="txt_up">'.getPost('u_cf_idno').'</span>'.(getPost('u_tva_dt') ? '<br/>'.(getPost('u_tp')=='fiz'?'dat.nast.: '.date( 'd.m.Y', strtotime( getPost('u_tva_dt') ) ):'TVA: '.getPost('u_tva_dt')) : '').(getPost('u_iban_dt_tk') ? '<br/>'.(getPost('u_tp')=='fiz'?'dat.el.: '.date( 'd.m.Y', strtotime( getPost('u_iban_dt_tk') ) ):'IBAN: '.getPost('u_iban_dt_tk')) : '').'</td>
-					<td><b class="txt_cpt">'.strtolower(getPost('cesionar_nm')).'</b><br/>'.getPost('cesionar_adr').'</br>'.(getPost('cesionar_tp')=='fiz'?'cp':'cf').': <span class="txt_up">'.getPost('cesionar_cf_idno').'</span>'.(getPost('cesionar_tva_dt') ? '<br/>'.(getPost('cesionar_tp')=='fiz'?'dat.nast.: '.date( 'd.m.Y', strtotime( getPost('cesionar_tva_dt') ) ):'TVA: '.getPost('cesionar_tva_dt')) : '').(getPost('cesionar_iban_dt_tk') ? '<br/>'.(getPost('cesionar_tp')=='fiz'?'dat.el.: '.date( 'd.m.Y', strtotime( getPost('cesionar_iban_dt_tk') ) ):'IBAN: '.getPost('cesionar_iban_dt_tk')) : '').'</td>
+					<td><b>'.getPost('u_nm').'</b><br/>cp <strong>'.getPost('u_cf_idno').'</strong><div class="signature">_____________________</div></td>
+					<td><b>'.getPost('cesionar_nm').'</b><br/>cp <strong>'.getPost('cesionar_cf_idno').'</strong><div class="signature">_____________________</div></td>
 				</tr>
 			</table>
 			<div class="ws" style="max-height:20mm;"></div>
 		</div>
 		<div class="conf">CONFIDENTIAL</div>
-	</div>
 </div>';
 
 echo $rtrn;

@@ -43,7 +43,7 @@ if ( $_POST['fn']=='edit_sbmt' ){
 	
 	//__________________INFO generator
 	$inf=''; $qu=0;
-	$inf_ar = ['br', 'mo', 'vin', 'yr', 'clr', 'prc', 'prc_eur', 'prc_av', 'loc', 'term_livr', 'cntr_fr', 'cntr_to', 'adr_to', 't2pay', 'plate', 'extras'];
+	$inf_ar = ['br', 'mo', 'vin', 'yr', 'clr', 'prc', 'prc_eur', 'prc_av', 'loc', 'term_livr', 'cntr_fr', 'cntr_to', 'adr_to', 't2pay', 'plate', 'extras', 'u_nm', 'u_cf_idno', 'cesionar_nm', 'cesionar_cf_idno', 'cesionar_suma', 'cont_nr', 'annexa_nr'];
 	$inf_up_ar = ['vin'];
 	foreach ($inf_ar as $k => $v){
 		if ( isset($_POST['inp'][$v])&&$_POST['inp'][$v]!='' ){

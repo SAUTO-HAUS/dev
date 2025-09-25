@@ -34,22 +34,11 @@ try {
         }
     }
     
-    // Подготовка данных для ответа
+    // Подготовка данных для ответа - только основные данные покупателя для cesionar
     $response_data = [
         'cont_nr' => $contract_nr,
-        'br' => isset($contract_data['br']) ? $contract_data['br'] : '',
-        'mo' => isset($contract_data['mo']) ? $contract_data['mo'] : '',
-        'vin' => isset($contract_data['vin']) ? $contract_data['vin'] : '',
-        'prc' => isset($contract_data['prc']) ? $contract_data['prc'] : '',
-        'cur' => isset($contract_data['cur']) ? $contract_data['cur'] : 'MDL',
-        'u_tp' => isset($contract_data['u_tp']) ? $contract_data['u_tp'] : 'fiz',
         'u_cf_idno' => isset($contract_data['u_cf_idno']) ? $contract_data['u_cf_idno'] : '',
-        'u_nm' => isset($contract_data['u_nm']) ? $contract_data['u_nm'] : '',
-        'u_tva_dt' => isset($contract_data['u_tva_dt']) ? $contract_data['u_tva_dt'] : '',
-        'u_iban_dt_tk' => isset($contract_data['u_iban_dt_tk']) ? $contract_data['u_iban_dt_tk'] : '',
-        'u_adr' => isset($contract_data['u_adr']) ? $contract_data['u_adr'] : '',
-        'u_phn' => isset($contract_data['u_phn']) ? $contract_data['u_phn'] : '',
-        'u_eml' => isset($contract_data['u_eml']) ? $contract_data['u_eml'] : ''
+        'u_nm' => isset($contract_data['u_nm']) ? $contract_data['u_nm'] : ''
     ];
     
     echo json_encode([
