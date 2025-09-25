@@ -93,8 +93,13 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
         <div class="sale-background"></div>
         <div class="sale-container">
             <div class="sale-intro__form">
-                <div class="sale-form" id="bitrix-form-top">
-                    <!-- Bitrix24 form will be loaded here -->
+                <div class="sale-form">
+                    <script data-b24-form="inline/42/u65756" data-skip-moving="true">
+                    (function(w,d,u){
+                    var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
+                    var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
+                    })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_42.js');
+                    </script>
                 </div>
             </div>
             <div class="sale-intro__content">
@@ -262,36 +267,11 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
                 <p><?=htmlspecialchars($saleTranslate(['cta', 'line1']), ENT_QUOTES, 'UTF-8')?><br><?=htmlspecialchars($saleTranslate(['cta', 'line2']), ENT_QUOTES, 'UTF-8')?></p>
             </div>
             <div class="sale-form sale-form--bottom">
-                <div id="bitrix-form-bottom"></div>
+                <script data-b24-form="inline/42/u65756" data-skip-moving="true">
+                (function(w,d,u){
+                var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
+                var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
+                })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_42.js?'+(Date.now()/180000|0));
+                </script>
             </div>
         </div>
-    </section>
-</div>
-
-<script>
-(function() {
- 
-    if (!window.b24FormLoaded) {
-        window.b24FormLoaded = true;
-        var script = document.createElement('script');
-        script.async = true;
-        script.src = 'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_42.js?' + Math.floor(Date.now()/180000);
-        script.onload = function() {
-           
-            if (window.BX24 && window.BX24.loadForm) {
-                // Top form
-                window.BX24.loadForm('inline/42/u65756', {
-                    id: 'bitrix-form-top',
-                    skipMoving: true
-                });
-                // Bottom form  
-                window.BX24.loadForm('inline/42/u65756', {
-                    id: 'bitrix-form-bottom',
-                    skipMoving: true
-                });
-            }
-        };
-        document.head.appendChild(script);
-    }
-})();
-</script>
