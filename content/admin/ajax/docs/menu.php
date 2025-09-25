@@ -165,7 +165,7 @@ if ( $t_mp[5]=='cesionar' || isset($mixall) ){
 	try {
 		// Query with JOIN to get buyer data from docs_u table
 		$pdo_contracts = $db->prepare('
-			SELECT c.id, c.inf, c.date, c.n as cont_nr, 
+			SELECT c.id, c.inf, c.date, c.n as cont_nr, c.f as contract_type,
 			       u.nm as u_nm, u.cf_idno as u_cf_idno, u.adr as u_adr, 
 			       u.phn as u_phn, u.eml as u_eml, u.tp as u_tp
 			FROM '.$prefx.'_docs_ctlg c 
@@ -186,6 +186,14 @@ if ( $t_mp[5]=='cesionar' || isset($mixall) ){
 			$u_adr = $contract['u_adr'] ?: '';
 			$u_phn = $contract['u_phn'] ?: '';
 			$u_eml = $contract['u_eml'] ?: '';
+
+			// Determine contract type display name
+$contract_type_name = '';
+if ($contract['contract_type'] == 'vinzare_proc') {
+    $contract_type_name = 'Vânzare-cumpărare';
+} elseif ($contract['contract_type'] == 'vinzare_avans') {
+    $contract_type_name = 'Avans';
+}
 			
 			// Parse inf for currency if available
 			$cur = 'MDL'; // default
@@ -200,7 +208,7 @@ if ( $t_mp[5]=='cesionar' || isset($mixall) ){
 			}
 			
 			
-			$contracts_html .= '<option value="'.$contract['id'].'" data-cont-nr="'.htmlspecialchars($cont_nr).'" data-u-nm="'.htmlspecialchars($u_nm).'" data-u-cf-idno="'.htmlspecialchars($u_cf_idno).'" data-u-adr="'.htmlspecialchars($u_adr).'" data-u-phn="'.htmlspecialchars($u_phn).'" data-u-eml="'.htmlspecialchars($u_eml).'" data-cur="'.htmlspecialchars($cur).'">'.htmlspecialchars($cont_nr).' - '.htmlspecialchars($u_nm).'</option>';
+			$contracts_html .= '<option value="'.$contract['id'].'" data-cont-nr="'.htmlspecialchars($cont_nr).'" data-u-nm="'.htmlspecialchars($u_nm).'" data-u-cf-idno="'.htmlspecialchars($u_cf_idno).'" data-u-adr="'.htmlspecialchars($u_adr).'" data-u-phn="'.htmlspecialchars($u_phn).'" data-u-eml="'.htmlspecialchars($u_eml).'" data-cur="'.htmlspecialchars($cur).'">ID:'.$contract['id'].' - '.htmlspecialchars($u_nm).' - '.htmlspecialchars($contract_type_name).'</option>';
 			$contract_count++;
 		}
 		
