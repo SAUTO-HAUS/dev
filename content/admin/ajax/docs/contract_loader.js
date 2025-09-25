@@ -1,6 +1,3 @@
-// JavaScript для автозаполнения данных Annexa из контракта
-// Добавить в menu.php для формы Annexa
-
 function loadContractData() {
     var contractNr = document.querySelector('input[name="cont_nr"]').value;
     if (contractNr.trim() === "") {
