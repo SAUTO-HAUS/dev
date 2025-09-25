@@ -59,13 +59,21 @@ if ( $t_mp[5]=='invoice' || isset($mixall) ){
 	<label class="lbl"><span class="ttl">Name</span><input class="need" type="text" name="buyer_name" title="Buyer Name" value="'.(isset($_POST['buyer_name']) ? htmlspecialchars($_POST['buyer_name']) : '').'" /></label>
 	<label class="lbl"><span class="ttl">VAT/IDNO</span><input type="text" name="buyer_vat" title="Buyer VAT/IDNO" value="'.(isset($_POST['buyer_vat']) ? htmlspecialchars($_POST['buyer_vat']) : '').'" /></label>
 	<label class="lbl"><span class="ttl">Cont bancar</span><input type="text" name="buyer_account" title="Buyer Account" value="'.(isset($_POST['buyer_account']) ? htmlspecialchars($_POST['buyer_account']) : '').'" /></label>
-	<label class="lbl max"><span class="ttl">Legal Address</span><textarea name="buyer_address" title="Buyer Address" rows="2">'.(isset($_POST['buyer_address']) ? htmlspecialchars($_POST['buyer_address']) : '').'</textarea></label>
+	<div style="display: flex; gap: 10px;">
+		<label class="lbl" style="flex: 2;"><span class="ttl">Legal Address</span><textarea name="buyer_address" title="Buyer Address" rows="2">'.(isset($_POST['buyer_address']) ? htmlspecialchars($_POST['buyer_address']) : '').'</textarea></label>
+		<label class="lbl" style="flex: 1;"><span class="ttl">Țara</span><input type="text" name="buyer_country" title="Buyer Country" value="'.(isset($_POST['buyer_country']) ? htmlspecialchars($_POST['buyer_country']) : '').'" /></label>
+		<label class="lbl" style="flex: 1;"><span class="ttl">SWIFT/BIC</span><input type="text" name="buyer_swift" title="Buyer SWIFT/BIC" value="'.(isset($_POST['buyer_swift']) ? htmlspecialchars($_POST['buyer_swift']) : '').'" /></label>
+	</div>
 	
 	<div class="ttl">Vânzător</div>
 	<label class="lbl"><span class="ttl">Name</span><input class="need" type="text" name="seller_name" title="Seller Name" value="'.(isset($_POST['seller_name']) ? htmlspecialchars($_POST['seller_name']) : '').'" /></label>
 	<label class="lbl"><span class="ttl">VAT/IDNO</span><input type="text" name="seller_vat" title="Seller VAT/IDNO" value="'.(isset($_POST['seller_vat']) ? htmlspecialchars($_POST['seller_vat']) : '').'" /></label>
 	<label class="lbl"><span class="ttl">Cont bancar</span><input type="text" name="seller_account" title="Seller Account" value="'.(isset($_POST['seller_account']) ? htmlspecialchars($_POST['seller_account']) : '').'" /></label>
-	<label class="lbl max"><span class="ttl">Legal Address</span><textarea name="seller_address" title="Seller Address" rows="2">'.(isset($_POST['seller_address']) ? htmlspecialchars($_POST['seller_address']) : '').'</textarea></label>
+	<div style="display: flex; gap: 10px;">
+		<label class="lbl" style="flex: 2;"><span class="ttl">Legal Address</span><textarea name="seller_address" title="Seller Address" rows="2">'.(isset($_POST['seller_address']) ? htmlspecialchars($_POST['seller_address']) : '').'</textarea></label>
+		<label class="lbl" style="flex: 1;"><span class="ttl">Țara</span><input type="text" name="seller_country" title="Seller Country" value="'.(isset($_POST['seller_country']) ? htmlspecialchars($_POST['seller_country']) : '').'" /></label>
+		<label class="lbl" style="flex: 1;"><span class="ttl">SWIFT/BIC</span><input type="text" name="seller_swift" title="Seller SWIFT/BIC" value="'.(isset($_POST['seller_swift']) ? htmlspecialchars($_POST['seller_swift']) : '').'" /></label>
+	</div>
 	
 	'.( isset($mixall)?'</form>':'' ).'
 	
@@ -76,9 +84,34 @@ if ( $t_mp[5]=='invoice' || isset($mixall) ){
 		vat: "1017600006845",
 		account_eur: "MD51VI022512000000094EUR",
 		account_usd: "MD51VI022512000000094USD", 
-		address: "Republica Moldova, MD-2084, mun.Chișinău, or.Cricova, str.Chisinaului 84, ap.(of.) 39"
+		address: "Republica Moldova, MD-2084, mun.Chișinău, or.Cricova, str.Chisinaului 84, of. 39"
 	};
 	
+	// Function to show/hide country and swift fields based on SAUTO role
+	function toggleCountrySwiftFields() {
+		var sautoRole = document.querySelector(\'select[name="sauto_role"]\').value;
+		
+		// Get all country and swift field containers (now in flex divs)
+		var sellerCountryField = document.querySelector(\'input[name="seller_country"]\').closest(\'label\');
+		var sellerSwiftField = document.querySelector(\'input[name="seller_swift"]\').closest(\'label\');
+		var buyerCountryField = document.querySelector(\'input[name="buyer_country"]\').closest(\'label\');
+		var buyerSwiftField = document.querySelector(\'input[name="buyer_swift"]\').closest(\'label\');
+		
+		if (sautoRole === \'seller\') {
+			// Hide seller fields (SAUTO), show buyer fields (client)
+			sellerCountryField.style.display = \'none\';
+			sellerSwiftField.style.display = \'none\';
+			buyerCountryField.style.display = \'block\';
+			buyerSwiftField.style.display = \'block\';
+		} else if (sautoRole === \'buyer\') {
+			// Hide buyer fields (SAUTO), show seller fields (client)
+			buyerCountryField.style.display = \'none\';
+			buyerSwiftField.style.display = \'none\';
+			sellerCountryField.style.display = \'block\';
+			sellerSwiftField.style.display = \'block\';
+		}
+	}
+
 	// Function to auto-fill S-Auto data based on role
 	function fillSAutoData() {
 		var sautoRole = document.querySelector(\'select[name="sauto_role"]\').value;
@@ -89,25 +122,34 @@ if ( $t_mp[5]=='invoice' || isset($mixall) ){
 		document.querySelector(\'input[name="seller_name"]\').value = "";
 		document.querySelector(\'input[name="seller_vat"]\').value = "";
 		document.querySelector(\'input[name="seller_account"]\').value = "";
+		document.querySelector(\'input[name="seller_country"]\').value = "";
+		document.querySelector(\'input[name="seller_swift"]\').value = "";
 		document.querySelector(\'textarea[name="seller_address"]\').value = "";
 		document.querySelector(\'input[name="buyer_name"]\').value = "";
 		document.querySelector(\'input[name="buyer_vat"]\').value = "";
 		document.querySelector(\'input[name="buyer_account"]\').value = "";
+		document.querySelector(\'input[name="buyer_country"]\').value = "";
+		document.querySelector(\'input[name="buyer_swift"]\').value = "";
 		document.querySelector(\'textarea[name="buyer_address"]\').value = "";
 		
 		if (sautoRole === \'seller\') {
-			// Sauto as seller - fill seller fields
+			// Sauto as seller - fill seller fields (keep as is - address includes country)
 			document.querySelector(\'input[name="seller_name"]\').value = sAutoData.name;
 			document.querySelector(\'input[name="seller_vat"]\').value = sAutoData.vat;
 			document.querySelector(\'input[name="seller_account"]\').value = account;
 			document.querySelector(\'textarea[name="seller_address"]\').value = sAutoData.address;
+			// Don\'t fill country and swift - they stay empty for SAUTO (data is in address)
 		} else if (sautoRole === \'buyer\') {
-			// Sauto as buyer - fill buyer fields
+			// Sauto as buyer - fill buyer fields (keep as is - address includes country)
 			document.querySelector(\'input[name="buyer_name"]\').value = sAutoData.name;
 			document.querySelector(\'input[name="buyer_vat"]\').value = sAutoData.vat;
 			document.querySelector(\'input[name="buyer_account"]\').value = account;
 			document.querySelector(\'textarea[name="buyer_address"]\').value = sAutoData.address;
+			// Don\'t fill country and swift - they stay empty for SAUTO (data is in address)
 		}
+		
+		// Toggle visibility of country/swift fields
+		toggleCountrySwiftFields();
 	}
 	
 	// Update account when currency changes
@@ -133,9 +175,17 @@ if ( $t_mp[5]=='invoice' || isset($mixall) ){
 		
 		// Update account when currency changes
 		document.querySelector(\'select[name="cur"]\').addEventListener(\'change\', updateSAutoAccount);
+		
+		// Initial toggle of fields
+		toggleCountrySwiftFields();
 	});
 	</script>';
 }
+
+
+
+
+
 
 
 	//__________________________________________________________________________________________ANNEXA (CESIUNE DREPT DE PLATĂ)
