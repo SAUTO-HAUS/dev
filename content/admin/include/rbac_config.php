@@ -12,7 +12,7 @@ $rbac_admin_menu = [
         'seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['create', 'ctlg'],
-        'stock' => ['ctlg'],
+        'stock' => ['ctlg', 'extern'],
         'sett' => ['info', 'adm_usr', 'roles', 'phone_config']
     ],
     'admin' => [

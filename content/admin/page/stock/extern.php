@@ -3,10 +3,10 @@
 // Include stock translations
 require_once dirname(__FILE__) . '/stock_translations.php';
 
-// Stock management - View only for director
-echo '<div class="page_title">' . $stock_lang['stock'] . '</div>';
+// Stock extern management - View only for director
+echo '<div class="page_title">' . $stock_lang['stock_extern'] . '</div>';
 
-// Get brand distribution data with active/inactive breakdown
+// Get brand distribution data with active/inactive breakdown for external stock
 try {
     $sql = "SELECT 
         br_nm,
@@ -17,14 +17,14 @@ try {
         loc,
         vis
     FROM {$prefx}_car_ctlg 
-    WHERE act = 1 AND n_a = 0 AND loc IN ('1', '2')
+    WHERE act = 1 AND n_a = 0 AND (loc = '0' OR loc IS NULL OR loc = '')
     ORDER BY br_nm ASC, mo_nm ASC, yr DESC, id DESC";
     
     $stmt = $db->prepare($sql);
     $stmt->execute();
     $cars = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Group cars by brand and model, count active/inactive by location
+    // Group cars by brand and model, count active/inactive by location (for external stock)
     $brands = [];
     $totals = [
         'main_active' => 0,
@@ -68,7 +68,7 @@ try {
         // Add car to model
         $brands[$brand]['models'][$model]['cars'][] = $car;
         
-        // Count by location and visibility
+        // For external stock, we still count by location but these should be mostly 0 or empty
         if ($car['loc'] == '1') { // Main branch
             if ($car['vis'] == '1') {
                 $brands[$brand]['models'][$model]['cnt_main_active']++;
@@ -109,7 +109,7 @@ try {
 ?>
 
 <div class="stock-summary">
-    <div class="summary-title">📊 <?= $stock_lang['stock_summary'] ?></div>
+    <div class="summary-title">📊 <?= $stock_lang['stock_summary'] ?> - <?= $stock_lang['stock_extern'] ?></div>
     <div class="summary-grid">
         <div class="summary-item">
             <span class="summary-label"><?= $stock_lang['total_cars'] ?>:</span>
