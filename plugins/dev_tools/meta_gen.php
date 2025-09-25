@@ -43,6 +43,26 @@ if ($current_lang == 'ru') {
 $sa['meta']['dsc'] = 'Sauto - Vânzare de mașini, pagina auto, vă oferim o gamă largă de mașini.';
 $sa['meta']['kwd'] = 'sauto, md, Renault Megane, Renault Kadjar, Renault Clio, Nissan Qashqai, Nissan Juke, Nissan X Trail, Ford Focus, Opel Astra, Ford Transit, Ford Fiesta, Ford Fusion, VW Passat, VW Golf';
 
+if ($z2 === 'tradein') {
+    switch ($current_lang) {
+        case 'ru':
+            $sa['meta']['ttl'] = 'Обмен авто за 1 день в Кишиневе | Trade-in Sauto — выгодно и без хлопот';
+            $sa['meta']['dsc'] = 'Trade-in Sauto в Кишиневе: оценка автомобиля по рыночной цене, подбор новой машины, оформление и выплата разницы за 1 день без скрытых комиссий. Быстрый и безопасный обмен авто.';
+            $sa['meta']['kwd'] = 'trade-in авто Кишинев, обмен авто Sauto, trade in Молдова, обменять машину, оценка авто, покупка авто с доплатой, автосалон trade in, быстрый обмен авто, Sauto trade-in';
+            break;
+        case 'en':
+            $sa['meta']['ttl'] = 'Trade in Your Car in 1 Day in Chișinău | Sauto Trade-In — Smart & Easy';
+            $sa['meta']['dsc'] = 'Sauto Trade-In in Chișinău: fair car valuation, choice of new or used vehicles, paperwork and payment handled in one day with no hidden fees. Fast, secure car exchange.';
+            $sa['meta']['kwd'] = 'trade-in Chisinau, car trade-in Moldova, swap my car, Sauto trade in, car valuation, exchange car with cash top-up, buy car with trade-in, fast car exchange, dealership trade in service';
+            break;
+        default:
+            $sa['meta']['ttl'] = 'Schimbă-ți mașina în 1 zi la Chișinău | Trade-In Sauto — avantajos și fără griji';
+            $sa['meta']['dsc'] = 'Trade-In Sauto în Chișinău: evaluare corectă a mașinii, ofertă pentru vehicule noi sau rulate, acte și plată într-o singură zi, fără comisioane ascunse. Schimb rapid și sigur.';
+            $sa['meta']['kwd'] = 'trade-in auto Chisinau, schimb auto Sauto, evaluare masina, trade in Moldova, cumpara masina cu avans, schimb masina cu diferenta, autoturisme noi si rulate, servicii trade-in, schimb rapid auto';
+            break;
+    }
+}
+
 // Direct check for car filter URLs - apply SEO titles immediately 
 if ($z2 == 'cars' && !is_numeric($z3) && isset($t_mp[3]) && !empty($t_mp[3])) {
     // This could be a brand in a clean URL
