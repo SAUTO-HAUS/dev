@@ -41,7 +41,7 @@ $buyer_address = isset($_POST['buyer_address']) ? htmlspecialchars($_POST['buyer
 $buyer_country = isset($_POST['buyer_country']) ? htmlspecialchars($_POST['buyer_country']) : '';
 $buyer_account = isset($_POST['buyer_account']) ? htmlspecialchars($_POST['buyer_account']) : '';
 $buyer_swift = isset($_POST['buyer_swift']) ? htmlspecialchars($_POST['buyer_swift']) : '';
-$description = isset($_POST['description']) && $_POST['description'] ? htmlspecialchars($_POST['description']) : ($br && $mo ? strtoupper($br.' '.$mo) : '');
+$description = isset($_POST['description']) && $_POST['description'] ? htmlspecialchars($_POST['description']) : ($br && $mo ? strtoupper(str_replace('_', ' ', $br.' '.$mo)) : '');
 
 $rtrn .= '
 <div class="pg bg" style="font-size: 16px; line-height: 1.3; padding: 15px;">
@@ -76,7 +76,6 @@ $rtrn .= '
 	
 	<div style="text-align: center; margin: 20px 0;">
 		<div style="font-weight: bold; font-size: 26px; margin: 5px 0;">Rechnung/Kaufvertrag</div>
-		<div style="font-weight: bold; font-size: 20px; margin: 5px 0;">Facture / Invoice</div>
 	</div>
 	
 	<table style="width: 100%; margin: 15px 0; border-collapse: collapse; border: 2px solid #000;">
@@ -127,26 +126,26 @@ $rtrn .= '
 		</tbody>
 	</table>
 	
-	<div style="margin: 20px 0; padding: 20px; border: 2px solid #000;">
-		<div style="display: flex; justify-content: space-between; margin: 8px 0; font-size: 20px;"><span><strong>Summe der Nettobetrage</strong></span><span></span></div>
-		<div style="display: flex; justify-content: space-between; margin: 8px 0; font-size: 12px;"><span><strong>Suma NETO</strong></span><span></span></div>
-		<div style="display: flex; justify-content: space-between; margin: 5px 0; font-size: 20px;"><span>*zzgl. 0% Umsatzsteuer</span><span></span></div>
-		<div style="display: flex; justify-content: space-between; margin: 5px 0; font-size: 12px;"><span>TVA</span><span></span></div>
+	<div style="margin: 10px 0; padding: 10px; border: 2px solid #000;">
+		<div style="display: flex; justify-content: space-between; margin: 8px 0; font-size: 17px;"><span><strong>Summe der Nettobetrage</strong></span><span></span></div>
+		<div style="display: flex; justify-content: space-between; margin: 8px 0; font-size: 11px;"><span><strong>Suma NETO</strong></span><span></span></div>
+		<div style="display: flex; justify-content: space-between; margin: 5px 0; font-size: 17px;"><span>*zzgl. 0% Umsatzsteuer</span><span></span></div>
+		<div style="display: flex; justify-content: space-between; margin: 5px 0; font-size: 11px;"><span>TVA</span><span></span></div>
 		<hr style="border: none; height: 2px; background: #000; margin: 15px 0;">
-		<div style="display: flex; justify-content: space-between; margin: 8px 0; font-size: 20px;"><span><strong>Gesamtbetrag</strong></span><span></span></div>
-		<div style="display: flex; justify-content: space-between; margin: 8px 0; font-size: 20px;"><span><strong>Total</strong></span><span><strong>'.number_format($price, 0).' '.$currency.'</strong></span></div>
+		<div style="display: flex; justify-content: space-between; margin: 8px 0; font-size: 17px;"><span><strong>Gesamtbetrag</strong></span><span></span></div>
+		<div style="display: flex; justify-content: space-between; margin: 8px 0;"><span style="font-size: 17px;"><strong>Total</strong></span><span style="font-size: 20px;"><strong>'.number_format($price, 0).' '.$currency.'</strong></span></div>
 	</div>
 	
-	<div style="margin: 25px 0; padding: 18px; border: 1px solid #000; font-size: 15px; line-height: 1.5;">
-		<div style="margin: 8px 0;"><strong>*Exportgeschäft . Steuerfreie Ausfurlieferung Paragraf 4 Nr. 1a Ustg</strong></div>
-		<div style="margin: 8px 0;"><em>Clauza de livrare fara taxa</em></div>
-		<div style="margin: 12px 0;"><strong>Zahlunsart:</strong> Bar/TRANSFER</div>
-		<div style="margin: 8px 0;"><em>tip de plata: TRANSFER</em></div>
-		<div style="margin: 12px 0;">Das Leistungsdatum entspricht dem Rechnungsdatum.</div>
-		<div style="margin: 8px 0;"><em>Data prestației este data facturii.</em></div>
+	<div>
+		<div style="margin: 12px 0; font-size: 17px;"><strong>*Exportgeschäft . Steuerfreie Ausfurlieferung Paragraf 4 Nr. 1a Ustg</strong></div>
+		<div style="margin: 8px 0; font-size: 12px;"><em>Clauza de livrare fara taxa</em></div>
+		<div style="margin: 12px 0; font-size: 17px;"><strong>Zahlunsart:</strong> Bar/TRANSFER</div>
+		<div style="margin: 8px 0; font-size: 12px;"><em>tip de plata: TRANSFER</em></div>
+		<div style="margin: 12px 0; font-size: 17px;">Das Leistungsdatum entspricht dem Rechnungsdatum.</div>
+		<div style="margin: 8px 0; font-size: 12px;"><em>Data prestației este data facturii.</em></div>
 	</div>
 	
-	<div style="margin-top: 40px; padding: 20px; border-top: 2px solid #000;">
+	<div style="margin-top: 10px; padding: 10px; border-top: 2px solid #000;">
 		<div style="display: flex; justify-content: space-between; align-items: flex-start;">
 			<div style="font-size: 16px; flex: 1;">
 				'.str_replace('<br>', '<br>', $seller_address).'
@@ -162,5 +161,7 @@ $rtrn .= '
 $rtrn .= '
 </div>';
 
+// When included from docs_print.php, just echo the content
+// When accessed directly, also echo the content
 echo $rtrn;
 ?>

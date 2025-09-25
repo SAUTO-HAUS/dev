@@ -51,8 +51,8 @@ if ( $t_mp[5]=='invoice' || isset($mixall) ){
 	
 	<div class="ttl">Sauto Role</div>
 	<label class="lbl"><span class="ttl">Sauto este</span><select name="sauto_role" title="Sauto Role">
-		<option value="seller"'.(isset($_POST['sauto_role']) && $_POST['sauto_role'] == 'seller' ? ' selected' : (!isset($_POST['sauto_role']) ? ' selected' : '')).'>Vânzător</option>
-		<option value="buyer"'.(isset($_POST['sauto_role']) && $_POST['sauto_role'] == 'buyer' ? ' selected' : '').'>Cumpărător</option>
+	<option value="buyer"'.(isset($_POST['sauto_role']) && $_POST['sauto_role'] == 'buyer' ? ' selected' : (!isset($_POST['sauto_role']) ? ' selected' : '')).'>Cumpărător</option>
+		<option value="seller"'.(isset($_POST['sauto_role']) && $_POST['sauto_role'] == 'seller' ? ' selected' : '').'>Vânzător</option>
 	</select></label>
 	
 	<div class="ttl">Cumpărător</div>
