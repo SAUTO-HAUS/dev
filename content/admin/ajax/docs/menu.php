@@ -188,7 +188,7 @@ if ( $t_mp[5]=='invoice' || isset($mixall) ){
 
 
 
-	//__________________________________________________________________________________________ANNEXA (CESIUNE DREPT DE PLATĂ)
+//__________________________________________________________________________________________ANNEXA (CESIUNE DREPT DE PLATĂ)
 
 if ( $t_mp[5]=='cesionar' || isset($mixall) ){
 	// Auto-generate Annexa number AN-YYYY-XXX with database counter
@@ -401,6 +401,24 @@ if ($contract['contract_type'] == 'vinzare_proc') {
 							loadContractData();
 						}
 					}
+					
+					var grntTxt = vals.data('grnt_txt');
+					if (grntTxt) {
+						var grntTexts = grntTxt.toString().split('||');
+						var grntContainer = document.getElementById('grnt_fld_bx');
+						
+						if (grntContainer) {
+							grntContainer.innerHTML = '';
+							grntContainer.setAttribute('data-qu', grntTexts.length);
+							
+							for (var i = 0; i < grntTexts.length; i++) {
+								if (grntTexts[i].trim() !== '') {
+									var fieldHtml = '<label class="lbl max"><span class="ttl">6.' + (i + 1) + '.</span><textarea class="need" name="grnt_txt[]" title="Group 6 text" rows="1">' + grntTexts[i] + '</textarea></label>';
+									grntContainer.innerHTML += fieldHtml;
+								}
+							}
+						}
+					}
 				}
 			}, 100);
 		}
@@ -411,6 +429,7 @@ JAVASCRIPT;
 	
 	$rtrn .= ( isset($mixall)?'</form>':'' );
 }
+	
 	
 	//__________________________________________________________________________________________CONT DE PLATA
 	if ( $t_mp[5]=='con_plata' || isset($mixall) ){
