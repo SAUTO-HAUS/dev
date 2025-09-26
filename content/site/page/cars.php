@@ -821,13 +821,25 @@ $iconTelegramParams = array(
                 // Get dynamic phone number based on car data and context
                 $dynamicPhone = PhoneHelper::getCarPhone($r, 'car_page');
 
+                // webs25
+                $pdo = $db->prepare('SELECT * FROM ' . $prefx . '_seo2 WHERE `it_id`=:it_id AND lng = :lng LIMIT 1');
+                $pdo->execute(['it_id' => $r['id'], 'lng' => $_COOKIE['lang']]);
+                $rseo = $pdo->fetch();
+                // var_dump( $rseo);
+                $rseo['params_html'] = (html_entity_decode($rseo['params_html']));
+
+                $bnt_params_mobile = '  ';
+                if( trim($rseo['params_html']) != '' ) {
+                    $bnt_params_mobile = ' <div class="btn_params mobile" onclick=" openParamsPopAuto(\'open\')  " > '.$lng['w']['characteristics'].' </div> ';
+                }
+
                 $rtrn .= '
                             <div class="prc  desktop">
                                 <span class="val" title="'.$lng['w']['prc'].'">'.( $r['prc']>100 ? '<span class="i">'.parseCurr($prc).'</span> <span class="cur">'.( symb_rplc($r['cur']) ).'</span>' : '<span style="font-size: 1.5rem;">'.$lng['w']['negociabil'] ).'</span></span>
                                 '.$o_prc_bl.'
                             </div>
                             <div class="doit">
-                                <div class="btn_params mobile" onclick=" openParamsPopAuto(\'open\')  " > '.$lng['w']['characteristics'].' </div>
+                                '. $bnt_params_mobile .'
                                 
                                 <a class="btn call" href="tel:'.$dynamicPhone.'">'.$lng['w']['call'].'</a>
                                 
