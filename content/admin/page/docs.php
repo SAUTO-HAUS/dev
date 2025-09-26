@@ -12,17 +12,16 @@ if ( isset($t_mp[4]) ){
 			$docs_ar = [
 				'cars'=>[
 					'sell'=>[ 
-						'con_plata'=>'Cont de plata'
-						,'cesionar'=>'Annexa (Cesiune drept de plată)'
-						,'con_arvon'=>'Contract de arvună'
+						'cesionar'=>'Annexa (Cesiune drept de plată)'
+						,'con_plata'=>'Cont de plata'
+					    ,'con_arvon'=>'Contract de arvună'
 						,'con_arvon_com'=>'Contract de arvună (la comanda)'
 						,'com_transport'=>'Comanda pentru transport'
 						,'con_intermed'=>'Contract de intermediere [TEST]'
-						,'invoice'=>'Invoice'
 						,'vinzare_proc'=>'Contract de vânzare-cumpărare'
 						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
 						,'vinzare_sauto'=>'Contract de vânzare-cumpărare ( Sauto cumparator )'
-						
+						,'invoice'=>'Invoice'
 					]
 				]
 			];
@@ -38,16 +37,16 @@ if ( isset($t_mp[4]) ){
 			$docs_ar = [
 				'cars'=>[
 					'sell'=>[ 
-						'con_plata'=>'Cont de plata'
-						,'cesionar'=>'Annexa (Cesiune drept de plată)'
-						,'con_arvon'=>'Contract de arvună'
+						'cesionar'=>'Annexa (Cesiune drept de plată)'
+						,'con_plata'=>'Cont de plata'
+					    ,'con_arvon'=>'Contract de arvună'
 						,'con_arvon_com'=>'Contract de arvună (la comanda)'
 						,'com_transport'=>'Comanda pentru transport'
 						,'con_intermed'=>'Contract de intermediere [TEST]'
-						,'invoice'=>'Invoice'
 						,'vinzare_proc'=>'Contract de vânzare-cumpărare'
 						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
 						,'vinzare_sauto'=>'Contract de vânzare-cumpărare ( Sauto cumparator )'
+						,'invoice'=>'Invoice'
 					]//,'contract_de_intermediere'=>'Contract de intermediere'
 				]
 			];
