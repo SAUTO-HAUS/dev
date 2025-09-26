@@ -118,8 +118,8 @@ class PhoneReplacementService
      */
     private function isLocationPrunkul($location)
     {
-        // Prunkul Branch - Pietrăriei 3 (ID = 2 based on language files verification)
-        return in_array($location, [2]) ||
+        // Prunkul Branch - Pietrăriei 3 (ID = 2, can be string '2' or integer 2)
+        return in_array($location, [2, '2']) ||
                strpos(strtolower($location), 'prunkul') !== false;
     }
     

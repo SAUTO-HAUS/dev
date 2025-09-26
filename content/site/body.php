@@ -98,8 +98,36 @@ echo '
         </nav>
 
         <?php
-        // Get contextual phone number
-        $contextualPhone = PhoneHelper::getContextualPhone($t_mp);
+        // Get contextual phone number with car data for car pages
+        $carData = null;
+        
+        // If we're on a car page, get car data BEFORE cars.php loads
+        if (isset($t_mp[2]) && $t_mp[2] == 'cars' && isset($t_mp[3])) {
+            try {
+                if (is_numeric($t_mp[3])) {
+                    // Numeric ID format
+                    $pdo = $db->prepare('SELECT * FROM ' . $prefx . '_car_ctlg WHERE id = :id AND vis = "1" AND act = "1" LIMIT 1');
+                    $pdo->execute(['id' => intval($t_mp[3])]);
+                } else {
+                    // Brand/model URL format
+                    $brand = $t_mp[3];
+                    $model = isset($t_mp[4]) ? $t_mp[4] : '';
+                    
+                    if ($brand && $model) {
+                        $pdo = $db->prepare('SELECT * FROM ' . $prefx . '_car_ctlg WHERE br = :brand AND mo = :model AND vis = "1" AND act = "1" ORDER BY id DESC LIMIT 1');
+                        $pdo->execute(['brand' => $brand, 'model' => $model]);
+                    }
+                }
+                
+                if (isset($pdo) && $pdo->rowCount() > 0) {
+                    $carData = $pdo->fetch();
+                }
+            } catch (Exception $e) {
+                // In case of error, carData stays null
+            }
+        }
+        
+        $contextualPhone = PhoneHelper::getContextualPhone($t_mp, $carData);
         $formattedPhone = PhoneHelper::formatPhone($contextualPhone, 'display');
         ?>
         <a class="call" href="tel:<?php echo $contextualPhone; ?>" title="<?php echo $formattedPhone; ?>">

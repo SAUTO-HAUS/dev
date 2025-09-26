@@ -76,6 +76,13 @@ class PhoneHelper
             return self::getOrderPhone();
         }
         
+        if (is_array($urlSegments) && 
+            count($urlSegments) >= 3 && 
+            $urlSegments[2] === 'cars' && 
+            $carData) {
+            return self::getCarPhone($carData, 'car_page');
+        }
+        
         // If car data is provided, get car-specific phone
         if ($carData) {
             return self::getCarPhone($carData, 'contextual');
