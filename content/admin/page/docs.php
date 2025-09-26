@@ -643,6 +643,12 @@ if ( isset($t_mp[4]) ){
 							'.(isset($inf['pays'])?'data-pays="'.$inf['pays'].'"':'').' '.(isset($inf['grnt_txt'])?'data-grnt_txt="'.$inf['grnt_txt'].'"':'').'
 							'.(isset($inf['extras'])?'data-extras="'.$inf['extras'].'"':'').' '.(isset($inf['dmg_pos'])?'data-dmg_pos="'.$inf['dmg_pos'].'"':'').' '.(isset($inf['dmg_txt'])?'data-dmg_txt="'.$inf['dmg_txt'].'"':'').'
 							'.(isset($inf['orig'])?'data-orig="'.$inf['orig'].'"':'').' 
+							'.(isset($inf['cur'])?'data-cur="'.$inf['cur'].'"':'').' '.(isset($inf['description'])?'data-description="'.htmlspecialchars($inf['description']).'"':'').' '.(isset($inf['dealer'])?'data-dealer="'.htmlspecialchars($inf['dealer']).'"':'').'
+							'.(isset($inf['sauto_role'])?'data-sauto_role="'.$inf['sauto_role'].'"':'').'
+							'.(isset($inf['seller_name'])?'data-seller_name="'.htmlspecialchars($inf['seller_name']).'"':'').' '.(isset($inf['seller_vat'])?'data-seller_vat="'.htmlspecialchars($inf['seller_vat']).'"':'').' '.(isset($inf['seller_account'])?'data-seller_account="'.htmlspecialchars($inf['seller_account']).'"':'').'
+							'.(isset($inf['seller_address'])?'data-seller_address="'.htmlspecialchars($inf['seller_address']).'"':'').' '.(isset($inf['seller_country'])?'data-seller_country="'.htmlspecialchars($inf['seller_country']).'"':'').' '.(isset($inf['seller_swift'])?'data-seller_swift="'.htmlspecialchars($inf['seller_swift']).'"':'').'
+							'.(isset($inf['buyer_name'])?'data-buyer_name="'.htmlspecialchars($inf['buyer_name']).'"':'').' '.(isset($inf['buyer_vat'])?'data-buyer_vat="'.htmlspecialchars($inf['buyer_vat']).'"':'').' '.(isset($inf['buyer_account'])?'data-buyer_account="'.htmlspecialchars($inf['buyer_account']).'"':'').'
+							'.(isset($inf['buyer_address'])?'data-buyer_address="'.htmlspecialchars($inf['buyer_address']).'"':'').' '.(isset($inf['buyer_country'])?'data-buyer_country="'.htmlspecialchars($inf['buyer_country']).'"':'').' '.(isset($inf['buyer_swift'])?'data-buyer_swift="'.htmlspecialchars($inf['buyer_swift']).'"':'').' 
 							data-u_tp="'.$r['u_tp'].'" 
 							data-adm="'.$r['adm'].'" data-last_edited_by="'.($r['last_edited_by'] ?? $r['adm']).'"
 						></div>

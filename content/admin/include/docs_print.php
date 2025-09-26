@@ -273,7 +273,7 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 		
 		//__________________INFO generator
 		$inf=''; $qu=0;
-		$inf_ar = ['br', 'mo', 'vin', 'yr', 'clr', 'prc', 'cur', 'prc_eur', 'prc_av', 'loc', 'term_livr', 'cntr_fr', 'cntr_to', 'adr_to', 't2pay', 'plate', 'extras', 'orig', 'description', 'dealer', 'sauto_role', 'seller_name', 'seller_vat', 'seller_account', 'seller_address', 'buyer_name', 'buyer_vat', 'buyer_account', 'buyer_address', 'annexa_nr', 'cont_nr', 'add_cesionar', 'cesionar_tp', 'cesionar_cf_idno', 'cesionar_nm', 'cesionar_tva_dt', 'cesionar_iban_dt_tk', 'cesionar_account', 'cesionar_adr', 'cesionar_phn', 'cesionar_eml', 'cesionar_suma'];
+		$inf_ar = ['br', 'mo', 'vin', 'yr', 'clr', 'prc', 'cur', 'prc_eur', 'prc_av', 'loc', 'term_livr', 'cntr_fr', 'cntr_to', 'adr_to', 't2pay', 'plate', 'extras', 'orig', 'description', 'dealer', 'sauto_role', 'seller_name', 'seller_vat', 'seller_account', 'seller_address', 'seller_country', 'seller_swift', 'buyer_name', 'buyer_vat', 'buyer_account', 'buyer_address', 'buyer_country', 'buyer_swift', 'annexa_nr', 'cont_nr', 'add_cesionar', 'cesionar_tp', 'cesionar_cf_idno', 'cesionar_nm', 'cesionar_tva_dt', 'cesionar_iban_dt_tk', 'cesionar_account', 'cesionar_adr', 'cesionar_phn', 'cesionar_eml', 'cesionar_suma'];
 		$inf_up_ar = ['vin'];
 		foreach ($inf_ar as $k => $v){
 			if ( isset($_POST[$v])&&$_POST[$v]!='' ){
