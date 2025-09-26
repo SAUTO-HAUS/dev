@@ -41,7 +41,18 @@ $buyer_address = isset($_POST['buyer_address']) ? htmlspecialchars($_POST['buyer
 $buyer_country = isset($_POST['buyer_country']) ? htmlspecialchars($_POST['buyer_country']) : '';
 $buyer_account = isset($_POST['buyer_account']) ? htmlspecialchars($_POST['buyer_account']) : '';
 $buyer_swift = isset($_POST['buyer_swift']) ? htmlspecialchars($_POST['buyer_swift']) : '';
-$description = isset($_POST['description']) && $_POST['description'] ? htmlspecialchars($_POST['description']) : ($br && $mo ? strtoupper(str_replace('_', ' ', $br.' '.$mo)) : '');
+$custom_description = isset($_POST['description']) && $_POST['description'] ? htmlspecialchars($_POST['description']) : '';
+$brand_model = ($br && $mo) ? strtoupper(str_replace('_', ' ', $br.' '.$mo)) : '';
+
+if ($custom_description && $brand_model) {
+    $description = $brand_model . ' - ' . $custom_description;
+} elseif ($custom_description) {
+    $description = $custom_description;
+} elseif ($brand_model) {
+    $description = $brand_model;
+} else {
+    $description = '';
+}
 
 $rtrn .= '
 <div class="pg bg" style="font-size: 16px; line-height: 1.3; padding: 15px;">
