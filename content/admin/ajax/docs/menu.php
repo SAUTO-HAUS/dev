@@ -288,20 +288,15 @@ if ($contract['contract_type'] == 'vinzare_proc') {
 	<label class="lbl"><span class="ttl">Nume cumpărător</span><input class="need" type="text" name="u_nm" title="Nume cumpărător" value="'.(isset($_POST['u_nm']) ? htmlspecialchars($_POST['u_nm']) : '').'" /></label>
 	<label class="lbl"><span class="ttl">IDNO/CF cumpărător</span><input class="need" type="text" name="u_cf_idno" title="IDNO/CF cumpărător" value="'.(isset($_POST['u_cf_idno']) ? htmlspecialchars($_POST['u_cf_idno']) : '').'" /></label>
 	
-	<div class="ttl">Opțiuni Annexa</div>
-	<label class="lbl chk">
-		<input type="checkbox" name="add_cesionar" id="add_cesionar" value="1" '.(isset($_POST['add_cesionar']) && $_POST['add_cesionar'] == '1' ? 'checked' : '').' onchange="toggleCesionarSection()" />
-		<span class="ttl">Добавить Cesionar (terța parte care primește dreptul de plată)</span>
-	</label>
+	<div class="ttl">Cesionar (terța parte care primește dreptul de plată)</div>
+	<input type="hidden" name="add_cesionar" value="1" />
 	
-	<div id="cesionar_section" style="display:'.(isset($_POST['add_cesionar']) && $_POST['add_cesionar'] == '1' ? 'block' : 'none').';">
-		<div class="ttl">Cesionar (terța parte care primește dreptul de plată)</div>
+		<div id="cesionar_section">
 		<label class="lbl"><span class="ttl">Nume cesionar</span><input class="cesionar-field" type="text" name="cesionar_nm" title="Nume cesionar" value="'.(isset($_POST['cesionar_nm']) ? htmlspecialchars($_POST['cesionar_nm']) : '').'" /></label>
 		<label class="lbl"><span class="ttl">IDNO/CF cesionar</span><input class="cesionar-field" type="text" name="cesionar_cf_idno" title="IDNO/CF cesionar" value="'.(isset($_POST['cesionar_cf_idno']) ? htmlspecialchars($_POST['cesionar_cf_idno']) : '').'" /></label>
 		<label class="lbl"><span class="ttl">Cont bancar cesionar</span><input class="cesionar-field" type="text" name="cesionar_account" title="Cont bancar cesionar" value="'.(isset($_POST['cesionar_account']) ? htmlspecialchars($_POST['cesionar_account']) : '').'" /></label>
 		<label class="lbl"><span class="ttl">Sumă cesiune * (în valuta contractului)</span><input class="need cesionar-field" type="number" name="cesionar_suma" title="Sumă cesiune" value="'.(isset($_POST['cesionar_suma']) ? $_POST['cesionar_suma'] : '').'" step="0.01" min="0.01" /></label>
 	</div>
-	
 	<div class="ttl">Text suplimentar (opțional)</div>
 	<div id="grnt_fld_bx" name="grnt_txt" data-qu="0"></div>
 	<div class="btn" data-fn="add_grnt_fld">Adăugați</div>
@@ -341,26 +336,17 @@ if ($contract['contract_type'] == 'vinzare_proc') {
 	}
 	
 	function toggleCesionarSection() {
-		var checkbox = document.getElementById("add_cesionar");
+		// Cesionar section is always visible now
 		var section = document.getElementById("cesionar_section");
 		var cesionarFields = document.querySelectorAll(".cesionar-field");
 		
-		if (checkbox.checked) {
-			section.style.display = "block";
-			// Make cesionar fields required when section is visible
-			cesionarFields.forEach(function(field) {
-				if (field.name === "cesionar_nm" || field.name === "cesionar_cf_idno" || field.name === "cesionar_suma") {
-					field.classList.add("need");
-				}
-			});
-		} else {
-			section.style.display = "none";
-			// Remove required class when section is hidden
-			cesionarFields.forEach(function(field) {
-				field.classList.remove("need");
-				field.value = ""; // Clear values when hiding
-			});
-		}
+		section.style.display = "block";
+		// Make cesionar fields required since section is always visible
+		cesionarFields.forEach(function(field) {
+			if (field.name === "cesionar_nm" || field.name === "cesionar_cf_idno" || field.name === "cesionar_suma") {
+				field.classList.add("need");
+			}
+		});
 	}
 	
 	// Initialize on page load
@@ -377,20 +363,16 @@ if ($contract['contract_type'] == 'vinzare_proc') {
 				}
 				
 				if (vals.length > 0) {
-					// Handle cesionar checkbox
-					var addCesionar = vals.data('add_cesionar');
-					if (addCesionar == '1') {
-						document.getElementById('add_cesionar').checked = true;
-						document.getElementById('cesionar_section').style.display = 'block';
-						
-						// Make cesionar fields required
-						var cesionarFields = document.querySelectorAll('.cesionar-field');
-						cesionarFields.forEach(function(field) {
-							if (field.name === 'cesionar_nm' || field.name === 'cesionar_cf_idno' || field.name === 'cesionar_suma') {
-								field.classList.add('need');
-							}
-						});
-					}
+					// Cesionar section is always visible and active
+					document.getElementById('cesionar_section').style.display = 'block';
+					
+					// Make cesionar fields required
+					var cesionarFields = document.querySelectorAll('.cesionar-field');
+					cesionarFields.forEach(function(field) {
+						if (field.name === 'cesionar_nm' || field.name === 'cesionar_cf_idno' || field.name === 'cesionar_suma') {
+							field.classList.add('need');
+						}
+					});
 					
 					// Handle base_contract_id
 					var baseContractId = vals.data('base_contract_id');
