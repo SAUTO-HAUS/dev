@@ -21,6 +21,11 @@ $rtrn = '
 	.legal-clauses div { margin: 10px 0; }
 	.payment-terms { margin: 20px 0; }
 	.signature-section { margin-top: 40px; }
+	
+	#p_cont {
+		max-width: 800px;
+		margin: 0 auto;
+	}
 </style>
 
 <div id="p_cont" class="base">';
@@ -55,7 +60,7 @@ if ($custom_description && $brand_model) {
 }
 
 $rtrn .= '
-<div class="pg bg" style="font-size: 16px; line-height: 1.3; padding: 15px;">
+<div class="pg bg" style="font-size: 16px; line-height: 1.3; padding: 10px 30px;">
 	<div style="text-align: left; font-size: 36px; font-weight: bold; margin-bottom: 15px;">INVOICE</div>
 	
 	<div style="display: flex; margin-bottom: 15px;">
@@ -156,7 +161,7 @@ $rtrn .= '
 		<div style="margin: 8px 0; font-size: 12px;"><em>Data prestației este data facturii.</em></div>
 	</div>
 	
-	<div style="margin-top: 10px; padding: 10px; border-top: 2px solid #000;">
+	<div style="margin-top: 10px; padding: 0px; border-top: 2px solid #000;">
 		<div style="display: flex; justify-content: space-between; align-items: flex-start;">
 			<div style="font-size: 16px; flex: 1;">
 				'.str_replace('<br>', '<br>', $seller_address).'
