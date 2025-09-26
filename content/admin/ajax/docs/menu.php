@@ -366,6 +366,45 @@ if ($contract['contract_type'] == 'vinzare_proc') {
 	// Initialize on page load
 	document.addEventListener("DOMContentLoaded", function() {
 		toggleCesionarSection();
+
+		
+		// Check if we're in edit mode and populate cesionar fields from data attributes
+		if (typeof $ !== 'undefined' && $("#overlay").length > 0) {
+			setTimeout(function() {
+				var vals = $(".docs .list .bx.edited .values");
+				if (vals.length === 0) {
+					vals = $(".docs .list .bx input[name='btns_act']:checked").closest('.bx').find('.values');
+				}
+				
+				if (vals.length > 0) {
+					// Handle cesionar checkbox
+					var addCesionar = vals.data('add_cesionar');
+					if (addCesionar == '1') {
+						document.getElementById('add_cesionar').checked = true;
+						document.getElementById('cesionar_section').style.display = 'block';
+						
+						// Make cesionar fields required
+						var cesionarFields = document.querySelectorAll('.cesionar-field');
+						cesionarFields.forEach(function(field) {
+							if (field.name === 'cesionar_nm' || field.name === 'cesionar_cf_idno' || field.name === 'cesionar_suma') {
+								field.classList.add('need');
+							}
+						});
+					}
+					
+					// Handle base_contract_id
+					var baseContractId = vals.data('base_contract_id');
+					if (baseContractId) {
+						var contractSelect = document.getElementById('base_contract_id');
+						if (contractSelect) {
+							contractSelect.value = baseContractId;
+							loadContractData();
+						}
+					}
+				}
+			}, 100);
+		}
+
 	});
 	</script>
 JAVASCRIPT;
