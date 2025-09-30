@@ -275,3 +275,18 @@ if (!function_exists('__log')) {
         }
     }
 }
+
+/**
+ * generate proper car URL 
+ * @param string 
+ * @param string 
+ * @return string 
+ */
+function buildCarUrl($brand, $model = '') {
+    $brand_clean = str_replace('_', '-', $brand);
+    if (empty($model)) {
+        return $brand_clean;
+    }
+    $model_clean = str_replace('_', '-', $model);
+    return $brand_clean . '-' . $model_clean;
+}

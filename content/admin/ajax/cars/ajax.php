@@ -398,7 +398,7 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
         urlencode(strtolower($r['br'])) .
         "&utm_source=social&utm_medium=organic&utm_campaign=new_auto";*/
 
-    $message .= "\n\n". "👉 Alte modele aici: " . "https://www.sauto.md/ro/cars/".$brand_auto."-".$model_auto."?utm_source=social&utm_medium=organic&utm_campaign=new_auto";
+    $message .= "\n\n". "👉 Alte modele aici: " . "https://www.sauto.md/ro/cars/".str_replace('_', '-', $brand_auto)."-".str_replace('_', '-', $model_auto)."?utm_source=social&utm_medium=organic&utm_campaign=new_auto";
 
 // ─────────── 3. Универсальный вызов Graph API ───────────
     function graphCall( $endpoint, array $params = [],  $method = 'POST') {

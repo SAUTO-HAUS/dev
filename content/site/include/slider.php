@@ -9,7 +9,7 @@ $slide_arr = [
 		[ 'img'=>'mma5knn9nz' ],
 	],
 	'rnd'=>[ //2 группа баннеров. Здесь будут выдаваться баннеры наугад и после 1 группы
-		[ 'img'=>'a6fwm1hruk', 'url'=>'/'.$_COOKIE['lang'].'/cars/nissan-qashqai-qashqai_2' ],
+		[ 'img'=>'a6fwm1hruk', 'url'=>'/'.$_COOKIE['lang'].'/cars/nissan-qashqai-qashqai-2' ],
 		[ 'img'=>'gzdy7witv2', 'url'=>'/'.$_COOKIE['lang'].'/cars?tg=smpl&v=gD2ksAsmc5L' ],
 		[ 'img'=>'77hveyio33' ],
 		[ 'img'=>'0uuist3lhq' ],

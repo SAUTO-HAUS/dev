@@ -432,7 +432,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 }else{
                     $z_stat .= '
 						<div class="stat n_a1">'.$lng['l']['stat']['n_a1'].'</div>
-						<a href="/'.$_COOKIE['lang'].'/cars/'.$r['br'].'-'.str_replace('_', '-', $r['mo']).'" class="stat soon1">'.$lng['w']['fnd_smlr'].'</a>
+						<a href="/'.$_COOKIE['lang'].'/cars/'.buildCarUrl($r['br'], $r['mo']).'" class="stat soon1">'.$lng['w']['fnd_smlr'].'</a>
 					';
                 }
 
@@ -1126,7 +1126,7 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
 				</div>';
             }
 
-            if ( $chkr_av == 1 ){ $rtrn .= '<script> $(document).ready(function(){ $("#crumbs .crnt").html("<a style=\"color:inherit;\" href=\"/"+$("body").data("lng")+"/cars/'.$r['br'].'-'.str_replace('_', '-', $r['mo']).'\">'.$r['br_nm'].' '.$r['mo_nm'].'</a>"); }) </script>'; }//, ['.$r['id'].']
+            if ( $chkr_av == 1 ){ $rtrn .= '<script> $(document).ready(function(){ $("#crumbs .crnt").html("<a style=\"color:inherit;\" href=\"/"+$("body").data("lng")+"/cars/'.buildCarUrl($r['br'], $r['mo']).'\">'.$r['br_nm'].' '.$r['mo_nm'].'</a>"); }) </script>'; }//, ['.$r['id'].']
             else{ $rtrn .= '<div class="no_item">'.$lng['t']['x']['no_item'].'</div>'; }
         }
     }
