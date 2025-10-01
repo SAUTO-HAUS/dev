@@ -225,7 +225,12 @@ if ( !isset($t_mp[3]) ){
 			}
 			
 			if ( $chkr_av == 1 ){ $rtrn .= '<script> $(document).ready(function(){ $("#crumbs .crnt").text("'.$r['br_nm'].' '.$r['mo_nm'].' '.$r['w'].'/'.$r['h'].' R'.$r['d'].', ['.$r['id'].']"); }) </script>'; }
-			else{ $rtrn .= '<div class="no_item">'.$lng['t']['x']['no_item'].'</div>'; }
+			else{ 
+				// Tyre not found - return 404 instead of showing no_item block
+				http_response_code(404);
+				include(_DEFAULT.'/404.php');
+				exit;
+			}
 		}
 	}
 }

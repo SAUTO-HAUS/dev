@@ -16,7 +16,8 @@
 
 echo '
 <div id="services">';
-	if ( !isset($t_mp[3]) || !key_exists( $t_mp[3], $serv_arr ) ){
+	if ( !isset($t_mp[3]) ){
+		// No service slug provided - show services list
 	
 		echo '
 		<h1 class="ttl">'.( mb_strtoupper( $lng['w']['services'] ) ).'</h1>
@@ -83,13 +84,18 @@ echo '
 			<a class="menu" href="/'.$_COOKIE['lang'].'/services/'.$k.'">
 				<div class="img">
 					<div class="def" style="background-image:url(/media/images/site/v2/'.$v['img'].');"></div>
-				</div>
-				<div class="txt">'.$lang_offers[$k]['name'].'</div>
-			</a>
 			';
 		}*/
 	
 	}else{
+		// Service slug provided - check if it exists
+		if (!key_exists($t_mp[3], $serv_arr)) {
+			// Invalid service slug - return 404
+			http_response_code(404);
+			include(_DEFAULT.'/404.php');
+			exit;
+		}
+		
 		if ($t_mp[3]!='transportation'){ // credit
 
             $rtrnCalculatorBlock = "";

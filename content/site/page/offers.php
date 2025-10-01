@@ -75,20 +75,19 @@ echo '
 		0% {right:150%;}
 		100% {right:50%;}
 	}
-	
+		
 </style>
 ';
 
 echo '<div id="offers">';
 
-if ( !in_array($t_mp[3], $offers_arr) ){
-
-	foreach( $offers_arr as $key ){
+if ( !isset($t_mp[3]) ){
+	// No offer slug provided - show offers list
+	foreach( $offers_arr as $key){
 		echo '
 		<a class="menu" href="/'.$_COOKIE['lang'].'/offers/'.$key.'">
 			<div class="img">
 				<div class="def" style="background-image:url(/media/images/site/offers/'.$key.'.png);"></div>
-				<div class="act" style="background-image:url(/media/images/site/offers/'.$key.'_a.png);"></div>
 			</div>
 			<div class="text">'.$lang_offers[$key]['name'].'</div>
 		</a>
@@ -96,6 +95,13 @@ if ( !in_array($t_mp[3], $offers_arr) ){
 	}
 
 }else{
+	// Offer slug provided - check if it exists
+	if (!in_array($t_mp[3], $offers_arr)) {
+		// Invalid offer slug - return 404
+		http_response_code(404);
+		include(_DEFAULT.'/404.php');
+		exit;
+	}
 	
 	echo '
 	<div class="page">

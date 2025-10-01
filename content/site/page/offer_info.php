@@ -5,7 +5,9 @@ use App\Helper\PhoneHelper;
 $pdo = $db->prepare('SELECT * FROM '.$prefx.'_offer_catalog WHERE `id`=:id');
 $pdo->execute(array('id' => $t_mp[3]));
 
+$offer_found = false;
 foreach($pdo as $row){
+    $offer_found = true;
     $c_id = $row['id'];
 	$c_type = $row['type'];
 	//$c_specs = $row['specs'];
@@ -15,13 +17,19 @@ foreach($pdo as $row){
 	$c_currency = $row['currency'];
 	$c_visible = $row['visible'];
 	$c_active = $row['active'];
-;}
+}
+
+// Check if offer exists and is visible/active
+if (!$offer_found || $c_visible != 1 || $c_active != 1) {
+    http_response_code(404);
+    include(_DEFAULT.'/404.php');
+    exit;
+}
 
 $pdo = $db->prepare('SELECT * FROM '.$prefx.'_offer_photo WHERE `id`=:id AND main=1');
 $pdo->execute(array('id' => $t_mp[3]));
 
 foreach($pdo as $row){
-    $c_path = $row['path'];
 	$c_photo_name = $row['name'];
 }
 

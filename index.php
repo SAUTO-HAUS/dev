@@ -62,7 +62,11 @@ if (isset($t_mp[2])&&$t_mp[2]==$admin_dir){//Если запрос к админ
 }
 
 //---err 404
-if( ( isset($t_mp[2]) && !in_array( $t_mp[2], $url_arr ) ) || ( isset($t_mp[2]) && $t_mp[2]=='' && isset($t_mp[3]) ) ) { include_once(_DEFAULT.'/404.php'); die(); }
+if( ( isset($t_mp[2]) && !in_array( $t_mp[2], $url_arr ) ) || ( isset($t_mp[2]) && $t_mp[2]=='' && isset($t_mp[3]) ) ) { 
+    http_response_code(404);
+    include_once(_DEFAULT.'/404.php'); 
+    die(); 
+}
 //---OLD Internet Explorer
 if ( checkBrowser() == 'old_ie' ){include(_DEFAULT.'/ie_sorry.php'); die(); }
 //---mobile check

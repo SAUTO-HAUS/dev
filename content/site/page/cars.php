@@ -1115,22 +1115,27 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                     </div>
                 </div>-->';
                 */
-
                 $rtrn .= '
-				<div class="smlr gr">
-					<h3>'.$lng['t']['seo']['car_inf_h3'].'</h3>
-					<div class="cnt">';
-                $card = $car_card('smlr', 4, $r); $rtrn .= $card['txt'];
+                <div class="smlr gr">
+                    <h3>'.$lng['t']['seo']['car_inf_h3'].'</h3>
+                    <div class="cnt">';
+                $card = $car_card('smlr', 4, $r); 
+                $rtrn .= $card['txt'];
                 $rtrn .= '
-					</div>
-				</div>';
+                    </div>
+                </div>';
             }
 
-            if ( $chkr_av == 1 ){ $rtrn .= '<script> $(document).ready(function(){ $("#crumbs .crnt").html("<a style=\"color:inherit;\" href=\"/"+$("body").data("lng")+"/cars/'.buildCarUrl($r['br'], $r['mo']).'\">'.$r['br_nm'].' '.$r['mo_nm'].'</a>"); }) </script>'; }//, ['.$r['id'].']
-            else{ $rtrn .= '<div class="no_item">'.$lng['t']['x']['no_item'].'</div>'; }
+            if ( $chkr_av == 1 ){ 
+                $rtrn .= '<script> $(document).ready(function(){ $("#crumbs .crnt").html("<a style=\"color:inherit;\" href=\"/"+$("body").data("lng")+"/cars/'.buildCarUrl($r['br'], $r['mo']).'\">'.$r['br_nm'].' '.$r['mo_nm'].'</a>"); }) </script>'; 
+            } else {
+                // car not found, return 404 instead of showing no item block
+                http_response_code(404);
+                include(_DEFAULT.'/404.php');
+                exit;
+            }
         }
     }
 }
 
 echo $rtrn;
-?>
