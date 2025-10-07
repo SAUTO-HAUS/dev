@@ -222,20 +222,19 @@ if ( !isset($t_mp[2]) || $t_mp[2]=='' || ( ($t_mp[2]=='cars' || $t_mp[2]=='tyres
 <footer>
     <div class="footer-content">
         <div class="columns-wrapper">
-            <!-- First Column Container -->
+            <!-- First Column Container - Services -->
             <div class="column-container col-1-container">
-                <div class="col col-links">
+                <div class="col col-services">
                     <?php
                     foreach($foo_arr as $l => $a){
-                        if ($l == 'information') {
+                        if ($l == 'services') {
                             $zttl = (isset($lng['w'][$l])) ? $lng['w'][$l] : $l;
                             echo '
                                 <div class="section">
                                     <div class="ttl">'.$zttl.'</div>';
                             foreach($a as $k){
-                                if ($l=='vehicles'){$v=isset($lng['l']['car']['bt'][$k]) ? $lng['l']['car']['bt'][$k] : $k; $k = 'cars?tg=fltr&bt='.$k;}
-                                elseif ($l=='services'){$v=$lng['p']['services'][$k]['name']; $k='services/'.$k;}
-                                elseif ($l=='information'){$v=$lng['p']['information'][$k]['name'];}
+                                $v=$lng['p']['services'][$k]['name']; 
+                                $k='services/'.$k;
                                 echo '<a href="/'.$_COOKIE['lang'].'/'.$k.'">'.$v.'</a>';
                             }
                             echo '
@@ -246,8 +245,30 @@ if ( !isset($t_mp[2]) || $t_mp[2]=='' || ( ($t_mp[2]=='cars' || $t_mp[2]=='tyres
                 </div>
             </div>
 
-            <!-- Second Column Container -->
+            <!-- Second Column Container - Information -->
             <div class="column-container col-2-container">
+                <div class="col col-information">
+                    <?php
+                    foreach($foo_arr as $l => $a){
+                        if ($l == 'information') {
+                            $zttl = (isset($lng['w'][$l])) ? $lng['w'][$l] : $l;
+                            echo '
+                                <div class="section">
+                                    <div class="ttl">'.$zttl.'</div>';
+                            foreach($a as $k){
+                                $v=$lng['p']['information'][$k]['name'];
+                                echo '<a href="/'.$_COOKIE['lang'].'/'.$k.'">'.$v.'</a>';
+                            }
+                            echo '
+                                </div>';
+                        }
+                    }
+                    ?>
+                </div>
+            </div>
+
+            <!-- Third Column Container - Contacts -->
+            <div class="column-container col-3-container">
                 <div class="col col-contacts">
                     <div class="ttl"><?php echo $lng['w']['contacts']; ?></div>
                     <?php
@@ -269,7 +290,13 @@ if ( !isset($t_mp[2]) || $t_mp[2]=='' || ( ($t_mp[2]=='cars' || $t_mp[2]=='tyres
                         <i class="fa-solid fa-envelope"></i>
                         info@sauto.md
                     </a>
-                    <p class="social-title"><?php echo isset($lng['w']['social']) ? $lng['w']['social'] : 'Rețelele sociale'; ?></p>
+                </div>
+            </div>
+
+            <!-- Fourth Column Container - Social Media -->
+            <div class="column-container col-4-container">
+                <div class="col col-social">
+                    <div class="ttl"><?php echo isset($lng['w']['social']) ? $lng['w']['social'] : 'Rețelele sociale'; ?></div>
                     <div class="sc">
                         <?php
                         foreach ($sc_ar as $k => $v){

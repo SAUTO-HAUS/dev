@@ -594,27 +594,41 @@
       margin: 0 auto 0 auto !important;
   }
   
-  /* Column Containers */
+  /* Column Containers - 4 columns layout */
   footer .columns-wrapper .column-container {
-      width: 45% !important;
+      width: 22% !important;
       display: flex !important;
       justify-content: center !important;
       align-items: flex-start !important;
-      margin: 0 2.5% !important;
+      margin: 0 1.5% !important;
       padding: 0 !important;
   }
   
   footer .columns-wrapper .column-container.col-1-container {
-      width: 45% !important;
+      width: 22% !important;
       justify-content: center !important;
-      margin: 0 2.5% !important;
+      margin: 0 1.5% !important;
       padding: 0 !important;
   }
   
   footer .columns-wrapper .column-container.col-2-container {
-      width: 45% !important;
+      width: 22% !important;
       justify-content: center !important;
-      margin: 0 2.5% !important;
+      margin: 0 1.5% !important;
+      padding: 0 !important;
+  }
+  
+  footer .columns-wrapper .column-container.col-3-container {
+      width: 22% !important;
+      justify-content: center !important;
+      margin: 0 1.5% !important;
+      padding: 0 !important;
+  }
+  
+  footer .columns-wrapper .column-container.col-4-container {
+      width: 22% !important;
+      justify-content: center !important;
+      margin: 0 1.5% !important;
       padding: 0 !important;
   }
   
@@ -629,12 +643,15 @@
       margin: 0 auto !important;
   }
   
-  /* Links Column Sections */
-  footer .col-links .section {
+  /* Services, Information and Social Column Sections */
+  footer .col-services .section,
+  footer .col-information .section {
       margin-bottom: 2rem;
   }
   
-  footer .col-links .section .ttl {
+  footer .col-services .section .ttl,
+  footer .col-information .section .ttl,
+  footer .col-social .ttl {
       font-size: 1.2rem;
       text-transform: uppercase;
       border-bottom: 1px solid #aaa;
@@ -644,7 +661,8 @@
       text-align: center;
   }
   
-  footer .col-links .section a {
+  footer .col-services .section a,
+  footer .col-information .section a {
       width: 100%;
       display: block;
       margin: 0.4rem 0;
@@ -654,11 +672,13 @@
       font-size: 1.1rem;
   }
   
-  footer .col-links .section a:hover {
+  footer .col-services .section a:hover,
+  footer .col-information .section a:hover {
       color: #bbb;
   }
   
-  footer .col-links .section a:first-letter {
+  footer .col-services .section a:first-letter,
+  footer .col-information .section a:first-letter {
       text-transform: capitalize;
   }
   
@@ -731,16 +751,17 @@
   }
   
   /* Social Media Icons */
-  footer .col-contacts .sc {
+  footer .col-social .sc {
       width: 100%;
       margin-top: 0.5rem;
       text-align: center;
       display: flex;
       justify-content: center;
       align-items: center;
+      flex-wrap: wrap;
   }
   
-  footer .col-contacts .sc a {
+  footer .col-social .sc a {
       width: 2.5rem;
       height: 2.5rem;
       display: inline-block;
@@ -748,21 +769,21 @@
       background-repeat: no-repeat;
       background-position: center;
       background-size: contain;
-      margin: 0 0.5rem;
+      margin: 0.4rem;
       transition: transform 0.3s ease;
   }
   
-  footer .col-contacts .sc a:hover {
+  footer .col-social .sc a:hover {
       transform: scale(1.1);
   }
   
-  /* Mobile Responsive - Columns Stack Vertically */
+  /* Mobile Responsive - Show Contacts, Social Media and Information only */
   @media (max-width: 768px) {
       /* Columns wrapper becomes vertical */
       footer .footer-content .columns-wrapper {
           flex-direction: column !important;
           width: 100% !important;
-          gap: 2rem !important;
+          gap: 1rem !important;
       }
       
       /* Column containers take full width */
@@ -771,18 +792,37 @@
           margin: 0 !important;
           justify-content: center !important;
       }
-      
-      /* Change order: Contacts first, then Information */
-      footer .columns-wrapper .column-container.col-1-container {
-          width: 100% !important;
-          margin: 0 !important;
-          order: 2 !important;
+
+      footer .col-social .sc a {
+        margin: 0.7rem !important;
+        width: 3rem !important;
+        height: 3rem !important;
       }
       
+      /* Services column - hidden on mobile */
+      footer .columns-wrapper .column-container.col-1-container {
+          display: none !important;
+      }
+      
+      /* Information column on mobile */
       footer .columns-wrapper .column-container.col-2-container {
           width: 100% !important;
           margin: 0 !important;
+          order: 3 !important;
+      }
+      
+      /* Contacts column on mobile */
+      footer .columns-wrapper .column-container.col-3-container {
+          width: 100% !important;
+          margin: 0 !important;
           order: 1 !important;
+      }
+      
+      /* Social media column on mobile */
+      footer .columns-wrapper .column-container.col-4-container {
+          width: 100% !important;
+          margin: 0 !important;
+          order: 2 !important;
       }
       
       /* Column content adjusts */
@@ -810,7 +850,7 @@
   .footer-logo-section {
       width: 100%;
       text-align: center;
-      margin: 0;
+      margin-top: 20px;
       padding: 0;
   }
   
@@ -1910,6 +1950,10 @@
           padding-left: 0 !important;
           padding-right: 0 !important;
       }
+
+      #crumbs {
+        margin-top: 50px !important;
+      }
       
       header .def .call {
           display: none !important;
@@ -1925,18 +1969,13 @@
           left: 0 !important;
           transform: none !important;
           margin-right: 160px !important;
+          margin-top: 10px !important;
           order: -1 !important;
       }
       
       #top_logo img {
           width: 9rem !important;
           height: auto !important;
-      }
-      
-      #main_menu > .mm_lb {
-          left: -3.5rem !important;
-          width: 3.5rem !important;
-          height: 3.5rem !important;
       }
       
       #services {
