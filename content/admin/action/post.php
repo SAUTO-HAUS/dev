@@ -7,6 +7,7 @@ if ( isset( $_POST['adm_out_submit'] ) ){//_____________________________________
 	//if ( !isset($_SESSION['adm_try']) ){ $_SESSION['adm_try']=1; }
 	//if($_SESSION['adm_try']>=5){ alertIt('Too many tries, you are banned for a while.'); }
 	
+	$pdo = $db->prepare('SELECT * FROM '.$prefx.'_adm_usr WHERE `login`=:login AND `act`="1"');
 	$pdo->execute(['login' => strtolower($_POST['login'])]);
 	//if ( $pdo->rowCount() == 0 ){ $_SESSION['adm_try']++; }
 	
