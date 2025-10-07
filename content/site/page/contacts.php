@@ -1,6 +1,10 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
-// PhoneHelper functions are already loaded via functions.php in index.php
+use App\Helper\PhoneHelper;
+
+// Get phone number for contacts page
+$generalPhone = PhoneHelper::getGeneralPhone();
+$formattedPhone = PhoneHelper::formatPhone($generalPhone, 'display');
 
 $form = '<script data-b24-form="inline/4/nj2ojp" data-skip-moving="true">
             (function(w,d,u){

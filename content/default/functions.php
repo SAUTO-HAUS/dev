@@ -72,19 +72,32 @@ function checkBrowser(){
 	$arr_browsers = array ('Firefox'=>'firefox', 'OPR'=>'opera', 'Chrome'=>'chrome', 'Safari'=>'safari', 'MSIE 6.0'=>'old_ie', 'MSIE 7.0'=>'old_ie', 'MSIE 8.0'=>'old_ie', 'MSIE 9.0'=>'ie', 'MSIE 10.0'=>'ie', 'Trident/7.0'=>'ie',);
 	foreach ($arr_browsers as $key => $value) {
 		if (stristr($_SERVER['HTTP_USER_AGENT'], $key)) {$browser = $value; break;}
-	;}
+	}
 	return $browser;
 }
 
-//Session duration
+//Session duration with buffer time to prevent premature logout
 function setSessTime($sess_time){
 	$sess_time = isset($sess_time) ? $sess_time : 10800;
 	
 	ini_set('session.gc_maxlifetime', $sess_time);
 	session_set_cookie_params($sess_time);
-	session_start();
+	
+	// Check if session is already started
+	if (session_status() == PHP_SESSION_NONE) {
+		session_start();
+	}
+	
 	$now = time();
-	if (isset($_SESSION['discard_after']) && $now > $_SESSION['discard_after']) { session_unset(); session_destroy(); session_start();}
+	
+	// Add buffer time (5 minutes) to prevent premature session destruction
+	$buffer_time = 300; // 5 minutes buffer
+	if (isset($_SESSION['discard_after']) && $now > ($_SESSION['discard_after'] + $buffer_time)) { 
+		session_unset(); 
+		session_destroy(); 
+		session_start();
+		__log("Session expired and recreated for user: " . ($_SESSION['user_id'] ?? 'unknown'));
+	}
 	$_SESSION['discard_after'] = $now + $sess_time;
 }
 

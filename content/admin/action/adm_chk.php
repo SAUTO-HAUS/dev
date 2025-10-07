@@ -28,23 +28,41 @@ if ( isset($_COOKIE['sess'])&&!empty($_COOKIE['sess']) ){
 		$_SESSION['user_branch_id'] = $user_branch_id;
 		$_SESSION['user_name'] = $user_name;
 		
-		$hash = md5( time() );
-		$cookie_val = $r['id'].'-'.$hash;
+		// Update cookie only if more than 5 minutes have passed since last update
+		$last_update = $r['sess_e'] - (60 * $r['sess_t']);
+		$time_since_update = time() - $last_update;
 		
-		$time = time()+(60*60*24*365);//1 year
-		$sess_time = time()+(60*$r['sess_t']);
+		if ($time_since_update > 300) { // 5 minutes
+			$hash = md5( time() );
+			$cookie_val = $r['id'].'-'.$hash;
+			
+			$time = time()+(60*60*24*365);//1 year
+			$sess_time = time()+(60*$r['sess_t']);
+			
+			$current_domain = $_SERVER['HTTP_HOST'];
+			setcookie('sess', $cookie_val, $time, '/', $current_domain); 
+			$_COOKIE['sess'] = $cookie_val;
+			
+			$pdo = $db->prepare('UPDATE '.$prefx.'_adm_usr SET `sess_e`=:sess_e, `cookie`=:cookie WHERE id=:id');
+			$pdo->execute(array(
+				'sess_e' => $sess_time,
+				'cookie'=> $cookie_val,
+				'id' => $r['id']
+			));
+			
+			__log("Admin session updated for user: " . $r['login']);
+		} else {
+			// Just extend session time without updating cookie
+			$sess_time = time()+(60*$r['sess_t']);
+			$pdo = $db->prepare('UPDATE '.$prefx.'_adm_usr SET `sess_e`=:sess_e WHERE id=:id');
+			$pdo->execute(array(
+				'sess_e' => $sess_time,
+				'id' => $r['id']
+			));
+		}
+		
 		$sess_dur = $r['sess_t'];
 		$sess_end = $r['sess_e'];
-		
-		$current_domain = $_SERVER['HTTP_HOST'];
-		setcookie('sess', $cookie_val, $time, '/', $current_domain); $_COOKIE['sess'] = $cookie_val;
-		
-		$pdo = $db->prepare('UPDATE '.$prefx.'_adm_usr SET `sess_e`=:sess_e, `cookie`=:cookie WHERE id=:id');
-		$pdo->execute(array(
-			'sess_e' => $sess_time,
-			'cookie'=> $cookie_val,
-			'id' => $r['id']
-		));
 	}
 }
 ?>

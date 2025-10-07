@@ -8,6 +8,14 @@ if ( $_POST['fn']=='save_pdf' ){
 }
 //---------------------------------------------EDIT
 if ( $_POST['fn']=='edit_sbmt' ){
+	// Check user authentication before document editing
+	if (!isset($_SESSION['user_id']) && !isset($_COOKIE['sess'])) {
+		__log("Unauthorized document edit attempt from IP: " . myIp());
+		$returnIt = [ 'fn'=>$_POST['fn'], 'error'=>'Unauthorized access' ];
+		echo json_encode($returnIt);
+		exit;
+	}
+	
 	$doc_date = isset($_POST['inp']['date'])&&$_POST['inp']['date']!=''?date( 'Y-m-d', strtotime( $_POST['inp']['date'] ) ):date('Y-m-d');
 	
 	$u_id = isset($_POST['inp']['u_id'])&&$_POST['inp']['u_id']!=''?$_POST['inp']['u_id']:0;

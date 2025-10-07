@@ -1,13 +1,11 @@
 <?php
 include_once('environment.php');
 
+// Start session for AJAX requests
+if ( ( session_id()=='' || !isset($_SESSION) ) ){ session_start(); }
+
 if ( !in_array($_POST['tp'], ['adm','ste'], true) ){ die( 'Restricted access' ); }
 $returnIt = ['xsx'=>'1'];
-
-//error_reporting(E_ALL);
-//ini_set('display_errors', 1);
-//ini_set('display_startup_errors', 1);
-
 spl_autoload_register(function ($class) {
     $classPath = str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
     if (file_exists($classPath)) {
@@ -43,21 +41,40 @@ if (isset($_POST['fn']) && $_POST['fn']=='snd_msg'){
 if (__post('tp') == 'adm') {
     $tp = __post('tp');
     $pg = __post('pg');
+    
+    // Check for session cookie existence
+    if (!isset($_COOKIE['sess']) || empty($_COOKIE['sess'])) {
+        die(json_encode(['error' => 'No session cookie']));
+    }
+    
     $cookie_sess = $_COOKIE['sess'];
+    $sess = explode("-", $cookie_sess);
 
-	$pdo = $db->prepare('SELECT * FROM '.$prefx.'_adm_usr WHERE `cookie`=:cookie');
-    $pdo->execute(['cookie' => $cookie_sess]);
+    // Enhanced authentication check like in adm_chk.php
+	$pdo = $db->prepare('SELECT * FROM '.$prefx.'_adm_usr WHERE id = :id AND `act`="1" AND `cookie`=:cookie AND `this_ip`=:this_ip AND `sess_e`>:time_now');
+	$pdo->execute(array(
+		'id' => $sess[0],
+		'cookie' => $cookie_sess,
+		'this_ip' => myIp(),
+		'time_now' => time()
+	));
+    
     $user = $pdo->fetch(PDO::FETCH_ASSOC);
+    
+    if (!$user) {
+        die(json_encode(['error' => 'Invalid session or expired']));
+    }
 
     $user_id = $user['id'];
     $user_login = $user['login'];
     $user_type = $user['type'];
     $user_role = $user['role'] ?? $user['type'];
     $user_active = $user['act'];
-
-    if ($user_active !== 1) {
-        die('User is not active');
-    }
+    
+    // Store user information in session
+    $_SESSION['user_id'] = $user_id;
+    $_SESSION['user_role'] = $user_role;
+    $_SESSION['user_name'] = $user['name'];
 
     // Include RBAC system for permission checks
     require_once(_ADM_INCL.'/rbac_config.php');
