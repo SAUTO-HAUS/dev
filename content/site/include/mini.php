@@ -20,16 +20,16 @@ $ann = array(
 );
 
 $ann_rnd = rand( 0, (count($ann)-1) );
-echo '
-<a class="mini" href="/'.$_COOKIE['lang'].$ann[$ann_rnd]['href'].'" style="background-image:url(/media/images/site/'.$ann[$ann_rnd]['img'].$img_frmt.');">
-	<div class="grp">';
-		foreach($ann[$ann_rnd] as $key => $val){
-			if ( $val!='' && ($key!='href'&&$key!='img') ){
-				echo '
-				<div class="'.$key.'">'.$val.'</div>';
-			}
-		}
-	echo '
-	</div>
-</a>';
+// echo '
+// <a class="mini" href="/'.$_COOKIE['lang'].$ann[$ann_rnd]['href'].'" style="background-image:url(/media/images/site/'.$ann[$ann_rnd]['img'].$img_frmt.');">
+// 	<div class="grp">';
+// 		foreach($ann[$ann_rnd] as $key => $val){
+// 			if ( $val!='' && ($key!='href'&&$key!='img') ){
+// 				echo '
+// 				<div class="'.$key.'">'.$val.'</div>';
+// 			}
+// 		}
+// 	echo '
+// 	</div>
+// </a>';
 ?>

@@ -32,28 +32,28 @@ $slide_arr = [
 ];
 ?>
 
-<div id="slider" data-in_t="<?php echo (isset($_COOKIE['usr_id'])&&$_COOKIE['usr_id']=='5'?2:8); ?>" data-dl_t="1">
+<!-- <div id="slider" data-in_t="<?php echo (isset($_COOKIE['usr_id'])&&$_COOKIE['usr_id']=='5'?2:8); ?>" data-dl_t="1">
 	<div class="pattern ghost"></div>
 		
 		<?php 
-		shuffle($slide_arr['rnd']);
+		// shuffle($slide_arr['rnd']);
 		
-		$i=1;
-		foreach ($slide_arr as $gr){
-			foreach ($gr as $v){
-				if ( isset($v['url']) && $v['url']!='' ){ $z_tag = 'a'; $z_link = ' href="'.$v['url'].'" '; } else { $z_tag = 'span'; $z_link = ''; }
+		// $i=1;
+		// foreach ($slide_arr as $gr){
+		// 	foreach ($gr as $v){
+		// 		if ( isset($v['url']) && $v['url']!='' ){ $z_tag = 'a'; $z_link = ' href="'.$v['url'].'" '; } else { $z_tag = 'span'; $z_link = ''; }
 				
-				echo '
-				<'.$z_tag.' class="slide'.( $i==1?' active':'' ).'" '.$z_link.' numb="'.$i.'" style="background-image:url(/media/images/site/slider/'.$v['img'].$img_frmt.')">';
-					if ( isset($v['css']) && $v['css']!='' ){echo '<style>'.$v['css'].'</style>';}
-					echo '
-					<p class="main_txt">'.( isset($v['txt']) && $v['txt']!='' ? $v['txt'] : '' ).'</p>
-					<p class="xtra_txt">'.( isset($v['xtr']) && $v['xtr']!='' ? $v['xtr'] : '' ).'</p>
-				</'.$z_tag.'>
-				';
-				$i++;
-			}
-		}
+		// 		echo '
+		// 		<'.$z_tag.' class="slide'.( $i==1?' active':'' ).'" '.$z_link.' numb="'.$i.'" style="background-image:url(/media/images/site/slider/'.$v['img'].$img_frmt.')">';
+		// 			if ( isset($v['css']) && $v['css']!='' ){echo '<style>'.$v['css'].'</style>';}
+		// 			echo '
+		// 			<p class="main_txt">'.( isset($v['txt']) && $v['txt']!='' ? $v['txt'] : '' ).'</p>
+		// 			<p class="xtra_txt">'.( isset($v['xtr']) && $v['xtr']!='' ? $v['xtr'] : '' ).'</p>
+		// 		</'.$z_tag.'>
+		// 		';
+		// 		$i++;
+		// 	}
+		// }
 		?>
 	
 	<div class="text">
@@ -63,7 +63,7 @@ $slide_arr = [
 	
 	<div class="timebar">
 		<div class="fill min"></div>
-	</div>
+	</div> -->
 	
 	<?php /*
 	<video id="vid" preload="auto" loop="loop" muted="muted" autoplay="autoplay" poster="" playsinline="true" type="video/mp4">
