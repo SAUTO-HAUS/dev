@@ -220,62 +220,84 @@ if ( !isset($t_mp[2]) || $t_mp[2]=='' || ( ($t_mp[2]=='cars' || $t_mp[2]=='tyres
 </main>
 
 <footer>
-    <div class="col logo">
-        <a href="/<?php echo $_COOKIE['lang']; ?>/">
-            <img src="/<?php echo _SITE_IMG; ?>/v2/logo_w.svg" alt="SAUTO" />
-        </a>
-        </a>
-        <p class="txt"><?php echo $lng['t']['x']['logo_txt']; ?></p>
-    </div>
-    <?php
-    foreach($foo_arr as $l => $a){
-        $zttl = (isset($lng['w'][$l])) ? $lng['w'][$l] : $l;
-        echo '
-			<div class="col">
-				<div class="ttl">'.$zttl.'</div>';
-        foreach($a as $k){
-            if ($l=='vehicles'){$v=isset($lng['l']['car']['bt'][$k]) ? $lng['l']['car']['bt'][$k] : $k; $k = 'cars?tg=fltr&bt='.$k;}
-            elseif ($l=='services'){$v=$lng['p']['services'][$k]['name']; $k='services/'.$k;}
-            elseif ($l=='information'){$v=$lng['p']['information'][$k]['name'];}
-            //$k = $a=='services'?'services/'.$k:$k;
-            echo '<a href="/'.$_COOKIE['lang'].'/'.$k.'">'.$v.'</a>';
-        }
-        echo '
-			</div>';
-    }
-    ?>
-    <div class="col cnts">
-        <div class="ttl"><?php echo $lng['w']['contacts']; ?></div>
-        <?php
-        $generalPhone = PhoneHelper::getGeneralPhone();
-        $formattedGeneralPhone = PhoneHelper::formatPhone($generalPhone, 'display');
-        ?>
-        <a href="tel:<?php echo $generalPhone; ?>" class="phone"><?php echo $formattedGeneralPhone; ?></a>
-        <p>
-            <?php echo $lng['t']['x']['address'][0].'
-				<ul>
-					<li><a onclick="navigate(47.03038049808741, 28.855162562579835)" style="cursor:pointer;" >'.$lng['t']['x']['address'][1].'</a>
-					<li><a onclick="navigate(47.05765228741261, 28.77507935382036)" style="cursor:pointer;" >'.$lng['t']['x']['address'][2].'</a></li>
-				</ul>'; ?>
-        </p>
-        <p><?php echo $lng['l']['date']['day']['mon']['l'].' - '.$lng['l']['date']['day']['fri']['l'].' 8:00 - 18:00<br/>'.$lng['l']['date']['day']['sat']['l'].' - '.$lng['l']['date']['day']['sun']['l'].' 9:00 - 16:00'; ?></p>
-        <a href="mailto:info@sauto.md" class="mail">info@sauto.md</a>
-        <p><?php echo isset($lng['w']['social']) ? $lng['w']['social'] : 'Social Media'; ?></p>
-        <div class="sc">
-            <?php
-            foreach ($sc_ar as $k => $v){
-                echo '<a class="'.$k.'" href="'.$v['url'].'" target="_blank" title="'.$v['name'].'" style="background-image:url(/media/images/site/social/'.$v['img']['w'].');"></a>';
-            }
-            ?>
+    <div class="footer-content">
+        <div class="columns-wrapper">
+            <!-- First Column Container -->
+            <div class="column-container col-1-container">
+                <div class="col col-links">
+                    <?php
+                    foreach($foo_arr as $l => $a){
+                        if ($l == 'information') {
+                            $zttl = (isset($lng['w'][$l])) ? $lng['w'][$l] : $l;
+                            echo '
+                                <div class="section">
+                                    <div class="ttl">'.$zttl.'</div>';
+                            foreach($a as $k){
+                                if ($l=='vehicles'){$v=isset($lng['l']['car']['bt'][$k]) ? $lng['l']['car']['bt'][$k] : $k; $k = 'cars?tg=fltr&bt='.$k;}
+                                elseif ($l=='services'){$v=$lng['p']['services'][$k]['name']; $k='services/'.$k;}
+                                elseif ($l=='information'){$v=$lng['p']['information'][$k]['name'];}
+                                echo '<a href="/'.$_COOKIE['lang'].'/'.$k.'">'.$v.'</a>';
+                            }
+                            echo '
+                                </div>';
+                        }
+                    }
+                    ?>
+                </div>
+            </div>
+
+            <!-- Second Column Container -->
+            <div class="column-container col-2-container">
+                <div class="col col-contacts">
+                    <div class="ttl"><?php echo $lng['w']['contacts']; ?></div>
+                    <?php
+                    $generalPhone = PhoneHelper::getGeneralPhone();
+                    $formattedGeneralPhone = PhoneHelper::formatPhone($generalPhone, 'display');
+                    ?>
+                    <a href="tel:<?php echo $generalPhone; ?>" class="phone"><?php echo $formattedGeneralPhone; ?></a>
+                    <p class="address">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <?php echo $lng['t']['x']['address'][0].'<br/>
+                            <strong>'.$lng['t']['x']['address'][1].'</strong><br/>
+                            <strong>'.$lng['t']['x']['address'][2].'</strong>'; ?>
+                    </p>
+                    <p class="schedule">
+                        <i class="fa-solid fa-clock"></i>
+                        <?php echo $lng['l']['date']['day']['mon']['l'].' - '.$lng['l']['date']['day']['fri']['l'].' <strong>8:00 - 18:00</strong><br/>'.$lng['l']['date']['day']['sat']['l'].' - '.$lng['l']['date']['day']['sun']['l'].' <strong>9:00 - 16:00</strong>'; ?>
+                    </p>
+                    <a href="mailto:info@sauto.md" class="mail">
+                        <i class="fa-solid fa-envelope"></i>
+                        info@sauto.md
+                    </a>
+                    <p class="social-title"><?php echo isset($lng['w']['social']) ? $lng['w']['social'] : 'Rețelele sociale'; ?></p>
+                    <div class="sc">
+                        <?php
+                        foreach ($sc_ar as $k => $v){
+                            echo '<a class="'.$k.'" href="'.$v['url'].'" target="_blank" title="'.$v['name'].'" style="background-image:url(/media/images/site/social/'.$v['img']['w'].');"></a>';
+                        }
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div> <!-- Close columns-wrapper -->
+        
+        <!-- Logo and description above copyright -->
+        <div class="footer-bottom">
+            <div class="footer-logo-section">
+                <a href="/<?php echo $_COOKIE['lang']; ?>/">
+                    <img src="/<?php echo _SITE_IMG; ?>/v2/logo_w.svg" alt="SAUTO" />
+                </a>
+                <p class="footer-description"><?php echo $lng['t']['x']['logo_txt']; ?></p>
+            </div>
+            <div id="copyrights"><?php echo date('Y') ?> <span title="Copyrighted"> Sauto S.R.L.</span></div>
         </div>
-    </div>
+    </div> <!-- Close footer-content -->
 
     <?php
     //foreach($footer_arr as $k){
     //echo '<a class="'; if( $t_mp[2]==$k ){echo ' active';} echo '" href="/'.$_COOKIE['lang'].'/'.$k.'">'.$lang_xtra_menu[$k].'</a>';
     //}
     ?>
-    <div id="copyrights"><?php echo date('Y') ?> <span title="Copyrighted"> Sauto S.R.L.</span></div>
 </footer>
 
 <?php
