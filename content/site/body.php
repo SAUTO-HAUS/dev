@@ -219,6 +219,22 @@ if ( !isset($t_mp[2]) || $t_mp[2]=='' || ( ($t_mp[2]=='cars' || $t_mp[2]=='tyres
     <div class="clear"></div>
 </main>
 
+<?php 
+if (!isset($t_mp[2]) || $t_mp[2]=='') { ?>
+<div id="mobile-call-button" class="mobile-call-button-green">
+    <a href="tel:+37379600361" class="call-button-inner-green">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="white">
+            <path d="M6.62 10.79a15.464 15.464 0 006.59 6.59l2.2-2.2a1
+                     1 0 011.01-.24c1.12.37 2.33.57 3.58.57.55 0 1
+                     .45 1 1v3.5c0 .55-.45 1-1 1C10.07 21 3 13.93
+                     3 5.5c0-.55.45-1 1-1H7.5c.55 0 1 .45
+                     1 1 0 1.25.2 2.46.57 3.58.11.33.03.7-.24
+                     1.01l-2.21 2.2z"></path>
+        </svg>
+    </a>
+</div>
+<?php } ?>
+
 <footer>
     <div class="footer-content">
         <div class="columns-wrapper">

@@ -55,6 +55,7 @@ foreach ($lang_arr as $lang){
 
 <link rel="stylesheet" type="text/css" href="/<?php e(_DEFAULT)?>/css/default.css?d=<?php echo date("GYimsd", filemtime(_DEFAULT.'/css/default.css')); ?>">
 <link rel="stylesheet" type="text/css" href="/<?php e(_SITE)?>/css/style.css?d=<?php echo date("GYimsd", filemtime(_SITE.'/css/style.css')); ?>">
+<link rel="stylesheet" type="text/css" href="/<?php e(_SITE)?>/css/mobile-call-button.css?d=<?php echo date("GYimsd", filemtime(_SITE.'/css/mobile-call-button.css')); ?>">
 <link rel="stylesheet" type="text/css" href="/<?php e(_SITE)?>/css/media.css?d=<?php echo date("GYimsd", filemtime(_SITE.'/css/media.css')); ?>">
 <link rel="stylesheet" href="/<?php e(_SITE)?>/css/consent-modal-v2.css?d=<?php echo date("GYimsd", filemtime(_SITE.'/css/consent-modal-v2.css')); ?>">
 <!--
