@@ -193,7 +193,7 @@ if ($_COOKIE['lang']=='ru'){
 		
 		't'=>array(
 			'x'=>array(
-				'logo_txt'=>'Импорт и продажа<br/>автомобилей из Европы',
+				'logo_txt'=>'Импорт и продажа автомобилей из Европы',
 				'no_offers'=>'На данный момент предложений нет',
 				'no_item'=>'Сожалеем, но данного товара нет в каталоге',
 				'top_auto'=>'Топ авто недели',
@@ -1616,7 +1616,7 @@ elseif ($_COOKIE['lang']=='ro'){
 		
 		't'=>array(
 			'x'=>array(
-				'logo_txt'=>'Import și vânzare <br/> mașini din Europa',
+				'logo_txt'=>'Import și vânzare mașini din Europa',
 				'no_offers'=>'Momentan nu există oferte',
 				'no_item'=>'Ne pare rău, dar acest articol nu este în catalog',
 				'top_auto'=>'Top - Mașina săptămânei',
@@ -1784,7 +1784,7 @@ elseif ($_COOKIE['lang']=='ro'){
 		'warranty'=>'Garanție',
 		'privacy'=>'Politica de confidențialitate',
 		'information'=>'Informații',
-		'logo_txt'=>'Import și vânzare <br/> mașini din Europa',
+		'logo_txt'=>'Import și vânzare mașini din Europa',
 		'top_auto'=>'Auto de top al saptamanii',
 		'our_serv'=>'Serviciile noastre',
 		'sale'=>'Vânzarea mașinii',
@@ -2979,7 +2979,7 @@ elseif ($_COOKIE['lang']=='en'){
 		
 		't'=>array(
 			'x'=>array(
-				'logo_txt'=>'Import and sale <br/> cars from Europe',
+				'logo_txt'=>'Import and sale cars from Europe',
 				'no_offers'=>'No offers at the moment',
 				'no_item'=>'We\'re sorry, but we can\'t find this item in the catalog.',
 				'top_auto'=>'Top car of the week',
