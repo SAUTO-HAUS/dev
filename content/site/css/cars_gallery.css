@@ -384,9 +384,10 @@ html.with-fancybox body {
     }
     main > .spc_bx > .doit {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         flex-wrap: nowrap;
         align-items: center;
+        justify-content: space-between;
         gap: 10px;
     }
     main > .spc_bx > .name {

@@ -1954,21 +1954,26 @@
       #crumbs {
         margin-top: 50px !important;
       }
-      
       header .def .call {
           display: none !important;
       }
   
       header .def {
           height: 30px !important;
-          padding: 0 15px !important;
+          padding: 0 5px !important;
+          overflow: visible !important;
+      }
+      
+      #main_menu {
+          justify-content: flex-start !important;
+          overflow: visible !important;
       }
       
       #top_logo {
           position: relative !important;
           left: 0 !important;
           transform: none !important;
-          margin-right: 160px !important;
+          margin-right: 240px !important;
           margin-top: 10px !important;
           order: -1 !important;
       }
