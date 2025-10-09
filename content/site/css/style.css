@@ -575,12 +575,12 @@
   
   /* Centered container for columns */
   footer .footer-content {
-      width: 80%;
-      max-width: 1200px;
+      width: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0;
+      gap: 0;    
+      padding: 0 !important;
   }
   
   /* Columns wrapper */
@@ -588,47 +588,52 @@
       width: 100% !important;
       display: flex !important;
       flex-direction: row !important;
-      justify-content: center !important;
-      align-items: flex-start !important;
       gap: 0 !important;
       margin: 0 auto 0 auto !important;
   }
   
-  /* Column Containers - 4 columns layout */
+  /* Column Containers - 5 columns layout */
   footer .columns-wrapper .column-container {
-      width: 22% !important;
+      width: 23% !important;
       display: flex !important;
       justify-content: center !important;
       align-items: flex-start !important;
-      margin: 0 1.5% !important;
+      margin: 0 !important;
       padding: 0 !important;
   }
   
-  footer .columns-wrapper .column-container.col-1-container {
-      width: 22% !important;
+footer .columns-wrapper .column-container.col-logo-container {
+    width: 8% !important;
+    justify-content: center !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+  footer .columns-wrapper .column-container.col-services-container {
+      width: 23% !important;
       justify-content: center !important;
-      margin: 0 1.5% !important;
+      margin: 0 !important;
       padding: 0 !important;
   }
   
-  footer .columns-wrapper .column-container.col-2-container {
-      width: 22% !important;
+  footer .columns-wrapper .column-container.col-information-container {
+      width: 23% !important;
       justify-content: center !important;
-      margin: 0 1.5% !important;
+      margin: 0 !important;
       padding: 0 !important;
   }
   
-  footer .columns-wrapper .column-container.col-3-container {
-      width: 22% !important;
+  footer .columns-wrapper .column-container.col-contacts-container {
+      width: 29% !important;
       justify-content: center !important;
-      margin: 0 1.5% !important;
+      margin: 0 !important;
       padding: 0 !important;
   }
   
-  footer .columns-wrapper .column-container.col-4-container {
-      width: 22% !important;
+  footer .columns-wrapper .column-container.col-social-container {
+      width: 17% !important;
       justify-content: center !important;
-      margin: 0 1.5% !important;
+      margin: 0 !important;
       padding: 0 !important;
   }
   
@@ -650,8 +655,7 @@
   }
   
   footer .col-services .section .ttl,
-  footer .col-information .section .ttl,
-  footer .col-social .ttl {
+  footer .col-information .section .ttl {
       font-size: 1.2rem;
       text-transform: uppercase;
       border-bottom: 1px solid #aaa;
@@ -659,6 +663,29 @@
       margin-bottom: 0.3rem;
       padding-bottom: 0.3rem;
       text-align: center;
+  }
+
+  /* Social Media title with shorter border */
+  footer .col-social .ttl {
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+      color: #fff;
+      text-align: center;
+      width: 100%;
+      position: relative;
+  }
+
+  /* Shorter border for social media */
+  footer .col-social .ttl::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 25%;
+      right: 25%;
+      height: 1px;
+      background-color: #aaa;
   }
   
   footer .col-services .section a,
@@ -681,8 +708,241 @@
   footer .col-information .section a:first-letter {
       text-transform: capitalize;
   }
+
+  /* Services subcolumns layout */
+  footer .col-services .services-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      width: 100%;
+  }
+
+  /* Main services title spanning full width */
+  footer .col-services .services-main-title {
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+      color: #fff;
+      text-align: center;
+      width: 100%;
+      position: relative;
+  }
+
+  /* Shorter border for services */
+  footer .col-services .services-main-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 25%;
+      right: 25%;
+      height: 1px;
+      background-color: #aaa;
+  }
+
+  /* Subcolumns container */
+  footer .col-services .services-subcolumns {
+      display: flex;
+      flex-direction: row;
+      gap: 0;
+      width: 100%;
+  }
+
+  footer .col-services .services-subcolumn {
+      width: 50%;
+      padding: 0 5px;
+  }
+
+  footer .col-services .services-subcolumn .section {
+      margin-bottom: 2rem;
+  }
+
+  footer .col-services .services-subcolumn .section .ttl {
+      display: none; /* Hide individual titles since we have main title */
+  }
+
+  footer .col-services .services-subcolumn .section a {
+      width: 100%;
+      display: block;
+      margin: 0.4rem 0;
+      color: #fff;
+      text-decoration: none;
+      text-align: center;
+      font-size: 1.1rem;
+  }
+
+  footer .col-services .services-subcolumn .section a:hover {
+      color: #bbb;
+  }
+
+  /* Information subcolumns layout */
+  footer .col-information .information-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      width: 100%;
+  }
+
+  /* Main information title spanning full width */
+  footer .col-information .information-main-title {
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+      color: #fff;
+      text-align: center;
+      width: 100%;
+      position: relative;
+  }
+
+  /* Shorter border for information */
+  footer .col-information .information-main-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 25%;
+      right: 25%;
+      height: 1px;
+      background-color: #aaa;
+  }
+
+  /* Information subcolumns container */
+  footer .col-information .information-subcolumns {
+      display: flex;
+      flex-direction: row;
+      gap: 0;
+      width: 100%;
+  }
+
+  footer .col-information .information-subcolumn {
+      width: 50%;
+      padding: 0 5px;
+  }
+
+  footer .col-information .information-subcolumn .section {
+      margin-bottom: 2rem;
+  }
+
+  footer .col-information .information-subcolumn .section .ttl {
+      display: none; /* Hide individual titles since we have main title */
+  }
+
+  footer .col-information .information-subcolumn .section a {
+      width: 100%;
+      display: block;
+      margin: 0.4rem 0;
+      color: #fff;
+      text-decoration: none;
+      text-align: center;
+      font-size: 1.1rem;
+  }
+
+  footer .col-information .information-subcolumn .section a:hover {
+      color: #bbb;
+  }
+
+  /* Contacts subcolumns layout */
+  footer .col-contacts .contacts-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      width: 100%;
+  }
+
+  /* Main contacts title spanning full width */
+  footer .col-contacts .contacts-main-title {
+      font-size: 1.2rem;
+      text-transform: uppercase;
+      padding-bottom: 0.5rem;
+      margin-bottom: 1rem;
+      color: #fff;
+      text-align: center;
+      width: 100%;
+      position: relative;
+  }
+
+  /* Shorter border for contacts */
+  footer .col-contacts .contacts-main-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 25%;
+      right: 25%;
+      height: 1px;
+      background-color: #aaa;
+  }
+
+  /* Contacts subcolumns container */
+  footer .col-contacts .contacts-subcolumns {
+      display: flex;
+      flex-direction: row;
+      gap: 0;
+      width: 100%;
+  }
+
+  footer .col-contacts .contacts-subcolumn {
+      width: 50%;
+      padding: 0 5px;
+  }
+
+  footer .col-contacts .contacts-subcolumn .section {
+      margin-bottom: 2rem;
+  }
+
+  /* Location items */
+  footer .col-contacts .location-item {
+      font-size: 1.1rem;
+      line-height: 1.5;
+      margin: 0.2rem 0;
+      color: #fff;
+      text-align: center;
+      font-family: "def_l";
+  }
+
+  footer .col-contacts .location-item i {
+      margin-right: 0.2rem;
+      font-size: 0.7rem;
+      color: #fff;
+      vertical-align: middle;
+  }
+
+  /* Phone item */
+  footer .col-contacts .phone-item {
+      font-size: 1rem !important;
+      font-weight: bold;
+      color: #fff !important;
+      text-decoration: none;
+      display: block;
+      margin: 0.2rem 0;
+      text-align: center;
+      font-family: "def_l";
+  }
+
+  footer .col-contacts .phone-item i {
+      margin-right: 0.2rem;
+      font-size: 0.7rem;
+      color: #fff;
+      vertical-align: middle;
+  }
+
+  /* Schedule items */
+  footer .col-contacts .schedule-item {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin: 0.5rem 0;
+      color: #fff;
+      text-align: center;
+      font-family: "def_l";
+      white-space: nowrap;
+  }
+
+
+  /* Schedule hours styling */
+  footer .col-contacts .schedule-item strong {
+      font-size: 0.85rem;
+  }
   
-  /* Contacts Column */
+  /* Contacts Column (old styles - keeping for compatibility) */
   footer .col-contacts .ttl {
       font-size: 1.2rem;
       text-transform: uppercase;
@@ -712,21 +972,17 @@
       font-family: "def_l";
   }
   
-  footer .col-contacts .address i,
-  footer .col-contacts .schedule i {
-      margin-right: 0.5rem;
+  footer .col-contacts .address i {
+      margin-right: 0.2rem;
       font-size: 1.1rem;
       vertical-align: middle;
       line-height: 1.5;
   }
   
   footer .col-contacts .address i {
-      color: #e2001a;
+      color: #fff;
   }
   
-  footer .col-contacts .schedule i {
-      color: #e2001a;
-  }
   
   footer .col-contacts .mail {
       color: #fff !important;
@@ -740,7 +996,7 @@
   footer .col-contacts .mail i {
       margin-right: 0.5rem;
       font-size: 1.1rem;
-      color: #e2001a;
+      color: #fff;
       vertical-align: middle;
   }
   
@@ -776,6 +1032,25 @@
   footer .col-social .sc a:hover {
       transform: scale(1.1);
   }
+
+  /* Social email styling */
+  footer .col-social .social-email {
+      color: #fff !important;
+      font-weight: bold;
+      font-size: 1.1rem;
+      text-decoration: none;
+      display: block;
+      margin: 0.4rem 0 0 0;
+      text-align: center;
+      font-family: "def_l";
+  }
+
+  footer .col-social .social-email i {
+      margin-right: 0.2rem;
+      font-size: 0.8rem;
+      color: #fff;
+      vertical-align: middle;
+  }
   
   /* Mobile Responsive - Show Contacts, Social Media and Information only */
   @media (max-width: 768px) {
@@ -800,31 +1075,64 @@
       }
       
       /* Services column - hidden on mobile */
-      footer .columns-wrapper .column-container.col-1-container {
+      footer .columns-wrapper .column-container.col-logo-container {
           display: none !important;
       }
       
       /* Information column on mobile */
-      footer .columns-wrapper .column-container.col-2-container {
+      footer .columns-wrapper .column-container.col-services-container {
           width: 100% !important;
           margin: 0 !important;
           order: 3 !important;
       }
       
       /* Contacts column on mobile */
-      footer .columns-wrapper .column-container.col-3-container {
+      footer .columns-wrapper .column-container.col-information-container {
           width: 100% !important;
           margin: 0 !important;
           order: 1 !important;
       }
       
       /* Social media column on mobile */
-      footer .columns-wrapper .column-container.col-4-container {
+      footer .columns-wrapper .column-container.col-contacts-container {
           width: 100% !important;
           margin: 0 !important;
           order: 2 !important;
       }
       
+      /* Services subcolumns on mobile */
+      footer .col-services .services-subcolumns {
+          flex-direction: column;
+      }
+      
+      footer .col-services .services-subcolumn {
+          width: 100%;
+          padding: 0;
+          margin-bottom: 1rem;
+      }
+
+      /* Information subcolumns on mobile */
+      footer .col-information .information-subcolumns {
+          flex-direction: column;
+      }
+      
+      footer .col-information .information-subcolumn {
+          width: 100%;
+          padding: 0;
+          margin-bottom: 1rem;
+      }
+
+      /* Contacts subcolumns on mobile */
+      footer .col-contacts .contacts-subcolumns {
+          flex-direction: column;
+      }
+      
+      footer .col-contacts .contacts-subcolumn {
+          width: 100%;
+          padding: 0;
+          margin-bottom: 1rem;
+      }
+
       /* Column content adjusts */
       footer .columns-wrapper .col {
           max-width: 100% !important;
@@ -850,12 +1158,11 @@
   .footer-logo-section {
       width: 100%;
       text-align: center;
-      margin-top: 20px;
       padding: 0;
   }
   
   .footer-logo-section img {
-      width: 120px;
+      width: 100px;
       margin: 0;
       padding: 0;
   }

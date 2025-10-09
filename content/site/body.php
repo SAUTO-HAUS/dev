@@ -238,79 +238,132 @@ if (!isset($t_mp[2]) || $t_mp[2]=='') { ?>
 <footer>
     <div class="footer-content">
         <div class="columns-wrapper">
-            <!-- First Column Container - Services -->
-            <div class="column-container col-1-container">
+
+            <!-- Column 1: Company Logo -->
+            <div class="column-container col-logo-container">
+                <div class="col col-logo">
+                    <div class="footer-logo-section">
+                        <a href="/<?php echo $_COOKIE['lang']; ?>/">
+                            <img src="/<?php echo _SITE_IMG; ?>/v2/logo_w.svg" alt="SAUTO" />
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Column 2: Services -->
+            <div class="column-container col-services-container">
                 <div class="col col-services">
-                    <?php
-                    foreach($foo_arr as $l => $a){
-                        if ($l == 'services') {
-                            $zttl = (isset($lng['w'][$l])) ? $lng['w'][$l] : $l;
-                            echo '
+                    <div class="services-wrapper">
+                        <!-- Main title spanning full width -->
+                        <div class="services-main-title"><?php echo (isset($lng['w']['services'])) ? $lng['w']['services'] : 'Servicii'; ?></div>
+                        
+                        <!-- Subcolumns container -->
+                        <div class="services-subcolumns">
+                            <!-- Subcoloana 1 -->
+                            <div class="services-subcolumn">
                                 <div class="section">
-                                    <div class="ttl">'.$zttl.'</div>';
-                            foreach($a as $k){
-                                $v=$lng['p']['services'][$k]['name']; 
-                                $k='services/'.$k;
-                                echo '<a href="/'.$_COOKIE['lang'].'/'.$k.'">'.$v.'</a>';
-                            }
-                            echo '
-                                </div>';
-                        }
-                    }
-                    ?>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/services/car_sale">Vânzarea mașinii</a>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/services/trade_in">Schimb auto</a>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/services/evaluation">Evaluare auto</a>
+                                </div>
+                            </div>
+                            
+                            <!-- Subcoloana 2 -->
+                            <div class="services-subcolumn">
+                                <div class="section">
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/services/test_drive">Test Drive</a>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/services/insurance">Asigurare auto</a>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/services/custom_order">Auto la comandă</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Second Column Container - Information -->
-            <div class="column-container col-2-container">
+            <!-- Column 3: Information -->
+            <div class="column-container col-information-container">
                 <div class="col col-information">
-                    <?php
-                    foreach($foo_arr as $l => $a){
-                        if ($l == 'information') {
-                            $zttl = (isset($lng['w'][$l])) ? $lng['w'][$l] : $l;
-                            echo '
+                    <div class="information-wrapper">
+                        <!-- Main title spanning full width -->
+                        <div class="information-main-title"><?php echo (isset($lng['w']['information'])) ? $lng['w']['information'] : 'Informații'; ?></div>
+                        
+                        <!-- Subcolumns container -->
+                        <div class="information-subcolumns">
+                            <!-- Subcoloana 1 -->
+                            <div class="information-subcolumn">
                                 <div class="section">
-                                    <div class="ttl">'.$zttl.'</div>';
-                            foreach($a as $k){
-                                $v=$lng['p']['information'][$k]['name'];
-                                echo '<a href="/'.$_COOKIE['lang'].'/'.$k.'">'.$v.'</a>';
-                            }
-                            echo '
-                                </div>';
-                        }
-                    }
-                    ?>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/about">Despre noi</a>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/credit">Cerințe credit</a>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/warranty">Garanție</a>
+                                </div>
+                            </div>
+                            
+                            <!-- Subcoloana 2 -->
+                            <div class="information-subcolumn">
+                                <div class="section">
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/privacy">Politica confidențialitate</a>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/terms">Termeni și condiții</a>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/faq">Întrebări frecvente</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Third Column Container - Contacts -->
-            <div class="column-container col-3-container">
+            <!-- Column 4: Contact Information -->
+            <div class="column-container col-contacts-container">
                 <div class="col col-contacts">
-                    <div class="ttl"><?php echo $lng['w']['contacts']; ?></div>
-                    <?php
-                    $generalPhone = PhoneHelper::getGeneralPhone();
-                    $formattedGeneralPhone = PhoneHelper::formatPhone($generalPhone, 'display');
-                    ?>
-                    <a href="tel:<?php echo $generalPhone; ?>" class="phone"><?php echo $formattedGeneralPhone; ?></a>
-                    <p class="address">
-                        <i class="fa-solid fa-location-dot"></i>
-                        <?php echo $lng['t']['x']['address'][0].'<br/>
-                            <strong>'.$lng['t']['x']['address'][1].'</strong><br/>
-                            <strong>'.$lng['t']['x']['address'][2].'</strong>'; ?>
-                    </p>
-                    <p class="schedule">
-                        <i class="fa-solid fa-clock"></i>
-                        <?php echo $lng['l']['date']['day']['mon']['l'].' - '.$lng['l']['date']['day']['fri']['l'].' <strong>8:00 - 18:00</strong><br/>'.$lng['l']['date']['day']['sat']['l'].' - '.$lng['l']['date']['day']['sun']['l'].' <strong>9:00 - 16:00</strong>'; ?>
-                    </p>
-                    <a href="mailto:info@sauto.md" class="mail">
-                        <i class="fa-solid fa-envelope"></i>
-                        info@sauto.md
-                    </a>
+                    <div class="contacts-wrapper">
+                        <!-- Main title spanning full width -->
+                        <div class="contacts-main-title"><?php echo $lng['w']['contacts']; ?></div>
+                        
+                        <!-- Subcolumns container -->
+                        <div class="contacts-subcolumns">
+                            <!-- Subcoloana 1: Locații -->
+                            <div class="contacts-subcolumn">
+                                <div class="section">
+                                    <p class="location-item">
+                                        <?php echo $lng['t']['x']['address'][0]; ?>
+                                    </p>
+                                    <p class="location-item">
+                                        <i class="fa-solid fa-location-dot"></i>
+                                        <?php echo $lng['t']['x']['address'][1]; ?>
+                                    </p>
+                                    <p class="location-item">
+                                        <i class="fa-solid fa-location-dot"></i>
+                                        <?php echo $lng['t']['x']['address'][2]; ?>
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <!-- Subcoloana 2: Program și telefon -->
+                            <div class="contacts-subcolumn">
+                                <div class="section">
+                                    <?php
+                                    $generalPhone = PhoneHelper::getGeneralPhone();
+                                    $formattedGeneralPhone = PhoneHelper::formatPhone($generalPhone, 'display');
+                                    ?>
+                                    <a href="tel:<?php echo $generalPhone; ?>" class="phone-item">
+                                        <i class="fa-solid fa-phone"></i>
+                                        <?php echo $formattedGeneralPhone; ?>
+                                    </a>
+                                    <p class="schedule-item">
+                                        <?php echo $lng['l']['date']['day']['mon']['l'].' - '.$lng['l']['date']['day']['fri']['l']; ?> <strong>8:00 - 18:00</strong>
+                                    </p>
+                                    <p class="schedule-item">
+                                        <?php echo $lng['l']['date']['day']['sat']['l'].' - '.$lng['l']['date']['day']['sun']['l']; ?> <strong>9:00 - 16:00</strong>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Fourth Column Container - Social Media -->
-            <div class="column-container col-4-container">
+            <!-- Column 5: Social Media -->
+            <div class="column-container col-social-container">
                 <div class="col col-social">
                     <div class="ttl"><?php echo isset($lng['w']['social']) ? $lng['w']['social'] : 'Rețelele sociale'; ?></div>
                     <div class="sc">
@@ -320,18 +373,18 @@ if (!isset($t_mp[2]) || $t_mp[2]=='') { ?>
                         }
                         ?>
                     </div>
+                    <!-- Email moved here -->
+                    <a href="mailto:info@sauto.md" class="social-email">
+                        <i class="fa-solid fa-envelope"></i>
+                        info@sauto.md
+                    </a>
                 </div>
             </div>
         </div> <!-- Close columns-wrapper -->
         
-        <!-- Logo and description above copyright -->
+        <!--description above copyright -->
         <div class="footer-bottom">
-            <div class="footer-logo-section">
-                <a href="/<?php echo $_COOKIE['lang']; ?>/">
-                    <img src="/<?php echo _SITE_IMG; ?>/v2/logo_w.svg" alt="SAUTO" />
-                </a>
-                <p class="footer-description"><?php echo $lng['t']['x']['logo_txt']; ?></p>
-            </div>
+            <div class="footer-description"><?php echo $lng['t']['x']['logo_txt']; ?></div>
             <div id="copyrights"><?php echo date('Y') ?> <span title="Copyrighted"> Sauto S.R.L.</span></div>
         </div>
     </div> <!-- Close footer-content -->
