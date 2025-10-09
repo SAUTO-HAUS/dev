@@ -93,7 +93,7 @@
     }
 }
 
-@media (max-width: 768px), (max-height: 768px) and (orientation: landscape) {
+@media (max-width: 768px) {
     .mobile-call-button-green {
         display: block;
     }
