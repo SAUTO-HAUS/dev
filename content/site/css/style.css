@@ -1043,7 +1043,7 @@ footer .columns-wrapper .column-container.col-logo-container {
       vertical-align: middle;
   }
   
-  /* Mobile Responsive - Păstrează subcoloanele side-by-side ca pe desktop */
+  /* Mobile Responsive */
   @media (max-width: 1284px) {
       /* Columns wrapper becomes vertical */
       footer .footer-content .columns-wrapper {
@@ -1060,9 +1060,9 @@ footer .columns-wrapper .column-container.col-logo-container {
       }
 
       footer .col-social .sc a {
-        margin: 1rem !important;
-        width: 3.5rem !important;
-        height: 3.5rem !important;
+        margin: 0.5rem !important;
+        width: 3.8rem !important;
+        height: 3.8rem !important;
       }
       
       /* Logo column - hidden on mobile */
@@ -1070,30 +1070,24 @@ footer .columns-wrapper .column-container.col-logo-container {
           display: none !important;
       }
       
-      /* ORDINEA PE MOBILE: Contacte, Informații, Servicii, Social Media */
-      
-      /* Contacte - primul pe mobile */
       footer .columns-wrapper .column-container.col-contacts-container {
           width: 100% !important;
           margin: 0 !important;
           order: 1 !important;
       }
       
-      /* Informații - al doilea pe mobile */
       footer .columns-wrapper .column-container.col-information-container {
           width: 100% !important;
           margin: 0 !important;
           order: 2 !important;
       }
       
-      /* Servicii - al treilea pe mobile */
       footer .columns-wrapper .column-container.col-services-container {
           width: 100% !important;
           margin: 0 !important;
           order: 3 !important;
       }
       
-      /* Social Media - ultimul pe mobile */
       footer .columns-wrapper .column-container.col-social-container {
           width: 100% !important;
           margin: 0 !important;
@@ -1118,7 +1112,6 @@ footer .columns-wrapper .column-container.col-logo-container {
           margin-top: 2px !important;
       }
 
-      /* Font size mai mic pentru textele din servicii și informații pe mobile */
       footer .col-services .section a,
       footer .col-information .section a {
           font-size: 0.9rem !important;
@@ -1177,17 +1170,15 @@ footer .columns-wrapper .column-container.col-logo-container {
       footer .columns-wrapper .col {
           max-width: 100% !important;
           padding: 0px 20px 0px 20px !important;
-          text-align: center !important; /* Centrează toate textele pe mobile */
+          text-align: center !important; 
       }
 
-      /* Toate linkurile și textele centrate pe mobile */
       footer .col-services .section a,
       footer .col-information .section a,
       footer .col-information .information-subcolumn .section a {
           text-align: center !important;
       }
 
-      /* Contacte centrate pe mobile */
       footer .col-contacts .location-item,
       footer .col-contacts .phone-item,
       footer .col-contacts .schedule-item {
@@ -2336,12 +2327,12 @@ footer .columns-wrapper .column-container.col-logo-container {
           left: 0 !important;
           transform: none !important;
           margin-right: 240px !important;
-          margin-top: 10px !important;
+          margin-top: 0px !important;
           order: -1 !important;
       }
       
       #top_logo img {
-          width: 9rem !important;
+          width: 11rem !important;
           height: auto !important;
       }
       
