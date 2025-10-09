@@ -94,7 +94,25 @@ echo '
                     echo '<a href="/'.$k.$lang_mp.'" hreflang="'.$k.'" class="'.$k.' button '; if($t_mp[1]==$k){echo ' active';} echo'" title="'.$v.'"><div>'.strtoupper($k).'</div></a>';
                 } ?>
             </div>
-            <label for="mm_cbx" class="mm_lb"></label>
+            <label for="mm_cbx" class="mm_lb" data-close="<?php 
+                $close_text = array(
+                    'ro' => 'Închide',
+                    'ru' => 'Закрыть', 
+                    'en' => 'Close'
+                );
+                echo $close_text[$_COOKIE['lang']];
+                ?>">
+                <span class="menu-text">
+                    <?php 
+                    $menu_text = array(
+                        'ro' => 'Meniu',
+                        'ru' => 'Меню', 
+                        'en' => 'Menu'
+                    );
+                    echo $menu_text[$_COOKIE['lang']];
+                    ?>
+                </span>
+            </label>
         </nav>
 
         <?php

@@ -1,4 +1,4 @@
-﻿@media (max-width:999px), (orientation: portrait) {
+@media (max-width:999px), (orientation: portrait) {
 	
 	header, #crumbs, #ann, body > .fltr, main, footer {width:96vw; margin:20px 2vw 0;}
 	
@@ -74,6 +74,40 @@
 	
 	#mm_cbx:checked+#main_menu {right:0;}
 	#mm_cbx:checked+#main_menu > .mm_lb {left:1rem; background-image:url(/media/images/site/v2/close.svg); background-size:50%; border-radius:.5rem;}
+	/* Text change when menu is open */
+	#mm_cbx:checked+#main_menu > .mm_lb .menu-text::before {
+		content: attr(data-close-text);
+	}
+	
+	#mm_cbx:checked+#main_menu > .mm_lb .menu-text {
+		display: none;
+	}
+	
+	#mm_cbx:checked+#main_menu > .mm_lb::after {
+		content: attr(data-close);
+		font-size: 0.8rem;
+		font-weight: 700;
+		color: #333;
+		font-family: "def_l";
+		margin-bottom: 3rem;
+	}
+	
+	/* Burger menu text styling */
+	.mm_lb {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		cursor: pointer;
+		padding-bottom: 4rem;
+	}
+	
+	.mm_lb .menu-text {
+		font-size: 0.8rem;
+		font-weight: 700;
+		color: #333;
+		font-family: "def_l";
+		margin-bottom: 1rem;
+	}
 	
 	#main_menu .menu a {width:100%; padding:1rem;}
 	#main_menu .lang a {width: 100%; padding:.5rem 0;}

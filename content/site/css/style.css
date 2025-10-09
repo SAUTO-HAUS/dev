@@ -102,8 +102,8 @@
           }
               
               #mm_cbx {display:none;}
-              #main_menu > .mm_lb {width:3rem; height:3rem; position:absolute; left:-3rem; top:2rem; cursor:pointer; background:#fff url(/media/images/site/v2/m_menu.svg) no-repeat center / 70%; border-radius:.5rem 0 0 .5rem; transition:.2s;}
-              #main_menu > .mm_lb:hover {transform:scale(1.25);}
+              #main_menu > .mm_lb {width:3.5rem; height:3.5rem; position:absolute; left:-4.5rem; top:2rem; cursor:pointer; background:#fff url(/media/images/site/v2/m_menu.svg) no-repeat center / 70%; border-radius:.5rem; transition:.2s;}
+              #main_menu > .mm_lb:hover {transform:scale(1.35);}
                   
               #main_menu .menu {float:left; margin-left:3%;}
               #main_menu .lang {float:right; margin-right:3%; color:#ccc;}
