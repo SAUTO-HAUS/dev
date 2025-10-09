@@ -262,18 +262,18 @@ if (!isset($t_mp[2]) || $t_mp[2]=='') { ?>
                             <!-- Subcoloana 1 -->
                             <div class="services-subcolumn">
                                 <div class="section">
-                                    <a href="/<?php echo $_COOKIE['lang']; ?>/services/car_sale">Vânzarea mașinii</a>
-                                    <a href="/<?php echo $_COOKIE['lang']; ?>/services/trade_in">Schimb auto</a>
-                                    <a href="/<?php echo $_COOKIE['lang']; ?>/services/evaluation">Evaluare auto</a>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/services/car_sale"><?php echo $lng['p']['services']['sale']['name']; ?></a>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/services/trade_in"><?php echo $lng['p']['services']['tradein']['name']; ?></a>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/services/evaluation"><?php echo $lng['p']['services']['estimation']['name']; ?></a>
                                 </div>
                             </div>
                             
                             <!-- Subcoloana 2 -->
                             <div class="services-subcolumn">
                                 <div class="section">
-                                    <a href="/<?php echo $_COOKIE['lang']; ?>/services/test_drive">Test Drive</a>
-                                    <a href="/<?php echo $_COOKIE['lang']; ?>/services/insurance">Asigurare auto</a>
-                                    <a href="/<?php echo $_COOKIE['lang']; ?>/services/custom_order">Auto la comandă</a>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/services/test_drive"><?php echo $lng['p']['services']['testdrive']['name']; ?></a>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/services/insurance"><?php echo $lng['p']['services']['insurance']['name']; ?></a>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/services/custom_order"><?php echo $lng['p']['services']['order']['name']; ?></a>
                                 </div>
                             </div>
                         </div>
@@ -293,18 +293,26 @@ if (!isset($t_mp[2]) || $t_mp[2]=='') { ?>
                             <!-- Subcoloana 1 -->
                             <div class="information-subcolumn">
                                 <div class="section">
-                                    <a href="/<?php echo $_COOKIE['lang']; ?>/about">Despre noi</a>
-                                    <a href="/<?php echo $_COOKIE['lang']; ?>/credit">Cerințe credit</a>
-                                    <a href="/<?php echo $_COOKIE['lang']; ?>/warranty">Garanție</a>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/about"><?php echo $lng['p']['information']['about']['name']; ?></a>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/credit"><?php echo $lng['p']['information']['credit']['name']; ?></a>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/warranty"><?php echo $lng['p']['information']['warranty']['name']; ?></a>
                                 </div>
                             </div>
                             
                             <!-- Subcoloana 2 -->
                             <div class="information-subcolumn">
                                 <div class="section">
-                                    <a href="/<?php echo $_COOKIE['lang']; ?>/privacy">Politica confidențialitate</a>
-                                    <a href="/<?php echo $_COOKIE['lang']; ?>/terms">Termeni și condiții</a>
-                                    <a href="/<?php echo $_COOKIE['lang']; ?>/faq">Întrebări frecvente</a>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/privacy"><?php echo $lng['p']['information']['privacy']['name']; ?></a>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/terms"><?php echo $lng['p']['information']['terms']['name']; ?></a>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/faq"><?php 
+                                        if ($_COOKIE['lang'] == 'ru') {
+                                            echo 'Часто задаваемые вопросы';
+                                        } elseif ($_COOKIE['lang'] == 'en') {
+                                            echo 'Frequently Asked Questions';
+                                        } else {
+                                            echo 'Întrebări frecvente';
+                                        }
+                                    ?></a>
                                 </div>
                             </div>
                         </div>
