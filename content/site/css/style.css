@@ -756,19 +756,19 @@ footer .columns-wrapper .column-container.col-logo-container {
   footer .col-services .services-subcolumn .section {
       margin-bottom: 2rem;
   }
-
   footer .col-services .services-subcolumn .section .ttl {
       display: none; /* Hide individual titles since we have main title */
   }
 
-  footer .col-services .services-subcolumn .section a {
+  footer .col-services .section a,
+  footer .col-information .section a {
       width: 100%;
       display: block;
       margin: 0.4rem 0;
       color: #fff;
       text-decoration: none;
       text-align: center;
-      font-size: 1.1rem;
+      font-size: 0.9rem;
   }
 
   footer .col-services .services-subcolumn .section a:hover {
@@ -834,7 +834,7 @@ footer .columns-wrapper .column-container.col-logo-container {
       color: #fff;
       text-decoration: none;
       text-align: center;
-      font-size: 1.1rem;
+      font-size: 0.9rem;
   }
 
   footer .col-information .information-subcolumn .section a:hover {
@@ -891,7 +891,7 @@ footer .columns-wrapper .column-container.col-logo-container {
 
   /* Location items */
   footer .col-contacts .location-item {
-      font-size: 1.1rem;
+      font-size: 0.9rem;
       line-height: 1.5;
       margin: 0.2rem 0;
       color: #fff;
@@ -908,7 +908,7 @@ footer .columns-wrapper .column-container.col-logo-container {
 
   /* Phone item */
   footer .col-contacts .phone-item {
-      font-size: 1rem !important;
+      font-size: 0.8rem !important;
       font-weight: bold;
       color: #fff !important;
       text-decoration: none;
@@ -1037,7 +1037,7 @@ footer .columns-wrapper .column-container.col-logo-container {
   footer .col-social .social-email {
       color: #fff !important;
       font-weight: bold;
-      font-size: 1.1rem;
+      font-size: 0.9rem;
       text-decoration: none;
       display: block;
       margin: 0.4rem 0 0 0;
