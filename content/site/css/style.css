@@ -562,7 +562,7 @@
   footer {
       width:100vw;
       margin:10px 0 0;
-      padding:30px 0 0;
+      padding:20px 0 0;
       background:#515151;
       color:#fff;
       display: flex;
@@ -592,25 +592,16 @@
       margin: 0 auto 0 auto !important;
   }
   
-  /* Column Containers - 5 columns layout */
-  footer .columns-wrapper .column-container {
-      width: 23% !important;
-      display: flex !important;
-      justify-content: center !important;
-      align-items: flex-start !important;
-      margin: 0 !important;
-      padding: 0 !important;
-  }
   
 footer .columns-wrapper .column-container.col-logo-container {
-    width: 8% !important;
+    width: 10% !important;
     justify-content: center !important;
     margin: 0 !important;
     padding: 0 !important;
 }
 
   footer .columns-wrapper .column-container.col-services-container {
-      width: 23% !important;
+      width: 21% !important;
       justify-content: center !important;
       margin: 0 !important;
       padding: 0 !important;
@@ -641,8 +632,8 @@ footer .columns-wrapper .column-container.col-logo-container {
   footer .columns-wrapper .col {
       width: 100% !important;
       max-width: 350px !important;
-      padding: 0px 10px 0px 10px !important;
-      text-align: center !important;
+      padding: 0 !important;
+      text-align: left !important;
       float: none !important;
       display: block !important;
       margin: 0 auto !important;
@@ -651,7 +642,7 @@ footer .columns-wrapper .column-container.col-logo-container {
   /* Services, Information and Social Column Sections */
   footer .col-services .section,
   footer .col-information .section {
-      margin-bottom: 2rem;
+      margin-bottom: 0;
   }
   
   footer .col-services .section .ttl,
@@ -754,7 +745,7 @@ footer .columns-wrapper .column-container.col-logo-container {
   }
 
   footer .col-services .services-subcolumn .section {
-      margin-bottom: 2rem;
+      margin-bottom: 0;
   }
   footer .col-services .services-subcolumn .section .ttl {
       display: none; /* Hide individual titles since we have main title */
@@ -767,7 +758,7 @@ footer .columns-wrapper .column-container.col-logo-container {
       margin: 0.4rem 0;
       color: #fff;
       text-decoration: none;
-      text-align: center;
+      text-align: left;
       font-size: 0.9rem;
   }
 
@@ -820,7 +811,7 @@ footer .columns-wrapper .column-container.col-logo-container {
   }
 
   footer .col-information .information-subcolumn .section {
-      margin-bottom: 2rem;
+      margin-bottom: 0;
   }
 
   footer .col-information .information-subcolumn .section .ttl {
@@ -833,7 +824,7 @@ footer .columns-wrapper .column-container.col-logo-container {
       margin: 0.4rem 0;
       color: #fff;
       text-decoration: none;
-      text-align: center;
+      text-align: left;
       font-size: 0.9rem;
   }
 
@@ -886,7 +877,7 @@ footer .columns-wrapper .column-container.col-logo-container {
   }
 
   footer .col-contacts .contacts-subcolumn .section {
-      margin-bottom: 2rem;
+      margin-bottom: 0;
   }
 
   /* Location items */
@@ -895,7 +886,7 @@ footer .columns-wrapper .column-container.col-logo-container {
       line-height: 1.5;
       margin: 0.2rem 0;
       color: #fff;
-      text-align: center;
+      text-align: left;
       font-family: "def_l";
   }
 
@@ -914,7 +905,7 @@ footer .columns-wrapper .column-container.col-logo-container {
       text-decoration: none;
       display: block;
       margin: 0.2rem 0;
-      text-align: center;
+      text-align: left;
       font-family: "def_l";
   }
 
@@ -931,7 +922,7 @@ footer .columns-wrapper .column-container.col-logo-container {
       line-height: 1.5;
       margin: 0.5rem 0;
       color: #fff;
-      text-align: center;
+      text-align: left;
       font-family: "def_l";
       white-space: nowrap;
   }
@@ -1186,6 +1177,21 @@ footer .columns-wrapper .column-container.col-logo-container {
       footer .columns-wrapper .col {
           max-width: 100% !important;
           padding: 0px 20px 0px 20px !important;
+          text-align: center !important; /* Centrează toate textele pe mobile */
+      }
+
+      /* Toate linkurile și textele centrate pe mobile */
+      footer .col-services .section a,
+      footer .col-information .section a,
+      footer .col-information .information-subcolumn .section a {
+          text-align: center !important;
+      }
+
+      /* Contacte centrate pe mobile */
+      footer .col-contacts .location-item,
+      footer .col-contacts .phone-item,
+      footer .col-contacts .schedule-item {
+          text-align: center !important;
       }
   }
   
@@ -1211,7 +1217,7 @@ footer .columns-wrapper .column-container.col-logo-container {
   }
   
   .footer-logo-section img {
-      width: 100px;
+      width: 120px;
       margin: 0;
       padding: 0;
   }
@@ -1219,10 +1225,10 @@ footer .columns-wrapper .column-container.col-logo-container {
   .footer-description {
       font-family: "def_l";
       text-transform: uppercase;
-      font-size: 1.2rem;
+      font-size: 1rem;
       color: #bbb;
-      margin: 0;
-      padding: 0;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
   }
   
   footer #copyrights {
