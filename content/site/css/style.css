@@ -1053,7 +1053,7 @@ footer .columns-wrapper .column-container.col-logo-container {
   }
   
   /* Mobile Responsive - Păstrează subcoloanele side-by-side ca pe desktop */
-  @media (max-width: 768px) {
+  @media (max-width: 1284px) {
       /* Columns wrapper becomes vertical */
       footer .footer-content .columns-wrapper {
           flex-direction: column !important;
