@@ -13,12 +13,17 @@ $z2 = isset($t_mp[2]) ? $t_mp[2] : '';
 //$z3 = isset($t_mp[3]) ? $t_mp[3] : '';
 $z3 = !isset($t_mp[3])?'':(in_array($z2, ['cars', 'tyres'])?( toNumber($t_mp[3])>0?toNumber($t_mp[3]):'' ):$t_mp[3]);
 
-$zrbt = 'index, follow';
+$zrbt = 'noindex, nofollow';
 
-// Check if this is a subdomain and set noindex for subdomains
-$current_host = $_SERVER['HTTP_HOST'] ?? '';
-if (!empty($current_host) && strpos($current_host, '.sauto.md') !== false && $current_host !== 'sauto.md' && $current_host !== 'www.sauto.md') {
-    $zrbt = 'noindex, nofollow';
+// Only allow indexing on the primary sauto.md domain in production
+$current_host = strtolower($_SERVER['HTTP_HOST'] ?? '');
+if ($current_host !== '') {
+    // Strip an optional port suffix (e.g. sauto.md:8080)
+    $current_host = preg_replace('/:\d+$/', '', $current_host);
+}
+
+if (in_array($current_host, ['sauto.md', 'www.sauto.md'], true)) {
+    $zrbt = 'index, follow';
 }
 
 $r['ttl']='';$r['h1']='';$r['dsc']='';$r['kwd']='';
@@ -117,7 +122,9 @@ if ( in_array($z2, $url_arr) ){//if t_mp[2] is allowed part of url
 		foreach ($pdo as $r){ foreach ($r as $k => $v){ $sa['it']['r'][$k] = $v; } $ir=1;}
 		
 		if ($ir==1){
-			$zrbt = ( $z2=='cars' && ($r['n_a']=='1' || $r['act']=='0') ) ? 'noindex, follow' : $zrbt;
+                        // Always allow indexing for car catalog pages regardless of stock status
+                        // Previously we set noindex when the car was unavailable, but business rules now
+                        // require indexing for all car detail pages.
 			
 			$pdo2->execute(array('id'=>$r['id']));
 			foreach ($pdo2 as $r2){ $sa['it']['img']='https://www.sauto.md/media/images/upload/'.$p_type.'/'.$sa['it']['r']['p_path'].'/'.$sa['it']['r']['id'].'/med/'.$r2['name'].'.jpg'; }
