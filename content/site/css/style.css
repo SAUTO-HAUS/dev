@@ -1052,13 +1052,13 @@ footer .columns-wrapper .column-container.col-logo-container {
       vertical-align: middle;
   }
   
-  /* Mobile Responsive - Show Contacts, Social Media and Information only */
+  /* Mobile Responsive - Păstrează subcoloanele side-by-side ca pe desktop */
   @media (max-width: 768px) {
       /* Columns wrapper becomes vertical */
       footer .footer-content .columns-wrapper {
           flex-direction: column !important;
           width: 100% !important;
-          gap: 1rem !important;
+          gap: 0.5rem !important;
       }
       
       /* Column containers take full width */
@@ -1069,68 +1069,101 @@ footer .columns-wrapper .column-container.col-logo-container {
       }
 
       footer .col-social .sc a {
-        margin: 0.5rem !important;
-        width: 3rem !important;
-        height: 3rem !important;
+        margin: 1rem !important;
+        width: 3.5rem !important;
+        height: 3.5rem !important;
       }
       
-      /* Services column - hidden on mobile */
+      /* Logo column - hidden on mobile */
       footer .columns-wrapper .column-container.col-logo-container {
           display: none !important;
       }
       
-      /* Information column on mobile */
+      /* ORDINEA PE MOBILE: Contacte, Informații, Servicii, Social Media */
+      
+      /* Contacte - primul pe mobile */
+      footer .columns-wrapper .column-container.col-contacts-container {
+          width: 100% !important;
+          margin: 0 !important;
+          order: 1 !important;
+      }
+      
+      /* Informații - al doilea pe mobile */
+      footer .columns-wrapper .column-container.col-information-container {
+          width: 100% !important;
+          margin: 0 !important;
+          order: 2 !important;
+      }
+      
+      /* Servicii - al treilea pe mobile */
       footer .columns-wrapper .column-container.col-services-container {
           width: 100% !important;
           margin: 0 !important;
           order: 3 !important;
       }
       
-      /* Contacts column on mobile */
-      footer .columns-wrapper .column-container.col-information-container {
+      /* Social Media - ultimul pe mobile */
+      footer .columns-wrapper .column-container.col-social-container {
           width: 100% !important;
           margin: 0 !important;
-          order: 1 !important;
+          order: 4 !important;
       }
       
-      /* Social media column on mobile */
-      footer .columns-wrapper .column-container.col-contacts-container {
-          width: 100% !important;
-          margin: 0 !important;
-          order: 2 !important;
-      }
-      
-      /* Services subcolumns on mobile */
+      /* SERVICII - păstrează 2 subcoloane side-by-side pe mobile */
       footer .col-services .services-subcolumns {
-          flex-direction: column;
+          flex-direction: row !important;
+          gap: 10px !important;
       }
       
       footer .col-services .services-subcolumn {
-          width: 100%;
-          padding: 0;
-          margin-bottom: 1rem;
+          width: 48% !important;
+          padding: 0 !important;
+          margin-bottom: 0 !important;
       }
 
-      /* Information subcolumns on mobile */
+      /* INFORMAȚII - păstrează 2 subcoloane side-by-side pe mobile */
       footer .col-information .information-subcolumns {
-          flex-direction: column;
+          flex-direction: row !important;
+          gap: 10px !important;
       }
       
       footer .col-information .information-subcolumn {
-          width: 100%;
-          padding: 0;
-          margin-bottom: 1rem;
+          width: 48% !important;
+          padding: 0 !important;
+          margin-bottom: 0 !important;
       }
 
-      /* Contacts subcolumns on mobile */
+      /* CONTACTE - păstrează 2 subcoloane side-by-side pe mobile */
       footer .col-contacts .contacts-subcolumns {
-          flex-direction: column;
+          flex-direction: row !important;
+          gap: 10px !important;
       }
       
       footer .col-contacts .contacts-subcolumn {
-          width: 100%;
-          padding: 0;
-          margin-bottom: 1rem;
+          width: 48% !important;
+          padding: 0 !important;
+          margin-bottom: 0 !important;
+      }
+
+      /* SOCIAL MEDIA - email deasupra titlului pe mobile */
+      footer .col-social {
+          display: flex !important;
+          flex-direction: column !important;
+      }
+      
+      footer .col-social .social-email {
+          order: 1 !important;
+          margin-bottom: 1rem !important;
+          margin-top: 3rem !important;
+      }
+      
+      footer .col-social .ttl {
+          order: 2 !important;
+      }
+      
+      footer .col-social .sc {
+          order: 3 !important;
+          margin-top: -1rem !important;
       }
 
       /* Column content adjusts */
