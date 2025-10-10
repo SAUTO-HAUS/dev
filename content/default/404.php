@@ -29,7 +29,7 @@ http_response_code(404);
 	<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
 	
-    <title><?php echo $lang_404.', '.$site_name; ?></title>
+    <title><?php echo '404 - '.$lang_404.', '.$site_name; ?></title>
 
 
 	<style>

@@ -109,7 +109,7 @@
 		margin-bottom: 1rem;
 	}
 	
-	#main_menu .menu a {width:100%; padding:1rem;}
+	#main_menu .menu a {width:100%; padding:1rem; color:#000;}
 	#main_menu .lang a {width: 100%; padding:.5rem 0;}
 	
 	main > .pht_bx {width:100%; height:auto;}
