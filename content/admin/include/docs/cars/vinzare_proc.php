@@ -211,7 +211,20 @@ $rtrn = '
 		</div>
 		<div class="conf">CONFIDENTIAL</div>
 	</div>
-</div>';
+';
+
+// Include KYC 
+include(__DIR__.'/kyc_helper.php');
+if (requiresKycPages('vinzare_proc')) {
+	$rtrn .= '
+	<div class="sep"></div>';
+	
+	includeKycPages();
+}
 
 echo $rtrn;
 ?>
+
+
+
+
