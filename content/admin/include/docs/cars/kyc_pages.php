@@ -56,7 +56,7 @@ $kyc_pages = '
 			</tr>
 			<tr>
 				<td colspan="2">
-				<table style="width: 100%; border: none;">
+					<table style="width: 100%; border: none;">
 						<tr>
 							<td style="border: none; width: 33%; vertical-align: top; padding: 2mm;">
 								<div class="kyc-label">Seria, numărul: <span style="border-bottom: 1px dotted #000; display: inline-block; width: 60mm; min-height: 5mm;">' . (isset($_POST['kyc_doc_series']) ? $_POST['kyc_doc_series'] : '') . '</span></div>
@@ -193,7 +193,243 @@ $kyc_pages = '
 				<td class="kyc-header" style="width: 5%;">IV.</td>
 				<td class="kyc-header">Persoană expusă politic (Funcția publică deținută)<br/><span class="kyc-sublabel">Политически уязвимые лица/(Выполняемая государственная должность)</span></td>
 			</tr>
-			<tr>		
+			<tr>
+				<td colspan="2">
+					<div style="text-align: left; margin-top: 3mm;">
+						<span class="kyc-label">Conform Legii nr.158/2008 cu privire la funcția publică și statutul funcționarului public</span>
+					</div>
+					<div style="text-align: left; margin-top: 1mm;">
+						<span class="kyc-sublabel">Согласно закону №158 от 04.07.2008 o государственной должности и статусе государственного служащего</span>
+					</div>
+					<div style="text-align: left; margin-top: 3mm;">
+						<span>☐ <span class="kyc-label">Nu dețin funcție publică</span></span>
+					</div>
+					<div style="text-align: left; margin-top: 1mm; margin-left: 5mm;">
+						<span class="kyc-sublabel">(Не выполняю государственных обязанностей)</span>
+					</div>
+					<div style="text-align: left; margin-top: 5mm;">
+						<span class="kyc-label">În caz că dețineți o funcție publică indicați:</span>
+					</div>
+					<div style="text-align: left; margin-top: 1mm;">
+						<span class="kyc-sublabel">(Если вы политически уязвимое лицо, укажите)</span>
+					</div>
+					<table style="width: 100%; border: none; margin-top: 3mm;">
+						<tr>
+							<td style="border: none; width: 33%; text-align: center; vertical-align: top; padding: 2mm;">
+								<div>☐ <span class="kyc-label">Deputat al Parlamentului RM</span></div>
+								<div class="kyc-sublabel">(Депутат Парламента РМ)</div>
+							</td>
+							<td style="border: none; width: 33%; text-align: center; vertical-align: top; padding: 2mm;">
+								<div>☐ <span class="kyc-label">Judecător</span></div>
+								<div class="kyc-sublabel">(Судья)</div>
+							</td>
+							<td style="border: none; width: 34%; text-align: center; vertical-align: top; padding: 2mm;">
+								<div>☐ <span class="kyc-label">Membru al Guvernului RM</span></div>
+								<div class="kyc-sublabel">(Член правительства рм)</div>
+							</td>
+						</tr>
+					</table>
+					<table style="width: 100%; border: none; margin-top: 3mm;">
+						<tr>
+							<td style="border: none; width: 50%; text-align: center; vertical-align: top; padding: 2mm;">
+								<div>☐ <span class="kyc-label">Membru al organelor de conducere ale partidelor politice</span></div>
+								<div class="kyc-sublabel">(Член руководящих органов политических партий)</div>
+							</td>
+							<td style="border: none; width: 50%; text-align: center; vertical-align: top; padding: 2mm;">
+								<div>☐ <span class="kyc-label">Primar</span></div>
+								<div class="kyc-sublabel">(Мэр)</div>
+							</td>
+						</tr>
+					</table>
+					<table style="width: 100%; border: none; margin-top: 3mm;">
+						<tr>
+							<td style="border: none; width: 50%; text-align: center; vertical-align: top; padding: 2mm;">
+								<div>☐ <span class="kyc-label">Consilier al autorităților publice locale</span></div>
+								<div class="kyc-sublabel">(Советник местных органов власти)</div>
+							</td>
+							<td style="border: none; width: 50%; text-align: center; vertical-align: top; padding: 2mm;">
+								<div>☐ <span class="kyc-label">Alta (indicați) <span style="border-bottom: 1px dotted #000; display: inline-block; width: 60mm; min-height: 5mm;"></span></span></div>
+								<div class="kyc-sublabel">(Другие)(укажите)</div>
+							</td>
+						</tr>
+					</table>
+					<div style="text-align: left; margin-top: 5mm;">
+						<span class="kyc-label">Afilierea (Conducător, asociat, acționar cu 25%)</span>
+					</div>
+					<div style="text-align: left; margin-top: 1mm;">
+						<span class="kyc-sublabel">Аффилированность (Руководитель, участник, акционер с 25%)</span>
+					</div>
+					<div style="text-align: left; margin-top: 3mm;">
+						<span class="kyc-label">Denumirea companiei:</span>
+						<span style="margin-left: 5mm; border-bottom: 1px dotted #000; display: inline-block; width: 100mm; min-height: 5mm;">' . (isset($_POST['kyc_affiliated_company']) ? $_POST['kyc_affiliated_company'] : '') . '</span>
+					</div>
+					<div style="text-align: left; margin-top: 1mm;">
+						<span class="kyc-sublabel">(Название компании)</span>
+					</div>
+					<hr style="border: none; border-top: 1px solid #000; margin: 5mm 0;">
+					<div style="text-align: left; margin-top: 3mm;">
+						<span class="kyc-label">Membrii de familie</span>
+					</div>
+					<div style="text-align: left; margin-top: 1mm; margin-left: 5mm;">
+						<span class="kyc-sublabel">(Члены семьи)</span>
+					</div>
+					<table style="width: 100%; border: none; margin-top: 3mm;">
+						<tr>
+							<td style="border: none; width: 50%; vertical-align: top; padding: 2mm;">
+								<div class="kyc-label">Părinți: Numele, Prenumele <span style="border-bottom: 1px dotted #000; display: inline-block; width: 65mm; min-height: 5mm;">' . (isset($_POST['kyc_parents_names']) ? $_POST['kyc_parents_names'] : '') . '</span></div>
+								<div class="kyc-sublabel">(Родители) Фамилия, Имя</div>
+							</td>
+							<td style="border: none; width: 50%; vertical-align: top; padding: 2mm;">
+								<div class="kyc-label">Soț/soție: Numele, Prenumele <span style="border-bottom: 1px dotted #000; display: inline-block; width: 65mm; min-height: 5mm;">' . (isset($_POST['kyc_spouse_name']) ? $_POST['kyc_spouse_name'] : '') . '</span></div>
+								<div class="kyc-sublabel">(Супруг/супруга) Фамилия, Имя</div>
+							</td>
+						</tr>
+					</table>
+					<table style="width: 100%; border: none; margin-top: 3mm;">
+						<tr>
+							<td style="border: none; width: 50%; vertical-align: top; padding: 2mm;">
+								<div class="kyc-label">Copiii și soțul/soția acestora: Numele, Prenumele <span style="border-bottom: 1px dotted #000; display: inline-block; width: 65mm; min-height: 5mm;">' . (isset($_POST['kyc_children_names']) ? $_POST['kyc_children_names'] : '') . '</span></div>
+								<div class="kyc-sublabel">(Дети и их супруги) Фамилия, Имя</div>
+							</td>
+							<td style="border: none; width: 50%; vertical-align: top; padding: 2mm;">
+								<div class="kyc-label">Concubin/concubină: Numele, Prenumele <span style="border-bottom: 1px dotted #000; display: inline-block; width: 65mm; min-height: 5mm;">' . (isset($_POST['kyc_partner_name']) ? $_POST['kyc_partner_name'] : '') . '</span></div>
+								<div class="kyc-sublabel">Сожитель/сожительница Фамилия, Имя</div>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td class="kyc-header" style="width: 5%;">V.</td>
+				<td class="kyc-header">Scopul și natura tranzacțiilor<br/><span class="kyc-sublabel">(Цель и вид операции)</span></td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<div style="text-align: left; margin-top:0.5mm;">
+						<div style="margin-bottom: 0.5mm;">☐ <span class="kyc-label">Achiziționarea unui automobil pentru uz personal</span></div>
+						<div style="margin-bottom: 0.5mm;">☐ <span class="kyc-label">Achiziționarea unui automobil pentru uzul familiei / rudelor</span></div>
+						<div style="margin-bottom: 0.5mm;">☐ <span class="kyc-label">Achiziționarea unui automobil pentru companie / activitate economică</span></div>
+						<div style="margin-bottom: 0.5mm;">☐ <span class="kyc-label">Achiziționarea unui automobil în scop de revânzare</span></div>
+						<div style="margin-bottom: 0.5mm;">☐ <span class="kyc-label">Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</span></div>
+						<div style="margin-bottom: 0.5mm;">☐ <span class="kyc-label">Transfer de proprietate între rude (moștenire, donație etc.)</span></div>
+						<div style="margin-bottom: 0.5mm;">☐ <span class="kyc-label">Altele (indicați) <span style="border-bottom: 1px dotted #000; display: inline-block; width: 120mm; min-height: 5mm;"></span></span></div>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td class="kyc-header" style="width: 5%;">VI.</td>
+				<td class="kyc-header">Sursa mijloacelor bănești<br/><span class="kyc-sublabel">(Источник денежных средств)</span></td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<div style="text-align: left; margin-top: 3mm; display: flex; flex-wrap: wrap; gap: 5mm;">
+						<div style="text-align: center;">
+							<div>☐ <span class="kyc-label">Salariu</span></div>
+							<div class="kyc-sublabel">(Зарплата)</div>
+						</div>
+						<div style="text-align: center;">
+							<div>☐ <span class="kyc-label">Dividende</span></div>
+							<div class="kyc-sublabel">(Дивиденды)</div>
+						</div>
+						<div style="text-align: center;">
+							<div>☐ <span class="kyc-label">Împrumut</span></div>
+							<div class="kyc-sublabel">(Ссуда)</div>
+						</div>
+						<div style="text-align: center;">
+							<div>☐ <span class="kyc-label">Venit din activitatea de Antreprenor</span></div>
+							<div class="kyc-sublabel">(Доход от предпринимательской деятельности)</div>
+						</div>
+						<div style="text-align: center;">
+							<div>☐ <span class="kyc-label">Moștenire</span></div>
+							<div class="kyc-sublabel">(Наследство)</div>
+						</div>
+						<div style="text-align: center;">
+							<div>☐ <span class="kyc-label">Donații</span></div>
+							<div class="kyc-sublabel">(Дарение)</div>
+						</div>
+						<div style="text-align: center;">
+							<div>☐ <span class="kyc-label">Alte (indicați) <span style="border-bottom: 1px dotted #000; display: inline-block; width: 120mm; min-height: 5mm;"></span></span></div>
+							<div class="kyc-sublabel">(Другой) (укажите)</div>
+						</div>
+					</div>
+				</td>
+			</tr>
+		</table>
+		
+		<div style="margin-top: 10mm;">
+			<div style="text-align: center; margin-bottom: 5mm;">
+				<span class="kyc-label">Declarații ale clientului / Заявления клиентa:</span>
+			</div>
+			
+			<div style="text-align: justify; margin-bottom: 1mm;">
+				<span class="kyc-label">1.</span> <span style="font-size: 0.9rem;">Confirm corectitudinea datelor prezentate și îmi asum obligația să comunic în scris către SAUTO SRL orice modificare referitoare la cele declarate mai sus, în termen de 5 zile lucrătoare de la data eliberării documentului confirmativ. Confirm, de asemenea, proveniența legală a mijloacelor bănești, încasate/depuse în cont, inclusiv a mijloacelor ce vor derula prin contul/conturile mele.</span>
+			</div>
+			<div style="text-align: justify; margin-bottom: 5mm;">
+				<span class="kyc-sublabel" style="font-size: 0.85rem;">Я подтверждаю, что представленные данные верны и и я обязуюсь письменно уведомить SAUTO SRL о любых изменениях, связанных с изложенными выше, в течение 5 рабочих дней с момента выдачи подтверждающего документа. Я также подтверждаю законное происхождение средств внесенных/зачисленных на счет/счета, включая средства, которые будут проходить через мой счет/счета.</span>
+			</div>
+			
+			<div style="text-align: justify; margin-bottom: 1mm;">
+				<span class="kyc-label">2.</span> <span style="font-size: 0.9rem;">Îmi exprim consimțământul expres la prelucrarea de către SAUTO SRL a datelor mele cu caracter personal care sunt prelucrate în scopuri legate de deservirea calitativă aferentă serviciilor prestate de SAUTO SRL, inclusiv alte cazuri conform legislației în vigoare. Aceste acțiuni pot fi efectuate și prin utilizarea mijloacelor informatice automatizate în conformitate cu prevederile Legii Nr. 133 din 08.07.2011 privind protecția datelor cu caracter personal.</span>
+			</div>
+			<div style="text-align: justify; margin-bottom: 5mm;">
+				<span class="kyc-sublabel" style="font-size: 0.85rem;">Я выражаю свое явное согласие на обработку SAUTO SRL моих персональных данных, которые обрабатываются в целях, связанных с качественным обслуживанием, включая другие случаи, предусмотренные действующим законодательством. Эти действия также могут быть осуществлены с использованием автоматизированных средств ИТ в соответствии с положениями Закона №133 от 08.07.2011 о защите персональных данных.</span>
+			</div>
+			
+			<div style="text-align: justify; margin-bottom: 1mm;">
+				<span class="kyc-label">3.</span> <span style="font-size: 0.9rem;">Prin prezentul, declar pe propria răspundere că sunt beneficiarul efectiv al contului/lor, implicit al mijloacelor bănești utilizate prin intermediul acestuia/acestora.</span>
+			</div>
+			<div style="text-align: justify; margin-bottom: 5mm;">
+				<span class="kyc-sublabel" style="font-size: 0.85rem;">Настоящим я заявляю под свою ответственность, что являюсь эффективным бенефициаром счета/ов, а также средств, использованных через него/них.</span>
+			</div>
+		</div>
+		
+		<table style="width: 100%; border: none; margin-top: 5mm;">
+			<tr>
+				<td colspan="2" style="border: none; text-align: left; padding: 2mm;">
+					<table style="width: 100%; border: none;">
+						<tr>
+							<td style="border: none; width: 50%; vertical-align: middle; padding: 2mm; text-align: center;">
+								<div>Data completării</div>
+								<div style="border-bottom: 1px dotted #000; width: 50mm; min-height: 5mm; margin: 2mm auto;">' . (isset($_POST['kyc_completion_date']) ? $_POST['kyc_completion_date'] : date('d.m.Y')) . '</div>
+								<div class="kyc-sublabel">(Дата заполнения)</div>
+							</td>
+							<td style="border: none; width: 50%; vertical-align: middle; padding: 2mm; text-align: center;">
+								<div>Semnătura clientului</div>
+								<div style="border-bottom: 1px dotted #000; width: 70mm; min-height: 5mm; margin: 2mm auto;"></div>
+								<div class="kyc-sublabel">(Подпись клиента)</div>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2" style="border: none; text-align: left; padding: 5mm 2mm 2mm 2mm;">
+					<table style="width: 100%; border: none;">
+						<tr>
+							<td style="border: none; width: 33%; vertical-align: middle; padding: 2mm; text-align: center;">
+								<div class="kyc-label">SAUTO SRL :</div>
+							</td>
+							<td style="border: none; width: 33%; vertical-align: middle; padding: 2mm; text-align: center;">
+								<div>Data aprobării</div>
+								<div style="border-bottom: 1px dotted #000; width: 40mm; min-height: 5mm; margin: 2mm auto;">' . (isset($_POST['kyc_approval_date']) ? $_POST['kyc_approval_date'] : '') . '</div>
+								<div class="kyc-sublabel">(Дата утверждения)</div>
+							</td>
+							<td style="border: none; width: 34%; vertical-align: middle; padding: 2mm; text-align: center;">
+								<div>Semnătura persoanei responsabile</div>
+								<div style="border-bottom: 1px dotted #000; width: 40mm; min-height: 5mm; margin: 2mm auto;"></div>
+								<div class="kyc-sublabel">(Подпись ответственного лицa)</div>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+		
+		<div style="margin-top: 10mm; font-size: 0.8rem; text-align: justify;">
+			<span style="vertical-align: super; font-size: 0.7rem;">1</span> <span style="font-weight: 600;">Persoană expusă politic</span> - persoana fizică definită conform <span style="font-weight: 600;">art. 8 din Legea nr.308/2017</span> cu privire la prevenirea și combaterea spălării banilor și finanțării terorismului.
+		</div>
+		
+		
 ';
 
 echo $kyc_pages;
