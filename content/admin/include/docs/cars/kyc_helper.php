@@ -37,10 +37,10 @@ function populateKycFields() {
     $_POST['kyc_doc_type'] = $_POST['doc_type'] ?? 'buletin';
     $_POST['kyc_doc_series'] = $_POST['doc_series'] ?? '';
     $_POST['kyc_doc_office'] = $_POST['doc_office'] ?? '';
-    $_POST['kyc_doc_date'] = $_POST['doc_date'] ?? ($_POST['u_iban_dt_tk'] ?? '');
+    $_POST['kyc_doc_date'] = $_POST['doc_date'] ?? (isset($_POST['u_iban_dt_tk']) && $_POST['u_iban_dt_tk'] ? date('d.m.Y', strtotime($_POST['u_iban_dt_tk'])) : '');
     $_POST['kyc_doc_expiry'] = $_POST['doc_expiry'] ?? '';
     $_POST['kyc_citizenship'] = $_POST['citizenship'] ?? 'Republica Moldova';
-    $_POST['kyc_birth_info'] = $_POST['birth_info'] ?? ($_POST['u_tva_dt'] ?? '');
+    $_POST['kyc_birth_info'] = $_POST['birth_info'] ?? (isset($_POST['u_tva_dt']) && $_POST['u_tva_dt'] ? date('d.m.Y', strtotime($_POST['u_tva_dt'])) : '');
     
     // Occupation and employment information
     $_POST['kyc_occupation'] = $_POST['occupation'] ?? '';
