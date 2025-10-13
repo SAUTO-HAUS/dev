@@ -483,7 +483,8 @@ if ( isset($t_mp[4]) ){
 						"kyc_doc_buletin", "kyc_doc_permis", "kyc_doc_pasaport",
 						"kyc_occupation_angajat", "kyc_occupation_student", "kyc_occupation_antreprenor", "kyc_occupation_somer", "kyc_occupation_pensionar",
 						"kyc_no_public_function", "kyc_public_function_deputat", "kyc_public_function_judecator", "kyc_public_function_guvern", "kyc_public_function_primar", "kyc_public_function_partid", "kyc_public_function_consilier",
-						"kyc_transaction_personal", "kyc_transaction_family", "kyc_transaction_company", "kyc_transaction_resale", "kyc_transaction_commercial", "kyc_transaction_transfer"
+						"kyc_transaction_personal", "kyc_transaction_family", "kyc_transaction_company", "kyc_transaction_resale", "kyc_transaction_commercial", "kyc_transaction_transfer",
+						"kyc_funds_salary", "kyc_funds_dividends", "kyc_funds_loan", "kyc_funds_business", "kyc_funds_inheritance", "kyc_funds_donations"
 					];
 					
 					$.each(kyc_checkboxes, function(i, checkbox_name) {
@@ -493,6 +494,8 @@ if ( isset($t_mp[4]) ){
 							if (!(checkbox_name in kv_ar)) {
 								kv_ar[checkbox_name] = "0";
 							}
+						} else {
+							kv_ar[checkbox_name] = "0";
 						}
 					});
 					
@@ -683,6 +686,7 @@ if ( isset($t_mp[4]) ){
 							'.(isset($inf['kyc_occupation_angajat'])?'data-kyc_occupation_angajat="'.$inf['kyc_occupation_angajat'].'"':'').' '.(isset($inf['kyc_occupation_student'])?'data-kyc_occupation_student="'.$inf['kyc_occupation_student'].'"':'').' '.(isset($inf['kyc_occupation_antreprenor'])?'data-kyc_occupation_antreprenor="'.$inf['kyc_occupation_antreprenor'].'"':'').' '.(isset($inf['kyc_occupation_somer'])?'data-kyc_occupation_somer="'.$inf['kyc_occupation_somer'].'"':'').' '.(isset($inf['kyc_occupation_pensionar'])?'data-kyc_occupation_pensionar="'.$inf['kyc_occupation_pensionar'].'"':'').'
 							'.(isset($inf['kyc_no_public_function'])?'data-kyc_no_public_function="'.$inf['kyc_no_public_function'].'"':'').' '.(isset($inf['kyc_public_function_deputat'])?'data-kyc_public_function_deputat="'.$inf['kyc_public_function_deputat'].'"':'').' '.(isset($inf['kyc_public_function_judecator'])?'data-kyc_public_function_judecator="'.$inf['kyc_public_function_judecator'].'"':'').' '.(isset($inf['kyc_public_function_guvern'])?'data-kyc_public_function_guvern="'.$inf['kyc_public_function_guvern'].'"':'').' '.(isset($inf['kyc_public_function_primar'])?'data-kyc_public_function_primar="'.$inf['kyc_public_function_primar'].'"':'').' '.(isset($inf['kyc_public_function_partid'])?'data-kyc_public_function_partid="'.$inf['kyc_public_function_partid'].'"':'').' '.(isset($inf['kyc_public_function_consilier'])?'data-kyc_public_function_consilier="'.$inf['kyc_public_function_consilier'].'"':'').'
 							'.(isset($inf['kyc_transaction_personal'])?'data-kyc_transaction_personal="'.$inf['kyc_transaction_personal'].'"':'').' '.(isset($inf['kyc_transaction_family'])?'data-kyc_transaction_family="'.$inf['kyc_transaction_family'].'"':'').' '.(isset($inf['kyc_transaction_company'])?'data-kyc_transaction_company="'.$inf['kyc_transaction_company'].'"':'').' '.(isset($inf['kyc_transaction_resale'])?'data-kyc_transaction_resale="'.$inf['kyc_transaction_resale'].'"':'').' '.(isset($inf['kyc_transaction_commercial'])?'data-kyc_transaction_commercial="'.$inf['kyc_transaction_commercial'].'"':'').' '.(isset($inf['kyc_transaction_transfer'])?'data-kyc_transaction_transfer="'.$inf['kyc_transaction_transfer'].'"':'').'
+							'.(isset($inf['kyc_funds_salary'])?'data-kyc_funds_salary="'.$inf['kyc_funds_salary'].'"':'').' '.(isset($inf['kyc_funds_dividends'])?'data-kyc_funds_dividends="'.$inf['kyc_funds_dividends'].'"':'').' '.(isset($inf['kyc_funds_loan'])?'data-kyc_funds_loan="'.$inf['kyc_funds_loan'].'"':'').' '.(isset($inf['kyc_funds_business'])?'data-kyc_funds_business="'.$inf['kyc_funds_business'].'"':'').' '.(isset($inf['kyc_funds_inheritance'])?'data-kyc_funds_inheritance="'.$inf['kyc_funds_inheritance'].'"':'').' '.(isset($inf['kyc_funds_donations'])?'data-kyc_funds_donations="'.$inf['kyc_funds_donations'].'"':'').'
 							data-u_tp="'.$r['u_tp'].'" 
 							data-adm="'.$r['adm'].'" data-last_edited_by="'.($r['last_edited_by'] ?? $r['adm']).'"
 						></div>

@@ -172,22 +172,22 @@ $kyc_pages = '
 				<td colspan="2" style="border: 1px solid #000; padding: 1mm; vertical-align: top;">
 					<div style="text-align: left; display: flex; flex-wrap: wrap; gap: 3mm;">
 						<div style="text-align: center;">
-							<div>☐ <span style="font-weight: bold;">Salariu</span></div>
+							<div>' . (isset($_POST['kyc_funds_salary']) && $_POST['kyc_funds_salary'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Salariu</span></div>
 						</div>
 						<div style="text-align: center;">
-							<div>☐ <span style="font-weight: bold;">Dividende</span></div>
+							<div>' . (isset($_POST['kyc_funds_dividends']) && $_POST['kyc_funds_dividends'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Dividende</span></div>
 						</div>
 						<div style="text-align: center;">
-							<div>☐ <span style="font-weight: bold;">Împrumut</span></div>
+							<div>' . (isset($_POST['kyc_funds_loan']) && $_POST['kyc_funds_loan'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Împrumut</span></div>
 						</div>
 						<div style="text-align: center;">
-							<div>☐ <span style="font-weight: bold;">Venit din activitatea de Antreprenor</span></div>
+							<div>' . (isset($_POST['kyc_funds_business']) && $_POST['kyc_funds_business'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Venit din activitatea de Antreprenor</span></div>
 						</div>
 						<div style="text-align: center;">
-							<div>☐ <span style="font-weight: bold;">Moștenire</span></div>
+							<div>' . (isset($_POST['kyc_funds_inheritance']) && $_POST['kyc_funds_inheritance'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Moștenire</span></div>
 						</div>
 						<div style="text-align: center;">
-							<div>☐ <span style="font-weight: bold;">Donații</span></div>
+							<div>' . (isset($_POST['kyc_funds_donations']) && $_POST['kyc_funds_donations'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Donații</span></div>
 						</div>
 					</div>
 				</td>

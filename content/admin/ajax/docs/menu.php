@@ -476,6 +476,17 @@ JAVASCRIPT;
 			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"'.(isset($_POST['kyc_transaction_commercial']) && $_POST['kyc_transaction_commercial'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
 			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"'.(isset($_POST['kyc_transaction_transfer']) && $_POST['kyc_transaction_transfer'] == '1' ? ' checked' : '').'> Transfer de proprietate între rude (moștenire, donație etc.)</label>
 		</div>
+
+        <div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+	<div style="font-weight: bold; margin-bottom: 10px;">Sursa mijloacelor bănești:</div>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_salary" value="1"'.(isset($_POST['kyc_funds_salary']) && $_POST['kyc_funds_salary'] == '1' ? ' checked' : (!isset($_POST['kyc_funds_salary']) ? ' checked' : '')).'> Salariu</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_dividends" value="1"'.(isset($_POST['kyc_funds_dividends']) && $_POST['kyc_funds_dividends'] == '1' ? ' checked' : '').'> Dividende</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_loan" value="1"'.(isset($_POST['kyc_funds_loan']) && $_POST['kyc_funds_loan'] == '1' ? ' checked' : '').'> Împrumut</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_business" value="1"'.(isset($_POST['kyc_funds_business']) && $_POST['kyc_funds_business'] == '1' ? ' checked' : '').'> Venit din activitatea de Antreprenor</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_inheritance" value="1"'.(isset($_POST['kyc_funds_inheritance']) && $_POST['kyc_funds_inheritance'] == '1' ? ' checked' : '').'> Moștenire</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_donations" value="1"'.(isset($_POST['kyc_funds_donations']) && $_POST['kyc_funds_donations'] == '1' ? ' checked' : '').'> Donații</label>
+       </div>
+
 		'.( isset($mixall)?'</form>':'' );
 		//}
 	}
@@ -570,6 +581,17 @@ JAVASCRIPT;
 			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"'.(isset($_POST['kyc_transaction_commercial']) && $_POST['kyc_transaction_commercial'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
 			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"'.(isset($_POST['kyc_transaction_transfer']) && $_POST['kyc_transaction_transfer'] == '1' ? ' checked' : '').'> Transfer de proprietate între rude (moștenire, donație etc.)</label>
 		</div>
+
+           <div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+	<div style="font-weight: bold; margin-bottom: 10px;">Sursa mijloacelor bănești:</div>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_salary" value="1"'.(isset($_POST['kyc_funds_salary']) && $_POST['kyc_funds_salary'] == '1' ? ' checked' : (!isset($_POST['kyc_funds_salary']) ? ' checked' : '')).'> Salariu</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_dividends" value="1"'.(isset($_POST['kyc_funds_dividends']) && $_POST['kyc_funds_dividends'] == '1' ? ' checked' : '').'> Dividende</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_loan" value="1"'.(isset($_POST['kyc_funds_loan']) && $_POST['kyc_funds_loan'] == '1' ? ' checked' : '').'> Împrumut</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_business" value="1"'.(isset($_POST['kyc_funds_business']) && $_POST['kyc_funds_business'] == '1' ? ' checked' : '').'> Venit din activitatea de Antreprenor</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_inheritance" value="1"'.(isset($_POST['kyc_funds_inheritance']) && $_POST['kyc_funds_inheritance'] == '1' ? ' checked' : '').'> Moștenire</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_donations" value="1"'.(isset($_POST['kyc_funds_donations']) && $_POST['kyc_funds_donations'] == '1' ? ' checked' : '').'> Donații</label>
+       </div>
+
 		'.( isset($mixall)?'</form>':'' );
 	}
 	
@@ -649,6 +671,16 @@ JAVASCRIPT;
 			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"'.(isset($_POST['kyc_transaction_commercial']) && $_POST['kyc_transaction_commercial'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
 			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"'.(isset($_POST['kyc_transaction_transfer']) && $_POST['kyc_transaction_transfer'] == '1' ? ' checked' : '').'> Transfer de proprietate între rude (moștenire, donație etc.)</label>
 		</div>
+
+		   <div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+	<div style="font-weight: bold; margin-bottom: 10px;">Sursa mijloacelor bănești:</div>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_salary" value="1"'.(isset($_POST['kyc_funds_salary']) && $_POST['kyc_funds_salary'] == '1' ? ' checked' : (!isset($_POST['kyc_funds_salary']) ? ' checked' : '')).'> Salariu</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_dividends" value="1"'.(isset($_POST['kyc_funds_dividends']) && $_POST['kyc_funds_dividends'] == '1' ? ' checked' : '').'> Dividende</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_loan" value="1"'.(isset($_POST['kyc_funds_loan']) && $_POST['kyc_funds_loan'] == '1' ? ' checked' : '').'> Împrumut</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_business" value="1"'.(isset($_POST['kyc_funds_business']) && $_POST['kyc_funds_business'] == '1' ? ' checked' : '').'> Venit din activitatea de Antreprenor</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_inheritance" value="1"'.(isset($_POST['kyc_funds_inheritance']) && $_POST['kyc_funds_inheritance'] == '1' ? ' checked' : '').'> Moștenire</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_donations" value="1"'.(isset($_POST['kyc_funds_donations']) && $_POST['kyc_funds_donations'] == '1' ? ' checked' : '').'> Donații</label>
+       </div>
 		'.( isset($mixall)?'</form>':'' );
 	}
 	
@@ -745,6 +777,16 @@ JAVASCRIPT;
 			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"'.(isset($_POST['kyc_transaction_commercial']) && $_POST['kyc_transaction_commercial'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
 			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"'.(isset($_POST['kyc_transaction_transfer']) && $_POST['kyc_transaction_transfer'] == '1' ? ' checked' : '').'> Transfer de proprietate între rude (moștenire, donație etc.)</label>
 		</div>
+
+		   <div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+	<div style="font-weight: bold; margin-bottom: 10px;">Sursa mijloacelor bănești:</div>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_salary" value="1"'.(isset($_POST['kyc_funds_salary']) && $_POST['kyc_funds_salary'] == '1' ? ' checked' : (!isset($_POST['kyc_funds_salary']) ? ' checked' : '')).'> Salariu</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_dividends" value="1"'.(isset($_POST['kyc_funds_dividends']) && $_POST['kyc_funds_dividends'] == '1' ? ' checked' : '').'> Dividende</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_loan" value="1"'.(isset($_POST['kyc_funds_loan']) && $_POST['kyc_funds_loan'] == '1' ? ' checked' : '').'> Împrumut</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_business" value="1"'.(isset($_POST['kyc_funds_business']) && $_POST['kyc_funds_business'] == '1' ? ' checked' : '').'> Venit din activitatea de Antreprenor</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_inheritance" value="1"'.(isset($_POST['kyc_funds_inheritance']) && $_POST['kyc_funds_inheritance'] == '1' ? ' checked' : '').'> Moștenire</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_donations" value="1"'.(isset($_POST['kyc_funds_donations']) && $_POST['kyc_funds_donations'] == '1' ? ' checked' : '').'> Donații</label>
+       </div>
 		
 		<div class="ttl">Extra</div>
 		<label class="lbl"><span class="ttl">EUR</span><input type="number" name="u_eur" title="EUR" value="0" min="0" step="100" /></label>
@@ -817,6 +859,16 @@ JAVASCRIPT;
 			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"'.(isset($_POST['kyc_transaction_commercial']) && $_POST['kyc_transaction_commercial'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
 			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"'.(isset($_POST['kyc_transaction_transfer']) && $_POST['kyc_transaction_transfer'] == '1' ? ' checked' : '').'> Transfer de proprietate între rude (moștenire, donație etc.)</label>
 		</div>
+
+		   <div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+	<div style="font-weight: bold; margin-bottom: 10px;">Sursa mijloacelor bănești:</div>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_salary" value="1"'.(isset($_POST['kyc_funds_salary']) && $_POST['kyc_funds_salary'] == '1' ? ' checked' : (!isset($_POST['kyc_funds_salary']) ? ' checked' : '')).'> Salariu</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_dividends" value="1"'.(isset($_POST['kyc_funds_dividends']) && $_POST['kyc_funds_dividends'] == '1' ? ' checked' : '').'> Dividende</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_loan" value="1"'.(isset($_POST['kyc_funds_loan']) && $_POST['kyc_funds_loan'] == '1' ? ' checked' : '').'> Împrumut</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_business" value="1"'.(isset($_POST['kyc_funds_business']) && $_POST['kyc_funds_business'] == '1' ? ' checked' : '').'> Venit din activitatea de Antreprenor</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_inheritance" value="1"'.(isset($_POST['kyc_funds_inheritance']) && $_POST['kyc_funds_inheritance'] == '1' ? ' checked' : '').'> Moștenire</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_donations" value="1"'.(isset($_POST['kyc_funds_donations']) && $_POST['kyc_funds_donations'] == '1' ? ' checked' : '').'> Donații</label>
+       </div>
 		'.( isset($mixall)?'</form>':'' );
 	}
 	
@@ -917,6 +969,16 @@ JAVASCRIPT;
 			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"'.(isset($_POST['kyc_transaction_commercial']) && $_POST['kyc_transaction_commercial'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
 			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"'.(isset($_POST['kyc_transaction_transfer']) && $_POST['kyc_transaction_transfer'] == '1' ? ' checked' : '').'> Transfer de proprietate între rude (moștenire, donație etc.)</label>
 		</div>
+
+		   <div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+	<div style="font-weight: bold; margin-bottom: 10px;">Sursa mijloacelor bănești:</div>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_salary" value="1"'.(isset($_POST['kyc_funds_salary']) && $_POST['kyc_funds_salary'] == '1' ? ' checked' : (!isset($_POST['kyc_funds_salary']) ? ' checked' : '')).'> Salariu</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_dividends" value="1"'.(isset($_POST['kyc_funds_dividends']) && $_POST['kyc_funds_dividends'] == '1' ? ' checked' : '').'> Dividende</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_loan" value="1"'.(isset($_POST['kyc_funds_loan']) && $_POST['kyc_funds_loan'] == '1' ? ' checked' : '').'> Împrumut</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_business" value="1"'.(isset($_POST['kyc_funds_business']) && $_POST['kyc_funds_business'] == '1' ? ' checked' : '').'> Venit din activitatea de Antreprenor</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_inheritance" value="1"'.(isset($_POST['kyc_funds_inheritance']) && $_POST['kyc_funds_inheritance'] == '1' ? ' checked' : '').'> Moștenire</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_donations" value="1"'.(isset($_POST['kyc_funds_donations']) && $_POST['kyc_funds_donations'] == '1' ? ' checked' : '').'> Donații</label>
+       </div>
 
 		'.( isset($mixall)?'</form>':'' );
 	}
@@ -1088,6 +1150,16 @@ JAVASCRIPT;
 			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"'.(isset($_POST['kyc_transaction_commercial']) && $_POST['kyc_transaction_commercial'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
 			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"'.(isset($_POST['kyc_transaction_transfer']) && $_POST['kyc_transaction_transfer'] == '1' ? ' checked' : '').'> Transfer de proprietate între rude (moștenire, donație etc.)</label>
 		</div>
+
+		   <div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+	<div style="font-weight: bold; margin-bottom: 10px;">Sursa mijloacelor bănești:</div>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_salary" value="1"'.(isset($_POST['kyc_funds_salary']) && $_POST['kyc_funds_salary'] == '1' ? ' checked' : (!isset($_POST['kyc_funds_salary']) ? ' checked' : '')).'> Salariu</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_dividends" value="1"'.(isset($_POST['kyc_funds_dividends']) && $_POST['kyc_funds_dividends'] == '1' ? ' checked' : '').'> Dividende</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_loan" value="1"'.(isset($_POST['kyc_funds_loan']) && $_POST['kyc_funds_loan'] == '1' ? ' checked' : '').'> Împrumut</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_business" value="1"'.(isset($_POST['kyc_funds_business']) && $_POST['kyc_funds_business'] == '1' ? ' checked' : '').'> Venit din activitatea de Antreprenor</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_inheritance" value="1"'.(isset($_POST['kyc_funds_inheritance']) && $_POST['kyc_funds_inheritance'] == '1' ? ' checked' : '').'> Moștenire</label>
+	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_donations" value="1"'.(isset($_POST['kyc_funds_donations']) && $_POST['kyc_funds_donations'] == '1' ? ' checked' : '').'> Donații</label>
+       </div>
 		
 		<div class="ttl">Damage</div>
 		<div id="dmg_clk_bx" oncontextmenu="return false;">
