@@ -26,9 +26,9 @@ $kyc_pages = '
 				<td colspan="2" style="border: 1px solid #000; padding: 1mm; vertical-align: top;">
 					<div style="text-align: left; white-space: nowrap;">
 						<span style="font-weight: bold; display: inline-block;">Actul de identitate:</span>
-						<span style="display: inline-block; margin-left: 3mm;">☐ <span style="font-weight: bold;">Buletin de identitate</span></span>
-						<span style="display: inline-block; margin-left: 3mm;">☐ <span style="font-weight: bold;">Permis de ședere</span></span>
-						<span style="display: inline-block; margin-left: 3mm;">☐ <span style="font-weight: bold;">Pașaport</span></span>
+						<span style="display: inline-block; margin-left: 3mm;">' . (isset($_POST['kyc_doc_buletin']) && $_POST['kyc_doc_buletin'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Buletin de identitate</span></span>
+						<span style="display: inline-block; margin-left: 3mm;">' . (isset($_POST['kyc_doc_permis']) && $_POST['kyc_doc_permis'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Permis de ședere</span></span>
+						<span style="display: inline-block; margin-left: 3mm;">' . (isset($_POST['kyc_doc_pasaport']) && $_POST['kyc_doc_pasaport'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Pașaport</span></span>
 						<span style="font-weight: bold; display: inline-block; margin-left: 5mm;">Data eliberării: <span style="border-bottom: 1px dotted #000; display: inline-block; width: 20mm; min-height: 5mm; margin-left: 1mm;">' . (isset($_POST['kyc_doc_date']) ? $_POST['kyc_doc_date'] : (isset($_POST['u_iban_dt_tk']) ? date('d.m.Y', strtotime($_POST['u_iban_dt_tk'])) : '')) . '</span></span>
 					</div>
 				</td>
@@ -70,11 +70,11 @@ $kyc_pages = '
 			<tr>
 				<td colspan="2" style="border: 1px solid #000; padding: 1mm; vertical-align: top;">
 					<div style="display: flex; flex-wrap: wrap; row-gap: 1mm; column-gap: 7mm; margin-top: 0.5mm;">
-						<div>☐ <span style="font-weight: bold;">Angajat*</span></div>
-						<div>☐ <span style="font-weight: bold;">Student*</span></div>
-						<div>☐ <span style="font-weight: bold;">Antreprenor*</span></div>
-						<div>☐ <span style="font-weight: bold;">Șomer</span></div>
-						<div>☐ <span style="font-weight: bold;">Pensionar</span></div>
+						<div>' . (isset($_POST['kyc_occupation_angajat']) && $_POST['kyc_occupation_angajat'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Angajat*</span></div>
+						<div>' . (isset($_POST['kyc_occupation_student']) && $_POST['kyc_occupation_student'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Student*</span></div>
+						<div>' . (isset($_POST['kyc_occupation_antreprenor']) && $_POST['kyc_occupation_antreprenor'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Antreprenor*</span></div>
+						<div>' . (isset($_POST['kyc_occupation_somer']) && $_POST['kyc_occupation_somer'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Șomer</span></div>
+						<div>' . (isset($_POST['kyc_occupation_pensionar']) && $_POST['kyc_occupation_pensionar'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Pensionar</span></div>
 					</div>
 					<div style="text-align: left; margin-top: 1mm;">
 						<span>☐ <span style="font-weight: bold;">Alte (indicați)</span></span>
@@ -102,18 +102,18 @@ $kyc_pages = '
 						<span style="font-weight: bold;">Conform Legii nr.158/2008 cu privire la funcția publică și statutul funcționarului public</span>
 					</div>
 					<div style="text-align: left;">
-						<span>☐ <span style="font-weight: bold;">Nu dețin funcție publică</span></span>
+						<span>' . (isset($_POST['kyc_no_public_function']) && $_POST['kyc_no_public_function'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Nu dețin funcție publică</span></span>
 					</div>
 					<div style="text-align: left; margin-top:2mm;">
 						<span style="font-weight: bold;">În caz că dețineți o funcție publică indicați:</span>
 					</div>
 					<div style="display: flex; flex-wrap: wrap; row-gap: 1mm; column-gap: 8mm; margin-top: 1mm;">
-						<div>☐ <span style="font-weight: bold;">Deputat al Parlamentului RM</span></div>
-						<div>☐ <span style="font-weight: bold;">Judecător</span></div>
-						<div>☐ <span style="font-weight: bold;">Membru al Guvernului RM</span></div>
-						<div>☐ <span style="font-weight: bold;">Primar</span></div>
-						<div>☐ <span style="font-weight: bold;">Membru al organelor de conducere ale partidelor politice</span></div>
-						<div>☐ <span style="font-weight: bold;">Consilier al autorităților publice locale</span></div>
+						<div>' . (isset($_POST['kyc_public_function_deputat']) && $_POST['kyc_public_function_deputat'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Deputat al Parlamentului RM</span></div>
+						<div>' . (isset($_POST['kyc_public_function_judecator']) && $_POST['kyc_public_function_judecator'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Judecător</span></div>
+						<div>' . (isset($_POST['kyc_public_function_guvern']) && $_POST['kyc_public_function_guvern'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Membru al Guvernului RM</span></div>
+						<div>' . (isset($_POST['kyc_public_function_primar']) && $_POST['kyc_public_function_primar'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Primar</span></div>
+						<div>' . (isset($_POST['kyc_public_function_partid']) && $_POST['kyc_public_function_partid'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Membru al organelor de conducere ale partidelor politice</span></div>
+						<div>' . (isset($_POST['kyc_public_function_consilier']) && $_POST['kyc_public_function_consilier'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Consilier al autorităților publice locale</span></div>
 						<div>☐ <span style="font-weight: bold;">Alta (indicați) <span style="border-bottom: 1px dotted #000; display: inline-block; width: 80mm; min-height: 5mm;"></span></span></div>
 					</div>
 					<div style="text-align: left; margin-top: 1mm; white-space: nowrap;">
@@ -154,12 +154,12 @@ $kyc_pages = '
 			<tr>
 				<td colspan="2" style="border: 1px solid #000; padding: 1mm; vertical-align: top;">
 					<div style="text-align: left;">
-						<div>☐ <span style="font-weight: bold;">Achiziționarea unui automobil pentru uz personal</span></div>
-						<div>☐ <span style="font-weight: bold;">Achiziționarea unui automobil pentru uzul familiei / rudelor</span></div>
-						<div>☐ <span style="font-weight: bold;">Achiziționarea unui automobil pentru companie / activitate economică</span></div>
-						<div>☐ <span style="font-weight: bold;">Achiziționarea unui automobil în scop de revânzare</span></div>
-						<div>☐ <span style="font-weight: bold;">Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</span></div>
-						<div>☐ <span style="font-weight: bold;">Transfer de proprietate între rude (moștenire, donație etc.)</span></div>
+						<div>' . (isset($_POST['kyc_transaction_personal']) && $_POST['kyc_transaction_personal'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Achiziționarea unui automobil pentru uz personal</span></div>
+						<div>' . (isset($_POST['kyc_transaction_family']) && $_POST['kyc_transaction_family'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Achiziționarea unui automobil pentru uzul familiei / rudelor</span></div>
+						<div>' . (isset($_POST['kyc_transaction_company']) && $_POST['kyc_transaction_company'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Achiziționarea unui automobil pentru companie / activitate economică</span></div>
+						<div>' . (isset($_POST['kyc_transaction_resale']) && $_POST['kyc_transaction_resale'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Achiziționarea unui automobil în scop de revânzare</span></div>
+						<div>' . (isset($_POST['kyc_transaction_commercial']) && $_POST['kyc_transaction_commercial'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</span></div>
+						<div>' . (isset($_POST['kyc_transaction_transfer']) && $_POST['kyc_transaction_transfer'] == '1' ? '☑' : '☐') . ' <span style="font-weight: bold;">Transfer de proprietate între rude (moștenire, donație etc.)</span></div>
 						<div>☐ <span style="font-weight: bold;">Altele (indicați) <span style="border-bottom: 1px dotted #000; display: inline-block; width: 120mm; min-height: 5mm;"></span></span></div>
 					</div>
 				</td>

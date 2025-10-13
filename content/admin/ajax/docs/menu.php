@@ -449,7 +449,7 @@ JAVASCRIPT;
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Ocupația:</div>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"'.(isset($_POST['kyc_occupation_angajat']) && $_POST['kyc_occupation_angajat'] == '1' ? ' checked' : '').'> Angajat*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"'.(isset($_POST['kyc_occupation_angajat']) && $_POST['kyc_occupation_angajat'] == '1' ? ' checked' : (!isset($_POST['kyc_occupation_angajat']) ? ' checked' : '')).'> Angajat*</label>
 			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"'.(isset($_POST['kyc_occupation_student']) && $_POST['kyc_occupation_student'] == '1' ? ' checked' : '').'> Student*</label>
 			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"'.(isset($_POST['kyc_occupation_antreprenor']) && $_POST['kyc_occupation_antreprenor'] == '1' ? ' checked' : '').'> Antreprenor*</label>
 			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"'.(isset($_POST['kyc_occupation_somer']) && $_POST['kyc_occupation_somer'] == '1' ? ' checked' : '').'> Șomer</label>
@@ -543,7 +543,7 @@ JAVASCRIPT;
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Ocupația:</div>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"'.(isset($_POST['kyc_occupation_angajat']) && $_POST['kyc_occupation_angajat'] == '1' ? ' checked' : '').'> Angajat*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"'.(isset($_POST['kyc_occupation_angajat']) && $_POST['kyc_occupation_angajat'] == '1' ? ' checked' : (!isset($_POST['kyc_occupation_angajat']) ? ' checked' : '')).'> Angajat*</label>
 			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"'.(isset($_POST['kyc_occupation_student']) && $_POST['kyc_occupation_student'] == '1' ? ' checked' : '').'> Student*</label>
 			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"'.(isset($_POST['kyc_occupation_antreprenor']) && $_POST['kyc_occupation_antreprenor'] == '1' ? ' checked' : '').'> Antreprenor*</label>
 			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"'.(isset($_POST['kyc_occupation_somer']) && $_POST['kyc_occupation_somer'] == '1' ? ' checked' : '').'> Șomer</label>
@@ -622,7 +622,7 @@ JAVASCRIPT;
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Ocupația:</div>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"'.(isset($_POST['kyc_occupation_angajat']) && $_POST['kyc_occupation_angajat'] == '1' ? ' checked' : '').'> Angajat*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"'.(isset($_POST['kyc_occupation_angajat']) && $_POST['kyc_occupation_angajat'] == '1' ? ' checked' : (!isset($_POST['kyc_occupation_angajat']) ? ' checked' : '')).'> Angajat*</label>
 			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"'.(isset($_POST['kyc_occupation_student']) && $_POST['kyc_occupation_student'] == '1' ? ' checked' : '').'> Student*</label>
 			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"'.(isset($_POST['kyc_occupation_antreprenor']) && $_POST['kyc_occupation_antreprenor'] == '1' ? ' checked' : '').'> Antreprenor*</label>
 			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"'.(isset($_POST['kyc_occupation_somer']) && $_POST['kyc_occupation_somer'] == '1' ? ' checked' : '').'> Șomer</label>
@@ -718,7 +718,7 @@ JAVASCRIPT;
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Ocupația:</div>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"'.(isset($_POST['kyc_occupation_angajat']) && $_POST['kyc_occupation_angajat'] == '1' ? ' checked' : '').'> Angajat*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"'.(isset($_POST['kyc_occupation_angajat']) && $_POST['kyc_occupation_angajat'] == '1' ? ' checked' : (!isset($_POST['kyc_occupation_angajat']) ? ' checked' : '')).'> Angajat*</label>
 			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"'.(isset($_POST['kyc_occupation_student']) && $_POST['kyc_occupation_student'] == '1' ? ' checked' : '').'> Student*</label>
 			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"'.(isset($_POST['kyc_occupation_antreprenor']) && $_POST['kyc_occupation_antreprenor'] == '1' ? ' checked' : '').'> Antreprenor*</label>
 			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"'.(isset($_POST['kyc_occupation_somer']) && $_POST['kyc_occupation_somer'] == '1' ? ' checked' : '').'> Șomer</label>
@@ -790,7 +790,7 @@ JAVASCRIPT;
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Ocupația:</div>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"'.(isset($_POST['kyc_occupation_angajat']) && $_POST['kyc_occupation_angajat'] == '1' ? ' checked' : '').'> Angajat*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"'.(isset($_POST['kyc_occupation_angajat']) && $_POST['kyc_occupation_angajat'] == '1' ? ' checked' : (!isset($_POST['kyc_occupation_angajat']) ? ' checked' : '')).'> Angajat*</label>
 			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"'.(isset($_POST['kyc_occupation_student']) && $_POST['kyc_occupation_student'] == '1' ? ' checked' : '').'> Student*</label>
 			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"'.(isset($_POST['kyc_occupation_antreprenor']) && $_POST['kyc_occupation_antreprenor'] == '1' ? ' checked' : '').'> Antreprenor*</label>
 			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"'.(isset($_POST['kyc_occupation_somer']) && $_POST['kyc_occupation_somer'] == '1' ? ' checked' : '').'> Șomer</label>
@@ -860,7 +860,26 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">TVA</span><input class="need fj dt" type="text" name="u_tva_dt" min="1900-01-01" max="2099-12-31" title="TVA" data-fiz="Data nasterii" data-jur="TVA" /></label> <!--onfocus=\'(this.type="date")\'-->
 		<label class="lbl"><span class="ttl">IBAN</span><input class="need fj dt" type="text" name="u_iban_dt_tk" min="1900-01-01" max="2099-12-31" title="IBAN" data-fiz="Data elibirat" data-jur="IBAN" /></label>
 		<label class="lbl"><span class="ttl">Adress</span><input class="need" type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" /></label>
+		';
 		
+		//---LOCATION---
+		$rtrn .= '
+		<div class="ttl">Info</div>
+		<label class="lbl"><span class="ttl">Țară (înc)</span><select class="need" name="cntr_fr" title="Țară (înc)" tabindex="12" title="Location">
+			<option value="" class="def" disabled selected>-</option>';
+			foreach ($lng['l']['country'] as $k => $v){ $rtrn .= '<option value="'.$k.'">'.$v.'</option>'; }
+		$rtrn .= '
+		</select></label>
+		<label class="lbl"><span class="ttl">Țară (desc)</span><select class="need" name="cntr_to" title="Țară (desc)" tabindex="12" title="Location">
+			<option value="" class="def" disabled selected>-</option>';
+			foreach ($lng['l']['country'] as $k => $v){ $rtrn .= '<option value="'.$k.'" '.($k=='MD'?'selected':'').'>'.$v.'</option>'; }
+		$rtrn .= '
+		</select></label>
+		<label class="lbl"><span class="ttl">Price</span><input class="need" type="text" name="prc" title="Price" /></label>
+		<label class="lbl"><span class="ttl">Adresa descărcării</span><input class="need" type="text" name="adr_to" title="Adresa descărcării" /></label>
+		<label class="lbl"><span class="ttl">Termenul de achitare</span><input class="need" type="text" name="t2pay" title="Termenul de achitare" /></label>
+		<label class="lbl"><span class="ttl">Nr. Înma. Camion/remorca</span><textarea class="need" name="plate" title="Nr. Înma. Camion/remorca" rows="1"></textarea></label>
+
 		<div class="ttl">Date Chestionar</div>
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
@@ -871,7 +890,7 @@ JAVASCRIPT;
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Ocupația:</div>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"'.(isset($_POST['kyc_occupation_angajat']) && $_POST['kyc_occupation_angajat'] == '1' ? ' checked' : '').'> Angajat*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"'.(isset($_POST['kyc_occupation_angajat']) && $_POST['kyc_occupation_angajat'] == '1' ? ' checked' : (!isset($_POST['kyc_occupation_angajat']) ? ' checked' : '')).'> Angajat*</label>
 			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"'.(isset($_POST['kyc_occupation_student']) && $_POST['kyc_occupation_student'] == '1' ? ' checked' : '').'> Student*</label>
 			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"'.(isset($_POST['kyc_occupation_antreprenor']) && $_POST['kyc_occupation_antreprenor'] == '1' ? ' checked' : '').'> Antreprenor*</label>
 			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"'.(isset($_POST['kyc_occupation_somer']) && $_POST['kyc_occupation_somer'] == '1' ? ' checked' : '').'> Șomer</label>
@@ -898,25 +917,7 @@ JAVASCRIPT;
 			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"'.(isset($_POST['kyc_transaction_commercial']) && $_POST['kyc_transaction_commercial'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
 			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"'.(isset($_POST['kyc_transaction_transfer']) && $_POST['kyc_transaction_transfer'] == '1' ? ' checked' : '').'> Transfer de proprietate între rude (moștenire, donație etc.)</label>
 		</div>
-		';
-		
-		//---LOCATION---
-		$rtrn .= '
-		<div class="ttl">Info</div>
-		<label class="lbl"><span class="ttl">Țară (înc)</span><select class="need" name="cntr_fr" title="Țară (înc)" tabindex="12" title="Location">
-			<option value="" class="def" disabled selected>-</option>';
-			foreach ($lng['l']['country'] as $k => $v){ $rtrn .= '<option value="'.$k.'">'.$v.'</option>'; }
-		$rtrn .= '
-		</select></label>
-		<label class="lbl"><span class="ttl">Țară (desc)</span><select class="need" name="cntr_to" title="Țară (desc)" tabindex="12" title="Location">
-			<option value="" class="def" disabled selected>-</option>';
-			foreach ($lng['l']['country'] as $k => $v){ $rtrn .= '<option value="'.$k.'" '.($k=='MD'?'selected':'').'>'.$v.'</option>'; }
-		$rtrn .= '
-		</select></label>
-		<label class="lbl"><span class="ttl">Price</span><input class="need" type="text" name="prc" title="Price" /></label>
-		<label class="lbl"><span class="ttl">Adresa descărcării</span><input class="need" type="text" name="adr_to" title="Adresa descărcării" /></label>
-		<label class="lbl"><span class="ttl">Termenul de achitare</span><input class="need" type="text" name="t2pay" title="Termenul de achitare" /></label>
-		<label class="lbl"><span class="ttl">Nr. Înma. Camion/remorca</span><textarea class="need" name="plate" title="Nr. Înma. Camion/remorca" rows="1"></textarea></label>
+
 		'.( isset($mixall)?'</form>':'' );
 	}
 	
@@ -1060,7 +1061,7 @@ JAVASCRIPT;
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Ocupația:</div>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"'.(isset($_POST['kyc_occupation_angajat']) && $_POST['kyc_occupation_angajat'] == '1' ? ' checked' : '').'> Angajat*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"'.(isset($_POST['kyc_occupation_angajat']) && $_POST['kyc_occupation_angajat'] == '1' ? ' checked' : (!isset($_POST['kyc_occupation_angajat']) ? ' checked' : '')).'> Angajat*</label>
 			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"'.(isset($_POST['kyc_occupation_student']) && $_POST['kyc_occupation_student'] == '1' ? ' checked' : '').'> Student*</label>
 			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"'.(isset($_POST['kyc_occupation_antreprenor']) && $_POST['kyc_occupation_antreprenor'] == '1' ? ' checked' : '').'> Antreprenor*</label>
 			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"'.(isset($_POST['kyc_occupation_somer']) && $_POST['kyc_occupation_somer'] == '1' ? ' checked' : '').'> Șomer</label>
