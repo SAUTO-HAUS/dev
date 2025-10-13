@@ -110,5 +110,14 @@ $rtrn = '
 </div>
 ';
 
+// Include KYC pages
+include(__DIR__.'/kyc_helper.php');
+if (requiresKycPages('con_arvon')) {
+    $rtrn .= '
+    <div class="sep"></div>';
+    
+    includeKycPages();
+}
+
 echo $rtrn;
 ?>

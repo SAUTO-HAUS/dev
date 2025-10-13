@@ -23,9 +23,14 @@ function populateKycFields() {
         switch($_POST['doc_f']) {
             case 'vinzare_proc':
             case 'vinzare_avans':
+            case 'con_plata':
+            case 'con_arvon':
+            case 'con_intermed':
                 $_POST['kyc_transaction_purpose'] = $_POST['transaction_purpose'] ?? 'personal_use';
                 break;
             case 'vinzare_sauto':
+            case 'con_arvon_com':
+            case 'com_transport':
                 $_POST['kyc_transaction_purpose'] = $_POST['transaction_purpose'] ?? 'company_use';
                 break;
             default:
@@ -90,7 +95,17 @@ function includeKycPages() {
 }
 
 function requiresKycPages($contractType) {
-    $sales_contracts = ['vinzare_proc', 'vinzare_avans', 'vinzare_sauto'];
-    return in_array($contractType, $sales_contracts);
+    // All contract types that require KYC pages (excluding invoice which is just a billing document)
+    $kyc_contracts = [
+        'vinzare_proc',      
+        'vinzare_avans',     
+        'vinzare_sauto',     
+        'con_plata',        
+        'con_arvon',         
+        'con_arvon_com',     
+        'com_transport',     
+        'con_intermed'       
+    ];
+    return in_array($contractType, $kyc_contracts);
 }
 ?>

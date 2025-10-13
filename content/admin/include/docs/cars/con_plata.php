@@ -46,5 +46,14 @@ $vin = isset($_POST['vin']) ? (is_array($_POST['vin']) ? ($_POST['vin'][0] ?? ''
 $rtrn .= '
 </div>';
 
+// Include KYC pages
+include(__DIR__.'/kyc_helper.php');
+if (requiresKycPages('con_plata')) {
+    $rtrn .= '
+    <div class="sep"></div>';
+    
+    includeKycPages();
+}
+
 echo $rtrn;
 ?>

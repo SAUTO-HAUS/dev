@@ -126,5 +126,14 @@ $rtrn .= '
 </div>
 ';
 
+// Include KYC pages
+include(__DIR__.'/kyc_helper.php');
+if (requiresKycPages('com_transport')) {
+    $rtrn .= '
+    <div class="sep"></div>';
+    
+    includeKycPages();
+}
+
 echo $rtrn;
 ?>

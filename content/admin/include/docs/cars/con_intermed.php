@@ -241,5 +241,14 @@ $rtrn = '
 	</div>
 </div>';
 
+// Include KYC pages
+include(__DIR__.'/kyc_helper.php');
+if (requiresKycPages('con_intermed')) {
+    $rtrn .= '
+    <div class="sep"></div>';
+    
+    includeKycPages();
+}
+
 echo $rtrn;
 ?>
