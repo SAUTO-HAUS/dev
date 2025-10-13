@@ -2,10 +2,10 @@
 
 $kyc_pages = '
 	<!-- KYC PAGE 14 -->
-	<div class="pg bg">
+	<div class="pg bg" style="page-break-before: always; margin-top: 3mm;">
 		<div class="head">
-			<div class="nr">Anexa nr. 1</div>
-			<div class="ttl">CHESTIONAR CUNOAȘTE-ȚI CLIENTULUI PERSOANĂ FIZICĂ</div>
+			<div style="text-align: center; font-size: 1.2rem; font-family: \'def\';">Anexa nr. 1</div>
+			<div style="text-align: center; font-size: 1.1rem; font-weight: bold; margin-bottom: 2mm;">CHESTIONAR CUNOAȘTE-ȚI CLIENTULUI PERSOANĂ FIZICĂ</div>
 		</div>
 		
 		<table style="width: 100%; border-collapse: collapse; margin: 0.5mm auto;">
