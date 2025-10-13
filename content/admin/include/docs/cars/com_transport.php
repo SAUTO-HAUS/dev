@@ -122,9 +122,7 @@ $rtrn .= '
 			</div>
 			<div class="ws" style="max-height:20mm;"></div>
 		</div>
-	</div>
-</div>
-';
+	</div>';
 
 // Include KYC pages
 include(__DIR__.'/kyc_helper.php');
@@ -134,6 +132,9 @@ if (requiresKycPages('com_transport')) {
     
     includeKycPages();
 }
+
+$rtrn .= '
+</div>';
 
 echo $rtrn;
 ?>

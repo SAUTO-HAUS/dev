@@ -4,6 +4,7 @@ $abr = 'CP';
 
 $rtrn = '
 <style>
+	.base {font-family:"def_l"; color:#000;}
 	.date {text-align:center; padding:15mm 0 0; float:left;}
 	.ttl {text-align:center; padding:15mm 0 0; clear:both; font-size:1.4rem; font-weight:bold;}
 	tr > td.id {width:10%;} tr > td.nm {width:50%;} tr > td.prc {width:40%;}
@@ -43,8 +44,6 @@ $vin = isset($_POST['vin']) ? (is_array($_POST['vin']) ? ($_POST['vin'][0] ?? ''
 			</div>
 		</div>';
 	}
-$rtrn .= '
-</div>';
 
 // Include KYC pages
 include(__DIR__.'/kyc_helper.php');
@@ -54,6 +53,9 @@ if (requiresKycPages('con_plata')) {
     
     includeKycPages();
 }
+
+$rtrn .= '
+</div>';
 
 echo $rtrn;
 ?>

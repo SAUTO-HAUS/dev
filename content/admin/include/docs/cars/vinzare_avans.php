@@ -257,9 +257,7 @@ $rtrn = '
 			</div>
 		</div>
 		<div class="conf">CONFIDENTIAL</div>
-	</div>
-</div>
-';
+	</div>';
 
 // Include KYC pages
 include(__DIR__.'/kyc_helper.php');
@@ -269,6 +267,9 @@ if (requiresKycPages('vinzare_avans')) {
     
     includeKycPages();
 }
+
+$rtrn .= '
+</div>';
 
 echo $rtrn;
 ?>

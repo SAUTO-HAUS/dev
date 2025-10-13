@@ -106,9 +106,7 @@ $rtrn = '
 				<div class="s2"><span class="txt_cpt">'.strtolower($_POST['u_nm']).'</span><div class="ln"></div></div>
 			</div>
 		</div>
-	</div>
-</div>
-';
+	</div>';
 
 // Include KYC pages
 include(__DIR__.'/kyc_helper.php');
@@ -118,6 +116,9 @@ if (requiresKycPages('con_arvon')) {
     
     includeKycPages();
 }
+
+$rtrn .= '
+</div>';
 
 echo $rtrn;
 ?>

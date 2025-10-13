@@ -238,8 +238,7 @@ $rtrn = '
 			<div class="date" style="align-self:flex-end;">'.$zdate.'</div>
 		</div>
 		<div class="conf">CONFIDENTIAL</div>
-	</div>
-</div>';
+	</div>';
 
 // Include KYC pages
 include(__DIR__.'/kyc_helper.php');
@@ -249,6 +248,9 @@ if (requiresKycPages('con_intermed')) {
     
     includeKycPages();
 }
+
+$rtrn .= '
+</div>';
 
 echo $rtrn;
 ?>
