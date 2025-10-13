@@ -24,7 +24,7 @@ $kyc_pages = '
 			<tr>
 				<td colspan="2">
 					<div style="text-align: left; white-space: nowrap;">
-						<span class="kyc-label" style="display: inline-block;">Numele, Prenumele: <span style="border-bottom: 1px dotted #000; display: inline-block; width: 40mm; min-height: 5mm; margin-left: 1mm;">' . (isset($_POST['kyc_client_name']) ? strtoupper($_POST['kyc_client_name']) : (isset($_POST['u_nm']) ? strtoupper($_POST['u_nm']) : '')) . '</span></span>
+						<span class="kyc-label" style="display: inline-block;">Numele, Prenumele: <span style="border-bottom: 1px dotted #000; display: inline-block; width: 40mm; min-height: 5mm; margin-left: 1mm;">' . (isset($_POST['kyc_client_name']) ? ucwords(strtolower($_POST['kyc_client_name'])) : (isset($_POST['u_nm']) ? ucwords(strtolower($_POST['u_nm'])) : '')) . '</span></span>
 						<span class="kyc-label" style="display: inline-block; margin-left: 5mm;">zz.ll.aaaa – nașterii: <span style="border-bottom: 1px dotted #000; display: inline-block; width: 20mm; min-height: 5mm; margin-left: 1mm;">' . (isset($_POST['kyc_birth_info']) ? $_POST['kyc_birth_info'] : (isset($_POST['u_tva_dt']) ? date('d.m.Y', strtotime($_POST['u_tva_dt'])) : '')) . '</span></span>
 						<span class="kyc-label" style="display: inline-block; margin-left: 2mm;">IDNP: <span style="border-bottom: 1px dotted #000; display: inline-block; width: 30mm; min-height: 5mm; margin-left: 1mm;">' . (isset($_POST['kyc_idnp']) ? $_POST['kyc_idnp'] : (isset($_POST['u_cf_idno']) ? $_POST['u_cf_idno'] : '')) . '</span></span>
 					</div>
@@ -44,7 +44,7 @@ $kyc_pages = '
 			<tr>
 				<td colspan="2">
 					<div style="text-align: left;">
-						<div class="kyc-label">Adresa de domiciliu: <span style="border-bottom: 1px dotted #000; display: inline-block; width: 90mm; min-height: 5mm; margin-left: 1mm;">' . (isset($_POST['kyc_address']) ? $_POST['kyc_address'] : (isset($_POST['u_adr']) ? $_POST['u_adr'] : '')) . '</span></div>
+						<div class="kyc-label">Adresa de domiciliu: <span style="border-bottom: 1px dotted #000; display: inline-block; width: 150mm; min-height: 5mm; margin-left: 1mm;">' . (isset($_POST['kyc_address']) ? $_POST['kyc_address'] : (isset($_POST['u_adr']) ? $_POST['u_adr'] : '')) . '</span></div>
 					</div>
 				</td>
 			</tr>
@@ -136,7 +136,7 @@ $kyc_pages = '
 					<table style="width: 100%; border: none; margin-top: 1mm;">
 						<tr>
 							<td style="border: none; width: 50%; vertical-align: top; padding: 1mm;">
-								<div class="kyc-label">Părinți: Numele, Prenumele <span style="border-bottom: 1px dotted #000; display: inline-block; width: 65mm; min-height: 3mm; vertical-align: bottom;">' . (isset($_POST['kyc_parents_names']) ? $_POST['kyc_parents_names'] : '') . '</span></div>
+								<div class="kyc-label">Părinți: Numele, Prenumele <span style="border-bottom: 1px dotted #000; display: inline-block; width: 75mm; min-height: 3mm; vertical-align: bottom;">' . (isset($_POST['kyc_parents_names']) ? $_POST['kyc_parents_names'] : '') . '</span></div>
 							</td>
 							<td style="border: none; width: 50%; vertical-align: top; padding: 1mm;">
 								<div class="kyc-label">Soț/soție: Numele, Prenumele <span style="border-bottom: 1px dotted #000; display: inline-block; width: 65mm; min-height: 3mm; vertical-align: bottom;">' . (isset($_POST['kyc_spouse_name']) ? $_POST['kyc_spouse_name'] : '') . '</span></div>
