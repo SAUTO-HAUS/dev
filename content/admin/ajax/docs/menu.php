@@ -442,39 +442,39 @@ JAVASCRIPT;
 		<div class="ttl">Date Chestionar</div>
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1" checked> Buletin de identitate</label>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_permis" value="1"> Permis de ședere</label>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_pasaport" value="1"> Pașaport</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1"'.(isset($_POST['kyc_doc_buletin']) && $_POST['kyc_doc_buletin'] == '1' ? ' checked' : (!isset($_POST['kyc_doc_buletin']) ? ' checked' : '')).'> Buletin de identitate</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_permis" value="1"'.(isset($_POST['kyc_doc_permis']) && $_POST['kyc_doc_permis'] == '1' ? ' checked' : '').'> Permis de ședere</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_pasaport" value="1"'.(isset($_POST['kyc_doc_pasaport']) && $_POST['kyc_doc_pasaport'] == '1' ? ' checked' : '').'> Pașaport</label>
 		</div>
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Ocupația:</div>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"> Angajat*</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"> Student*</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"> Antreprenor*</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"> Șomer</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_pensionar" value="1"> Pensionar</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"'.(isset($_POST['kyc_occupation_angajat']) && $_POST['kyc_occupation_angajat'] == '1' ? ' checked' : '').'> Angajat*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"'.(isset($_POST['kyc_occupation_student']) && $_POST['kyc_occupation_student'] == '1' ? ' checked' : '').'> Student*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"'.(isset($_POST['kyc_occupation_antreprenor']) && $_POST['kyc_occupation_antreprenor'] == '1' ? ' checked' : '').'> Antreprenor*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"'.(isset($_POST['kyc_occupation_somer']) && $_POST['kyc_occupation_somer'] == '1' ? ' checked' : '').'> Șomer</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_pensionar" value="1"'.(isset($_POST['kyc_occupation_pensionar']) && $_POST['kyc_occupation_pensionar'] == '1' ? ' checked' : '').'> Pensionar</label>
 		</div>
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Persoană expusă politic (Funcția publică deținută):</div>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_no_public_function" value="1" checked> Nu dețin funcție publică</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_deputat" value="1"> Deputat al Parlamentului RM</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_judecator" value="1"> Judecător</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_guvern" value="1"> Membru al Guvernului RM</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_primar" value="1"> Primar</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_partid" value="1"> Membru al organelor de conducere ale partidelor politice</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_consilier" value="1"> Consilier al autorităților publice locale</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_no_public_function" value="1"'.(isset($_POST['kyc_no_public_function']) && $_POST['kyc_no_public_function'] == '1' ? ' checked' : (!isset($_POST['kyc_no_public_function']) ? ' checked' : '')).'> Nu dețin funcție publică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_deputat" value="1"'.(isset($_POST['kyc_public_function_deputat']) && $_POST['kyc_public_function_deputat'] == '1' ? ' checked' : '').'> Deputat al Parlamentului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_judecator" value="1"'.(isset($_POST['kyc_public_function_judecator']) && $_POST['kyc_public_function_judecator'] == '1' ? ' checked' : '').'> Judecător</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_guvern" value="1"'.(isset($_POST['kyc_public_function_guvern']) && $_POST['kyc_public_function_guvern'] == '1' ? ' checked' : '').'> Membru al Guvernului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_primar" value="1"'.(isset($_POST['kyc_public_function_primar']) && $_POST['kyc_public_function_primar'] == '1' ? ' checked' : '').'> Primar</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_partid" value="1"'.(isset($_POST['kyc_public_function_partid']) && $_POST['kyc_public_function_partid'] == '1' ? ' checked' : '').'> Membru al organelor de conducere ale partidelor politice</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_consilier" value="1"'.(isset($_POST['kyc_public_function_consilier']) && $_POST['kyc_public_function_consilier'] == '1' ? ' checked' : '').'> Consilier al autorităților publice locale</label>
 		</div>
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Scopul și natura tranzacțiilor:</div>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_personal" value="1" checked> Achiziționarea unui automobil pentru uz personal</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_family" value="1"> Achiziționarea unui automobil pentru uzul familiei / rudelor</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_company" value="1"> Achiziționarea unui automobil pentru companie / activitate economică</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_resale" value="1"> Achiziționarea unui automobil în scop de revânzare</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"> Transfer de proprietate între rude (moștenire, donație etc.)</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_personal" value="1"'.(isset($_POST['kyc_transaction_personal']) && $_POST['kyc_transaction_personal'] == '1' ? ' checked' : (!isset($_POST['kyc_transaction_personal']) ? ' checked' : '')).'> Achiziționarea unui automobil pentru uz personal</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_family" value="1"'.(isset($_POST['kyc_transaction_family']) && $_POST['kyc_transaction_family'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru uzul familiei / rudelor</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_company" value="1"'.(isset($_POST['kyc_transaction_company']) && $_POST['kyc_transaction_company'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru companie / activitate economică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_resale" value="1"'.(isset($_POST['kyc_transaction_resale']) && $_POST['kyc_transaction_resale'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil în scop de revânzare</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"'.(isset($_POST['kyc_transaction_commercial']) && $_POST['kyc_transaction_commercial'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"'.(isset($_POST['kyc_transaction_transfer']) && $_POST['kyc_transaction_transfer'] == '1' ? ' checked' : '').'> Transfer de proprietate între rude (moștenire, donație etc.)</label>
 		</div>
 		'.( isset($mixall)?'</form>':'' );
 		//}
@@ -536,39 +536,39 @@ JAVASCRIPT;
 		<div class="ttl">Date Chestionar</div>
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1" checked> Buletin de identitate</label>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_permis" value="1"> Permis de ședere</label>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_pasaport" value="1"> Pașaport</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1"'.(isset($_POST['kyc_doc_buletin']) && $_POST['kyc_doc_buletin'] == '1' ? ' checked' : (!isset($_POST['kyc_doc_buletin']) ? ' checked' : '')).'> Buletin de identitate</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_permis" value="1"'.(isset($_POST['kyc_doc_permis']) && $_POST['kyc_doc_permis'] == '1' ? ' checked' : '').'> Permis de ședere</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_pasaport" value="1"'.(isset($_POST['kyc_doc_pasaport']) && $_POST['kyc_doc_pasaport'] == '1' ? ' checked' : '').'> Pașaport</label>
 		</div>
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Ocupația:</div>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"> Angajat*</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"> Student*</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"> Antreprenor*</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"> Șomer</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_pensionar" value="1"> Pensionar</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"'.(isset($_POST['kyc_occupation_angajat']) && $_POST['kyc_occupation_angajat'] == '1' ? ' checked' : '').'> Angajat*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"'.(isset($_POST['kyc_occupation_student']) && $_POST['kyc_occupation_student'] == '1' ? ' checked' : '').'> Student*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"'.(isset($_POST['kyc_occupation_antreprenor']) && $_POST['kyc_occupation_antreprenor'] == '1' ? ' checked' : '').'> Antreprenor*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"'.(isset($_POST['kyc_occupation_somer']) && $_POST['kyc_occupation_somer'] == '1' ? ' checked' : '').'> Șomer</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_pensionar" value="1"'.(isset($_POST['kyc_occupation_pensionar']) && $_POST['kyc_occupation_pensionar'] == '1' ? ' checked' : '').'> Pensionar</label>
 		</div>
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Persoană expusă politic (Funcția publică deținută):</div>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_no_public_function" value="1" checked> Nu dețin funcție publică</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_deputat" value="1"> Deputat al Parlamentului RM</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_judecator" value="1"> Judecător</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_guvern" value="1"> Membru al Guvernului RM</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_primar" value="1"> Primar</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_partid" value="1"> Membru al organelor de conducere ale partidelor politice</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_consilier" value="1"> Consilier al autorităților publice locale</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_no_public_function" value="1"'.(isset($_POST['kyc_no_public_function']) && $_POST['kyc_no_public_function'] == '1' ? ' checked' : (!isset($_POST['kyc_no_public_function']) ? ' checked' : '')).'> Nu dețin funcție publică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_deputat" value="1"'.(isset($_POST['kyc_public_function_deputat']) && $_POST['kyc_public_function_deputat'] == '1' ? ' checked' : '').'> Deputat al Parlamentului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_judecator" value="1"'.(isset($_POST['kyc_public_function_judecator']) && $_POST['kyc_public_function_judecator'] == '1' ? ' checked' : '').'> Judecător</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_guvern" value="1"'.(isset($_POST['kyc_public_function_guvern']) && $_POST['kyc_public_function_guvern'] == '1' ? ' checked' : '').'> Membru al Guvernului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_primar" value="1"'.(isset($_POST['kyc_public_function_primar']) && $_POST['kyc_public_function_primar'] == '1' ? ' checked' : '').'> Primar</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_partid" value="1"'.(isset($_POST['kyc_public_function_partid']) && $_POST['kyc_public_function_partid'] == '1' ? ' checked' : '').'> Membru al organelor de conducere ale partidelor politice</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_consilier" value="1"'.(isset($_POST['kyc_public_function_consilier']) && $_POST['kyc_public_function_consilier'] == '1' ? ' checked' : '').'> Consilier al autorităților publice locale</label>
 		</div>
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Scopul și natura tranzacțiilor:</div>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_personal" value="1" checked> Achiziționarea unui automobil pentru uz personal</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_family" value="1"> Achiziționarea unui automobil pentru uzul familiei / rudelor</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_company" value="1"> Achiziționarea unui automobil pentru companie / activitate economică</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_resale" value="1"> Achiziționarea unui automobil în scop de revânzare</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"> Transfer de proprietate între rude (moștenire, donație etc.)</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_personal" value="1"'.(isset($_POST['kyc_transaction_personal']) && $_POST['kyc_transaction_personal'] == '1' ? ' checked' : (!isset($_POST['kyc_transaction_personal']) ? ' checked' : '')).'> Achiziționarea unui automobil pentru uz personal</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_family" value="1"'.(isset($_POST['kyc_transaction_family']) && $_POST['kyc_transaction_family'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru uzul familiei / rudelor</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_company" value="1"'.(isset($_POST['kyc_transaction_company']) && $_POST['kyc_transaction_company'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru companie / activitate economică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_resale" value="1"'.(isset($_POST['kyc_transaction_resale']) && $_POST['kyc_transaction_resale'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil în scop de revânzare</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"'.(isset($_POST['kyc_transaction_commercial']) && $_POST['kyc_transaction_commercial'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"'.(isset($_POST['kyc_transaction_transfer']) && $_POST['kyc_transaction_transfer'] == '1' ? ' checked' : '').'> Transfer de proprietate între rude (moștenire, donație etc.)</label>
 		</div>
 		'.( isset($mixall)?'</form>':'' );
 	}
@@ -615,39 +615,39 @@ JAVASCRIPT;
 		<div class="ttl">Date Chestionar</div>
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1" checked> Buletin de identitate</label>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_permis" value="1"> Permis de ședere</label>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_pasaport" value="1"> Pașaport</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1"'.(isset($_POST['kyc_doc_buletin']) && $_POST['kyc_doc_buletin'] == '1' ? ' checked' : (!isset($_POST['kyc_doc_buletin']) ? ' checked' : '')).'> Buletin de identitate</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_permis" value="1"'.(isset($_POST['kyc_doc_permis']) && $_POST['kyc_doc_permis'] == '1' ? ' checked' : '').'> Permis de ședere</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_pasaport" value="1"'.(isset($_POST['kyc_doc_pasaport']) && $_POST['kyc_doc_pasaport'] == '1' ? ' checked' : '').'> Pașaport</label>
 		</div>
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Ocupația:</div>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"> Angajat*</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"> Student*</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"> Antreprenor*</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"> Șomer</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_pensionar" value="1"> Pensionar</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"'.(isset($_POST['kyc_occupation_angajat']) && $_POST['kyc_occupation_angajat'] == '1' ? ' checked' : '').'> Angajat*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"'.(isset($_POST['kyc_occupation_student']) && $_POST['kyc_occupation_student'] == '1' ? ' checked' : '').'> Student*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"'.(isset($_POST['kyc_occupation_antreprenor']) && $_POST['kyc_occupation_antreprenor'] == '1' ? ' checked' : '').'> Antreprenor*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"'.(isset($_POST['kyc_occupation_somer']) && $_POST['kyc_occupation_somer'] == '1' ? ' checked' : '').'> Șomer</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_pensionar" value="1"'.(isset($_POST['kyc_occupation_pensionar']) && $_POST['kyc_occupation_pensionar'] == '1' ? ' checked' : '').'> Pensionar</label>
 		</div>
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Persoană expusă politic (Funcția publică deținută):</div>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_no_public_function" value="1" checked> Nu dețin funcție publică</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_deputat" value="1"> Deputat al Parlamentului RM</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_judecator" value="1"> Judecător</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_guvern" value="1"> Membru al Guvernului RM</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_primar" value="1"> Primar</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_partid" value="1"> Membru al organelor de conducere ale partidelor politice</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_consilier" value="1"> Consilier al autorităților publice locale</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_no_public_function" value="1"'.(isset($_POST['kyc_no_public_function']) && $_POST['kyc_no_public_function'] == '1' ? ' checked' : (!isset($_POST['kyc_no_public_function']) ? ' checked' : '')).'> Nu dețin funcție publică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_deputat" value="1"'.(isset($_POST['kyc_public_function_deputat']) && $_POST['kyc_public_function_deputat'] == '1' ? ' checked' : '').'> Deputat al Parlamentului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_judecator" value="1"'.(isset($_POST['kyc_public_function_judecator']) && $_POST['kyc_public_function_judecator'] == '1' ? ' checked' : '').'> Judecător</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_guvern" value="1"'.(isset($_POST['kyc_public_function_guvern']) && $_POST['kyc_public_function_guvern'] == '1' ? ' checked' : '').'> Membru al Guvernului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_primar" value="1"'.(isset($_POST['kyc_public_function_primar']) && $_POST['kyc_public_function_primar'] == '1' ? ' checked' : '').'> Primar</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_partid" value="1"'.(isset($_POST['kyc_public_function_partid']) && $_POST['kyc_public_function_partid'] == '1' ? ' checked' : '').'> Membru al organelor de conducere ale partidelor politice</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_consilier" value="1"'.(isset($_POST['kyc_public_function_consilier']) && $_POST['kyc_public_function_consilier'] == '1' ? ' checked' : '').'> Consilier al autorităților publice locale</label>
 		</div>
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Scopul și natura tranzacțiilor:</div>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_personal" value="1" checked> Achiziționarea unui automobil pentru uz personal</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_family" value="1"> Achiziționarea unui automobil pentru uzul familiei / rudelor</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_company" value="1"> Achiziționarea unui automobil pentru companie / activitate economică</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_resale" value="1"> Achiziționarea unui automobil în scop de revânzare</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"> Transfer de proprietate între rude (moștenire, donație etc.)</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_personal" value="1"'.(isset($_POST['kyc_transaction_personal']) && $_POST['kyc_transaction_personal'] == '1' ? ' checked' : (!isset($_POST['kyc_transaction_personal']) ? ' checked' : '')).'> Achiziționarea unui automobil pentru uz personal</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_family" value="1"'.(isset($_POST['kyc_transaction_family']) && $_POST['kyc_transaction_family'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru uzul familiei / rudelor</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_company" value="1"'.(isset($_POST['kyc_transaction_company']) && $_POST['kyc_transaction_company'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru companie / activitate economică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_resale" value="1"'.(isset($_POST['kyc_transaction_resale']) && $_POST['kyc_transaction_resale'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil în scop de revânzare</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"'.(isset($_POST['kyc_transaction_commercial']) && $_POST['kyc_transaction_commercial'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"'.(isset($_POST['kyc_transaction_transfer']) && $_POST['kyc_transaction_transfer'] == '1' ? ' checked' : '').'> Transfer de proprietate între rude (moștenire, donație etc.)</label>
 		</div>
 		'.( isset($mixall)?'</form>':'' );
 	}
@@ -711,39 +711,39 @@ JAVASCRIPT;
 		<div class="ttl">Date Chestionar</div>
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1" checked> Buletin de identitate</label>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_permis" value="1"> Permis de ședere</label>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_pasaport" value="1"> Pașaport</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1"'.(isset($_POST['kyc_doc_buletin']) && $_POST['kyc_doc_buletin'] == '1' ? ' checked' : (!isset($_POST['kyc_doc_buletin']) ? ' checked' : '')).'> Buletin de identitate</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_permis" value="1"'.(isset($_POST['kyc_doc_permis']) && $_POST['kyc_doc_permis'] == '1' ? ' checked' : '').'> Permis de ședere</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_pasaport" value="1"'.(isset($_POST['kyc_doc_pasaport']) && $_POST['kyc_doc_pasaport'] == '1' ? ' checked' : '').'> Pașaport</label>
 		</div>
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Ocupația:</div>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"> Angajat*</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"> Student*</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"> Antreprenor*</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"> Șomer</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_pensionar" value="1"> Pensionar</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"'.(isset($_POST['kyc_occupation_angajat']) && $_POST['kyc_occupation_angajat'] == '1' ? ' checked' : '').'> Angajat*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"'.(isset($_POST['kyc_occupation_student']) && $_POST['kyc_occupation_student'] == '1' ? ' checked' : '').'> Student*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"'.(isset($_POST['kyc_occupation_antreprenor']) && $_POST['kyc_occupation_antreprenor'] == '1' ? ' checked' : '').'> Antreprenor*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"'.(isset($_POST['kyc_occupation_somer']) && $_POST['kyc_occupation_somer'] == '1' ? ' checked' : '').'> Șomer</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_pensionar" value="1"'.(isset($_POST['kyc_occupation_pensionar']) && $_POST['kyc_occupation_pensionar'] == '1' ? ' checked' : '').'> Pensionar</label>
 		</div>
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Persoană expusă politic (Funcția publică deținută):</div>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_no_public_function" value="1" checked> Nu dețin funcție publică</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_deputat" value="1"> Deputat al Parlamentului RM</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_judecator" value="1"> Judecător</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_guvern" value="1"> Membru al Guvernului RM</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_primar" value="1"> Primar</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_partid" value="1"> Membru al organelor de conducere ale partidelor politice</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_consilier" value="1"> Consilier al autorităților publice locale</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_no_public_function" value="1"'.(isset($_POST['kyc_no_public_function']) && $_POST['kyc_no_public_function'] == '1' ? ' checked' : (!isset($_POST['kyc_no_public_function']) ? ' checked' : '')).'> Nu dețin funcție publică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_deputat" value="1"'.(isset($_POST['kyc_public_function_deputat']) && $_POST['kyc_public_function_deputat'] == '1' ? ' checked' : '').'> Deputat al Parlamentului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_judecator" value="1"'.(isset($_POST['kyc_public_function_judecator']) && $_POST['kyc_public_function_judecator'] == '1' ? ' checked' : '').'> Judecător</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_guvern" value="1"'.(isset($_POST['kyc_public_function_guvern']) && $_POST['kyc_public_function_guvern'] == '1' ? ' checked' : '').'> Membru al Guvernului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_primar" value="1"'.(isset($_POST['kyc_public_function_primar']) && $_POST['kyc_public_function_primar'] == '1' ? ' checked' : '').'> Primar</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_partid" value="1"'.(isset($_POST['kyc_public_function_partid']) && $_POST['kyc_public_function_partid'] == '1' ? ' checked' : '').'> Membru al organelor de conducere ale partidelor politice</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_consilier" value="1"'.(isset($_POST['kyc_public_function_consilier']) && $_POST['kyc_public_function_consilier'] == '1' ? ' checked' : '').'> Consilier al autorităților publice locale</label>
 		</div>
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Scopul și natura tranzacțiilor:</div>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_personal" value="1" checked> Achiziționarea unui automobil pentru uz personal</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_family" value="1"> Achiziționarea unui automobil pentru uzul familiei / rudelor</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_company" value="1"> Achiziționarea unui automobil pentru companie / activitate economică</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_resale" value="1"> Achiziționarea unui automobil în scop de revânzare</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"> Transfer de proprietate între rude (moștenire, donație etc.)</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_personal" value="1"'.(isset($_POST['kyc_transaction_personal']) && $_POST['kyc_transaction_personal'] == '1' ? ' checked' : (!isset($_POST['kyc_transaction_personal']) ? ' checked' : '')).'> Achiziționarea unui automobil pentru uz personal</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_family" value="1"'.(isset($_POST['kyc_transaction_family']) && $_POST['kyc_transaction_family'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru uzul familiei / rudelor</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_company" value="1"'.(isset($_POST['kyc_transaction_company']) && $_POST['kyc_transaction_company'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru companie / activitate economică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_resale" value="1"'.(isset($_POST['kyc_transaction_resale']) && $_POST['kyc_transaction_resale'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil în scop de revânzare</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"'.(isset($_POST['kyc_transaction_commercial']) && $_POST['kyc_transaction_commercial'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"'.(isset($_POST['kyc_transaction_transfer']) && $_POST['kyc_transaction_transfer'] == '1' ? ' checked' : '').'> Transfer de proprietate între rude (moștenire, donație etc.)</label>
 		</div>
 		
 		<div class="ttl">Extra</div>
@@ -783,39 +783,39 @@ JAVASCRIPT;
 				<div class="ttl">Date Chestionar</div>
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1" checked> Buletin de identitate</label>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_permis" value="1"> Permis de ședere</label>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_pasaport" value="1"> Pașaport</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1"'.(isset($_POST['kyc_doc_buletin']) && $_POST['kyc_doc_buletin'] == '1' ? ' checked' : (!isset($_POST['kyc_doc_buletin']) ? ' checked' : '')).'> Buletin de identitate</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_permis" value="1"'.(isset($_POST['kyc_doc_permis']) && $_POST['kyc_doc_permis'] == '1' ? ' checked' : '').'> Permis de ședere</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_pasaport" value="1"'.(isset($_POST['kyc_doc_pasaport']) && $_POST['kyc_doc_pasaport'] == '1' ? ' checked' : '').'> Pașaport</label>
 		</div>
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Ocupația:</div>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"> Angajat*</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"> Student*</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"> Antreprenor*</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"> Șomer</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_pensionar" value="1"> Pensionar</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"'.(isset($_POST['kyc_occupation_angajat']) && $_POST['kyc_occupation_angajat'] == '1' ? ' checked' : '').'> Angajat*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"'.(isset($_POST['kyc_occupation_student']) && $_POST['kyc_occupation_student'] == '1' ? ' checked' : '').'> Student*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"'.(isset($_POST['kyc_occupation_antreprenor']) && $_POST['kyc_occupation_antreprenor'] == '1' ? ' checked' : '').'> Antreprenor*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"'.(isset($_POST['kyc_occupation_somer']) && $_POST['kyc_occupation_somer'] == '1' ? ' checked' : '').'> Șomer</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_pensionar" value="1"'.(isset($_POST['kyc_occupation_pensionar']) && $_POST['kyc_occupation_pensionar'] == '1' ? ' checked' : '').'> Pensionar</label>
 		</div>
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Persoană expusă politic (Funcția publică deținută):</div>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_no_public_function" value="1" checked> Nu dețin funcție publică</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_deputat" value="1"> Deputat al Parlamentului RM</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_judecator" value="1"> Judecător</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_guvern" value="1"> Membru al Guvernului RM</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_primar" value="1"> Primar</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_partid" value="1"> Membru al organelor de conducere ale partidelor politice</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_consilier" value="1"> Consilier al autorităților publice locale</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_no_public_function" value="1"'.(isset($_POST['kyc_no_public_function']) && $_POST['kyc_no_public_function'] == '1' ? ' checked' : (!isset($_POST['kyc_no_public_function']) ? ' checked' : '')).'> Nu dețin funcție publică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_deputat" value="1"'.(isset($_POST['kyc_public_function_deputat']) && $_POST['kyc_public_function_deputat'] == '1' ? ' checked' : '').'> Deputat al Parlamentului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_judecator" value="1"'.(isset($_POST['kyc_public_function_judecator']) && $_POST['kyc_public_function_judecator'] == '1' ? ' checked' : '').'> Judecător</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_guvern" value="1"'.(isset($_POST['kyc_public_function_guvern']) && $_POST['kyc_public_function_guvern'] == '1' ? ' checked' : '').'> Membru al Guvernului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_primar" value="1"'.(isset($_POST['kyc_public_function_primar']) && $_POST['kyc_public_function_primar'] == '1' ? ' checked' : '').'> Primar</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_partid" value="1"'.(isset($_POST['kyc_public_function_partid']) && $_POST['kyc_public_function_partid'] == '1' ? ' checked' : '').'> Membru al organelor de conducere ale partidelor politice</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_consilier" value="1"'.(isset($_POST['kyc_public_function_consilier']) && $_POST['kyc_public_function_consilier'] == '1' ? ' checked' : '').'> Consilier al autorităților publice locale</label>
 		</div>
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Scopul și natura tranzacțiilor:</div>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_personal" value="1" checked> Achiziționarea unui automobil pentru uz personal</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_family" value="1"> Achiziționarea unui automobil pentru uzul familiei / rudelor</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_company" value="1"> Achiziționarea unui automobil pentru companie / activitate economică</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_resale" value="1"> Achiziționarea unui automobil în scop de revânzare</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"> Transfer de proprietate între rude (moștenire, donație etc.)</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_personal" value="1"'.(isset($_POST['kyc_transaction_personal']) && $_POST['kyc_transaction_personal'] == '1' ? ' checked' : (!isset($_POST['kyc_transaction_personal']) ? ' checked' : '')).'> Achiziționarea unui automobil pentru uz personal</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_family" value="1"'.(isset($_POST['kyc_transaction_family']) && $_POST['kyc_transaction_family'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru uzul familiei / rudelor</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_company" value="1"'.(isset($_POST['kyc_transaction_company']) && $_POST['kyc_transaction_company'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru companie / activitate economică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_resale" value="1"'.(isset($_POST['kyc_transaction_resale']) && $_POST['kyc_transaction_resale'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil în scop de revânzare</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"'.(isset($_POST['kyc_transaction_commercial']) && $_POST['kyc_transaction_commercial'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"'.(isset($_POST['kyc_transaction_transfer']) && $_POST['kyc_transaction_transfer'] == '1' ? ' checked' : '').'> Transfer de proprietate între rude (moștenire, donație etc.)</label>
 		</div>
 		'.( isset($mixall)?'</form>':'' );
 	}
@@ -864,39 +864,39 @@ JAVASCRIPT;
 		<div class="ttl">Date Chestionar</div>
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1" checked> Buletin de identitate</label>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_permis" value="1"> Permis de ședere</label>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_pasaport" value="1"> Pașaport</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1"'.(isset($_POST['kyc_doc_buletin']) && $_POST['kyc_doc_buletin'] == '1' ? ' checked' : (!isset($_POST['kyc_doc_buletin']) ? ' checked' : '')).'> Buletin de identitate</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_permis" value="1"'.(isset($_POST['kyc_doc_permis']) && $_POST['kyc_doc_permis'] == '1' ? ' checked' : '').'> Permis de ședere</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_pasaport" value="1"'.(isset($_POST['kyc_doc_pasaport']) && $_POST['kyc_doc_pasaport'] == '1' ? ' checked' : '').'> Pașaport</label>
 		</div>
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Ocupația:</div>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"> Angajat*</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"> Student*</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"> Antreprenor*</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"> Șomer</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_pensionar" value="1"> Pensionar</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"'.(isset($_POST['kyc_occupation_angajat']) && $_POST['kyc_occupation_angajat'] == '1' ? ' checked' : '').'> Angajat*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"'.(isset($_POST['kyc_occupation_student']) && $_POST['kyc_occupation_student'] == '1' ? ' checked' : '').'> Student*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"'.(isset($_POST['kyc_occupation_antreprenor']) && $_POST['kyc_occupation_antreprenor'] == '1' ? ' checked' : '').'> Antreprenor*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"'.(isset($_POST['kyc_occupation_somer']) && $_POST['kyc_occupation_somer'] == '1' ? ' checked' : '').'> Șomer</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_pensionar" value="1"'.(isset($_POST['kyc_occupation_pensionar']) && $_POST['kyc_occupation_pensionar'] == '1' ? ' checked' : '').'> Pensionar</label>
 		</div>
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Persoană expusă politic (Funcția publică deținută):</div>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_no_public_function" value="1" checked> Nu dețin funcție publică</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_deputat" value="1"> Deputat al Parlamentului RM</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_judecator" value="1"> Judecător</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_guvern" value="1"> Membru al Guvernului RM</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_primar" value="1"> Primar</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_partid" value="1"> Membru al organelor de conducere ale partidelor politice</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_consilier" value="1"> Consilier al autorităților publice locale</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_no_public_function" value="1"'.(isset($_POST['kyc_no_public_function']) && $_POST['kyc_no_public_function'] == '1' ? ' checked' : (!isset($_POST['kyc_no_public_function']) ? ' checked' : '')).'> Nu dețin funcție publică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_deputat" value="1"'.(isset($_POST['kyc_public_function_deputat']) && $_POST['kyc_public_function_deputat'] == '1' ? ' checked' : '').'> Deputat al Parlamentului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_judecator" value="1"'.(isset($_POST['kyc_public_function_judecator']) && $_POST['kyc_public_function_judecator'] == '1' ? ' checked' : '').'> Judecător</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_guvern" value="1"'.(isset($_POST['kyc_public_function_guvern']) && $_POST['kyc_public_function_guvern'] == '1' ? ' checked' : '').'> Membru al Guvernului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_primar" value="1"'.(isset($_POST['kyc_public_function_primar']) && $_POST['kyc_public_function_primar'] == '1' ? ' checked' : '').'> Primar</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_partid" value="1"'.(isset($_POST['kyc_public_function_partid']) && $_POST['kyc_public_function_partid'] == '1' ? ' checked' : '').'> Membru al organelor de conducere ale partidelor politice</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_consilier" value="1"'.(isset($_POST['kyc_public_function_consilier']) && $_POST['kyc_public_function_consilier'] == '1' ? ' checked' : '').'> Consilier al autorităților publice locale</label>
 		</div>
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Scopul și natura tranzacțiilor:</div>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_personal" value="1" checked> Achiziționarea unui automobil pentru uz personal</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_family" value="1"> Achiziționarea unui automobil pentru uzul familiei / rudelor</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_company" value="1"> Achiziționarea unui automobil pentru companie / activitate economică</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_resale" value="1"> Achiziționarea unui automobil în scop de revânzare</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"> Transfer de proprietate între rude (moștenire, donație etc.)</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_personal" value="1"'.(isset($_POST['kyc_transaction_personal']) && $_POST['kyc_transaction_personal'] == '1' ? ' checked' : (!isset($_POST['kyc_transaction_personal']) ? ' checked' : '')).'> Achiziționarea unui automobil pentru uz personal</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_family" value="1"'.(isset($_POST['kyc_transaction_family']) && $_POST['kyc_transaction_family'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru uzul familiei / rudelor</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_company" value="1"'.(isset($_POST['kyc_transaction_company']) && $_POST['kyc_transaction_company'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru companie / activitate economică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_resale" value="1"'.(isset($_POST['kyc_transaction_resale']) && $_POST['kyc_transaction_resale'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil în scop de revânzare</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"'.(isset($_POST['kyc_transaction_commercial']) && $_POST['kyc_transaction_commercial'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"'.(isset($_POST['kyc_transaction_transfer']) && $_POST['kyc_transaction_transfer'] == '1' ? ' checked' : '').'> Transfer de proprietate între rude (moștenire, donație etc.)</label>
 		</div>
 		';
 		
@@ -1053,39 +1053,39 @@ JAVASCRIPT;
 		<div class="ttl">Date Chestionar</div>
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1" checked> Buletin de identitate</label>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_permis" value="1"> Permis de ședere</label>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_pasaport" value="1"> Pașaport</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1"'.(isset($_POST['kyc_doc_buletin']) && $_POST['kyc_doc_buletin'] == '1' ? ' checked' : (!isset($_POST['kyc_doc_buletin']) ? ' checked' : '')).'> Buletin de identitate</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_permis" value="1"'.(isset($_POST['kyc_doc_permis']) && $_POST['kyc_doc_permis'] == '1' ? ' checked' : '').'> Permis de ședere</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_pasaport" value="1"'.(isset($_POST['kyc_doc_pasaport']) && $_POST['kyc_doc_pasaport'] == '1' ? ' checked' : '').'> Pașaport</label>
 		</div>
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Ocupația:</div>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"> Angajat*</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"> Student*</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"> Antreprenor*</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"> Șomer</label>
-			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_pensionar" value="1"> Pensionar</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"'.(isset($_POST['kyc_occupation_angajat']) && $_POST['kyc_occupation_angajat'] == '1' ? ' checked' : '').'> Angajat*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"'.(isset($_POST['kyc_occupation_student']) && $_POST['kyc_occupation_student'] == '1' ? ' checked' : '').'> Student*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"'.(isset($_POST['kyc_occupation_antreprenor']) && $_POST['kyc_occupation_antreprenor'] == '1' ? ' checked' : '').'> Antreprenor*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"'.(isset($_POST['kyc_occupation_somer']) && $_POST['kyc_occupation_somer'] == '1' ? ' checked' : '').'> Șomer</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_pensionar" value="1"'.(isset($_POST['kyc_occupation_pensionar']) && $_POST['kyc_occupation_pensionar'] == '1' ? ' checked' : '').'> Pensionar</label>
 		</div>
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Persoană expusă politic (Funcția publică deținută):</div>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_no_public_function" value="1" checked> Nu dețin funcție publică</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_deputat" value="1"> Deputat al Parlamentului RM</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_judecator" value="1"> Judecător</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_guvern" value="1"> Membru al Guvernului RM</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_primar" value="1"> Primar</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_partid" value="1"> Membru al organelor de conducere ale partidelor politice</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_consilier" value="1"> Consilier al autorităților publice locale</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_no_public_function" value="1"'.(isset($_POST['kyc_no_public_function']) && $_POST['kyc_no_public_function'] == '1' ? ' checked' : (!isset($_POST['kyc_no_public_function']) ? ' checked' : '')).'> Nu dețin funcție publică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_deputat" value="1"'.(isset($_POST['kyc_public_function_deputat']) && $_POST['kyc_public_function_deputat'] == '1' ? ' checked' : '').'> Deputat al Parlamentului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_judecator" value="1"'.(isset($_POST['kyc_public_function_judecator']) && $_POST['kyc_public_function_judecator'] == '1' ? ' checked' : '').'> Judecător</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_guvern" value="1"'.(isset($_POST['kyc_public_function_guvern']) && $_POST['kyc_public_function_guvern'] == '1' ? ' checked' : '').'> Membru al Guvernului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_primar" value="1"'.(isset($_POST['kyc_public_function_primar']) && $_POST['kyc_public_function_primar'] == '1' ? ' checked' : '').'> Primar</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_partid" value="1"'.(isset($_POST['kyc_public_function_partid']) && $_POST['kyc_public_function_partid'] == '1' ? ' checked' : '').'> Membru al organelor de conducere ale partidelor politice</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_consilier" value="1"'.(isset($_POST['kyc_public_function_consilier']) && $_POST['kyc_public_function_consilier'] == '1' ? ' checked' : '').'> Consilier al autorităților publice locale</label>
 		</div>
 		
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Scopul și natura tranzacțiilor:</div>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_personal" value="1" checked> Achiziționarea unui automobil pentru uz personal</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_family" value="1"> Achiziționarea unui automobil pentru uzul familiei / rudelor</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_company" value="1"> Achiziționarea unui automobil pentru companie / activitate economică</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_resale" value="1"> Achiziționarea unui automobil în scop de revânzare</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
-			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"> Transfer de proprietate între rude (moștenire, donație etc.)</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_personal" value="1"'.(isset($_POST['kyc_transaction_personal']) && $_POST['kyc_transaction_personal'] == '1' ? ' checked' : (!isset($_POST['kyc_transaction_personal']) ? ' checked' : '')).'> Achiziționarea unui automobil pentru uz personal</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_family" value="1"'.(isset($_POST['kyc_transaction_family']) && $_POST['kyc_transaction_family'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru uzul familiei / rudelor</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_company" value="1"'.(isset($_POST['kyc_transaction_company']) && $_POST['kyc_transaction_company'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru companie / activitate economică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_resale" value="1"'.(isset($_POST['kyc_transaction_resale']) && $_POST['kyc_transaction_resale'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil în scop de revânzare</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"'.(isset($_POST['kyc_transaction_commercial']) && $_POST['kyc_transaction_commercial'] == '1' ? ' checked' : '').'> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"'.(isset($_POST['kyc_transaction_transfer']) && $_POST['kyc_transaction_transfer'] == '1' ? ' checked' : '').'> Transfer de proprietate între rude (moștenire, donație etc.)</label>
 		</div>
 		
 		<div class="ttl">Damage</div>

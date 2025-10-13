@@ -313,7 +313,18 @@ if ( isset($t_mp[4]) ){
 											}
 										}
 									} else if ( tag=="INPUT" || tag=="TEXTAREA" ){
-										if ( typeof v === "string" ){ el.val(v); }
+										if ( typeof v === "string" ){ 
+											// Special handling for KYC checkboxes
+											if (el.attr("type") === "checkbox" && k.indexOf("kyc_") === 0) {
+												if (v === "1") {
+													el.prop("checked", true);
+												} else {
+													el.prop("checked", false);
+												}
+											} else {
+												el.val(v); 
+											}
+										}
 									} else if ( tag=="DIV" ){
 										v = v + "";
 										var tmp = v.split("||");
@@ -466,6 +477,25 @@ if ( isset($t_mp[4]) ){
 							kv_ar[ v["name"] ] = v["value"];
 						}
 					});
+					
+					// Special handling for KYC checkboxes - include unchecked ones as "0"
+					var kyc_checkboxes = [
+						"kyc_doc_buletin", "kyc_doc_permis", "kyc_doc_pasaport",
+						"kyc_occupation_angajat", "kyc_occupation_student", "kyc_occupation_antreprenor", "kyc_occupation_somer", "kyc_occupation_pensionar",
+						"kyc_no_public_function", "kyc_public_function_deputat", "kyc_public_function_judecator", "kyc_public_function_guvern", "kyc_public_function_primar", "kyc_public_function_partid", "kyc_public_function_consilier",
+						"kyc_transaction_personal", "kyc_transaction_family", "kyc_transaction_company", "kyc_transaction_resale", "kyc_transaction_commercial", "kyc_transaction_transfer"
+					];
+					
+					$.each(kyc_checkboxes, function(i, checkbox_name) {
+						var $checkbox = $form.find("input[name=\"" + checkbox_name + "\"]");
+						if ($checkbox.length > 0) {
+							// If checkbox exists in form but not in serialized data, it\'s unchecked
+							if (!(checkbox_name in kv_ar)) {
+								kv_ar[checkbox_name] = "0";
+							}
+						}
+					});
+					
 					//console.log(kv_ar);
 					return kv_ar;
 				}
@@ -628,7 +658,6 @@ if ( isset($t_mp[4]) ){
 					$rtrn .= '
 					<label class="bx '.( $i%2>0?'odd':'even' ).'" data-id="'.$r['id'].'" data-u_id="'.$r['u_id'].'" data-tags="'.strtr(mb_strtolower( $r['u_nm'].' '.$r['u_cf_idno'].' '.$r['u_tp'].' '.$r['abr'].$r['y'].$r['q'].'/'.$r['n'].' '.( isset($inf['br'])?$inf['br']:'' ).' '.( isset($inf['mo'])?$inf['mo']:'' ).' '.( isset($inf['vin'])?$inf['vin']:'' ).' '.( isset($inf['prc'])?$inf['prc']:'' ).' '.date( 'd.m.Y', strtotime( $r['date'] ) ).' '.$r['f'].' '.( isset($adm_ar[ $r['adm'] ])?$adm_ar[ $r['adm'] ]:$r['adm'] ), 'UTF-8' ), ['ă'=>'a', 'â'=>'a', 'î'=>'i', 'ș'=>'s', 'ț'=>'t', '_'=>' ']).'">
 						<div class="values"
-{{ ... }}
 							data-id="'.$r['id'].'" data-doc="'.$r['f'].'" data-gr="'.$r['gr'].'"
 							data-cont_y="'.$r['y'].'" data-cont_q="'.$r['q'].'" data-cont_n="'.$r['n'].'" 
 							data-u_id="'.$r['u_id'].'" data-u_cf_idno="'.$r['u_cf_idno'].'" data-u_nm="'.$r['u_nm'].'" data-date="'.$r['date'].'" 
@@ -650,6 +679,10 @@ if ( isset($t_mp[4]) ){
 							'.(isset($inf['buyer_name'])?'data-buyer_name="'.htmlspecialchars($inf['buyer_name']).'"':'').' '.(isset($inf['buyer_vat'])?'data-buyer_vat="'.htmlspecialchars($inf['buyer_vat']).'"':'').' '.(isset($inf['buyer_account'])?'data-buyer_account="'.htmlspecialchars($inf['buyer_account']).'"':'').'
 							'.(isset($inf['buyer_address'])?'data-buyer_address="'.htmlspecialchars($inf['buyer_address']).'"':'').' '.(isset($inf['buyer_country'])?'data-buyer_country="'.htmlspecialchars($inf['buyer_country']).'"':'').' '.(isset($inf['buyer_swift'])?'data-buyer_swift="'.htmlspecialchars($inf['buyer_swift']).'"':'').' 
 							'.(isset($inf['add_cesionar'])?'data-add_cesionar="'.$inf['add_cesionar'].'"':'').' '.(isset($inf['cesionar_account'])?'data-cesionar_account="'.htmlspecialchars($inf['cesionar_account']).'"':'').' '.(isset($inf['cesionar_nm'])?'data-cesionar_nm="'.htmlspecialchars($inf['cesionar_nm']).'"':'').' '.(isset($inf['cesionar_cf_idno'])?'data-cesionar_cf_idno="'.htmlspecialchars($inf['cesionar_cf_idno']).'"':'').' '.(isset($inf['cesionar_suma'])?'data-cesionar_suma="'.$inf['cesionar_suma'].'"':'').' '.(isset($inf['base_contract_id'])?'data-base_contract_id="'.$inf['base_contract_id'].'"':'').' 
+							'.(isset($inf['kyc_doc_buletin'])?'data-kyc_doc_buletin="'.$inf['kyc_doc_buletin'].'"':'').' '.(isset($inf['kyc_doc_permis'])?'data-kyc_doc_permis="'.$inf['kyc_doc_permis'].'"':'').' '.(isset($inf['kyc_doc_pasaport'])?'data-kyc_doc_pasaport="'.$inf['kyc_doc_pasaport'].'"':'').'
+							'.(isset($inf['kyc_occupation_angajat'])?'data-kyc_occupation_angajat="'.$inf['kyc_occupation_angajat'].'"':'').' '.(isset($inf['kyc_occupation_student'])?'data-kyc_occupation_student="'.$inf['kyc_occupation_student'].'"':'').' '.(isset($inf['kyc_occupation_antreprenor'])?'data-kyc_occupation_antreprenor="'.$inf['kyc_occupation_antreprenor'].'"':'').' '.(isset($inf['kyc_occupation_somer'])?'data-kyc_occupation_somer="'.$inf['kyc_occupation_somer'].'"':'').' '.(isset($inf['kyc_occupation_pensionar'])?'data-kyc_occupation_pensionar="'.$inf['kyc_occupation_pensionar'].'"':'').'
+							'.(isset($inf['kyc_no_public_function'])?'data-kyc_no_public_function="'.$inf['kyc_no_public_function'].'"':'').' '.(isset($inf['kyc_public_function_deputat'])?'data-kyc_public_function_deputat="'.$inf['kyc_public_function_deputat'].'"':'').' '.(isset($inf['kyc_public_function_judecator'])?'data-kyc_public_function_judecator="'.$inf['kyc_public_function_judecator'].'"':'').' '.(isset($inf['kyc_public_function_guvern'])?'data-kyc_public_function_guvern="'.$inf['kyc_public_function_guvern'].'"':'').' '.(isset($inf['kyc_public_function_primar'])?'data-kyc_public_function_primar="'.$inf['kyc_public_function_primar'].'"':'').' '.(isset($inf['kyc_public_function_partid'])?'data-kyc_public_function_partid="'.$inf['kyc_public_function_partid'].'"':'').' '.(isset($inf['kyc_public_function_consilier'])?'data-kyc_public_function_consilier="'.$inf['kyc_public_function_consilier'].'"':'').'
+							'.(isset($inf['kyc_transaction_personal'])?'data-kyc_transaction_personal="'.$inf['kyc_transaction_personal'].'"':'').' '.(isset($inf['kyc_transaction_family'])?'data-kyc_transaction_family="'.$inf['kyc_transaction_family'].'"':'').' '.(isset($inf['kyc_transaction_company'])?'data-kyc_transaction_company="'.$inf['kyc_transaction_company'].'"':'').' '.(isset($inf['kyc_transaction_resale'])?'data-kyc_transaction_resale="'.$inf['kyc_transaction_resale'].'"':'').' '.(isset($inf['kyc_transaction_commercial'])?'data-kyc_transaction_commercial="'.$inf['kyc_transaction_commercial'].'"':'').' '.(isset($inf['kyc_transaction_transfer'])?'data-kyc_transaction_transfer="'.$inf['kyc_transaction_transfer'].'"':'').'
 							data-u_tp="'.$r['u_tp'].'" 
 							data-adm="'.$r['adm'].'" data-last_edited_by="'.($r['last_edited_by'] ?? $r['adm']).'"
 						></div>
