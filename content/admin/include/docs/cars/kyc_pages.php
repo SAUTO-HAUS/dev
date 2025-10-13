@@ -1,10 +1,9 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
-// KYC pages with exact table structure from image
 $kyc_pages = '
 <style>
-	.kyc-table { width: 100%; border-collapse: collapse; margin: 5mm 0; }
-	.kyc-table td { border: 1px solid #000; padding: 3mm; vertical-align: top; }
+	.kyc-table { width: 100%; border-collapse: collapse; margin: 0.5mm auto; }
+	.kyc-table td { border: 1px solid #000; padding: 1mm; vertical-align: top; }
 	.kyc-header { background-color: #f0f0f0; text-align: center; font-weight: bold; }
 	.kyc-label { font-weight: bold; }
 	.kyc-sublabel { font-size: 0.8em; color: #666; font-style: italic; }
@@ -19,50 +18,50 @@ $kyc_pages = '
 		
 		<table class="kyc-table">
 			<tr>
-				<td class="kyc-header" style="width: 5%;">I.</td>
-				<td class="kyc-header">Date generale</td>
+				<td class="kyc-header" style="width: 5%; padding: 0.5mm;">I.</td>
+				<td class="kyc-header" style="padding: 0.5mm;">Date generale</td>
 			</tr>
 			<tr>
 				<td colspan="2">
-					<div style="text-align: left; padding: 0mm; white-space: nowrap;">
-						<span class="kyc-label" style="display: inline-block;">Numele, Prenumele: <span style="border-bottom: 1px dotted #000; display: inline-block; width: 45mm; min-height: 5mm; margin-left: 1mm;">' . (isset($_POST['kyc_client_name']) ? strtoupper($_POST['kyc_client_name']) : (isset($_POST['u_nm']) ? strtoupper($_POST['u_nm']) : '')) . '</span></span>
-						<span class="kyc-label" style="display: inline-block; margin-left: 8mm;">zz.ll.aaaa – nașterii: <span style="border-bottom: 1px dotted #000; display: inline-block; width: 20mm; min-height: 5mm; margin-left: 1mm;">' . (isset($_POST['kyc_birth_info']) ? $_POST['kyc_birth_info'] : (isset($_POST['u_tva_dt']) ? date('d.m.Y', strtotime($_POST['u_tva_dt'])) : '')) . '</span></span>
-						<span class="kyc-label" style="display: inline-block; margin-left: 8mm;">IDNP: <span style="border-bottom: 1px dotted #000; display: inline-block; width: 35mm; min-height: 5mm; margin-left: 1mm;">' . (isset($_POST['kyc_idnp']) ? $_POST['kyc_idnp'] : (isset($_POST['u_cf_idno']) ? $_POST['u_cf_idno'] : '')) . '</span></span>
+					<div style="text-align: left; white-space: nowrap;">
+						<span class="kyc-label" style="display: inline-block;">Numele, Prenumele: <span style="border-bottom: 1px dotted #000; display: inline-block; width: 40mm; min-height: 5mm; margin-left: 1mm;">' . (isset($_POST['kyc_client_name']) ? strtoupper($_POST['kyc_client_name']) : (isset($_POST['u_nm']) ? strtoupper($_POST['u_nm']) : '')) . '</span></span>
+						<span class="kyc-label" style="display: inline-block; margin-left: 5mm;">zz.ll.aaaa – nașterii: <span style="border-bottom: 1px dotted #000; display: inline-block; width: 20mm; min-height: 5mm; margin-left: 1mm;">' . (isset($_POST['kyc_birth_info']) ? $_POST['kyc_birth_info'] : (isset($_POST['u_tva_dt']) ? date('d.m.Y', strtotime($_POST['u_tva_dt'])) : '')) . '</span></span>
+						<span class="kyc-label" style="display: inline-block; margin-left: 2mm;">IDNP: <span style="border-bottom: 1px dotted #000; display: inline-block; width: 30mm; min-height: 5mm; margin-left: 1mm;">' . (isset($_POST['kyc_idnp']) ? $_POST['kyc_idnp'] : (isset($_POST['u_cf_idno']) ? $_POST['u_cf_idno'] : '')) . '</span></span>
 					</div>
 				</td>
 			</tr>
 			<tr>
 				<td colspan="2">
-					<div style="text-align: left; padding: 0mm; white-space: nowrap;">
+					<div style="text-align: left; white-space: nowrap;">
 						<span class="kyc-label" style="display: inline-block;">Actul de identitate:</span>
-						<span style="display: inline-block; margin-left: 5mm;">☐ <span class="kyc-label">Buletin de identitate</span></span>
-						<span style="display: inline-block; margin-left: 5mm;">☐ <span class="kyc-label">Permis de ședere</span></span>
-						<span style="display: inline-block; margin-left: 5mm;">☐ <span class="kyc-label">Pașaport</span></span>
-						<span class="kyc-label" style="display: inline-block; margin-left: 8mm;">Data eliberării: <span style="border-bottom: 1px dotted #000; display: inline-block; width: 20mm; min-height: 5mm; margin-left: 1mm;">' . (isset($_POST['kyc_doc_date']) ? $_POST['kyc_doc_date'] : (isset($_POST['u_iban_dt_tk']) ? date('d.m.Y', strtotime($_POST['u_iban_dt_tk'])) : '')) . '</span></span>
+						<span style="display: inline-block; margin-left: 3mm;">☐ <span class="kyc-label">Buletin de identitate</span></span>
+						<span style="display: inline-block; margin-left: 3mm;">☐ <span class="kyc-label">Permis de ședere</span></span>
+						<span style="display: inline-block; margin-left: 3mm;">☐ <span class="kyc-label">Pașaport</span></span>
+						<span class="kyc-label" style="display: inline-block; margin-left: 5mm;">Data eliberării: <span style="border-bottom: 1px dotted #000; display: inline-block; width: 20mm; min-height: 5mm; margin-left: 1mm;">' . (isset($_POST['kyc_doc_date']) ? $_POST['kyc_doc_date'] : (isset($_POST['u_iban_dt_tk']) ? date('d.m.Y', strtotime($_POST['u_iban_dt_tk'])) : '')) . '</span></span>
 					</div>
 				</td>
 			</tr>
 			<tr>
 				<td colspan="2">
-					<div style="text-align: left; padding: 0mm">
-						<div class="kyc-label">Adresa de domiciliu: <span style="border-bottom: 1px dotted #000; display: inline-block; width: 120mm; min-height: 5mm; margin-left: 5mm;">' . (isset($_POST['kyc_address']) ? $_POST['kyc_address'] : (isset($_POST['u_adr']) ? $_POST['u_adr'] : '')) . '</span></div>
+					<div style="text-align: left;">
+						<div class="kyc-label">Adresa de domiciliu: <span style="border-bottom: 1px dotted #000; display: inline-block; width: 90mm; min-height: 5mm; margin-left: 1mm;">' . (isset($_POST['kyc_address']) ? $_POST['kyc_address'] : (isset($_POST['u_adr']) ? $_POST['u_adr'] : '')) . '</span></div>
 					</div>
 				</td>
 			</tr>
 			<tr>
 				<td colspan="2">
-					<div style="text-align: left; padding: 0mm">
+					<div style="text-align: left;">
 						<span class="kyc-label">Adresa de reședință:</span>
-						<span style="margin-left: 5mm; border-bottom: 1px dotted #000; display: inline-block; width: 120mm; min-height: 5mm;">' . (isset($_POST['kyc_residence_addr']) ? $_POST['kyc_residence_addr'] : '') . '</span>
+						<span style="margin-left: 5mm; border-bottom: 1px dotted #000; display: inline-block; width: 90mm; min-height: 5mm; margin-left: 1mm;"></span>
 					</div>
-					<div class="kyc-sublabel" style="text-align: left; margin-top: 2mm;">
+					<div class="kyc-sublabel" style="text-align: left; margin-top: 0.5mm; font-weight: bold; color: #333;">
 						(Se completează în cazul în care diferă de adresa de domiciliu)
 					</div>
 				</td>
 			</tr>
 			<tr>
-				<td class="kyc-header" style="width: 5%;">II.</td>
-				<td class="kyc-header">Date de contact</td>
+				<td class="kyc-header" style="width: 5%; padding: 0.5mm;">II.</td>
+				<td class="kyc-header" style="padding: 0.5mm;">Date de contact</td>
 			</tr>
 			<tr>
 				<td colspan="2">
@@ -73,151 +72,113 @@ $kyc_pages = '
 				</td>
 			</tr>
 			<tr>
-				<td class="kyc-header" style="width: 5%;">III.</td>
-				<td class="kyc-header">Ocupația</td>
+				<td class="kyc-header" style="width: 5%; padding: 0.5mm;">III.</td>
+				<td class="kyc-header" style="padding: 0.5mm;">Ocupația</td>
 			</tr>
 			<tr>
 				<td colspan="2">
-					<table style="width: 100%; border: none;">
-						<tr>
-							<td style="border: none; width: 20%; text-align: center; vertical-align: top; padding: 2mm;">
-								<div>☐ <span class="kyc-label">Angajat*</span></div>
-							</td>
-							<td style="border: none; width: 20%; text-align: center; vertical-align: top; padding: 2mm;">
-								<div>☐ <span class="kyc-label">Student*</span></div>
-							</td>
-							<td style="border: none; width: 20%; text-align: center; vertical-align: top; padding: 2mm;">
-								<div>☐ <span class="kyc-label">Antreprenor*</span></div>
-							</td>
-							<td style="border: none; width: 20%; text-align: center; vertical-align: top; padding: 2mm;">
-								<div>☐ <span class="kyc-label">Șomer</span></div>
-							</td>
-							<td style="border: none; width: 20%; text-align: center; vertical-align: top; padding: 2mm;">
-								<div>☐ <span class="kyc-label">Pensionar</span></div>
-							</td>
-						</tr>
-					</table>
-					<div style="text-align: left; margin-top: 3mm;">
-						<span>☐ <span class="kyc-label">Alte (indicați)</span></span>
-						<span style="margin-left: 5mm; border-bottom: 1px dotted #000; display: inline-block; width: 100mm; min-height: 5mm;"></span>
+					<div style="display: flex; flex-wrap: wrap; row-gap: 1mm; column-gap: 7mm; margin-top: 0.5mm;">
+						<div>☐ <span class="kyc-label">Angajat*</span></div>
+						<div>☐ <span class="kyc-label">Student*</span></div>
+						<div>☐ <span class="kyc-label">Antreprenor*</span></div>
+						<div>☐ <span class="kyc-label">Șomer</span></div>
+						<div>☐ <span class="kyc-label">Pensionar</span></div>
 					</div>
-					<table style="width: 100%; border: none; margin-top: 5mm;">
+					<div style="text-align: left; margin-top: 1mm;">
+						<span>☐ <span class="kyc-label">Alte (indicați)</span></span>
+						<span style="margin-left: 2mm; border-bottom: 1px dotted #000; display: inline-block; width: 100mm; min-height: 5mm;"></span>
+					</div>
+					<table style="width: 100%; border: none; margin-top: 1.5mm;">
 						<tr>
-							<td style="border: none; width: 50%; vertical-align: top; padding: 2mm;">
-								<div class="kyc-label">Denumirea instituției: <span style="border-bottom: 1px dotted #000; display: inline-block; width: 70mm; min-height: 5mm;">' . (isset($_POST['kyc_institution_name']) ? $_POST['kyc_institution_name'] : '') . '</span></div>
+							<td style="border: none; width: 50%; vertical-align: top; padding-bottom: 0.5mm;">
+								<div class="kyc-label">Denumirea instituției: <span style="border-bottom: 1px dotted #000; display: inline-block; width: 55mm; min-height: 5mm;">' . (isset($_POST['kyc_institution_name']) ? $_POST['kyc_institution_name'] : '') . '</span></div>
 							</td>
-							<td style="border: none; width: 50%; vertical-align: top; padding: 2mm;">
-								<div class="kyc-label">Funcția deținută: <span style="border-bottom: 1px dotted #000; display: inline-block; width: 80mm; min-height: 5mm;">' . (isset($_POST['kyc_position']) ? $_POST['kyc_position'] : '') . '</span></div>
+							<td style="border: none; width: 50%; vertical-align: top; padding-bottom: 0.5mm;">
+								<div class="kyc-label">Funcția deținută: <span style="border-bottom: 1px dotted #000; display: inline-block; width: 55mm; min-height: 5mm;">' . (isset($_POST['kyc_position']) ? $_POST['kyc_position'] : '') . '</span></div>
 							</td>
 						</tr>
 					</table>
 				</td>
 			</tr>
 			<tr>
-				<td class="kyc-header" style="width: 5%;">IV.</td>
-				<td class="kyc-header">Persoană expusă politic (Funcția publică deținută)</td>
+				<td class="kyc-header" style="width: 5%; padding: 0.5mm;">IV.</td>
+				<td class="kyc-header" style="padding: 0.5mm;">Persoană expusă politic (Funcția publică deținută)</td>
 			</tr>
 			<tr>
 				<td colspan="2">
-					<div style="text-align: left; margin-top: 3mm;">
+					<div style="text-align: left;">
 						<span class="kyc-label">Conform Legii nr.158/2008 cu privire la funcția publică și statutul funcționarului public</span>
 					</div>
-					<div style="text-align: left; margin-top: 3mm;">
+					<div style="text-align: left;">
 						<span>☐ <span class="kyc-label">Nu dețin funcție publică</span></span>
 					</div>
-					<div style="text-align: left; margin-top: 5mm;">
+					<div style="text-align: left; margin-top:2mm;">
 						<span class="kyc-label">În caz că dețineți o funcție publică indicați:</span>
 					</div>
-					<table style="width: 100%; border: none; margin-top: 3mm;">
-						<tr>
-							<td style="border: none; width: 33%; text-align: center; vertical-align: top; padding: 2mm;">
-								<div>☐ <span class="kyc-label">Deputat al Parlamentului RM</span></div>
-							</td>
-							<td style="border: none; width: 33%; text-align: center; vertical-align: top; padding: 2mm;">
-								<div>☐ <span class="kyc-label">Judecător</span></div>
-															</td>
-							<td style="border: none; width: 34%; text-align: center; vertical-align: top; padding: 2mm;">
-								<div>☐ <span class="kyc-label">Membru al Guvernului RM</span></div>
-							</td>
-						</tr>
-					</table>
-					<table style="width: 100%; border: none; margin-top: 3mm;">
-						<tr>
-							<td style="border: none; width: 50%; text-align: center; vertical-align: top; padding: 2mm;">
-								<div>☐ <span class="kyc-label">Membru al organelor de conducere ale partidelor politice</span></div>
-							</td>
-							<td style="border: none; width: 50%; text-align: center; vertical-align: top; padding: 2mm;">
-								<div>☐ <span class="kyc-label">Primar</span></div>
-							</td>
-						</tr>
-					</table>
-					<table style="width: 100%; border: none; margin-top: 3mm;">
-						<tr>
-							<td style="border: none; width: 50%; text-align: center; vertical-align: top; padding: 2mm;">
-								<div>☐ <span class="kyc-label">Consilier al autorităților publice locale</span></div>
-							</td>
-							<td style="border: none; width: 50%; text-align: center; vertical-align: top; padding: 2mm;">
-								<div>☐ <span class="kyc-label">Alta (indicați) <span style="border-bottom: 1px dotted #000; display: inline-block; width: 60mm; min-height: 5mm;"></span></span></div>
-							</td>
-						</tr>
-					</table>
-					<div style="text-align: left; margin-top: 5mm;">
-						<span class="kyc-label">Afilierea (Conducător, asociat, acționar cu 25%)</span>
+					<div style="display: flex; flex-wrap: wrap; row-gap: 1mm; column-gap: 8mm; margin-top: 1mm;">
+						<div>☐ <span class="kyc-label">Deputat al Parlamentului RM</span></div>
+						<div>☐ <span class="kyc-label">Judecător</span></div>
+						<div>☐ <span class="kyc-label">Membru al Guvernului RM</span></div>
+						<div>☐ <span class="kyc-label">Primar</span></div>
+						<div>☐ <span class="kyc-label">Membru al organelor de conducere ale partidelor politice</span></div>
+						<div>☐ <span class="kyc-label">Consilier al autorităților publice locale</span></div>
+						<div>☐ <span class="kyc-label">Alta (indicați) <span style="border-bottom: 1px dotted #000; display: inline-block; width: 80mm; min-height: 5mm;"></span></span></div>
 					</div>
-					<div style="text-align: left; margin-top: 3mm;">
-						<span class="kyc-label">Denumirea companiei:</span>
-						<span style="margin-left: 5mm; border-bottom: 1px dotted #000; display: inline-block; width: 100mm; min-height: 5mm;">' . (isset($_POST['kyc_affiliated_company']) ? $_POST['kyc_affiliated_company'] : '') . '</span>
+					<div style="text-align: left; margin-top: 1mm; white-space: nowrap;">
+						<span class="kyc-label">Afilierea</span> <span style="font-size: 0.85em; font-weight: normal;">(Conducător, asociat, acționar cu 25%)</span>
+						<span class="kyc-label" style="margin-left: 5mm;">Denumirea companiei:</span>
+						<span style="margin-left: 3mm; border-bottom: 1px dotted #000; display: inline-block; width: 60mm; min-height: 5mm;">' . (isset($_POST['kyc_affiliated_company']) ? $_POST['kyc_affiliated_company'] : '') . '</span>
 					</div>
-					<hr style="border: none; border-top: 1px solid #000; margin: 5mm 0;">
-					<div style="text-align: left; margin-top: 3mm;">
+					<hr style="border: none; border-top: 1px solid #000; margin: 1mm;">
+					<div style="text-align: center; margin-top: 1mm;">
 						<span class="kyc-label">Membrii de familie</span>
 					</div>
-					<table style="width: 100%; border: none; margin-top: 3mm;">
+					<table style="width: 100%; border: none; margin-top: 1mm;">
 						<tr>
-							<td style="border: none; width: 50%; vertical-align: top; padding: 2mm;">
-								<div class="kyc-label">Părinți: Numele, Prenumele <span style="border-bottom: 1px dotted #000; display: inline-block; width: 65mm; min-height: 5mm;">' . (isset($_POST['kyc_parents_names']) ? $_POST['kyc_parents_names'] : '') . '</span></div>
+							<td style="border: none; width: 50%; vertical-align: top; padding: 1mm;">
+								<div class="kyc-label">Părinți: Numele, Prenumele <span style="border-bottom: 1px dotted #000; display: inline-block; width: 65mm; min-height: 3mm; vertical-align: bottom;">' . (isset($_POST['kyc_parents_names']) ? $_POST['kyc_parents_names'] : '') . '</span></div>
 							</td>
-							<td style="border: none; width: 50%; vertical-align: top; padding: 2mm;">
-								<div class="kyc-label">Soț/soție: Numele, Prenumele <span style="border-bottom: 1px dotted #000; display: inline-block; width: 65mm; min-height: 5mm;">' . (isset($_POST['kyc_spouse_name']) ? $_POST['kyc_spouse_name'] : '') . '</span></div>
+							<td style="border: none; width: 50%; vertical-align: top; padding: 1mm;">
+								<div class="kyc-label">Soț/soție: Numele, Prenumele <span style="border-bottom: 1px dotted #000; display: inline-block; width: 65mm; min-height: 3mm; vertical-align: bottom;">' . (isset($_POST['kyc_spouse_name']) ? $_POST['kyc_spouse_name'] : '') . '</span></div>
 							</td>
 						</tr>
 					</table>
 					<table style="width: 100%; border: none; margin-top: 3mm;">
 						<tr>
-							<td style="border: none; width: 50%; vertical-align: top; padding: 2mm;">
-								<div class="kyc-label">Copiii și soțul/soția acestora: Numele, Prenumele <span style="border-bottom: 1px dotted #000; display: inline-block; width: 65mm; min-height: 5mm;">' . (isset($_POST['kyc_children_names']) ? $_POST['kyc_children_names'] : '') . '</span></div>
+							<td style="border: none; width: 50%; vertical-align: top; padding: 1mm;">
+								<div class="kyc-label">Copiii și soțul/soția acestora: Numele, Prenumele <span style="border-bottom: 1px dotted #000; display: inline-block; width: 65mm; min-height: 3mm; vertical-align: bottom;">' . (isset($_POST['kyc_children_names']) ? $_POST['kyc_children_names'] : '') . '</span></div>
 							</td>
-							<td style="border: none; width: 50%; vertical-align: top; padding: 2mm;">
-								<div class="kyc-label">Concubin/concubină: Numele, Prenumele <span style="border-bottom: 1px dotted #000; display: inline-block; width: 65mm; min-height: 5mm;">' . (isset($_POST['kyc_partner_name']) ? $_POST['kyc_partner_name'] : '') . '</span></div>
+							<td style="border: none; width: 50%; vertical-align: top; padding: 1mm;">
+								<div class="kyc-label">Concubin/concubină: Numele, Prenumele <span style="border-bottom: 1px dotted #000; display: inline-block; width: 65mm; min-height: 3mm; vertical-align: bottom;">' . (isset($_POST['kyc_partner_name']) ? $_POST['kyc_partner_name'] : '') . '</span></div>
 							</td>
 						</tr>
 					</table>
 				</td>
 			</tr>
 			<tr>
-				<td class="kyc-header" style="width: 5%;">V.</td>
-				<td class="kyc-header">Scopul și natura tranzacțiilor</td>
+				<td class="kyc-header" style="width: 5%; padding: 0.5mm;">V.</td>
+				<td class="kyc-header" style="padding: 0.5mm;">Scopul și natura tranzacțiilor</td>
 			</tr>
 			<tr>
 				<td colspan="2">
-					<div style="text-align: left; margin-top:0.5mm;">
-						<div style="margin-bottom: 0.5mm;">☐ <span class="kyc-label">Achiziționarea unui automobil pentru uz personal</span></div>
-						<div style="margin-bottom: 0.5mm;">☐ <span class="kyc-label">Achiziționarea unui automobil pentru uzul familiei / rudelor</span></div>
-						<div style="margin-bottom: 0.5mm;">☐ <span class="kyc-label">Achiziționarea unui automobil pentru companie / activitate economică</span></div>
-						<div style="margin-bottom: 0.5mm;">☐ <span class="kyc-label">Achiziționarea unui automobil în scop de revânzare</span></div>
-						<div style="margin-bottom: 0.5mm;">☐ <span class="kyc-label">Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</span></div>
-						<div style="margin-bottom: 0.5mm;">☐ <span class="kyc-label">Transfer de proprietate între rude (moștenire, donație etc.)</span></div>
-						<div style="margin-bottom: 0.5mm;">☐ <span class="kyc-label">Altele (indicați) <span style="border-bottom: 1px dotted #000; display: inline-block; width: 120mm; min-height: 5mm;"></span></span></div>
+					<div style="text-align: left;">
+						<div>☐ <span class="kyc-label">Achiziționarea unui automobil pentru uz personal</span></div>
+						<div>☐ <span class="kyc-label">Achiziționarea unui automobil pentru uzul familiei / rudelor</span></div>
+						<div>☐ <span class="kyc-label">Achiziționarea unui automobil pentru companie / activitate economică</span></div>
+						<div>☐ <span class="kyc-label">Achiziționarea unui automobil în scop de revânzare</span></div>
+						<div>☐ <span class="kyc-label">Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</span></div>
+						<div>☐ <span class="kyc-label">Transfer de proprietate între rude (moștenire, donație etc.)</span></div>
+						<div>☐ <span class="kyc-label">Altele (indicați) <span style="border-bottom: 1px dotted #000; display: inline-block; width: 120mm; min-height: 5mm;"></span></span></div>
 					</div>
 				</td>
 			</tr>
 			<tr>
-				<td class="kyc-header" style="width: 5%;">VI.</td>
-				<td class="kyc-header">Sursa mijloacelor bănești</td>
+				<td class="kyc-header" style="width: 5%; padding: 0.5mm;">VI.</td>
+				<td class="kyc-header" style="padding: 0.5mm;">Sursa mijloacelor bănești</td>
 			</tr>
 			<tr>
 				<td colspan="2">
-					<div style="text-align: left; margin-top: 3mm; display: flex; flex-wrap: wrap; gap: 5mm;">
+					<div style="text-align: left; display: flex; flex-wrap: wrap; gap: 3mm;">
 						<div style="text-align: center;">
 							<div>☐ <span class="kyc-label">Salariu</span></div>
 						</div>
@@ -236,15 +197,12 @@ $kyc_pages = '
 						<div style="text-align: center;">
 							<div>☐ <span class="kyc-label">Donații</span></div>
 						</div>
-						<div style="text-align: center;">
-							<div>☐ <span class="kyc-label">Alte (indicați) <span style="border-bottom: 1px dotted #000; display: inline-block; width: 120mm; min-height: 5mm;"></span></span></div>
-						</div>
 					</div>
 				</td>
 			</tr>
 		</table>
 		
-		<div style="margin-top: 10mm;">
+		<div style="margin-top: 10mm; padding-top: 15mm;">
 			<div style="text-align: center; margin-bottom: 5mm;">
 				<span class="kyc-label">Declarații ale clientului:</span>
 			</div>
@@ -288,7 +246,7 @@ $kyc_pages = '
 							</td>
 							<td style="border: none; width: 33%; vertical-align: middle; padding: 2mm; text-align: center;">
 								<div>Data aprobării</div>
-								<div style="border-bottom: 1px dotted #000; width: 40mm; min-height: 5mm; margin: 2mm auto;">' . (isset($_POST['kyc_approval_date']) ? $_POST['kyc_approval_date'] : '') . '</div>
+								<div style="border-bottom: 1px dotted #000; width: 40mm; min-height: 5mm; margin: 2mm auto;">' . date('d.m.Y') . '</div>
 							</td>
 							<td style="border: none; width: 34%; vertical-align: middle; padding: 2mm; text-align: center;">
 								<div>Semnătura persoanei responsabile</div>
