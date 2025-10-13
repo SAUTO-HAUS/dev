@@ -439,6 +439,43 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp"><option value="fiz">Fizic</option><option value="jur">Juridic</option></select></label>
 		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" /></label>
 		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" /></label>
+		<div class="ttl">Date Chestionar</div>
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1" checked> Buletin de identitate</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_permis" value="1"> Permis de ședere</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_pasaport" value="1"> Pașaport</label>
+		</div>
+		
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Ocupația:</div>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"> Angajat*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"> Student*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"> Antreprenor*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"> Șomer</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_pensionar" value="1"> Pensionar</label>
+		</div>
+		
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Persoană expusă politic (Funcția publică deținută):</div>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_no_public_function" value="1" checked> Nu dețin funcție publică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_deputat" value="1"> Deputat al Parlamentului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_judecator" value="1"> Judecător</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_guvern" value="1"> Membru al Guvernului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_primar" value="1"> Primar</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_partid" value="1"> Membru al organelor de conducere ale partidelor politice</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_consilier" value="1"> Consilier al autorităților publice locale</label>
+		</div>
+		
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Scopul și natura tranzacțiilor:</div>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_personal" value="1" checked> Achiziționarea unui automobil pentru uz personal</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_family" value="1"> Achiziționarea unui automobil pentru uzul familiei / rudelor</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_company" value="1"> Achiziționarea unui automobil pentru companie / activitate economică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_resale" value="1"> Achiziționarea unui automobil în scop de revânzare</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"> Transfer de proprietate între rude (moștenire, donație etc.)</label>
+		</div>
 		'.( isset($mixall)?'</form>':'' );
 		//}
 	}
@@ -496,6 +533,43 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Adress</span><input class="need" type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" /></label>
 		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" /></label>
 		<label class="lbl"><span class="ttl">Email</span><input type="text" name="u_eml" title="Email" /></label>
+		<div class="ttl">Date Chestionar</div>
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1" checked> Buletin de identitate</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_permis" value="1"> Permis de ședere</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_pasaport" value="1"> Pașaport</label>
+		</div>
+		
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Ocupația:</div>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"> Angajat*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"> Student*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"> Antreprenor*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"> Șomer</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_pensionar" value="1"> Pensionar</label>
+		</div>
+		
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Persoană expusă politic (Funcția publică deținută):</div>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_no_public_function" value="1" checked> Nu dețin funcție publică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_deputat" value="1"> Deputat al Parlamentului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_judecator" value="1"> Judecător</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_guvern" value="1"> Membru al Guvernului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_primar" value="1"> Primar</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_partid" value="1"> Membru al organelor de conducere ale partidelor politice</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_consilier" value="1"> Consilier al autorităților publice locale</label>
+		</div>
+		
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Scopul și natura tranzacțiilor:</div>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_personal" value="1" checked> Achiziționarea unui automobil pentru uz personal</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_family" value="1"> Achiziționarea unui automobil pentru uzul familiei / rudelor</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_company" value="1"> Achiziționarea unui automobil pentru companie / activitate economică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_resale" value="1"> Achiziționarea unui automobil în scop de revânzare</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"> Transfer de proprietate între rude (moștenire, donație etc.)</label>
+		</div>
 		'.( isset($mixall)?'</form>':'' );
 	}
 	
@@ -538,6 +612,43 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Adress</span><input class="need" type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" /></label>
 		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" /></label>
 		<label class="lbl"><span class="ttl">Email</span><input type="text" name="u_eml" title="Email" /></label>
+		<div class="ttl">Date Chestionar</div>
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1" checked> Buletin de identitate</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_permis" value="1"> Permis de ședere</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_pasaport" value="1"> Pașaport</label>
+		</div>
+		
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Ocupația:</div>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"> Angajat*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"> Student*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"> Antreprenor*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"> Șomer</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_pensionar" value="1"> Pensionar</label>
+		</div>
+		
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Persoană expusă politic (Funcția publică deținută):</div>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_no_public_function" value="1" checked> Nu dețin funcție publică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_deputat" value="1"> Deputat al Parlamentului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_judecator" value="1"> Judecător</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_guvern" value="1"> Membru al Guvernului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_primar" value="1"> Primar</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_partid" value="1"> Membru al organelor de conducere ale partidelor politice</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_consilier" value="1"> Consilier al autorităților publice locale</label>
+		</div>
+		
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Scopul și natura tranzacțiilor:</div>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_personal" value="1" checked> Achiziționarea unui automobil pentru uz personal</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_family" value="1"> Achiziționarea unui automobil pentru uzul familiei / rudelor</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_company" value="1"> Achiziționarea unui automobil pentru companie / activitate economică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_resale" value="1"> Achiziționarea unui automobil în scop de revânzare</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"> Transfer de proprietate între rude (moștenire, donație etc.)</label>
+		</div>
 		'.( isset($mixall)?'</form>':'' );
 	}
 	
@@ -597,6 +708,43 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Adress</span><input class="need" type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" /></label>
 		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" /></label>
 		<label class="lbl"><span class="ttl">Email</span><input type="text" name="u_eml" title="Email" /></label>
+		<div class="ttl">Date Chestionar</div>
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1" checked> Buletin de identitate</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_permis" value="1"> Permis de ședere</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_pasaport" value="1"> Pașaport</label>
+		</div>
+		
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Ocupația:</div>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"> Angajat*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"> Student*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"> Antreprenor*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"> Șomer</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_pensionar" value="1"> Pensionar</label>
+		</div>
+		
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Persoană expusă politic (Funcția publică deținută):</div>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_no_public_function" value="1" checked> Nu dețin funcție publică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_deputat" value="1"> Deputat al Parlamentului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_judecator" value="1"> Judecător</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_guvern" value="1"> Membru al Guvernului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_primar" value="1"> Primar</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_partid" value="1"> Membru al organelor de conducere ale partidelor politice</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_consilier" value="1"> Consilier al autorităților publice locale</label>
+		</div>
+		
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Scopul și natura tranzacțiilor:</div>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_personal" value="1" checked> Achiziționarea unui automobil pentru uz personal</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_family" value="1"> Achiziționarea unui automobil pentru uzul familiei / rudelor</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_company" value="1"> Achiziționarea unui automobil pentru companie / activitate economică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_resale" value="1"> Achiziționarea unui automobil în scop de revânzare</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"> Transfer de proprietate între rude (moștenire, donație etc.)</label>
+		</div>
 		
 		<div class="ttl">Extra</div>
 		<label class="lbl"><span class="ttl">EUR</span><input type="number" name="u_eur" title="EUR" value="0" min="0" step="100" /></label>
@@ -632,6 +780,43 @@ JAVASCRIPT;
 		<label class="lbl none"><select name="u_tp"><option value="fiz" selected="selected">Fizic</option><option value="jur">Juridic</option></select></label>
 		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" /></label>
 		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" /></label>
+				<div class="ttl">Date Chestionar</div>
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1" checked> Buletin de identitate</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_permis" value="1"> Permis de ședere</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_pasaport" value="1"> Pașaport</label>
+		</div>
+		
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Ocupația:</div>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"> Angajat*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"> Student*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"> Antreprenor*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"> Șomer</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_pensionar" value="1"> Pensionar</label>
+		</div>
+		
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Persoană expusă politic (Funcția publică deținută):</div>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_no_public_function" value="1" checked> Nu dețin funcție publică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_deputat" value="1"> Deputat al Parlamentului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_judecator" value="1"> Judecător</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_guvern" value="1"> Membru al Guvernului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_primar" value="1"> Primar</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_partid" value="1"> Membru al organelor de conducere ale partidelor politice</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_consilier" value="1"> Consilier al autorităților publice locale</label>
+		</div>
+		
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Scopul și natura tranzacțiilor:</div>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_personal" value="1" checked> Achiziționarea unui automobil pentru uz personal</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_family" value="1"> Achiziționarea unui automobil pentru uzul familiei / rudelor</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_company" value="1"> Achiziționarea unui automobil pentru companie / activitate economică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_resale" value="1"> Achiziționarea unui automobil în scop de revânzare</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"> Transfer de proprietate între rude (moștenire, donație etc.)</label>
+		</div>
 		'.( isset($mixall)?'</form>':'' );
 	}
 	
@@ -674,7 +859,46 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">SRL</span><input class="need fj" type="text" name="u_nm" title="SRL" data-fiz="Name" data-jur="SRL" /></label>
 		<label class="lbl"><span class="ttl">TVA</span><input class="need fj dt" type="text" name="u_tva_dt" min="1900-01-01" max="2099-12-31" title="TVA" data-fiz="Data nasterii" data-jur="TVA" /></label> <!--onfocus=\'(this.type="date")\'-->
 		<label class="lbl"><span class="ttl">IBAN</span><input class="need fj dt" type="text" name="u_iban_dt_tk" min="1900-01-01" max="2099-12-31" title="IBAN" data-fiz="Data elibirat" data-jur="IBAN" /></label>
-		<label class="lbl"><span class="ttl">Adress</span><input class="need" type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" /></label>';
+		<label class="lbl"><span class="ttl">Adress</span><input class="need" type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" /></label>
+		
+		<div class="ttl">Date Chestionar</div>
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1" checked> Buletin de identitate</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_permis" value="1"> Permis de ședere</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_pasaport" value="1"> Pașaport</label>
+		</div>
+		
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Ocupația:</div>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"> Angajat*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"> Student*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"> Antreprenor*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"> Șomer</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_pensionar" value="1"> Pensionar</label>
+		</div>
+		
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Persoană expusă politic (Funcția publică deținută):</div>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_no_public_function" value="1" checked> Nu dețin funcție publică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_deputat" value="1"> Deputat al Parlamentului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_judecator" value="1"> Judecător</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_guvern" value="1"> Membru al Guvernului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_primar" value="1"> Primar</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_partid" value="1"> Membru al organelor de conducere ale partidelor politice</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_consilier" value="1"> Consilier al autorităților publice locale</label>
+		</div>
+		
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Scopul și natura tranzacțiilor:</div>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_personal" value="1" checked> Achiziționarea unui automobil pentru uz personal</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_family" value="1"> Achiziționarea unui automobil pentru uzul familiei / rudelor</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_company" value="1"> Achiziționarea unui automobil pentru companie / activitate economică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_resale" value="1"> Achiziționarea unui automobil în scop de revânzare</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"> Transfer de proprietate între rude (moștenire, donație etc.)</label>
+		</div>
+		';
 		
 		//---LOCATION---
 		$rtrn .= '
@@ -825,6 +1049,44 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Adress</span><input class="need" type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" /></label>
 		<label class="lbl"><span class="ttl">Phone</span><input class="need" type="text" name="u_phn" value="+373" title="Phone" /></label>
 		<label class="lbl"><span class="ttl">Email</span><input type="text" name="u_eml" title="Email" /></label>
+		
+		<div class="ttl">Date Chestionar</div>
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1" checked> Buletin de identitate</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_permis" value="1"> Permis de ședere</label>
+			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_pasaport" value="1"> Pașaport</label>
+		</div>
+		
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Ocupația:</div>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"> Angajat*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"> Student*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_antreprenor" value="1"> Antreprenor*</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_somer" value="1"> Șomer</label>
+			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_pensionar" value="1"> Pensionar</label>
+		</div>
+		
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Persoană expusă politic (Funcția publică deținută):</div>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_no_public_function" value="1" checked> Nu dețin funcție publică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_deputat" value="1"> Deputat al Parlamentului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_judecator" value="1"> Judecător</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_guvern" value="1"> Membru al Guvernului RM</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_primar" value="1"> Primar</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_partid" value="1"> Membru al organelor de conducere ale partidelor politice</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_public_function_consilier" value="1"> Consilier al autorităților publice locale</label>
+		</div>
+		
+		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="font-weight: bold; margin-bottom: 10px;">Scopul și natura tranzacțiilor:</div>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_personal" value="1" checked> Achiziționarea unui automobil pentru uz personal</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_family" value="1"> Achiziționarea unui automobil pentru uzul familiei / rudelor</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_company" value="1"> Achiziționarea unui automobil pentru companie / activitate economică</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_resale" value="1"> Achiziționarea unui automobil în scop de revânzare</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_commercial" value="1"> Achiziționarea unui automobil pentru prestarea de servicii comerciale (ex. taxi, livrări)</label>
+			<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_transaction_transfer" value="1"> Transfer de proprietate între rude (moștenire, donație etc.)</label>
+		</div>
 		
 		<div class="ttl">Damage</div>
 		<div id="dmg_clk_bx" oncontextmenu="return false;">
