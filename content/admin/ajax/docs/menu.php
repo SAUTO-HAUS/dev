@@ -740,7 +740,16 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Adress</span><input class="need" type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" /></label>
 		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" /></label>
 		<label class="lbl"><span class="ttl">Email</span><input type="text" name="u_eml" title="Email" /></label>
-		<div class="ttl">Date Chestionar</div>
+		
+		
+		<div class="ttl">Extra</div>
+		<label class="lbl"><span class="ttl">EUR</span><input type="number" name="u_eur" title="EUR" value="0" min="0" step="100" /></label>
+		
+		<div class="ttl">"Garanție", text suplimentar</div>
+		<div id="grnt_fld_bx" name="grnt_txt" data-qu="0"></div>
+		<div class="btn" data-fn="add_grnt_fld">Adăugati</div>
+
+         <div class="ttl">Date Chestionar</div>
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
 			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1"'.(isset($_POST['kyc_doc_buletin']) && $_POST['kyc_doc_buletin'] == '1' ? ' checked' : (!isset($_POST['kyc_doc_buletin']) ? ' checked' : '')).'> Buletin de identitate</label>
@@ -787,13 +796,7 @@ JAVASCRIPT;
 	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_inheritance" value="1"'.(isset($_POST['kyc_funds_inheritance']) && $_POST['kyc_funds_inheritance'] == '1' ? ' checked' : '').'> Moștenire</label>
 	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_donations" value="1"'.(isset($_POST['kyc_funds_donations']) && $_POST['kyc_funds_donations'] == '1' ? ' checked' : '').'> Donații</label>
        </div>
-		
-		<div class="ttl">Extra</div>
-		<label class="lbl"><span class="ttl">EUR</span><input type="number" name="u_eur" title="EUR" value="0" min="0" step="100" /></label>
-		
-		<div class="ttl">"Garanție", text suplimentar</div>
-		<div id="grnt_fld_bx" name="grnt_txt" data-qu="0"></div>
-		<div class="btn" data-fn="add_grnt_fld">Adăugati</div>
+
 		'.( isset($mixall)?'</form>':'' );
 	}
 	
@@ -1113,6 +1116,19 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Phone</span><input class="need" type="text" name="u_phn" value="+373" title="Phone" /></label>
 		<label class="lbl"><span class="ttl">Email</span><input type="text" name="u_eml" title="Email" /></label>
 		
+		<div class="ttl">Damage</div>
+		<div id="dmg_clk_bx" oncontextmenu="return false;">
+			<div class="help">
+				<div class="btn" data-stts="0">help</div>
+				<div class="txt ghost">
+					<p><span>LEFT</span> button <span>click</span> on field <span>>></span> Create element</p>
+					<p><span>LEFT</span> button <span>press</span> and <span>HOLD</span> on element <span>>></span> Dragging</p>
+					<p><span>RIGHT</span> button <span>double click</span> on element <span>>></span> Delete</p>
+				</div>
+			</div>
+			<div class="img" name="dmg_pos"><img class="ghost" src="/media/images/site/blueprint/sdn.jpg" height="100%" /></div> <!--/media/images/site/v2/suv.svg-->
+		</div>
+		<div id="dmg_txt_bx" name="dmg_txt"></div>
 		<div class="ttl">Date Chestionar</div>
 		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
@@ -1160,21 +1176,6 @@ JAVASCRIPT;
 	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_inheritance" value="1"'.(isset($_POST['kyc_funds_inheritance']) && $_POST['kyc_funds_inheritance'] == '1' ? ' checked' : '').'> Moștenire</label>
 	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_donations" value="1"'.(isset($_POST['kyc_funds_donations']) && $_POST['kyc_funds_donations'] == '1' ? ' checked' : '').'> Donații</label>
        </div>
-		
-		<div class="ttl">Damage</div>
-		<div id="dmg_clk_bx" oncontextmenu="return false;">
-			<div class="help">
-				<div class="btn" data-stts="0">help</div>
-				<div class="txt ghost">
-					<p><span>LEFT</span> button <span>click</span> on field <span>>></span> Create element</p>
-					<p><span>LEFT</span> button <span>press</span> and <span>HOLD</span> on element <span>>></span> Dragging</p>
-					<p><span>RIGHT</span> button <span>double click</span> on element <span>>></span> Delete</p>
-				</div>
-			</div>
-			<div class="img" name="dmg_pos"><img class="ghost" src="/media/images/site/blueprint/sdn.jpg" height="100%" /></div> <!--/media/images/site/v2/suv.svg-->
-		</div>
-		<div id="dmg_txt_bx" name="dmg_txt"></div>
-		
 		<style>
 			:root {--sz:calc(1vw + 1vh);}
 			input [type="checkbox"] {display:none;}
