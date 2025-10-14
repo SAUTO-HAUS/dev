@@ -439,15 +439,18 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp"><option value="fiz">Fizic</option><option value="jur">Juridic</option></select></label>
 		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" /></label>
 		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" /></label>
+
+		<div class="kyc-questionnaire" style="display: block;">
+			
 		<div class="ttl">Date Chestionar</div>
-		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
-			<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1"'.(isset($_POST['kyc_doc_buletin']) && $_POST['kyc_doc_buletin'] == '1' ? ' checked' : (!isset($_POST['kyc_doc_buletin']) ? ' checked' : '')).'> Buletin de identitate</label>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_permis" value="1"'.(isset($_POST['kyc_doc_permis']) && $_POST['kyc_doc_permis'] == '1' ? ' checked' : '').'> Permis de ședere</label>
-			<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_pasaport" value="1"'.(isset($_POST['kyc_doc_pasaport']) && $_POST['kyc_doc_pasaport'] == '1' ? ' checked' : '').'> Pașaport</label>
-		</div>
+			<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+				<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
+				<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1"'.(isset($_POST['kyc_doc_buletin']) && $_POST['kyc_doc_buletin'] == '1' ? ' checked' : (!isset($_POST['kyc_doc_buletin']) ? ' checked' : '')).'> Buletin de identitate</label>
+				<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_permis" value="1"'.(isset($_POST['kyc_doc_permis']) && $_POST['kyc_doc_permis'] == '1' ? ' checked' : '').'> Permis de ședere</label>
+				<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_pasaport" value="1"'.(isset($_POST['kyc_doc_pasaport']) && $_POST['kyc_doc_pasaport'] == '1' ? ' checked' : '').'> Pașaport</label>
+			</div>
 		
-		<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+			<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 			<div style="font-weight: bold; margin-bottom: 10px;">Ocupația:</div>
 			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_angajat" value="1"'.(isset($_POST['kyc_occupation_angajat']) && $_POST['kyc_occupation_angajat'] == '1' ? ' checked' : (!isset($_POST['kyc_occupation_angajat']) ? ' checked' : '')).'> Angajat*</label>
 			<label style="display: inline-block; margin-right: 15px; width: 120px;"><input type="checkbox" name="kyc_occupation_student" value="1"'.(isset($_POST['kyc_occupation_student']) && $_POST['kyc_occupation_student'] == '1' ? ' checked' : '').'> Student*</label>
@@ -486,6 +489,37 @@ JAVASCRIPT;
 	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_inheritance" value="1"'.(isset($_POST['kyc_funds_inheritance']) && $_POST['kyc_funds_inheritance'] == '1' ? ' checked' : '').'> Moștenire</label>
 	<label style="display: block; margin-bottom: 5px;"><input type="checkbox" name="kyc_funds_donations" value="1"'.(isset($_POST['kyc_funds_donations']) && $_POST['kyc_funds_donations'] == '1' ? ' checked' : '').'> Donații</label>
        </div>
+
+		</div>
+
+		<script>
+		// KYC form visibility control based on price
+		function toggleKycFormConPlata() {
+			var priceInput = document.querySelector(\'form.menu_con_plata input[name="prc"]\');
+			var kycSection = document.querySelector(\'form.menu_con_plata .kyc-questionnaire\');
+			
+			if (priceInput && kycSection) {
+				priceInput.addEventListener(\'input\', function() {
+					var price = parseFloat(this.value.replace(/[^0-9.]/g, \'\')) || 0;
+					var showKyc = price >= 200000 || price === 0;
+					
+					kycSection.style.display = showKyc ? \'block\' : \'none\';
+				});
+				
+				// Trigger initial check
+				var initialPrice = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
+				var showKyc = initialPrice >= 200000 || initialPrice === 0;
+				kycSection.style.display = showKyc ? \'block\' : \'none\';
+			}
+		}
+
+		// Initialize when DOM is ready
+		if (document.readyState === \'loading\') {
+			document.addEventListener(\'DOMContentLoaded\', toggleKycFormConPlata);
+		} else {
+			toggleKycFormConPlata();
+		}
+		</script>
 
 		'.( isset($mixall)?'</form>':'' );
 		//}
