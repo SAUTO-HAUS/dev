@@ -442,7 +442,7 @@ JAVASCRIPT;
 
 		<div class="kyc-questionnaire" style="display: block;">
 			
-		<div class="ttl">Date Chestionar</div>
+		<div style="margin-top: 30px;" class="ttl">Date Chestionar</div>
 			<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 				<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
 				<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1"'.(isset($_POST['kyc_doc_buletin']) && $_POST['kyc_doc_buletin'] == '1' ? ' checked' : (!isset($_POST['kyc_doc_buletin']) ? ' checked' : '')).'> Buletin de identitate</label>
@@ -587,7 +587,7 @@ JAVASCRIPT;
 		
 		<div class="kyc-questionnaire" style="display: block;">
 			
-		<div class="ttl">Date Chestionar</div>
+		<div style="margin-top: 30px;" class="ttl">Date Chestionar</div>
 			<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 				<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
 				<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1"'.(isset($_POST['kyc_doc_buletin']) && $_POST['kyc_doc_buletin'] == '1' ? ' checked' : (!isset($_POST['kyc_doc_buletin']) ? ' checked' : '')).'> Buletin de identitate</label>
@@ -644,17 +644,23 @@ JAVASCRIPT;
 			var kycSection = document.querySelector(\'form.menu_con_plata .kyc-questionnaire\');
 			
 			if (priceInput && kycSection) {
-				priceInput.addEventListener(\'input\', function() {
-					var price = parseFloat(this.value.replace(/[^0-9.]/g, \'\')) || 0;
-					var showKyc = price >= 200000 || price === 0;
-					
+				var currency = document.querySelector(\'form.menu_con_plata select[name="cur"]\');
+				
+				function checkKycThreshold() {
+					var price = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
+					var cur = currency ? currency.value : \'MDL\';
+					var showKyc = (price === 0) || (cur === \'EUR\' ? price >= 10000 : price >= 200000);
 					kycSection.style.display = showKyc ? \'block\' : \'none\';
-				});
+				}
+				
+				priceInput.addEventListener(\'input\', checkKycThreshold);
+				
+				if (currency) {
+					currency.addEventListener(\'change\', checkKycThreshold);
+				}
 				
 				// Trigger initial check
-				var initialPrice = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
-				var showKyc = initialPrice >= 200000 || initialPrice === 0;
-				kycSection.style.display = showKyc ? \'block\' : \'none\';
+				checkKycThreshold();
 			}
 		}
 
@@ -711,7 +717,7 @@ JAVASCRIPT;
 		
     <div class="kyc-questionnaire" style="display: block;">
 			
-		<div class="ttl">Date Chestionar</div>
+		<div style="margin-top: 30px;" class="ttl">Date Chestionar</div>
 			<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 				<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
 				<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1"'.(isset($_POST['kyc_doc_buletin']) && $_POST['kyc_doc_buletin'] == '1' ? ' checked' : (!isset($_POST['kyc_doc_buletin']) ? ' checked' : '')).'> Buletin de identitate</label>
@@ -768,17 +774,23 @@ JAVASCRIPT;
 			var kycSection = document.querySelector(\'form.menu_con_plata .kyc-questionnaire\');
 			
 			if (priceInput && kycSection) {
-				priceInput.addEventListener(\'input\', function() {
-					var price = parseFloat(this.value.replace(/[^0-9.]/g, \'\')) || 0;
-					var showKyc = price >= 200000 || price === 0;
-					
+				var currency = document.querySelector(\'form.menu_con_plata select[name="cur"]\');
+				
+				function checkKycThreshold() {
+					var price = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
+					var cur = currency ? currency.value : \'MDL\';
+					var showKyc = (price === 0) || (cur === \'EUR\' ? price >= 10000 : price >= 200000);
 					kycSection.style.display = showKyc ? \'block\' : \'none\';
-				});
+				}
+				
+				priceInput.addEventListener(\'input\', checkKycThreshold);
+				
+				if (currency) {
+					currency.addEventListener(\'change\', checkKycThreshold);
+				}
 				
 				// Trigger initial check
-				var initialPrice = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
-				var showKyc = initialPrice >= 200000 || initialPrice === 0;
-				kycSection.style.display = showKyc ? \'block\' : \'none\';
+				checkKycThreshold();
 			}
 		}
 
@@ -860,7 +872,7 @@ JAVASCRIPT;
 
          <div class="kyc-questionnaire" style="display: block;">
 			
-		<div class="ttl">Date Chestionar</div>
+		<div style="margin-top: 30px;" class="ttl">Date Chestionar</div>
 			<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 				<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
 				<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1"'.(isset($_POST['kyc_doc_buletin']) && $_POST['kyc_doc_buletin'] == '1' ? ' checked' : (!isset($_POST['kyc_doc_buletin']) ? ' checked' : '')).'> Buletin de identitate</label>
@@ -917,17 +929,23 @@ JAVASCRIPT;
 			var kycSection = document.querySelector(\'form.menu_con_plata .kyc-questionnaire\');
 			
 			if (priceInput && kycSection) {
-				priceInput.addEventListener(\'input\', function() {
-					var price = parseFloat(this.value.replace(/[^0-9.]/g, \'\')) || 0;
-					var showKyc = price >= 200000 || price === 0;
-					
+				var currency = document.querySelector(\'form.menu_con_plata select[name="cur"]\');
+				
+				function checkKycThreshold() {
+					var price = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
+					var cur = currency ? currency.value : \'MDL\';
+					var showKyc = (price === 0) || (cur === \'EUR\' ? price >= 10000 : price >= 200000);
 					kycSection.style.display = showKyc ? \'block\' : \'none\';
-				});
+				}
+				
+				priceInput.addEventListener(\'input\', checkKycThreshold);
+				
+				if (currency) {
+					currency.addEventListener(\'change\', checkKycThreshold);
+				}
 				
 				// Trigger initial check
-				var initialPrice = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
-				var showKyc = initialPrice >= 200000 || initialPrice === 0;
-				kycSection.style.display = showKyc ? \'block\' : \'none\';
+				checkKycThreshold();
 			}
 		}
 
@@ -970,7 +988,7 @@ JAVASCRIPT;
 				
     <div class="kyc-questionnaire" style="display: block;">
 			
-		<div class="ttl">Date Chestionar</div>
+		<div style="margin-top: 30px;" class="ttl">Date Chestionar</div>
 			<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 				<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
 				<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1"'.(isset($_POST['kyc_doc_buletin']) && $_POST['kyc_doc_buletin'] == '1' ? ' checked' : (!isset($_POST['kyc_doc_buletin']) ? ' checked' : '')).'> Buletin de identitate</label>
@@ -1027,17 +1045,23 @@ JAVASCRIPT;
 			var kycSection = document.querySelector(\'form.menu_con_plata .kyc-questionnaire\');
 			
 			if (priceInput && kycSection) {
-				priceInput.addEventListener(\'input\', function() {
-					var price = parseFloat(this.value.replace(/[^0-9.]/g, \'\')) || 0;
-					var showKyc = price >= 200000 || price === 0;
-					
+				var currency = document.querySelector(\'form.menu_con_plata select[name="cur"]\');
+				
+				function checkKycThreshold() {
+					var price = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
+					var cur = currency ? currency.value : \'MDL\';
+					var showKyc = (price === 0) || (cur === \'EUR\' ? price >= 10000 : price >= 200000);
 					kycSection.style.display = showKyc ? \'block\' : \'none\';
-				});
+				}
+				
+				priceInput.addEventListener(\'input\', checkKycThreshold);
+				
+				if (currency) {
+					currency.addEventListener(\'change\', checkKycThreshold);
+				}
 				
 				// Trigger initial check
-				var initialPrice = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
-				var showKyc = initialPrice >= 200000 || initialPrice === 0;
-				kycSection.style.display = showKyc ? \'block\' : \'none\';
+				checkKycThreshold();
 			}
 		}
 
@@ -1114,7 +1138,7 @@ JAVASCRIPT;
 
 		<div class="kyc-questionnaire" style="display: block;">
 			
-		<div class="ttl">Date Chestionar</div>
+		<div style="margin-top: 30px;" class="ttl">Date Chestionar</div>
 			<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 				<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
 				<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1"'.(isset($_POST['kyc_doc_buletin']) && $_POST['kyc_doc_buletin'] == '1' ? ' checked' : (!isset($_POST['kyc_doc_buletin']) ? ' checked' : '')).'> Buletin de identitate</label>
@@ -1171,17 +1195,23 @@ JAVASCRIPT;
 			var kycSection = document.querySelector(\'form.menu_con_plata .kyc-questionnaire\');
 			
 			if (priceInput && kycSection) {
-				priceInput.addEventListener(\'input\', function() {
-					var price = parseFloat(this.value.replace(/[^0-9.]/g, \'\')) || 0;
-					var showKyc = price >= 200000 || price === 0;
-					
+				var currency = document.querySelector(\'form.menu_con_plata select[name="cur"]\');
+				
+				function checkKycThreshold() {
+					var price = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
+					var cur = currency ? currency.value : \'MDL\';
+					var showKyc = (price === 0) || (cur === \'EUR\' ? price >= 10000 : price >= 200000);
 					kycSection.style.display = showKyc ? \'block\' : \'none\';
-				});
+				}
+				
+				priceInput.addEventListener(\'input\', checkKycThreshold);
+				
+				if (currency) {
+					currency.addEventListener(\'change\', checkKycThreshold);
+				}
 				
 				// Trigger initial check
-				var initialPrice = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
-				var showKyc = initialPrice >= 200000 || initialPrice === 0;
-				kycSection.style.display = showKyc ? \'block\' : \'none\';
+				checkKycThreshold();
 			}
 		}
 
@@ -1342,7 +1372,7 @@ JAVASCRIPT;
 		
     <div class="kyc-questionnaire" style="display: block;">
 			
-		<div class="ttl">Date Chestionar</div>
+		<div style="margin-top: 30px;" class="ttl">Date Chestionar</div>
 			<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
 				<div style="font-weight: bold; margin-bottom: 10px;">Actul de identitate:</div>
 				<label style="display: inline-block; margin-right: 15px;"><input type="checkbox" name="kyc_doc_buletin" value="1"'.(isset($_POST['kyc_doc_buletin']) && $_POST['kyc_doc_buletin'] == '1' ? ' checked' : (!isset($_POST['kyc_doc_buletin']) ? ' checked' : '')).'> Buletin de identitate</label>
@@ -1399,17 +1429,23 @@ JAVASCRIPT;
 			var kycSection = document.querySelector(\'form.menu_con_plata .kyc-questionnaire\');
 			
 			if (priceInput && kycSection) {
-				priceInput.addEventListener(\'input\', function() {
-					var price = parseFloat(this.value.replace(/[^0-9.]/g, \'\')) || 0;
-					var showKyc = price >= 200000 || price === 0;
-					
+				var currency = document.querySelector(\'form.menu_con_plata select[name="cur"]\');
+				
+				function checkKycThreshold() {
+					var price = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
+					var cur = currency ? currency.value : \'MDL\';
+					var showKyc = (price === 0) || (cur === \'EUR\' ? price >= 10000 : price >= 200000);
 					kycSection.style.display = showKyc ? \'block\' : \'none\';
-				});
+				}
+				
+				priceInput.addEventListener(\'input\', checkKycThreshold);
+				
+				if (currency) {
+					currency.addEventListener(\'change\', checkKycThreshold);
+				}
 				
 				// Trigger initial check
-				var initialPrice = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
-				var showKyc = initialPrice >= 200000 || initialPrice === 0;
-				kycSection.style.display = showKyc ? \'block\' : \'none\';
+				checkKycThreshold();
 			}
 		}
 
