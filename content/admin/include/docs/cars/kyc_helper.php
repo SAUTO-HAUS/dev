@@ -97,35 +97,45 @@ function includeKycPages() {
     }
 }
 
-function requiresKycPages($contractType, $price = null) {
-    // All contract types that require KYC pages (excluding invoice which is just a billing document)
-    $kyc_contracts = [
-        'vinzare_proc',      
-        'vinzare_avans',     
-        'vinzare_sauto',     
-        'con_plata',        
-        'con_arvon',         
-        'con_arvon_com',     
-        'com_transport',     
-        'con_intermed'       
+function requiresKycPages($contractType = null, $price = null) {
+    // List of contract types that require KYC pages
+    $kycContractTypes = [
+        'vinzare_proc', 'vinzare_avans', 'vinzare_sauto', 
+        'con_plata', 'con_arvon', 'con_arvon_com', 
+        'com_transport', 'con_intermed'
     ];
     
-    // Check if contract type requires KYC
-    if (!in_array($contractType, $kyc_contracts)) {
+    // Check contract type
+    $contractType = $contractType ?? ($_POST['doc_f'] ?? '');
+    if (!in_array($contractType, $kycContractTypes)) {
         return false;
     }
     
-    // Check price condition - KYC required only if price >= 200,000
+    // Check price threshold based on currency
+    $currency = $_POST['cur'] ?? 'MDL';
+    
     if ($price !== null) {
         // Convert price to numeric value, handling different formats
         $numericPrice = is_numeric($price) ? (float)$price : (float)str_replace([',', ' '], '', $price);
-        return $numericPrice >= 200000;
+        
+        // Apply currency-specific thresholds
+        if ($currency === 'EUR') {
+            return $numericPrice >= 10000; // 10,000 EUR threshold
+        } else {
+            return $numericPrice >= 200000; // 200,000 MDL threshold
+        }
     }
     
     // If no price provided, check $_POST for price
     if (isset($_POST['prc']) && $_POST['prc'] !== '') {
         $numericPrice = is_numeric($_POST['prc']) ? (float)$_POST['prc'] : (float)str_replace([',', ' '], '', $_POST['prc']);
-        return $numericPrice >= 200000;
+        
+        // Apply currency-specific thresholds
+        if ($currency === 'EUR') {
+            return $numericPrice >= 10000; // 10,000 EUR threshold
+        } else {
+            return $numericPrice >= 200000; // 200,000 MDL threshold
+        }
     }
     
     // Default to true if no price available (for backward compatibility)
@@ -138,25 +148,38 @@ function getKycJavaScript() {
 function toggleKycForm() {
     var priceInputs = document.querySelectorAll(\'input[name="prc"]\');
     var kycSections = document.querySelectorAll(\'.kyc-questionnaire\');
+    var currencySelect = document.querySelector(\'select[name="cur"]\');
     
-    priceInputs.forEach(function(priceInput) {
-        priceInput.addEventListener(\'input\', function() {
-            var price = parseFloat(this.value.replace(/[^0-9.]/g, \'\')) || 0;
-            var showKyc = price <= 200000 && price > 0;
+    function checkKycThreshold() {
+        priceInputs.forEach(function(priceInput) {
+            var price = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
+            var currency = currencySelect ? currencySelect.value : \'MDL\';
+            var showKyc = false;
+            
+            if (price === 0) {
+                showKyc = true; // Show for ADD mode
+            } else if (currency === \'EUR\') {
+                showKyc = price >= 10000; // 10,000 EUR threshold
+            } else {
+                showKyc = price >= 200000; // 200,000 MDL threshold
+            }
             
             kycSections.forEach(function(section) {
                 section.style.display = showKyc ? \'block\' : \'none\';
             });
         });
-        
-        // Trigger initial check
-        var initialPrice = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
-        var showKyc = initialPrice <= 200000 && initialPrice > 0;
-        
-        kycSections.forEach(function(section) {
-            section.style.display = showKyc ? \'block\' : \'none\';
-        });
+    }
+    
+    priceInputs.forEach(function(priceInput) {
+        priceInput.addEventListener(\'input\', checkKycThreshold);
     });
+    
+    if (currencySelect) {
+        currencySelect.addEventListener(\'change\', checkKycThreshold);
+    }
+    
+    // Trigger initial check
+    checkKycThreshold();
 }
 
 // Initialize when DOM is ready

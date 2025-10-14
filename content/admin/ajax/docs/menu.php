@@ -499,17 +499,23 @@ JAVASCRIPT;
 			var kycSection = document.querySelector(\'form.menu_con_plata .kyc-questionnaire\');
 			
 			if (priceInput && kycSection) {
-				priceInput.addEventListener(\'input\', function() {
-					var price = parseFloat(this.value.replace(/[^0-9.]/g, \'\')) || 0;
-					var showKyc = price >= 200000 || price === 0;
-					
+				var currency = document.querySelector(\'form.menu_con_plata select[name="cur"]\');
+				
+				function checkKycThreshold() {
+					var price = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
+					var cur = currency ? currency.value : \'MDL\';
+					var showKyc = (price === 0) || (cur === \'EUR\' ? price >= 10000 : price >= 200000);
 					kycSection.style.display = showKyc ? \'block\' : \'none\';
-				});
+				}
+				
+				priceInput.addEventListener(\'input\', checkKycThreshold);
+				
+				if (currency) {
+					currency.addEventListener(\'change\', checkKycThreshold);
+				}
 				
 				// Trigger initial check
-				var initialPrice = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
-				var showKyc = initialPrice >= 200000 || initialPrice === 0;
-				kycSection.style.display = showKyc ? \'block\' : \'none\';
+				checkKycThreshold();
 			}
 		}
 
