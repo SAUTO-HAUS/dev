@@ -158,7 +158,6 @@ if ( isset($t_mp[4]) ){
 			#overlay .lbl {width:31%; position:relative; display:inline-block; margin:.5rem;}
 			#overlay .lbl.max {width:100%; margin:.5rem;}
 			#overlay .lbl > .ttl {font-size:.7rem; position:absolute; top:-1.7rem; left:.25rem;}
-			
 			#overlay .btn {display:inline-block; padding:.5rem 2rem; margin:0 .5rem 1rem; cursor:pointer; background-color:#333; color:#fff; transition:background-color .3s;}
 			#overlay .btn:hover {background-color:var(--clr);}
 			
@@ -166,6 +165,68 @@ if ( isset($t_mp[4]) ){
 			
 			#overlay .action {width:100%; display:flex; flex-flow:row wrap; justify-content:space-between;}
 			#overlay .action > .btn.submit, #overlay .action > .btn.close {width:48%; text-align:center; margin:2rem .5rem 0; padding:1rem; animation:unset;}
+			
+			/* KYC Form Styling for Edit Mode - to match ADD mode appearance */
+			#overlay .kyc-questionnaire {
+				margin-top: 30px;
+				display: block;
+			}
+			
+			#overlay .kyc-questionnaire .ttl {
+				font-size: 1rem;
+				font-weight: bold;
+				margin-top: 30px;
+				margin-bottom: 0;
+			}
+			
+			#overlay .kyc-questionnaire > div {
+				margin: 10px 0;
+				padding: 10px;
+				border: 1px solid #ddd;
+				border-radius: 5px;
+			}
+			
+			#overlay .kyc-questionnaire > div > div:first-child {
+				font-weight: bold;
+				margin-bottom: 10px;
+			}
+			
+			#overlay .kyc-questionnaire label {
+				display: inline-block;
+				margin-right: 15px;
+				margin-bottom: 5px;
+				width: auto;
+				position: static;
+			}
+			
+			#overlay .kyc-questionnaire label input[type="checkbox"] {
+				margin-right: 5px;
+				width: auto;
+				height: auto;
+				padding: 0;
+				border: none;
+				background: none;
+				float: none;
+			}
+			
+			#overlay .kyc-questionnaire label span {
+				font-size: 0.9rem;
+				line-height: 1.4;
+			}
+			
+			/* Special width for occupation checkboxes */
+			#overlay .kyc-questionnaire div:nth-child(3) label {
+				width: 120px;
+			}
+			
+			/* Block display for public function and transaction purpose */
+			#overlay .kyc-questionnaire div:nth-child(4) label,
+			#overlay .kyc-questionnaire div:nth-child(5) label,
+			#overlay .kyc-questionnaire div:nth-child(6) label {
+				display: block;
+				width: auto;
+				margin-bottom: 5px;
+			}
 		</style>
 		<script>
 			$(document).ready(function(){
