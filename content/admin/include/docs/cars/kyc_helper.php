@@ -3,23 +3,23 @@
 function populateKycFields() {
     global $_POST;
     
-    // Core client information mapping
-    $_POST['kyc_client_name'] = $_POST['u_nm'] ?? '';
-    $_POST['kyc_idnp'] = $_POST['u_cf_idno'] ?? '';
-    $_POST['kyc_address'] = $_POST['u_adr'] ?? '';
-    $_POST['kyc_phone'] = $_POST['u_phn'] ?? '';
-    $_POST['kyc_email'] = $_POST['u_eml'] ?? '';
+    // Core client information mapping - only if not already set
+    $_POST['kyc_client_name'] = $_POST['kyc_client_name'] ?? ($_POST['u_nm'] ?? '');
+    $_POST['kyc_idnp'] = $_POST['kyc_idnp'] ?? ($_POST['u_cf_idno'] ?? '');
+    $_POST['kyc_address'] = $_POST['kyc_address'] ?? ($_POST['u_adr'] ?? '');
+    $_POST['kyc_phone'] = $_POST['kyc_phone'] ?? ($_POST['u_phn'] ?? '');
+    $_POST['kyc_email'] = $_POST['kyc_email'] ?? ($_POST['u_eml'] ?? '');
     
     // Set completion date to current date if not set
-    $_POST['kyc_completion_date'] = $_POST['completion_date'] ?? date('d.m.Y');
+    $_POST['kyc_completion_date'] = $_POST['kyc_completion_date'] ?? ($_POST['completion_date'] ?? date('d.m.Y'));
     
     // Auto-populate residence address same as domicile if not specified
-    if (isset($_POST['u_adr']) && $_POST['u_adr'] != '') {
+    if (!isset($_POST['kyc_residence_addr']) && isset($_POST['u_adr']) && $_POST['u_adr'] != '') {
         $_POST['kyc_residence_addr'] = $_POST['residence_addr'] ?? $_POST['u_adr'];
     }
     
-    // Set transaction purpose based on contract type
-    if (isset($_POST['doc_f'])) {
+    // Set transaction purpose based on contract type - only if not already set
+    if (!isset($_POST['kyc_transaction_purpose']) && isset($_POST['doc_f'])) {
         switch($_POST['doc_f']) {
             case 'vinzare_proc':
             case 'vinzare_avans':
@@ -39,41 +39,44 @@ function populateKycFields() {
     }
     
     // Set default document type to ID card if not specified
-    $_POST['kyc_doc_type'] = $_POST['doc_type'] ?? 'buletin';
-    $_POST['kyc_doc_series'] = $_POST['doc_series'] ?? '';
-    $_POST['kyc_doc_office'] = $_POST['doc_office'] ?? '';
-    $_POST['kyc_doc_date'] = $_POST['doc_date'] ?? (isset($_POST['u_iban_dt_tk']) && $_POST['u_iban_dt_tk'] ? date('d.m.Y', strtotime($_POST['u_iban_dt_tk'])) : '');
-    $_POST['kyc_doc_expiry'] = $_POST['doc_expiry'] ?? '';
-    $_POST['kyc_citizenship'] = $_POST['citizenship'] ?? 'Republica Moldova';
-    $_POST['kyc_birth_info'] = $_POST['birth_info'] ?? (isset($_POST['u_tva_dt']) && $_POST['u_tva_dt'] ? date('d.m.Y', strtotime($_POST['u_tva_dt'])) : '');
+    $_POST['kyc_doc_type'] = $_POST['kyc_doc_type'] ?? ($_POST['doc_type'] ?? 'buletin');
+    $_POST['kyc_doc_series'] = $_POST['kyc_doc_series'] ?? ($_POST['doc_series'] ?? '');
+    $_POST['kyc_doc_office'] = $_POST['kyc_doc_office'] ?? ($_POST['doc_office'] ?? '');
+    $_POST['kyc_doc_date'] = $_POST['kyc_doc_date'] ?? ($_POST['doc_date'] ?? (isset($_POST['u_iban_dt_tk']) && $_POST['u_iban_dt_tk'] ? date('d.m.Y', strtotime($_POST['u_iban_dt_tk'])) : ''));
+    $_POST['kyc_doc_expiry'] = $_POST['kyc_doc_expiry'] ?? ($_POST['doc_expiry'] ?? '');
+    $_POST['kyc_citizenship'] = $_POST['kyc_citizenship'] ?? ($_POST['citizenship'] ?? 'Republica Moldova');
+    $_POST['kyc_birth_info'] = $_POST['kyc_birth_info'] ?? ($_POST['birth_info'] ?? (isset($_POST['u_tva_dt']) && $_POST['u_tva_dt'] ? date('d.m.Y', strtotime($_POST['u_tva_dt'])) : ''));
     
-    // Occupation and employment information
-    $_POST['kyc_occupation'] = $_POST['occupation'] ?? '';
-    $_POST['kyc_occupation_other'] = $_POST['occupation_other'] ?? '';
-    $_POST['kyc_institution_name'] = $_POST['institution_name'] ?? '';
-    $_POST['kyc_position'] = $_POST['position'] ?? '';
+    // Occupation and employment information - only if not already set
+    $_POST['kyc_occupation'] = $_POST['kyc_occupation'] ?? ($_POST['occupation'] ?? '');
+    $_POST['kyc_occupation_other'] = $_POST['kyc_occupation_other'] ?? ($_POST['occupation_other'] ?? '');
+    $_POST['kyc_institution_name'] = $_POST['kyc_institution_name'] ?? ($_POST['institution_name'] ?? '');
+    $_POST['kyc_position'] = $_POST['kyc_position'] ?? ($_POST['position'] ?? '');
     
-    // Politically Exposed Person (PEP) information
-    $_POST['kyc_no_public_function'] = $_POST['no_public_function'] ?? 'checked';
-    $_POST['kyc_public_function'] = $_POST['public_function'] ?? '';
-    $_POST['kyc_public_function_other'] = $_POST['public_function_other'] ?? '';
-    $_POST['kyc_affiliated_company'] = $_POST['affiliated_company'] ?? '';
+    // Politically Exposed Person (PEP) information - preserve form values
+    // Don't override if already set from form
+    if (!isset($_POST['kyc_no_public_function'])) {
+        $_POST['kyc_no_public_function'] = $_POST['no_public_function'] ?? '';
+    }
+    $_POST['kyc_public_function'] = $_POST['kyc_public_function'] ?? ($_POST['public_function'] ?? '');
+    $_POST['kyc_public_function_other'] = $_POST['kyc_public_function_other'] ?? ($_POST['public_function_other'] ?? '');
+    $_POST['kyc_affiliated_company'] = $_POST['kyc_affiliated_company'] ?? ($_POST['affiliated_company'] ?? '');
     
-    // Family members information
-    $_POST['kyc_parents_names'] = $_POST['parents_names'] ?? '';
-    $_POST['kyc_spouse_name'] = $_POST['spouse_name'] ?? '';
-    $_POST['kyc_children_names'] = $_POST['children_names'] ?? '';
-    $_POST['kyc_partner_name'] = $_POST['partner_name'] ?? '';
+    // Family members information - only if not already set
+    $_POST['kyc_parents_names'] = $_POST['kyc_parents_names'] ?? ($_POST['parents_names'] ?? '');
+    $_POST['kyc_spouse_name'] = $_POST['kyc_spouse_name'] ?? ($_POST['spouse_name'] ?? '');
+    $_POST['kyc_children_names'] = $_POST['kyc_children_names'] ?? ($_POST['children_names'] ?? '');
+    $_POST['kyc_partner_name'] = $_POST['kyc_partner_name'] ?? ($_POST['partner_name'] ?? '');
     
-    // Transaction purpose other field
-    $_POST['kyc_transaction_purpose_other'] = $_POST['transaction_purpose_other'] ?? '';
+    // Transaction purpose other field - only if not already set
+    $_POST['kyc_transaction_purpose_other'] = $_POST['kyc_transaction_purpose_other'] ?? ($_POST['transaction_purpose_other'] ?? '');
     
-    // Source of funds - default to salary
-    $_POST['kyc_money_source'] = $_POST['money_source'] ?? 'salary';
-    $_POST['kyc_money_source_other'] = $_POST['money_source_other'] ?? '';
+    // Source of funds - only if not already set
+    $_POST['kyc_money_source'] = $_POST['kyc_money_source'] ?? ($_POST['money_source'] ?? 'salary');
+    $_POST['kyc_money_source_other'] = $_POST['kyc_money_source_other'] ?? ($_POST['money_source_other'] ?? '');
     
-    // SAUTO approval information
-    $_POST['kyc_approval_date'] = $_POST['approval_date'] ?? '';
+    // SAUTO approval information - only if not already set
+    $_POST['kyc_approval_date'] = $_POST['kyc_approval_date'] ?? ($_POST['approval_date'] ?? '');
 }
 
 function includeKycPages() {
