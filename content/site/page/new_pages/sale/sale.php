@@ -88,6 +88,20 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
 }
 </script>
 
+<style>
+/* Simple positioning for sale page */
+#sale-page {
+    margin-top: -40px !important;
+    padding-top: 40px !important;
+}
+@media (max-width: 680px) {
+    #sale-page {
+        margin-top: -20px !important;
+        padding-top: 60px !important;
+    }
+}
+</style>
+
 <div id="sale-page">
     <section class="sale-section sale-intro sale-animated">
         <div class="sale-background"></div>
@@ -162,6 +176,18 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
                     <div class="sale-card__icon sale-icon--rocket"></div>
                     <h3><?=htmlspecialchars($benefitItems[4] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
                 </article>
+                <article class="sale-card glow-on-scroll">
+                    <div class="sale-card__icon sale-icon--clock"></div>
+                    <h3><?=htmlspecialchars($benefitItems[5] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
+                </article>
+                <article class="sale-card pulse-on-scroll">
+                    <div class="sale-card__icon sale-icon--handshake"></div>
+                    <h3><?=htmlspecialchars($benefitItems[6] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
+                </article>
+                <article class="sale-card spin-on-scroll">
+                    <div class="sale-card__icon sale-icon--security"></div>
+                    <h3><?=htmlspecialchars($benefitItems[7] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
+                </article>
             </div>
         </div>
     </section>
@@ -200,6 +226,18 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
                 <div class="sale-step">
                     <div class="sale-step__icon sale-icon--cash"></div>
                     <p><?=htmlspecialchars($howSteps[6] ?? '', ENT_QUOTES, 'UTF-8')?></p>
+                </div>
+                <div class="sale-step">
+                    <div class="sale-step__icon sale-icon--deal"></div>
+                    <p><?=htmlspecialchars($howSteps[7] ?? '', ENT_QUOTES, 'UTF-8')?></p>
+                </div>
+                <div class="sale-step">
+                    <div class="sale-step__icon sale-icon--trust"></div>
+                    <p><?=htmlspecialchars($howSteps[8] ?? '', ENT_QUOTES, 'UTF-8')?></p>
+                </div>
+                <div class="sale-step">
+                    <div class="sale-step__icon sale-icon--garage"></div>
+                    <p><?=htmlspecialchars($howSteps[9] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
             </div>
         </div>

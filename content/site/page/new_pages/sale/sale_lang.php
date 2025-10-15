@@ -24,6 +24,9 @@ return [
                 'Ваш автомобиль в безопасности – стоит у нас на охраняемой площадке.',
                 'Мы берём на себя рекламу, звонки, показы.',
                 'Быстрое оформление: деньги получаете сразу после продажи.',
+                'Текст контейнер 6',
+                'Текст контейнер 7',
+                'Текст контейнер 8',
             ],
         ],
         'how' => [
@@ -37,6 +40,9 @@ return [
                 'Размещаем объявления на 999.md, Facebook, Instagram, Telegram, TikTok.',
                 'Ведём переговоры и показываем автомобиль покупателям.',
                 'Организуем сделку и передаём вам деньги.',
+                'Текст здесь 8',
+                'Текст здесь 9',
+                'Текст здесь 10',
             ],
         ],
         'compare' => [
@@ -100,6 +106,9 @@ return [
                 'Mașina ta este în siguranță – stă la noi pe o parcare păzită.',
                 'Ne ocupăm noi de promovare, apeluri și prezentări.',
                 'Formalizare rapidă: primești banii imediat după vânzare.',
+                'Text container 6',
+                'Text container 7',
+                'Text container 8',
             ],
         ],
         'how' => [
@@ -113,6 +122,9 @@ return [
                 'Publicăm anunțuri pe 999.md, Facebook, Instagram, Telegram, TikTok.',
                 'Negociem și prezentăm mașina cumpărătorilor.',
                 'Organizăm tranzacția și îți transferăm banii.',
+                'Text aici 8',
+                'Text aici 9',
+                'Text aici 10',
             ],
         ],
         'compare' => [
@@ -176,6 +188,9 @@ return [
                 'Your car stays safe on our guarded lot.',
                 'We take care of advertising, calls, and showings.',
                 'Fast paperwork: you get paid right after the sale.',
+                'Text container 6',
+                'Text container 7',
+                'Text container 8',
             ],
         ],
         'how' => [
@@ -189,6 +204,9 @@ return [
                 'We post listings on 999.md, Facebook, Instagram, Telegram, and TikTok.',
                 'We negotiate and show the car to buyers.',
                 'We finalize the deal and hand you the money.',
+                'Text here 8',
+                'Text here 9',
+                'Text here 10',
             ],
         ],
         'compare' => [
