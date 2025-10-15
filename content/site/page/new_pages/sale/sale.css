@@ -550,19 +550,6 @@ body {
     }
 }
 
-[data-mobile-snap] {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(255, 3, 4, 0.35) rgba(16, 24, 32, 0.1);
-}
-
-[data-mobile-snap]::-webkit-scrollbar {
-    height: 6px;
-}
-
-[data-mobile-snap]::-webkit-scrollbar-thumb {
-    background: rgba(255, 3, 4, 0.4);
-    border-radius: 999px;
-}
 
 .sale-steps::after {
     content: '';
@@ -777,23 +764,16 @@ body {
     .sale-steps {
         display: flex;
         overflow-x: auto;
-        scroll-snap-type: x mandatory;
         gap: 16px;
         padding: 0 20px 20px 20px;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-    }
-    
-    .sale-steps::-webkit-scrollbar {
-        display: none;
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
     }
 
     .sale-step {
         min-width: 280px;
         flex-shrink: 0;
-        scroll-snap-align: start;
         padding: 20px;
-        scroll-snap-stop: always;
     }
 
     .sale-steps::after {
@@ -806,16 +786,19 @@ body {
     }
     
     .sale-how::after {
-        content: '';
+        content: '← Swipe →';
         position: absolute;
-        bottom: 20px;
+        bottom: 15px;
         left: 50%;
         transform: translateX(-50%);
-        width: 60px;
-        height: 4px;
-        background: linear-gradient(90deg, rgba(255, 3, 4, 0.3), rgba(255, 200, 87, 0.3));
-        border-radius: 2px;
-        opacity: 0.7;
+        background: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 15px;
+        font-size: 11px;
+        font-weight: 500;
+        opacity: var(--hint-opacity, 0.8);
+        transition: opacity 0.3s ease;
     }
 
     .sale-faq__tab {
@@ -926,7 +909,3 @@ body {
     transition-duration: 0.2s;
 }
 
-[data-mobile-snap].is-dragging {
-    cursor: grabbing;
-    cursor: -webkit-grabbing;
-}

@@ -198,7 +198,7 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
                 <div class="section-pretitle"><?=htmlspecialchars($saleTranslate(['how', 'pretitle']), ENT_QUOTES, 'UTF-8')?></div>
                 <h2><?=htmlspecialchars($saleTranslate(['how', 'title']), ENT_QUOTES, 'UTF-8')?></h2>
             </div>
-            <div class="sale-steps" data-mobile-snap>
+            <div class="sale-steps">
                 <div class="sale-step">
                     <div class="sale-step__icon sale-icon--garage"></div>
                     <p><?=htmlspecialchars($howSteps[0] ?? '', ENT_QUOTES, 'UTF-8')?></p>
