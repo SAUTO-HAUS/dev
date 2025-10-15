@@ -59,24 +59,43 @@ document.addEventListener('DOMContentLoaded', function () {
     snapContainers.forEach((container) => {
         let isDown = false;
         let startX, scrollLeft;
+        let startTime, startScrollLeft;
 
         const handleStart = (e) => {
             isDown = true;
             container.classList.add('is-dragging');
             startX = (e.pageX || e.touches[0].pageX) - container.offsetLeft;
             scrollLeft = container.scrollLeft;
+            startTime = Date.now();
+            startScrollLeft = container.scrollLeft;
+            container.style.scrollBehavior = 'auto';
         };
 
-        const handleEnd = () => {
+        const handleEnd = (e) => {
+            if (!isDown) return;
             isDown = false;
             container.classList.remove('is-dragging');
+            
+            const endTime = Date.now();
+            const timeDiff = endTime - startTime;
+            const scrollDiff = container.scrollLeft - startScrollLeft;
+            
+            if (timeDiff < 300 && Math.abs(scrollDiff) > 30) {
+                const momentum = scrollDiff * 2;
+                container.scrollLeft += momentum;
+            }
+            
+            setTimeout(() => {
+                container.style.scrollBehavior = 'smooth';
+            }, 100);
         };
 
         const handleMove = (e) => {
             if (!isDown) return;
             e.preventDefault();
             const x = (e.pageX || e.touches[0].pageX) - container.offsetLeft;
-            container.scrollLeft = scrollLeft - (x - startX);
+            const walk = (x - startX) * 1.5; // Increase sensitivity
+            container.scrollLeft = scrollLeft - walk;
         };
 
         container.addEventListener('mousedown', handleStart);
@@ -86,6 +105,8 @@ document.addEventListener('DOMContentLoaded', function () {
         container.addEventListener('touchend', handleEnd);
         container.addEventListener('mousemove', handleMove);
         container.addEventListener('touchmove', handleMove, { passive: false });
+        
+        container.addEventListener('contextmenu', (e) => e.preventDefault());
     });
 
     const touchElements = document.querySelectorAll('#sale-page .sale-card, #sale-page .sale-step, #sale-page .sale-compare__card');

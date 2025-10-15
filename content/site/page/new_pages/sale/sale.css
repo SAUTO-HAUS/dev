@@ -82,7 +82,7 @@ body {
 .sale-section.sale-intro {
     padding-top: 110px;
     padding-bottom: 90px;
-    background: linear-gradient(135deg, rgba(12, 17, 25, 0.96) 0%, rgba(16, 24, 32, 0.9) 100%);
+    background: linear-gradient(to right, #6d6d6d 0%, #5c5c5c 100%);
     color: #ffffff;
     overflow: hidden;
 }
@@ -265,7 +265,7 @@ body {
     box-shadow: var(--sale-shadow);
     position: relative;
     overflow: hidden;
-    transition: transform 0.5s ease, box-shadow 0.5s ease;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     display: flex;
     flex-direction: column;
     gap: 18px;
@@ -277,21 +277,21 @@ body {
     inset: auto -60px -120px;
     width: 160px;
     height: 160px;
-    background: radial-gradient(circle, rgba(255, 3, 4, 0.24) 0%, transparent 72%);
+    background: radial-gradient(circle, rgba(255, 3, 4, 0.18) 0%, transparent 72%);
     opacity: 0;
-    transition: transform 0.5s ease, opacity 0.45s ease;
+    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .sale-card:hover,
 .sale-card:focus-within {
-    transform: translateY(-14px) scale(1.02);
-    box-shadow: 0 46px 90px -48px rgba(16, 24, 32, 0.55), 0 20px 40px -30px rgba(255, 3, 4, 0.2);
+    transform: translateY(-8px) scale(1.01) rotateX(2deg);
+    box-shadow: 0 20px 40px -20px rgba(16, 24, 32, 0.3), 0 8px 16px -8px rgba(255, 3, 4, 0.15);
 }
 
 .sale-card:hover::after,
 .sale-card:focus-within::after {
-    opacity: 1;
-    transform: translate(-16px, -16px) scale(1.08);
+    opacity: 0.6;
+    transform: translate(-8px, -8px) scale(1.04);
 }
 
 .sale-card__icon,
@@ -350,7 +350,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 18px;
-    transition: transform 0.5s ease, box-shadow 0.5s ease;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .sale-step p {
@@ -362,8 +362,8 @@ body {
 
 .sale-step:hover,
 .sale-step:focus-within {
-    transform: translateY(-10px) scale(1.01);
-    box-shadow: 0 40px 80px -46px rgba(16, 24, 32, 0.5), 0 18px 34px -26px rgba(255, 3, 4, 0.16);
+    transform: translateY(-8px) scale(1.01) rotateX(2deg);
+    box-shadow: 0 20px 40px -20px rgba(16, 24, 32, 0.3), 0 8px 16px -8px rgba(255, 3, 4, 0.15);
 }
 
 .sale-compare__grid {
@@ -380,7 +380,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 16px;
-    transition: transform 0.45s ease, box-shadow 0.45s ease;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .sale-compare__card p {
@@ -391,8 +391,8 @@ body {
 
 .sale-compare__card:hover,
 .sale-compare__card:focus-within {
-    transform: translateY(-12px) scale(1.015);
-    box-shadow: 0 42px 86px -48px rgba(16, 24, 32, 0.55), 0 18px 34px -28px rgba(255, 3, 4, 0.18);
+    transform: translateY(-8px) scale(1.01) rotateX(2deg);
+    box-shadow: 0 20px 40px -20px rgba(16, 24, 32, 0.3), 0 8px 16px -8px rgba(255, 3, 4, 0.15);
 }
 
 .sale-security__content p {
@@ -459,7 +459,7 @@ body {
 }
 
 .sale-cta {
-    background: linear-gradient(135deg, rgba(12, 17, 25, 0.95) 0%, rgba(16, 24, 32, 0.92) 100%);
+    background: linear-gradient(to right, #6d6d6d 0%, #5c5c5c 100%);
     color: #ffffff;
 }
 
@@ -505,11 +505,11 @@ body {
 }
 
 .glow-on-scroll.is-visible {
-    box-shadow: 0 0 30px rgba(255, 3, 4, 0.25);
+    box-shadow: none;
 }
 
 .pulse-on-scroll.is-visible {
-    animation: pulseCard 2.8s ease-in-out infinite;
+    animation: none;
 }
 
 @keyframes pulseCard {
@@ -522,7 +522,7 @@ body {
 }
 
 .sway-on-scroll.is-visible {
-    animation: swayCard 3s ease-in-out infinite;
+    animation: none;
 }
 
 @keyframes swayCard {
@@ -535,12 +535,7 @@ body {
 }
 
 .shimmer-on-scroll.is-visible::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(120deg, transparent 0%, rgba(255, 255, 255, 0.45) 45%, transparent 60%);
-    transform: translateX(-120%);
-    animation: shimmer 2.8s ease-in-out infinite;
+    display: none;
 }
 
 @keyframes shimmer {
@@ -784,17 +779,43 @@ body {
         overflow-x: auto;
         scroll-snap-type: x mandatory;
         gap: 16px;
-        padding-bottom: 14px;
+        padding: 0 20px 20px 20px;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    
+    .sale-steps::-webkit-scrollbar {
+        display: none;
     }
 
     .sale-step {
-        min-width: 230px;
+        min-width: 280px;
+        flex-shrink: 0;
         scroll-snap-align: start;
         padding: 20px;
+        scroll-snap-stop: always;
     }
 
     .sale-steps::after {
         display: none;
+    }
+    
+    /* Mobile slider indicators */
+    .sale-how {
+        position: relative;
+    }
+    
+    .sale-how::after {
+        content: '';
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 4px;
+        background: linear-gradient(90deg, rgba(255, 3, 4, 0.3), rgba(255, 200, 87, 0.3));
+        border-radius: 2px;
+        opacity: 0.7;
     }
 
     .sale-faq__tab {
@@ -880,8 +901,12 @@ body {
     }
     
     .sale-steps {
-        padding-bottom: 20px;
-        -webkit-overflow-scrolling: touch;
+        padding: 0 15px 25px 15px;
+        gap: 12px;
+    }
+    
+    .sale-step {
+        min-width: 260px;
     }
 }
 

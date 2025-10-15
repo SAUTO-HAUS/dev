@@ -156,35 +156,35 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
                 <h2><?=htmlspecialchars($saleTranslate(['benefits', 'title']), ENT_QUOTES, 'UTF-8')?></h2>
             </div>
             <div class="sale-grid sale-benefits__grid">
-                <article class="sale-card spin-on-scroll">
+                <article class="sale-card">
                     <div class="sale-card__icon sale-icon--badge"></div>
                     <h3><?=htmlspecialchars($benefitItems[0] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
                 </article>
-                <article class="sale-card glow-on-scroll">
+                <article class="sale-card">
                     <div class="sale-card__icon sale-icon--contract"></div>
                     <h3><?=htmlspecialchars($benefitItems[1] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
                 </article>
-                <article class="sale-card pulse-on-scroll">
+                <article class="sale-card">
                     <div class="sale-card__icon sale-icon--shield"></div>
                     <h3><?=htmlspecialchars($benefitItems[2] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
                 </article>
-                <article class="sale-card sway-on-scroll">
+                <article class="sale-card">
                     <div class="sale-card__icon sale-icon--speaker"></div>
                     <h3><?=htmlspecialchars($benefitItems[3] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
                 </article>
-                <article class="sale-card shimmer-on-scroll">
+                <article class="sale-card">
                     <div class="sale-card__icon sale-icon--rocket"></div>
                     <h3><?=htmlspecialchars($benefitItems[4] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
                 </article>
-                <article class="sale-card glow-on-scroll">
+                <article class="sale-card">
                     <div class="sale-card__icon sale-icon--clock"></div>
                     <h3><?=htmlspecialchars($benefitItems[5] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
                 </article>
-                <article class="sale-card pulse-on-scroll">
+                <article class="sale-card">
                     <div class="sale-card__icon sale-icon--handshake"></div>
                     <h3><?=htmlspecialchars($benefitItems[6] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
                 </article>
-                <article class="sale-card spin-on-scroll">
+                <article class="sale-card">
                     <div class="sale-card__icon sale-icon--security"></div>
                     <h3><?=htmlspecialchars($benefitItems[7] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
                 </article>
