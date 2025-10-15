@@ -775,12 +775,7 @@ body {
         flex-shrink: 0;
         padding: 20px;
     }
-
-    .sale-steps::after {
-        display: none;
-    }
     
-    /* Mobile slider indicators */
     .sale-how {
         position: relative;
     }
