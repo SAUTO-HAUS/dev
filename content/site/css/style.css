@@ -114,7 +114,7 @@
                   transition:all 0.25s ease 0s;
               }
               
-              #main_menu .menu a {padding:0 1vw; float:left; color:#336FA1;}
+              #main_menu .menu a {padding:0 1vw; float:left;}
               #main_menu .lang a {padding:0 .3vw; float:right; color:rgba(40,40,40,.15);}
               
               #main_menu .menu a span, #main_menu .lang a span {position:relative; z-index:2;}
