@@ -180,26 +180,26 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
     background: #f6f7fb !important;
 }
 #sale-page .sale-compare__card {
-    background-color: #ffffff !important;
+    background-color: #f1f1f1 !important;
     border: 0.1rem solid #d7d8db !important;
 }
 .sale-compare__grid .sale-compare__card {
-    background-color: #ffffff !important;
+    background-color: #f1f1f1 !important;
     border: 0.1rem solid #d7d8db !important;
 }
 .sale-compare__card.is-visible {
-    background-color: #ffffff !important;
+    background-color: #f1f1f1 !important;
     border: 0.1rem solid #d7d8db !important;
 }
 #sale-page .sale-compare__card.is-visible {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
+    background: #f1f1f1 !important;
+    background-color: #f1f1f1 !important;
     background-image: none !important;
     border: 0.1rem solid #d7d8db !important;
 }
 #sale-page .sale-section.sale-compare .sale-compare__card {
-    background: #ffffff !important;
-    background-color: #ffffff !important;
+    background: #f1f1f1 !important;
+    background-color: #f1f1f1 !important;
     background-image: none !important;
     border: 0.1rem solid #d7d8db !important;
 }
@@ -314,8 +314,8 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(function() {
         const compareCards = document.querySelectorAll('.sale-compare__card');
         compareCards.forEach(function(card) {
-            card.style.setProperty('background', '#ffffff', 'important');
-            card.style.setProperty('background-color', '#ffffff', 'important');
+            card.style.setProperty('background', '#f1f1f1', 'important');
+            card.style.setProperty('background-color', '#f1f1f1', 'important');
             card.style.setProperty('background-image', 'none', 'important');
             card.style.setProperty('border', '0.1rem solid #d7d8db', 'important');
         });
