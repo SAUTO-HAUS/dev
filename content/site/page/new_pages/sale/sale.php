@@ -569,4 +569,6 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
         </div>
     </section>
+    
+    <img src="/content/site/page/new_pages/sale/icons/bnr_sale-rec.jpg" style="width:100%; margin:0 0; padding:0 2rem;" />
 </div>

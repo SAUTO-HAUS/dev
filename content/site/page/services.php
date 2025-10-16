@@ -255,7 +255,7 @@ if ($t_mp[3] == 'insurance') {
 
 		}
 		
-		if ( in_array($t_mp[3], ['sale', 'credit', 'transportation']) ){
+		if ( in_array($t_mp[3], ['credit', 'transportation']) ){
 			echo '<img src="/media/images/site/services/bnr_'.$t_mp[3].'.jpg" style="width:100%; margin:3rem 0; padding:0 2rem;" />';
 		}
 	}
