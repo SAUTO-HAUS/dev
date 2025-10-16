@@ -141,9 +141,6 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
     grid-template-columns: repeat(5, 1fr) !important;
     gap: 20px !important;
 }
-.sale-hero.copy-block {
-    padding-bottom: 10px !important;
-}
 .sale-section.sale-how {
     margin-top: 0 !important;
     padding-top: 25px !important;
