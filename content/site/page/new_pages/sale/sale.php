@@ -123,6 +123,7 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
     padding-top: 15px !important;
     padding-bottom: 15px !important;
     margin: 0 !important;
+    background: #f6f7fb !important;
 }
 .sale-section.sale-intro {
     margin-bottom: 0 !important;
@@ -143,6 +144,7 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
     margin-top: 0 !important;
     padding-top: 25px !important;
     padding-bottom: 25px !important;
+    background: #f6f7fb !important;
 }
 /* Desktop grid layout for sale-steps */
 @media (min-width: 769px) {
@@ -175,6 +177,7 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
     margin-top: 0 !important;
     padding-top: 25px !important;
     padding-bottom: 25px !important;
+    background: #f6f7fb !important;
 }
 #sale-page .sale-compare__card {
     background-color: #ffffff !important;
