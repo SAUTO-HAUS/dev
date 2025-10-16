@@ -132,6 +132,10 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
     background-color: #f1f1f1 !important;
     border: 0.1rem solid #d7d8db !important;
 }
+.sale-grid.sale-benefits__grid .sale-card h3 {
+    font-family: inherit !important;
+    font-weight: normal !important;
+}
 .sale-grid.sale-benefits__grid {
     display: grid !important;
     grid-template-columns: repeat(5, 1fr) !important;
