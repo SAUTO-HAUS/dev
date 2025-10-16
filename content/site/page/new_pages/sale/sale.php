@@ -256,7 +256,7 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
         padding-bottom: 10px !important;
     }
     #sale-page .sale-hero.copy-block {
-        padding: 0 20px !important;
+        padding: 5px 20px 20px 20px !important;
         margin-top: -15px !important;
     }
     #sale-page .sale-hero__icons {
