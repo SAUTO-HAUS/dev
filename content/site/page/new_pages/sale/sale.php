@@ -300,6 +300,25 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
         grid-template-columns: none !important;
         gap: 15px !important;
     }
+    
+    /* Reduce padding for CTA section on mobile */
+    #sale-page .sale-section.sale-cta {
+        padding-top: 5px !important;
+        padding-bottom: 5px !important;
+        margin-bottom: 40px !important;
+    }
+    
+    #sale-page .sale-section.sale-cta .sale-container {
+        margin-top: 0 !important;
+        margin-bottom: 0 !important;
+        padding-top: 5px !important;
+        padding-bottom: 5px !important;
+    }
+    
+    /* Hide image on mobile */
+    #sale-page .sale-section.sale-cta .sale-container:last-child {
+        display: none !important;
+    }
 }
 /* Override CSS file styles for smaller screens */
 @media (max-width: 680px) {
@@ -568,7 +587,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 </script>
             </div>
         </div>
+         <div class="sale-container" style="margin-top: 10px; position: relative; z-index: 10;">
+        <img src="/content/site/page/new_pages/sale/icons/bnr_sale-rec.jpg" style="width:100%; margin:0; padding:0; position: relative; z-index: 10;" />
+    </div>
     </section>
-    
-    <img src="/content/site/page/new_pages/sale/icons/bnr_sale-rec.jpg" style="width:100%; margin:0 0; padding:0 2rem;" />
+
+   
 </div>
