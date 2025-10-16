@@ -140,7 +140,10 @@
 	main .gr > .cnt > .lnk {width:100%; min-height:0; padding:2rem 2rem; margin:1rem 0;}
 	
 	main .gr > .cnt {flex-flow:column;}
-	main .gr > .cnt > .it {width:100%; margin:20px;}
+	main .gr > .cnt > .it {
+    width: 100%;
+    margin: 10px;
+}
 	main .gr > .cnt > .it > img {}
 	main .gr > .cnt > .it > .img {height:50vh;}
 	
@@ -163,7 +166,10 @@
 	
 	main .gr > .cnt > .lnk > h4, main .gr > .cnt > .lnk > .txt {text-align:center;}
 	
-	#cnt > .bx > .gr.cnt > .it {width:100%; margin-bottom:1rem;}
+	#cnt > .bx > .gr.cnt > .it {
+    width: 100%;
+    margin-bottom: 0.5rem;
+}
 	#cnt > .bx > .gr.mlmp > .ml,
 	#cnt > .bx > .gr.mlmp > .mp	{width:100%; border-radius:1rem;}
 	#cnt > .bx > .gr.mlmp > .mp {margin-top:1rem;}
