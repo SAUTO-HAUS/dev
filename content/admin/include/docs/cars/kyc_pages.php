@@ -229,25 +229,6 @@ $kyc_pages = '
 					</table>
 				</td>
 			</tr>
-			<tr>
-				<td colspan="2" style="border: none; text-align: left; padding: 5mm 2mm 2mm 2mm;">
-					<table style="width: 100%; border: none;">
-						<tr>
-							<td style="border: none; width: 33%; vertical-align: middle; padding: 2mm; text-align: center;">
-								<div style="font-weight: bold;">SAUTO SRL :</div>
-							</td>
-							<td style="border: none; width: 33%; vertical-align: middle; padding: 2mm; text-align: center;">
-								<div>Data aprobării</div>
-								<div style="border-bottom: 1px dotted #000; width: 40mm; min-height: 5mm; margin: 2mm auto;">' . date('d.m.Y') . '</div>
-							</td>
-							<td style="border: none; width: 34%; vertical-align: middle; padding: 2mm; text-align: center;">
-								<div>Semnătura persoanei responsabile</div>
-								<div style="border-bottom: 1px dotted #000; width: 40mm; min-height: 5mm; margin: 2mm auto;"></div>
-							</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
 		</table>
 		
 		<div style="margin-top: 10mm; font-size: 0.8rem; text-align: justify;">
