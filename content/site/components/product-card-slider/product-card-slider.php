@@ -217,7 +217,7 @@ function generateImageSliderHTML($images, $car_data, $enable_slider = true) {
     if (count($images) == 1 || !$enable_slider) {
         // Single image - no slider needed
         $image = $images[0];
-        $p_src = '/'._CAR_IMG.'/'.$car_data['p_path'].'/'.$car_data['id'].'/med/';
+        $p_src = '/'._CAR_IMG.'/'.$car_data['p_path'].'/'.$car_data['id'].'/high/';
         $p_name = $image['name'].$img_frmt;
         return '<img src="'.$p_src.$p_name.'" alt="car '.$car_data['br_nm'].' '.$car_data['mo_nm'].' id'.$car_data['id'].' main photo" />';
     }
@@ -228,7 +228,7 @@ function generateImageSliderHTML($images, $car_data, $enable_slider = true) {
     $html .= '<div class="product-card-slider__track">';
     
     foreach ($images as $index => $image) {
-        $p_src = '/'._CAR_IMG.'/'.$car_data['p_path'].'/'.$car_data['id'].'/med/';
+        $p_src = '/'._CAR_IMG.'/'.$car_data['p_path'].'/'.$car_data['id'].'/high/';
         $p_name = $image['name'].$img_frmt;
         $html .= '<div class="product-card-slider__slide">';
         $html .= '<img src="'.$p_src.$p_name.'" alt="car '.$car_data['br_nm'].' '.$car_data['mo_nm'].' id'.$car_data['id'].' photo '.($index+1).'" />';
@@ -236,10 +236,6 @@ function generateImageSliderHTML($images, $car_data, $enable_slider = true) {
     }
     
     $html .= '</div>'; // close track
-    
-    // Navigation arrows
-    $html .= '<button class="product-card-slider__nav product-card-slider__nav--prev">‹</button>';
-    $html .= '<button class="product-card-slider__nav product-card-slider__nav--next">›</button>';
     
     // Dots indicator
     if (count($images) <= 5) { // Only show dots for 5 or fewer images
