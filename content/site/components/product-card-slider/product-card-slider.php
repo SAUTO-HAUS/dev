@@ -251,8 +251,8 @@ function generateImageSliderHTML($images, $car_data, $enable_slider = true) {
         $html .= '</div>';
     }
     
-    // Image counter
-    $html .= '<div class="product-card-slider__counter">1/'.count($images).'</div>';
+    // Line indicator
+    $html .= '<div class="product-card-slider__line-indicator"></div>';
     
     $html .= '</div>'; // close container
     $html .= '</div>'; // close slider

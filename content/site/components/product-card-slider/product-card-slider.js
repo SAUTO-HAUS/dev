@@ -146,8 +146,16 @@ class ProductCardSlider {
     updateSlider() {
         const translateX = -this.currentIndex * 100;
         this.track.style.transform = `translateX(${translateX}%)`;
-        this.updateCounter();
         this.updateDots();
+        this.updateLineIndicator();
+    }
+    
+    updateLineIndicator() {
+        const lineIndicator = this.slider.querySelector('.product-card-slider__line-indicator');
+        if (lineIndicator) {
+            const progress = ((this.currentIndex + 1) / this.totalSlides) * 100;
+            lineIndicator.style.setProperty('--progress', `${progress}%`);
+        }
     }
     
     updateCounter() {
@@ -362,6 +370,15 @@ class MobileCardSlider {
         const translateX = -this.currentIndex * 100;
         this.track.style.transform = `translateX(${translateX}%)`;
         this.updateCounter();
+        this.updateLineIndicator();
+    }
+    
+    updateLineIndicator() {
+        const lineIndicator = this.slider.querySelector('.mobile-card-slider__line-indicator');
+        if (lineIndicator) {
+            const progress = ((this.currentIndex + 1) / this.totalSlides) * 100;
+            lineIndicator.style.setProperty('--progress', `${progress}%`);
+        }
     }
     
     updateCounter() {

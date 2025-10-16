@@ -473,7 +473,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 					$image_html .= '<div class="mobile-card-slider__slide"><img src="'.$img_src.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' photo '.($idx+1).'" /></div>';
 				}
 				$image_html .= '</div>';
-				$image_html .= '<div class="mobile-card-slider__counter">1/'.count($all_images).'</div>';
+				$image_html .= '<div class="mobile-card-slider__line-indicator"></div>';
 				$image_html .= '</div></div>';
 			} else {
 				// Single image - normal display
@@ -841,8 +841,8 @@ function generateMobileSliderHTML($images, $car_data, $img_frmt) {
     $html .= '<button class="mobile-card-slider__nav mobile-card-slider__nav--prev">‹</button>';
     $html .= '<button class="mobile-card-slider__nav mobile-card-slider__nav--next">›</button>';
     
-    // Image counter
-    $html .= '<div class="mobile-card-slider__counter">1/'.count($images).'</div>';
+    // Line indicator
+    $html .= '<div class="mobile-card-slider__line-indicator"></div>';
     
     $html .= '</div>'; // close container
     $html .= '</div>'; // close slider
