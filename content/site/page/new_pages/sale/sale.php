@@ -213,6 +213,13 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
 .sale-container {
     margin-top: 20px !important;
 }
+/* Desktop - equal padding/margin for sale-container */
+@media (min-width: 769px) {
+    .sale-container {
+        margin: 15px auto !important;
+        padding: 15px 0 !important;
+    }
+}
 .sale-steps .sale-step:nth-child(1) {
     position: relative !important;
 }
