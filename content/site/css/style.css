@@ -751,14 +751,13 @@ footer .columns-wrapper .column-container.col-logo-container {
       display: none; /* Hide individual titles since we have main title */
   }
 
-  footer .col-services .section a,
-  footer .col-information .section a {
+  footer .col-services .services-subcolumn .section a {
       width: 100%;
       display: block;
       margin: 0.4rem 0;
       color: #fff;
       text-decoration: none;
-      text-align: left;
+      text-align: center;
       font-size: 0.9rem;
   }
 
@@ -824,7 +823,7 @@ footer .columns-wrapper .column-container.col-logo-container {
       margin: 0.4rem 0;
       color: #fff;
       text-decoration: none;
-      text-align: left;
+      text-align: center;
       font-size: 0.9rem;
   }
 
@@ -886,7 +885,7 @@ footer .columns-wrapper .column-container.col-logo-container {
       line-height: 1.5;
       margin: 0.2rem 0;
       color: #fff;
-      text-align: left;
+      text-align: center;
       font-family: "def_l";
   }
 
@@ -905,7 +904,7 @@ footer .columns-wrapper .column-container.col-logo-container {
       text-decoration: none;
       display: block;
       margin: 0.2rem 0;
-      text-align: left;
+      text-align: center;
       font-family: "def_l";
   }
 
@@ -922,7 +921,7 @@ footer .columns-wrapper .column-container.col-logo-container {
       line-height: 1.5;
       margin: 0.5rem 0;
       color: #fff;
-      text-align: left;
+      text-align: center;
       font-family: "def_l";
       white-space: nowrap;
   }
