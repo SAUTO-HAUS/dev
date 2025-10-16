@@ -24,9 +24,6 @@ return [
                 'Ваш автомобиль в безопасности – стоит у нас на охраняемой площадке.',
                 'Мы берём на себя рекламу, звонки, показы.',
                 'Быстрое оформление: деньги получаете сразу после продажи.',
-                'Текст контейнер 6',
-                'Текст контейнер 7',
-                'Текст контейнер 8',
             ],
         ],
         'how' => [
@@ -106,9 +103,6 @@ return [
                 'Mașina ta este în siguranță – stă la noi pe o parcare păzită.',
                 'Ne ocupăm noi de promovare, apeluri și prezentări.',
                 'Formalizare rapidă: primești banii imediat după vânzare.',
-                'Text container 6',
-                'Text container 7',
-                'Text container 8',
             ],
         ],
         'how' => [
@@ -188,9 +182,6 @@ return [
                 'Your car stays safe on our guarded lot.',
                 'We take care of advertising, calls, and showings.',
                 'Fast paperwork: you get paid right after the sale.',
-                'Text container 6',
-                'Text container 7',
-                'Text container 8',
             ],
         ],
         'how' => [

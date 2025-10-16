@@ -65,7 +65,7 @@ $compareItems = is_array($compareItems) ? $compareItems : [];
 $faqItems = $saleTranslate(['faq', 'items']);
 $faqItems = is_array($faqItems) ? $faqItems : [];
 ?>
-<link rel="stylesheet" type="text/css" href="/content/site/page/new_pages/sale/sale.css?v=1.2">
+<link rel="stylesheet" type="text/css" href="/content/site/page/new_pages/sale/sale.css?v=1.4">
 <script src="/content/site/page/new_pages/sale/sale.js?v=1.2" defer></script>
 
 <!-- Structured Data for SEO -->
@@ -89,16 +89,54 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
 </script>
 
 <style>
-/* Simple positioning for sale page */
 #sale-page {
-    margin-top: -40px !important;
-    padding-top: 40px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+#sale-page .sale-hero h1 {
+    font-size: clamp(24px, 3.4vw, 34px) !important;
 }
 @media (max-width: 680px) {
-    #sale-page {
-        margin-top: -20px !important;
-        padding-top: 60px !important;
+    #sale-page .sale-hero h1 {
+        font-size: 26px !important;
     }
+}
+.sale-section.sale-intro {
+    margin: 10px 0 10px 0 !important;
+    padding: 0 !important;
+}
+.sale-intro .sale-container {
+    padding-top: 50px !important;
+    padding-bottom: 50px !important;
+}
+.sale-background {
+    background: linear-gradient(to right, #6d6d6d 0%, #5c5c5c 100%) !important;
+    opacity: 1 !important;
+}
+.sale-hero__icons {
+    position: absolute !important;
+    top: -20px !important;
+    left: -20px !important;
+    right: auto !important;
+}
+.sale-section.sale-benefits {
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+    margin: 0 !important;
+}
+.sale-section.sale-intro {
+    margin-bottom: 0 !important;
+}
+.sale-grid.sale-benefits__grid .sale-card {
+    background-color: #f1f1f1 !important;
+}
+.sale-grid.sale-benefits__grid {
+    display: grid !important;
+    grid-template-columns: repeat(5, 1fr) !important;
+    gap: 20px !important;
+}
+.sale-hero.copy-block {
+    padding-bottom: 10px !important;
 }
 </style>
 
@@ -175,18 +213,6 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
                 <article class="sale-card">
                     <div class="sale-card__icon sale-icon--rocket"></div>
                     <h3><?=htmlspecialchars($benefitItems[4] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
-                </article>
-                <article class="sale-card">
-                    <div class="sale-card__icon sale-icon--clock"></div>
-                    <h3><?=htmlspecialchars($benefitItems[5] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
-                </article>
-                <article class="sale-card">
-                    <div class="sale-card__icon sale-icon--handshake"></div>
-                    <h3><?=htmlspecialchars($benefitItems[6] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
-                </article>
-                <article class="sale-card">
-                    <div class="sale-card__icon sale-icon--security"></div>
-                    <h3><?=htmlspecialchars($benefitItems[7] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
                 </article>
             </div>
         </div>
