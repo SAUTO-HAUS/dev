@@ -456,12 +456,42 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 		$ar['txt'] .= "</pre>\n";
 	}
 	foreach ($results as $r) {
-		$pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id AND `main`="1" LIMIT 1'); 
-		$pdo2->execute([ 'it_id'=>$r['id'] ]); 
-		$p = $pdo2->fetch();
+		// Check if mobile - simple detection
+		$is_mobile = (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/Mobile|Android|iPhone|iPad/', $_SERVER['HTTP_USER_AGENT']));
 		
-		$p_src = isset($p['name']) ? '/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/' : '/'._SITE_IMG.'/v2/';
-		$p_name = isset($p['name']) ? $p['name'].$img_frmt : 'no_image.svg' ;
+		if ($is_mobile) {
+			// Mobile: Get all images for slider
+			$pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `main` DESC, `pos` ASC'); 
+			$pdo2->execute([ 'it_id'=>$r['id'] ]); 
+			$all_images = $pdo2->fetchAll(PDO::FETCH_ASSOC);
+			
+			if (count($all_images) > 1) {
+				// Multiple images - create slider HTML
+				$image_html = '<div class="mobile-card-slider"><div class="mobile-card-slider__container"><div class="mobile-card-slider__track">';
+				foreach ($all_images as $idx => $img) {
+					$img_src = '/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/'.$img['name'].$img_frmt;
+					$image_html .= '<div class="mobile-card-slider__slide"><img src="'.$img_src.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' photo '.($idx+1).'" /></div>';
+				}
+				$image_html .= '</div>';
+				$image_html .= '<div class="mobile-card-slider__counter">1/'.count($all_images).'</div>';
+				$image_html .= '</div></div>';
+			} else {
+				// Single image - normal display
+				$p = $all_images[0] ?? null;
+				$p_src = isset($p['name']) ? '/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/' : '/'._SITE_IMG.'/v2/';
+				$p_name = isset($p['name']) ? $p['name'].$img_frmt : 'no_image.svg';
+				$image_html = '<img src="'.$p_src.$p_name.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' main photo" />';
+			}
+		} else {
+			// Desktop: Single image as before
+			$pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id AND `main`="1" LIMIT 1'); 
+			$pdo2->execute([ 'it_id'=>$r['id'] ]); 
+			$p = $pdo2->fetch();
+			
+			$p_src = isset($p['name']) ? '/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/' : '/'._SITE_IMG.'/v2/';
+			$p_name = isset($p['name']) ? $p['name'].$img_frmt : 'no_image.svg';
+			$image_html = '<img src="'.$p_src.$p_name.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' main photo" />';
+		}
 		
 		$z_stat = '';
 		if ( $r['n_a']==0 && $r['act']==1 ){
@@ -480,10 +510,10 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 
 		$ar['txt'] .= '
 		<a class="it car" href="/'.$_COOKIE['lang'].'/cars/'.$r['id'].'">
-			<img src="'.$p_src.$p_name.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' main photo" />
+			'.$image_html.'
 			<div class="txt">
 				<div class="status">'.$z_stat.'</div>
-				<div class="name" style="margin-top: -3px;">'.$r['br_nm'].' '.$r['mo_nm'].'</div>';
+				<div class="name">'.$r['br_nm'].' '.$r['mo_nm'].'</div>';
 				
 				//$ar['txt'] .= '<div class="id">ID-'.$r['id'].'</div>';
 				$ar['txt'] .= '
@@ -708,6 +738,116 @@ function tyre_card($prefx, $db, $img_frmt, $lng, $v1='', $lmt='4', $zreq=null){
 	if ($i==0){$ar['txt'] .= '<div class="empty">'.$lng['t']['x']['no_offers'].'</div>';}
 	
 	return $ar;
+}
+
+/**
+ * Generate image slider HTML for product cards
+ * 
+ * @param array $images - Array of image data
+ * @param array $car_data - Car data
+ * @param string $img_frmt - Image format extension
+ * @return string - HTML for image slider
+ */
+function generateProductCardSliderHTML($images, $car_data, $img_frmt) {
+    if (empty($images)) {
+        // No images - show placeholder
+        return '<img src="/'._SITE_IMG.'/v2/no_image.svg" alt="car '.$car_data['br_nm'].' '.$car_data['mo_nm'].' id'.$car_data['id'].' no photo" />';
+    }
+    
+    if (count($images) == 1) {
+        // Single image - no slider needed
+        $image = $images[0];
+        $p_src = '/'._CAR_IMG.'/'.$car_data['p_path'].'/'.$car_data['id'].'/med/';
+        $p_name = $image['name'].$img_frmt;
+        return '<img src="'.$p_src.$p_name.'" alt="car '.$car_data['br_nm'].' '.$car_data['mo_nm'].' id'.$car_data['id'].' main photo" />';
+    }
+    
+    // Multiple images - generate slider
+    $html = '<div class="product-card-slider">';
+    $html .= '<div class="product-card-slider__container">';
+    $html .= '<div class="product-card-slider__track">';
+    
+    foreach ($images as $index => $image) {
+        $p_src = '/'._CAR_IMG.'/'.$car_data['p_path'].'/'.$car_data['id'].'/med/';
+        $p_name = $image['name'].$img_frmt;
+        $html .= '<div class="product-card-slider__slide">';
+        $html .= '<img src="'.$p_src.$p_name.'" alt="car '.$car_data['br_nm'].' '.$car_data['mo_nm'].' id'.$car_data['id'].' photo '.($index+1).'" />';
+        $html .= '</div>';
+    }
+    
+    $html .= '</div>'; // close track
+    
+    // Navigation arrows
+    $html .= '<button class="product-card-slider__nav product-card-slider__nav--prev">‹</button>';
+    $html .= '<button class="product-card-slider__nav product-card-slider__nav--next">›</button>';
+    
+    // Dots indicator (only for 5 or fewer images)
+    if (count($images) <= 5) {
+        $html .= '<div class="product-card-slider__dots">';
+        for ($i = 0; $i < count($images); $i++) {
+            $active_class = $i === 0 ? ' product-card-slider__dot--active' : '';
+            $html .= '<div class="product-card-slider__dot'.$active_class.'"></div>';
+        }
+        $html .= '</div>';
+    }
+    
+    // Image counter
+    $html .= '<div class="product-card-slider__counter">1/'.count($images).'</div>';
+    
+    $html .= '</div>'; // close container
+    $html .= '</div>'; // close slider
+    
+    return $html;
+}
+
+/**
+ * Generate mobile slider HTML for product cards
+ * 
+ * @param array $images - Array of image data
+ * @param array $car_data - Car data
+ * @param string $img_frmt - Image format extension
+ * @return string - HTML for mobile slider
+ */
+function generateMobileSliderHTML($images, $car_data, $img_frmt) {
+    if (empty($images)) {
+        // No images - show placeholder
+        return '<img src="/'._SITE_IMG.'/v2/no_image.svg" alt="car '.$car_data['br_nm'].' '.$car_data['mo_nm'].' id'.$car_data['id'].' no photo" />';
+    }
+    
+    if (count($images) == 1) {
+        // Single image - no slider needed
+        $image = $images[0];
+        $p_src = '/'._CAR_IMG.'/'.$car_data['p_path'].'/'.$car_data['id'].'/med/';
+        $p_name = $image['name'].$img_frmt;
+        return '<img src="'.$p_src.$p_name.'" alt="car '.$car_data['br_nm'].' '.$car_data['mo_nm'].' id'.$car_data['id'].' main photo" />';
+    }
+    
+    // Multiple images - generate mobile slider
+    $html = '<div class="mobile-card-slider">';
+    $html .= '<div class="mobile-card-slider__container">';
+    $html .= '<div class="mobile-card-slider__track">';
+    
+    foreach ($images as $index => $image) {
+        $p_src = '/'._CAR_IMG.'/'.$car_data['p_path'].'/'.$car_data['id'].'/med/';
+        $p_name = $image['name'].$img_frmt;
+        $html .= '<div class="mobile-card-slider__slide">';
+        $html .= '<img src="'.$p_src.$p_name.'" alt="car '.$car_data['br_nm'].' '.$car_data['mo_nm'].' id'.$car_data['id'].' photo '.($index+1).'" />';
+        $html .= '</div>';
+    }
+    
+    $html .= '</div>'; // close track
+    
+    // Navigation arrows
+    $html .= '<button class="mobile-card-slider__nav mobile-card-slider__nav--prev">‹</button>';
+    $html .= '<button class="mobile-card-slider__nav mobile-card-slider__nav--next">›</button>';
+    
+    // Image counter
+    $html .= '<div class="mobile-card-slider__counter">1/'.count($images).'</div>';
+    
+    $html .= '</div>'; // close container
+    $html .= '</div>'; // close slider
+    
+    return $html;
 }
 
 

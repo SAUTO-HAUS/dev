@@ -12,6 +12,10 @@ use App\Helper\PhoneHelper;?>
 <script src="/<?php e(_DEFAULT)?>/js/sitescripts.js?d=<?php echo date("GYimsd", filemtime(_DEFAULT.'/js/sitescripts.js')); ?>"></script>
 <script src="/<?php e(_SITE)?>/js/sitescripts.js?d=<?php echo date("GYimsd", filemtime(_SITE.'/js/sitescripts.js')); ?>"></script>
 
+<!-- Product Card Slider Assets -->
+<link rel="stylesheet" href="/content/site/components/product-card-slider/product-card-slider.css?v=<?php echo time(); ?>">
+<script src="/content/site/components/product-card-slider/product-card-slider.js?v=<?php echo time(); ?>" defer></script>
+
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],

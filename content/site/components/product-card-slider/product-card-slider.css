@@ -1,0 +1,262 @@
+/* Mobile Tap Slider - Tap to change images */
+
+.mobile-tap-slider {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.mobile-tap-slider__container {
+    position: relative;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4/3;
+}
+
+.mobile-tap-slider__track {
+    display: flex;
+    transition: transform 0.1s ease-out;
+    height: 100%;
+}
+
+.mobile-tap-slider__slide {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+}
+
+.mobile-tap-slider__slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    border-radius: 8px;
+    background: #f8f8f8;
+}
+
+.mobile-tap-slider__counter {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 500;
+    z-index: 10;
+}
+
+/* Mobile Card Slider Styles */
+
+.mobile-card-slider {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.mobile-card-slider__container {
+    position: relative;
+    width: 100%;
+    height: auto; /* Auto height to fit image */
+    aspect-ratio: 4/3; /* Maintain aspect ratio */
+}
+
+.mobile-card-slider__track {
+    display: flex;
+    transition: transform 0.05s ease-out; /* Much faster transition */
+    height: 100%;
+}
+
+.mobile-card-slider__slide {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+}
+
+.mobile-card-slider__slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Show full image instead of cropping */
+    display: block;
+    border-radius: 8px;
+    background: #f8f8f8; /* Light background for letterboxing */
+}
+
+/* Navigation arrows removed - display only slider */
+
+/* Image counter */
+.mobile-card-slider__counter {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 500;
+    z-index: 10;
+}
+
+/* Hide navigation for single image */
+.mobile-card-slider--single .mobile-card-slider__nav,
+.mobile-card-slider--single .mobile-card-slider__counter {
+    display: none;
+}
+
+/* Touch support for mobile */
+.mobile-card-slider__track {
+    touch-action: pan-x;
+}
+
+/* Product Card Slider Styles */
+
+.product-card-slider {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.product-card-slider__container {
+    position: relative;
+    width: 100%;
+    height: 200px; /* Fixed height for consistency */
+}
+
+.product-card-slider__track {
+    display: flex;
+    transition: transform 0.3s ease;
+    height: 100%;
+}
+
+.product-card-slider__slide {
+    flex: 0 0 100%;
+    width: 100%;
+    height: 100%;
+}
+
+.product-card-slider__slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 8px;
+}
+
+/* Navigation arrows */
+.product-card-slider__nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.product-card-slider:hover .product-card-slider__nav {
+    opacity: 1;
+}
+
+.product-card-slider__nav--prev {
+    left: 8px;
+}
+
+.product-card-slider__nav--next {
+    right: 8px;
+}
+
+.product-card-slider__nav:hover {
+    background: rgba(0, 0, 0, 0.7);
+}
+
+/* Dots indicator */
+.product-card-slider__dots {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 4px;
+    z-index: 10;
+}
+
+.product-card-slider__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.product-card-slider__dot--active {
+    background: rgba(255, 255, 255, 0.9);
+}
+
+/* Image counter */
+.product-card-slider__counter {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 500;
+    z-index: 10;
+}
+
+/* Hide navigation for single image */
+.product-card-slider--single .product-card-slider__nav,
+.product-card-slider--single .product-card-slider__dots,
+.product-card-slider--single .product-card-slider__counter {
+    display: none;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .product-card-slider__container {
+        height: 180px;
+    }
+    
+    .product-card-slider__nav {
+        width: 28px;
+        height: 28px;
+        font-size: 12px;
+    }
+    
+    .product-card-slider__counter {
+        font-size: 10px;
+        padding: 1px 4px;
+    }
+}
+
+/* Touch support for mobile */
+.product-card-slider__track {
+    touch-action: pan-x;
+}
+
+/* Loading state */
+.product-card-slider__slide img {
+    background: #f0f0f0;
+}
+
+.product-card-slider__slide img[src=""] {
+    background: #f0f0f0 url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ccc"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>') center/50px no-repeat;
+}
