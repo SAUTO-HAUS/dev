@@ -397,23 +397,33 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             <div class="sale-grid sale-benefits__grid">
                 <article class="sale-card">
-                    <div class="sale-card__icon sale-icon--badge"></div>
+                    <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
+                        <img src="/content/site/page/new_pages/sale/icons/sale-1-1.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
+                    </div>
                     <h3><?=htmlspecialchars($benefitItems[0] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
                 </article>
                 <article class="sale-card">
-                    <div class="sale-card__icon sale-icon--contract"></div>
+                    <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
+                        <img src="/content/site/page/new_pages/sale/icons/sale-1-2.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
+                    </div>
                     <h3><?=htmlspecialchars($benefitItems[1] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
                 </article>
                 <article class="sale-card">
-                    <div class="sale-card__icon sale-icon--shield"></div>
+                    <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
+                        <img src="/content/site/page/new_pages/sale/icons/sale-1-3.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
+                    </div>
                     <h3><?=htmlspecialchars($benefitItems[2] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
                 </article>
                 <article class="sale-card">
-                    <div class="sale-card__icon sale-icon--speaker"></div>
+                    <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
+                        <img src="/content/site/page/new_pages/sale/icons/sale-1-4.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
+                    </div>
                     <h3><?=htmlspecialchars($benefitItems[3] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
                 </article>
                 <article class="sale-card">
-                    <div class="sale-card__icon sale-icon--rocket"></div>
+                    <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
+                        <img src="/content/site/page/new_pages/sale/icons/sale-1-5.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
+                    </div>
                     <h3><?=htmlspecialchars($benefitItems[4] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
                 </article>
             </div>
@@ -428,34 +438,48 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             <div class="sale-steps">
                 <div class="sale-step">
-                    <div class="sale-step__icon sale-icon--garage"></div>
+                    <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
+                        <img src="/content/site/page/new_pages/sale/icons/sale-2-1.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
+                    </div>
                     <p><?=htmlspecialchars($howSteps[0] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                     <div class="category-car-image" style="position: absolute !important; top: 195px !important; left: 50% !important; transform: translateX(-50%) !important; width: 100% !important; text-align: center !important;">
                         <img src="/content/site/page/new_pages/credit/credit-media/car-2.png" alt="Sale Car" class="car-category-image" style="width: 100% !important; max-width: 100% !important; height: auto !important; display: block !important;">
                     </div>
                 </div>
                 <div class="sale-step">
-                    <div class="sale-step__icon sale-icon--inspection"></div>
+                    <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
+                        <img src="/content/site/page/new_pages/sale/icons/sale-2-2.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
+                    </div>
                     <p><?=htmlspecialchars($howSteps[1] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
                 <div class="sale-step">
-                    <div class="sale-step__icon sale-icon--pen"></div>
+                    <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
+                        <img src="/content/site/page/new_pages/sale/icons/sale-2-3.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
+                    </div>
                     <p><?=htmlspecialchars($howSteps[2] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
                 <div class="sale-step">
-                    <div class="sale-step__icon sale-icon--wash"></div>
+                    <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
+                        <img src="/content/site/page/new_pages/sale/icons/sale-2-4.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
+                    </div>
                     <p><?=htmlspecialchars($howSteps[3] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
                 <div class="sale-step">
-                    <div class="sale-step__icon sale-icon--megaphone"></div>
+                    <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
+                        <img src="/content/site/page/new_pages/sale/icons/sale-2-5.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
+                    </div>
                     <p><?=htmlspecialchars($howSteps[4] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
                 <div class="sale-step">
-                    <div class="sale-step__icon sale-icon--handshake"></div>
+                    <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
+                        <img src="/content/site/page/new_pages/sale/icons/sale-2-6.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
+                    </div>
                     <p><?=htmlspecialchars($howSteps[5] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
                 <div class="sale-step">
-                    <div class="sale-step__icon sale-icon--cash"></div>
+                    <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
+                        <img src="/content/site/page/new_pages/sale/icons/sale-2-7.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
+                    </div>
                     <p><?=htmlspecialchars($howSteps[6] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
             </div>
@@ -470,19 +494,27 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
             <div class="sale-compare__grid">
                 <div class="sale-compare__card">
-                    <div class="sale-compare__icon sale-icon--clock"></div>
+                    <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
+                        <img src="/content/site/page/new_pages/sale/icons/sale-3-1.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
+                    </div>
                     <p><?=htmlspecialchars($compareItems[0] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
                 <div class="sale-compare__card">
-                    <div class="sale-compare__icon sale-icon--security"></div>
+                    <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
+                        <img src="/content/site/page/new_pages/sale/icons/sale-3-2.png?v=3" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
+                    </div>
                     <p><?=htmlspecialchars($compareItems[1] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
                 <div class="sale-compare__card">
-                    <div class="sale-compare__icon sale-icon--deal"></div>
+                    <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
+                        <img src="/content/site/page/new_pages/sale/icons/sale-3-3.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
+                    </div>
                     <p><?=htmlspecialchars($compareItems[2] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
                 <div class="sale-compare__card">
-                    <div class="sale-compare__icon sale-icon--trust"></div>
+                    <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
+                        <img src="/content/site/page/new_pages/sale/icons/sale-3-4.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
+                    </div>
                     <p><?=htmlspecialchars($compareItems[3] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
             </div>
