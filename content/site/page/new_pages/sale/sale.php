@@ -90,7 +90,7 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
 
 <style>
 #sale-page {
-    margin: 0 !important;
+    margin: 0 0 -100px 0 !important;
     padding: 0 !important;
 }
 #sale-page .sale-hero h1 {
