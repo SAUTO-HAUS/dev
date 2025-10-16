@@ -59,6 +59,7 @@
     width: 100%;
     height: auto; /* Auto height to fit image */
     aspect-ratio: 4/3; /* Maintain aspect ratio */
+    margin-bottom: 20px; /* Space for line indicator below */
 }
 
 .mobile-card-slider__track {
@@ -103,6 +104,34 @@
     display: none;
 }
 
+/* Slider indicator line */
+.mobile-card-slider__line-indicator {
+    position: absolute;
+    bottom: -12px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: #ddd;
+    border-radius: 2px;
+}
+
+.mobile-card-slider__line-indicator::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: var(--progress, 0%);
+    background: #000; /* Black active color */
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+/* Hide line indicator for single image */
+.mobile-card-slider--single .mobile-card-slider__line-indicator {
+    display: none;
+}
+
 /* Touch support for mobile */
 .mobile-card-slider__track {
     touch-action: pan-y;
@@ -120,6 +149,7 @@
     position: relative;
     width: 100%;
     height: 200px; /* Fixed height for consistency */
+    margin-bottom: 20px; /* Space for line indicator below */
 }
 
 .product-card-slider__track {
@@ -254,4 +284,32 @@
 
 .product-card-slider__slide img[src=""] {
     background: #f0f0f0 url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ccc"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>') center/50px no-repeat;
+}
+
+/* Slider indicator line */
+.product-card-slider__line-indicator {
+    position: absolute;
+    bottom: -12px;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: #ddd;
+    border-radius: 2px;
+}
+
+.product-card-slider__line-indicator::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: var(--progress, 0%);
+    background: #000; /* Black active color */
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+/* Hide line indicator for single image */
+.product-card-slider--single .product-card-slider__line-indicator {
+    display: none;
 }
