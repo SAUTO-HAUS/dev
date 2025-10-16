@@ -65,7 +65,7 @@ $compareItems = is_array($compareItems) ? $compareItems : [];
 $faqItems = $saleTranslate(['faq', 'items']);
 $faqItems = is_array($faqItems) ? $faqItems : [];
 ?>
-<link rel="stylesheet" type="text/css" href="/content/site/page/new_pages/sale/sale.css?v=1.4">
+<link rel="stylesheet" type="text/css" href="/content/site/page/new_pages/sale/sale.css?v=1.5">
 <script src="/content/site/page/new_pages/sale/sale.js?v=1.2" defer></script>
 
 <!-- Structured Data for SEO -->
@@ -129,6 +129,7 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
 }
 .sale-grid.sale-benefits__grid .sale-card {
     background-color: #f1f1f1 !important;
+    border: 0.1rem solid #d7d8db !important;
 }
 .sale-grid.sale-benefits__grid {
     display: grid !important;
@@ -138,7 +139,127 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
 .sale-hero.copy-block {
     padding-bottom: 10px !important;
 }
+.sale-section.sale-how {
+    margin-top: 0 !important;
+    padding-top: 25px !important;
+    padding-bottom: 25px !important;
+}
+.sale-steps {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr 1fr 1fr !important;
+    grid-template-rows: 15rem 15rem !important;
+    gap: 1rem !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    justify-content: center !important;
+}
+.sale-steps .sale-step:nth-child(1) {
+    grid-row: 1 / span 2 !important;
+    grid-column: 1 / 2 !important;
+}
+.sale-steps .sale-step:nth-child(2) { grid-row: 1 !important; grid-column: 2 !important; }
+.sale-steps .sale-step:nth-child(3) { grid-row: 1 !important; grid-column: 3 !important; }
+.sale-steps .sale-step:nth-child(4) { grid-row: 1 !important; grid-column: 4 !important; }
+.sale-steps .sale-step:nth-child(5) { grid-row: 2 !important; grid-column: 2 !important; }
+.sale-steps .sale-step:nth-child(6) { grid-row: 2 !important; grid-column: 3 !important; }
+.sale-steps .sale-step:nth-child(7) { grid-row: 2 !important; grid-column: 4 !important; }
+.sale-steps .sale-step {
+    background-color: #f1f1f1 !important;
+    border: 0.1rem solid #d7d8db !important;
+}
+.sale-section.sale-compare {
+    margin-top: 0 !important;
+    padding-top: 25px !important;
+    padding-bottom: 25px !important;
+}
+#sale-page .sale-compare__card {
+    background-color: #ffffff !important;
+    border: 0.1rem solid #d7d8db !important;
+}
+.sale-compare__grid .sale-compare__card {
+    background-color: #ffffff !important;
+    border: 0.1rem solid #d7d8db !important;
+}
+.sale-compare__card.is-visible {
+    background-color: #ffffff !important;
+    border: 0.1rem solid #d7d8db !important;
+}
+#sale-page .sale-compare__card.is-visible {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    background-image: none !important;
+    border: 0.1rem solid #d7d8db !important;
+}
+#sale-page .sale-section.sale-compare .sale-compare__card {
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+    background-image: none !important;
+    border: 0.1rem solid #d7d8db !important;
+}
+.sale-section.sale-security {
+    margin-top: 0 !important;
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+}
+.sale-section.sale-faq {
+    margin-top: 0 !important;
+    padding-top: 15px !important;
+    padding-bottom: 15px !important;
+}
+.sale-container {
+    margin-top: 20px !important;
+}
+.sale-steps .sale-step:nth-child(1) {
+    position: relative !important;
+}
+.sale-steps .sale-step:nth-child(1) .category-car-image {
+    position: absolute !important;
+    bottom: 0px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    margin-top: 0 !important;
+    text-align: center !important;
+}
+.sale-step .car-category-image {
+    max-width: 100% !important;
+    width: 100% !important;
+    height: auto !important;
+    opacity: 0.9 !important;
+}
+#sale-page .sale-steps .sale-step:nth-child(1) .category-car-image .car-category-image {
+    max-width: 100% !important;
+    width: 100% !important;
+    height: auto !important;
+}
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(function() {
+        const compareCards = document.querySelectorAll('.sale-compare__card');
+        compareCards.forEach(function(card) {
+            card.style.setProperty('background', '#ffffff', 'important');
+            card.style.setProperty('background-color', '#ffffff', 'important');
+            card.style.setProperty('background-image', 'none', 'important');
+            card.style.setProperty('border', '0.1rem solid #d7d8db', 'important');
+        });
+        
+        const firstStep = document.querySelector('.sale-steps .sale-step:nth-child(1)');
+        const carImage = document.querySelector('.sale-steps .sale-step:nth-child(1) .category-car-image');
+        if (firstStep) {
+            firstStep.style.setProperty('position', 'relative', 'important');
+        }
+        if (carImage) {
+            carImage.style.setProperty('position', 'absolute', 'important');
+            carImage.style.setProperty('bottom', '10px', 'important');
+            carImage.style.setProperty('left', '50%', 'important');
+            carImage.style.setProperty('transform', 'translateX(-50%)', 'important');
+            carImage.style.setProperty('margin-top', '0', 'important');
+        }
+    }, 100);
+});
+</script>
 
 <div id="sale-page">
     <section class="sale-section sale-intro sale-animated">
@@ -228,6 +349,9 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
                 <div class="sale-step">
                     <div class="sale-step__icon sale-icon--garage"></div>
                     <p><?=htmlspecialchars($howSteps[0] ?? '', ENT_QUOTES, 'UTF-8')?></p>
+                    <div class="category-car-image" style="position: absolute !important; top: 195px !important; left: 50% !important; transform: translateX(-50%) !important; width: 100% !important; text-align: center !important;">
+                        <img src="/content/site/page/new_pages/credit/credit-media/car-2.png" alt="Sale Car" class="car-category-image" style="width: 100% !important; max-width: 100% !important; height: auto !important; display: block !important;">
+                    </div>
                 </div>
                 <div class="sale-step">
                     <div class="sale-step__icon sale-icon--inspection"></div>
@@ -252,18 +376,6 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
                 <div class="sale-step">
                     <div class="sale-step__icon sale-icon--cash"></div>
                     <p><?=htmlspecialchars($howSteps[6] ?? '', ENT_QUOTES, 'UTF-8')?></p>
-                </div>
-                <div class="sale-step">
-                    <div class="sale-step__icon sale-icon--deal"></div>
-                    <p><?=htmlspecialchars($howSteps[7] ?? '', ENT_QUOTES, 'UTF-8')?></p>
-                </div>
-                <div class="sale-step">
-                    <div class="sale-step__icon sale-icon--trust"></div>
-                    <p><?=htmlspecialchars($howSteps[8] ?? '', ENT_QUOTES, 'UTF-8')?></p>
-                </div>
-                <div class="sale-step">
-                    <div class="sale-step__icon sale-icon--garage"></div>
-                    <p><?=htmlspecialchars($howSteps[9] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
             </div>
         </div>

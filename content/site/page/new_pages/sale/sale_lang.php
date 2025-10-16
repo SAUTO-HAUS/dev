@@ -37,9 +37,6 @@ return [
                 'Размещаем объявления на 999.md, Facebook, Instagram, Telegram, TikTok.',
                 'Ведём переговоры и показываем автомобиль покупателям.',
                 'Организуем сделку и передаём вам деньги.',
-                'Текст здесь 8',
-                'Текст здесь 9',
-                'Текст здесь 10',
             ],
         ],
         'compare' => [
@@ -116,9 +113,6 @@ return [
                 'Publicăm anunțuri pe 999.md, Facebook, Instagram, Telegram, TikTok.',
                 'Negociem și prezentăm mașina cumpărătorilor.',
                 'Organizăm tranzacția și îți transferăm banii.',
-                'Text aici 8',
-                'Text aici 9',
-                'Text aici 10',
             ],
         ],
         'compare' => [
@@ -195,9 +189,6 @@ return [
                 'We post listings on 999.md, Facebook, Instagram, Telegram, and TikTok.',
                 'We negotiate and show the car to buyers.',
                 'We finalize the deal and hand you the money.',
-                'Text here 8',
-                'Text here 9',
-                'Text here 10',
             ],
         ],
         'compare' => [
