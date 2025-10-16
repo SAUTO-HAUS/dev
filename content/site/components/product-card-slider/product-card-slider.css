@@ -109,7 +109,7 @@
 
 /* Touch support for mobile */
 .mobile-card-slider__track {
-    touch-action: pan-x;
+    touch-action: pan-y;
 }
 
 /* Product Card Slider Styles */
@@ -249,7 +249,7 @@
 
 /* Touch support for mobile */
 .product-card-slider__track {
-    touch-action: pan-x;
+    touch-action: pan-y;
 }
 
 /* Loading state */

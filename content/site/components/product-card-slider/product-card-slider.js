@@ -72,25 +72,51 @@ class ProductCardSlider {
     
     addTouchSupport() {
         let startX = 0;
-        let currentX = 0;
+        let startY = 0;
         let isDragging = false;
         
         this.track.addEventListener('touchstart', (e) => {
             startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
             isDragging = true;
         }, { passive: true });
         
         this.track.addEventListener('touchmove', (e) => {
             if (!isDragging) return;
-            currentX = e.touches[0].clientX;
-        }, { passive: true });
+            
+            const currentX = e.touches[0].clientX;
+            const currentY = e.touches[0].clientY;
+            
+            const diffX = Math.abs(startX - currentX);
+            const diffY = Math.abs(startY - currentY);
+            
+            // If vertical movement is greater than horizontal, allow scrolling
+            if (diffY > diffX) {
+                return;
+            }
+            
+            // Prevent default only for horizontal swipes
+            if (diffX > 30) {
+                e.preventDefault();
+            }
+        }, { passive: false });
         
         this.track.addEventListener('touchend', (e) => {
             if (!isDragging) return;
             isDragging = false;
             
+            const currentX = e.changedTouches[0].clientX;
             const diffX = startX - currentX;
-            const threshold = 50; // Minimum swipe distance
+            const threshold = 30; // Minimum swipe distance
+            
+            // Only handle horizontal swipes
+            const currentY = e.changedTouches[0].clientY;
+            const diffY = Math.abs(startY - currentY);
+            
+            // If vertical movement is greater than horizontal, don't handle swipe
+            if (diffY > Math.abs(diffX)) {
+                return;
+            }
             
             if (Math.abs(diffX) > threshold) {
                 if (diffX > 0) {
@@ -98,9 +124,6 @@ class ProductCardSlider {
                 } else {
                     this.prevSlide();
                 }
-                // Prevent card click after swipe
-                e.preventDefault();
-                e.stopPropagation();
             }
         });
     }
@@ -236,16 +259,21 @@ class MobileCardSlider {
                     hasMoved = true;
                 }
             }
+            
+            // Allow vertical scrolling by not preventing default
         }, { passive: true });
         
         this.track.addEventListener('touchend', (e) => {
             const endX = e.changedTouches[0].clientX;
+            const endY = e.changedTouches[0].clientY;
             const endTime = Date.now();
             const diffX = startX - endX;
+            const diffY = Math.abs(startY - endY);
             const diffTime = endTime - startTime;
             
-            // Only trigger if it's a horizontal swipe with reasonable distance
-            if (hasMoved && Math.abs(diffX) > 30 && diffTime < 500) {
+            // Only trigger if it's a horizontal swipe with reasonable distance and time
+            // and if vertical movement is not dominant
+            if (hasMoved && Math.abs(diffX) > 30 && diffTime < 500 && diffY < Math.abs(diffX)) {
                 if (diffX > 0) {
                     this.nextSlide();
                 } else {
