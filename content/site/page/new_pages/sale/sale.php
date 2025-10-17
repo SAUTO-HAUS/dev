@@ -29,6 +29,9 @@ if (isset($saleTranslations[$requestedLang]['meta'])) {
 $currentSaleTranslations = $saleTranslations[$requestedLang];
 $fallbackSaleTranslations = $saleTranslations['ru'];
 
+// Include the main language file to access $lng variable
+require_once($_SERVER['DOCUMENT_ROOT'] . '/content/default/language.php');
+
 $saleTranslate = function (array $path) use ($currentSaleTranslations, $fallbackSaleTranslations) {
     $value = $currentSaleTranslations;
     foreach ($path as $segment) {
@@ -90,7 +93,7 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
 
 <style>
 #sale-page {
-    margin: 0 0 -100px 0 !important;
+    margin: -40px 0 -100px 0 !important;
     padding: 0 !important;
 }
 #sale-page .sale-hero h1 {
@@ -135,6 +138,41 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
 .sale-grid.sale-benefits__grid .sale-card h3 {
     font-family: inherit !important;
     font-weight: normal !important;
+}
+#crumbs {
+    display: block !important;
+    margin-top: 20px !important;
+    margin-bottom: 10px !important;
+    padding: 0 20px !important;
+    z-index: 100 !important;
+    position: relative !important;
+    background: white !important;
+}
+/* Desktop breadcrumb styling */
+@media (min-width: 769px) {
+    #crumbs {
+        margin-top: 20px !important;
+        margin-bottom: 20px !important;
+        padding: 0 !important;
+        background: transparent !important;
+        width: 80vw !important;
+        margin-left: 10vw !important;
+        margin-right: 10vw !important;
+    }
+}
+/* Mobile breadcrumb styling */
+@media (max-width: 768px) {
+    #crumbs {
+        margin-top: 60px !important;
+        margin-bottom: 15px !important;
+        padding: 0 20px !important;
+        background: white !important;
+        position: relative !important;
+        z-index: 100 !important;
+        width: 100vw !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
 }
 .sale-grid.sale-benefits__grid {
     display: grid !important;
@@ -249,7 +287,7 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
 /* Mobile version */
 @media (max-width: 768px) {
     #sale-page {
-        margin-top: 40px !important;
+        margin-top: -30px !important;
     }
     #sale-page .sale-section.sale-intro {
         padding-top: 10px !important;
