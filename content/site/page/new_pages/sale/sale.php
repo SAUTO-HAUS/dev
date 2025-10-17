@@ -481,7 +481,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="sale-grid sale-benefits__grid">
                 <article class="sale-card">
                     <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
-                        <img src="/content/site/page/new_pages/sale/icons/sale-1-1.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
+                        <img src="/content/site/page/new_pages/sale/icons/sale-1-1-v2.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
                     </div>
                     <?php if (is_array($benefitItems[0] ?? null)): ?>
                         <h3><?=htmlspecialchars($benefitItems[0]['title'] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
@@ -492,7 +492,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </article>
                 <article class="sale-card">
                     <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
-                        <img src="/content/site/page/new_pages/sale/icons/sale-1-2.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
+                        <img src="/content/site/page/new_pages/sale/icons/sale-1-2-v2.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
                     </div>
                     <?php if (is_array($benefitItems[1] ?? null)): ?>
                         <h3><?=htmlspecialchars($benefitItems[1]['title'] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
