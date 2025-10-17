@@ -98,11 +98,16 @@ function includeKycPages() {
 }
 
 function requiresKycPages($contractType = null, $price = null) {
+    // con_intermed (transport services) does not require KYC
+    if ($contractType === 'con_intermed') {
+        return false;
+    }
+    
     // List of contract types that require KYC pages
     $kycContractTypes = [
         'vinzare_proc', 'vinzare_avans', 'vinzare_sauto', 
         'con_plata', 'con_arvon', 'con_arvon_com', 
-        'com_transport', 'con_intermed'
+        'com_transport'
     ];
     
     // Check contract type
