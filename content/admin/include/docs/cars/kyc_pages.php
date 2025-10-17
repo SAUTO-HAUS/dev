@@ -2,10 +2,10 @@
 
 $kyc_pages = '
 	<!-- KYC PAGE 14 -->
-	<div class="pg bg" style="page-break-before: always; margin-top: 3mm;">
+	<div class="pg bg" style="page-break-before: always; margin-top: 0mm;">
 		<div class="head">
-			<div style="text-align: center; font-size: 1.2rem; font-family: \'def\';">Anexa nr. 1</div>
-			<div style="text-align: center; font-size: 1.1rem; font-weight: bold; margin-bottom: 2mm;">CHESTIONAR CUNOAȘTE-ȚI CLIENTULUI PERSOANĂ FIZICĂ</div>
+			<div style="text-align: center; font-size: 1rem; font-family: \'def\';">Anexa nr. 1</div>
+			<div style="text-align: center; font-size: 0.9rem; font-weight: bold; margin-bottom: 1mm;">CHESTIONAR CUNOAȘTE-ȚI CLIENTULUI PERSOANĂ FIZICĂ</div>
 		</div>
 		
 		<table style="width: 100%; border-collapse: collapse; margin: 0.5mm auto;">
@@ -192,50 +192,21 @@ $kyc_pages = '
 					</div>
 				</td>
 			</tr>
-		</table>
-		
-		<div style="margin-top: 10mm; padding-top: 15mm;">
-			<div style="text-align: center; margin-bottom: 5mm;">
-				<span style="font-weight: bold;">Declarații ale clientului:</span>
-			</div>
-			
-			<div style="text-align: justify; margin-bottom: 1mm;">
-				<span style="font-weight: bold;">1.</span> <span style="font-size: 0.9rem;">Confirm corectitudinea datelor prezentate și îmi asum obligația să comunic în scris către SAUTO SRL orice modificare referitoare la cele declarate mai sus, în termen de 5 zile lucrătoare de la data eliberării documentului confirmativ. Confirm, de asemenea, proveniența legală a mijloacelor bănești, încasate/depuse în cont, inclusiv a mijloacelor ce vor derula prin contul/conturile mele.</span>
-			</div>
-			
-			<div style="text-align: justify; margin-bottom: 1mm;">
-				<span style="font-weight: bold;">2.</span> <span style="font-size: 0.9rem;">Îmi exprim consimțământul expres la prelucrarea de către SAUTO SRL a datelor mele cu caracter personal care sunt prelucrate în scopuri legate de deservirea calitativă aferentă serviciilor prestate de SAUTO SRL, inclusiv alte cazuri conform legislației în vigoare. Aceste acțiuni pot fi efectuate și prin utilizarea mijloacelor informatice automatizate în conformitate cu prevederile Legii Nr. 133 din 08.07.2011 privind protecția datelor cu caracter personal.</span>
-			</div>
-			
-			<div style="text-align: justify; margin-bottom: 1mm;">
-				<span style="font-weight: bold;">3.</span> <span style="font-size: 0.9rem;">Prin prezentul, declar pe propria răspundere că sunt beneficiarul efectiv al contului/lor, implicit al mijloacelor bănești utilizate prin intermediul acestuia/acestora.</span>
-			</div>
-		</div>
-		
-		<table style="width: 100%; border: none; margin-top: 5mm;">
 			<tr>
-				<td colspan="2" style="border: none; text-align: left; padding: 2mm;">
-					<table style="width: 100%; border: none;">
-						<tr>
-							<td style="border: none; width: 50%; vertical-align: middle; padding: 2mm; text-align: center;">
-								<div>Data completării</div>
-								<div style="border-bottom: 1px dotted #000; width: 50mm; min-height: 5mm; margin: 2mm auto;">' . (isset($_POST['kyc_completion_date']) ? $_POST['kyc_completion_date'] : date('d.m.Y')) . '</div>
-							</td>
-							<td style="border: none; width: 50%; vertical-align: middle; padding: 2mm; text-align: center;">
-								<div>Semnătura clientului</div>
-								<div style="border-bottom: 1px dotted #000; width: 70mm; min-height: 5mm; margin: 2mm auto;"></div>
-							</td>
-						</tr>
-					</table>
+				<td colspan="2" style="border: 1px solid #000; padding: 1mm; vertical-align: middle;">
+					<div style="display: flex; width: 100%; align-items: flex-start;">
+						<div style="width: 50%; text-align: center; vertical-align: top;">
+							<div style="font-weight: bold; margin-bottom: 2mm;">Data completării</div>
+							<div style="border-bottom: 1px dotted #000; width: 50mm; height: 5mm; margin: 0 auto; font-weight: bold; display: flex; align-items: center; justify-content: center;">' . (isset($_POST['kyc_completion_date']) ? $_POST['kyc_completion_date'] : date('d.m.Y')) . '</div>
+						</div>
+						<div style="width: 50%; text-align: center; vertical-align: top;">
+							<div style="font-weight: bold; margin-bottom: 2mm;">Semnătura clientului</div>
+							<div style="border-bottom: 1px dotted #000; width: 70mm; height: 5mm; margin: 0 auto; font-weight: bold;"></div>
+						</div>
+					</div>
 				</td>
 			</tr>
-		</table>
-		
-		<div style="margin-top: 10mm; font-size: 0.8rem; text-align: justify;">
-			<span style="vertical-align: super; font-size: 0.7rem;">1</span> <span style="font-weight: 600;">Persoană expusă politic</span> - persoana fizică definită conform <span style="font-weight: 600;">art. 8 din Legea nr.308/2017</span> cu privire la prevenirea și combaterea spălării banilor și finanțării terorismului.
-		</div>
-		
-		
+		</table>	
 ';
 
 echo $kyc_pages;
