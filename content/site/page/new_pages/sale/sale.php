@@ -95,6 +95,9 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
 #sale-page {
     margin: -40px 0 -100px 0 !important;
     padding: 0 !important;
+    width: 100vw !important;
+    margin-left: calc(-50vw + 50%) !important;
+    margin-right: calc(-50vw + 50%) !important;
 }
 #sale-page .sale-hero h1 {
     font-size: clamp(24px, 3.4vw, 34px) !important;
@@ -625,8 +628,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 </script>
             </div>
         </div>
-         <div class="sale-container" style="margin-top: 10px; position: relative; z-index: 10;">
-        <img src="/content/site/page/new_pages/sale/icons/bnr_sale-rec.jpg" style="width:100%; margin:0; padding:0; position: relative; z-index: 10;" />
+         <div style="margin-top: 10px; position: relative; z-index: 10; width: 100vw; margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%);">
+        <img src="/content/site/page/new_pages/sale/icons/bnr_sale-rec.jpg" style="width:100%; margin:0; padding:0; position: relative; z-index: 10; display: block;" />
     </div>
     </section>
 
