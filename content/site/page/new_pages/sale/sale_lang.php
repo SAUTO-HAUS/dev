@@ -19,11 +19,26 @@ return [
             'pretitle' => 'Преимущества',
             'title' => 'Почему продать машину через Sauto Haus проще и выгоднее, чем самому париться',
             'items' => [
-                'Реальная рыночная цена – продаём дороже, чем перекупы.',
-                'Полная прозрачность: договор, официальные расчёты.',
-                'Ваш автомобиль в безопасности – стоит у нас на охраняемой площадке.',
-                'Мы берём на себя рекламу, звонки, показы.',
-                'Быстрое оформление: деньги получаете сразу после продажи.',
+                [
+                    'title' => 'Справедливая цена, без спекуляций',
+                    'content' => 'Реальная рыночная цена – продаём дороже, чем перекупы.',
+                ],
+                [
+                    'title' => 'Полная ясность',
+                    'content' => 'Полная прозрачность: договор, официальные расчёты.',
+                ],
+                [
+                    'title' => 'Гарантированная безопасность',
+                    'content' => 'Ваш автомобиль в безопасности – стоит у нас на охраняемой площадке.',
+                ],
+                [
+                    'title' => 'Помогаем вам расти',
+                    'content' => 'Мы берём на себя рекламу, звонки, показы.',
+                ],
+                [
+                    'title' => 'Гарантированная быстрая оплата',
+                    'content' => 'Быстрое оформление: деньги получаете сразу после продажи.',
+                ],
             ],
         ],
         'how' => [
@@ -95,11 +110,26 @@ return [
             'pretitle' => 'Avantaje',
             'title' => 'De ce să vinzi mașina prin Sauto Haus e mai simplu și mai avantajos decât să-ți bați capul singur',
             'items' => [
-                'Preț real de piață – vindem mai scump decât samsarii.',
-                'Transparență totală: contract și plăți oficiale.',
-                'Mașina ta este în siguranță – stă la noi pe o parcare păzită.',
-                'Ne ocupăm noi de promovare, apeluri și prezentări.',
-                'Formalizare rapidă: primești banii imediat după vânzare.',
+                [
+                    'title' => 'Preț corect, nu speculații',
+                    'content' => 'Preț real de piață – vindem mai scump decât samsarii.',
+                ],
+                [
+                    'title' => 'Claritate totală',
+                    'content' => 'Transparență totală: contract și plăți oficiale.',
+                ],
+                [
+                    'title' => 'Siguranță garantată',
+                    'content' => 'Mașina ta este în siguranță – stă la noi pe o parcare păzită.',
+                ],
+                [
+                    'title' => 'Te ajutăm să crești',
+                    'content' => 'Ne ocupăm noi de promovare, apeluri și prezentări.',
+                ],
+                [
+                    'title' => 'Plată rapidă garantată',
+                    'content' => 'Formalizare rapidă: primești banii imediat după vânzare.',
+                ],
             ],
         ],
         'how' => [
@@ -171,11 +201,26 @@ return [
             'pretitle' => 'Benefits',
             'title' => 'Why selling your car through Sauto Haus is easier and more profitable than stressing on your own',
             'items' => [
-                'Real market price – we sell for more than quick resellers.',
-                'Complete transparency: formal contract and official payments.',
-                'Your car stays safe on our guarded lot.',
-                'We take care of advertising, calls, and showings.',
-                'Fast paperwork: you get paid right after the sale.',
+                [
+                    'title' => 'Fair price, no speculation',
+                    'content' => 'Real market price – we sell for more than quick resellers.',
+                ],
+                [
+                    'title' => 'Total clarity',
+                    'content' => 'Complete transparency: formal contract and official payments.',
+                ],
+                [
+                    'title' => 'Guaranteed security',
+                    'content' => 'Your car stays safe on our guarded lot.',
+                ],
+                [
+                    'title' => 'We help you grow',
+                    'content' => 'We take care of advertising, calls, and showings.',
+                ],
+                [
+                    'title' => 'Guaranteed fast payment',
+                    'content' => 'Fast paperwork: you get paid right after the sale.',
+                ],
             ],
         ],
         'how' => [

@@ -138,9 +138,28 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
     background-color: #f1f1f1 !important;
     border: 0.1rem solid #d7d8db !important;
 }
+.sale-grid.sale-benefits__grid .sale-card {
+    gap: 10px !important;
+}
 .sale-grid.sale-benefits__grid .sale-card h3 {
     font-family: inherit !important;
-    font-weight: normal !important;
+    font-weight: 600 !important;
+    margin: 0 !important;
+}
+.sale-grid.sale-benefits__grid .sale-card p {
+    margin: 0 !important;
+}
+.sale-grid.sale-benefits__grid .sale-card img {
+    width: 52px !important;
+    height: 52px !important;
+}
+.sale-steps .sale-step img {
+    width: 52px !important;
+    height: 52px !important;
+}
+.sale-compare__grid .sale-compare__card img {
+    width: 52px !important;
+    height: 52px !important;
 }
 #crumbs {
     display: block !important;
@@ -464,31 +483,56 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
                         <img src="/content/site/page/new_pages/sale/icons/sale-1-1.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
                     </div>
-                    <h3><?=htmlspecialchars($benefitItems[0] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
+                    <?php if (is_array($benefitItems[0] ?? null)): ?>
+                        <h3><?=htmlspecialchars($benefitItems[0]['title'] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
+                        <p><?=htmlspecialchars($benefitItems[0]['content'] ?? '', ENT_QUOTES, 'UTF-8')?></p>
+                    <?php else: ?>
+                        <h3><?=htmlspecialchars($benefitItems[0] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
+                    <?php endif; ?>
                 </article>
                 <article class="sale-card">
                     <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
                         <img src="/content/site/page/new_pages/sale/icons/sale-1-2.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
                     </div>
-                    <h3><?=htmlspecialchars($benefitItems[1] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
+                    <?php if (is_array($benefitItems[1] ?? null)): ?>
+                        <h3><?=htmlspecialchars($benefitItems[1]['title'] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
+                        <p><?=htmlspecialchars($benefitItems[1]['content'] ?? '', ENT_QUOTES, 'UTF-8')?></p>
+                    <?php else: ?>
+                        <h3><?=htmlspecialchars($benefitItems[1] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
+                    <?php endif; ?>
                 </article>
                 <article class="sale-card">
                     <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
                         <img src="/content/site/page/new_pages/sale/icons/sale-1-3.png?v=3" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
                     </div>
-                    <h3><?=htmlspecialchars($benefitItems[2] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
+                    <?php if (is_array($benefitItems[2] ?? null)): ?>
+                        <h3><?=htmlspecialchars($benefitItems[2]['title'] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
+                        <p><?=htmlspecialchars($benefitItems[2]['content'] ?? '', ENT_QUOTES, 'UTF-8')?></p>
+                    <?php else: ?>
+                        <h3><?=htmlspecialchars($benefitItems[2] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
+                    <?php endif; ?>
                 </article>
                 <article class="sale-card">
                     <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
                         <img src="/content/site/page/new_pages/sale/icons/sale-1-4.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
                     </div>
-                    <h3><?=htmlspecialchars($benefitItems[3] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
+                    <?php if (is_array($benefitItems[3] ?? null)): ?>
+                        <h3><?=htmlspecialchars($benefitItems[3]['title'] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
+                        <p><?=htmlspecialchars($benefitItems[3]['content'] ?? '', ENT_QUOTES, 'UTF-8')?></p>
+                    <?php else: ?>
+                        <h3><?=htmlspecialchars($benefitItems[3] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
+                    <?php endif; ?>
                 </article>
                 <article class="sale-card">
                     <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
                         <img src="/content/site/page/new_pages/sale/icons/sale-1-5.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
                     </div>
-                    <h3><?=htmlspecialchars($benefitItems[4] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
+                    <?php if (is_array($benefitItems[4] ?? null)): ?>
+                        <h3><?=htmlspecialchars($benefitItems[4]['title'] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
+                        <p><?=htmlspecialchars($benefitItems[4]['content'] ?? '', ENT_QUOTES, 'UTF-8')?></p>
+                    <?php else: ?>
+                        <h3><?=htmlspecialchars($benefitItems[4] ?? '', ENT_QUOTES, 'UTF-8')?></h3>
+                    <?php endif; ?>
                 </article>
             </div>
         </div>
