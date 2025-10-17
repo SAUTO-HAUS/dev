@@ -580,7 +580,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <div class="sale-step">
                     <div style="background: none !important; border-radius: 0 !important; box-shadow: none !important; padding: 0 !important; width: auto !important; height: auto !important;">
-                        <img src="/content/site/page/new_pages/sale/sales-2-6-v2.png.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
+                        <img src="/content/site/page/new_pages/sale/sales-2-6-v2.png" alt="Feature Icon" width="64" height="64" style="background: transparent !important; display: block !important;">
                     </div>
                     <p><?=htmlspecialchars($howSteps[5] ?? '', ENT_QUOTES, 'UTF-8')?></p>
                 </div>
