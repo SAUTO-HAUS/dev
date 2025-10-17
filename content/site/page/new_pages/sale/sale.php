@@ -150,16 +150,16 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
     margin: 0 !important;
 }
 .sale-grid.sale-benefits__grid .sale-card img {
-    width: 52px !important;
-    height: 52px !important;
+    width: 54px !important;
+    height: 54px !important;
 }
 .sale-steps .sale-step img {
-    width: 52px !important;
-    height: 52px !important;
+    width: 54px !important;
+    height: 54px !important;
 }
 .sale-compare__grid .sale-compare__card img {
-    width: 52px !important;
-    height: 52px !important;
+    width: 54px !important;
+    height: 54px !important;
 }
 #crumbs {
     display: block !important;
@@ -365,7 +365,7 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
     #sale-page .sale-section.sale-cta {
         padding-top: 5px !important;
         padding-bottom: 5px !important;
-        margin-bottom: 40px !important;
+        margin-bottom: 80px !important;
     }
     
     #sale-page .sale-section.sale-cta .sale-container {
@@ -377,6 +377,11 @@ $faqItems = is_array($faqItems) ? $faqItems : [];
     
     /* Hide image on mobile */
     #sale-page .sale-section.sale-cta .sale-container:last-child {
+        display: none !important;
+    }
+    
+    /* Hide banner image on mobile */
+    #sale-page .sale-section.sale-cta img[src*="bnr_sale-rec.jpg"] {
         display: none !important;
     }
 }
