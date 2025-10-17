@@ -5,8 +5,8 @@ $abr = 'AV';
 $rtrn = '
 <style>
 	.logo {float:left;}
-	.date {text-align:center; padding:15mm 0 0; float:left;}
-	.ttl {text-align:center; padding:15mm 0 0; clear:both; font-size:1.4rem; font-weight:bold;}
+	.date {text-align:center; padding:5mm 0 0; float:left;}
+	.ttl {text-align:center; padding:5mm 0 0; clear:both; font-size:1.4rem; font-weight:bold;}
 	tr > td.id {width:10%;} tr > td.nm {width:50%;} tr > td.prc {width:40%;}
 	.cont {margin:0;}
 	.txt_up {text-transform:uppercase;}
@@ -22,7 +22,7 @@ $rtrn = '
 	
 	.who {margin-top:1rem; text-align:justify;}
 	
-	.gr {margin-top:4mm; text-align:justify;}
+	.gr {margin-top:2mm; text-align:justify;}
 	.gr > .ttl {text-align:center; font-weight:bold;}
 	.gr > .sb {padding-left:10mm;}
 	
@@ -34,7 +34,7 @@ $rtrn = '
 	table.n2 tr {height:10mm;}
 	table.n2 tr > td {width:50%;}
 	
-	.pg:not(.x2) tr > td {padding:2mm;}
+	.pg:not(.x2) tr > td {padding:1mm;}
 	
 	.pg > .gr:first-of-type {margin-top:0;}
 	
@@ -97,6 +97,18 @@ $rtrn = '
 		</div>
 		<div class="gr">
 			<p><b>12.</b> Arvona se restituie in caz daca clientul se refuza de servicului auto la comanda pînă la licitarea automobilului cautat pe platforme de achizitii pentru dealeri.</p>
+		</div>
+
+		<div style="text-align: center;">
+					<span style="font-weight: bold; font-size: 0.8rem;">Declarații ale clientului:</span>
+			</div>
+			<div style="text-align: justify; margin-bottom: 0.5mm; line-height: 3.5mm;">
+					<span style="font-size: 0.75rem;"><span style="font-weight: bold;">1.</span> Confirm corectitudinea datelor prezentate și îmi asum obligația să comunic în scris către SAUTO SRL orice modificare referitoare la cele declarate mai sus, în termen de 5 zile lucrătoare de la data eliberării documentului confirmativ. Confirm, de asemenea, proveniența legală a mijloacelor bănești, încasate/depuse în cont, inclusiv a mijloacelor ce vor derula prin contul/conturile mele.<br/>
+					<span style="font-weight: bold;">2.</span> Îmi exprim consimțământul expres la prelucrarea de către SAUTO SRL a datelor mele cu caracter personal care sunt prelucrate în scopuri legate de deservirea calitativă aferentă serviciilor prestate de SAUTO SRL, inclusiv alte cazuri conform legislației în vigoare. Aceste acțiuni pot fi efectuate și prin utilizarea mijloacelor informatice automatizate în conformitate cu prevederile Legii Nr. 133 din 08.07.2011 privind protecția datelor cu caracter personal.<br/>
+					<span style="font-weight: bold;">3.</span> Prin prezentul, declar pe propria răspundere că sunt beneficiarul efectiv al contului/lor, implicit al mijloacelor bănești utilizate prin intermediul acestuia/acestora.</span>
+			</div>
+		<div style="margin-top: 1mm; font-size: 0.7rem; text-align: justify;">
+				<span style="vertical-align: super; font-size: 0.65rem;">1</span> <span style="font-weight: 600;">Persoană expusă politic</span> - persoana fizică definită conform <span style="font-weight: 600;">art. 8 din Legea nr.308/2017</span> cu privire la prevenirea și combaterea spălării banilor și finanțării terorismului.
 		</div>
 		
 		<div class="flx">
