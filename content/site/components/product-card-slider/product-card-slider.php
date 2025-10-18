@@ -65,14 +65,19 @@ function car_card_with_slider($v1='', $lmt='4', $zreq=null, $stts='av', $enable_
 
     // Generate HTML for each car
     foreach ($results as $r) {
-        // Get all images for slider (not just main image)
+        // Get all images for slider (limited to 7 for performance)
         if ($enable_slider) {
-            $pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `main` DESC, `pos` ASC'); 
+            $pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `main` DESC, `pos` ASC LIMIT 7'); 
         } else {
             $pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id AND `main`="1" LIMIT 1'); 
         }
         $pdo2->execute([ 'it_id'=>$r['id'] ]); 
         $images = $pdo2->fetchAll(PDO::FETCH_ASSOC);
+        
+        // Ensure maximum 7 images for performance
+        if (count($images) > 7) {
+            $images = array_slice($images, 0, 7);
+        }
         
         // Generate status badges
         $z_stat = '';
@@ -217,7 +222,7 @@ function generateImageSliderHTML($images, $car_data, $enable_slider = true) {
     if (count($images) == 1 || !$enable_slider) {
         // Single image - no slider needed
         $image = $images[0];
-        $p_src = '/'._CAR_IMG.'/'.$car_data['p_path'].'/'.$car_data['id'].'/high/';
+        $p_src = '/'._CAR_IMG.'/'.$car_data['p_path'].'/'.$car_data['id'].'/med/';
         $p_name = $image['name'].$img_frmt;
         return '<img src="'.$p_src.$p_name.'" alt="car '.$car_data['br_nm'].' '.$car_data['mo_nm'].' id'.$car_data['id'].' main photo" />';
     }
@@ -228,7 +233,7 @@ function generateImageSliderHTML($images, $car_data, $enable_slider = true) {
     $html .= '<div class="product-card-slider__track">';
     
     foreach ($images as $index => $image) {
-        $p_src = '/'._CAR_IMG.'/'.$car_data['p_path'].'/'.$car_data['id'].'/high/';
+        $p_src = '/'._CAR_IMG.'/'.$car_data['p_path'].'/'.$car_data['id'].'/med/';
         $p_name = $image['name'].$img_frmt;
         $html .= '<div class="product-card-slider__slide">';
         $html .= '<img src="'.$p_src.$p_name.'" alt="car '.$car_data['br_nm'].' '.$car_data['mo_nm'].' id'.$car_data['id'].' photo '.($index+1).'" />';

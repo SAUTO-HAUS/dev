@@ -460,16 +460,21 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 		$is_mobile = (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/Mobile|Android|iPhone|iPad/', $_SERVER['HTTP_USER_AGENT']));
 		
 		if ($is_mobile) {
-			// Mobile: Get all images for slider
-			$pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `main` DESC, `pos` ASC'); 
+			// Mobile: Get all images for slider (limited to 7 for performance)
+			$pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `main` DESC, `pos` ASC LIMIT 7'); 
 			$pdo2->execute([ 'it_id'=>$r['id'] ]); 
 			$all_images = $pdo2->fetchAll(PDO::FETCH_ASSOC);
+			
+			// Ensure maximum 7 images for mobile performance
+			if (count($all_images) > 7) {
+				$all_images = array_slice($all_images, 0, 7);
+			}
 			
 			if (count($all_images) > 1) {
 				// Multiple images - create slider HTML
 				$image_html = '<div class="mobile-card-slider"><div class="mobile-card-slider__container"><div class="mobile-card-slider__track">';
 				foreach ($all_images as $idx => $img) {
-					$img_src = '/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/high/'.$img['name'].$img_frmt;
+					$img_src = '/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/'.$img['name'].$img_frmt;
 					$image_html .= '<div class="mobile-card-slider__slide"><img src="'.$img_src.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' photo '.($idx+1).'" /></div>';
 				}
 				$image_html .= '</div>';
@@ -478,7 +483,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 			} else {
 				// Single image - normal display
 				$p = $all_images[0] ?? null;
-				$p_src = isset($p['name']) ? '/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/high/' : '/'._SITE_IMG.'/v2/';
+				$p_src = isset($p['name']) ? '/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/' : '/'._SITE_IMG.'/v2/';
 				$p_name = isset($p['name']) ? $p['name'].$img_frmt : 'no_image.svg';
 				$image_html = '<img src="'.$p_src.$p_name.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' main photo" />';
 			}
