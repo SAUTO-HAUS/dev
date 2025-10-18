@@ -460,14 +460,14 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 		$is_mobile = (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/Mobile|Android|iPhone|iPad/', $_SERVER['HTTP_USER_AGENT']));
 		
 		if ($is_mobile) {
-			// Mobile: Get all images for slider (limited to 5 for performance)
-			$pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `main` DESC, `pos` ASC LIMIT 5'); 
+			// Mobile: Get all images for slider (limited to 3 for performance)
+			$pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `main` DESC, `pos` ASC LIMIT 3'); 
 			$pdo2->execute([ 'it_id'=>$r['id'] ]); 
 			$all_images = $pdo2->fetchAll(PDO::FETCH_ASSOC);
 			
-			// Ensure maximum 5 images for mobile performance
-			if (count($all_images) > 5) {
-				$all_images = array_slice($all_images, 0, 5);
+			// Ensure maximum 3 images for mobile performance
+			if (count($all_images) > 3) {
+				$all_images = array_slice($all_images, 0, 3);
 			}
 			
 			if (count($all_images) > 1) {
