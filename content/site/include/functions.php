@@ -460,14 +460,14 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 		$is_mobile = (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/Mobile|Android|iPhone|iPad/', $_SERVER['HTTP_USER_AGENT']));
 		
 		if ($is_mobile) {
-			// Mobile: Get all images for slider (limited to 3 for performance)
-			$pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `main` DESC, `pos` ASC LIMIT 3'); 
+			// Mobile: Get all images for slider (limited to 7 with lazy loading)
+			$pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `main` DESC, `pos` ASC LIMIT 7'); 
 			$pdo2->execute([ 'it_id'=>$r['id'] ]); 
 			$all_images = $pdo2->fetchAll(PDO::FETCH_ASSOC);
 			
-			// Ensure maximum 3 images for mobile performance
-			if (count($all_images) > 3) {
-				$all_images = array_slice($all_images, 0, 3);
+			// Ensure maximum 7 images for mobile performance
+			if (count($all_images) > 7) {
+				$all_images = array_slice($all_images, 0, 7);
 			}
 			
 			if (count($all_images) > 1) {
@@ -475,7 +475,12 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 				$image_html = '<div class="mobile-card-slider"><div class="mobile-card-slider__container"><div class="mobile-card-slider__track">';
 				foreach ($all_images as $idx => $img) {
 					$img_src = '/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/'.$img['name'].$img_frmt;
-					$image_html .= '<div class="mobile-card-slider__slide"><img src="'.$img_src.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' photo '.($idx+1).'" /></div>';
+					// Lazy load images except the first one
+					if ($idx === 0) {
+						$image_html .= '<div class="mobile-card-slider__slide"><img src="'.$img_src.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' photo '.($idx+1).'" /></div>';
+					} else {
+						$image_html .= '<div class="mobile-card-slider__slide"><img data-src="'.$img_src.'" src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'200\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23f0f0f0\'/%3E%3C/svg%3E" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' photo '.($idx+1).'" class="lazy-load" /></div>';
+					}
 				}
 				$image_html .= '</div>';
 				$image_html .= '<div class="mobile-card-slider__line-indicator"></div>';
