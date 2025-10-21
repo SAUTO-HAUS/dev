@@ -3,7 +3,12 @@
 use App\Helper\PhoneHelper;
 
 
-include(_SITE_INCL.'/functions.php'); ?>
+// Include appropriate functions file based on current page
+if (isset($t_mp[2]) && $t_mp[2] == 'ordercars') {
+    include(_SITE_INCL.'/order_functions.php');
+} else {
+    include(_SITE_INCL.'/functions.php');
+} ?>
 
 <head>
 	<?php include(_SITE.'/head.php'); ?>

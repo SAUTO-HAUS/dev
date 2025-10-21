@@ -70,6 +70,7 @@ $restrict_admin_menu = [
 //allow urls
 $menu_arr = [
     'cars'      => '1',
+    'ordercars' => '1',
     'credit'    => '1',
     'services'  => '1',
     'tradein'   => '1',
@@ -83,6 +84,7 @@ $url_arr = [
     '#',
     $admin_dir,
     'cars',
+    'ordercars',
     'services',
     'tyres',
     'rent',
