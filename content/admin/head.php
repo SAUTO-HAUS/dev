@@ -38,6 +38,9 @@ $current_url = $_SERVER['REQUEST_URI'];
 if (strpos($current_url, '/cars/') !== false) {
     // Load only cars.js for cars pages
     echo '<script src="/' . _ADM . '/js/cars.js?d=' . date("GYimsd", filemtime(_ADM.'/js/cars.js')) . '"></script>' . "\n";
+} elseif (strpos($current_url, '/ordercars/') !== false) {
+    // Load only ordercars.js for ordercars pages
+    echo '<script src="/' . _ADM . '/js/ordercars.js?d=' . date("GYimsd", filemtime(_ADM.'/js/ordercars.js')) . '"></script>' . "\n";
 } elseif (strpos($current_url, '/tyres/') !== false) {
     // Load only tyres.js for tyres pages
     echo '<script src="/' . _ADM . '/js/tyres.js?d=' . date("GYimsd", filemtime(_ADM.'/js/tyres.js')) . '"></script>' . "\n";
