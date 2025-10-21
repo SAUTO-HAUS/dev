@@ -273,7 +273,7 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
     require (_DEFAULT.'/language.php');
   
     // Use PhoneReplacementService for dynamic phone numbers
-    require_once 'App/Services/PhoneReplacementService.php';
+    require_once '../../../../App/Services/PhoneReplacementService.php';
     $phoneService = new \App\Services\PhoneReplacementService();
     $phone = $phoneService->getGeneralPhone();
     $car_title_name = "";
@@ -668,7 +668,7 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
     $caption_lines[] = "\n <a href='https://t.me/Sauto_B24_bot?start=".$marka_auto."_".$model_auto."_".$price_auto."_".$year_auto."'>👉 Comentariile le citim și răspundem imediat 👈</a>";
 
 
-    include_once "CTelegram.php";
+    include_once "order_CTelegram.php";
 
     $bot_token = "8169302156:AAEe1j7AASXegfKRdWB-rSiaKY-PSgqkGgo";
     $bot_token = "7459955785:AAGTMPvUkh2Fktar7ZpNlHBFsq43FH_DPsY"; // sauto
