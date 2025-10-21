@@ -83,13 +83,18 @@ if (__post('tp') == 'adm') {
     // Gordon (superadmin) always has access
     if ($user_role === 'gordon') {
         // Allow full access for gordon
-    } elseif (in_array($user_role, ['publisher', 'publisher_limited']) && in_array($pg, ['docs', 'cars', 'tyres'])) {
+    } elseif (in_array($user_role, ['publisher', 'publisher_limited']) && in_array($pg, ['docs', 'cars', 'ordercars', 'tyres'])) {
         // Allow access for publisher roles to their permitted modules
     } elseif (!rbac_has_permission($user_role, $pg, 'read')) {
         die('Restricted access');
     }
 
-    $ajaxFile = _ADM_AJAX . '/' . $pg . '/ajax.php';
+    // Special handling for ordercars to use separate ajax folder
+    if ($pg === 'ordercars') {
+        $ajaxFile = _ADM_AJAX . '/ordercars/order_ajax.php';
+    } else {
+        $ajaxFile = _ADM_AJAX . '/' . $pg . '/ajax.php';
+    }
     if (file_exists($ajaxFile)) {
         require_once $ajaxFile;
     } else {

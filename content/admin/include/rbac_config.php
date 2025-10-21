@@ -189,6 +189,7 @@ function rbac_can_access_branch($user_role, $user_branch_id, $target_branch_id) 
 $rbac_admin_menu = [
     'gordon' => [
         'cars' => ['add', 'ctlg'],
+        'ordercars' => ['add', 'ctlg'],
         'tyres' => ['ctlg'],
         'seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
@@ -198,6 +199,7 @@ $rbac_admin_menu = [
     ],
     'admin' => [
         'cars' => ['add', 'ctlg'],
+        'ordercars' => ['add', 'ctlg'],
         'tyres' => ['ctlg'],
         'seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
@@ -205,11 +207,13 @@ $rbac_admin_menu = [
         'sett' => ['info']
     ],
     'publisher' => [
-        'cars' => ['add', 'ctlg'], 
+        'cars' => ['add', 'ctlg'],
+        'ordercars' => ['add', 'ctlg'], 
         'docs' => ['add', 'ctlg']
     ],
     'publisher_limited' => [
-        'cars' => ['add', 'ctlg'], 
+        'cars' => ['add', 'ctlg'],
+        'ordercars' => ['add', 'ctlg'], 
         'docs' => ['add', 'ctlg']
     ]
 ];
@@ -218,6 +222,7 @@ $rbac_admin_menu = [
 $rbac_internal_actions = [
     'gordon' => [
         'cars' => ['add', 'create', 'detail', 'ctlg'],
+        'ordercars' => ['add', 'create', 'detail', 'ctlg'],
         'tyres' => ['add', 'create', 'detail', 'ctlg'],
         'seo' => ['add', 'create', 'detail', 'ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
@@ -227,6 +232,7 @@ $rbac_internal_actions = [
     ],
     'admin' => [
         'cars' => ['add', 'create', 'detail', 'ctlg'],
+        'ordercars' => ['add', 'create', 'detail', 'ctlg'],
         'tyres' => ['add', 'create', 'detail', 'ctlg'],
         'seo' => ['add', 'create', 'detail', 'ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
@@ -235,10 +241,12 @@ $rbac_internal_actions = [
     ],
     'publisher' => [
         'cars' => ['add', 'create', 'detail', 'ctlg'],
+        'ordercars' => ['add', 'create', 'detail', 'ctlg'],
         'docs' => ['add', 'create', 'detail', 'ctlg']
     ],
     'publisher_limited' => [
         'cars' => ['add', 'create', 'detail', 'ctlg'],
+        'ordercars' => ['add', 'create', 'detail', 'ctlg'],
         'docs' => ['add', 'create', 'detail', 'ctlg']
     ]
 ];
