@@ -197,7 +197,8 @@ if ( !isset($t_mp[2]) || $t_mp[2]==''){
 		</div>';
 }
 
-if ( !isset($t_mp[2]) || $t_mp[2]=='' || ( ($t_mp[2]=='cars' || $t_mp[2]=='tyres' || $t_mp[2]=='rent') && (!isset($t_mp[3]) || $t_mp[3]=='' || (($t_mp[2]=='cars') && isset($t_mp[3]))) ) ){ include(_SITE_INCL.'/filter.php'); }
+if ( !isset($t_mp[2]) || $t_mp[2]=='' || ( ($t_mp[2]=='cars' || $t_mp[2]=='tyres' || $t_mp[2]=='rent') && (!isset($t_mp[3]) || $t_mp[3]=='' || ($t_mp[2]=='cars' && isset($t_mp[3]))) ) ){ include(_SITE_INCL.'/filter.php'); }
+elseif ( $t_mp[2]=='ordercars' && (!isset($t_mp[3]) || $t_mp[3]=='') ){ include(_SITE_INCL.'/order_filter.php'); }
 ?>
 
 <main role="main">
@@ -213,6 +214,7 @@ if ( !isset($t_mp[2]) || $t_mp[2]=='' || ( ($t_mp[2]=='cars' || $t_mp[2]=='tyres
     if ( !isset($t_mp[2]) || $t_mp[2]=='') {include (_SITE_PAGE.'/home.php');}
 
     elseif ($t_mp[2]=='cars') {include (_SITE_PAGE.'/cars.php');}
+    elseif ($t_mp[2]=='ordercars') {include (_SITE_PAGE.'/ordercars.php');}
     elseif ($t_mp[2]=='services') {include (_SITE_PAGE.'/services.php');}
     elseif ($t_mp[2]=='tyres') {include (_SITE_PAGE.'/tyres.php');}
     elseif ($t_mp[2]=='credit') {include (_SITE_PAGE.'/new_pages/credit/credit.php');}
