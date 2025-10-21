@@ -84,7 +84,7 @@
 			// Gordon (superadmin) always has full access
 			if (isset($user_role) && $user_role === 'gordon') {
 				$has_access = true;
-			} elseif (isset($user_role) && in_array($user_role, ['admin', 'publisher', 'publisher_limited']) && isset($t_mp[3]) && in_array($t_mp[3], ['docs', 'cars', 'tyres'])) {
+			} elseif (isset($user_role) && in_array($user_role, ['admin', 'publisher', 'publisher_limited']) && isset($t_mp[3]) && in_array($t_mp[3], ['docs', 'cars', 'ordercars', 'tyres'])) {
 				// Direct access for admin and publisher roles to their permitted modules
 				// Check appropriate permission based on action
 				$required_permission = 'read';
@@ -121,7 +121,7 @@
 				
 				if ($has_access) {
 					if ( isset($t_mp[3]) && isset($current_menu[$t_mp[3]]) ){
-						if ( in_array($t_mp[3], ['cars','tyres']) ){require_once(_ADM_INCL.'/filter.php');}
+						if ( in_array($t_mp[3], ['cars','ordercars','tyres']) ){require_once(_ADM_INCL.'/filter.php');}
 						if ( file_exists(_ADM.'/page/'.$t_mp[3].'.php') ){
 							include(_ADM.'/page/'.$t_mp[3].'.php');
 						} else {echo 'File not found';}

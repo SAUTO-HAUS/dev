@@ -8,6 +8,7 @@
 $rbac_admin_menu = [
     'gordon' => [
         'cars' => ['add', 'ctlg'],
+        'ordercars' => ['add', 'ctlg'],
         'tyres' => ['ctlg'],
         'seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
@@ -17,6 +18,7 @@ $rbac_admin_menu = [
     ],
     'admin' => [
         'cars' => ['add', 'ctlg'],
+        'ordercars' => ['add', 'ctlg'],
         'tyres' => ['ctlg'],
         'seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
@@ -25,11 +27,13 @@ $rbac_admin_menu = [
     ],
     'publisher' => [
         'cars' => ['add', 'ctlg'],
+        'ordercars' => ['add', 'ctlg'],
         'docs' => ['create', 'ctlg']
         // Can view cars catalog for sales purposes but only add new cars
     ],
     'publisher_limited' => [
         'cars' => ['add', 'ctlg'],
+        'ordercars' => ['add', 'ctlg'],
         'docs' => ['create', 'ctlg']
         // Can view cars catalog for sales purposes but only add new cars + branch limited access
     ]
@@ -45,6 +49,7 @@ $rbac_permissions = [
         'system_settings' => true,
         'all_branches' => true,
         'cars' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
+        'ordercars' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
         'tyres' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
         'seo' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'mail' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
@@ -59,6 +64,7 @@ $rbac_permissions = [
         'system_settings' => false,
         'all_branches' => true,
         'cars' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
+        'ordercars' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
         'tyres' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
         'seo' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'mail' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
@@ -73,6 +79,7 @@ $rbac_permissions = [
         'all_branches' => true,
         'branch_limited' => false,
         'cars' => ['create' => true, 'read' => true, 'update' => false, 'delete' => false, 'restore' => false],
+        'ordercars' => ['create' => true, 'read' => true, 'update' => false, 'delete' => false, 'restore' => false],
         'seo' => ['read' => false],
         'mail' => ['read' => false],
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
@@ -85,6 +92,7 @@ $rbac_permissions = [
         'system_settings' => false,
         'branch_limited' => true,
         'cars' => ['create' => true, 'read' => true, 'update' => false, 'delete' => false, 'restore' => false],
+        'ordercars' => ['create' => true, 'read' => true, 'update' => false, 'delete' => false, 'restore' => false],
         'seo' => ['read' => false],
         'mail' => ['read' => false],
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],

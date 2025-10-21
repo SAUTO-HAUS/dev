@@ -31,30 +31,30 @@ $prefx = 'gh3sp';
 $admin_dir = 'adminsauto';
 //menu permissions
 $admin_menu = [
-	'dev' => ['cars', 'tyres', 'seo', 'mail', 'slider', 'users', 'docs', 'sett'/*, 'video', 'team'*/],
-	'sad' => ['cars', 'tyres', 'seo', 'mail', 'docs'],
-	'adm' => ['cars', 'tyres', 'seo', 'mail', 'docs'],
-	'mod' => ['cars', 'tyres'],
-	'mod2' => ['cars', 'tyres'],
+	'dev' => ['cars', 'ordercars', 'tyres', 'seo', 'mail', 'slider', 'users', 'docs', 'sett'/*, 'video', 'team'*/],
+	'sad' => ['cars', 'ordercars', 'tyres', 'seo', 'mail', 'docs'],
+	'adm' => ['cars', 'ordercars', 'tyres', 'seo', 'mail', 'docs'],
+	'mod' => ['cars', 'ordercars', 'tyres'],
+	'mod2' => ['cars', 'ordercars', 'tyres'],
 	'seo' => ['seo'],
 	'x1'  => ['docs'],
-	'x2'  => ['cars', 'docs'],
-	'publisher' => ['cars', 'tyres', 'docs'],
-	'publisher_limited' => ['cars', 'tyres', 'docs']
+	'x2'  => ['cars', 'ordercars', 'docs'],
+	'publisher' => ['cars', 'ordercars', 'tyres', 'docs'],
+	'publisher_limited' => ['cars', 'ordercars', 'tyres', 'docs']
 ];
 
 $admin_menu_dev1 = [
 	//'dev' => [ 'cars'=>['ctlg','br_lst'], 'tyres'=>['ctlg','br_lst'], 'seo'=>['ctlg'], 'mail'=>['message', 'order', 'favorites', 'archive'], 'slider'=>['ctlg'], 'docs'=>['ctlg', 'arch'], 'users'=>['ctlg'], 'sett'=>['info','adm_usr']/*, 'settings', 'video', 'team'*/ ],
-    'dev' => ['cars' => ['ctlg', 'br_lst'], 'tyres' => ['ctlg', 'br_lst'], 'seo' => ['ctlg'], 'mail' => ['message', 'order', 'favorites', 'archive'], 'docs' => ['create', 'ctlg'], 'notcrm' => ['app'], 'sett' => ['info', 'annc', 'adm_usr']],
-    'sad' => ['cars' => ['ctlg'], 'tyres' => ['ctlg'], 'seo' => ['ctlg'], 'mail' => ['message', 'order', 'favorites', 'archive'], 'docs' => ['create', 'ctlg'], 'sett' => ['info']],
-    'adm' => ['cars' => ['ctlg'], 'tyres' => ['ctlg'], 'seo' => ['ctlg'], 'mail' => ['message', 'order', 'favorites', 'archive'], 'docs' => ['create', 'ctlg'], 'sett' => ['info']],
-    'mod' => ['cars' => ['ctlg'], 'tyres' => ['ctlg']],
-    'mod2' => ['cars' => ['ctlg'], 'docs' => ['create', 'ctlg']],
+    'dev' => ['cars' => ['ctlg', 'br_lst'], 'ordercars' => ['ctlg', 'br_lst'], 'tyres' => ['ctlg', 'br_lst'], 'seo' => ['ctlg'], 'mail' => ['message', 'order', 'favorites', 'archive'], 'docs' => ['create', 'ctlg'], 'notcrm' => ['app'], 'sett' => ['info', 'annc', 'adm_usr']],
+    'sad' => ['cars' => ['ctlg'], 'ordercars' => ['ctlg'], 'tyres' => ['ctlg'], 'seo' => ['ctlg'], 'mail' => ['message', 'order', 'favorites', 'archive'], 'docs' => ['create', 'ctlg'], 'sett' => ['info']],
+    'adm' => ['cars' => ['ctlg'], 'ordercars' => ['ctlg'], 'tyres' => ['ctlg'], 'seo' => ['ctlg'], 'mail' => ['message', 'order', 'favorites', 'archive'], 'docs' => ['create', 'ctlg'], 'sett' => ['info']],
+    'mod' => ['cars' => ['ctlg'], 'ordercars' => ['ctlg'], 'tyres' => ['ctlg']],
+    'mod2' => ['cars' => ['ctlg'], 'ordercars' => ['ctlg'], 'docs' => ['create', 'ctlg']],
     'seo' => ['seo' => ['ctlg']],
     'x1' => ['docs' => ['create', 'ctlg']],
-    'x2' => ['cars' => ['ctlg'], 'docs' => ['create', 'ctlg'], 'sett' => ['info']],
-    'publisher' => ['cars' => ['ctlg'], 'tyres' => ['ctlg'], 'docs' => ['create', 'ctlg']],
-    'publisher_limited' => ['cars' => ['ctlg'], 'tyres' => ['ctlg'], 'docs' => ['create', 'ctlg']]
+    'x2' => ['cars' => ['ctlg'], 'ordercars' => ['ctlg'], 'docs' => ['create', 'ctlg'], 'sett' => ['info']],
+    'publisher' => ['cars' => ['ctlg'], 'ordercars' => ['ctlg'], 'tyres' => ['ctlg'], 'docs' => ['create', 'ctlg']],
+    'publisher_limited' => ['cars' => ['ctlg'], 'ordercars' => ['ctlg'], 'tyres' => ['ctlg'], 'docs' => ['create', 'ctlg']]
 ];
 
 $hided_admin_menu = ['users', 'settings', 'video', 'team'];
