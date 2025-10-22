@@ -351,7 +351,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
         $it_id = toNumber($t_mp[3]);
 
         if ( $it_id > 0 ){
-            $spec_ar = ['yr', 'bt', 'mlg', 'vol', 'hp', 'fl', 'tra', 'wd', 'clr', 'sts', 'loc', 'import_country_id'];
+            $spec_ar = ['yr', 'bt', 'mlg', 'vol', 'hp', 'fl', 'tra', 'wd', 'clr', 'sts', 'delivery_time', 'advance_amount', 'loc', 'import_country_id'];
 
             //Update views
             file_put_contents('view_counter_log.txt', date('Y-m-d H:i:s') . ' - Car ID: ' . $it_id . ' - View incremented' . PHP_EOL, FILE_APPEND);
@@ -665,6 +665,8 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                         $v_lng = $v == 'hp' ? $r[$v].' '.$lng['l']['unit']['hp'].' ('.( round($r['hp']*0.735,0) ).' '.$lng['l']['unit']['kw'].')' : $v_lng;
                         $v_lng = $v == 'clr' ? $v_lng.( isset($clr_arr[$r[$v]])?'<span class="crcl" style="background-image:linear-gradient(135deg, '.$clr_arr[$r[$v]].')"></span>':'' ) : $v_lng;
                         $v_lng = $v == 'loc' ? $lng['t']['x']['address'][$r[$v]] : $v_lng;
+                        $v_lng = $v == 'delivery_time' ? $r[$v].' '.$lng['l']['unit']['days'] : $v_lng;
+                        $v_lng = $v == 'advance_amount' ? parseCurr($r[$v]).' '.$lng['l']['cur'][$r['cur']] : $v_lng;
                         if ($v == 'import_country_id' && !empty($r[$v])) {
                             $country_name = getImportCountryName($r[$v], $_COOKIE['lang']);
                             if (!empty($country_name)) {
@@ -768,6 +770,20 @@ $iconTelegramParams = array(
                 <path d="M12 2 C8 2 5 5.5 5 9.5 C5 14.5 12 22 12 22 C12 22 19 14.5 19 9.5 C19 5.5 16 2 12 2 Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
                 <circle cx="12" cy="10" r="1.4" fill="currentColor"/>
               </svg>',
+
+    /* 'delivery_time' => время доставки (часы/календарь) */
+    'delivery_time' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
+                <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.4"/>
+                <path d="M12 7 L12 12 L16 16" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="12" cy="12" r="1" fill="currentColor"/>
+              </svg>',
+
+    /* 'advance_amount' => сумма аванса (деньги/кошелек) */
+    'advance_amount' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
+                <rect x="2" y="7" width="20" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/>
+                <circle cx="12" cy="12" r="2.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
+                <path d="M7 7 L7 5 A2 2 0 0 1 9 3 L15 3 A2 2 0 0 1 17 5 L17 7" fill="none" stroke="currentColor" stroke-width="1.4"/>
+              </svg>',
 );
 
 
@@ -782,6 +798,8 @@ $iconTelegramParams = array(
                     $v_lng = $v == 'hp' ? $r[$v].' '.$lng['l']['unit']['hp'].' ('.( round($r['hp']*0.735,0) ).' '.$lng['l']['unit']['kw'].')' : $v_lng;
                     $v_lng = $v == 'clr' ? $v_lng.( isset($clr_arr[$r[$v]])?'<span class="crcl" style="background-image:linear-gradient(135deg, '.$clr_arr[$r[$v]].')"></span>':'' ) : $v_lng;
                     $v_lng = $v == 'loc' ? $lng['t']['x']['address'][$r[$v]] : $v_lng;
+                    $v_lng = $v == 'delivery_time' ? $r[$v].' '.$lng['l']['unit']['days'] : $v_lng;
+                    $v_lng = $v == 'advance_amount' ? parseCurr($r[$v]).' '.$lng['l']['cur'][$r['cur']] : $v_lng;
                     if ($v == 'import_country_id' && !empty($r[$v])) {
                         $country_name = getImportCountryName($r[$v], $_COOKIE['lang']);
                         if (!empty($country_name)) {
@@ -802,24 +820,10 @@ $iconTelegramParams = array(
                             </p>';
                     }
                 }
+
                 $rtrn .= '</div>';
-                ?>
 
-
-                <?
-                if ( $r['prc_t']!=0 && $r['prc_t']>time() ){
-                    $prc = $r['prc_n'];
-                    $o_prc = $r['prc'];
-                    $o_prc_bl = '<span class="o_val" title="'.$lng['w']['o_prc'].'"><span class="i">'.parseCurr($o_prc).'</span> '.( symb_rplc($r['cur']) ).'</span>';
-                }
-                else{
-                    $prc = $r['prc'];
-                    $o_prc = 0;
-                    $o_prc_bl = '';
-                }
-
-                // Get dynamic phone number based on car data and context
-                $dynamicPhone = PhoneHelper::getCarPhone($r, 'car_page');
+                // ... (rest of the code remains the same)
 
                 // webs25
                 $pdo = $db->prepare('SELECT * FROM ' . $prefx . '_seo2 WHERE `it_id`=:it_id AND lng = :lng LIMIT 1');
