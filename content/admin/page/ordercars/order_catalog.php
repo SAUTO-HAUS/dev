@@ -284,7 +284,7 @@ $last_car_id = 0;
                 <?php if( $r['act'] == 0 ) : ?>
                     <div class="remove_after" timer="<?= ( $r['del_t']-time() ) ?>" ra="<?= $r['del_t'] ?>">**, **:**:**</div>
                 <?php endif; ?>
-                <a class="url" href="<?= $site_url.'/'.$_COOKIE['lang'].'/cars/'.$r['id'] ?>" target="_blank" title="To the item page">
+                <a class="url" href="<?= $site_url.'/'.$_COOKIE['lang'].'/ordercars/'.$r['id'] ?>" target="_blank" title="To the item page">
                     <div class="ico"></div>
                 </a>
                 <div class="on_img ghost"><?= $on_img ?></div>
