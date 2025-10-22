@@ -632,7 +632,7 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' || ($t_mp[2]=='services' && isset($t_mp[
 
 
 <?php
-if(isset($t_mp[2]) && ($t_mp[2]=='cars' ) ) {
+if(isset($t_mp[2]) && ($t_mp[2]=='cars' || $t_mp[2]=='ordercars') ) {
     ?>
     <script>
         function openParamsPopAuto(type) {
