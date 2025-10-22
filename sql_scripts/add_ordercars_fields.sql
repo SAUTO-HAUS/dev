@@ -5,7 +5,7 @@ SET @col_exists = (SELECT COUNT(*) FROM information_schema.COLUMNS
     AND COLUMN_NAME = 'delivery_time');
 
 SET @sql = IF(@col_exists = 0, 
-    'ALTER TABLE gh3sp_car_ctlg ADD COLUMN delivery_time INT DEFAULT 0 COMMENT ''Delivery time in days for order cars''', 
+    'ALTER TABLE gh3sp_car_ctlg ADD COLUMN delivery_time INT DEFAULT 14 COMMENT ''Delivery time in days for order cars''', 
     'SELECT ''Column delivery_time already exists'' as message');
 
 PREPARE stmt FROM @sql;

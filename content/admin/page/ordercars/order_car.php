@@ -329,16 +329,16 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                 <!-----DELIVERY TIME----->
                 <div class="form-group col-md-6">
                     <input class="delivery_time form-control" type="number" name="delivery_time" tabindex="16"
-                           value="<?= $car['delivery_time'] ?? '' ?>"
+                           value="<?= $car['delivery_time'] ?? '14' ?>"
                            placeholder="<?php 
-                               if ($_COOKIE['lang'] == 'ro') echo 'Termen de livrare (zile)';
-                               elseif ($_COOKIE['lang'] == 'ru') echo 'Срок поставки (дни)';
-                               else echo 'Delivery time (days)';
+                               if ($_COOKIE['lang'] == 'ro') echo 'TERMEN DE LIVRARE (ZILE)';
+                               elseif ($_COOKIE['lang'] == 'ru') echo 'СРОК ПОСТАВКИ (ДНИ)';
+                               else echo 'DELIVERY TIME (DAYS)';
                            ?>"
                            title="<?php 
-                               if ($_COOKIE['lang'] == 'ro') echo 'Termen de livrare în zile';
-                               elseif ($_COOKIE['lang'] == 'ru') echo 'Срок поставки в днях';
-                               else echo 'Delivery time in days';
+                               if ($_COOKIE['lang'] == 'ro') echo 'TERMEN DE LIVRARE ÎN ZILE';
+                               elseif ($_COOKIE['lang'] == 'ru') echo 'СРОК ПОСТАВКИ В ДНЯХ';
+                               else echo 'DELIVERY TIME IN DAYS';
                            ?>"
                            min="1"
                            max="365">
@@ -368,14 +368,14 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                     <input class="advance_amount need nmb form-control" type="number" name="advance_amount" tabindex="18"
                            value="<?= $car['advance_amount'] ?? '' ?>"
                            placeholder="<?php 
-                               if ($_COOKIE['lang'] == 'ro') echo 'Suma avansului';
-                               elseif ($_COOKIE['lang'] == 'ru') echo 'Сумма аванса';
-                               else echo 'Advance amount';
+                               if ($_COOKIE['lang'] == 'ro') echo 'SUMA AVANSULUI';
+                               elseif ($_COOKIE['lang'] == 'ru') echo 'СУММА АВАНСА';
+                               else echo 'ADVANCE AMOUNT';
                            ?>"
                            title="<?php 
-                               if ($_COOKIE['lang'] == 'ro') echo 'Suma avansului (70% din preț)';
-                               elseif ($_COOKIE['lang'] == 'ru') echo 'Сумма аванса (70% от цены)';
-                               else echo 'Advance amount (70% of price)';
+                               if ($_COOKIE['lang'] == 'ro') echo 'SUMA AVANSULUI (70% DIN PREȚ)';
+                               elseif ($_COOKIE['lang'] == 'ru') echo 'СУММА АВАНСА (70% ОТ ЦЕНЫ)';
+                               else echo 'ADVANCE AMOUNT (70% OF PRICE)';
                            ?>"
                            min="0"
                            step="0.01">
