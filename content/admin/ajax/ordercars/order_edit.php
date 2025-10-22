@@ -334,7 +334,7 @@ elseif ( $_POST['sub']=='make_it' ){//******************************************
 				//if($r['top']){$rtrn .= '<div class="top-sales" title="Top Sales">'.$lng['l']['stat']['top1'].'</div>';}
 				if( $r['act'] == 0 ){$rtrn .= '<div class="remove_after" timer="'.( $r['del_t']-time() ).'" ra="'.$r['del_t'].'">**, **:**:**</div>';}
 				$rtrn .= '
-				<a class="url" href="'.$site_url.'/'.$_COOKIE['lang'].'/cars/'.$r['id'].'" target="_blank" title="To the item page"><div class="ico"></div></a>
+				<a class="url" href="'.$site_url.'/'.$_COOKIE['lang'].'/ordercars/'.$r['id'].'" target="_blank" title="To the item page"><div class="ico"></div></a>
 				<div class="on_img">'.$on_img.'</div>
 			</div>
 			
