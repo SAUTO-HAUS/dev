@@ -63,7 +63,7 @@ $last_car_id = 0;
 <div class="ctlg_dspl_tp"></div>
 <section class="ctlg">
     <?php if (rbac_has_permission($user_role, 'cars', 'create')): ?>
-    <a id="add_new" href="<?= '/'.$_COOKIE['lang'].'/'.$admin_dir.'/cars/detail' ?>" class="bx" title="<?= $lng['adm']['add'] ?>">
+    <a id="add_new" href="<?= '/'.$_COOKIE['lang'].'/'.$admin_dir.'/ordercars/detail' ?>" class="bx" title="<?= $lng['adm']['add'] ?>">
         <div>
             <span class="add_icon">+</span>
             <span class="add_text"><?= $lng['adm']['add'] ?></span>
@@ -240,7 +240,7 @@ $last_car_id = 0;
             <div class="adm_menu">
                 <?php if( $r['act'] == 1 ) : ?>
                     <?php if (rbac_has_permission($user_role, 'cars', 'update')): ?>
-                    <a class="btn edit" href="<?= '/'.$_COOKIE['lang'].'/'.$admin_dir.'/cars/detail?id=' . $r['id'] ?>" title="<?= $lng['adm']['edit'] ?>">
+                    <a class="btn edit" href="<?= '/'.$_COOKIE['lang'].'/'.$admin_dir.'/ordercars/detail?id=' . $r['id'] ?>" title="<?= $lng['adm']['edit'] ?>">
                         <div></div>
                     </a>
                     <?php endif; ?>

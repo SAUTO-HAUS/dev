@@ -106,7 +106,7 @@ foreach ($pdo as $r){
 		<div class="adm_menu">';
 			if( $r['act'] == 1 ){
 				$rtrn .= '
-				<a class="btn edit" href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/cars/detail?id=' . $r['id'].'" title="'.$lng['adm']['edit'].'"> <div></div> </a><!--data-fn="edit"-->
+				<a class="btn edit" href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/ordercars/detail?id=' . $r['id'].'&v='.time().'" title="'.$lng['adm']['edit'].'"> <div></div> </a><!--data-fn="edit"-->
 				<div class="btn fn_av" data-fn="'.($r['n_a']==0?'av0':'av1').'" title="'.($r['n_a']==0?'-':'+').'" data-alt="'.($r['n_a']==0?'+':'-').'"> <div></div> </div>';
 				if ( in_array($user_type, ['dev', 'sad']) ){
 					$rtrn .= '
