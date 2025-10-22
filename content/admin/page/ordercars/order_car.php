@@ -43,14 +43,14 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
 ?>
 
-<div id="content_box" class="noselect" <?php if(!$new) : ?> data-car-id="<?=$car['id']?>" <?php endif; ?> back-url="<?= '/'.$_COOKIE['lang'].'/'.$admin_dir.'/cars/ctlg' ?>">
+<div id="content_box" class="noselect" <?php if(!$new) : ?> data-car-id="<?=$car['id']?>" <?php endif; ?> back-url="<?= '/'.$_COOKIE['lang'].'/'.$admin_dir.'/ordercars/ctlg' ?>">
 	<div class="bx id_<?= $bx_id ?>" data-bx_id="<?= $bx_id ?>" style="margin-bottom: 100px;">
 		<div class="top" style="display: flex">
             <?php if ($user_name == 'Developer') : ?>
 			    <div class="fill_fields" style="width:fit-content; position:absolute; top:0; left:4%; color:#00f; cursor:pointer; line-height:1.5rem;">Fill</div>
             <?php endif; ?>
 			<div class="title"><?= !empty($car) ? (__('cars.edit_ad') . ' #' . $car['id']) : __('cars.new_ad') ?></div>
-            <a class="close" href="<?= '/'.$_COOKIE['lang'].'/'.$admin_dir.'/cars/ctlg' ?>">X</a>
+            <a class="close" href="<?= '/'.$_COOKIE['lang'].'/'.$admin_dir.'/ordercars/ctlg' ?>">X</a>
 		</div>
 
 		<form class="img_bx" id="img_bx" enctype="multipart/form-data">
