@@ -6,7 +6,7 @@ if (!isset($t_mp[2]) || $t_mp[2]=='' || $t_mp[2]=='ordercars'){
 	$content = '';
 	
 	$query_args = array();
-	$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE catalog_type = "on_order" AND `vis`="1" AND `act`="1" ORDER BY `br` ASC, `mo` ASC ';
+	$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE `vis`="1" AND `act`="1" ORDER BY `br` ASC, `mo` ASC ';
 	
 	$pdo = $db->prepare($sql);
 	$pdo->execute($query_args);
