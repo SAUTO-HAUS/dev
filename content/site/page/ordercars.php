@@ -778,11 +778,13 @@ $iconTelegramParams = array(
                 <circle cx="12" cy="12" r="1" fill="currentColor"/>
               </svg>',
 
-    /* 'advance_amount' => сумма аванса (деньги/кошелек) */
+    /* 'advance_amount' => сумма аванса (банкнота) */
     'advance_amount' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
-                <rect x="2" y="7" width="20" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/>
-                <circle cx="12" cy="12" r="2.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
-                <path d="M7 7 L7 5 A2 2 0 0 1 9 3 L15 3 A2 2 0 0 1 17 5 L17 7" fill="none" stroke="currentColor" stroke-width="1.4"/>
+                <rect x="2" y="8" width="20" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
+                <circle cx="12" cy="12" r="1.8" fill="none" stroke="currentColor" stroke-width="1.2"/>
+                <path d="M12 10.5 L12 13.5 M10.5 12 L13.5 12" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                <circle cx="6" cy="10" r="0.8" fill="currentColor"/>
+                <circle cx="18" cy="14" r="0.8" fill="currentColor"/>
               </svg>',
 );
 
