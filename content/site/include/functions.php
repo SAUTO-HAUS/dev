@@ -12,7 +12,12 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 	$f_arr = ['bt'=>0, 'gr'=>0, 'br'=>0, 'mo'=>0, 'yr'=>1, 'fl'=>0, 'tra'=>0, 'wd'=>0, 'clr'=>0, 'mlg'=>1, 'vol'=>1, 'sts'=>1, 'prc'=>1];
 	
 	$query_args = ['lmt'=>$lmt];
-	$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE 1=1';
+	$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE (catalog_type = "in_stock" OR catalog_type IS NULL)';
+	
+	// For filter searches, show all cars regardless of catalog_type
+	if ($v1=='fltr') {
+		$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE 1=1';
+	}
 	
 	if ($v1=='new'){ $sql .= ' AND `vis`="1" AND `act`="1" '; }
 	elseif ($v1=='archive'){ $sql .= ' AND `vis`="1" AND `act`="0" '; }
