@@ -518,18 +518,16 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 		}else{
 			$z_stat .= '<div class="stat n_a1">'.$lng['l']['stat']['n_a1'].'</div>';
 		}
-		
-		// Convert brand and model to URL-friendly format with hyphens
-		$brand_url = str_replace('_', '-', $r['br']);
-		$model_url = str_replace('_', '-', $r['mo']);
 
-		$ar['txt'] .= '
-		<a class="it car" href="/'.$_COOKIE['lang'].'/cars/'.$r['id'].'">
-			'.$image_html.'
-			<div class="txt">
-				<div class="status">'.$z_stat.'</div>
-				<div class="name">'.$r['br_nm'].' '.$r['mo_nm'].'</div>';
-				
+			// Generate correct URL based on catalog_type
+			$page_type = (isset($r['catalog_type']) && $r['catalog_type'] == 'on_order') ? 'ordercars' : 'cars';
+			
+			$ar['txt'] .= '
+			<a class="it car" href="/'.$_COOKIE['lang'].'/'.$page_type.'/'.$r['id'].'">
+				'.$image_html.'
+				<div class="txt">
+					<div class="status">'.$z_stat.'</div>
+					<div class="name">'.$r['br_nm'].' '.$r['mo_nm'].'</div>';
 				//$ar['txt'] .= '<div class="id">ID-'.$r['id'].'</div>';
 				$ar['txt'] .= '
 				<div class="specs">';

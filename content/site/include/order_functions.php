@@ -523,8 +523,11 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 		$brand_url = str_replace('_', '-', $r['br']);
 		$model_url = str_replace('_', '-', $r['mo']);
 
+		// Generate correct URL based on catalog_type
+		$page_type = (isset($r['catalog_type']) && $r['catalog_type'] == 'on_order') ? 'ordercars' : 'cars';
+		
 		$ar['txt'] .= '
-		<a class="it car" href="/'.$_COOKIE['lang'].'/ordercars/'.$r['id'].'">
+		<a class="it car" href="/'.$_COOKIE['lang'].'/'.$page_type.'/'.$r['id'].'">
 			'.$image_html.'
 			<div class="txt">
 				<div class="status">'.$z_stat.'</div>
