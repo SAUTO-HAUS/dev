@@ -432,7 +432,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 }else{
                     $z_stat .= '
 						<div class="stat n_a1">'.$lng['l']['stat']['n_a1'].'</div>
-						<a href="/'.$_COOKIE['lang'].'/cars/'.buildCarUrl($r['br'], $r['mo']).'" class="stat soon1">'.$lng['w']['fnd_smlr'].'</a>
+						<a href="/'.$_COOKIE['lang'].'/ordercars/'.buildCarUrl($r['br'], $r['mo']).'" class="stat soon1">'.$lng['w']['fnd_smlr'].'</a>
 					';
                 }
 
@@ -1133,7 +1133,7 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
             }
 
             if ( $chkr_av == 1 ){ 
-                $rtrn .= '<script> $(document).ready(function(){ $("#crumbs .crnt").html("<a style=\"color:inherit;\" href=\"/"+$("body").data("lng")+"/cars/'.buildCarUrl($r['br'], $r['mo']).'\">'.$r['br_nm'].' '.$r['mo_nm'].'</a>"); }) </script>'; 
+                $rtrn .= '<script> $(document).ready(function(){ $("#crumbs .crnt").html("<a style=\"color:inherit;\" href=\"/"+$("body").data("lng")+"/ordercars/'.buildCarUrl($r['br'], $r['mo']).'\">'.$r['br_nm'].' '.$r['mo_nm'].'</a>"); }) </script>'; 
             } else {
                 // car not found, return 404 instead of showing no item block
                 http_response_code(404);
