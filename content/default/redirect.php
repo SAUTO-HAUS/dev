@@ -126,7 +126,7 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr' && isset($_GET['br'])) {
 }
 
 // Handle clean URLs for car filters and single car pages
-if ((isset($t_mp[2]) && $t_mp[2]=='cars') && isset($t_mp[3])) {
+if ((isset($t_mp[2]) && ($t_mp[2]=='cars' || $t_mp[2]=='ordercars')) && isset($t_mp[3])) {
     // Check if this is a numeric ID (single car) or a brand/model format
     if (!is_numeric($t_mp[3])) {
         $_GET['tg'] = 'fltr';
