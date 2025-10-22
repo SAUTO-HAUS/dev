@@ -524,7 +524,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 		$model_url = str_replace('_', '-', $r['mo']);
 
 		$ar['txt'] .= '
-		<a class="it car" href="/'.$_COOKIE['lang'].'/cars/'.$r['id'].'">
+		<a class="it car" href="/'.$_COOKIE['lang'].'/ordercars/'.$r['id'].'">
 			'.$image_html.'
 			<div class="txt">
 				<div class="status">'.$z_stat.'</div>

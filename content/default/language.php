@@ -29,7 +29,7 @@ $lng_x = [
 	'car'=>[
 		'gr'=>['car'=>'Cars', 'com'=>'Comercial'],
 		'bt'=>['sdn'=>'Sedan', 'suv'=>'Suv', 'hbk'=>'Hatchback', 'unv'=>'Station wagon', 'cup'=>'Coupe', 'crv'=>'Crossover', 'mnv'=>'Minivan', 'pkp'=>'Truck', 'van'=>'Full size van', 'mbs'=>'Full size van', 'cbr'=>'Convertible', 'cmb'=>'Combi', 'rod'=>'Roadster', 'frg'=>'Refrigerator', 'crr'=>'Chassis'],
-		'spec'=>['br'=>'Brand', 'mo'=>'Model', 'br_nm'=>'Brand', 'mo_nm'=>'Model', 'bt'=>'Body type', 'yr'=>'Year', 'vol'=>'Volume', 'fl'=>'Fuel', 'tra'=>'Transmission', 'hp'=>'Power', 'clr'=>'Color', 'mlg'=>'Mileage', 'prc'=>'Price', 'cur'=>'Currency', 'sts'=>'Number of seats', 'wd'=>'Drivetrain', 'air'=>'Air conditioner', 'loc'=>'Address', 'cons'=>'Average consumption', 'tnk'=>'Fuel tank volume'],
+		'spec'=>['br'=>'Brand', 'mo'=>'Model', 'br_nm'=>'Brand', 'mo_nm'=>'Model', 'bt'=>'Body type', 'yr'=>'Year', 'vol'=>'Volume', 'fl'=>'Fuel', 'tra'=>'Transmission', 'hp'=>'Power', 'clr'=>'Color', 'mlg'=>'Mileage', 'prc'=>'Price', 'cur'=>'Currency', 'sts'=>'Number of seats', 'wd'=>'Drivetrain', 'air'=>'Air conditioner', 'loc'=>'Address', 'cons'=>'Average consumption', 'tnk'=>'Fuel tank volume', 'delivery_time'=>'Delivery time', 'advance_amount'=>'Advance amount'],
 		'fl'=>['gsl'=>'Gasoline', 'gmn'=>'Gasoline / Gas (methane)', 'gpn'=>'Gasoline / Gas (propane)', 'hbd'=>'Hybrid', 'dsl'=>'Diesel', 'pih'=>'Plug-in Hybrid', 'elc'=>'Electric', 'gas'=>'Gas'],
 		'tra'=>['tpt'=>'Tiptronic ', 'atm'=>'Automatic', 'mnl'=>'Manual', 'rbt'=>'Robot', 'vrr'=>'Variator'],
 		'wd'=>['44'=>'AWD', 're'=>'RWD', 'fr'=>'FWD'],
@@ -168,7 +168,7 @@ if ($_COOKIE['lang']=='ru'){
 			'car'=>array(
 				'gr'=>array('car'=>'ЛЕГКОВЫЕ АВТОМОБИЛИ', 'com'=>'КОММЕРЧЕСКИЕ АВТОМОБИЛИ'),
 				'bt'=>array('sdn'=>'Седан', 'suv'=>'Внедорожник', 'hbk'=>'Хэтчбэк', 'unv'=>'Универсал', 'cup'=>'Купе', 'crv'=>'Кроссовер', 'mnv'=>'Минивэн', 'pkp'=>'Пикап', 'van'=>'Фургон', 'mbs'=>'Микроавтобус', 'cbr'=>'Кабриолет', 'cmb'=>'Комби', 'rod'=>'Родстер', 'frg'=>'Холодильник', 'crr'=>'Шасси'),
-				'spec'=>array('br'=>'Марка авто', 'mo'=>'Модель авто', 'br_nm'=>'Марка авто', 'mo_nm'=>'Модель авто', 'bt'=>'Тип кузова', 'yr'=>'Год выпуска', 'vol'=>'Объем двигателя', 'fl'=>'Топливо', 'tra'=>'КПП', 'hp'=>'Мощность', 'clr'=>'Цвет', 'mlg'=>'Пробег', 'prc'=>'Цена', 'cur'=>'Валюта', 'sts'=>'Количество мест', 'wd'=>'Привод', 'air'=>'Кондиционер', 'loc'=>'Адрес', 'cons'=>'Средний расход', 'tnk'=>'Объем бака'),
+				'spec'=>array('br'=>'Марка авто', 'mo'=>'Модель авто', 'br_nm'=>'Марка авто', 'mo_nm'=>'Модель авто', 'bt'=>'Тип кузова', 'yr'=>'Год выпуска', 'vol'=>'Объем двигателя', 'fl'=>'Топливо', 'tra'=>'КПП', 'hp'=>'Мощность', 'clr'=>'Цвет', 'mlg'=>'Пробег', 'prc'=>'Цена', 'cur'=>'Валюта', 'sts'=>'Количество мест', 'wd'=>'Привод', 'air'=>'Кондиционер', 'loc'=>'Адрес', 'cons'=>'Средний расход', 'tnk'=>'Объем бака', 'delivery_time'=>'Срок поставки', 'advance_amount'=>'Сумма аванса'),
 				'fl'=>array('gsl'=>'Бензин', 'gmn'=>'Бензин / Газ (метан)', 'gpn'=>'Бензин / Газ (пропан)', 'hbd'=>'Гибрид', 'dsl'=>'Дизель', 'pih'=>'Plug-in Гибрид', 'elc'=>'Электричество', 'gas'=>'Газ'),
 				'tra'=>array('tpt'=>'Типтроник', 'atm'=>'Автомат', 'mnl'=>'Механика', 'rbt'=>'Робот', 'vrr'=>'Вариатор'),
 				'wd'=>array('44'=>'4x4', 're'=>'Задний', 'fr'=>'Передний'),
@@ -179,7 +179,7 @@ if ($_COOKIE['lang']=='ru'){
 				'ss'=>array('w'=>'Зима', 's'=>'Лето', 'a'=>'Всесезонная')
 			),
 			'unit'=>array(
-				'hp'=>'л.с.', 'kw'=>'кВт', 'km'=>'км', 'mi'=>'миль', 'cm3'=>'см<sup>3</sup>'
+				'hp'=>'л.с.', 'kw'=>'кВт', 'km'=>'км', 'mi'=>'миль', 'cm3'=>'см<sup>3</sup>', 'days'=>'дней'
 			),
 			'cur'=>array(
 				'EUR'=>'&#128;', 'USD'=>'&#36;', 'RUB'=>'₽', 'UAH'=>'₴', 'GBP'=>'£', 'JPY'=>'¥', 'CNY'=>'元', 'MDL'=>' MDL'
@@ -1696,7 +1696,7 @@ elseif ($_COOKIE['lang']=='ro'){
 			'car'=>array(
 				'gr'=>array('car'=>'AUTOTURISME', 'com'=>'AUTOCOMERCIALE'),
 				'bt'=>array('sdn'=>'Sedan', 'suv'=>'SUV', 'hbk'=>'Hatchback', 'unv'=>'Universal', 'cup'=>'Coupe', 'crv'=>'Crossover', 'mnv'=>'Minivan', 'pkp'=>'Pickup', 'van'=>'Furgon', 'mbs'=>'Microbus', 'cbr'=>'Cabriolet', 'cmb'=>'Combi', 'rod'=>'Roadster', 'frg'=>'Frigider', 'crr'=>'Purtător'),
-				'spec'=>array('br'=>'Marca', 'mo'=>'Model', 'br_nm'=>'Marca', 'mo_nm'=>'Model', 'bt'=>'Tip caroserie', 'yr'=>'An de fabricație', 'vol'=>'Capacitate motor', 'fl'=>'Tip combustibil', 'tra'=>'Cutia de viteze', 'hp'=>'Putere', 'clr'=>'Culoare', 'mlg'=>'Parcurs', 'prc'=>'Preț', 'cur'=>'Valută', 'sts'=>'Numărul de locuri', 'wd'=>'Tip tracțiune', 'air'=>'Aer condiționat', 'loc'=>'Adresă', 'cons'=>'Consum mediu', 'tnk'=>'Volum rezervor combustibil'),
+				'spec'=>array('br'=>'Marca', 'mo'=>'Model', 'br_nm'=>'Marca', 'mo_nm'=>'Model', 'bt'=>'Tip caroserie', 'yr'=>'An de fabricație', 'vol'=>'Capacitate motor', 'fl'=>'Tip combustibil', 'tra'=>'Cutia de viteze', 'hp'=>'Putere', 'clr'=>'Culoare', 'mlg'=>'Parcurs', 'prc'=>'Preț', 'cur'=>'Valută', 'sts'=>'Numărul de locuri', 'wd'=>'Tip tracțiune', 'air'=>'Aer condiționat', 'loc'=>'Adresă', 'cons'=>'Consum mediu', 'tnk'=>'Volum rezervor combustibil', 'delivery_time'=>'Termen de livrare', 'advance_amount'=>'Suma avansului'),
 				'fl'=>array('gsl'=>'Benzină', 'gmn'=>'Benzină / Gaz (metan)', 'gpn'=>'Benzină / Gaz (propan)', 'hbd'=>'Hybrid', 'dsl'=>'Diesel', 'pih'=>'Plug-in Hybrid', 'elc'=>'Electricitate', 'gas'=>'Gaz'),
 				'tra'=>array('tpt'=>'Tiptronic', 'atm'=>'Automată', 'mnl'=>'Mecanică', 'rbt'=>'Robotizată', 'vrr'=>'Variator' ),
 				'wd'=>array('44'=>'4x4', 're'=>'Din spate', 'fr'=>'Din față'),
@@ -1707,7 +1707,7 @@ elseif ($_COOKIE['lang']=='ro'){
 				'ss'=>array('w'=>'Iarnă', 's'=>'Vară', 'a'=>'Tot sezonul')
 			),
 			'unit'=>array(
-				'hp'=>'hp', 'kw'=>'kw', 'km'=>'km', 'mi'=>'mile', 'cm3'=>'cm<sup>3</sup>'
+				'hp'=>'hp', 'kw'=>'kw', 'km'=>'km', 'mi'=>'mile', 'cm3'=>'cm<sup>3</sup>', 'days'=>'zile'
 			),
 			'cur'=>array(
 				'EUR'=>'&#128;', 'USD'=>'&#36;', 'RUB'=>'₽', 'UAH'=>'₴', 'GBP'=>'£', 'JPY'=>'¥', 'CNY'=>'元', 'MDL'=>' MDL'
@@ -3163,7 +3163,7 @@ elseif ($_COOKIE['lang']=='en'){
 				'gr'=>array('car'=>'CARS', 'com'=>'COMERCIAL'),
 				//'bt'=>array('sdn'=>'Sedan', 'suv'=>'Suv', 'hbk'=>'Hatchback', 'unv'=>'Universal', 'cup'=>'Coupe', 'crv'=>'Crossover', 'mnv'=>'Minivan', 'pkp'=>'Pickup', 'van'=>'Van', 'mbs'=>'Minibus', 'cbr'=>'Cabriolet', 'cmb'=>'Combi', 'rod'=>'Roadster', 'frg'=>'Refrigerator', 'crr'=>'Chassis'),
 				'bt'=>array('sdn'=>'Sedan', 'suv'=>'Suv', 'hbk'=>'Hatchback', 'unv'=>'Station wagon', 'cup'=>'Coupe', 'crv'=>'Crossover', 'mnv'=>'Minivan', 'pkp'=>'Truck', 'van'=>'Full size van', 'mbs'=>'Full size van', 'cbr'=>'Convertible', 'cmb'=>'Combi', 'rod'=>'Roadster', 'frg'=>'Refrigerator', 'crr'=>'Chassis'),
-				'spec'=>array('br'=>'Brand', 'mo'=>'Model', 'br_nm'=>'Brand', 'mo_nm'=>'Model', 'bt'=>'Body type', 'yr'=>'Year', 'vol'=>'Volume', 'fl'=>'Fuel', 'tra'=>'Transmission', 'hp'=>'Power', 'clr'=>'Color', 'mlg'=>'Mileage', 'prc'=>'Price', 'cur'=>'Currency', 'sts'=>'Number of seats', 'wd'=>'Drivetrain', 'air'=>'Air conditioner', 'loc'=>'Address', 'cons'=>'Average consumption', 'tnk'=>'Fuel tank volume'),
+				'spec'=>array('br'=>'Brand', 'mo'=>'Model', 'br_nm'=>'Brand', 'mo_nm'=>'Model', 'bt'=>'Body type', 'yr'=>'Year', 'vol'=>'Volume', 'fl'=>'Fuel', 'tra'=>'Transmission', 'hp'=>'Power', 'clr'=>'Color', 'mlg'=>'Mileage', 'prc'=>'Price', 'cur'=>'Currency', 'sts'=>'Number of seats', 'wd'=>'Drivetrain', 'air'=>'Air conditioner', 'loc'=>'Address', 'cons'=>'Average consumption', 'tnk'=>'Fuel tank volume', 'delivery_time'=>'Delivery time', 'advance_amount'=>'Advance amount'),
 				'fl'=>array('gsl'=>'Gasoline', 'gmn'=>'Gasoline / Gas (methane)', 'gpn'=>'Gasoline / Gas (propane)', 'hbd'=>'Hybrid', 'dsl'=>'Diesel', 'pih'=>'Plug-in Hybrid', 'elc'=>'Electric', 'gas'=>'Gas'),
 				'tra'=>array('tpt'=>'Tiptronic ', 'atm'=>'Automatic', 'mnl'=>'Manual', 'rbt'=>'Robot', 'vrr'=>'Variator'),
 				'wd'=>array('44'=>'AWD', 're'=>'RWD', 'fr'=>'FWD'),
@@ -3174,7 +3174,7 @@ elseif ($_COOKIE['lang']=='en'){
 				'ss'=>array('w'=>'Winter', 's'=>'Summer', 'a'=>'All seasons')
 			),
 			'unit'=>array(
-				'hp'=>'h.p.', 'kw'=>'kW', 'km'=>'km', 'mi'=>'mi', 'cm3'=>'cm<sup>3</sup>'
+				'hp'=>'h.p.', 'kw'=>'kW', 'km'=>'km', 'mi'=>'mi', 'cm3'=>'cm<sup>3</sup>', 'days'=>'days'
 			),
 			'cur'=>array(
 				'EUR'=>'&#128;', 'USD'=>'&#36;', 'RUB'=>'₽', 'UAH'=>'₴', 'GBP'=>'£', 'JPY'=>'¥', 'CNY'=>'元', 'MDL'=>' MDL'
