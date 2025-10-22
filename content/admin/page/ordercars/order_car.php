@@ -328,6 +328,13 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                 <!-----DELIVERY TIME----->
                 <div class="form-group col-md-6">
+                    <label class="form-label" style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">
+                        <?php 
+                            if ($_COOKIE['lang'] == 'ro') echo 'TERMEN DE LIVRARE:';
+                            elseif ($_COOKIE['lang'] == 'ru') echo 'СРОК ПОСТАВКИ:';
+                            else echo 'DELIVERY TIME:';
+                        ?>
+                    </label>
                     <input class="delivery_time form-control" type="number" name="delivery_time" tabindex="16"
                            value="<?= $car['delivery_time'] ?? '14' ?>"
                            placeholder="<?php 
@@ -346,6 +353,13 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                 <!-----PRICE--->
                 <div class="form-group col-md-90">
+                    <label class="form-label" style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">
+                        <?php 
+                            if ($_COOKIE['lang'] == 'ro') echo 'PREȚ TOTAL:';
+                            elseif ($_COOKIE['lang'] == 'ru') echo 'ОБЩАЯ ЦЕНА:';
+                            else echo 'TOTAL PRICE:';
+                        ?>
+                    </label>
                     <input class="price need nmb form-control" type="text" name="prc" tabindex="16"
                            value="<?= $car['prc'] ?? '' ?>"
                            placeholder="<?= mb_strtoupper($lang_price, "UTF-8") ?>"
@@ -365,6 +379,13 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                 <!-----ADVANCE AMOUNT----->
                 <div class="form-group col-md-6">
+                    <label class="form-label" style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">
+                        <?php 
+                            if ($_COOKIE['lang'] == 'ro') echo 'SUMA AVANSULUI (70%):';
+                            elseif ($_COOKIE['lang'] == 'ru') echo 'СУММА АВАНСА (70%):';
+                            else echo 'ADVANCE AMOUNT (70%):';
+                        ?>
+                    </label>
                     <input class="advance_amount need nmb form-control" type="number" name="advance_amount" tabindex="18"
                            value="<?= $car['advance_amount'] ?? '' ?>"
                            placeholder="<?php 
