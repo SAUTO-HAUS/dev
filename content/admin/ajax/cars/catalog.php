@@ -1,6 +1,6 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
-$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE 1=1 ';
+$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE catalog_type = "in_stock" ';
 
 foreach($arr_types as $k){ if ( isset($_POST[$k.'_search'])&&$_POST[$k.'_search']!='all' ) {$sql .= ' AND `'.$k.'` = :'.$k.''; $query_args[$k] = $_POST[$k.'_search'];} }
 
@@ -19,12 +19,12 @@ $query_args["it_qu"] = ($_POST["it_qu"]+1);
 $pdo = $db->prepare($sql);
 $pdo->execute($query_args);
 
+
 //if ($_POST['fn']!='more'){ $cars[] = '<div id="add_new" class="car_box" title="Добавить"> <div></div> </div>'; }
 
 $i = 0;
 $rtrn = '';
 foreach ($pdo as $r){
-//$r_cnt = mysqli_num_rows($result);
 	$i++;
 	if($i>$_POST['it_qu']){break;}
 	

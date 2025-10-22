@@ -4,7 +4,7 @@ namespace App\Db;
 
 use App\Core\Container;
 
-class Car
+class OrderCar
 {
     private $db;
     private $prefix;
@@ -39,7 +39,7 @@ class Car
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function getCarsCtlg($limit, $user_role = null, $user_branch_id = null, $vin_search = null, $catalog_type = 'in_stock')
+    public function getCarsCtlg($limit, $user_role = null, $user_branch_id = null, $vin_search = null, $catalog_type = 'on_order')
     {
         $sql = 'SELECT * FROM ' . $this->prefix . '_car_ctlg WHERE `act`="1" AND `catalog_type`="' . $catalog_type . '"';
         $params = [];

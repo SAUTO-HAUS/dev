@@ -30,12 +30,8 @@ $i_max = $display_limit;
 $user_role = $_SESSION['user_role'] ?? $user_role ?? null;
 $user_branch_id = $_SESSION['user_branch_id'] ?? $user_branch_id ?? null;
 
-// Get cars and filter for catalog_type = 'on_order'
-$all_cars = (new \App\Db\Car())->getCarsCtlg($i_max * 2, $user_role, $user_branch_id, $vin_search); // Get more to filter
-$pdo = array_filter($all_cars, function($car) {
-    return isset($car['catalog_type']) && $car['catalog_type'] === 'on_order';
-});
-$pdo = array_slice($pdo, 0, $i_max); // Limit to requested amount
+// Get cars with catalog_type = 'on_order'
+$pdo = (new \App\Db\OrderCar())->getCarsCtlg($i_max, $user_role, $user_branch_id, $vin_search);
 $total_cars_fetched = count($pdo);
 $has_more_cars = $total_cars_fetched > $i_max;
 $i = 0;
