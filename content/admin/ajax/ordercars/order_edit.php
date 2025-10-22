@@ -157,6 +157,12 @@ if ( $_POST['sub']=='start' ){//************************************************
 			//---VIN CODE---
 			$rtrn .= '<input class="vin no_need" name="vin" size="16" tabindex="11" placeholder="VIN КОД" type="text" title="VIN КОД" value="'.$r['vin'].'">';
 			
+			//---DELIVERY TIME---
+			$rtrn .= '<input class="delivery_time form-control" type="number" name="delivery_time" tabindex="16" min="1" max="365" placeholder="DELIVERY TIME (DAYS)" title="DELIVERY TIME (DAYS)" value="'.($r['delivery_time'] ?? '14').'">';
+			
+			//---ADVANCE AMOUNT---
+			$rtrn .= '<input class="advance_amount need nmb form-control" type="number" name="advance_amount" tabindex="17" min="0" step="0.01" placeholder="ADVANCE AMOUNT" title="ADVANCE AMOUNT" value="'.($r['advance_amount'] ?? '0').'">';
+			
 			//---LOCATION---
 			$rtrn .= '<select class="location need" name="loc" title="'.$lng['w']['address'].'" tabindex="12">';
 			foreach ($lng['t']['x']['address'] as $k => $v){ $v = ($k==0) ? $lng['w']['not_sel'] : $v; $rtrn .= '<option value="'.$k.'" '.($k==$r['loc']?'selected':'').'>'.$v.'</option>'; }

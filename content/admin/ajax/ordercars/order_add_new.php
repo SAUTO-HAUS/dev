@@ -371,7 +371,7 @@ if (__post('sub') == 'mo_search') {
     
     if (!empty($_FILES)) {
         //**********   FILE UPLOAD
-        require_once($ajax_folder . '/file_upload.php');
+        require_once($ajax_folder . '/order_file_upload.php');
     }
     
     $rtrn = [
