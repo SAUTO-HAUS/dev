@@ -326,6 +326,24 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                            oninput="this.value = this.value.toUpperCase().replace(/[^A-HJ-NPR-Z0-9]/g, '')">
                 </div>
 
+                <!-----DELIVERY TIME----->
+                <div class="form-group col-md-6">
+                    <input class="delivery_time form-control" type="number" name="delivery_time" tabindex="16"
+                           value="<?= $car['delivery_time'] ?? '' ?>"
+                           placeholder="<?php 
+                               if ($_COOKIE['lang'] == 'ro') echo 'Termen de livrare (zile)';
+                               elseif ($_COOKIE['lang'] == 'ru') echo 'Срок поставки (дни)';
+                               else echo 'Delivery time (days)';
+                           ?>"
+                           title="<?php 
+                               if ($_COOKIE['lang'] == 'ro') echo 'Termen de livrare în zile';
+                               elseif ($_COOKIE['lang'] == 'ru') echo 'Срок поставки в днях';
+                               else echo 'Delivery time in days';
+                           ?>"
+                           min="1"
+                           max="365">
+                </div>
+
                 <!-----PRICE--->
                 <div class="form-group col-md-90">
                     <input class="price need nmb form-control" type="text" name="prc" tabindex="16"
@@ -343,6 +361,24 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                             </option>
                         <?php endforeach; ?>
                     </select>
+                </div>
+
+                <!-----ADVANCE AMOUNT----->
+                <div class="form-group col-md-6">
+                    <input class="advance_amount need nmb form-control" type="number" name="advance_amount" tabindex="18"
+                           value="<?= $car['advance_amount'] ?? '' ?>"
+                           placeholder="<?php 
+                               if ($_COOKIE['lang'] == 'ro') echo 'Suma avansului';
+                               elseif ($_COOKIE['lang'] == 'ru') echo 'Сумма аванса';
+                               else echo 'Advance amount';
+                           ?>"
+                           title="<?php 
+                               if ($_COOKIE['lang'] == 'ro') echo 'Suma avansului (70% din preț)';
+                               elseif ($_COOKIE['lang'] == 'ru') echo 'Сумма аванса (70% от цены)';
+                               else echo 'Advance amount (70% of price)';
+                           ?>"
+                           min="0"
+                           step="0.01">
                 </div>
             </div>
             <div class="add_info" style="margin-top: 10px">
@@ -875,5 +911,52 @@ SVG
 </div>
 
 <?php endif; ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const priceInput = document.querySelector('input[name="prc"]');
+    const advanceInput = document.querySelector('input[name="advance_amount"]');
+    
+    // Function to calculate 70% advance
+    function calculateAdvance() {
+        const price = parseFloat(priceInput.value) || 0;
+        const advance = Math.round(price * 0.7 * 100) / 100; // Round to 2 decimal places
+        
+        // Only auto-fill if advance field is empty or user hasn't manually changed it
+        if (!advanceInput.dataset.userModified) {
+            advanceInput.value = advance > 0 ? advance : '';
+        }
+    }
+    
+    // Calculate advance when price changes
+    if (priceInput && advanceInput) {
+        // Check if we're editing an existing car (has existing advance value)
+        const hasExistingAdvance = advanceInput.value && advanceInput.value !== '';
+        if (hasExistingAdvance) {
+            // Mark as user-modified to preserve existing values when editing
+            advanceInput.dataset.userModified = 'true';
+        } else {
+            // Calculate initial advance on page load for new cars
+            calculateAdvance();
+        }
+        
+        // Recalculate when price changes
+        priceInput.addEventListener('input', calculateAdvance);
+        priceInput.addEventListener('change', calculateAdvance);
+        
+        // Mark as user-modified when advance is manually changed
+        advanceInput.addEventListener('input', function() {
+            this.dataset.userModified = 'true';
+        });
+        
+        // Reset user-modified flag if advance is cleared
+        advanceInput.addEventListener('focus', function() {
+            if (this.value === '') {
+                this.dataset.userModified = 'false';
+            }
+        });
+    }
+});
+</script>
 
 <?php include(__DIR__ . '/order_country_flags_include.php'); ?>

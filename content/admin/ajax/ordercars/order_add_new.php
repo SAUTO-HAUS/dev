@@ -139,7 +139,7 @@ if (__post('sub') == 'mo_search') {
                 `tra`=:tra, `wd`=:wd, `clr`=:clr, `loc`=:loc, `txt`=:txt, `vin`=:vin,
                 `prc`=:prc, `cur`=:cur, `soon`=:soon, `n_a`=:n_a, `tva`=:tva, `top`=:top,
                 `gift`=:gift, `import_country_id`=:import_country_id, `catalog_type`=:catalog_type,
-                `prc_t`=:prc_t, `prc_n`=:prc_n, `999`=:data_999 
+                `delivery_time`=:delivery_time, `advance_amount`=:advance_amount, `prc_t`=:prc_t, `prc_n`=:prc_n, `999`=:data_999 
                 WHERE `id`=:id');
             $pdo->execute([
                 'id' => __post('id'),
@@ -171,6 +171,8 @@ if (__post('sub') == 'mo_search') {
                 'gift' => __post('gift', 0),
                 'import_country_id' => __post('import_country_id', 0),
                 'catalog_type' => 'on_order',
+                'delivery_time' => __post('delivery_time', 0),
+                'advance_amount' => __post('advance_amount', 0),
                 'prc_t' => (strtotime(__post('prc_t'))!=''&&strtotime(__post('prc_t'))!=0?strtotime(__post('prc_t')):0),
                 'prc_n' => __post('prc_n', __post('prc', 0)),
                 'data_999' => $updated_999_data
@@ -287,8 +289,8 @@ if (__post('sub') == 'mo_search') {
 
         } else {
 
-            $pdo = $db->prepare('INSERT INTO ' . $prefx . '_car_ctlg (`gr`, `br`, `mo`, `br_nm`, `mo_nm`, `yr`, `vin`,`bt`, `sts`, `mlg`, `unit`, `vol`, `hp`, `fl`, `tra`, `wd`, `clr`, `loc`, `txt`, `prc`, `cur`, `soon`, `n_a`, `top`, `tva`, `gift`, `import_country_id`, `catalog_type`, `p_path`, `date`, `author`, `vis`) 
-                VALUES (:gr, :br, :mo, :br_nm, :mo_nm, :yr, :vin, :bt, :sts, :mlg, :unit, :vol, :hp, :fl, :tra, :wd, :clr, :loc, :txt, :prc, :cur, :soon, :n_a, :top, :tva, :gift, :import_country_id, :catalog_type, :p_path, :date, :author, "1")');//, `vis`, "0"
+            $pdo = $db->prepare('INSERT INTO ' . $prefx . '_car_ctlg (`gr`, `br`, `mo`, `br_nm`, `mo_nm`, `yr`, `vin`,`bt`, `sts`, `mlg`, `unit`, `vol`, `hp`, `fl`, `tra`, `wd`, `clr`, `loc`, `txt`, `prc`, `cur`, `soon`, `n_a`, `top`, `tva`, `gift`, `import_country_id`, `catalog_type`, `delivery_time`, `advance_amount`, `p_path`, `date`, `author`, `vis`) 
+                VALUES (:gr, :br, :mo, :br_nm, :mo_nm, :yr, :vin, :bt, :sts, :mlg, :unit, :vol, :hp, :fl, :tra, :wd, :clr, :loc, :txt, :prc, :cur, :soon, :n_a, :top, :tva, :gift, :import_country_id, :catalog_type, :delivery_time, :advance_amount, :p_path, :date, :author, "1")');//, `vis`, "0"
 
             $pdo->execute([
                 'gr' => __post('gr'),
@@ -319,6 +321,8 @@ if (__post('sub') == 'mo_search') {
                 'gift' => __post('gift', 0),
                 'import_country_id' => __post('import_country_id', 0),
                 'catalog_type' => 'on_order',
+                'delivery_time' => __post('delivery_time', 0),
+                'advance_amount' => __post('advance_amount', 0),
                 'p_path' => $zY . '/' . $zM,
                 'date' => time(),
                 'author' => __post('author')
