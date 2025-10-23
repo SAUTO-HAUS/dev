@@ -366,7 +366,7 @@
   #rent > .bx > .s > .it > .txt {font-family:"def_l";}
   #rent > .bx > .s > .it > .img {width:100%; height:3rem; background-repeat:no-repeat; background-position:left center; background-size:contain;}
   
-  main > .pht_bx {width:60%; height:35rem; float:left;}
+  main > .pht_bx {width:67%; height:25rem; float:left;}
   
   /*main > .pht_bx > .pht_list {width:15%; height:inherit; display:flex; flex-flow:row wrap; justify-content:space-between; overflow-y:scroll; float:left; -ms-overflow-style:none; scrollbar-width:none; background-color:#fff; border-radius:1rem;}
   main > .pht_bx > .pht_list::-webkit-scrollbar {display:none;}
@@ -386,8 +386,8 @@
   main > .pht_bx > .list > .phts > .item.act {filter:none;}
   /*main > .pht_bx > .list > .phts > .item:not(:first-child) {margin:10px 0 0 0;}*/
   
-  main > .pht_bx > .big_pht {width:calc(83% - 10px); height:inherit; background-color:#fff; background-repeat:no-repeat; background-position:center; background-size:contain; border-radius:0 1rem 1rem 0; float:left; image-rendering:-webkit-optimize-contrast; margin-left:10px; cursor:zoom-in;}
-  main > .spc_bx {width:38%; min-height:30rem; float:right; background-color:#fff; padding:3rem; border-radius:1rem;}
+  main > .pht_bx > .big_pht {width:calc(83% - 10px); height:inherit; background-color:#fff; background-repeat:no-repeat; background-position:center; background-size:cover; border-radius:0 1rem 1rem 0; float:left; image-rendering:auto; margin-left:10px; cursor:zoom-in;}
+  main > .spc_bx {width:32%; min-height:30rem; float:right; background-color:#fff; padding:1.5rem; border-radius:1rem;}
   
   main > .spc_bx > .name {font-size:1.5rem; text-transform:uppercase;}
   main > .spc_bx > .name > .id {width:100%; display:block; color:#e2001a; font-size:1rem;}
