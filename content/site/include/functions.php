@@ -621,7 +621,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 							// Add flag image below the country name without dots
 							if (!empty($country_code)) {
 								$ar['txt'] .= '
-							<div style="text-align: right; margin-right:-3px; padding: 0; border: none;">
+							<div style="text-align: right; margin-right:-3px; margin-top: -8px; padding: 0; border: none;">
 								<img src="/media/images/flags/'.$country_code.'.svg" alt="'.$country_name.' flag" style="width: 36px; height: 30px; border: none; padding: 0;">
 							</div>';
 							}

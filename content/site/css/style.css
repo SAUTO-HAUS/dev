@@ -195,7 +195,7 @@
   main .gr > .cnt > .it > div.imgX > img {max-height:100%; max-width:100%;}
   main .gr > .cnt > .it > .img {width:100%; height:15vw; background-color:transparent; background-repeat:no-repeat; background-position:center; background-size:cover; position:absolute; z-index:3; top:0; left:0; right:0;}
   main .gr > .cnt > .it > .img.n_a {background-image:url(/media/images/site/v2/no_image.svg); position:absolute; z-index:1; background-size:30%; background-color:#fff; border-bottom:1px solid #eee;}
-  main .gr > .cnt > .it > .txt {width:100%; padding:3% 10% 5%; float:left;}
+  main .gr > .cnt > .it > .txt {width:100%; padding:0 5% 0; float:left;}
   main .gr > .cnt > .it > .txt > .status {min-height:2rem;}
   main .gr > .cnt > .it.car > .txt > .status {text-align:center; display:flex; flex-flow:row wrap; justify-content:left;}
       
@@ -226,7 +226,7 @@
   main .gr > .cnt > .it > .txt > .id {color:#cecece; font-size:.7rem; position:absolute; bottom:.5rem; right:1rem;}
   main .gr > .cnt > .it > .txt > .specs {font-size:.7rem;}
   main .gr > .cnt > .it > .txt > .specs > .ar {display:flex; flex-flow:row; justify-content:space-between; align-items:center; margin:.5rem 0;}
-  main .gr > .cnt > .it > .txt > .specs > .ar > .name {color:#515151;}
+  main .gr > .cnt > .it > .txt > .specs > .ar > .name {color:#515151; font-size:0.85rem;}
   main .gr > .cnt > .it > .txt > .specs > .ar > .space {flex-grow:1; border-bottom:1px dashed #d7d7d7; height:.9rem;}
   main .gr > .cnt > .it > .txt > .specs > .ar > .val {font-size:1.05rem;}
   
