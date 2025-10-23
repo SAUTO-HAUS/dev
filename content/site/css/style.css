@@ -197,6 +197,19 @@
 
   /* Styles images size fix */
   @media (min-width: 769px) {
+    main .gr > .cnt > .it {
+      height: 25rem;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    main .gr > .cnt > .it > .txt {
+      flex: 1; 
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    
     main .gr > .cnt > .it > img {
       width: 100%; 
       height: 200px; 
