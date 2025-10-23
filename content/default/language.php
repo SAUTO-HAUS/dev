@@ -141,8 +141,10 @@ if ($_COOKIE['lang']=='ru'){
 			'negociabil'=>'Договорная',
 			'extras'=>'Дополнительно',
 			'fnd_smlr'=>'Найти похожие',
-
-
+			'ordercars_promo_text'=>'Не нашли подходящий автомобиль? Посмотрите наш каталог автомобилей под заказ!',
+			'ordercars_button_text'=>'Авто под заказ',
+			'cars_promo_text'=>'Ищете автомобиль в наличии? Посмотрите наш каталог автомобилей в стоке!',
+			'cars_button_text'=>'Автомобили в наличии',
             'calc_title' => 'Кредитный калькулятор',
             'calc_title_sum_tl' => 'Сумма кредита (от 2 000 EUR до 50 000 EUR)',
             'calc_title_term_tl' => 'Срок кредита (от 6 до 60 месяцев)',
@@ -1669,8 +1671,10 @@ elseif ($_COOKIE['lang']=='ro'){
 			'negociabil'=>'Negociabil',
 			'extras'=>'Elemente suplimentare',
 			'fnd_smlr'=>'Găsiți modele similare',
-
-
+			'ordercars_promo_text'=>'Nu ați găsit mașina potrivită? Aruncați o privire la catalogul nostru de mașini la comandă!',
+			'ordercars_button_text'=>'Mașini la comandă',
+			'cars_promo_text'=>'Căutați o mașină în stoc? Aruncați o privire la catalogul nostru de mașini disponibile!',
+			'cars_button_text'=>'Mașini în stoc',
             'calc_title' => 'Calculator credit',
             'calc_title_sum_tl' => 'Suma creditului (de la 2 000 EUR până la 50 000 EUR)',
             'calc_title_term_tl' => 'Termenul creditului (de la 6 până la 60 luni)',
@@ -3136,7 +3140,10 @@ elseif ($_COOKIE['lang']=='en'){
 			'negociabil'=>'Negotiable',
 			'extras'=>'Extras',
 			'fnd_smlr'=>'Find similar',
-
+			'ordercars_promo_text'=>'Didn\'t find the right car? Check out our catalog of cars on order!',
+			'ordercars_button_text'=>'Cars on Order',
+			'cars_promo_text'=>'Looking for a car in stock? Check out our catalog of available cars!',
+			'cars_button_text'=>'Cars in Stock',
             'calc_title' => 'Loan Calculator',
             'calc_title_sum_tl' => 'Loan amount (from 2,000 EUR to 50,000 EUR)',
             'calc_title_term_tl' => 'Loan term (from 6 to 60 months)',
