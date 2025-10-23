@@ -194,6 +194,50 @@
   main .gr > .cnt > .it > div.imgX {width:100%; height:17rem; display:block; text-align:center; overflow:hidden; background:url(/media/images/site/v2/no_image.svg) center / 30% no-repeat;}
   main .gr > .cnt > .it > div.imgX > img {max-height:100%; max-width:100%;}
   main .gr > .cnt > .it > .img {width:100%; height:15vw; background-color:transparent; background-repeat:no-repeat; background-position:center; background-size:cover; position:absolute; z-index:3; top:0; left:0; right:0;}
+
+  /* Styles images size fix */
+  @media (min-width: 769px) {
+    main .gr > .cnt > .it > img {
+      width: 100%; 
+      height: 200px; 
+      object-fit: cover; 
+      object-position: center; 
+      position: relative; 
+      z-index: 2; 
+      float: left; 
+      background: #fff url(/media/images/site/v2/no_image.svg) no-repeat center / 30%;
+    }
+    
+    main .gr > .cnt > .it > div.imgX {
+      width: 100%; 
+      height: 200px; 
+      display: block; 
+      text-align: center; 
+      overflow: hidden; 
+      background: url(/media/images/site/v2/no_image.svg) center / 30% no-repeat;
+    }
+    
+    main .gr > .cnt > .it > div.imgX > img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+    
+    main .gr > .cnt > .it > .img {
+      width: 100%; 
+      height: 200px;
+      background-color: transparent; 
+      background-repeat: no-repeat; 
+      background-position: center; 
+      background-size: cover; 
+      position: absolute; 
+      z-index: 3; 
+      top: 0; 
+      left: 0; 
+      right: 0;
+    }
+  }
   main .gr > .cnt > .it > .img.n_a {background-image:url(/media/images/site/v2/no_image.svg); position:absolute; z-index:1; background-size:30%; background-color:#fff; border-bottom:1px solid #eee;}
   main .gr > .cnt > .it > .txt {width:100%; padding:0 5% 0; float:left;}
   main .gr > .cnt > .it > .txt > .status {min-height:2rem;}
