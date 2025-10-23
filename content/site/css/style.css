@@ -186,13 +186,13 @@
   main .gr > .cnt > .lnk > h4 {font-size:1.35rem; text-align:left; margin-top:1.4rem;}
   main .gr > .cnt > .lnk > .txt {color:#515151; text-align:left; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; max-height: 4.2rem;}
   
-  main .gr > .cnt > .it {width:23%; /*min-height:60vh;*/ border-radius:0; overflow:hidden; background-color:#fff; position:relative; transition:.2s;}
+  main .gr > .cnt > .it {width:23%; /*min-height:60vh;*/ border-radius:12px; overflow:hidden; background-color:#fff; position:relative; transition:.2s;}
   main .gr > .cnt.list > .it {margin:1rem 0;}
   main .gr > .cnt > .it:hover {transform:scale(1.025); box-shadow:0 5px 10px 0 rgba(0,0,0,.3);}
   main .gr > .cnt > .it > .crdt {background-color:#e2001a; color:#fff; display:inline-block; position:absolute; top:1rem; left:1rem; z-index:4; padding:.3rem 1rem; border-radius:.5rem;}
-  main .gr > .cnt > .it > img {width:100%; min-height:10rem; position:relative; z-index:2; float:left; background:#fff url(/media/images/site/v2/no_image.svg) no-repeat center / 30%;}
+  main .gr > .cnt > .it > img {width:100%; height:17rem; object-fit:cover; object-position:center; position:relative; z-index:2; float:left; background:#fff url(/media/images/site/v2/no_image.svg) no-repeat center / 30%;}
   main .gr > .cnt > .it > div.imgX {width:100%; height:17rem; display:block; text-align:center; overflow:hidden; background:url(/media/images/site/v2/no_image.svg) center / 30% no-repeat;}
-  main .gr > .cnt > .it > div.imgX > img {max-height:100%; max-width:100%;}
+  main .gr > .cnt > .it > div.imgX > img {width:100%; height:100%; object-fit:cover; object-position:center;}
   main .gr > .cnt > .it > .img {width:100%; height:15vw; background-color:transparent; background-repeat:no-repeat; background-position:center; background-size:cover; position:absolute; z-index:3; top:0; left:0; right:0;}
 
   /* Styles images size fix */
@@ -213,7 +213,7 @@
     main .gr > .cnt > .it > img {
       width: 100%; 
       height: 200px; 
-      object-fit: contain; 
+      object-fit: cover; 
       object-position: center; 
       position: relative; 
       z-index: 2; 
@@ -233,7 +233,7 @@
     main .gr > .cnt > .it > div.imgX > img {
       width: 100%;
       height: 100%;
-      object-fit: contain;
+      object-fit: cover;
       object-position: center;
     }
     
@@ -243,7 +243,7 @@
       background-color: transparent; 
       background-repeat: no-repeat; 
       background-position: center; 
-      background-size: contain; 
+      background-size: cover; 
       position: absolute; 
       z-index: 3; 
       top: 0; 
