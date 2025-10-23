@@ -2474,6 +2474,55 @@ footer .columns-wrapper .column-container.col-logo-container {
           max-width: 55px;
           top: 25px;
       }
+      
+      /* Styles cards for mobile vers */
+      main .gr > .cnt > .it {
+          display: flex !important;
+          flex-direction: column !important;
+      }
+      
+      main .gr > .cnt > .it > .name {
+          font-size: 1.6rem;
+          padding-left: 0.7rem; 
+      }
+      
+      main .gr > .cnt > .it > .compact-info {
+          padding-left: 0 !important;
+      }
+      
+      main .gr > .cnt > .it > .compact-info > .line1,
+      main .gr > .cnt > .it > .compact-info > .line2 {
+          font-size: 1rem; 
+          padding-left: 0.7rem !important; 
+      }
+      
+      main .gr > .cnt > .it > .prc {
+          padding-left: 0.7rem !important;
+          padding-right: 0.7rem !important; 
+          margin-top: -0.4rem !important; 
+      }
+      
+      main .gr > .cnt > .it > .prc > .val {
+          font-size: 1.8rem !important; 
+      }
+
+      main .gr > .cnt > .it > .prc > .stock-status {
+    padding: 0.3rem 1rem 0.3rem 1rem !important;
+    font-size: 1.2rem !important;
+}
+      
+      main .gr > .cnt > .it > .txt > .specs {
+          font-size: 0.9rem !important; 
+      }
+      
+      main .gr > .cnt > .it > .txt > .specs > .ar > .name {
+          font-size: 0.9rem !important; 
+      }
+      
+      main .gr > .cnt > .it > .txt > .specs > .ar > .val {
+          font-size: 1.1rem !important; 
+      }    
+     
   }
   
   /* Styles for credit page on mobile in landscape mode */
