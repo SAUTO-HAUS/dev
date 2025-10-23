@@ -159,11 +159,11 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
         $body_type_red = '<span style="color: #ff0000;">'.$body_type_upper.'</span>';
 
         if ($zlng == 'ro') {
-            $sa['meta']['h1'] = "{$body_type_red} | În stoc, disponibil pentru vânzare și Trade-In";
+            $sa['meta']['h1'] = "{$body_type_red} | Disponibil pentru vânzare și Trade-In";
         } elseif ($zlng == 'ru') {
-            $sa['meta']['h1'] = "{$body_type_red} | В наличии, доступно для продажи и Trade-In";
+            $sa['meta']['h1'] = "{$body_type_red} | Доступно для продажи и Trade-In";
         } else { // English
-            $sa['meta']['h1'] = "{$body_type_red} | In stock, available for sale and Trade-In";
+            $sa['meta']['h1'] = "{$body_type_red} | Available for sale and Trade-In";
         }
 
         $sa['meta']['ttl'] = $sa['meta']['h1'] . " | Sauto Haus";
@@ -207,11 +207,11 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
 
                     // Use language-specific h1 content with red brand and model
                     if ($zlng == 'ro') {
-                        $sa['meta']['h1'] = $brand_model_red." | În stoc, disponibil pentru vânzare și Trade-In";
+                        $sa['meta']['h1'] = $brand_model_red." | Disponibil pentru vânzare și Trade-In";
                     } elseif ($zlng == 'ru') {
-                        $sa['meta']['h1'] = $brand_model_red." | В наличии, доступно для продажи и Trade-In";
+                        $sa['meta']['h1'] = $brand_model_red." | Доступно для продажи и Trade-In";
                     } else { // English or any other language
-                        $sa['meta']['h1'] = $brand_model_red." | In stock, available for sale and Trade-In";
+                        $sa['meta']['h1'] = $brand_model_red." | Available for sale and Trade-In";
                     }
 
                     $sa['meta']['dsc'] = "Automobile {$brand_name} {$model_name} în stoc și la comandă. Prețuri și oferte actuale.";
@@ -229,11 +229,11 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
 
                 // Use language-specific h1 content with red brand
                 if ($zlng == 'ro') {
-                    $sa['meta']['h1'] = $brand_red." | În stoc, disponibil pentru vânzare și Trade-In";
+                    $sa['meta']['h1'] = $brand_red." | Disponibil pentru vânzare și Trade-In";
                 } elseif ($zlng == 'ru') {
-                    $sa['meta']['h1'] = $brand_red." | В наличии, доступно для продажи и Trade-In";
+                    $sa['meta']['h1'] = $brand_red." | Доступно для продажи и Trade-In";
                 } else { // English or any other language
-                    $sa['meta']['h1'] = $brand_red." | In stock, available for sale and Trade-In";
+                    $sa['meta']['h1'] = $brand_red." | Available for sale and Trade-In";
                 }
 
                 $sa['meta']['dsc'] = "Automobile {$brand_name} în stoc și la comandă. Prețuri și oferte actuale.";
