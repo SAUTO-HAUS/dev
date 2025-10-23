@@ -186,7 +186,7 @@
   main .gr > .cnt > .lnk > h4 {font-size:1.35rem; text-align:left; margin-top:1.4rem;}
   main .gr > .cnt > .lnk > .txt {color:#515151; text-align:left; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; max-height: 4.2rem;}
   
-  main .gr > .cnt > .it {width:23%; /*min-height:60vh;*/ border-radius:1rem; overflow:hidden; background-color:#fff; position:relative; transition:.2s;}
+  main .gr > .cnt > .it {width:23%; /*min-height:60vh;*/ border-radius:0; overflow:hidden; background-color:#fff; position:relative; transition:.2s;}
   main .gr > .cnt.list > .it {margin:1rem 0;}
   main .gr > .cnt > .it:hover {transform:scale(1.025); box-shadow:0 5px 10px 0 rgba(0,0,0,.3);}
   main .gr > .cnt > .it > .crdt {background-color:#e2001a; color:#fff; display:inline-block; position:absolute; top:1rem; left:1rem; z-index:4; padding:.3rem 1rem; border-radius:.5rem;}
@@ -217,6 +217,11 @@
       
   main .gr > .cnt > .it > .txt > .name {font-size:1.3rem; /*border-bottom:1px solid #e2001a;*/}
   main .gr > .cnt > .it > .txt > .name > span {font-size:1rem; display:inline-block;}
+  
+  main .gr > .cnt > .it > .compact-info {font-size:0.85rem; color:#666; padding:0.2rem 1rem 0.2rem 0.8rem;}
+  main .gr > .cnt > .it > .name {padding-left:0.8rem; font-size:1.2rem;}
+  main .gr > .cnt > .it > .compact-info > .line1,
+  main .gr > .cnt > .it > .compact-info > .line2 {margin:0.2rem 0;}
   main .gr > .cnt > .it > .txt > .name > span.inf {width:100%; font-size:1.2rem;}
   main .gr > .cnt > .it > .txt > .id {color:#cecece; font-size:.7rem; position:absolute; bottom:.5rem; right:1rem;}
   main .gr > .cnt > .it > .txt > .specs {font-size:.7rem;}

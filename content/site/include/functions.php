@@ -522,32 +522,26 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 			// Generate correct URL based on catalog_type
 			$page_type = (isset($r['catalog_type']) && $r['catalog_type'] == 'on_order') ? 'ordercars' : 'cars';
 			
+			// Prepare compact info display
+			$year = $r['yr'];
+			$fuel = isset($lng['l']['car']['fl'][$r['fl']]) ? $lng['l']['car']['fl'][$r['fl']] : $r['fl'];
+			$transmission = isset($lng['l']['car']['tra'][$r['tra']]) ? $lng['l']['car']['tra'][$r['tra']] : $r['tra'];
+			$volume = $r['vol'].' '.$lng['l']['unit']['cm3'];
+			$mileage = number_format($r['mlg']).' '.( isset($lng['l']['unit'][ $r['unit'] ]) ? $lng['l']['unit'][ $r['unit'] ] : $r['unit'] );
+			
 			$ar['txt'] .= '
 			<a class="it car" href="/'.$_COOKIE['lang'].'/'.$page_type.'/'.$r['id'].'">
+				<div class="name">'.$r['br_nm'].' '.$r['mo_nm'].'</div>
+				<div class="compact-info">
+					<div class="line1">'.$year.' | '.$fuel.' | '.$volume.'</div>
+					<div class="line2">'.$transmission.' | '.$mileage.'</div>
+				</div>
 				'.$image_html.'
 				<div class="txt">
-					<div class="status">'.$z_stat.'</div>
-					<div class="name">'.$r['br_nm'].' '.$r['mo_nm'].'</div>';
+					<div class="status">'.$z_stat.'</div>';
 				//$ar['txt'] .= '<div class="id">ID-'.$r['id'].'</div>';
 				$ar['txt'] .= '
 				<div class="specs">';
-					
-					foreach ($specs_arr as $k => $v){
-						//$r[$k] = $k=='hp' ? $r[$k].' '.$lng['l']['unit']['hp'].' ('.round($r[$k]*0.735,0).' '.$lng['l']['unit']['kw'].')' : $r[$k];
-						$r[$k] = $k=='mlg' ? number_format($r[$k]).' '.( isset($lng['l']['unit'][ $r['unit'] ]) ? $lng['l']['unit'][ $r['unit'] ] : $r['unit'] ) : $r[$k];
-						
-						$r[$k] = $k=='vol' ? $r[$k].' '.$lng['l']['unit']['cm3'] : $r[$k];
-						
-						//$v_lng = $v == 'vol' ? $r['vol'].' '.$lng['l']['unit']['cm3'] : $v_lng;
-						
-						$v1 = ( $v===1&&isset($lng['l']['car'][$k][$r[$k]]) ) ? $lng['l']['car'][$k][$r[$k]] : $r[$k];
-						$ar['txt'] .= '
-						<p class="ar">
-							<span class="name">'.$lng['l']['car']['spec'][$k].'</span>
-							<span class="space"></span>
-							<span class="val">'.$v1.'</span>
-						</p>';
-					}
 					
 					// Add monthly payment after the specs
 					if($r['prc'] > 100) {
