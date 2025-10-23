@@ -528,7 +528,18 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 			$transmission = isset($lng['l']['car']['tra'][$r['tra']]) ? $lng['l']['car']['tra'][$r['tra']] : $r['tra'];
 			$volume = $r['vol'].' '.$lng['l']['unit']['cm3'];
 			$mileage = number_format($r['mlg']).' '.( isset($lng['l']['unit'][ $r['unit'] ]) ? $lng['l']['unit'][ $r['unit'] ] : $r['unit'] );
-			
+		
+			// Calculate price before displaying
+			if ( $r['prc_t']!=0 && $r['prc_t']>time() ){
+				$prc = number_format($r['prc_n'], 0, ',', ' ');
+				$o_prc = number_format($r['prc'], 0, ',', ' ');
+				$o_prc_bl = '<span class="o_val" title="'.$lng['w']['o_prc'].'"><span class="i">'.$o_prc.'</span> &#8364;</span>';
+			}else{
+				$prc = number_format($r['prc'], 0, ',', ' ');
+				$o_prc = 0;
+				$o_prc_bl = '';
+			}
+		
 			$ar['txt'] .= '
 			<a class="it car" href="/'.$_COOKIE['lang'].'/'.$page_type.'/'.$r['id'].'">
 				<div class="name">'.$r['br_nm'].' '.$r['mo_nm'].'</div>
@@ -537,6 +548,8 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 					<div class="line2">'.$transmission.' | '.$mileage.'</div>
 				</div>
 				'.$image_html.'
+				<div class="prc"><strong class="val">'.($r['prc'] > 100 ? $prc.' &#8364;' : $lng['w']['negociabil']).'</strong>'.$o_prc_bl.'</div>
+				
 				<div class="txt">
 					<div class="status">'.$z_stat.'</div>';
 				//$ar['txt'] .= '<div class="id">ID-'.$r['id'].'</div>';
@@ -620,8 +633,6 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 					
 				$ar['txt'] .= '
 				</div>
-				
-				<div class="prc" style="'.$price_margin_style.'"> <strong class="val">'.($r['prc'] > 100 ? $prc.' &#8364;' : $lng['w']['negociabil']).'</strong> '.$o_prc_bl.'</div>
 			</div>
 		</a>';
 		

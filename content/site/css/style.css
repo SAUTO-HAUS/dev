@@ -218,8 +218,8 @@
   main .gr > .cnt > .it > .txt > .name {font-size:1.3rem; /*border-bottom:1px solid #e2001a;*/}
   main .gr > .cnt > .it > .txt > .name > span {font-size:1rem; display:inline-block;}
   
-  main .gr > .cnt > .it > .compact-info {font-size:0.85rem; color:#666; padding:0.2rem 1rem 0.2rem 0.8rem;}
-  main .gr > .cnt > .it > .name {padding-left:0.8rem; font-size:1.2rem;}
+  main .gr > .cnt > .it > .compact-info {font-size:0.85rem; color:#666; padding:0.2rem 1rem 0.2rem 0.5rem;}
+  main .gr > .cnt > .it > .name {padding-left:0.5rem; font-size:1.2rem;}
   main .gr > .cnt > .it > .compact-info > .line1,
   main .gr > .cnt > .it > .compact-info > .line2 {margin:0.2rem 0;}
   main .gr > .cnt > .it > .txt > .name > span.inf {width:100%; font-size:1.2rem;}
@@ -234,8 +234,16 @@
   main .gr > .cnt > .it > .txt > .prcs > .ar > .name {width:100%; margin-left:0;}
   main .gr > .cnt > .it > .txt > .prcs > .ar > .val {width:100%; margin-left:0;}
           
-  main .gr > .cnt > .it > .txt > .prc {margin-top:30px;}
-  main .gr > .cnt > .it > .txt > .prc > .val {font-size:1.6rem; line-height:1.6rem;}
+  main .gr > .cnt > .it > .prc {
+      background-color: yellow; 
+      display: inline-block;
+      margin-left: 0.5rem;
+      margin-top: 0.2rem;
+  }
+  main .gr > .cnt > .it > .prc > .val {
+      font-size: 1.2rem;
+      color: red; 
+  }
   main .gr > .cnt > .it > .txt > .prc > .o_val {color:#e2001a; text-decoration:line-through; margin-left:1rem;}
   
   main .gr > .cnt > .it > .txt > .specs2 {width:100%; margin-top:1rem; float:left;}
