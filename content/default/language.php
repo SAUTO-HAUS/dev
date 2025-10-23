@@ -153,6 +153,8 @@ if ($_COOKIE['lang']=='ru'){
             'calc_title_plata2' => 'до',
             'calc_title_luni' => 'месяцев',
             'calc_title_btn' => 'Подать заявку',
+            'in_stock'=>'В наличии',
+            'on_order'=>'Под заказ'
 		),
 		
 		'u'=>array(
@@ -1683,6 +1685,8 @@ elseif ($_COOKIE['lang']=='ro'){
             'calc_title_plata2' => 'până la',
             'calc_title_luni' => 'luni',
             'calc_title_btn' => 'Aplică acum',
+            'in_stock'=>'În stoc',
+            'on_order'=>'La comandă'
 		),
 		
 		'u'=>array(
@@ -3152,6 +3156,8 @@ elseif ($_COOKIE['lang']=='en'){
             'calc_title_plata2' => 'to',
             'calc_title_luni' => 'months',
             'calc_title_btn' => 'Apply now',
+            'in_stock'=>'In Stock',
+            'on_order'=>'On Order'
 		),
 		
 		'u'=>array(

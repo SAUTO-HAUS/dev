@@ -548,7 +548,10 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 					<div class="line2">'.$transmission.' | '.$mileage.'</div>
 				</div>
 				'.$image_html.'
-				<div class="prc"><strong class="val">'.($r['prc'] > 100 ? $prc.' &#8364;' : $lng['w']['negociabil']).'</strong>'.$o_prc_bl.'</div>
+				<div class="prc">
+					<strong class="val">'.($r['prc'] > 100 ? $prc.' &#8364;' : $lng['w']['negociabil']).'</strong>'.$o_prc_bl.'
+					<span class="stock-status'.($r['catalog_type'] == 'on_order' ? ' on-order' : '').'">'.($r['catalog_type'] == 'on_order' ? $lng['w']['on_order'] : $lng['w']['in_stock']).'</span>
+				</div>
 				
 				<div class="txt">
 					<div class="status">'.$z_stat.'</div>';

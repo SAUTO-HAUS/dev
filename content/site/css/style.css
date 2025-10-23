@@ -234,15 +234,31 @@
   main .gr > .cnt > .it > .txt > .prcs > .ar > .name {width:100%; margin-left:0;}
   main .gr > .cnt > .it > .txt > .prcs > .ar > .val {width:100%; margin-left:0;}
           
-  main .gr > .cnt > .it > .prc {
-      background-color: yellow; 
-      display: inline-block;
+  main .gr > .cnt > .it > .prc { 
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       margin-left: 0.5rem;
-      margin-top: 0.2rem;
+      margin-right: 0.5rem;
+      margin-top: 0.5rem;
+      padding: 0.3rem;
   }
   main .gr > .cnt > .it > .prc > .val {
-      font-size: 1.2rem;
-      color: red; 
+      font-size: 1.3rem; 
+  }
+  main .gr > .cnt > .it > .prc > .stock-status {
+      font-size: 1rem;
+      color: #fff;
+      font-weight: normal;
+      padding: 0.1rem 0.5rem;
+      border-radius: 4px;
+      background-color: #CE3226; 
+  }
+  
+  /* Background pentru "La comandă" */
+  main .gr > .cnt > .it > .prc > .stock-status.on-order {
+      background-color: #CE3226;
+      color: #fff;
   }
   main .gr > .cnt > .it > .txt > .prc > .o_val {color:#e2001a; text-decoration:line-through; margin-left:1rem;}
   
