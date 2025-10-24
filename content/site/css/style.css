@@ -251,12 +251,19 @@
     }
   }
   
-  /* Small tablets and laptops */
-  @media (min-width: 769px) and (max-width: 1199px) {
-    main .gr > .cnt > .it { height: 25rem; }
-    main .gr > .cnt > .it > img { height: 14rem; }
-    main .gr > .cnt > .it > div.imgX { height: 14rem; }
-    main .gr > .cnt > .it > .img { height: 14rem; }
+  @media (min-width: 769px) and (max-width: 1024px) {
+    main .gr > .cnt { 
+      flex-flow: row wrap !important; 
+      justify-content: space-between !important;
+    }
+    main .gr > .cnt > .it { 
+      width: 48% !important; 
+      height: 28rem !important; 
+      margin: 1% !important;
+    }
+    main .gr > .cnt > .it > img { height: 13rem !important; }
+    main .gr > .cnt > .it > div.imgX { height: 13rem !important; }
+    main .gr > .cnt > .it > .img { height: 13rem !important; }
   }
 
   /* Standard laptops (1200-1599px) */
