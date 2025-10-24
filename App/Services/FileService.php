@@ -81,8 +81,13 @@ class FileService
                 $dir_path = $path.'/'.$k;
                 // Create directory if not exists
                 if (!file_exists($dir_path)) {
-                    mkdir($dir_path, 0755, true);
-                    copy('tmp/index.html', $dir_path.'/index.html');
+                    $mkdir_result = mkdir($dir_path, 0755, true);
+                    error_log("Creating directory: {$dir_path} - " . ($mkdir_result ? 'SUCCESS' : 'FAILED'));
+                    if ($mkdir_result) {
+                        copy('tmp/index.html', $dir_path.'/index.html');
+                    }
+                } else {
+                    error_log("Directory already exists: {$dir_path}");
                 }
                 
                 $full_path = $dir_path.'/'.$n_nm.'.'.$frmt; // Create output photo path
@@ -109,7 +114,15 @@ class FileService
                 imagecopyresampled($img_new, $img_old, 0, 0, 0, 0, $img_w, $img_h, $w, $h); // Apply source to output photo
 
                 // Save output photo in JPEG only
+                error_log("Saving JPEG to: {$full_path} with quality: {$v['ql']}");
                 $result = imagejpeg($img_new, $full_path, $v['ql']);
+                error_log("JPEG save result: " . ($result ? 'SUCCESS' : 'FAILED'));
+                
+                if ($result && file_exists($full_path)) {
+                    error_log("File created successfully: {$full_path} (size: " . filesize($full_path) . " bytes)");
+                } else {
+                    error_log("File creation FAILED: {$full_path}");
+                }
                 
                 imagedestroy($img_new);
                 imagedestroy($img_old); // Clear memory

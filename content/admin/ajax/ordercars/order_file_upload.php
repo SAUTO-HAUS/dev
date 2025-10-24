@@ -38,11 +38,16 @@ foreach ($_FILES as $inp => $ar){//________________Цикл по типу фай
     $pdo_ar = [];
 	//________________________Цикл файлов
 	foreach ($ar['name'] as $k => $nm) {
+		$i++;
+		error_log("Processing file #{$i}: {$nm[0]}");
+		
 		//________________Сбор информации о файле (F)
 		$fi_path = $_FILES[$inp]['tmp_name'][$k][0]; //F path
 		$fi_sz = filesize($fi_path); //F size
 		$fi_mime = finfo_open(FILEINFO_MIME_TYPE); //F info
 		$fi_tp = strtolower( finfo_file($fi_mime, $fi_path) ); //F type
+		
+		error_log("File info - Path: {$fi_path}, Size: {$fi_sz}, MIME: {$fi_tp}");
 		
 		$tmp_f = 'tmp/'.$nm[0];
 		$path = $zDir.'/'.$zY.'/'.$zM.'/'.$last_id;
@@ -116,10 +121,14 @@ foreach ($_FILES as $inp => $ar){//________________Цикл по типу фай
 			if( strlen($nm[0]) ){// проверяем что имя фото не пустое
 				if ( $_FILES[$inp]['size'][$k][0] <= $max_mb ){// проверяем размер фото
 					$upload_status = move_uploaded_file($_FILES[$inp]['tmp_name'][$k][0], $tmp_f); // загружаем фото во временную папку
+					error_log("Upload status: " . ($upload_status ? 'SUCCESS' : 'FAILED') . " for file: {$tmp_f}");
 					if($upload_status){ // если успешно загружено
 						// Use JPEG-only method for order cars
 						error_log("Attempting to create JPEG image: {$tmp_f} -> {$path}/{$n_nm}");
-						if((new FileService())->createImagePreserveJpeg($tmp_f, $path, $n_nm, $size_cr)) { // создаем выходное фото в JPEG
+						error_log("Size config: " . json_encode($size_cr));
+						$imageResult = (new FileService())->createImagePreserveJpeg($tmp_f, $path, $n_nm, $size_cr);
+						error_log("Image creation result: " . ($imageResult ? 'SUCCESS' : 'FAILED'));
+						if($imageResult) { // создаем выходное фото в JPEG
 							error_log("JPEG image creation successful");
                             $photoPdo = $db->prepare('SELECT * FROM '.$prefx.'_car_pht WHERE it_id = :it_id order by pos desc limit 1');
                             $photoPdo->execute(['it_id'=>$last_id]);
