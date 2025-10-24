@@ -258,7 +258,7 @@
 
     @media (min-width: 1280px) {
     main .gr > .cnt > .it {
-      height: 28rem;
+      height: 27rem;
       display: flex;
       flex-direction: column;
     }
