@@ -1046,15 +1046,8 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Calculate advance when price changes
     if (priceInput && advanceInput) {
-        // Check if we're editing an existing car (has existing advance value)
-        const hasExistingAdvance = advanceInput.value && advanceInput.value !== '';
-        if (hasExistingAdvance) {
-            // Mark as user-modified to preserve existing values when editing
-            advanceInput.dataset.userModified = 'true';
-        } else {
-            // Calculate initial advance on page load for new cars
-            calculateAdvance();
-        }
+        // Always calculate advance on page load, regardless of existing value
+        calculateAdvance();
         
         // Recalculate when price changes
         priceInput.addEventListener('input', calculateAdvance);
