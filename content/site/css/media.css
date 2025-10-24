@@ -109,7 +109,7 @@
 		margin-bottom: 1rem;
 	}
 	
-	#main_menu .menu a {width:100%; padding:1rem; text-align:left; padding-left:4rem;}
+	#main_menu .menu a {width:100%; padding:1rem; text-align:left; padding-left:4.5rem;}
 	#main_menu .lang a {width: 100%; padding:.5rem 0; text-align:left; padding-left:2rem;}
 	
 	main > .pht_bx {width:100%; height:auto;}
@@ -144,8 +144,13 @@
     width: 100%;
     margin: 10px;
 }
-	main .gr > .cnt > .it > img {}
-	main .gr > .cnt > .it > .img {height:30vh;}
+	main .gr > .cnt > .it > img {
+		height: 200px;
+		object-fit: contain;
+	}
+	main .gr > .cnt > .it > .img {
+		height: 200px;
+	}
 	
 	#rent > .gr.t {display:block;}
 	
@@ -209,7 +214,7 @@
 	body > .fltr > .ext > .data {width:49% !important;}
 }
 
-@media (max-width:900px) and (orientation: landscape) {
+@media (max-width:900px) and (min-width:769px) and (orientation: landscape) {
 	main .gr > .cnt > .it {width:49%;}
 }
 
@@ -217,9 +222,7 @@
 	
 }
 
-/* TELEFON LANDSCAPE - ULTIMUL MEDIA QUERY PENTRU PRIORITATE MAXIMĂ */
 @media screen and (max-width:999px) and (orientation: landscape) {
-	/* Pagina principală - cnt pe row */
 	div.cnt {
 		display: flex !important;
 		flex-direction: row !important;
@@ -233,17 +236,10 @@
 		width: 100% !important;
 		overflow: hidden !important;
 	}
-	main .gr > .cnt::after {
-		content: "";
-		display: table;
-		clear: both;
-	}
 	main .gr > .cnt > .it {
 		width: 47% !important;
 		margin: 1.5% !important;
 		height: auto !important;
-		display: block !important;
-		float: left !important;
 		box-sizing: border-box !important;
 	}
 	main .gr > .cnt > .it > img {
