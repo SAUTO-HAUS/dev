@@ -480,6 +480,8 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 				$image_html = '<div class="mobile-card-slider"><div class="mobile-card-slider__container"><div class="mobile-card-slider__track">';
 				foreach ($all_images as $idx => $img) {
 					// For order cars (catalog_type = 'on_order'), use .jpg extension instead of $img_frmt
+					// Debug: log catalog_type value
+					file_put_contents('debug_catalog_type.log', "Car ID: {$r['id']}, catalog_type: " . (isset($r['catalog_type']) ? $r['catalog_type'] : 'NOT SET') . "\n", FILE_APPEND);
 					$image_extension = (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
 					$img_src = '/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/'.$img['name'].$image_extension;
 					// Lazy load images except the first one
@@ -497,6 +499,8 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 				$p = $all_images[0] ?? null;
 				$p_src = isset($p['name']) ? '/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/' : '/'._SITE_IMG.'/v2/';
 				// For order cars (catalog_type = 'on_order'), use .jpg extension instead of $img_frmt
+				// Debug: log catalog_type value for single image
+				file_put_contents('debug_catalog_type.log', "Single image - Car ID: {$r['id']}, catalog_type: " . (isset($r['catalog_type']) ? $r['catalog_type'] : 'NOT SET') . "\n", FILE_APPEND);
 				$image_extension = (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
 				$p_name = isset($p['name']) ? $p['name'].$image_extension : 'no_image.svg';
 				$image_html = '<img src="'.$p_src.$p_name.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' main photo" />';
@@ -509,6 +513,8 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 			
 			$p_src = isset($p['name']) ? '/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/' : '/'._SITE_IMG.'/v2/';
 			// For order cars (catalog_type = 'on_order'), use .jpg extension instead of $img_frmt
+			// Debug: log catalog_type value for desktop
+			file_put_contents('debug_catalog_type.log', "Desktop - Car ID: {$r['id']}, catalog_type: " . (isset($r['catalog_type']) ? $r['catalog_type'] : 'NOT SET') . "\n", FILE_APPEND);
 			$image_extension = (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
 			$p_name = isset($p['name']) ? $p['name'].$image_extension : 'no_image.svg';
 			$image_html = '<img src="'.$p_src.$p_name.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' main photo" />';
