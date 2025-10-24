@@ -69,64 +69,83 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 			</div>
 			<script>
 			document.addEventListener('DOMContentLoaded', function() {
-				const fileInput = document.querySelector('input[name="img[]"]');
-				if (fileInput) {
-					fileInput.addEventListener('change', function(e) {
-						const files = Array.from(e.target.files);
-						
-						// Count JPEG vs other files
-						const jpegFiles = files.filter(file => 
-							file.type === 'image/jpeg' || file.type === 'image/jpg' || 
-							file.name.toLowerCase().endsWith('.jpg') || file.name.toLowerCase().endsWith('.jpeg')
-						);
-						
-						const otherFiles = files.filter(file => 
-							!(file.type === 'image/jpeg' || file.type === 'image/jpg' || 
-							  file.name.toLowerCase().endsWith('.jpg') || file.name.toLowerCase().endsWith('.jpeg'))
-						);
-						
-						// Count existing JPEG images
-						const existingImages = document.querySelectorAll('.prv.imgs.ready .it img');
-						let existingJpegCount = 0;
-						existingImages.forEach(img => {
-							const imgSrc = img.src;
-							if (imgSrc && (imgSrc.includes('.jpg') || imgSrc.includes('.jpeg'))) {
-								existingJpegCount++;
-							}
-						});
-						
-						const totalJpeg = existingJpegCount + jpegFiles.length;
-						const totalOther = otherFiles.length;
-						
-						// Show alert with file counts
+				// Validation function
+				function validateJpegImages() {
+					// Count uploaded JPEG vs other files
+					const fileInput = document.querySelector('input[name="img[]"]');
+					const uploadedFiles = fileInput ? Array.from(fileInput.files) : [];
+					
+					const jpegFiles = uploadedFiles.filter(file => 
+						file.type === 'image/jpeg' || file.type === 'image/jpg' || 
+						file.name.toLowerCase().endsWith('.jpg') || file.name.toLowerCase().endsWith('.jpeg')
+					);
+					
+					const otherFiles = uploadedFiles.filter(file => 
+						!(file.type === 'image/jpeg' || file.type === 'image/jpg' || 
+						  file.name.toLowerCase().endsWith('.jpg') || file.name.toLowerCase().endsWith('.jpeg'))
+					);
+					
+					// Count existing JPEG images
+					const existingImages = document.querySelectorAll('.prv.imgs.ready .it img');
+					let existingJpegCount = 0;
+					existingImages.forEach(img => {
+						const imgSrc = img.src;
+						if (imgSrc && (imgSrc.includes('.jpg') || imgSrc.includes('.jpeg'))) {
+							existingJpegCount++;
+						}
+					});
+					
+					const totalJpeg = existingJpegCount + jpegFiles.length;
+					const totalOther = otherFiles.length;
+					
+					// Check if validation passes
+					const hasMinimumJpeg = totalJpeg >= 5;
+					const hasOnlyJpeg = otherFiles.length === 0;
+					
+					if (!hasMinimumJpeg || !hasOnlyJpeg) {
 						let message;
 						<?php if($_COOKIE['lang'] == 'ro'): ?>
-							message = `📊 Imagini JPEG: ${totalJpeg} | Alte tipuri: ${totalOther}`;
-							if (totalJpeg < 5) {
+							message = `📷 Imagini JPEG: ${totalJpeg} | Alte tipuri: ${totalOther}`;
+							if (!hasMinimumJpeg) {
 								message += `\n\n❌ ATENȚIE: Necesare minim 5 fotografii JPEG pentru publicare!`;
 							}
-							if (otherFiles.length > 0) {
+							if (!hasOnlyJpeg) {
 								message += `\n\n⚠️ Fișiere non-JPEG detectate:\n${otherFiles.map(f => f.name).join('\n')}\n\nPentru automobile la comandă sunt acceptate doar fișiere JPEG.`;
 							}
 						<?php elseif($_COOKIE['lang'] == 'ru'): ?>
-							message = `📊 JPEG изображения: ${totalJpeg} | Другие типы: ${totalOther}`;
-							if (totalJpeg < 5) {
+							message = `📷 JPEG изображения: ${totalJpeg} | Другие типы: ${totalOther}`;
+							if (!hasMinimumJpeg) {
 								message += `\n\n❌ ВНИМАНИЕ: Требуется минимум 5 JPEG фотографий для публикации!`;
 							}
-							if (otherFiles.length > 0) {
+							if (!hasOnlyJpeg) {
 								message += `\n\n⚠️ Обнаружены не-JPEG файлы:\n${otherFiles.map(f => f.name).join('\n')}\n\nДля автомобилей под заказ принимаются только JPEG файлы.`;
 							}
 						<?php else: ?>
-							message = `📊 JPEG images: ${totalJpeg} | Other types: ${totalOther}`;
-							if (totalJpeg < 5) {
+							message = `📷 JPEG images: ${totalJpeg} | Other types: ${totalOther}`;
+							if (!hasMinimumJpeg) {
 								message += `\n\n❌ WARNING: Minimum 5 JPEG photos required for publishing!`;
 							}
-							if (otherFiles.length > 0) {
+							if (!hasOnlyJpeg) {
 								message += `\n\n⚠️ Non-JPEG files detected:\n${otherFiles.map(f => f.name).join('\n')}\n\nFor custom order cars only JPEG files are accepted.`;
 							}
 						<?php endif; ?>
 						
 						alert(message);
+						return false; // Block form submission
+					}
+					
+					return true; // Allow form submission
+				}
+				
+				// Add validation to Confirm button
+				const confirmButton = document.querySelector('.confirm');
+				if (confirmButton) {
+					confirmButton.addEventListener('click', function(e) {
+						if (!validateJpegImages()) {
+							e.preventDefault(); // Stop the form submission
+							e.stopPropagation();
+							return false;
+						}
 					});
 				}
 			});
