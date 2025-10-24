@@ -154,7 +154,21 @@ if ($_COOKIE['lang']=='ru'){
             'calc_title_luni' => 'месяцев',
             'calc_title_btn' => 'Подать заявку',
             'in_stock'=>'В наличии',
-            'on_order'=>'Под заказ'
+            'on_order'=>'Под заказ',
+			'on_order'=>'Под заказ',
+			'order_info_security_title'=>'Безопасность',
+            'order_info_security_desc1'=>'Проверка продавца.',
+            'order_info_security_desc2'=>'Проверка истории автомобиля',
+            'order_info_security_desc3'=>'Предоставляем гарантию после продажи',
+            'order_info_advantages_title'=>'Преимущества',
+            'order_info_advantages_desc1'=>'Можем доставить / посредничать любую машину из стока любого авторизованного дилера ЕС',
+            'order_info_advantages_desc2'=>'Возможность приобретения авто по чистой цене без НДС.',
+            'order_info_advantages_desc3'=>'Поможем сэкономить до 3000€ от рыночной цены.',
+            'order_info_advantages_desc4'=>'При первом взносе 30% можно оформить кредит под 9% годовых',
+            'order_info_transparency_title'=>'Прозрачность',
+            'order_info_transparency_desc1'=>'Постоянная консультация в период заказа',
+            'order_info_transparency_desc2'=>'Выдаем налоговую накладную',
+            'order_info_transparency_desc3'=>'Срок доставки автомобиля от 15 рабочих дней.'
 		),
 		
 		'u'=>array(
@@ -1686,7 +1700,20 @@ elseif ($_COOKIE['lang']=='ro'){
             'calc_title_luni' => 'luni',
             'calc_title_btn' => 'Aplică acum',
             'in_stock'=>'În stoc',
-            'on_order'=>'La comandă'
+            'on_order'=>'La comandă',
+			'order_info_security_title'=>'Siguranța',
+            'order_info_security_desc1'=>'Verificarea vânzătorului.',
+            'order_info_security_desc2'=>'Verificare de istoric a autovehiculului',
+            'order_info_security_desc3'=>'Oferim garanție post vânzare',
+            'order_info_advantages_title'=>'Avantaje',
+            'order_info_advantages_desc1'=>'Putem livra / intermedia orice mașina din stocul oricărui Dealer autorizat din UE',
+            'order_info_advantages_desc2'=>'Posibilitatea achiziționarii auto la Preț Net fără TVA.',
+            'order_info_advantages_desc3'=>'Te ajutăm să economisești pina la 3000€ din preț de piața.',
+            'order_info_advantages_desc4'=>'Ai prima rată 30% atunci il poți procura în credit la 9 % anual',
+            'order_info_transparency_title'=>'Transparența',
+            'order_info_transparency_desc1'=>'Consultanța Permanentă pe perioada comenzii',
+            'order_info_transparency_desc2'=>'Emitem factura fiscală',
+            'order_info_transparency_desc3'=>'Perioada de livrare a mașinii este de la 15 zile lucrătoare.'
 		),
 		
 		'u'=>array(
@@ -3157,7 +3184,20 @@ elseif ($_COOKIE['lang']=='en'){
             'calc_title_luni' => 'months',
             'calc_title_btn' => 'Apply now',
             'in_stock'=>'In Stock',
-            'on_order'=>'On Order'
+            'on_order'=>'On Order',
+			'order_info_security_title'=>'Security',
+            'order_info_security_desc1'=>'Seller verification.',
+            'order_info_security_desc2'=>'Vehicle history verification',
+            'order_info_security_desc3'=>'We provide post-sale warranty',
+            'order_info_advantages_title'=>'Advantages',
+            'order_info_advantages_desc1'=>'We can deliver / mediate any car from the stock of any authorized EU Dealer',
+            'order_info_advantages_desc2'=>'Possibility to purchase cars at Net Price without VAT.',
+            'order_info_advantages_desc3'=>'We help you save up to €3000 from market price.',
+            'order_info_advantages_desc4'=>'With 30% down payment you can get credit at 9% annual rate',
+            'order_info_transparency_title'=>'Transparency',
+            'order_info_transparency_desc1'=>'Permanent consultation during the order period',
+            'order_info_transparency_desc2'=>'We issue fiscal invoice',
+            'order_info_transparency_desc3'=>'Car delivery period is from 15 working days.'
 		),
 		
 		'u'=>array(

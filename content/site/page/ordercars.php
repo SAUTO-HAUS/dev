@@ -497,6 +497,132 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 $z_src = isset($img['main'])?'/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/high/'.$img['main'].$img_frmt:'';
                 //$z_src = (@getimagesize($site_url.$z_src)?$z_src:'');
                 $rtrn .= '<div class="big_pht" role="img" aria-label="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' large photo" data-pos="1" data-cnt="'.$img_cnt.'" style="background-image:url('.$z_src.');" data-src="'.$z_src.'"></div>';
+                
+                // Container cu informații despre comenzi - stil personal-grid
+                $rtrn .= '
+                            <style>
+                                .order-info-grid {
+                                    display: grid;
+                                    grid-template-columns: 1fr 1fr 1fr;
+                                    gap: 1rem;
+                                    margin: 0.5rem 0;
+                                    width: 100%;
+                                    padding: 0.5rem;
+                                    float: left;
+                                    background: #ffffff;
+                                    border-radius: 0.75rem;
+                                    box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.05);
+                                }
+                                
+                                .order-info-card {
+                                    background: #f6f6f6b5;
+                                    padding: 1rem;
+                                    border-radius: 0.75rem;
+                                    box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.08);
+                                    text-align: left;
+                                    transition: all 0.3s ease;
+                                    border: 0.1rem solid #d7d8db;
+                                    background-color: #f1f1f1;
+                                    display: flex;
+                                    flex-direction: column;
+                                    overflow: visible;
+                                    color: #333;
+                                }
+                                
+                                .order-info-card:hover {
+                                    transform: translateY(-0.25rem);
+                                    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.12);
+                                }
+                                
+                                .order-info-header {
+                                    height: 6rem;
+                                    display: flex;
+                                    flex-direction: column;
+                                    align-items: flex-start;
+                                }
+                                
+                                .order-info-icon {
+                                    width: 3rem;
+                                    height: 3rem;
+                                    margin-bottom: 0.5rem;
+                                    display: block;
+                                    object-fit: contain;
+                                }
+                                
+                                .order-info-title {
+                                    font-size: 1.2rem;
+                                    font-weight: 600;
+                                    color: #333;
+                                    margin-bottom: 1rem;
+                                    line-height: 1;
+                                }
+                                
+                                .order-info-desc {
+                                    font-size: 0.9375rem;
+                                    color: #666;
+                                    line-height: 1.5;
+                                    margin: 0;
+                                    margin-bottom: 0.2rem;
+                                }
+                                
+                                .order-info-desc:last-child {
+                                    margin-bottom: 0;
+                                }
+                                
+                                @media (max-width: 768px) {
+                                    .order-info-grid {
+                                        grid-template-columns: 1fr !important;
+                                        gap: 1rem !important;
+                                        padding: 0 !important;
+                                    }
+                                    
+                                    .order-info-card {
+                                        padding: 1rem !important;
+                                    }
+                                }
+                            </style>
+                            
+                            <div class="order-info-grid">
+                                <!-- Siguranța -->
+                                <div class="order-info-card">
+                                    <div class="order-info-header">
+                                        <img src="/media/images/site/order-1.png" alt="Security" class="order-info-icon">
+                                        <h3 class="order-info-title">'.$lng['w']['order_info_security_title'].'</h3>
+                                    </div>
+                                    <div class="order-info-content">
+                                        <p class="order-info-desc">• '.$lng['w']['order_info_security_desc1'].'</p>
+                                        <p class="order-info-desc">• '.$lng['w']['order_info_security_desc2'].'</p>
+                                        <p class="order-info-desc">• '.$lng['w']['order_info_security_desc3'].'</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Avantaje -->
+                                <div class="order-info-card">
+                                    <div class="order-info-header">
+                                        <img src="/media/images/site/order-2.png" alt="Advantages" class="order-info-icon">
+                                        <h3 class="order-info-title">'.$lng['w']['order_info_advantages_title'].'</h3>
+                                    </div>
+                                    <div class="order-info-content">
+                                        <p class="order-info-desc">• '.$lng['w']['order_info_advantages_desc1'].'</p>
+                                        <p class="order-info-desc">• '.$lng['w']['order_info_advantages_desc2'].'</p>
+                                        <p class="order-info-desc">• '.$lng['w']['order_info_advantages_desc3'].'</p>
+                                        <p class="order-info-desc">• '.$lng['w']['order_info_advantages_desc4'].'</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Transparența -->
+                                <div class="order-info-card">
+                                    <div class="order-info-header">
+                                        <img src="/media/images/site/order-3.png" alt="Transparency" class="order-info-icon">
+                                        <h3 class="order-info-title">'.$lng['w']['order_info_transparency_title'].'</h3>
+                                    </div>
+                                    <div class="order-info-content">
+                                        <p class="order-info-desc">• '.$lng['w']['order_info_transparency_desc1'].'</p>
+                                        <p class="order-info-desc">• '.$lng['w']['order_info_transparency_desc2'].'</p>
+                                        <p class="order-info-desc">• '.$lng['w']['order_info_transparency_desc3'].'</p>
+                                    </div>
+                                </div>
+                            </div>';
                 $rtrn .= '</div>';
 
                 $cur = $r['cur'];
@@ -890,7 +1016,7 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                                     </div>
                                 </div>
                             </div>
-                        </div>';
+                            </div>';
 
                 $rtrn .= '
                             <div style="clear: both"> </div>
@@ -1085,12 +1211,12 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                                 
                                 // Actualizăm și slider-ele pentru a fi sincronizate
                                 sliderSuma.update({ from: initialAmount });
-                                sliderTermen.update({ from: 60 });
-                                
+                                sliderTermen.update({ from: 60 });                         
+
                                 // Amânăm prima calculare pentru a ne asigura că toate componentele sunt inițializate corect
                                 setTimeout(updateRate, 100);
                             });
-                            </script>';
+                            </script>';          
                 /*
                  * <div class="calc_btn_btt">
                             <div class="calc_btn_point">
