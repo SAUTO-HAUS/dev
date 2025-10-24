@@ -55,9 +55,21 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
 		<form class="img_bx" id="img_bx" enctype="multipart/form-data">
 			<h3 class="ttl ghost"><?=$lng['w']['imgs']?></h3>
+			<div class="order_upload_hint" style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; padding: 10px; margin-bottom: 10px; font-size: 12px; color: #856404;">
+				<strong>📋 <?php
+					// Display requirements in current admin language
+					if($_COOKIE['lang'] == 'ro') {
+						echo 'Pentru automobile la comandă sunt necesare minim 5 fotografii în format JPEG';
+					} elseif($_COOKIE['lang'] == 'ru') {
+						echo 'Для автомобилей под заказ требуется минимум 5 фотографий в формате JPEG';
+					} else {
+						echo 'For custom order cars minimum 5 JPEG photos required';
+					}
+				?></strong>
+			</div>
 			<label class="dd_plc">
-				<input data-gr="new" class="f" type="file" multiple="multiple" name="img[]" tabindex="1" />
-				<div class="txt drag ghost">DROP HERE</div>
+				<input data-gr="new" class="f" type="file" multiple="multiple" name="img[]" accept=".jpg,.jpeg,image/jpeg" tabindex="1" />
+				<div class="txt drag ghost">DROP HERE (JPEG only)</div>
 				<div class="txt plus ghost"></div>
 				<div class="inf h ghost"><?= $lng['w']['qu'] ?>: <span class="c">0</span> | <?= $lng['w']['sz'] ?>: <span class="s">0 B</span></div>
 			</label>
