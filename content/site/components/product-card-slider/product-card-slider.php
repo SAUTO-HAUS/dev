@@ -223,7 +223,9 @@ function generateImageSliderHTML($images, $car_data, $enable_slider = true) {
         // Single image - no slider needed
         $image = $images[0];
         $p_src = '/'._CAR_IMG.'/'.$car_data['p_path'].'/'.$car_data['id'].'/med/';
-        $p_name = $image['name'].$img_frmt;
+        // For order cars (catalog_type = 'on_order'), use .jpg extension instead of $img_frmt
+        $image_extension = (isset($car_data['catalog_type']) && $car_data['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
+        $p_name = $image['name'].$image_extension;
         return '<img src="'.$p_src.$p_name.'" alt="car '.$car_data['br_nm'].' '.$car_data['mo_nm'].' id'.$car_data['id'].' main photo" />';
     }
     
@@ -234,7 +236,9 @@ function generateImageSliderHTML($images, $car_data, $enable_slider = true) {
     
     foreach ($images as $index => $image) {
         $p_src = '/'._CAR_IMG.'/'.$car_data['p_path'].'/'.$car_data['id'].'/med/';
-        $p_name = $image['name'].$img_frmt;
+        // For order cars (catalog_type = 'on_order'), use .jpg extension instead of $img_frmt
+        $image_extension = (isset($car_data['catalog_type']) && $car_data['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
+        $p_name = $image['name'].$image_extension;
         $html .= '<div class="product-card-slider__slide">';
         $html .= '<img src="'.$p_src.$p_name.'" alt="car '.$car_data['br_nm'].' '.$car_data['mo_nm'].' id'.$car_data['id'].' photo '.($index+1).'" />';
         $html .= '</div>';

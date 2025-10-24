@@ -479,7 +479,9 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 				// Multiple images - create slider HTML
 				$image_html = '<div class="mobile-card-slider"><div class="mobile-card-slider__container"><div class="mobile-card-slider__track">';
 				foreach ($all_images as $idx => $img) {
-					$img_src = '/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/'.$img['name'].$img_frmt;
+					// For order cars (catalog_type = 'on_order'), use .jpg extension instead of $img_frmt
+					$image_extension = (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
+					$img_src = '/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/'.$img['name'].$image_extension;
 					// Lazy load images except the first one
 					if ($idx === 0) {
 						$image_html .= '<div class="mobile-card-slider__slide"><img src="'.$img_src.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' photo '.($idx+1).'" /></div>';
@@ -494,7 +496,9 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 				// Single image - normal display
 				$p = $all_images[0] ?? null;
 				$p_src = isset($p['name']) ? '/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/' : '/'._SITE_IMG.'/v2/';
-				$p_name = isset($p['name']) ? $p['name'].$img_frmt : 'no_image.svg';
+				// For order cars (catalog_type = 'on_order'), use .jpg extension instead of $img_frmt
+				$image_extension = (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
+				$p_name = isset($p['name']) ? $p['name'].$image_extension : 'no_image.svg';
 				$image_html = '<img src="'.$p_src.$p_name.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' main photo" />';
 			}
 		} else {
@@ -504,7 +508,9 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 			$p = $pdo2->fetch();
 			
 			$p_src = isset($p['name']) ? '/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/' : '/'._SITE_IMG.'/v2/';
-			$p_name = isset($p['name']) ? $p['name'].$img_frmt : 'no_image.svg';
+			// For order cars (catalog_type = 'on_order'), use .jpg extension instead of $img_frmt
+			$image_extension = (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
+			$p_name = isset($p['name']) ? $p['name'].$image_extension : 'no_image.svg';
 			$image_html = '<img src="'.$p_src.$p_name.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' main photo" />';
 		}
 		

@@ -280,7 +280,7 @@ $last_car_id = 0;
                 <div class="date" title="<?= date('H:i:s', $r['date'])?>"><?= date('d.m.Y', $r['date'])?></div>
             </div>
 
-            <div class="img" style="background-image:url(/<?=_CAR_IMG?>/<?=$r['p_path']?>/<?=$r['id']?>/med/<?=$p_nm . $img_frmt?>), url(/media/images/site/no_image.png);">
+            <div class="img" style="background-image:url(/<?=_CAR_IMG?>/<?=$r['p_path']?>/<?=$r['id']?>/med/<?=$p_nm?>.jpg), url(/media/images/site/no_image.png);">
                 <?php if( $r['act'] == 0 ) : ?>
                     <div class="remove_after" timer="<?= ( $r['del_t']-time() ) ?>" ra="<?= $r['del_t'] ?>">**, **:**:**</div>
                 <?php endif; ?>
