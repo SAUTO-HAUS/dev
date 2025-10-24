@@ -542,11 +542,10 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                 }
                                 
                                 .order-info-icon {
-                                    width: 3rem;
-                                    height: 3rem;
+                                    font-size: 3rem;
                                     margin-bottom: 0.5rem;
                                     display: block;
-                                    object-fit: contain;
+                                    color: #e2001a;
                                 }
                                 
                                 .order-info-title {
@@ -586,7 +585,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                 <!-- Siguranța -->
                                 <div class="order-info-card">
                                     <div class="order-info-header">
-                                        <img src="/media/images/site/order-1.png" alt="Security" class="order-info-icon">
+                                        <div class="order-info-icon">🔒</div>
                                         <h3 class="order-info-title">'.$lng['w']['order_info_security_title'].'</h3>
                                     </div>
                                     <div class="order-info-content">
@@ -599,7 +598,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                 <!-- Avantaje -->
                                 <div class="order-info-card">
                                     <div class="order-info-header">
-                                        <img src="/media/images/site/order-2.png" alt="Advantages" class="order-info-icon">
+                                        <div class="order-info-icon">✓</div>
                                         <h3 class="order-info-title">'.$lng['w']['order_info_advantages_title'].'</h3>
                                     </div>
                                     <div class="order-info-content">
@@ -613,7 +612,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                 <!-- Transparența -->
                                 <div class="order-info-card">
                                     <div class="order-info-header">
-                                        <img src="/media/images/site/order-3.png" alt="Transparency" class="order-info-icon">
+                                        <div class="order-info-icon">📄</div>
                                         <h3 class="order-info-title">'.$lng['w']['order_info_transparency_title'].'</h3>
                                     </div>
                                     <div class="order-info-content">
