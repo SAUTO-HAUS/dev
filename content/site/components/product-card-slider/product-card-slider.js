@@ -174,7 +174,12 @@ class ProductCardSlider {
 // Auto-initialize sliders when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
     initProductCardSliders();
-    initMobileCardSliders();
+    
+    // Only initialize mobile sliders on mobile devices
+    if (window.innerWidth <= 768 || /Mobile|Android|iPhone|iPad/.test(navigator.userAgent)) {
+        initMobileCardSliders();
+    }
+    
     initLazyLoading();
 });
 
