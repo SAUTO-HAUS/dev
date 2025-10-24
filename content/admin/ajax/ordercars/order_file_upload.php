@@ -85,21 +85,32 @@ foreach ($_FILES as $inp => $ar){//________________Цикл по типу фай
                 continue;
             }// проверяем файл
 
-			// For order cars only accept JPEG format
-			$allowed_formats = ['image/jpeg' => ['jpg'], 'image/jpg' => ['jpg']];
-			if ( !isset($allowed_formats[$fi_tp]) ) {
-                $rtrn .= ' | File #'.$i.': '.$nm[0].' - Pentru automobile la comandă sunt acceptate doar fișiere JPEG / Для автомобилей под заказ только JPEG / For custom order cars only JPEG files allowed. Format "'.$fi_tp.'" not supported.';
-                continue;
-            } else {
-                $frmt_cr = $allowed_formats[$fi_tp];
-            }// check file format for order cars
+			// For order cars only accept JPEG format (use same structure as regular cars)
+			$allowed_jpeg_types = ['image/jpeg', 'image/jpg', 'image/pjpeg'];
+			
+			if (!in_array($fi_tp, $allowed_jpeg_types)) {
+				// Also check file extension as backup
+				$file_extension = strtolower(pathinfo($nm[0], PATHINFO_EXTENSION));
+				$is_jpeg_by_extension = in_array($file_extension, ['jpg', 'jpeg']);
+				
+				if (!$is_jpeg_by_extension) {
+					$rtrn .= ' | File #'.$i.': '.$nm[0].' - Pentru automobile la comandă sunt acceptate doar fișiere JPEG / Для автомобилей под заказ только JPEG / For custom order cars only JPEG files allowed. Format "'.$fi_tp.'" not supported.';
+					continue;
+				}
+			}
+			
+			// Set format for order cars (JPEG only, no WebP)
+			$frmt_cr = ['jpg'];
+			error_log("JPEG file accepted: {$nm[0]}, MIME: {$fi_tp}");
 			
 			if( strlen($nm[0]) ){// проверяем что имя фото не пустое
 				if ( $_FILES[$inp]['size'][$k][0] <= $max_mb ){// проверяем размер фото
 					$upload_status = move_uploaded_file($_FILES[$inp]['tmp_name'][$k][0], $tmp_f); // загружаем фото во временную папку
 					if($upload_status){ // если успешно загружено
 						// Use JPEG-only method for order cars
+						error_log("Attempting to create JPEG image: {$tmp_f} -> {$path}/{$n_nm}");
 						if((new FileService())->createImagePreserveJpeg($tmp_f, $path, $n_nm, $size_cr)) { // создаем выходное фото в JPEG
+							error_log("JPEG image creation successful");
                             $photoPdo = $db->prepare('SELECT * FROM '.$prefx.'_car_pht WHERE it_id = :it_id order by pos desc limit 1');
                             $photoPdo->execute(['it_id'=>$last_id]);
                             $photo = $photoPdo->fetch();
@@ -117,10 +128,16 @@ foreach ($_FILES as $inp => $ar){//________________Цикл по типу фай
                                 'tp'=>$inp,
                                 'path'=>$zY.'/'.$zM,
                                 'name'=>$n_nm,
-                                'ff'=>$allowed_formats[$fi_tp][0],
+                                'ff'=>'jpg', // Always JPEG for order cars
                                 'main'=>$main_file,
                                 'pos'=>$pos
                             ]);
+                            
+                            // Debug success
+                            error_log("Image saved to DB: {$n_nm}.jpg for car {$last_id}");
+						} else {
+							error_log("JPEG image creation FAILED for: {$tmp_f}");
+							$rtrn .= ' | File #'.$i.': '.$nm[0].' - Image processing failed.';
 						}
 					} else {
                         $rtrn .= ' | File #'.$i.': '.$nm[0].' - Upload failed.';
