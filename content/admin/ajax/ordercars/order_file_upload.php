@@ -85,18 +85,21 @@ foreach ($_FILES as $inp => $ar){//________________Цикл по типу фай
                 continue;
             }// проверяем файл
 
-			if ( !isset($file_av_ar[$inp]['frmt'][$fi_tp]) ) {
-                $rtrn .= ' | File #'.$i.': '.$nm[0].' - File format "'.$fi_tp.'" is not allowed';
+			// For order cars only accept JPEG format
+			$allowed_formats = ['image/jpeg' => ['jpg'], 'image/jpg' => ['jpg']];
+			if ( !isset($allowed_formats[$fi_tp]) ) {
+                $rtrn .= ' | File #'.$i.': '.$nm[0].' - Pentru automobile la comandă sunt acceptate doar fișiere JPEG / Для автомобилей под заказ только JPEG / For custom order cars only JPEG files allowed. Format "'.$fi_tp.'" not supported.';
                 continue;
             } else {
-                $frmt_cr = $file_av_ar[$inp]['frmt'][$fi_tp];
-            }// проверяем формат файла
+                $frmt_cr = $allowed_formats[$fi_tp];
+            }// check file format for order cars
 			
 			if( strlen($nm[0]) ){// проверяем что имя фото не пустое
 				if ( $_FILES[$inp]['size'][$k][0] <= $max_mb ){// проверяем размер фото
 					$upload_status = move_uploaded_file($_FILES[$inp]['tmp_name'][$k][0], $tmp_f); // загружаем фото во временную папку
 					if($upload_status){ // если успешно загружено
-						if((new FileService())->createImage($tmp_f, $path, $n_nm, $size_cr, $frmt_cr)) { // создаем выходное фото
+						// Use JPEG-only method for order cars
+						if((new FileService())->createImagePreserveJpeg($tmp_f, $path, $n_nm, $size_cr)) { // создаем выходное фото в JPEG
                             $photoPdo = $db->prepare('SELECT * FROM '.$prefx.'_car_pht WHERE it_id = :it_id order by pos desc limit 1');
                             $photoPdo->execute(['it_id'=>$last_id]);
                             $photo = $photoPdo->fetch();
@@ -114,7 +117,7 @@ foreach ($_FILES as $inp => $ar){//________________Цикл по типу фай
                                 'tp'=>$inp,
                                 'path'=>$zY.'/'.$zM,
                                 'name'=>$n_nm,
-                                'ff'=>$file_av_ar[$inp]['frmt'][$fi_tp][0],
+                                'ff'=>$allowed_formats[$fi_tp][0],
                                 'main'=>$main_file,
                                 'pos'=>$pos
                             ]);
