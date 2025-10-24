@@ -48,25 +48,6 @@ if (__post('sub') == 'mo_search') {
             $extracted_price = __post('prc', 0);
             $extracted_currency = __post('cur');
             
-            // Debug: log all POST data to see what's being sent
-            error_log("POST data keys: " . implode(', ', array_keys($_POST)));
-            error_log("=== DETAILED PRICE DEBUG ===");
-            $post_prc = __post('prc');
-            $post_cur = __post('cur');
-            error_log("Raw POST prc value: " . var_export($post_prc, true) . " (type: " . gettype($post_prc) . ")");
-            error_log("Raw POST cur value: " . var_export($post_cur, true) . " (type: " . gettype($post_cur) . ")");
-            
-            // Check if there's any conversion happening
-            $original_prc = $post_prc;
-            $converted_prc = (float)$post_prc;
-            $int_prc = (int)$post_prc;
-            
-            error_log("Original prc: " . var_export($original_prc, true));
-            error_log("Float converted prc: " . var_export($converted_prc, true));
-            error_log("Int converted prc: " . var_export($int_prc, true));
-            error_log("=== END DETAILED PRICE DEBUG ===");
-			error_log("Direct prc value from POST: " . __post('prc', 'NOT SET'));
-            error_log("Direct cur value from POST: " . __post('cur', 'NOT SET'));
             
             // Try to extract price from various possible POST fields
             if (!empty($_POST['feature'])) {
@@ -109,9 +90,6 @@ if (__post('sub') == 'mo_search') {
                 }
             }
 
-            error_log("FINAL VALUES BEFORE DATABASE UPDATE:");
-            error_log("Final extracted_price: $extracted_price");
-            error_log("Final extracted_currency: $extracted_currency");
             
             // Update 999 JSON data with new price
             $updated_999_data = null;
@@ -358,7 +336,6 @@ if (__post('sub') == 'mo_search') {
             'id' => $_POST['bx_id'],
             'last_id' => $last_id
         ];
-        error_log("Returning response for 'end': " . json_encode($rtrn));
     } catch (PDOException $e) {
         error_log("SQL Error in add_new.php: " . $e->getMessage());
         dd("SQL Error: " . $e->getMessage());
