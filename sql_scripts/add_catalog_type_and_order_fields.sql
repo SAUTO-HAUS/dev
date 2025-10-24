@@ -1,9 +1,8 @@
 ALTER TABLE gh3sp_car_ctlg ADD COLUMN catalog_type ENUM('in_stock', 'on_order') DEFAULT 'in_stock' NOT NULL;
 
 -- Add order-specific fields for on_order cars
-ALTER TABLE gh3sp_car_ctlg ADD COLUMN delivery_estimate VARCHAR(255) NULL COMMENT 'Estimated delivery time for orders';
-ALTER TABLE gh3sp_car_ctlg ADD COLUMN prepayment_amount DECIMAL(10,2) NULL COMMENT 'Required prepayment amount';
-ALTER TABLE gh3sp_car_ctlg ADD COLUMN prepayment_currency VARCHAR(3) DEFAULT 'EUR' COMMENT 'Currency for prepayment';
+ALTER TABLE gh3sp_car_ctlg ADD COLUMN delivery_time INT DEFAULT 14 COMMENT 'Delivery time in days for orders';
+ALTER TABLE gh3sp_car_ctlg ADD COLUMN advance_amount DECIMAL(10,2) NULL COMMENT 'Required advance payment amount (70% of price)';
 ALTER TABLE gh3sp_car_ctlg ADD COLUMN order_conditions TEXT NULL COMMENT 'Payment conditions and terms';
 ALTER TABLE gh3sp_car_ctlg ADD COLUMN customization_notes TEXT NULL COMMENT 'Available customization options';
 

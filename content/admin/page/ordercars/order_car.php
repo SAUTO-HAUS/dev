@@ -1046,8 +1046,11 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Calculate advance when price changes
     if (priceInput && advanceInput) {
-        // Always calculate advance on page load, regardless of existing value
-        calculateAdvance();
+        // Only calculate on page load if advance field is empty or zero (new car)
+        const currentAdvance = parseFloat(advanceInput.value) || 0;
+        if (currentAdvance === 0) {
+            calculateAdvance();
+        }
         
         // Recalculate when price changes
         priceInput.addEventListener('input', calculateAdvance);
