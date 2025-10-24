@@ -67,6 +67,70 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 					}
 				?></strong>
 			</div>
+			<script>
+			document.addEventListener('DOMContentLoaded', function() {
+				const fileInput = document.querySelector('input[name="img[]"]');
+				if (fileInput) {
+					fileInput.addEventListener('change', function(e) {
+						const files = Array.from(e.target.files);
+						
+						// Count JPEG vs other files
+						const jpegFiles = files.filter(file => 
+							file.type === 'image/jpeg' || file.type === 'image/jpg' || 
+							file.name.toLowerCase().endsWith('.jpg') || file.name.toLowerCase().endsWith('.jpeg')
+						);
+						
+						const otherFiles = files.filter(file => 
+							!(file.type === 'image/jpeg' || file.type === 'image/jpg' || 
+							  file.name.toLowerCase().endsWith('.jpg') || file.name.toLowerCase().endsWith('.jpeg'))
+						);
+						
+						// Count existing JPEG images
+						const existingImages = document.querySelectorAll('.prv.imgs.ready .it img');
+						let existingJpegCount = 0;
+						existingImages.forEach(img => {
+							const imgSrc = img.src;
+							if (imgSrc && (imgSrc.includes('.jpg') || imgSrc.includes('.jpeg'))) {
+								existingJpegCount++;
+							}
+						});
+						
+						const totalJpeg = existingJpegCount + jpegFiles.length;
+						const totalOther = otherFiles.length;
+						
+						// Show alert with file counts
+						let message;
+						<?php if($_COOKIE['lang'] == 'ro'): ?>
+							message = `📊 Imagini JPEG: ${totalJpeg} | Alte tipuri: ${totalOther}`;
+							if (totalJpeg < 5) {
+								message += `\n\n❌ ATENȚIE: Necesare minim 5 fotografii JPEG pentru publicare!`;
+							}
+							if (otherFiles.length > 0) {
+								message += `\n\n⚠️ Fișiere non-JPEG detectate:\n${otherFiles.map(f => f.name).join('\n')}\n\nPentru automobile la comandă sunt acceptate doar fișiere JPEG.`;
+							}
+						<?php elseif($_COOKIE['lang'] == 'ru'): ?>
+							message = `📊 JPEG изображения: ${totalJpeg} | Другие типы: ${totalOther}`;
+							if (totalJpeg < 5) {
+								message += `\n\n❌ ВНИМАНИЕ: Требуется минимум 5 JPEG фотографий для публикации!`;
+							}
+							if (otherFiles.length > 0) {
+								message += `\n\n⚠️ Обнаружены не-JPEG файлы:\n${otherFiles.map(f => f.name).join('\n')}\n\nДля автомобилей под заказ принимаются только JPEG файлы.`;
+							}
+						<?php else: ?>
+							message = `📊 JPEG images: ${totalJpeg} | Other types: ${totalOther}`;
+							if (totalJpeg < 5) {
+								message += `\n\n❌ WARNING: Minimum 5 JPEG photos required for publishing!`;
+							}
+							if (otherFiles.length > 0) {
+								message += `\n\n⚠️ Non-JPEG files detected:\n${otherFiles.map(f => f.name).join('\n')}\n\nFor custom order cars only JPEG files are accepted.`;
+							}
+						<?php endif; ?>
+						
+						alert(message);
+					});
+				}
+			});
+			</script>
 			<label class="dd_plc">
 				<input data-gr="new" class="f" type="file" multiple="multiple" name="img[]" accept=".jpg,.jpeg,image/jpeg" tabindex="1" />
 				<div class="txt drag ghost">DROP HERE (JPEG only)</div>
