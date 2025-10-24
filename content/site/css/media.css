@@ -144,8 +144,11 @@
     width: 100%;
     margin: 10px;
 }
-	main .gr > .cnt > .it > img {}
-	main .gr > .cnt > .it > .img {height:30vh;}
+	main .gr > .cnt > .it > img {
+		height: 200px;
+		object-fit: contain;
+	}
+	main .gr > .cnt > .it > .img {height: 200px;}
 	
 	#rent > .gr.t {display:block;}
 	
