@@ -3,6 +3,9 @@ defined( '_DOIT' ) or die( 'Restricted access' );
 
 use App\Helper\PhoneHelper;
 
+// Include order-specific functions for order cars
+include_once( _SITE_INCL.'/order_functions.php' );
+
 /**
  * Get country name by ID in the specified language
  * @param int $countryId - ID of the country
@@ -53,6 +56,10 @@ function getImportCountryName($countryId, $language = 'ro') {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5/dist/fancybox/fancybox.css" />
 
     <link rel="stylesheet" href="/content/site/css/cars_gallery.css?v=<?=time()?>" />
+    
+    <!-- Product Card Slider Assets -->
+    <link rel="stylesheet" href="/content/site/components/product-card-slider/product-card-slider.css?v=<?=time()?>" />
+    <script src="/content/site/components/product-card-slider/product-card-slider.js?v=<?=time()?>" defer></script>
 
 <?php
 
@@ -488,13 +495,17 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 foreach($img['all'] as $k => $v){
                     $img_cnt++;
                     $act = ($v['main']=='1') ? 'act' : '';
-                    $z_src = '/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/med/'.$v['name'].$img_frmt;
+                    // For order cars, use .jpg extension instead of $img_frmt
+                    $image_extension = (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
+                    $z_src = '/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/med/'.$v['name'].$image_extension;
                     $rtrn .= '<img class="item '.$act.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' photo #'.$img_cnt.'" data-pos="'.$k.'" src="'.$z_src.'" width="100%" height="auto" />';
                 }
                 $rtrn .= '
                                 </div>
                             </div>';
-                $z_src = isset($img['main'])?'/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/high/'.$img['main'].$img_frmt:'';
+                // For order cars, use .jpg extension instead of $img_frmt
+                $image_extension = (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
+                $z_src = isset($img['main'])?'/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/high/'.$img['main'].$image_extension:'';
                 //$z_src = (@getimagesize($site_url.$z_src)?$z_src:'');
                 $rtrn .= '<div class="big_pht" role="img" aria-label="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' large photo" data-pos="1" data-cnt="'.$img_cnt.'" style="background-image:url('.$z_src.');" data-src="'.$z_src.'"></div>';
                 
@@ -658,9 +669,11 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                             $img_cnt = 0;
                             foreach($img['all'] as $k => $v){
                                 $img_cnt++;
-                                $z_src = '/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/med/'.$v['name'].$img_frmt;
+                                // For order cars, use .jpg extension instead of $img_frmt
+                                $image_extension = (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
+                                $z_src = '/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/med/'.$v['name'].$image_extension;
 
-                                $z_src2 = isset($img['main'])?'/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/high/'.$v['name'].$img_frmt:'';
+                                $z_src2 = isset($img['main'])?'/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/high/'.$v['name'].$image_extension:'';
                                 ?>
                                 <div class="f-carousel__slide">
                                     <a href="<?=$z_src2?>" data-fancybox="product" data-id="p<?=$img_cnt?>"
