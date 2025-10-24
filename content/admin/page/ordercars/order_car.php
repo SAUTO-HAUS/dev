@@ -165,11 +165,11 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                         <?php $photos = (new \App\Db\CarPhoto())->getPhotosByCarId($_GET['id']); ?>
                         <?php foreach ($photos as $i => $p) :
                             $i++; ?>
-                            <div class="it '<?= $p['id'] ?>' f_img ext" data-id="<?= $p['id'] ?>" this_img="/<?= $photo_folder ?>/<?= $p['path'] ?>/<?= $p['it_id'] ?>/high/<?= $p['name'] . $img_frmt ?>" data-n="<?= $i ?>" data-pos="<?= $p['pos'] ?>" style="order:<?= $i ?>;">
+                            <div class="it '<?= $p['id'] ?>' f_img ext" data-id="<?= $p['id'] ?>" this_img="/<?= $photo_folder ?>/<?= $p['path'] ?>/<?= $p['it_id'] ?>/high/<?= $p['name'] ?>.jpg" data-n="<?= $i ?>" data-pos="<?= $p['pos'] ?>" style="order:<?= $i ?>;">
                                 <input id="main_img_<?= $p['id'] ?>" type="radio" class="use main_img ext none" name="main_img" value="<?= $p['id'] ?>" data-id="<?= $p['id'] ?>" <?= ($p['main']=='1'?'checked="checked"':'') ?> />
                                 <input id="del_img_<?= $p['id'] ?>" type="checkbox" class="use del_img ext none" name="del_img[]" value="<?= $p['id'] ?>" data-id="<?= $p['id'] ?>" />
                                 <div class="ico ghost"></div>
-                                <img class="img" src="/<?= $photo_folder ?>/<?= $p['path'] ?>/<?= $p['it_id'] ?>/med/<?= $p['name'] . $img_frmt ?>" />
+                                <img class="img" src="/<?= $photo_folder ?>/<?= $p['path'] ?>/<?= $p['it_id'] ?>/med/<?= $p['name'] ?>.jpg" />
                                 <div class="nm"><?= $i ?></div>
                                 <label for="main_img_<?= $p['id'] ?>" class="btn do_main photo_action" title="<?= $adm_lang['main_photo'] ?>"></label>
                                 <label for="del_img_<?= $p['id'] ?>" class="btn delete photo_action" title="<?= $adm_lang['delete'] ?>"></label>

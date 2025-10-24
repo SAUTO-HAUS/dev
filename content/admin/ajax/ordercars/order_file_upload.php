@@ -101,7 +101,17 @@ foreach ($_FILES as $inp => $ar){//________________Цикл по типу фай
 			
 			// Set format for order cars (JPEG only, no WebP)
 			$frmt_cr = ['jpg'];
-			error_log("JPEG file accepted: {$nm[0]}, MIME: {$fi_tp}");
+			
+			// Count existing JPEG images for this car (for edit mode)
+			$existingJpegCount = 0;
+			if (!empty($last_id)) {
+				$jpegCountPdo = $db->prepare('SELECT COUNT(*) as jpeg_count FROM '.$prefx.'_car_pht WHERE it_id = :it_id AND ff = "jpg"');
+				$jpegCountPdo->execute(['it_id' => $last_id]);
+				$jpegCountResult = $jpegCountPdo->fetch();
+				$existingJpegCount = $jpegCountResult['jpeg_count'] ?? 0;
+			}
+			
+			error_log("JPEG file accepted: {$nm[0]}, MIME: {$fi_tp}. Existing JPEG count: {$existingJpegCount}");
 			
 			if( strlen($nm[0]) ){// проверяем что имя фото не пустое
 				if ( $_FILES[$inp]['size'][$k][0] <= $max_mb ){// проверяем размер фото
