@@ -509,70 +509,94 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 //$z_src = (@getimagesize($site_url.$z_src)?$z_src:'');
                 $rtrn .= '<div class="big_pht" role="img" aria-label="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' large photo" data-pos="1" data-cnt="'.$img_cnt.'" style="background-image:url('.$z_src.');" data-src="'.$z_src.'"></div>';
                 
-                // Container cu informații despre comenzi - stil personal-grid
                 $rtrn .= '
                             <style>
                                 .order-info-grid {
                                     display: grid;
-                                    grid-template-columns: 1fr 1fr 1fr;
+                                    grid-template-columns: repeat(3, 1fr);
                                     gap: 1rem;
-                                    margin: 0.5rem 0;
+                                    margin: 26rem 0;
                                     width: 100%;
+                                    max-width: 1200px;
+                                    margin-left: auto;
+                                    margin-right: auto;
                                     padding: 0.5rem;
-                                    float: left;
-                                    background: #ffffff;
-                                    border-radius: 0.75rem;
-                                    box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.05);
+                                    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                                    border-radius: 1rem;
+                                    box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.08);
                                 }
                                 
                                 .order-info-card {
-                                    background: #f6f6f6b5;
-                                    padding: 1rem;
-                                    border-radius: 0.75rem;
+                                    background: #ffffff;
+                                    padding: 1.5rem;
+                                    border-radius: 1rem;
                                     box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.08);
                                     text-align: left;
                                     transition: all 0.3s ease;
-                                    border: 0.1rem solid #d7d8db;
-                                    background-color: #f1f1f1;
+                                    border: 0.0625rem solid #e9ecef;
                                     display: flex;
                                     flex-direction: column;
-                                    overflow: visible;
-                                    color: #333;
+                                    overflow: hidden;
+                                    position: relative;
+                                    min-height: 220px;
                                 }
                                 
                                 .order-info-card:hover {
-                                    transform: translateY(-0.25rem);
-                                    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.12);
+                                    transform: translateY(-0.5rem);
+                                    box-shadow: 0 1rem 2rem rgba(226, 0, 26, 0.15);
+                                    border-color: #e2001a;
                                 }
                                 
                                 .order-info-header {
-                                    height: 6rem;
                                     display: flex;
-                                    flex-direction: column;
-                                    align-items: flex-start;
+                                    align-items: center;
+                                    margin-bottom: 1rem;
+                                    gap: 1rem;
                                 }
                                 
                                 .order-info-icon {
-                                    font-size: 3rem;
-                                    margin-bottom: 0.5rem;
-                                    display: block;
+                                    width: 4rem;
+                                    height: 4rem;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    font-size: 2rem;
+                                    background: linear-gradient(135deg, rgba(226, 0, 26, 0.1) 0%, rgba(226, 0, 26, 0.05) 100%);
+                                    border-radius: 1rem;
+                                    flex-shrink: 0;
                                     color: #e2001a;
+                                    border: 2px solid rgba(226, 0, 26, 0.1);
                                 }
                                 
                                 .order-info-title {
-                                    font-size: 1.2rem;
-                                    font-weight: 600;
-                                    color: #333;
-                                    margin-bottom: 1rem;
-                                    line-height: 1;
+                                    font-size: 1.25rem;
+                                    font-weight: 700;
+                                    color: #2c3e50;
+                                    margin: 0;
+                                    line-height: 1.3;
+                                }
+                                
+                                .order-info-content {
+                                    flex: 1;
                                 }
                                 
                                 .order-info-desc {
-                                    font-size: 0.9375rem;
-                                    color: #666;
-                                    line-height: 1.5;
-                                    margin: 0;
-                                    margin-bottom: 0.2rem;
+                                    font-size: 0.95rem;
+                                    color: #6c757d;
+                                    line-height: 1.6;
+                                    margin: 0 0 0.3rem 0;
+                                    position: relative;
+                                    padding-left: 1.2rem;
+                                }
+                                
+                                .order-info-desc::before {
+                                    content: "✓";
+                                    position: absolute;
+                                    left: 0;
+                                    top: 0;
+                                    color: #e2001a;
+                                    font-weight: bold;
+                                    font-size: 1rem;
                                 }
                                 
                                 .order-info-desc:last-child {
@@ -583,11 +607,29 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                     .order-info-grid {
                                         grid-template-columns: 1fr !important;
                                         gap: 1rem !important;
-                                        padding: 0 !important;
+                                        padding: 1rem !important;
+                                        margin: 1.5rem 0 !important;
                                     }
                                     
                                     .order-info-card {
-                                        padding: 1rem !important;
+                                        padding: 1.25rem !important;
+                                        min-height: auto !important;
+                                    }
+                                    
+                                    .order-info-header {
+                                        flex-direction: column !important;
+                                        align-items: flex-start !important;
+                                        gap: 0.75rem !important;
+                                    }
+                                    
+                                    .order-info-icon {
+                                        width: 3rem !important;
+                                        height: 3rem !important;
+                                        font-size: 1.5rem !important;
+                                    }
+                                    
+                                    .order-info-title {
+                                        font-size: 1.1rem !important;
                                     }
                                 }
                             </style>
@@ -600,9 +642,9 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                         <h3 class="order-info-title">'.$lng['w']['order_info_security_title'].'</h3>
                                     </div>
                                     <div class="order-info-content">
-                                        <p class="order-info-desc">• '.$lng['w']['order_info_security_desc1'].'</p>
-                                        <p class="order-info-desc">• '.$lng['w']['order_info_security_desc2'].'</p>
-                                        <p class="order-info-desc">• '.$lng['w']['order_info_security_desc3'].'</p>
+                                        <p class="order-info-desc">'.$lng['w']['order_info_security_desc1'].'</p>
+                                        <p class="order-info-desc">'.$lng['w']['order_info_security_desc2'].'</p>
+                                        <p class="order-info-desc">'.$lng['w']['order_info_security_desc3'].'</p>
                                     </div>
                                 </div>
                                 
@@ -613,10 +655,10 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                         <h3 class="order-info-title">'.$lng['w']['order_info_advantages_title'].'</h3>
                                     </div>
                                     <div class="order-info-content">
-                                        <p class="order-info-desc">• '.$lng['w']['order_info_advantages_desc1'].'</p>
-                                        <p class="order-info-desc">• '.$lng['w']['order_info_advantages_desc2'].'</p>
-                                        <p class="order-info-desc">• '.$lng['w']['order_info_advantages_desc3'].'</p>
-                                        <p class="order-info-desc">• '.$lng['w']['order_info_advantages_desc4'].'</p>
+                                        <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc1'].'</p>
+                                        <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc2'].'</p>
+                                        <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc3'].'</p>
+                                        <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc4'].'</p>
                                     </div>
                                 </div>
                                 
@@ -627,9 +669,9 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                         <h3 class="order-info-title">'.$lng['w']['order_info_transparency_title'].'</h3>
                                     </div>
                                     <div class="order-info-content">
-                                        <p class="order-info-desc">• '.$lng['w']['order_info_transparency_desc1'].'</p>
-                                        <p class="order-info-desc">• '.$lng['w']['order_info_transparency_desc2'].'</p>
-                                        <p class="order-info-desc">• '.$lng['w']['order_info_transparency_desc3'].'</p>
+                                        <p class="order-info-desc">'.$lng['w']['order_info_transparency_desc1'].'</p>
+                                        <p class="order-info-desc">'.$lng['w']['order_info_transparency_desc2'].'</p>
+                                        <p class="order-info-desc">'.$lng['w']['order_info_transparency_desc3'].'</p>
                                     </div>
                                 </div>
                             </div>';
