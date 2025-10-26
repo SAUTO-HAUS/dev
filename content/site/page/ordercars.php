@@ -1172,6 +1172,12 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                             .order-info-grid-mobile {
                                 display: grid !important;
                             }
+                            
+                            .order-info-grid-mobile .order-info-header {
+                                flex-direction: row !important;
+                                align-items: center !important;
+                                gap: 1rem !important;
+                            }
                         }
                     </style>
                     
