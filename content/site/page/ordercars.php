@@ -514,26 +514,24 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                 .order-info-grid {
                                     display: grid;
                                     grid-template-columns: repeat(3, 1fr);
-                                    gap: 1rem;
-                                    margin: 26rem 0;
                                     width: 100%;
+                                    gap: 1rem;
                                     max-width: 1200px;
                                     margin-left: auto;
                                     margin-right: auto;
-                                    padding: 0.5rem;
-                                    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                                    padding: 1rem 1rem 1rem 1rem;
                                     border-radius: 1rem;
                                     box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.08);
                                 }
                                 
                                 .order-info-card {
-                                    background: #ffffff;
-                                    padding: 1.5rem;
+                                    background: #f8f9faff;
+                                    padding: 0.8rem;
                                     border-radius: 1rem;
                                     box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.08);
                                     text-align: left;
                                     transition: all 0.3s ease;
-                                    border: 0.0625rem solid #e9ecef;
+                                    border: 0.1rem solid #b6b6b6ff;
                                     display: flex;
                                     flex-direction: column;
                                     overflow: hidden;
@@ -607,8 +605,8 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                     .order-info-grid {
                                         grid-template-columns: 1fr !important;
                                         gap: 1rem !important;
-                                        padding: 1rem !important;
-                                        margin: 1.5rem 0 !important;
+                                        padding: 1rem 1rem 0 1rem !important;
+                                        margin: 0.5rem 0 -2rem 0 !important;
                                     }
                                     
                                     .order-info-card {
@@ -1088,13 +1086,13 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                         }
                         
                         .order-info-grid-mobile .order-info-card {
-                            background: #ffffff;
+                            background: #f8f9faff;
                             padding: 1.5rem;
                             border-radius: 1rem;
                             box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.08);
                             text-align: left;
                             transition: all 0.3s ease;
-                            border: 0.0625rem solid #e9ecef;
+                            border: 0.1rem solid #b6b6b6ff;
                             display: flex;
                             flex-direction: column;
                             overflow: hidden;
@@ -1132,7 +1130,7 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                         .order-info-grid-mobile .order-info-title {
                             font-size: 1.1rem;
                             font-weight: 700;
-                            color: #2c3e50;
+                            color: #27394cff;
                             margin: 0;
                             line-height: 1.3;
                         }
@@ -1142,7 +1140,7 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                         }
                         
                         .order-info-grid-mobile .order-info-desc {
-                            font-size: 0.9rem;
+                            font-size: 1rem;
                             color: #6c757d;
                             line-height: 1.6;
                             margin: 0 0 0.3rem 0;
