@@ -80,13 +80,50 @@ img.lazy.is-loaded{ filter:none; transform:none; opacity:1; }
 
 @media (max-width:640px){
     .f-carousel__slide{ width:88% !important; margin:0 2px; border-radius:10px; }
+    .f-carousel__slide img{ 
+        height: 250px !important; 
+        object-fit: cover !important; 
+        object-position: center !important; 
+    }
     .more-slide{ min-height:180px; }
     .mini-grid{ gap:10px; padding:10px; }
+}
+@media (min-width:641px) and (max-width:1199px){
+    .f-carousel__slide img{ 
+        height: 300px !important; 
+        object-fit: cover !important; 
+        object-position: center !important; 
+    }
+    
+    /* Fix Fancybox image heights on tablets */
+    .fancybox__image {
+        max-height: 75vh !important;
+        max-width: 90vw !important;
+        width: auto !important;
+        height: auto !important;
+        object-fit: contain !important;
+        object-position: center !important;
+    }
 }
 @media (min-width:1200px){
     .f-carousel__slide{
         width: 90% !important;
         margin: 0 3px;
+    }
+    .f-carousel__slide img{ 
+        height: 350px !important; 
+        object-fit: cover !important; 
+        object-position: center !important; 
+    }
+    
+    /* Fix Fancybox image heights on desktop */
+    .fancybox__image {
+        max-height: 85vh !important;
+        max-width: 85vw !important;
+        width: auto !important;
+        height: auto !important;
+        object-fit: contain !important;
+        object-position: center !important;
     }
 }
 
@@ -192,6 +229,16 @@ img.lazy.is-loaded{ filter:none; transform:none; opacity:1; }
     .pht_bx {
         display: none;
     }
+    
+    /* Fix Fancybox image heights on mobile */
+    .fancybox__image {
+        max-height: 70vh !important;
+        max-width: 95vw !important;
+        width: auto !important;
+        height: auto !important;
+        object-fit: contain !important;
+        object-position: center !important;
+    }
 }
 .is-compact .fancybox__footer .fancybox__caption {
     display: none;
@@ -215,6 +262,14 @@ img.lazy.is-loaded{ filter:none; transform:none; opacity:1; }
 .fancybox__content,
 .fancybox__image {
     touch-action: pan-x pan-y pinch-zoom !important;
+}
+
+/* Fix image heights in Fancybox for consistent display */
+.fancybox__image {
+    max-height: 80vh !important;
+    width: auto !important;
+    object-fit: contain !important;
+    object-position: center !important;
 }
 /*
 html.with-fancybox body {
