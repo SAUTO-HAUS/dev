@@ -1072,7 +1072,155 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                             </div>
                             </div>';
 
+                            // Add order-info-grid after specifications for mobile
+                if (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') {
+                    $rtrn .= '
+                    <style>
+                        .order-info-grid-mobile {
+                            display: none;
+                            grid-template-columns: 1fr;
+                            gap: 1rem;
+                            margin: 0.1rem 0;
+                            padding: 1rem;
+                            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+                            border-radius: 1rem;
+                            box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.08);
+                        }
+                        
+                        .order-info-grid-mobile .order-info-card {
+                            background: #ffffff;
+                            padding: 1.5rem;
+                            border-radius: 1rem;
+                            box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.08);
+                            text-align: left;
+                            transition: all 0.3s ease;
+                            border: 0.0625rem solid #e9ecef;
+                            display: flex;
+                            flex-direction: column;
+                            overflow: hidden;
+                            position: relative;
+                            min-height: 200px;
+                        }
+                        
+                        .order-info-grid-mobile .order-info-card:hover {
+                            transform: translateY(-0.5rem);
+                            box-shadow: 0 1rem 2rem rgba(226, 0, 26, 0.15);
+                            border-color: #e2001a;
+                        }
+                        
+                        .order-info-grid-mobile .order-info-header {
+                            display: flex;
+                            align-items: center;
+                            margin-bottom: 1rem;
+                            gap: 1rem;
+                        }
+                        
+                        .order-info-grid-mobile .order-info-icon {
+                            width: 3rem;
+                            height: 3rem;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 1.5rem;
+                            background: linear-gradient(135deg, rgba(226, 0, 26, 0.1) 0%, rgba(226, 0, 26, 0.05) 100%);
+                            border-radius: 1rem;
+                            flex-shrink: 0;
+                            color: #e2001a;
+                            border: 2px solid rgba(226, 0, 26, 0.1);
+                        }
+                        
+                        .order-info-grid-mobile .order-info-title {
+                            font-size: 1.1rem;
+                            font-weight: 700;
+                            color: #2c3e50;
+                            margin: 0;
+                            line-height: 1.3;
+                        }
+                        
+                        .order-info-grid-mobile .order-info-content {
+                            flex: 1;
+                        }
+                        
+                        .order-info-grid-mobile .order-info-desc {
+                            font-size: 0.9rem;
+                            color: #6c757d;
+                            line-height: 1.6;
+                            margin: 0 0 0.3rem 0;
+                            position: relative;
+                            padding-left: 1.2rem;
+                        }
+                        
+                        .order-info-grid-mobile .order-info-desc::before {
+                            content: "✓";
+                            position: absolute;
+                            left: 0;
+                            top: 0;
+                            color: #e2001a;
+                            font-weight: bold;
+                            font-size: 1rem;
+                        }
+                        
+                        .order-info-grid-mobile .order-info-desc:last-child {
+                            margin-bottom: 0;
+                        }
+                        
+                        @media (max-width: 768px) {
+                            .order-info-grid {
+                                display: none !important;
+                            }
+                            
+                            .order-info-grid-mobile {
+                                display: grid !important;
+                            }
+                        }
+                    </style>
+                    
+                    <div class="order-info-grid-mobile">
+                        <!-- Siguranța -->
+                        <div class="order-info-card">
+                            <div class="order-info-header">
+                                <div class="order-info-icon">🔒</div>
+                                <h3 class="order-info-title">'.$lng['w']['order_info_security_title'].'</h3>
+                            </div>
+                            <div class="order-info-content">
+                                <p class="order-info-desc">'.$lng['w']['order_info_security_desc1'].'</p>
+                                <p class="order-info-desc">'.$lng['w']['order_info_security_desc2'].'</p>
+                                <p class="order-info-desc">'.$lng['w']['order_info_security_desc3'].'</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Avantaje -->
+                        <div class="order-info-card">
+                            <div class="order-info-header">
+                                <div class="order-info-icon">✓</div>
+                                <h3 class="order-info-title">'.$lng['w']['order_info_advantages_title'].'</h3>
+                            </div>
+                            <div class="order-info-content">
+                                <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc1'].'</p>
+                                <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc2'].'</p>
+                                <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc3'].'</p>
+                                <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc4'].'</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Transparența -->
+                        <div class="order-info-card">
+                            <div class="order-info-header">
+                                <div class="order-info-icon">📄</div>
+                                <h3 class="order-info-title">'.$lng['w']['order_info_transparency_title'].'</h3>
+                            </div>
+                            <div class="order-info-content">
+                                <p class="order-info-desc">'.$lng['w']['order_info_transparency_desc1'].'</p>
+                                <p class="order-info-desc">'.$lng['w']['order_info_transparency_desc2'].'</p>
+                                <p class="order-info-desc">'.$lng['w']['order_info_transparency_desc3'].'</p>
+                            </div>
+                        </div>
+                    </div>';
+                }
+
                 $rtrn .= '
+
+                
                             <div style="clear: both"> </div>
                             <div class="spc_bx  d_right_b"> 
                                 <!--Plugin CSS file with desired skin-->
@@ -1270,7 +1418,8 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                                 // Amânăm prima calculare pentru a ne asigura că toate componentele sunt inițializate corect
                                 setTimeout(updateRate, 100);
                             });
-                            </script>';          
+                            </script>';
+                          
                 /*
                  * <div class="calc_btn_btt">
                             <div class="calc_btn_point">
