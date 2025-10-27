@@ -190,11 +190,11 @@ $rtrn .= '
             <div class="setting-group">
                 <h4>' . ($lng[$_COOKIE['lang']]['w']['api_999md_main'] ?? 'API "Три Девятки МД" - Основной аккаунт') . '</h4>
                 <label>' . ($lng[$_COOKIE['lang']]['w']['account_login'] ?? 'Аккаунт/Login:') . '</label>
-                <input type="text" name="regular_999md_account" value="' . htmlspecialchars($current_settings['regular_999md_account'] ?? 'SAUTO-HAUS') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_999md_account'] ?? 'SAUTO-HAUS') . '">
+                <input type="text" name="regular_999md_account" value="' . htmlspecialchars($current_settings['regular_999md_account'] ?? 'SAUTO-HAUS') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_999md_account'] ?? 'SAUTO-HAUS') . '" autocomplete="off" data-form-type="other">
                 
                 <label>' . ($lng[$_COOKIE['lang']]['w']['api_token'] ?? 'API Token:') . '</label>
                 <div class="input-with-button">
-                    <input type="password" name="regular_999md_token" id="regular_999md_token" value="' . htmlspecialchars($current_settings['regular_999md_token'] ?? 'I_SKyGEvvG5Rfm7lRZeiOTwk7r_F') . '" placeholder="I_SKyGEvvG5Rfm7lRZeiOTwk7r_F">
+                    <input type="password" name="regular_999md_token" id="regular_999md_token" value="' . htmlspecialchars($current_settings['regular_999md_token'] ?? 'I_SKyGEvvG5Rfm7lRZeiOTwk7r_F') . '" placeholder="I_SKyGEvvG5Rfm7lRZeiOTwk7r_F" autocomplete="new-password" data-form-type="other">
                     <button type="button" class="generate-btn" onclick="generate999Token(&quot;regular&quot;)">🔑 Generează</button>
                 </div>
             </div>
@@ -203,13 +203,13 @@ $rtrn .= '
                 <h4>' . ($lng[$_COOKIE['lang']]['w']['telegram_channel_1'] ?? 'Telegram - Канал №1') . '</h4>
                 <label>' . ($lng[$_COOKIE['lang']]['w']['bot_token'] ?? 'Bot Token:') . '</label>
                 <div class="input-with-button">
-                    <input type="password" name="regular_telegram_bot_token" id="regular_telegram_bot_token" value="' . htmlspecialchars($current_settings['regular_telegram_bot_token'] ?? '1398519511:AAHGNlpbTutAS4QAnT7Z-eCf7_z80hJ4N2g') . '" placeholder="1398519511:AAHGNlpbTutAS4QAnT7Z-eCf7_z80hJ4N2g">
+                    <input type="password" name="regular_telegram_bot_token" id="regular_telegram_bot_token" value="' . htmlspecialchars($current_settings['regular_telegram_bot_token'] ?? '1398519511:AAHGNlpbTutAS4QAnT7Z-eCf7_z80hJ4N2g') . '" placeholder="1398519511:AAHGNlpbTutAS4QAnT7Z-eCf7_z80hJ4N2g" autocomplete="new-password" data-form-type="other">
                     <button type="button" class="generate-btn" onclick="generateTelegramToken(&quot;regular&quot;)">🤖 Generează Bot</button>
                 </div>
                 
                 <label>' . ($lng[$_COOKIE['lang']]['w']['chat_id'] ?? 'Chat ID:') . '</label>
                 <div class="input-with-button">
-                    <input type="text" name="regular_telegram_chat_id" id="regular_telegram_chat_id" value="' . htmlspecialchars($current_settings['regular_telegram_chat_id'] ?? '564183869') . '" placeholder="564183869">
+                    <input type="text" name="regular_telegram_chat_id" id="regular_telegram_chat_id" value="' . htmlspecialchars($current_settings['regular_telegram_chat_id'] ?? '564183869') . '" placeholder="564183869" autocomplete="off" data-form-type="other">
                     <button type="button" class="generate-btn" onclick="getTelegramChatId(&quot;regular&quot;)">💬 Obține Chat ID</button>
                 </div>
             </div>
@@ -218,13 +218,13 @@ $rtrn .= '
                 <h4>' . ($lng[$_COOKIE['lang']]['w']['facebook_main'] ?? 'Facebook - Основная страница') . '</h4>
                 <label>' . ($lng[$_COOKIE['lang']]['w']['page_id'] ?? 'Page ID:') . '</label>
                 <div class="input-with-button">
-                    <input type="text" name="regular_facebook_page_id" id="regular_facebook_page_id" value="' . htmlspecialchars($current_settings['regular_facebook_page_id'] ?? '482777831588669') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_facebook_page'] ?? 'ID основной Facebook страницы') . '">
+                    <input type="text" name="regular_facebook_page_id" id="regular_facebook_page_id" value="' . htmlspecialchars($current_settings['regular_facebook_page_id'] ?? '482777831588669') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_facebook_page'] ?? 'ID основной Facebook страницы') . '" autocomplete="off" data-form-type="other">
                     <button type="button" class="generate-btn" onclick="getFacebookPageId(&quot;regular&quot;)">📄 Obține Page ID</button>
                 </div>
                 
                 <label>' . ($lng[$_COOKIE['lang']]['w']['page_token'] ?? 'Page Token:') . '</label>
                 <div class="input-with-button">
-                    <input type="password" name="regular_facebook_token" id="regular_facebook_token" value="' . htmlspecialchars($current_settings['regular_facebook_token'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_facebook_token'] ?? 'Access token для основной страницы') . '">
+                    <input type="password" name="regular_facebook_token" id="regular_facebook_token" value="' . htmlspecialchars($current_settings['regular_facebook_token'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_facebook_token'] ?? 'Access token для основной страницы') . '" autocomplete="new-password" data-form-type="other">
                     <button type="button" class="generate-btn" onclick="generateFacebookToken(&quot;regular&quot;)">🔐 Generează Token</button>
                 </div>
             </div>
@@ -245,11 +245,11 @@ $rtrn .= '
             <div class="setting-group">
                 <h4>' . ($lng[$_COOKIE['lang']]['w']['api_999md_separate'] ?? 'API "Три Девятки МД" - Отдельный аккаунт') . '</h4>
                 <label>' . ($lng[$_COOKIE['lang']]['w']['account_login'] ?? 'Аккаунт/Login:') . '</label>
-                <input type="text" name="order_999md_account" value="' . htmlspecialchars($current_settings['order_999md_account'] ?? 'Sauto-stock-extern') . '" placeholder="Sauto-stock-extern">
+                <input type="text" name="order_999md_account" value="' . htmlspecialchars($current_settings['order_999md_account'] ?? 'Sauto-stock-extern') . '" placeholder="Sauto-stock-extern" autocomplete="off" data-form-type="other">
                 
                 <label>' . ($lng[$_COOKIE['lang']]['w']['api_token'] ?? 'API Token:') . '</label>
                 <div class="input-with-button">
-                    <input type="password" name="order_999md_token" id="order_999md_token" value="' . htmlspecialchars($current_settings['order_999md_token'] ?? 'jMEsHjO0FhoRZm0KSsONLpkGLMIK') . '" placeholder="jMEsHjO0FhoRZm0KSsONLpkGLMIK">
+                    <input type="password" name="order_999md_token" id="order_999md_token" value="' . htmlspecialchars($current_settings['order_999md_token'] ?? 'jMEsHjO0FhoRZm0KSsONLpkGLMIK') . '" placeholder="jMEsHjO0FhoRZm0KSsONLpkGLMIK" autocomplete="new-password" data-form-type="other">
                     <button type="button" class="generate-btn" onclick="generate999Token(&quot;order&quot;)">🔑 Generează</button>
                 </div>
             </div>
@@ -258,13 +258,13 @@ $rtrn .= '
                 <h4>' . ($lng[$_COOKIE['lang']]['w']['telegram_separate'] ?? 'Telegram - Отдельный канал') . '</h4>
                 <label>' . ($lng[$_COOKIE['lang']]['w']['bot_token'] ?? 'Bot Token:') . '</label>
                 <div class="input-with-button">
-                    <input type="password" name="order_telegram_bot_token" id="order_telegram_bot_token" value="' . htmlspecialchars($current_settings['order_telegram_bot_token'] ?? '1398519511:AAHGNlpbTutAS4QAnT7Z-eCf7_z80hJ4N2g') . '" placeholder="1398519511:AAHGNlpbTutAS4QAnT7Z-eCf7_z80hJ4N2g">
+                    <input type="password" name="order_telegram_bot_token" id="order_telegram_bot_token" value="' . htmlspecialchars($current_settings['order_telegram_bot_token'] ?? '1398519511:AAHGNlpbTutAS4QAnT7Z-eCf7_z80hJ4N2g') . '" placeholder="1398519511:AAHGNlpbTutAS4QAnT7Z-eCf7_z80hJ4N2g" autocomplete="new-password" data-form-type="other">
                     <button type="button" class="generate-btn" onclick="generateTelegramToken(&quot;order&quot;)">🤖 Generează Bot</button>
                 </div>
                 
                 <label>' . ($lng[$_COOKIE['lang']]['w']['chat_id'] ?? 'Chat ID:') . '</label>
                 <div class="input-with-button">
-                    <input type="text" name="order_telegram_chat_id" id="order_telegram_chat_id" value="' . htmlspecialchars($current_settings['order_telegram_chat_id'] ?? '564183869') . '" placeholder="564183869">
+                    <input type="text" name="order_telegram_chat_id" id="order_telegram_chat_id" value="' . htmlspecialchars($current_settings['order_telegram_chat_id'] ?? '564183869') . '" placeholder="564183869" autocomplete="off" data-form-type="other">
                     <button type="button" class="generate-btn" onclick="getTelegramChatId(&quot;order&quot;)">💬 Obține Chat ID</button>
                 </div>
             </div>
@@ -273,13 +273,13 @@ $rtrn .= '
                 <h4>' . ($lng[$_COOKIE['lang']]['w']['facebook_same'] ?? 'Facebook - Та же страница с меткой "Под заказ"') . '</h4>
                 <label>' . ($lng[$_COOKIE['lang']]['w']['page_id'] ?? 'Page ID:') . '</label>
                 <div class="input-with-button">
-                    <input type="text" name="order_facebook_page_id" id="order_facebook_page_id" value="' . htmlspecialchars($current_settings['order_facebook_page_id'] ?? '482777831588669') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_facebook_page'] ?? 'ID Facebook страницы для заказов') . '">
+                    <input type="text" name="order_facebook_page_id" id="order_facebook_page_id" value="' . htmlspecialchars($current_settings['order_facebook_page_id'] ?? '482777831588669') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_facebook_page'] ?? 'ID Facebook страницы для заказов') . '" autocomplete="off" data-form-type="other">
                     <button type="button" class="generate-btn" onclick="getFacebookPageId(&quot;order&quot;)">📄 Obține Page ID</button>
                 </div>
                 
                 <label>' . ($lng[$_COOKIE['lang']]['w']['page_token'] ?? 'Page Token:') . '</label>
                 <div class="input-with-button">
-                    <input type="password" name="order_facebook_token" id="order_facebook_token" value="' . htmlspecialchars($current_settings['order_facebook_token'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_facebook_token'] ?? 'Access token для страницы заказов') . '">
+                    <input type="password" name="order_facebook_token" id="order_facebook_token" value="' . htmlspecialchars($current_settings['order_facebook_token'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_facebook_token'] ?? 'Access token для страницы заказов') . '" autocomplete="new-password" data-form-type="other">
                     <button type="button" class="generate-btn" onclick="generateFacebookToken(&quot;order&quot;)">🔐 Generează Token</button>
                 </div>
             </div>
