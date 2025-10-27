@@ -190,11 +190,11 @@ $rtrn .= '
             <div class="setting-group">
                 <h4>' . ($lng[$_COOKIE['lang']]['w']['api_999md_main'] ?? 'API "Три Девятки МД" - Основной аккаунт') . '</h4>
                 <label>' . ($lng[$_COOKIE['lang']]['w']['account_login'] ?? 'Аккаунт/Login:') . '</label>
-                <input type="text" name="regular_999md_account" value="' . htmlspecialchars($current_settings['regular_999md_account'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_999md_account'] ?? 'Основной аккаунт 999.md') . '">
+                <input type="text" name="regular_999md_account" value="' . htmlspecialchars($current_settings['regular_999md_account'] ?? 'SAUTO-HAUS') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_999md_account'] ?? 'SAUTO-HAUS') . '">
                 
                 <label>' . ($lng[$_COOKIE['lang']]['w']['api_token'] ?? 'API Token:') . '</label>
                 <div class="input-with-button">
-                    <input type="password" name="regular_999md_token" id="regular_999md_token" value="' . htmlspecialchars($current_settings['regular_999md_token'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_999md_token'] ?? 'API токен для основного аккаунта') . '">
+                    <input type="password" name="regular_999md_token" id="regular_999md_token" value="' . htmlspecialchars($current_settings['regular_999md_token'] ?? 'I_SKyGEvvG5Rfm7lRZeiOTwk7r_F') . '" placeholder="I_SKyGEvvG5Rfm7lRZeiOTwk7r_F">
                     <button type="button" class="generate-btn" onclick="generate999Token(&quot;regular&quot;)">🔑 Generează</button>
                 </div>
             </div>
@@ -203,13 +203,13 @@ $rtrn .= '
                 <h4>' . ($lng[$_COOKIE['lang']]['w']['telegram_channel_1'] ?? 'Telegram - Канал №1') . '</h4>
                 <label>' . ($lng[$_COOKIE['lang']]['w']['bot_token'] ?? 'Bot Token:') . '</label>
                 <div class="input-with-button">
-                    <input type="password" name="regular_telegram_bot_token" id="regular_telegram_bot_token" value="' . htmlspecialchars($current_settings['regular_telegram_bot_token'] ?? '7459955785:AAGTMPvUkh2Fktar7ZpNlHBFsq43FH_DPsY') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_telegram_token'] ?? 'Bot token для основного канала') . '">
+                    <input type="password" name="regular_telegram_bot_token" id="regular_telegram_bot_token" value="' . htmlspecialchars($current_settings['regular_telegram_bot_token'] ?? '1398519511:AAHGNlpbTutAS4QAnT7Z-eCf7_z80hJ4N2g') . '" placeholder="1398519511:AAHGNlpbTutAS4QAnT7Z-eCf7_z80hJ4N2g">
                     <button type="button" class="generate-btn" onclick="generateTelegramToken(&quot;regular&quot;)">🤖 Generează Bot</button>
                 </div>
                 
                 <label>' . ($lng[$_COOKIE['lang']]['w']['chat_id'] ?? 'Chat ID:') . '</label>
                 <div class="input-with-button">
-                    <input type="text" name="regular_telegram_chat_id" id="regular_telegram_chat_id" value="' . htmlspecialchars($current_settings['regular_telegram_chat_id'] ?? '-1002605369940') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_telegram_chat'] ?? 'Chat ID основного канала') . '">
+                    <input type="text" name="regular_telegram_chat_id" id="regular_telegram_chat_id" value="' . htmlspecialchars($current_settings['regular_telegram_chat_id'] ?? '564183869') . '" placeholder="564183869">
                     <button type="button" class="generate-btn" onclick="getTelegramChatId(&quot;regular&quot;)">💬 Obține Chat ID</button>
                 </div>
             </div>
@@ -245,11 +245,11 @@ $rtrn .= '
             <div class="setting-group">
                 <h4>' . ($lng[$_COOKIE['lang']]['w']['api_999md_separate'] ?? 'API "Три Девятки МД" - Отдельный аккаунт') . '</h4>
                 <label>' . ($lng[$_COOKIE['lang']]['w']['account_login'] ?? 'Аккаунт/Login:') . '</label>
-                <input type="text" name="order_999md_account" value="' . htmlspecialchars($current_settings['order_999md_account'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_999md_account'] ?? 'Отдельный аккаунт для заказов') . '">
+                <input type="text" name="order_999md_account" value="' . htmlspecialchars($current_settings['order_999md_account'] ?? 'Sauto-auto-comerciale') . '" placeholder="Sauto-auto-comerciale">
                 
                 <label>' . ($lng[$_COOKIE['lang']]['w']['api_token'] ?? 'API Token:') . '</label>
                 <div class="input-with-button">
-                    <input type="password" name="order_999md_token" id="order_999md_token" value="' . htmlspecialchars($current_settings['order_999md_token'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_999md_token'] ?? 'API токен для аккаунта заказов') . '">
+                    <input type="password" name="order_999md_token" id="order_999md_token" value="' . htmlspecialchars($current_settings['order_999md_token'] ?? 'EeKkPqGFjEhJZIK3S5KWh59w8jNG') . '" placeholder="EeKkPqGFjEhJZIK3S5KWh59w8jNG">
                     <button type="button" class="generate-btn" onclick="generate999Token(&quot;order&quot;)">🔑 Generează</button>
                 </div>
             </div>
@@ -258,13 +258,13 @@ $rtrn .= '
                 <h4>' . ($lng[$_COOKIE['lang']]['w']['telegram_separate'] ?? 'Telegram - Отдельный канал') . '</h4>
                 <label>' . ($lng[$_COOKIE['lang']]['w']['bot_token'] ?? 'Bot Token:') . '</label>
                 <div class="input-with-button">
-                    <input type="password" name="order_telegram_bot_token" id="order_telegram_bot_token" value="' . htmlspecialchars($current_settings['order_telegram_bot_token'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_telegram_token'] ?? 'Bot token для канала заказов') . '">
+                    <input type="password" name="order_telegram_bot_token" id="order_telegram_bot_token" value="' . htmlspecialchars($current_settings['order_telegram_bot_token'] ?? '1398519511:AAHGNlpbTutAS4QAnT7Z-eCf7_z80hJ4N2g') . '" placeholder="1398519511:AAHGNlpbTutAS4QAnT7Z-eCf7_z80hJ4N2g">
                     <button type="button" class="generate-btn" onclick="generateTelegramToken(&quot;order&quot;)">🤖 Generează Bot</button>
                 </div>
                 
                 <label>' . ($lng[$_COOKIE['lang']]['w']['chat_id'] ?? 'Chat ID:') . '</label>
                 <div class="input-with-button">
-                    <input type="text" name="order_telegram_chat_id" id="order_telegram_chat_id" value="' . htmlspecialchars($current_settings['order_telegram_chat_id'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_telegram_chat'] ?? 'Chat ID канала заказов') . '">
+                    <input type="text" name="order_telegram_chat_id" id="order_telegram_chat_id" value="' . htmlspecialchars($current_settings['order_telegram_chat_id'] ?? '564183869') . '" placeholder="564183869">
                     <button type="button" class="generate-btn" onclick="getTelegramChatId(&quot;order&quot;)">💬 Obține Chat ID</button>
                 </div>
             </div>
@@ -443,6 +443,7 @@ $rtrn .= '
 }
 
 .generate-btn {
+    display: none;
     padding: 12px 16px;
     background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
     color: white;
