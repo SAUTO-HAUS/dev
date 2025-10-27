@@ -1136,7 +1136,7 @@ if ($_COOKIE['lang']=='ru'){
 		'mail'=>'Почта',
 		'users'=>'Пользователи',
 		'settings'=>'Настройки',
-		'publication_settings'=>'Настройки публикации',
+		'publication_settings'=>'Публикация',
 		'checked_count'=>'Количество выбранных фото',
 		'check_all'=>'Выделить все',
 		'uncheck_all'=>'Отменить все',
