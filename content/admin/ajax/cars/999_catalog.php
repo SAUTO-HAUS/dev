@@ -14,13 +14,18 @@ $zY = substr( md5( date('Y') ), 0, 4 );
 $zM = substr( md5( date('m') ), 0, 4 );
 $requestData = $_POST;
 
+// Debug logging
+error_log('999_catalog.php: Request started with sub=' . (__post('sub') ?? 'null') . ', category=' . (__post('category') ?? 'null') . ', subcategory=' . (__post('subcategory') ?? 'null'));
+
 // Try to use regular cars settings, fallback to default if not configured
 try {
     $api999Service = Api999Service::createFromSettings('in_stock');
+    error_log('999_catalog.php: Successfully created Api999Service from settings');
 } catch (Exception $e) {
     // Log the error and fallback to default API service
     error_log('999_catalog.php: Failed to create Api999Service from settings: ' . $e->getMessage());
     $api999Service = new Api999Service();
+    error_log('999_catalog.php: Created fallback Api999Service');
 }
 
 if (__post('sub') == 'get_subcategory') {
