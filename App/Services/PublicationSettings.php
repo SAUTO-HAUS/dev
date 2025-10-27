@@ -3,6 +3,13 @@
 // Access global variables from admin context
 global $lng, $db, $prefx;
 
+// Include PublicationService
+require_once __DIR__ . '/PublicationService.php';
+use App\Services\PublicationService;
+
+// Initialize PublicationService
+$publicationService = new PublicationService($db, $prefx);
+
 // Ensure language is loaded
 if (!isset($lng)) {
     // Set default language if not set

@@ -405,7 +405,7 @@ if ( isset($t_mp[4]) ){
 	}
 	elseif ( $t_mp[4]=='publication_settings' ){
 		// Include publication settings management page
-		include $_SERVER['DOCUMENT_ROOT'] . '/App/Services/publication_settings.php';
+		include $_SERVER['DOCUMENT_ROOT'] . '/App/Services/PublicationSettings.php';
 	}
 	elseif ( $t_mp[4]=='annc' ){
 		if ( isset($t_mp[5]) ){
