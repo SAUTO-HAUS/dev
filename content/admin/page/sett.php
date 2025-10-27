@@ -403,6 +403,10 @@ if ( isset($t_mp[4]) ){
 		// Include phone configuration management page
 		include dirname(__FILE__) . '/phone_config.php';
 	}
+	elseif ( $t_mp[4]=='publication_settings' ){
+		// Include publication settings management page
+		include $_SERVER['DOCUMENT_ROOT'] . '/App/Services/publication_settings.php';
+	}
 	elseif ( $t_mp[4]=='annc' ){
 		if ( isset($t_mp[5]) ){
 			$link_back = ''; $count = count($t_mp);

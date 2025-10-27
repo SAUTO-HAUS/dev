@@ -255,22 +255,22 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
 
 
 
-    // Determine Facebook settings based on domain
-    // $current_host = $_SERVER['HTTP_HOST'] ?? '';
-    // $is_main_domain = ($current_host === 'sauto.md' || $current_host === 'www.sauto.md');
-    
-
-
-
     $carId = $it_id = __post('id');
-
     $local_id = __post('local_id');
-
-  //  echo $local_id;
-   // exit('2');
 
     $_COOKIE['lang']='ro';
     require (_DEFAULT.'/language.php');
+  
+    // Use PublicationService for regular cars
+    require_once '../../../../App/Services/PublicationService.php';
+    $publicationService = new \App\Services\PublicationService($db, $prefx);
+    
+    // Get Facebook settings for regular cars
+    $facebookSettings = $publicationService->getFacebookSettings('in_stock');
+    if (!$facebookSettings) {
+        echo json_encode(['success' => false, 'message' => 'Facebook settings for regular cars not configured']);
+        exit;
+    }
   
     // Use PhoneReplacementService for dynamic phone numbers
     require_once 'App/Services/PhoneReplacementService.php';
@@ -278,22 +278,11 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
     $phone = $phoneService->getGeneralPhone();
     $car_title_name = "";
 
-    if ($local_id == 2) {
-        // Vânzări automobile Piața Pruncu
-
-        // Main domain Facebook settings
-        define('APP_ID', '1082088863732549');
-        define('APP_SECRET', '77368f52ab263907ee1fe3ea72909289');
-        define('PAGE_ID', '482777831588669');
-        define('PAGE_TOKEN', 'EAAPYJ3JWk0UBPhHoFrglY8vNF9Jrm40RdjCvuPkYB0mO226K3yqF5qQrZAUasvkmAidLqK87dTZCCRyVwpMReuR5EKscMKwJjoAFZAiTUwjMSjLdstz15BmWr6QQfJR8YBKZAkBy0ksMHXwdvL8vzZAUpoF5K7osglWrLVQZB91xbtFJnUkw2MZCMhZAB6YRMATSJc46');
-    }
-    else {
-        // Subdomain Facebook settings (fallback to same for now)
-        define('APP_ID', '1082088863732549');
-        define('APP_SECRET', '77368f52ab263907ee1fe3ea72909289');
-        define('PAGE_ID', '725963964220309');
-        define('PAGE_TOKEN', 'EAAPYJ3JWk0UBPsgxBX8CZAarZAbDkllOe5rkXFZAfW29EnDKf7S68aVZC4Y4zvyswEGiLns1JMkp2iNPRYm5ZCoTgUFUyz2k6cfnlGNzHFAWAhRtYcYAZC8BlkBxKbpNj1cPU4jSdeXLeeRDwEoLXySRidMrUQVz2TrtR8gIe1AelIQWfqYOVPowDqosS10Y2GJjCO');
-    }
+    // Use settings from PublicationService
+    define('APP_ID', '1082088863732549'); // Keep existing app settings
+    define('APP_SECRET', '77368f52ab263907ee1fe3ea72909289');
+    define('PAGE_ID', $facebookSettings['page_id']);
+    define('PAGE_TOKEN', $facebookSettings['token']);
 
     define('GRAPH_VER', 'v22.0');
 
@@ -386,19 +375,20 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
         $i++;
     }
 
-// ─────────── 2. Собираем текст поста с emoji ───────────
+// ─────────── 2. Generate Facebook message using PublicationService ───────────
     $car['name'] = $car_title_name;
-
-    $message = "🔹 {$car['name']} ". parseCurr( $prc) . " €";
-    $message.= "\n\n" . $caption = implode("\n", $caption_lines);
-    $message.= "\n\n" . $phone;
-    // $message.= "\n\n" . parseCurr( $prc) . " " . symb_rplc( $cur);
-    /*$message.= "\n\n" ."👉 Alte modele aici: https://www.sauto.md/ro/cars?tg=fltr&mo=" .
-        urlencode(strtolower($r['mo'])) . "&br=" .
-        urlencode(strtolower($r['br'])) .
-        "&utm_source=social&utm_medium=organic&utm_campaign=new_auto";*/
-
-    $message .= "\n\n". "👉 Alte modele aici: " . "https://www.sauto.md/ro/cars/".str_replace('_', '-', $brand_auto)."-".str_replace('_', '-', $model_auto)."?utm_source=social&utm_medium=organic&utm_campaign=new_auto";
+    
+    // Get fresh car data for message generation
+    $pdo_msg = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg WHERE `id`= :id LIMIT 1');
+    $pdo_msg->execute(['id' => $it_id]);
+    $carDataForMessage = $pdo_msg->fetch(\PDO::FETCH_ASSOC);
+    $carDataForMessage['id'] = $it_id;
+    
+    // Generate message using PublicationService
+    $message = $publicationService->generateFacebookMessage($carDataForMessage, 'in_stock');
+    
+    // Add phone number
+    $message .= "\n\n📞 " . $phone;
 
 // ─────────── 3. Универсальный вызов Graph API ───────────
     function graphCall( $endpoint, array $params = [],  $method = 'POST') {
@@ -500,6 +490,9 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
             $returnIt['status'] = true;
             $returnIt['post_id'] = $post['id'];
             
+            // Log successful publication
+            $publicationService->logPublication($it_id, 'in_stock', 'facebook', true, 'Published to regular cars Facebook page, post_id: ' . $post['id']);
+            
             error_log('Facebook publication successful for car ID: ' . $it_id . ', post_id: ' . $post['id']);
         } catch (PDOException $e) {
             error_log('Facebook publication database error for car ID ' . $it_id . ': ' . $e->getMessage());
@@ -534,6 +527,9 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
         }
     }
     else {
+        // Log failed publication
+        $publicationService->logPublication($it_id, 'in_stock', 'facebook', false, 'Facebook API error: ' . json_encode($post));
+        
         $returnIt['status'] = false;
         $returnIt['message'] = ($post);
         $returnIt['post_id'] = 0;
@@ -668,11 +664,21 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
     $caption_lines[] = "\n <a href='https://t.me/Sauto_B24_bot?start=".$marka_auto."_".$model_auto."_".$price_auto."_".$year_auto."'>👉 Comentariile le citim și răspundem imediat 👈</a>";
 
 
+    // Use PublicationService for regular cars
+    require_once '../../../../App/Services/PublicationService.php';
+    $publicationService = new \App\Services\PublicationService($db, $prefx);
+    
+    // Get Telegram settings for regular cars
+    $telegramSettings = $publicationService->getTelegramSettings('in_stock');
+    if (!$telegramSettings) {
+        echo json_encode(['success' => false, 'message' => 'Telegram settings for regular cars not configured']);
+        exit;
+    }
+
     include_once "CTelegram.php";
 
-    $bot_token = "8169302156:AAEe1j7AASXegfKRdWB-rSiaKY-PSgqkGgo";
-    $bot_token = "7459955785:AAGTMPvUkh2Fktar7ZpNlHBFsq43FH_DPsY"; // sauto
-    $chat_id = '-1002605369940';
+    $bot_token = $telegramSettings['bot_token'];
+    $chat_id = $telegramSettings['chat_id'];
     $Cbot = new Telegram( array('bot_token' => $bot_token, 'chat_id'=> $chat_id ) );
 
     // 1) Собираем массив ссылок или file_id ваших фото (до 18 штук)
@@ -708,9 +714,16 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
     if($res['ok']) {
         $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `telegram_published`=:telegram_published WHERE `id`= :id ');
         $pdo->execute([ 'id' => $it_id, 'telegram_published' => 1 ]);
+        
+        // Log successful publication
+        $publicationService->logPublication($it_id, 'in_stock', 'telegram', true, 'Published to regular cars channel');
+        
         $returnIt['status'] = true;
     }
     else {
+        // Log failed publication
+        $publicationService->logPublication($it_id, 'in_stock', 'telegram', false, $res['description'] ?? 'Unknown error');
+        
         $returnIt['status'] = false;
     }
 }

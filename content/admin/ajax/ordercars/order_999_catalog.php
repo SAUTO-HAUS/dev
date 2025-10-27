@@ -14,9 +14,17 @@ $zY = substr( md5( date('Y') ), 0, 4 );
 $zM = substr( md5( date('m') ), 0, 4 );
 $requestData = $_POST;
 
+// Try to use order cars settings, fallback to default if not configured
+try {
+    $api999Service = Api999Service::createFromSettings('on_order');
+} catch (Exception $e) {
+    // Fallback to default API service if order settings not configured
+    $api999Service = new Api999Service();
+}
+
 if (__post('sub') == 'get_subcategory') {
     if (!empty(__post('category'))) {
-        $subcategories = (new Api999Service())->getSubcategories(__post('category'));
+        $subcategories = $api999Service->getSubcategories(__post('category'));
         foreach ($subcategories['subcategories'] as $cat) {
             $rtrn .= '<option value="'.$cat['id'].'">'.$cat['title'].'</option>';
         }
@@ -24,7 +32,7 @@ if (__post('sub') == 'get_subcategory') {
     }
 } elseif (__post('sub') == 'get_subcategory_offer_types') {
     if (!empty(__post('category')) && !empty(__post('subcategory'))) {
-        $types = (new Api999Service())->getSubcategoryOfferTypes(__post('category'), __post('subcategory'));
+        $types = $api999Service->getSubcategoryOfferTypes(__post('category'), __post('subcategory'));
         foreach ($types['offer_types'] as $cat) {
             $rtrn .= '<option value="'.$cat['id'].'">'.$cat['title'].'</option>';
         }
@@ -32,7 +40,7 @@ if (__post('sub') == 'get_subcategory') {
     }
 } elseif (__post('sub') == 'get_features') {
     if (!empty(__post('category')) && !empty(__post('subcategory')) && !empty(__post('offer_type'))) {
-        $types = (new Api999Service())->getSubcategoryFeatures(__post('category'), __post('subcategory'), __post('offer_type'));
+        $types = $api999Service->getSubcategoryFeatures(__post('category'), __post('subcategory'), __post('offer_type'));
         $feature_id = __post('subcategory');
         ob_start();
         include _ADM_PAGE.'/cars/features_form.php';
@@ -48,7 +56,7 @@ if (__post('sub') == 'get_subcategory') {
     $rtrn = [ 'bx_id' => __post('bx_id'), 'str' => $rtrn ];
 } elseif (__post('sub') == 'get_features_depends') {
     if (!empty(__post('subcategory')) && !empty(__post('dependency_feature_id')) && !empty(__post('parent_option_id'))) {
-        $types = (new Api999Service())->getDependentOptions(__post('subcategory'), __post('dependency_feature_id'), __post('parent_option_id'));
+        $types = $api999Service->getDependentOptions(__post('subcategory'), __post('dependency_feature_id'), __post('parent_option_id'));
         foreach ($types['Options'] as $cat) {
             $rtrn .= '<option value="'.$cat['id'].'">'.$cat['title'].'</option>';
         }

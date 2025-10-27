@@ -250,53 +250,36 @@ elseif ( __post('fn') == 'update_n_a_new' ) {
 
 elseif ( __post('fn')=='sendToFacebookCars' ){
 
-    // /debug_token?input_token={TOKEN}&access_token={APP_ID}|{APP_SECRET}
-    // https://graph.facebook.com/debug_token?input_token=EAA71HdmzXoEBO4MbZCfIlrtMS9X4qUMYzfX0C3okReZAfBnJgxh1WvPLzcup4ZAUOujIDDCTgx13SxcZCPR8WI1pBaRgH9YjQprKcKJptwR62AIaZAkxeLcayDYhdSxKF1XvquStSWMD1smvCLNAj4kzRGZADOlLCWjVdC3SAsYka4zOnj4gmPy3FjGObCeolm1dbhiDHaueztZBZAynwhZCy&access_token=4210158229216897
-
-
-
-    // Determine Facebook settings based on domain
-    // $current_host = $_SERVER['HTTP_HOST'] ?? '';
-    // $is_main_domain = ($current_host === 'sauto.md' || $current_host === 'www.sauto.md');
-    
-
-
-
     $carId = $it_id = __post('id');
-
     $local_id = __post('local_id');
-
-  //  echo $local_id;
-   // exit('2');
 
     $_COOKIE['lang']='ro';
     require (_DEFAULT.'/language.php');
   
+    // Use PublicationService for order cars
+    require_once '../../../../App/Services/PublicationService.php';
+    $publicationService = new \App\Services\PublicationService($db, $prefx);
+    
+    // Get Facebook settings for order cars
+    $facebookSettings = $publicationService->getFacebookSettings('on_order');
+    if (!$facebookSettings) {
+        echo json_encode(['success' => false, 'message' => 'Facebook settings for order cars not configured']);
+        exit;
+    }
+
     // Use PhoneReplacementService for dynamic phone numbers
     require_once '../../../../App/Services/PhoneReplacementService.php';
     $phoneService = new \App\Services\PhoneReplacementService();
     $phone = $phoneService->getGeneralPhone();
     $car_title_name = "";
 
-    if ($local_id == 2) {
-        // Vânzări automobile Piața Pruncu
-
-        // Main domain Facebook settings
-        define('APP_ID', '1082088863732549');
-        define('APP_SECRET', '77368f52ab263907ee1fe3ea72909289');
-        define('PAGE_ID', '482777831588669');
-        define('PAGE_TOKEN', 'EAAPYJ3JWk0UBPhHoFrglY8vNF9Jrm40RdjCvuPkYB0mO226K3yqF5qQrZAUasvkmAidLqK87dTZCCRyVwpMReuR5EKscMKwJjoAFZAiTUwjMSjLdstz15BmWr6QQfJR8YBKZAkBy0ksMHXwdvL8vzZAUpoF5K7osglWrLVQZB91xbtFJnUkw2MZCMhZAB6YRMATSJc46');
-    }
-    else {
-        // Subdomain Facebook settings (fallback to same for now)
-        define('APP_ID', '1082088863732549');
-        define('APP_SECRET', '77368f52ab263907ee1fe3ea72909289');
-        define('PAGE_ID', '725963964220309');
-        define('PAGE_TOKEN', 'EAAPYJ3JWk0UBPsgxBX8CZAarZAbDkllOe5rkXFZAfW29EnDKf7S68aVZC4Y4zvyswEGiLns1JMkp2iNPRYm5ZCoTgUFUyz2k6cfnlGNzHFAWAhRtYcYAZC8BlkBxKbpNj1cPU4jSdeXLeeRDwEoLXySRidMrUQVz2TrtR8gIe1AelIQWfqYOVPowDqosS10Y2GJjCO');
-    }
-
+    // Use Facebook settings from PublicationService
+    define('APP_ID', '1082088863732549'); // Keep same app
+    define('APP_SECRET', '77368f52ab263907ee1fe3ea72909289'); // Keep same app secret
+    define('PAGE_ID', $facebookSettings['page_id']);
+    define('PAGE_TOKEN', $facebookSettings['token']);
     define('GRAPH_VER', 'v22.0');
-
+    
 
     $pdo = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg WHERE `id`= :id LIMIT 1');
     $pdo->execute(['id' => $it_id]);
@@ -386,19 +369,20 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
         $i++;
     }
 
-// ─────────── 2. Собираем текст поста с emoji ───────────
+// ─────────── 2. Generate Facebook message using PublicationService ───────────
     $car['name'] = $car_title_name;
-
-    $message = "🔹 {$car['name']} ". parseCurr( $prc) . " €";
-    $message.= "\n\n" . $caption = implode("\n", $caption_lines);
-    $message.= "\n\n" . $phone;
-    // $message.= "\n\n" . parseCurr( $prc) . " " . symb_rplc( $cur);
-    /*$message.= "\n\n" ."👉 Alte modele aici: https://www.sauto.md/ro/cars?tg=fltr&mo=" .
-        urlencode(strtolower($r['mo'])) . "&br=" .
-        urlencode(strtolower($r['br'])) .
-        "&utm_source=social&utm_medium=organic&utm_campaign=new_auto";*/
-
-    $message .= "\n\n". "👉 Alte modele aici: " . "https://www.sauto.md/ro/cars/".str_replace('_', '-', $brand_auto)."-".str_replace('_', '-', $model_auto)."?utm_source=social&utm_medium=organic&utm_campaign=new_auto";
+    
+    // Get fresh car data for message generation
+    $pdo_msg = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg WHERE `id`= :id LIMIT 1');
+    $pdo_msg->execute(['id' => $it_id]);
+    $carDataForMessage = $pdo_msg->fetch(\PDO::FETCH_ASSOC);
+    $carDataForMessage['id'] = $it_id;
+    
+    // Generate message using PublicationService with order car label
+    $message = $publicationService->generateFacebookMessage($carDataForMessage, 'on_order');
+    
+    // Add phone number
+    $message .= "\n\n📞 " . $phone;
 
 // ─────────── 3. Универсальный вызов Graph API ───────────
     function graphCall( $endpoint, array $params = [],  $method = 'POST') {
@@ -500,7 +484,10 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
             $returnIt['status'] = true;
             $returnIt['post_id'] = $post['id'];
             
-            error_log('Facebook publication successful for car ID: ' . $it_id . ', post_id: ' . $post['id']);
+            // Log successful publication
+            $publicationService->logPublication($it_id, 'on_order', 'facebook', true, 'Published to order cars Facebook page with "ПОД ЗАКАЗ" label');
+            
+            echo json_encode(['success' => true, 'message' => 'Опубликовано в Facebook с меткой "ПОД ЗАКАЗ"', 'post_id' => $post['id']]);
         } catch (PDOException $e) {
             error_log('Facebook publication database error for car ID ' . $it_id . ': ' . $e->getMessage());
             
@@ -534,6 +521,11 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
         }
     }
     else {
+        // Log failed publication
+        $publicationService->logPublication($it_id, 'on_order', 'facebook', false, 'Failed to publish: ' . json_encode($post));
+        
+        echo json_encode(['success' => false, 'message' => 'Ошибка публикации в Facebook: ' . ($post['error']['message'] ?? 'Unknown error')]);
+        
         $returnIt['status'] = false;
         $returnIt['message'] = ($post);
         $returnIt['post_id'] = 0;
@@ -547,7 +539,21 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
     $_COOKIE['lang']='ro';
     require (_DEFAULT.'/language.php');
 
-    $phone = "+(373)69-977-674";
+    // Use PublicationService for order cars
+    require_once '../../../../App/Services/PublicationService.php';
+    $publicationService = new \App\Services\PublicationService($db, $prefx);
+    
+    // Get Telegram settings for order cars
+    $telegramSettings = $publicationService->getTelegramSettings('on_order');
+    if (!$telegramSettings) {
+        echo json_encode(['success' => false, 'message' => 'Telegram settings for order cars not configured']);
+        exit;
+    }
+
+    // Use PhoneReplacementService for dynamic phone numbers
+    require_once '../../../../App/Services/PhoneReplacementService.php';
+    $phoneService = new \App\Services\PhoneReplacementService();
+    $phone = $phoneService->getGeneralPhone();
     $car_title_name = "";
 
     // var_dump( $prefx); gh3sp
@@ -661,18 +667,18 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
     }
 
     //$caption_lines[] = "\n\n" . $phone;
-    // строка с хэштег-комментарием
+    // Add order-specific information
+    $caption_lines[] = '📋 <b>Автомобиль под заказ</b>';
     $caption_lines[] = '📌 Apasă pe hashtag pentru a vedea alte mașini similare';
 
     // $caption_lines[] = "\n 🔽 Comentariile le citim și răspundem imediat";
     $caption_lines[] = "\n <a href='https://t.me/Sauto_B24_bot?start=".$marka_auto."_".$model_auto."_".$price_auto."_".$year_auto."'>👉 Comentariile le citim și răspundem imediat 👈</a>";
 
-
     include_once "order_CTelegram.php";
 
-    $bot_token = "8169302156:AAEe1j7AASXegfKRdWB-rSiaKY-PSgqkGgo";
-    $bot_token = "7459955785:AAGTMPvUkh2Fktar7ZpNlHBFsq43FH_DPsY"; // sauto
-    $chat_id = '-1002605369940';
+    // Use settings from PublicationService for order cars
+    $bot_token = $telegramSettings['bot_token'];
+    $chat_id = $telegramSettings['chat_id'];
     $Cbot = new Telegram( array('bot_token' => $bot_token, 'chat_id'=> $chat_id ) );
 
     // 1) Собираем массив ссылок или file_id ваших фото (до 18 штук)
@@ -686,32 +692,21 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
     $res = json_decode( $res , true);
 
     if($res['ok']) {
-        /*
-        $captionkeyboard = html_entity_decode('&nbsp;');
-
-        $keyboard = [
-            'inline_keyboard' => [
-                [
-                    ['text' => '🔼 Comentariile le citim și răspundem imediat', 'url' => "https://t.me/Sauto_B24_bot?start=" . $marka_auto . "_" . $model_auto . "_" . $price_auto . "_" . $year_auto . ""]
-                ]
-            ]
-        ];
-        $res2 = $Cbot->send_caption_with_button("\xE3\x85\xA4", $keyboard);
-        */
+        // Mark as published in database
+        $stmt = $db->prepare("UPDATE {$prefx}_car_ctlg SET telegram_published = 1 WHERE id = ?");
+        $stmt->execute([$it_id]);
+        
+        // Log successful publication
+        $publicationService->logPublication($it_id, 'on_order', 'telegram', true, 'Published to order cars channel');
+        
+        echo json_encode(['success' => true, 'message' => 'Опубликовано в Telegram канале для заказов']);
+    } else {
+        // Log failed publication
+        $publicationService->logPublication($it_id, 'on_order', 'telegram', false, $res['description'] ?? 'Unknown error');
+        
+        echo json_encode(['success' => false, 'message' => 'Ошибка публикации: ' . ($res['description'] ?? 'Unknown error')]);
     }
 
-    // var_dump( $media);
-    // var_dump( $caption);
-    // var_dump( $res);
-
-    $returnIt = [];
-    if($res['ok']) {
-        $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `telegram_published`=:telegram_published WHERE `id`= :id ');
-        $pdo->execute([ 'id' => $it_id, 'telegram_published' => 1 ]);
-        $returnIt['status'] = true;
-    }
-    else {
-        $returnIt['status'] = false;
-    }
+    // End of Telegram publication for order cars
 }
 

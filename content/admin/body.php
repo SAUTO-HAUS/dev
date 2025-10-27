@@ -84,7 +84,7 @@
 			// Gordon (superadmin) always has full access
 			if (isset($user_role) && $user_role === 'gordon') {
 				$has_access = true;
-			} elseif (isset($user_role) && in_array($user_role, ['admin', 'publisher', 'publisher_limited']) && isset($t_mp[3]) && in_array($t_mp[3], ['docs', 'cars', 'ordercars', 'tyres'])) {
+			} elseif (isset($user_role) && in_array($user_role, ['admin', 'publisher', 'publisher_limited']) && isset($t_mp[3]) && in_array($t_mp[3], ['docs', 'cars', 'ordercars', 'tyres', 'sett'])) {
 				// Direct access for admin and publisher roles to their permitted modules
 				// Check appropriate permission based on action
 				$required_permission = 'read';

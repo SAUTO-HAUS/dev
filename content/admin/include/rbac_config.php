@@ -1,43 +1,4 @@
 <?php
-/**
- * RBAC Configuration Update
- * This file updates the existing admin system to support the new role-based access control
- */
-
-// New role-based menu configuration
-$rbac_admin_menu = [
-    'gordon' => [
-        'cars' => ['add', 'ctlg'],
-        'ordercars' => ['add', 'ctlg'],
-        'tyres' => ['ctlg'],
-        'seo' => ['ctlg'],
-        'mail' => ['message', 'order', 'favorites', 'archive'],
-        'docs' => ['create', 'ctlg'],
-        'stock' => ['ctlg', 'extern'],
-        'sett' => ['info', 'adm_usr', 'roles', 'phone_config']
-    ],
-    'admin' => [
-        'cars' => ['add', 'ctlg'],
-        'ordercars' => ['add', 'ctlg'],
-        'tyres' => ['ctlg'],
-        'seo' => ['ctlg'],
-        'mail' => ['message', 'order', 'favorites', 'archive'],
-        'docs' => ['create', 'ctlg'],
-        'sett' => ['info']
-    ],
-    'publisher' => [
-        'cars' => ['add', 'ctlg'],
-        'ordercars' => ['add', 'ctlg'],
-        'docs' => ['create', 'ctlg']
-        // Can view cars catalog for sales purposes but only add new cars
-    ],
-    'publisher_limited' => [
-        'cars' => ['add', 'ctlg'],
-        'ordercars' => ['add', 'ctlg'],
-        'docs' => ['create', 'ctlg']
-        // Can view cars catalog for sales purposes but only add new cars + branch limited access
-    ]
-];
 
 // Role permissions mapping - Updated to match business requirements
 $rbac_permissions = [
@@ -55,7 +16,7 @@ $rbac_permissions = [
         'mail' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
         'stock' => ['read' => true],
-        'settings' => ['read' => true, 'update' => true]
+        'sett' => ['read' => true, 'update' => true]
     ],
     // Admin (Администратор) - Полный доступ ко всем документам и почти полный доступ к остальному, кроме управления пользователями
     'admin' => [
@@ -69,7 +30,7 @@ $rbac_permissions = [
         'seo' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'mail' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
-        'settings' => ['read' => true, 'update' => false]
+        'sett' => ['read' => true, 'update' => false]
     ],
     // Publisher (Публикатор) - Can view and add cars for sales purposes, full docs access to ALL branches
     'publisher' => [
@@ -83,7 +44,7 @@ $rbac_permissions = [
         'seo' => ['read' => false],
         'mail' => ['read' => false],
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
-        'settings' => ['read' => false]
+        'sett' => ['read' => true]
     ],
     // Publisher-Limited (Публикатор Филиал) - Can view and add cars for sales purposes, docs access limited to own branch
     'publisher_limited' => [
@@ -96,7 +57,7 @@ $rbac_permissions = [
         'seo' => ['read' => false],
         'mail' => ['read' => false],
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
-        'settings' => ['read' => false]
+        'sett' => ['read' => true]
     ]
 ];
 
@@ -194,8 +155,8 @@ $rbac_admin_menu = [
         'seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['add', 'ctlg'],
-        'stock' => ['ctlg'],
-        'sett' => ['info', 'adm_usr', 'roles', 'phone_config']
+        'stock' => ['ctlg', 'extern'],
+        'sett' => ['info', 'adm_usr', 'roles', 'phone_config', 'publication_settings']
     ],
     'admin' => [
         'cars' => ['add', 'ctlg'],
@@ -204,17 +165,19 @@ $rbac_admin_menu = [
         'seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['add', 'ctlg'],
-        'sett' => ['info']
+        'sett' => ['info', 'publication_settings']
     ],
     'publisher' => [
         'cars' => ['add', 'ctlg'],
         'ordercars' => ['add', 'ctlg'], 
-        'docs' => ['add', 'ctlg']
+        'docs' => ['add', 'ctlg'],
+        'sett' => ['publication_settings']
     ],
     'publisher_limited' => [
         'cars' => ['add', 'ctlg'],
         'ordercars' => ['add', 'ctlg'], 
-        'docs' => ['add', 'ctlg']
+        'docs' => ['add', 'ctlg'],
+        'sett' => ['publication_settings']
     ]
 ];
 
@@ -228,7 +191,7 @@ $rbac_internal_actions = [
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['add', 'create', 'detail', 'ctlg'],
         'stock' => ['ctlg'],
-        'sett' => ['info', 'adm_usr', 'roles', 'phone_config']
+        'sett' => ['info', 'adm_usr', 'roles', 'phone_config', 'publication_settings']
     ],
     'admin' => [
         'cars' => ['add', 'create', 'detail', 'ctlg'],
@@ -237,17 +200,19 @@ $rbac_internal_actions = [
         'seo' => ['add', 'create', 'detail', 'ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['add', 'create', 'detail', 'ctlg'],
-        'sett' => ['info']
+        'sett' => ['info', 'publication_settings']
     ],
     'publisher' => [
         'cars' => ['add', 'create', 'detail', 'ctlg'],
         'ordercars' => ['add', 'create', 'detail', 'ctlg'],
-        'docs' => ['add', 'create', 'detail', 'ctlg']
+        'docs' => ['add', 'create', 'detail', 'ctlg'],
+        'sett' => ['publication_settings']
     ],
     'publisher_limited' => [
         'cars' => ['add', 'create', 'detail', 'ctlg'],
         'ordercars' => ['add', 'create', 'detail', 'ctlg'],
-        'docs' => ['add', 'create', 'detail', 'ctlg']
+        'docs' => ['add', 'create', 'detail', 'ctlg'],
+        'sett' => ['publication_settings']
     ]
 ];
 

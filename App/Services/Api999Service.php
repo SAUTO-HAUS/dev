@@ -26,16 +26,38 @@ class Api999Service
     private $prefix;
     private $api_key;
 
-    public function __construct(int $key = 1)
+    public function __construct($key = 1, $customApiKey = null)
     {
         $this->db = Container::get('db');
         $this->prefix = Container::get('prefix');
 
-        if (isset(self::API_KEY[$key])) {
+        if ($customApiKey) {
+            // Use custom API key from settings
+            $this->api_key = $customApiKey;
+        } elseif (is_int($key) && isset(self::API_KEY[$key])) {
+            // Use predefined API key
             $this->api_key = self::API_KEY[$key]['key'];
         } else {
             throw new \InvalidArgumentException("Invalid key provided: {$key}");
         }
+    }
+
+    /**
+     * Create instance with settings from PublicationService
+     * 
+     * @param string $catalogType 'in_stock' or 'on_order'
+     * @return Api999Service
+     */
+    public static function createFromSettings($catalogType)
+    {
+        $publicationService = new PublicationService(Container::get('db'), Container::get('prefix'));
+        $settings = $publicationService->get999mdSettings($catalogType);
+        
+        if (!$settings) {
+            throw new \Exception("999.md settings not configured for catalog type: {$catalogType}");
+        }
+        
+        return new self(null, $settings['token']);
     }
 
     /**
