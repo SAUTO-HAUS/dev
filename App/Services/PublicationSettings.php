@@ -177,6 +177,20 @@ while ($row = $stmt->fetch()) {
     $current_settings[$row['name']] = $row['value'];
 }
 
+// Debug - show what we found
+if (empty($current_settings)) {
+    $rtrn .= '<div style="background: #ffebee; border: 1px solid #f44336; padding: 10px; margin: 10px 0; border-radius: 5px;">
+        <strong>Debug:</strong> No settings found in database table: ' . $prefx . '_settings
+    </div>';
+} else {
+    $rtrn .= '<div style="background: #e8f5e8; border: 1px solid #4caf50; padding: 10px; margin: 10px 0; border-radius: 5px;">
+        <strong>Debug:</strong> Found ' . count($current_settings) . ' settings<br>
+        regular_999md_account: "' . ($current_settings['regular_999md_account'] ?? 'NOT_FOUND') . '"<br>
+        order_999md_account: "' . ($current_settings['order_999md_account'] ?? 'NOT_FOUND') . '"<br>
+        regular_telegram_bot_token: "' . substr($current_settings['regular_telegram_bot_token'] ?? 'NOT_FOUND', 0, 20) . '..."
+    </div>';
+}
+
 $rtrn .= '
 <div class="publication-settings">
     <h2>' . ($lng[$_COOKIE['lang']]['w']['publication_settings_title'] ?? 'Настройки публикации автомобилей') . '</h2>
