@@ -5,17 +5,14 @@ use App\Db\Car;
 use App\Helper\DefaultText;
 use App\Services\Api999Service;
 
-/*error_reporting(E_ALL);
+error_reporting(E_ALL);
 ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);*/
+ini_set('display_startup_errors', 1);
 
 $rtrn = '';
 $zY = substr( md5( date('Y') ), 0, 4 );
 $zM = substr( md5( date('m') ), 0, 4 );
 $requestData = $_POST;
-
-// Debug logging
-error_log('999_catalog.php: Request started with sub=' . (__post('sub') ?? 'null') . ', category=' . (__post('category') ?? 'null') . ', subcategory=' . (__post('subcategory') ?? 'null'));
 
 // Use simple Api999Service like in old working code
 $api999Service = new Api999Service();
