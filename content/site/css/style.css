@@ -2576,7 +2576,48 @@ footer .columns-wrapper .column-container.col-logo-container {
       
       main .gr > .cnt > .it > .txt > .specs > .ar > .val {
           font-size: 1.1rem !important; 
-      }    
+      }
+      
+      /* Mobile details button styles */
+      .mobile-details-with-flag {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          min-height: 30px;
+      }
+      
+      .mobile-details-no-flag {
+          display: flex;
+          justify-content: center;
+          margin-top: 15px;
+          padding: 0 1rem;
+      }
+      
+      .mobile-details-button {
+          background: #007bff;
+          color: white;
+          padding: 0 16px;
+          border-radius: 6px;
+          font-size: 0.9rem;
+          font-weight: 600;
+          text-align: center;
+          border: none;
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+          height: 30px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+      }
+      
+      /* Ensure flag images align properly with button */
+      .mobile-details-with-flag img[src*="flags/"] {
+          vertical-align: middle;
+      }
+      
+      .mobile-details-button:hover {
+          background: #0056b3;
+      }
      
   }
   

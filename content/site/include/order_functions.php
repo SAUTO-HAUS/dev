@@ -633,12 +633,27 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 								<span class="val">'.$country_name.'</span>
 							</p>';
 							
-							// Add flag image below the country name without dots
+							// Flag container - will include button for mobile
 							if (!empty($country_code)) {
-								$ar['txt'] .= '
-							<div style="text-align: right; margin-right:-3px; margin-top: -8px; padding: 0; border: none;">
-								<img src="/media/images/flags/'.$country_code.'.svg" alt="'.$country_name.' flag" style="width: 36px; height: 30px; border: none; padding: 0;">
-							</div>';
+								if ($is_mobile) {
+									// Mobile: Add button text for language
+									$details_text = 'Vezi detalii';
+									if (isset($_COOKIE['lang'])) {
+										if ($_COOKIE['lang'] == 'ru') {
+											$details_text = 'Подробности';
+										} elseif ($_COOKIE['lang'] == 'en') {
+											$details_text = 'View details';
+										}
+									}
+									$ar['txt'] .= '
+							<div class="mobile-details-with-flag" style="display: flex; justify-content: space-between; align-items: center; margin-top: -8px; padding: 0; border: none;">
+								<div class="mobile-details-button">'.$details_text.'</div>';
+								} else {
+									$ar['txt'] .= '
+							<div style="text-align: right; margin-right:-3px; margin-top: -8px; padding: 0; border: none;">';
+								}
+								$ar['txt'] .= '<img src="/media/images/flags/'.$country_code.'.svg" alt="'.$country_name.' flag" style="width: 36px; height: 30px; border: none; padding: 0;">';
+								$ar['txt'] .= '</div>';
 							}
 							
 							// Set smaller margin when import country exists
@@ -651,7 +666,26 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 					
 				$ar['txt'] .= '
 				</div>
-			</div>
+			</div>';
+			
+			// Add mobile "Vezi detalii" button for cars without flag
+			if ($is_mobile && empty($r['import_country_id'])) {
+				$details_text = 'Vezi detalii';
+				if (isset($_COOKIE['lang'])) {
+					if ($_COOKIE['lang'] == 'ru') {
+						$details_text = 'Подробности';
+					} elseif ($_COOKIE['lang'] == 'en') {
+						$details_text = 'View details';
+					}
+				}
+				
+				// Without flag - button centered at bottom
+				$ar['txt'] .= '<div class="mobile-details-no-flag">';
+				$ar['txt'] .= '<div class="mobile-details-button">'.$details_text.'</div>';
+				$ar['txt'] .= '</div>';
+			}
+			
+			$ar['txt'] .= '
 		</a>';
 		
 		$i++;
