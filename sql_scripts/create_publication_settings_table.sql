@@ -1,20 +1,27 @@
--- Insert publication settings into existing gh3sp_settings table
+-- Insert publication settings into existing gh3sp_settings table for PRODUCTION
 -- Table already exists with structure: id, name, value
 
 INSERT INTO `gh3sp_settings` (`name`, `value`) VALUES
-('regular_telegram_bot_token', '1398519511:AAHGNlpbTutAS4QAnT7Z-eCf7_z80hJ4N2g'),
-('regular_telegram_chat_id', '564183869'),
+-- Telegram settings (using working values from old code)
+('regular_telegram_bot_token', '7459955785:AAGTMPvUkh2Fktar7ZpNlHBFsq43FH_DPsY'),
+('regular_telegram_chat_id', '-1002605369940'),
+('order_telegram_bot_token', '7459955785:AAGTMPvUkh2Fktar7ZpNlHBFsq43FH_DPsY'),
+('order_telegram_chat_id', '-1002605369940'),
+
+-- Facebook settings
 ('regular_facebook_page_id', '482777831588669'),
-('auto_publish_regular', '1'),
-('auto_publish_order', '0'),
-('order_telegram_bot_token', '1398519511:AAHGNlpbTutAS4QAnT7Z-eCf7_z80hJ4N2g'),
-('order_telegram_chat_id', '564183869'),
-('order_facebook_page_id', '482777831588669'),
+('regular_facebook_token', 'EAAPYJ3JWk0UBPhHoFrglY8vNF9Jrm40RdjCvuPkYB0mO226K3yqF5qQrZAUasvkmAidLqK87dTZCCRyVwpMReuR5EKscMKwJjoAFZAiTUwjMSjLdstz15BmWr6QQfJR8YBKZAkBy0ksMHXwdvL8vzZAUpoF5K7osglWrLVQZB91xbtFJnUkw2MZCMhZAB6YRMATSJc46'),
+('order_facebook_page_id', '725963964220309'),
+('order_facebook_token', 'EAAPYJ3JWk0UBPsgxBX8CZAarZAbDkllOe5rkXFZAfW29EnDKf7S68aVZC4Y4zvyswEGiLns1JMkp2iNPRYm5ZCoTgUFUyz2k6cfnlGNzHFAWAhRtYcYAZC8BlkBxKbpNj1cPU4jSdeXLeeRDwEoLXySRidMrUQVz2TrtR8gIe1AelIQWfqYOVPowDqosS10Y2GJjCO'),
+
+-- 999.md API settings
 ('regular_999md_account', 'SAUTO-HAUS'),
 ('regular_999md_token', 'I_SKyGEvvG5Rfm7lRZeiOTwk7r_F'),
-('order_999md_account', 'Sauto-auto-comerciale'),
-('order_999md_token', 'EeKkPqGFjEhJZIK3S5KWh59w8jNG'),
-('regular_facebook_token', ''),
-('order_facebook_token', '')
+('order_999md_account', 'Sauto-stock-extern'),
+('order_999md_token', 'jMEsHjO0FhoRZm0KSsONLpkGLMIK'),
+
+-- Auto-publication settings
+('auto_publish_regular', '1'),
+('auto_publish_order', '1')
 AS new_values
 ON DUPLICATE KEY UPDATE value = new_values.value;
