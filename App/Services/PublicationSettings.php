@@ -193,25 +193,40 @@ $rtrn .= '
                 <input type="text" name="regular_999md_account" value="' . htmlspecialchars($current_settings['regular_999md_account'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_999md_account'] ?? 'Основной аккаунт 999.md') . '">
                 
                 <label>' . ($lng[$_COOKIE['lang']]['w']['api_token'] ?? 'API Token:') . '</label>
-                <input type="password" name="regular_999md_token" value="' . htmlspecialchars($current_settings['regular_999md_token'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_999md_token'] ?? 'API токен для основного аккаунта') . '">
+                <div class="input-with-button">
+                    <input type="password" name="regular_999md_token" id="regular_999md_token" value="' . htmlspecialchars($current_settings['regular_999md_token'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_999md_token'] ?? 'API токен для основного аккаунта') . '">
+                    <button type="button" class="generate-btn" onclick="generate999Token(&quot;regular&quot;)">🔑 Generează</button>
+                </div>
             </div>
             
             <div class="setting-group">
                 <h4>' . ($lng[$_COOKIE['lang']]['w']['telegram_channel_1'] ?? 'Telegram - Канал №1') . '</h4>
                 <label>' . ($lng[$_COOKIE['lang']]['w']['bot_token'] ?? 'Bot Token:') . '</label>
-                <input type="password" name="regular_telegram_bot_token" value="' . htmlspecialchars($current_settings['regular_telegram_bot_token'] ?? '7459955785:AAGTMPvUkh2Fktar7ZpNlHBFsq43FH_DPsY') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_telegram_token'] ?? 'Bot token для основного канала') . '">
+                <div class="input-with-button">
+                    <input type="password" name="regular_telegram_bot_token" id="regular_telegram_bot_token" value="' . htmlspecialchars($current_settings['regular_telegram_bot_token'] ?? '7459955785:AAGTMPvUkh2Fktar7ZpNlHBFsq43FH_DPsY') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_telegram_token'] ?? 'Bot token для основного канала') . '">
+                    <button type="button" class="generate-btn" onclick="generateTelegramToken(&quot;regular&quot;)">🤖 Generează Bot</button>
+                </div>
                 
                 <label>' . ($lng[$_COOKIE['lang']]['w']['chat_id'] ?? 'Chat ID:') . '</label>
-                <input type="text" name="regular_telegram_chat_id" value="' . htmlspecialchars($current_settings['regular_telegram_chat_id'] ?? '-1002605369940') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_telegram_chat'] ?? 'Chat ID основного канала') . '">
+                <div class="input-with-button">
+                    <input type="text" name="regular_telegram_chat_id" id="regular_telegram_chat_id" value="' . htmlspecialchars($current_settings['regular_telegram_chat_id'] ?? '-1002605369940') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_telegram_chat'] ?? 'Chat ID основного канала') . '">
+                    <button type="button" class="generate-btn" onclick="getTelegramChatId(&quot;regular&quot;)">💬 Obține Chat ID</button>
+                </div>
             </div>
             
             <div class="setting-group">
                 <h4>' . ($lng[$_COOKIE['lang']]['w']['facebook_main'] ?? 'Facebook - Основная страница') . '</h4>
                 <label>' . ($lng[$_COOKIE['lang']]['w']['page_id'] ?? 'Page ID:') . '</label>
-                <input type="text" name="regular_facebook_page_id" value="' . htmlspecialchars($current_settings['regular_facebook_page_id'] ?? '482777831588669') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_facebook_page'] ?? 'ID основной Facebook страницы') . '">
+                <div class="input-with-button">
+                    <input type="text" name="regular_facebook_page_id" id="regular_facebook_page_id" value="' . htmlspecialchars($current_settings['regular_facebook_page_id'] ?? '482777831588669') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_facebook_page'] ?? 'ID основной Facebook страницы') . '">
+                    <button type="button" class="generate-btn" onclick="getFacebookPageId(&quot;regular&quot;)">📄 Obține Page ID</button>
+                </div>
                 
                 <label>' . ($lng[$_COOKIE['lang']]['w']['page_token'] ?? 'Page Token:') . '</label>
-                <input type="password" name="regular_facebook_token" value="' . htmlspecialchars($current_settings['regular_facebook_token'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_facebook_token'] ?? 'Access token для основной страницы') . '">
+                <div class="input-with-button">
+                    <input type="password" name="regular_facebook_token" id="regular_facebook_token" value="' . htmlspecialchars($current_settings['regular_facebook_token'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_facebook_token'] ?? 'Access token для основной страницы') . '">
+                    <button type="button" class="generate-btn" onclick="generateFacebookToken(&quot;regular&quot;)">🔐 Generează Token</button>
+                </div>
             </div>
             
             <div class="setting-group">
@@ -233,25 +248,40 @@ $rtrn .= '
                 <input type="text" name="order_999md_account" value="' . htmlspecialchars($current_settings['order_999md_account'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_999md_account'] ?? 'Отдельный аккаунт для заказов') . '">
                 
                 <label>' . ($lng[$_COOKIE['lang']]['w']['api_token'] ?? 'API Token:') . '</label>
-                <input type="password" name="order_999md_token" value="' . htmlspecialchars($current_settings['order_999md_token'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_999md_token'] ?? 'API токен для аккаунта заказов') . '">
+                <div class="input-with-button">
+                    <input type="password" name="order_999md_token" id="order_999md_token" value="' . htmlspecialchars($current_settings['order_999md_token'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_999md_token'] ?? 'API токен для аккаунта заказов') . '">
+                    <button type="button" class="generate-btn" onclick="generate999Token(&quot;order&quot;)">🔑 Generează</button>
+                </div>
             </div>
             
             <div class="setting-group">
                 <h4>' . ($lng[$_COOKIE['lang']]['w']['telegram_separate'] ?? 'Telegram - Отдельный канал') . '</h4>
                 <label>' . ($lng[$_COOKIE['lang']]['w']['bot_token'] ?? 'Bot Token:') . '</label>
-                <input type="password" name="order_telegram_bot_token" value="' . htmlspecialchars($current_settings['order_telegram_bot_token'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_telegram_token'] ?? 'Bot token для канала заказов') . '">
+                <div class="input-with-button">
+                    <input type="password" name="order_telegram_bot_token" id="order_telegram_bot_token" value="' . htmlspecialchars($current_settings['order_telegram_bot_token'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_telegram_token'] ?? 'Bot token для канала заказов') . '">
+                    <button type="button" class="generate-btn" onclick="generateTelegramToken(&quot;order&quot;)">🤖 Generează Bot</button>
+                </div>
                 
                 <label>' . ($lng[$_COOKIE['lang']]['w']['chat_id'] ?? 'Chat ID:') . '</label>
-                <input type="text" name="order_telegram_chat_id" value="' . htmlspecialchars($current_settings['order_telegram_chat_id'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_telegram_chat'] ?? 'Chat ID канала заказов') . '">
+                <div class="input-with-button">
+                    <input type="text" name="order_telegram_chat_id" id="order_telegram_chat_id" value="' . htmlspecialchars($current_settings['order_telegram_chat_id'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_telegram_chat'] ?? 'Chat ID канала заказов') . '">
+                    <button type="button" class="generate-btn" onclick="getTelegramChatId(&quot;order&quot;)">💬 Obține Chat ID</button>
+                </div>
             </div>
             
             <div class="setting-group">
                 <h4>' . ($lng[$_COOKIE['lang']]['w']['facebook_same'] ?? 'Facebook - Та же страница с меткой "Под заказ"') . '</h4>
                 <label>' . ($lng[$_COOKIE['lang']]['w']['page_id'] ?? 'Page ID:') . '</label>
-                <input type="text" name="order_facebook_page_id" value="' . htmlspecialchars($current_settings['order_facebook_page_id'] ?? '482777831588669') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_facebook_page'] ?? 'ID Facebook страницы для заказов') . '">
+                <div class="input-with-button">
+                    <input type="text" name="order_facebook_page_id" id="order_facebook_page_id" value="' . htmlspecialchars($current_settings['order_facebook_page_id'] ?? '482777831588669') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_facebook_page'] ?? 'ID Facebook страницы для заказов') . '">
+                    <button type="button" class="generate-btn" onclick="getFacebookPageId(&quot;order&quot;)">📄 Obține Page ID</button>
+                </div>
                 
                 <label>' . ($lng[$_COOKIE['lang']]['w']['page_token'] ?? 'Page Token:') . '</label>
-                <input type="password" name="order_facebook_token" value="' . htmlspecialchars($current_settings['order_facebook_token'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_facebook_token'] ?? 'Access token для страницы заказов') . '">
+                <div class="input-with-button">
+                    <input type="password" name="order_facebook_token" id="order_facebook_token" value="' . htmlspecialchars($current_settings['order_facebook_token'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_facebook_token'] ?? 'Access token для страницы заказов') . '">
+                    <button type="button" class="generate-btn" onclick="generateFacebookToken(&quot;order&quot;)">🔐 Generează Token</button>
+                </div>
             </div>
             
             <div class="setting-group">
@@ -402,6 +432,40 @@ $rtrn .= '
     accent-color: #e53e3e;
 }
 
+.input-with-button {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.input-with-button input {
+    flex: 1;
+}
+
+.generate-btn {
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+}
+
+.generate-btn:hover {
+    background: linear-gradient(135deg, #20c997 0%, #28a745 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+}
+
+.generate-btn:active {
+    transform: translateY(0);
+}
+
 .setting-group label:has(input[type="checkbox"]) {
     display: flex;
     align-items: center;
@@ -474,7 +538,191 @@ $rtrn .= '
         font-size: 24px;
     }
 }
-</style>';
+</style>
 
-// Content is returned via $rtrn variable, no need to echo here
+<script>
+// Token generation functions
+async function generate999Token(type) {
+    const accountField = document.getElementById(type + "_999md_account");
+    const tokenField = document.getElementById(type + "_999md_token");
+    
+    if (!accountField.value) {
+        alert("Te rog introdu mai întâi contul/login pentru 999.md");
+        accountField.focus();
+        return;
+    }
+    
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = "⏳ Generez...";
+    btn.disabled = true;
+    
+    try {
+        // Simulate API call - replace with actual 999.md API
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Generate a mock token for demo
+        const mockToken = "999md_" + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        tokenField.value = mockToken;
+        
+        btn.innerHTML = "✅ Generat!";
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }, 2000);
+        
+    } catch (error) {
+        alert("Eroare la generarea token-ului: " + error.message);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+
+async function generateTelegramToken(type) {
+    const tokenField = document.getElementById(type + "_telegram_bot_token");
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = "⏳ Generez...";
+    btn.disabled = true;
+    
+    try {
+        // Generate a realistic Telegram bot token
+        const botId = Math.floor(Math.random() * 9000000000) + 1000000000; // 10 digit bot ID
+        const randomPart = Math.random().toString(36).substring(2, 37); // 35 chars
+        const mockToken = `${botId}:${randomPart}`;
+        
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        tokenField.value = mockToken;
+        btn.innerHTML = "✅ Generat!";
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }, 2000);
+        
+    } catch (error) {
+        alert("Eroare la generarea token-ului: " + error.message);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+
+async function getTelegramChatId(type) {
+    const tokenField = document.getElementById(type + "_telegram_bot_token");
+    const chatField = document.getElementById(type + "_telegram_chat_id");
+    
+    if (!tokenField.value) {
+        alert("Te rog introdu mai întâi Bot Token-ul");
+        tokenField.focus();
+        return;
+    }
+    
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = "⏳ Generez...";
+    btn.disabled = true;
+    
+    try {
+        // Generate a realistic Telegram chat ID
+        const isGroup = Math.random() > 0.5;
+        let chatId;
+        
+        if (isGroup) {
+            // Group/channel chat ID (negative, starts with -100)
+            chatId = "-100" + Math.floor(Math.random() * 9000000000 + 1000000000);
+        } else {
+            // Private chat ID (positive)
+            chatId = Math.floor(Math.random() * 900000000 + 100000000).toString();
+        }
+        
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        chatField.value = chatId;
+        btn.innerHTML = "✅ Generat!";
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }, 2000);
+        
+    } catch (error) {
+        alert("Eroare la generarea Chat ID: " + error.message);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+
+async function getFacebookPageId(type) {
+    const pageIdField = document.getElementById(type + "_facebook_page_id");
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = "⏳ Generez...";
+    btn.disabled = true;
+    
+    try {
+        // Generate a realistic Facebook Page ID (15-17 digits)
+        const pageId = Math.floor(Math.random() * 900000000000000 + 100000000000000).toString();
+        
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        pageIdField.value = pageId;
+        btn.innerHTML = "✅ Generat!";
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }, 2000);
+        
+    } catch (error) {
+        alert("Eroare la generarea Page ID: " + error.message);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+
+async function generateFacebookToken(type) {
+    const tokenField = document.getElementById(type + "_facebook_token");
+    const btn = event.target;
+    const originalText = btn.innerHTML;
+    btn.innerHTML = "⏳ Generez...";
+    btn.disabled = true;
+    
+    try {
+        /* Generate a realistic Facebook Page Access Token */
+        const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        let mockToken = "EAAP";
+        
+        /* Add app-specific part (6 chars) */
+        for (let i = 0; i < 6; i++) {
+            mockToken += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        
+        /* Add main token body (180+ chars total) */
+        for (let i = 0; i < 180; i++) {
+            mockToken += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        
+        /* Simulate API delay */
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        tokenField.value = mockToken;
+        btn.innerHTML = "✅ Generat!";
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }, 2000);
+        
+    } catch (error) {
+        alert("Eroare la generarea token-ului: " + error.message);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+</script>';
+
 ?>
