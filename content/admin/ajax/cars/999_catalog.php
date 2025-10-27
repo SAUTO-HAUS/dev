@@ -17,16 +17,8 @@ $requestData = $_POST;
 // Debug logging
 error_log('999_catalog.php: Request started with sub=' . (__post('sub') ?? 'null') . ', category=' . (__post('category') ?? 'null') . ', subcategory=' . (__post('subcategory') ?? 'null'));
 
-// Try to use regular cars settings, fallback to default if not configured
-try {
-    $api999Service = Api999Service::createFromSettings('in_stock');
-    error_log('999_catalog.php: Successfully created Api999Service from settings');
-} catch (Exception $e) {
-    // Log the error and fallback to default API service
-    error_log('999_catalog.php: Failed to create Api999Service from settings: ' . $e->getMessage());
-    $api999Service = new Api999Service();
-    error_log('999_catalog.php: Created fallback Api999Service');
-}
+// Use simple Api999Service like in old working code
+$api999Service = new Api999Service();
 
 if (__post('sub') == 'get_subcategory') {
     if (!empty(__post('category'))) {
@@ -38,18 +30,11 @@ if (__post('sub') == 'get_subcategory') {
     }
 } elseif (__post('sub') == 'get_subcategory_offer_types') {
     if (!empty(__post('category')) && !empty(__post('subcategory'))) {
-        try {
-            $types = $api999Service->getSubcategoryOfferTypes(__post('category'), __post('subcategory'));
-            if (!empty($types['offer_types'])) {
-                foreach ($types['offer_types'] as $cat) {
-                    $rtrn .= '<option value="'.$cat['id'].'">'.$cat['title'].'</option>';
-                }
-            }
-            $rtrn = [ 'bx_id'=>__post('bx_id'), 'str'=>$rtrn ];
-        } catch (Exception $e) {
-            error_log('999_catalog.php get_subcategory_offer_types error: ' . $e->getMessage());
-            $rtrn = [ 'bx_id'=>__post('bx_id'), 'str'=>'<option value="">Error loading offer types</option>' ];
+        $types = $api999Service->getSubcategoryOfferTypes(__post('category'), __post('subcategory'));
+        foreach ($types['offer_types'] as $cat) {
+            $rtrn .= '<option value="'.$cat['id'].'">'.$cat['title'].'</option>';
         }
+        $rtrn = [ 'bx_id'=>__post('bx_id'), 'str'=>$rtrn ];
     }
 } elseif (__post('sub') == 'get_features') {
     if (!empty(__post('category')) && !empty(__post('subcategory')) && !empty(__post('offer_type'))) {
