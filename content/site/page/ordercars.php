@@ -643,6 +643,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                         <p class="order-info-desc">'.$lng['w']['order_info_security_desc1'].'</p>
                                         <p class="order-info-desc">'.$lng['w']['order_info_security_desc2'].'</p>
                                         <p class="order-info-desc">'.$lng['w']['order_info_security_desc3'].'</p>
+                                        <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc3'].'</p>
                                     </div>
                                 </div>
                                 
@@ -655,7 +656,6 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                     <div class="order-info-content">
                                         <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc1'].'</p>
                                         <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc2'].'</p>
-                                        <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc3'].'</p>
                                         <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc4'].'</p>
                                     </div>
                                 </div>
@@ -1190,6 +1190,7 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                                 <p class="order-info-desc">'.$lng['w']['order_info_security_desc1'].'</p>
                                 <p class="order-info-desc">'.$lng['w']['order_info_security_desc2'].'</p>
                                 <p class="order-info-desc">'.$lng['w']['order_info_security_desc3'].'</p>
+                                <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc3'].'</p>
                             </div>
                         </div>
                         
@@ -1202,7 +1203,6 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                             <div class="order-info-content">
                                 <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc1'].'</p>
                                 <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc2'].'</p>
-                                <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc3'].'</p>
                                 <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc4'].'</p>
                             </div>
                         </div>
