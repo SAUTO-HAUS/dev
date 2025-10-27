@@ -171,13 +171,13 @@ $rbac_admin_menu = [
         'cars' => ['add', 'ctlg'],
         'ordercars' => ['add', 'ctlg'], 
         'docs' => ['add', 'ctlg'],
-        'sett' => []
+        'sett' => ['info']
     ],
     'publisher_limited' => [
         'cars' => ['add', 'ctlg'],
         'ordercars' => ['add', 'ctlg'], 
         'docs' => ['add', 'ctlg'],
-        'sett' => []
+        'sett' => ['info']
     ]
 ];
 
@@ -206,13 +206,13 @@ $rbac_internal_actions = [
         'cars' => ['add', 'create', 'detail', 'ctlg'],
         'ordercars' => ['add', 'create', 'detail', 'ctlg'],
         'docs' => ['add', 'create', 'detail', 'ctlg'],
-        'sett' => []
+        'sett' => ['info']
     ],
     'publisher_limited' => [
         'cars' => ['add', 'create', 'detail', 'ctlg'],
         'ordercars' => ['add', 'create', 'detail', 'ctlg'],
         'docs' => ['add', 'create', 'detail', 'ctlg'],
-        'sett' => []
+        'sett' => ['info']
     ]
 ];
 
