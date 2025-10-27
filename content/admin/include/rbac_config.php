@@ -165,19 +165,19 @@ $rbac_admin_menu = [
         'seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['add', 'ctlg'],
-        'sett' => ['info', 'publication_settings']
+        'sett' => ['info']
     ],
     'publisher' => [
         'cars' => ['add', 'ctlg'],
         'ordercars' => ['add', 'ctlg'], 
         'docs' => ['add', 'ctlg'],
-        'sett' => ['publication_settings']
+        'sett' => []
     ],
     'publisher_limited' => [
         'cars' => ['add', 'ctlg'],
         'ordercars' => ['add', 'ctlg'], 
         'docs' => ['add', 'ctlg'],
-        'sett' => ['publication_settings']
+        'sett' => []
     ]
 ];
 
@@ -200,19 +200,19 @@ $rbac_internal_actions = [
         'seo' => ['add', 'create', 'detail', 'ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['add', 'create', 'detail', 'ctlg'],
-        'sett' => ['info', 'publication_settings']
+        'sett' => ['info']
     ],
     'publisher' => [
         'cars' => ['add', 'create', 'detail', 'ctlg'],
         'ordercars' => ['add', 'create', 'detail', 'ctlg'],
         'docs' => ['add', 'create', 'detail', 'ctlg'],
-        'sett' => ['publication_settings']
+        'sett' => []
     ],
     'publisher_limited' => [
         'cars' => ['add', 'create', 'detail', 'ctlg'],
         'ordercars' => ['add', 'create', 'detail', 'ctlg'],
         'docs' => ['add', 'create', 'detail', 'ctlg'],
-        'sett' => ['publication_settings']
+        'sett' => []
     ]
 ];
 
