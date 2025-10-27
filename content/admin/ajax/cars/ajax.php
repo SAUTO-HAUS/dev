@@ -634,6 +634,7 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
     $pdo->execute([ 'it_id' => $it_id ]);
     $i=1;
     $photo_urls = array();
+    $media = array(); // Initialize media array
     foreach ($pdo as $file){
         if($i>10){break;}
 
