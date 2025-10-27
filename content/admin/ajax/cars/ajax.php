@@ -722,10 +722,12 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
         $returnIt['status'] = true;
     }
     else {
-        // Log failed publication
-        $publicationService->logPublication($it_id, 'in_stock', 'telegram', false, $res['description'] ?? 'Unknown error');
+        // Log failed publication with detailed error
+        $error_msg = isset($res['description']) ? $res['description'] : 'Unknown error';
+        $publicationService->logPublication($it_id, 'in_stock', 'telegram', false, $error_msg);
         
         $returnIt['status'] = false;
+        $returnIt['error'] = $error_msg;
+        $returnIt['telegram_response'] = $res;
     }
 }
-
