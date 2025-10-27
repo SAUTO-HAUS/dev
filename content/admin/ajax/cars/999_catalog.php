@@ -18,7 +18,8 @@ $requestData = $_POST;
 try {
     $api999Service = Api999Service::createFromSettings('in_stock');
 } catch (Exception $e) {
-    // Fallback to default API service if regular settings not configured
+    // Log the error and fallback to default API service
+    error_log('999_catalog.php: Failed to create Api999Service from settings: ' . $e->getMessage());
     $api999Service = new Api999Service();
 }
 
