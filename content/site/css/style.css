@@ -2533,7 +2533,7 @@ footer .columns-wrapper .column-container.col-logo-container {
       main .gr > .cnt > .it {
           display: flex !important;
           flex-direction: column !important;
-          padding-bottom: 1.5rem !important;
+          padding-bottom: 1rem !important;
       }
       
       main .gr > .cnt > .it > .name {
@@ -2589,7 +2589,7 @@ footer .columns-wrapper .column-container.col-logo-container {
       .mobile-details-no-flag {
           display: flex;
           justify-content: center;
-          margin-top: 15px;
+          margin-top: 5px;
           padding: 0 1rem;
       }
       

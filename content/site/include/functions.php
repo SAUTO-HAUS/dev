@@ -631,7 +631,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 										}
 									}
 									$ar['txt'] .= '
-							<div class="mobile-details-with-flag" style="display: flex; justify-content: space-between; align-items: center; margin-top: -8px; padding: 0; border: none;">
+							<div class="mobile-details-with-flag" style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding: 0; border: none;">
 								<div class="mobile-details-button">'.$details_text.'</div>';
 								} else {
 									$ar['txt'] .= '
