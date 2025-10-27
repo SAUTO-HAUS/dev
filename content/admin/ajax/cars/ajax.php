@@ -262,7 +262,7 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
     require (_DEFAULT.'/language.php');
   
     // Use PublicationService for regular cars
-    require_once '../../../../App/Services/PublicationService.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/App/Services/PublicationService.php';
     $publicationService = new \App\Services\PublicationService($db, $prefx);
     
     // Get Facebook settings for regular cars
@@ -273,7 +273,7 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
     }
   
     // Use PhoneReplacementService for dynamic phone numbers
-    require_once 'App/Services/PhoneReplacementService.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/App/Services/PhoneReplacementService.php';
     $phoneService = new \App\Services\PhoneReplacementService();
     $phone = $phoneService->getGeneralPhone();
     $car_title_name = "";
@@ -665,7 +665,7 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
 
 
     // Use PublicationService for regular cars
-    require_once '../../../../App/Services/PublicationService.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/App/Services/PublicationService.php';
     $publicationService = new \App\Services\PublicationService($db, $prefx);
     
     // Get Telegram settings for regular cars
