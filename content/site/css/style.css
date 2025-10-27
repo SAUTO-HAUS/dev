@@ -264,7 +264,7 @@
     }
     main .gr > .cnt > .it { 
       width: 48% !important; 
-      height: 28rem !important; 
+      height: 29rem !important; 
       margin: 1% !important;
     }
     main .gr > .cnt > .it > img { height: 13rem !important; }
@@ -274,7 +274,7 @@
 
   /* Standard laptops (1200-1599px) */
   @media (min-width: 1200px) and (max-width: 1599px) {
-    main .gr > .cnt > .it { height: 27rem; }
+    main .gr > .cnt > .it { height: 28rem; }
     main .gr > .cnt > .it > img { height: 13rem; }
     main .gr > .cnt > .it > div.imgX { height: 13rem; }
     main .gr > .cnt > .it > .img { height: 13rem; }
@@ -282,31 +282,31 @@
 
   /* Standard desktop (1600-2199px) - Includes 1920x1080 */
   @media (min-width: 1600px) and (max-width: 2199px) {
-    main .gr > .cnt > .it { height: 29rem; }
-    main .gr > .cnt > .it > img { height: 14rem; }
-    main .gr > .cnt > .it > div.imgX { height: 14rem; }
-    main .gr > .cnt > .it > .img { height: 14rem; }
+    main .gr > .cnt > .it { height: 30rem; }
+    main .gr > .cnt > .it > img { height: 15rem; }
+    main .gr > .cnt > .it > div.imgX { height: 15rem; }
+    main .gr > .cnt > .it > .img { height: 15rem; }
   }
 
   /* Large screens (2200-2999px) */
   @media (min-width: 2200px) and (max-width: 2999px) {
-    main .gr > .cnt > .it { height: 33rem; }
-    main .gr > .cnt > .it > img { height: 16rem; }
-    main .gr > .cnt > .it > div.imgX { height: 16rem; }
-    main .gr > .cnt > .it > .img { height: 16rem; }
+    main .gr > .cnt > .it { height: 34rem; }
+    main .gr > .cnt > .it > img { height: 17rem; }
+    main .gr > .cnt > .it > div.imgX { height: 17rem; }
+    main .gr > .cnt > .it > .img { height: 17rem; }
   }
 
   /* Very large screens (3000px+) */
   @media (min-width: 3000px) {
-    main .gr > .cnt > .it { height: 37rem; }
-    main .gr > .cnt > .it > img { height: 18rem; }
-    main .gr > .cnt > .it > div.imgX { height: 18rem; }
-    main .gr > .cnt > .it > .img { height: 18rem; }
+    main .gr > .cnt > .it { height: 38rem; }
+    main .gr > .cnt > .it > img { height: 19rem; }
+    main .gr > .cnt > .it > div.imgX { height: 19rem; }
+    main .gr > .cnt > .it > .img { height: 19rem; }
   }
 
   main .gr > .cnt > .it > .img.n_a {background-image:url(/media/images/site/v2/no_image.svg); position:absolute; z-index:1; background-size:30%; background-color:#fff; border-bottom:1px solid #eee;}
-  main .gr > .cnt > .it > .txt {width:100%; padding:0 5% 0; float:left;}
-  main .gr > .cnt > .it > .txt > .status {min-height:2rem;}
+  main .gr > .cnt > .it > .txt {width:100%; padding:0 5% 1rem 5%; float:left;}
+  main .gr > .cnt > .it > .txt > .status {min-height:2rem; margin-top:0.5rem;}
   main .gr > .cnt > .it.car > .txt > .status {text-align:center; display:flex; flex-flow:row wrap; justify-content:left;}
       
   main .gr > .cnt > .it > .txt > .status > .stat {display:inline-block; border-radius:.2rem; font-family:"def_l"; color:#fff;}
@@ -325,13 +325,13 @@
   main .gr > .cnt > .it.tyre > .txt > .status > .stat.top1 {color:#0caa38;}
   main .gr > .cnt > .it.tyre > .txt > .status > .stat.prc_n {color:#0caa38;}
       
-  main .gr > .cnt > .it > .txt > .name {font-size:1.3rem; /*border-bottom:1px solid #e2001a;*/}
+  main .gr > .cnt > .it > .txt > .name {font-size:1.3rem; margin-top:1rem; /*border-bottom:1px solid #e2001a;*/}
   main .gr > .cnt > .it > .txt > .name > span {font-size:1rem; display:inline-block;}
   
-  main .gr > .cnt > .it > .compact-info {font-size:0.85rem; color:#666; padding:0.2rem 1rem 0.2rem 0.5rem;}
-  main .gr > .cnt > .it > .name {padding-left:0.5rem; font-size:1.2rem;}
+  main .gr > .cnt > .it > .compact-info {font-size:0.85rem; color:#666; padding:0 1rem 0 1rem; margin-bottom:0.8rem;}
+  main .gr > .cnt > .it > .name {padding-left:1rem; font-size:1.2rem; margin-top:1.2rem; min-height:2rem; line-height:0.85;}
   main .gr > .cnt > .it > .compact-info > .line1,
-  main .gr > .cnt > .it > .compact-info > .line2 {margin:0.2rem 0;}
+  main .gr > .cnt > .it > .compact-info > .line2 {margin:0.1rem 0;}
   main .gr > .cnt > .it > .txt > .name > span.inf {width:100%; font-size:1.2rem;}
   main .gr > .cnt > .it > .txt > .id {color:#cecece; font-size:.7rem; position:absolute; bottom:.5rem; right:1rem;}
   main .gr > .cnt > .it > .txt > .specs {font-size:.7rem;}
@@ -2453,6 +2453,7 @@ footer .columns-wrapper .column-container.col-logo-container {
           padding-right: 0 !important;
       }
 
+
       #crumbs {
         margin-top: 50px !important;
       }
@@ -2532,11 +2533,12 @@ footer .columns-wrapper .column-container.col-logo-container {
       main .gr > .cnt > .it {
           display: flex !important;
           flex-direction: column !important;
+          padding-bottom: 1.5rem !important;
       }
       
       main .gr > .cnt > .it > .name {
           font-size: 1.6rem;
-          padding-left: 0.7rem; 
+          padding-left: 1rem !important; 
       }
       
       main .gr > .cnt > .it > .compact-info {
@@ -2546,7 +2548,7 @@ footer .columns-wrapper .column-container.col-logo-container {
       main .gr > .cnt > .it > .compact-info > .line1,
       main .gr > .cnt > .it > .compact-info > .line2 {
           font-size: 1rem; 
-          padding-left: 0.7rem !important; 
+          padding-left: 1rem !important; 
       }
       
       main .gr > .cnt > .it > .prc {
