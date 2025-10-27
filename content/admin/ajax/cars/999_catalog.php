@@ -33,11 +33,18 @@ if (__post('sub') == 'get_subcategory') {
     }
 } elseif (__post('sub') == 'get_subcategory_offer_types') {
     if (!empty(__post('category')) && !empty(__post('subcategory'))) {
-        $types = $api999Service->getSubcategoryOfferTypes(__post('category'), __post('subcategory'));
-        foreach ($types['offer_types'] as $cat) {
-            $rtrn .= '<option value="'.$cat['id'].'">'.$cat['title'].'</option>';
+        try {
+            $types = $api999Service->getSubcategoryOfferTypes(__post('category'), __post('subcategory'));
+            if (!empty($types['offer_types'])) {
+                foreach ($types['offer_types'] as $cat) {
+                    $rtrn .= '<option value="'.$cat['id'].'">'.$cat['title'].'</option>';
+                }
+            }
+            $rtrn = [ 'bx_id'=>__post('bx_id'), 'str'=>$rtrn ];
+        } catch (Exception $e) {
+            error_log('999_catalog.php get_subcategory_offer_types error: ' . $e->getMessage());
+            $rtrn = [ 'bx_id'=>__post('bx_id'), 'str'=>'<option value="">Error loading offer types</option>' ];
         }
-        $rtrn = [ 'bx_id'=>__post('bx_id'), 'str'=>$rtrn ];
     }
 } elseif (__post('sub') == 'get_features') {
     if (!empty(__post('category')) && !empty(__post('subcategory')) && !empty(__post('offer_type'))) {
