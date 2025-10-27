@@ -169,9 +169,9 @@ if ($_POST) {
     $rtrn .= '<div class="success">' . ($lng[$_COOKIE['lang']]['w']['publication_settings_saved'] ?? 'Настройки публикации сохранены!') . '</div>';
 }
 
-// Load current settings
+// Load current settings - force fresh data
 $current_settings = [];
-$stmt = $db->prepare("SELECT name, value FROM {$prefx}_settings WHERE name LIKE '%_999md_%' OR name LIKE '%_telegram_%' OR name LIKE '%_facebook_%' OR name LIKE 'auto_publish_%'");
+$stmt = $db->prepare("SELECT name, value FROM {$prefx}_settings WHERE name IN ('regular_999md_account', 'regular_999md_token', 'regular_telegram_bot_token', 'regular_telegram_chat_id', 'order_999md_account', 'order_999md_token', 'order_telegram_bot_token', 'order_telegram_chat_id', 'regular_facebook_page_id', 'regular_facebook_token', 'order_facebook_page_id', 'order_facebook_token', 'auto_publish_regular', 'auto_publish_order')");
 $stmt->execute();
 while ($row = $stmt->fetch()) {
     $current_settings[$row['name']] = $row['value'];
@@ -181,7 +181,7 @@ $rtrn .= '
 <div class="publication-settings">
     <h2>' . ($lng[$_COOKIE['lang']]['w']['publication_settings_title'] ?? 'Настройки публикации автомобилей') . '</h2>
     
-    <form method="POST">
+    <form method="POST" action="?'. time() .'">
         <div class="settings-container">
             <div class="settings-column left-column">
                 <div class="settings-section">
@@ -245,11 +245,11 @@ $rtrn .= '
             <div class="setting-group">
                 <h4>' . ($lng[$_COOKIE['lang']]['w']['api_999md_separate'] ?? 'API "Три Девятки МД" - Отдельный аккаунт') . '</h4>
                 <label>' . ($lng[$_COOKIE['lang']]['w']['account_login'] ?? 'Аккаунт/Login:') . '</label>
-                <input type="text" name="order_999md_account" value="' . htmlspecialchars($current_settings['order_999md_account'] ?? 'Sauto-auto-comerciale') . '" placeholder="Sauto-auto-comerciale">
+                <input type="text" name="order_999md_account" value="' . htmlspecialchars($current_settings['order_999md_account'] ?? 'Sauto-stock-extern') . '" placeholder="Sauto-stock-extern">
                 
                 <label>' . ($lng[$_COOKIE['lang']]['w']['api_token'] ?? 'API Token:') . '</label>
                 <div class="input-with-button">
-                    <input type="password" name="order_999md_token" id="order_999md_token" value="' . htmlspecialchars($current_settings['order_999md_token'] ?? 'EeKkPqGFjEhJZIK3S5KWh59w8jNG') . '" placeholder="EeKkPqGFjEhJZIK3S5KWh59w8jNG">
+                    <input type="password" name="order_999md_token" id="order_999md_token" value="' . htmlspecialchars($current_settings['order_999md_token'] ?? 'jMEsHjO0FhoRZm0KSsONLpkGLMIK') . '" placeholder="jMEsHjO0FhoRZm0KSsONLpkGLMIK">
                     <button type="button" class="generate-btn" onclick="generate999Token(&quot;order&quot;)">🔑 Generează</button>
                 </div>
             </div>
