@@ -34,7 +34,7 @@ class Api999Service
         if ($customApiKey) {
             // Use custom API key from settings
             $this->api_key = $customApiKey;
-        } elseif (is_int($key) && isset(self::API_KEY[$key])) {
+        } elseif (isset(self::API_KEY[$key])) {
             // Use predefined API key
             $this->api_key = self::API_KEY[$key]['key'];
         } else {
