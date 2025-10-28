@@ -257,13 +257,18 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
     require (_DEFAULT.'/language.php');
   
     // Use PublicationService for order cars
-    require_once '../../../../App/Services/PublicationService.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/App/Services/PublicationService.php';
     $publicationService = new \App\Services\PublicationService($db, $prefx);
     
     // First get car data to determine location
-    $pdo_temp = $db->prepare('SELECT * FROM '.$prefx.'_order_car_ctlg WHERE `id`= :id LIMIT 1');
+    $pdo_temp = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg WHERE `id`= :id LIMIT 1');
     $pdo_temp->execute(['id' => $it_id]);
     $tempCarData = $pdo_temp->fetch(\PDO::FETCH_ASSOC);
+    
+    // Ensure loc field exists, default to 1 if missing
+    if (!isset($tempCarData['loc']) || empty($tempCarData['loc'])) {
+        $tempCarData['loc'] = 1; // Default to Calea Moşilor 11
+    }
     
     // Get Facebook settings based on car location
     $facebookSettings = $publicationService->getFacebookSettings($tempCarData);
@@ -273,7 +278,7 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
     }
 
     // Use PhoneReplacementService for dynamic phone numbers
-    require_once '../../../../App/Services/PhoneReplacementService.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/App/Services/PhoneReplacementService.php';
     $phoneService = new \App\Services\PhoneReplacementService();
     $phone = $phoneService->getGeneralPhone();
     $car_title_name = "";
@@ -490,9 +495,9 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
             $returnIt['post_id'] = $post['id'];
             
             // Log successful publication
-            $publicationService->logPublication($it_id, 'on_order', 'facebook', true, 'Published to order cars Facebook page with "ПОД ЗАКАЗ" label');
+            $publicationService->logPublication($it_id, 'on_order', 'facebook', true, 'Published to order cars Facebook page with "LA COMANDĂ" label');
             
-            echo json_encode(['success' => true, 'message' => 'Опубликовано в Facebook с меткой "ПОД ЗАКАЗ"', 'post_id' => $post['id']]);
+            echo json_encode(['success' => true, 'message' => 'Publicat pe Facebook cu eticheta "LA COMANDĂ"', 'post_id' => $post['id']]);
         } catch (PDOException $e) {
             error_log('Facebook publication database error for car ID ' . $it_id . ': ' . $e->getMessage());
             
@@ -545,7 +550,7 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
     require (_DEFAULT.'/language.php');
 
     // Use PublicationService for order cars
-    require_once '../../../../App/Services/PublicationService.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/App/Services/PublicationService.php';
     $publicationService = new \App\Services\PublicationService($db, $prefx);
     
     // Get Telegram settings for order cars
@@ -556,7 +561,7 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
     }
 
     // Use PhoneReplacementService for dynamic phone numbers
-    require_once '../../../../App/Services/PhoneReplacementService.php';
+    require_once $_SERVER['DOCUMENT_ROOT'] . '/App/Services/PhoneReplacementService.php';
     $phoneService = new \App\Services\PhoneReplacementService();
     $phone = $phoneService->getGeneralPhone();
     $car_title_name = "";

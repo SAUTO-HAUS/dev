@@ -143,8 +143,8 @@ class PublicationService
         
         // Add catalog type label for orders
         if ($catalogType === 'on_order') {
-            $message .= "\n\n📋 ПОД ЗАКАЗ";
-            $message .= "\n⏰ Срок поставки: " . ($carData['delivery_time'] ?? '2-4 недели');
+            $message .= "\n\n📋 LA COMANDĂ";
+            $message .= "\n⏰ Termen de livrare: " . ($carData['delivery_time'] ?? '14 zile');
         }
         
         // Add detailed specifications with icons
