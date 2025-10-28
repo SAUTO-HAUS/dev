@@ -2,7 +2,7 @@ INSERT INTO `gh3sp_settings` (`name`, `value`) VALUES
 -- Telegram settings (using working values from old code)
 ('regular_telegram_bot_token', '7459955785:AAGTMPvUkh2Fktar7ZpNlHBFsq43FH_DPsY'),
 ('regular_telegram_chat_id', '-1002605369940'),
-('order_telegram_bot_token', '7459955785:AAGTMPvUkh2Fktar7ZpNlHBFsq43FH_DPsY'),
+('order_telegram_bot_token', '8169302156:AAEe1j7AASXegfKRdWB-rSiaKY-PSgqkGgo'),
 ('order_telegram_chat_id', '-1002605369940'),
 
 -- Facebook settings (location-based - ONLY by address, not catalog type)

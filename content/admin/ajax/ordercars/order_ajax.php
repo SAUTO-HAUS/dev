@@ -686,7 +686,6 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
 
     //$caption_lines[] = "\n\n" . $phone;
     // Add order-specific information
-    $caption_lines[] = '📋 <b>Автомобиль под заказ</b>';
     $caption_lines[] = '📌 Apasă pe hashtag pentru a vedea alte mașini similare';
 
     // $caption_lines[] = "\n 🔽 Comentariile le citim și răspundem imediat";
