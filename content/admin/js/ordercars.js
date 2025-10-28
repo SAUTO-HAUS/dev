@@ -120,14 +120,18 @@ function sendToTelegramCars() {
 			success: function(response) {
 				console.log('Статус обновлен:', response);
 
-				let d = JSON.parse( response);
-				if(d['status'] == false) {
-					alert("Произошла ошибка публикации");
+				try {
+					let d = JSON.parse(response);
+					if(d['status'] == false) {
+						alert("Произошла ошибка публикации");
+					}
+					else {
+						alert("Опубликовано");
+					}
+				} catch (e) {
+					console.error('JSON parse error:', e);
+					alert("Ошибка обработки ответа");
 				}
-				else {
-					alert("Опубликовано");
-				}
-
 				$('#stts_bar').removeClass('act');
 				$('#stts_bar > .ln').attr('style','');
 				$('body').removeClass('ajx');

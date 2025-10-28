@@ -708,6 +708,7 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
 
     $res = json_decode( $res , true);
 
+    $returnIt = [];
     if($res['ok']) {
         // Mark as published in database
         $stmt = $db->prepare("UPDATE {$prefx}_car_ctlg SET telegram_published = 1 WHERE id = ?");
@@ -716,13 +717,17 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
         // Log successful publication
         $publicationService->logPublication($it_id, 'on_order', 'telegram', true, 'Published to order cars channel');
         
-        echo json_encode(['success' => true, 'message' => 'Опубликовано в Telegram канале для заказов']);
+        $returnIt['status'] = true;
     } else {
         // Log failed publication
         $publicationService->logPublication($it_id, 'on_order', 'telegram', false, $res['description'] ?? 'Unknown error');
         
-        echo json_encode(['success' => false, 'message' => 'Ошибка публикации: ' . ($res['description'] ?? 'Unknown error')]);
+        $returnIt['status'] = false;
+        $returnIt['error'] = $res['description'] ?? 'Unknown error';
+        $returnIt['telegram_response'] = $res;
     }
+    
+    echo json_encode($returnIt);
 
     // End of Telegram publication for order cars
 }
