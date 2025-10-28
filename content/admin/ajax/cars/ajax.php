@@ -692,12 +692,20 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
     $caption_lines[] = "\n <a href='https://t.me/Sauto_B24_bot?start=".$marka_auto."_".$model_auto."_".$price_auto."_".$year_auto."'>👉 Comentariile le citim și răspundem imediat 👈</a>";
 
 
-    // Use PublicationService for regular cars
+    // Use PublicationService for cars
     require_once $_SERVER['DOCUMENT_ROOT'] . '/App/Services/PublicationService.php';
     $publicationService = new \App\Services\PublicationService($db, $prefx);
     
-    // Get Telegram settings for regular cars
-    $telegramSettings = $publicationService->getTelegramSettings('in_stock');
+    // First get car data to determine catalog type
+    $pdo_temp = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg WHERE `id`= :id LIMIT 1');
+    $pdo_temp->execute(['id' => $it_id]);
+    $tempCarData = $pdo_temp->fetch(\PDO::FETCH_ASSOC);
+    
+    // Determine catalog type from car data
+    $catalogType = $tempCarData['catalog_type'] ?? 'in_stock';
+    
+    // Get Telegram settings based on catalog type
+    $telegramSettings = $publicationService->getTelegramSettings($catalogType);
     if (!$telegramSettings) {
         echo json_encode(['success' => false, 'message' => 'Telegram settings for regular cars not configured']);
         exit;

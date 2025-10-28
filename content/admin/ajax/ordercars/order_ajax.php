@@ -549,12 +549,20 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
     $_COOKIE['lang']='ro';
     require (_DEFAULT.'/language.php');
 
-    // Use PublicationService for order cars
+    // Use PublicationService for cars
     require_once $_SERVER['DOCUMENT_ROOT'] . '/App/Services/PublicationService.php';
     $publicationService = new \App\Services\PublicationService($db, $prefx);
     
-    // Get Telegram settings for order cars
-    $telegramSettings = $publicationService->getTelegramSettings('on_order');
+    // First get car data to determine catalog type
+    $pdo_temp = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg WHERE `id`= :id LIMIT 1');
+    $pdo_temp->execute(['id' => $it_id]);
+    $tempCarData = $pdo_temp->fetch(\PDO::FETCH_ASSOC);
+    
+    // Determine catalog type from car data
+    $catalogType = $tempCarData['catalog_type'] ?? 'on_order';
+    
+    // Get Telegram settings based on catalog type
+    $telegramSettings = $publicationService->getTelegramSettings($catalogType);
     if (!$telegramSettings) {
         echo json_encode(['success' => false, 'message' => 'Telegram settings for order cars not configured']);
         exit;
