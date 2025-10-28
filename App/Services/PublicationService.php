@@ -52,17 +52,18 @@ class PublicationService
     }
 
     /**
-     * Get Facebook settings for catalog type
+     * Get Facebook settings for car location
      * 
-     * @param string $catalogType 'in_stock' or 'on_order'
+     * @param array $carData Car data with location info
      * @return array|null
      */
-    public function getFacebookSettings($catalogType)
+    public function getFacebookSettings($carData)
     {
-        $prefix = $catalogType === 'on_order' ? 'order' : 'regular';
+        // Determine location ID from car data
+        $locationId = $carData['loc'] ?? 1;
         
-        $pageId = $this->getSetting($prefix . '_facebook_page_id');
-        $token = $this->getSetting($prefix . '_facebook_token');
+        $pageId = $this->getSetting('location_' . $locationId . '_facebook_page_id');
+        $token = $this->getSetting('location_' . $locationId . '_facebook_token');
         
         if (empty($pageId) || empty($token)) {
             return null;
@@ -356,4 +357,5 @@ class PublicationService
             return [];
         }
     }
+
 }
