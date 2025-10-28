@@ -143,16 +143,16 @@ if ($_POST) {
         'regular_999md_token' => $_POST['regular_999md_token'] ?? '',
         'regular_telegram_bot_token' => $_POST['regular_telegram_bot_token'] ?? '',
         'regular_telegram_chat_id' => $_POST['regular_telegram_chat_id'] ?? '',
-        'regular_facebook_page_id' => $_POST['regular_facebook_page_id'] ?? '',
-        'regular_facebook_token' => $_POST['regular_facebook_token'] ?? '',
+        'location_1_facebook_page_id' => $_POST['location_1_facebook_page_id'] ?? '',
+        'location_1_facebook_token' => $_POST['location_1_facebook_token'] ?? '',
         
         // Order cars (on_order) settings
         'order_999md_account' => $_POST['order_999md_account'] ?? '',
         'order_999md_token' => $_POST['order_999md_token'] ?? '',
         'order_telegram_bot_token' => $_POST['order_telegram_bot_token'] ?? '',
         'order_telegram_chat_id' => $_POST['order_telegram_chat_id'] ?? '',
-        'order_facebook_page_id' => $_POST['order_facebook_page_id'] ?? '',
-        'order_facebook_token' => $_POST['order_facebook_token'] ?? '',
+        'location_2_facebook_page_id' => $_POST['location_2_facebook_page_id'] ?? '',
+        'location_2_facebook_token' => $_POST['location_2_facebook_token'] ?? '',
         
         // Auto-publication settings
         'auto_publish_regular' => isset($_POST['auto_publish_regular']) ? 1 : 0,
@@ -171,7 +171,7 @@ if ($_POST) {
 
 // Load current settings - force fresh data
 $current_settings = [];
-$stmt = $db->prepare("SELECT name, value FROM {$prefx}_settings WHERE name IN ('regular_999md_account', 'regular_999md_token', 'regular_telegram_bot_token', 'regular_telegram_chat_id', 'order_999md_account', 'order_999md_token', 'order_telegram_bot_token', 'order_telegram_chat_id', 'regular_facebook_page_id', 'regular_facebook_token', 'order_facebook_page_id', 'order_facebook_token', 'auto_publish_regular', 'auto_publish_order')");
+$stmt = $db->prepare("SELECT name, value FROM {$prefx}_settings WHERE name IN ('regular_999md_account', 'regular_999md_token', 'regular_telegram_bot_token', 'regular_telegram_chat_id', 'order_999md_account', 'order_999md_token', 'order_telegram_bot_token', 'order_telegram_chat_id', 'location_1_facebook_page_id', 'location_1_facebook_token', 'location_2_facebook_page_id', 'location_2_facebook_token', 'auto_publish_regular', 'auto_publish_order')");
 $stmt->execute();
 while ($row = $stmt->fetch()) {
     $current_settings[$row['name']] = $row['value'];
@@ -219,13 +219,13 @@ $rtrn .= '
                 <h4>' . ($lng[$_COOKIE['lang']]['w']['facebook_main'] ?? 'Facebook - Основная страница') . '</h4>
                 <label>' . ($lng[$_COOKIE['lang']]['w']['page_id'] ?? 'Page ID:') . '</label>
                 <div class="input-with-button">
-                    <input type="text" name="regular_facebook_page_id" id="regular_facebook_page_id" value="' . htmlspecialchars($current_settings['regular_facebook_page_id'] ?? '482777831588669') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_facebook_page'] ?? 'ID основной Facebook страницы') . '" autocomplete="off" data-form-type="other">
+                    <input type="text" name="location_1_facebook_page_id" id="location_1_facebook_page_id" value="' . htmlspecialchars($current_settings['location_1_facebook_page_id'] ?? '100063457076866') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_facebook_page'] ?? 'ID Facebook страницы для Calea Moşilor 11') . '" autocomplete="off" data-form-type="other">
                     <button type="button" class="generate-btn" onclick="getFacebookPageId(&quot;regular&quot;)">📄 Obține Page ID</button>
                 </div>
                 
                 <label>' . ($lng[$_COOKIE['lang']]['w']['page_token'] ?? 'Page Token:') . '</label>
                 <div class="input-with-button">
-                    <input type="password" name="regular_facebook_token" id="regular_facebook_token" value="' . htmlspecialchars($current_settings['regular_facebook_token'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_facebook_token'] ?? 'Access token для основной страницы') . '" autocomplete="new-password" data-form-type="other">
+                    <input type="password" name="location_1_facebook_token" id="location_1_facebook_token" value="' . htmlspecialchars($current_settings['location_1_facebook_token'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_main_facebook_token'] ?? 'Access token pentru Calea Moşilor 11') . '" autocomplete="new-password" data-form-type="other">
                     <button type="button" class="generate-btn" onclick="generateFacebookToken(&quot;regular&quot;)">🔐 Generează Token</button>
                 </div>
             </div>
@@ -274,13 +274,13 @@ $rtrn .= '
                 <h4>' . ($lng[$_COOKIE['lang']]['w']['facebook_same'] ?? 'Facebook - Та же страница с меткой "Под заказ"') . '</h4>
                 <label>' . ($lng[$_COOKIE['lang']]['w']['page_id'] ?? 'Page ID:') . '</label>
                 <div class="input-with-button">
-                    <input type="text" name="order_facebook_page_id" id="order_facebook_page_id" value="' . htmlspecialchars($current_settings['order_facebook_page_id'] ?? '482777831588669') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_facebook_page'] ?? 'ID Facebook страницы для заказов') . '" autocomplete="off" data-form-type="other">
+                    <input type="text" name="location_2_facebook_page_id" id="location_2_facebook_page_id" value="' . htmlspecialchars($current_settings['location_2_facebook_page_id'] ?? '61569460471739') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_facebook_page'] ?? 'ID Facebook страницы для Pietrăriei 3') . '" autocomplete="off" data-form-type="other">
                     <button type="button" class="generate-btn" onclick="getFacebookPageId(&quot;order&quot;)">📄 Obține Page ID</button>
                 </div>
                 
                 <label>' . ($lng[$_COOKIE['lang']]['w']['page_token'] ?? 'Page Token:') . '</label>
                 <div class="input-with-button">
-                    <input type="password" name="order_facebook_token" id="order_facebook_token" value="' . htmlspecialchars($current_settings['order_facebook_token'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_facebook_token'] ?? 'Access token для страницы заказов') . '" autocomplete="new-password" data-form-type="other">
+                    <input type="password" name="location_2_facebook_token" id="location_2_facebook_token" value="' . htmlspecialchars($current_settings['location_2_facebook_token'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_facebook_token'] ?? 'Access token pentru Pietrăriei 3') . '" autocomplete="new-password" data-form-type="other">
                     <button type="button" class="generate-btn" onclick="generateFacebookToken(&quot;order&quot;)">🔐 Generează Token</button>
                 </div>
             </div>
