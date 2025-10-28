@@ -231,6 +231,21 @@ $rtrn .= '
             </div>
             
             <div class="setting-group">
+                <h4>' . ($lng[$_COOKIE['lang']]['w']['facebook_same'] ?? 'Facebook - str. Pietrăriei 3') . '</h4>
+                <label>' . ($lng[$_COOKIE['lang']]['w']['page_id'] ?? 'Page ID:') . '</label>
+                <div class="input-with-button">
+                    <input type="text" name="location_2_facebook_page_id" id="location_2_facebook_page_id" value="' . htmlspecialchars($current_settings['location_2_facebook_page_id'] ?? '482777831588669') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_facebook_page'] ?? 'ID Facebook страницы для Pietrăriei 3') . '" autocomplete="off" data-form-type="other">
+                    <button type="button" class="generate-btn" onclick="getFacebookPageId(&quot;order&quot;)">📄 Obține Page ID</button>
+                </div>
+                
+                <label>' . ($lng[$_COOKIE['lang']]['w']['page_token'] ?? 'Page Token:') . '</label>
+                <div class="input-with-button">
+                    <input type="password" name="location_2_facebook_token" id="location_2_facebook_token" value="' . htmlspecialchars($current_settings['location_2_facebook_token'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_facebook_token'] ?? 'Access token pentru Pietrăriei 3') . '" autocomplete="new-password" data-form-type="other">
+                    <button type="button" class="generate-btn" onclick="generateFacebookToken(&quot;order&quot;)">🔐 Generează Token</button>
+                </div>
+            </div>
+            
+            <div class="setting-group">
                 <label>
                     <input type="checkbox" name="auto_publish_regular" ' . (($current_settings['auto_publish_regular'] ?? 0) ? 'checked' : '') . '>
                     ' . ($lng[$_COOKIE['lang']]['w']['auto_publish_stock'] ?? 'Автоматическая публикация при добавлении автомобиля в наличии') . '
@@ -267,21 +282,6 @@ $rtrn .= '
                 <div class="input-with-button">
                     <input type="text" name="order_telegram_chat_id" id="order_telegram_chat_id" value="' . htmlspecialchars($current_settings['order_telegram_chat_id'] ?? '564183869') . '" placeholder="564183869" autocomplete="off" data-form-type="other">
                     <button type="button" class="generate-btn" onclick="getTelegramChatId(&quot;order&quot;)">💬 Obține Chat ID</button>
-                </div>
-            </div>
-            
-            <div class="setting-group">
-                <h4>' . ($lng[$_COOKIE['lang']]['w']['facebook_same'] ?? 'Facebook - Та же страница с меткой "Под заказ"') . '</h4>
-                <label>' . ($lng[$_COOKIE['lang']]['w']['page_id'] ?? 'Page ID:') . '</label>
-                <div class="input-with-button">
-                    <input type="text" name="location_2_facebook_page_id" id="location_2_facebook_page_id" value="' . htmlspecialchars($current_settings['location_2_facebook_page_id'] ?? '61569460471739') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_facebook_page'] ?? 'ID Facebook страницы для Pietrăriei 3') . '" autocomplete="off" data-form-type="other">
-                    <button type="button" class="generate-btn" onclick="getFacebookPageId(&quot;order&quot;)">📄 Obține Page ID</button>
-                </div>
-                
-                <label>' . ($lng[$_COOKIE['lang']]['w']['page_token'] ?? 'Page Token:') . '</label>
-                <div class="input-with-button">
-                    <input type="password" name="location_2_facebook_token" id="location_2_facebook_token" value="' . htmlspecialchars($current_settings['location_2_facebook_token'] ?? '') . '" placeholder="' . ($lng[$_COOKIE['lang']]['w']['placeholder_order_facebook_token'] ?? 'Access token pentru Pietrăriei 3') . '" autocomplete="new-password" data-form-type="other">
-                    <button type="button" class="generate-btn" onclick="generateFacebookToken(&quot;order&quot;)">🔐 Generează Token</button>
                 </div>
             </div>
             
