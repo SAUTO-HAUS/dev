@@ -52,18 +52,37 @@ class PublicationService
     }
 
     /**
-     * Get Facebook settings for car location
+     * Get Facebook settings for car location or catalog type (backward compatibility)
      * 
-     * @param array $carData Car data with location info
+     * @param array|string $carDataOrCatalogType Car data with location info OR catalog type string
      * @return array|null
      */
-    public function getFacebookSettings($carData)
+    public function getFacebookSettings($carDataOrCatalogType)
     {
-        // Determine location ID from car data
-        $locationId = $carData['loc'] ?? 1;
-        
-        $pageId = $this->getSetting('location_' . $locationId . '_facebook_page_id');
-        $token = $this->getSetting('location_' . $locationId . '_facebook_token');
+        // Handle backward compatibility - if string passed, assume it's catalog type
+        if (is_string($carDataOrCatalogType)) {
+            // Old behavior: use catalog type to determine settings
+            $catalogType = $carDataOrCatalogType;
+            $prefix = $catalogType === 'on_order' ? 'order' : 'regular';
+            
+            $pageId = $this->getSetting($prefix . '_facebook_page_id');
+            $token = $this->getSetting($prefix . '_facebook_token');
+            
+            // If old settings don't exist, try location-based settings
+            if (empty($pageId) || empty($token)) {
+                // Default: regular -> location 1, order -> location 2
+                $locationId = $catalogType === 'on_order' ? 2 : 1;
+                $pageId = $this->getSetting('location_' . $locationId . '_facebook_page_id');
+                $token = $this->getSetting('location_' . $locationId . '_facebook_token');
+            }
+        } else {
+            // New behavior: use car location data
+            $carData = $carDataOrCatalogType;
+            $locationId = $carData['loc'] ?? 1;
+            
+            $pageId = $this->getSetting('location_' . $locationId . '_facebook_page_id');
+            $token = $this->getSetting('location_' . $locationId . '_facebook_token');
+        }
         
         if (empty($pageId) || empty($token)) {
             return null;
