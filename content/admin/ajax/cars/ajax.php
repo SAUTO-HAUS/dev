@@ -265,8 +265,13 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
     require_once $_SERVER['DOCUMENT_ROOT'] . '/App/Services/PublicationService.php';
     $publicationService = new \App\Services\PublicationService($db, $prefx);
     
-    // Get Facebook settings for regular cars
-    $facebookSettings = $publicationService->getFacebookSettings('in_stock');
+    // First get car data to determine location
+    $pdo_temp = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg WHERE `id`= :id LIMIT 1');
+    $pdo_temp->execute(['id' => $it_id]);
+    $tempCarData = $pdo_temp->fetch(\PDO::FETCH_ASSOC);
+    
+    // Get Facebook settings based on car location
+    $facebookSettings = $publicationService->getFacebookSettings($tempCarData);
     if (!$facebookSettings) {
         echo json_encode(['success' => false, 'message' => 'Facebook settings for regular cars not configured']);
         exit;
@@ -293,10 +298,32 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
     $caption_lines = [ ];
     $brand_auto = "";
     $model_auto = "";
+    $year_auto = "";
+    $price_auto = "";
+    $transmission_auto = "";
+    $fuel_auto = "";
+    $engine_auto = "";
+    $mileage_auto = "";
+    $color_auto = "";
+    $body_auto = "";
+    $drive_auto = "";
+    $loc_auto = "";
+    $carData = null;
+
     foreach ($pdo as $r){
-        // print_r( $r);
+        $carData = $r;
         $brand_auto = $r['br'];
         $model_auto = $r['mo'];
+        $year_auto = $r['yr'];
+        $price_auto = $r['prc'];
+        $transmission_auto = $r['tra'];
+        $fuel_auto = $r['fl'];
+        $engine_auto = $r['vol'];
+        $mileage_auto = $r['mlg'];
+        $color_auto = $r['clr'];
+        $body_auto = $r['bt'];
+        $drive_auto = $r['wd'];
+        $loc_auto = $r['loc'];
 
         $cur = $r['cur'];
         if ( $r['prc_t']!=0 && $r['prc_t']>time() ){

@@ -260,8 +260,13 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
     require_once '../../../../App/Services/PublicationService.php';
     $publicationService = new \App\Services\PublicationService($db, $prefx);
     
-    // Get Facebook settings for order cars
-    $facebookSettings = $publicationService->getFacebookSettings('on_order');
+    // First get car data to determine location
+    $pdo_temp = $db->prepare('SELECT * FROM '.$prefx.'_order_car_ctlg WHERE `id`= :id LIMIT 1');
+    $pdo_temp->execute(['id' => $it_id]);
+    $tempCarData = $pdo_temp->fetch(\PDO::FETCH_ASSOC);
+    
+    // Get Facebook settings based on car location
+    $facebookSettings = $publicationService->getFacebookSettings($tempCarData);
     if (!$facebookSettings) {
         echo json_encode(['success' => false, 'message' => 'Facebook settings for order cars not configured']);
         exit;
