@@ -1121,8 +1121,8 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                         }
                         
                         .order-info-grid-mobile .order-info-icon {
-                            width: 3rem;
-                            height: 3rem;
+                            width: 3rem !important;
+                            height: 3rem !important;
                             display: flex;
                             align-items: center;
                             justify-content: center;
@@ -1133,8 +1133,8 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                         }
                         
                         .order-info-grid-mobile .order-info-icon img {
-                            width: 2rem;
-                            height: 2rem;
+                            width: 3rem !important;
+                            height: 3rem !important;
                         }
                         
                         .order-info-grid-mobile .order-info-title {
