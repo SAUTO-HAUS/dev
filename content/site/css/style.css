@@ -275,7 +275,7 @@
 
   /* Standard laptops (1200-1599px) */
   @media (min-width: 1200px) and (max-width: 1599px) {
-    main .gr > .cnt > .it { height: 28rem; }
+    main .gr > .cnt > .it { height: 30rem; }
     main .gr > .cnt > .it > img { height: 13rem; }
     main .gr > .cnt > .it > div.imgX { height: 13rem; }
     main .gr > .cnt > .it > .img { height: 13rem; }
