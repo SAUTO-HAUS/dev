@@ -620,7 +620,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 							
 							// Flag container - will include button for mobile
 							if (!empty($country_code)) {
-								if ($is_mobile) {
+								if ($is_mobile && $v1 !== 'smlr') {
 									// Mobile: Add button text for language
 									$details_text = 'Vezi detalii';
 									if (isset($_COOKIE['lang'])) {
@@ -652,8 +652,8 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 				$ar['txt'] .= '
 				</div>';
 				
-				// Add mobile "Vezi detalii" button for cars without flag
-				if ($is_mobile && empty($r['import_country_id'])) {
+				// Add mobile "Vezi detalii" button for cars without flag (but not for similar cars grid)
+				if ($is_mobile && empty($r['import_country_id']) && $v1 !== 'smlr') {
 					$details_text = 'Vezi detalii';
 					if (isset($_COOKIE['lang'])) {
 						if ($_COOKIE['lang'] == 'ru') {
