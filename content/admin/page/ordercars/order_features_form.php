@@ -23,7 +23,7 @@ if (!isset($new999)) $new999 = true;
             <select id="announcement_type" name="announcement_type" <?php if (!$new999) : ?> disabled <?php endif; ?> class="form-control" required>
                 <option value=""><?= __('cars.type_ad_hint') ?></option>
                 <option value="auto_company" <?php if (!empty($car999['announcement_type']) && $car999['announcement_type'] == "auto_company") : ?> selected <?php endif; ?>><?= __('cars.auto_companies') ?></option>
-                <option value="auto_company_min" <?php if (!empty($car999['announcement_type']) && $car999['announcement_type'] == "auto_company_min") : ?> selected <?php endif; ?>><?= __('cars.auto_companies_minimal_promotion') ?></option>
+                <option value="auto_company_min" <?php if (!empty($car999['announcement_type']) && $car999['announcement_type'] == "auto_company_min") : ?> selected <?php elseif (!isset($car999['announcement_type']) || empty($car999['announcement_type'])) : ?> selected <?php endif; ?>><?= __('cars.auto_companies_minimal_promotion') ?></option>
                 <option value="auto_realization" <?php if (!empty($car999['announcement_type']) && $car999['announcement_type'] == "auto_realization") : ?> selected <?php endif; ?>><?= __('cars.auto_for_sale') ?></option>
                 <option value="auto_realization_min" <?php if (!empty($car999['announcement_type']) && $car999['announcement_type'] == "auto_realization_min") : ?> selected <?php endif; ?>><?= __('cars.auto_for_sale_minimal_promotion') ?></option>
             </select>
@@ -297,6 +297,59 @@ if (!isset($new999)) $new999 = true;
 <script>
     $(document).ready(function() {
         initializeSchedules();
+        
+        // Load order-specific texts and trigger announcement_type change event
+        let orderTexts = {};
+        $.getJSON("/api/order_texts.json", function (data) {
+            orderTexts = data;
+            // Trigger change event after texts are loaded
+            $('#announcement_type').trigger('change');
+        });
+        
+        // Override the announcement_type change handler for order cars
+        $(document).off('change', '#announcement_type').on('change', '#announcement_type', function() {
+            const type = $(this).val();
+            const textOptionsWrapper = $("#text_options_wrapper");
+            const textOptions = $("#text_options");
+            const textArea = $("#feature_13");
+
+            textOptionsWrapper.hide();
+            textOptions.empty();
+            textArea.val("");
+
+            if (type === "auto_company" || type === "auto_company_min") {
+                if (orderTexts['auto_company']) {
+                    orderTexts['auto_company'].forEach((item, index) => {
+                        const radioButton = `
+                            <div class="text-option-wrapper" style="margin-right: 20px; margin-bottom: 10px;">
+                                <label style="display: inline-block; text-align: center;">
+                                    <input type="radio" name="text_option" value="${index}" class="text-option-radio">
+                                    <span>${item.title}</span>
+                                </label>
+                                <div class="text-preview" style="border: 1px solid #ccc; padding: 10px; margin-top: 5px; border-radius: 5px; background: #f9f9f9;">
+                                    ${item.text}
+                                </div>
+                            </div>
+                        `;
+                        textOptions.append(radioButton);
+                    });
+                    textOptionsWrapper.show();
+                }
+            } else if (type === "auto_realization" || type === "auto_realization_min") {
+                if (orderTexts['auto_realization'] && orderTexts['auto_realization'][0]) {
+                    textArea.val(orderTexts['auto_realization'][0].text);
+                }
+            }
+        });
+        
+        // Handle text option selection for order cars
+        $(document).off('change', '.text-option-radio').on('change', '.text-option-radio', function() {
+            const index = $(this).val();
+            if (orderTexts['auto_company'] && orderTexts['auto_company'][index]) {
+                const selectedText = orderTexts['auto_company'][index].text;
+                $("#feature_13").val(selectedText);
+            }
+        });
 
         $(document).on('change', '.promotions-option-radio', function() {
             const selectedValue = $(this).val();
