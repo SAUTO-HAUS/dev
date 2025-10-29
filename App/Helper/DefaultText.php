@@ -26,6 +26,13 @@ class DefaultText
 
     public function getContacts($account_id): array
     {
+        // Special case for Sauto-stock-extern - API doesn't return phones
+        if ($account_id == 3) {
+            __log("Returning hardcoded phone for Sauto-stock-extern: 37379600326", 'phone_debug.log');
+            return ['37379600326'];
+        }
+        
+        __log("Getting phones from API for account_id: " . $account_id, 'phone_debug.log');
         $phones = (new Api999Service($account_id))->getPhones();
         $contacts = [];
         if (!empty($phones['phone_numbers'])) {
@@ -33,6 +40,7 @@ class DefaultText
                 $contacts[] = $phone['phone_number'];
             }
         }
+        __log("API returned contacts: " . json_encode($contacts), 'phone_debug.log');
         return $contacts;
     }
 }
