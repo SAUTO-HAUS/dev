@@ -19,6 +19,11 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 		$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE 1=1';
 	}
 	
+	// For similar cars, show both in_stock and on_order cars
+	if ($v1=='smlr') {
+		$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE (catalog_type = "in_stock" OR catalog_type = "on_order" OR catalog_type IS NULL)';
+	}
+	
 	if ($v1=='new'){ $sql .= ' AND `vis`="1" AND `act`="1" '; }
 	elseif ($v1=='archive'){ $sql .= ' AND `vis`="1" AND `act`="0" '; }
 	elseif ($v1=='top'){ $sql .= ' AND `vis`="1" AND `act`="1" AND `top`="1" '; }
