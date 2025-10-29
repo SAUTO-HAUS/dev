@@ -283,7 +283,7 @@
 
   /* Standard desktop (1600-2199px) - Includes 1920x1080 */
   @media (min-width: 1600px) and (max-width: 2199px) {
-    main .gr > .cnt > .it { height: 30rem; }
+    main .gr > .cnt > .it { height: 29rem; }
     main .gr > .cnt > .it > img { height: 15rem; }
     main .gr > .cnt > .it > div.imgX { height: 15rem; }
     main .gr > .cnt > .it > .img { height: 15rem; }
@@ -291,7 +291,7 @@
 
   /* Large screens (2200-2999px) */
   @media (min-width: 2200px) and (max-width: 2999px) {
-    main .gr > .cnt > .it { height: 34rem; }
+    main .gr > .cnt > .it { height: 33rem; }
     main .gr > .cnt > .it > img { height: 17rem; }
     main .gr > .cnt > .it > div.imgX { height: 17rem; }
     main .gr > .cnt > .it > .img { height: 17rem; }
@@ -299,7 +299,7 @@
 
   /* Very large screens (3000px+) */
   @media (min-width: 3000px) {
-    main .gr > .cnt > .it { height: 38rem; }
+    main .gr > .cnt > .it { height: 37rem; }
     main .gr > .cnt > .it > img { height: 19rem; }
     main .gr > .cnt > .it > div.imgX { height: 19rem; }
     main .gr > .cnt > .it > .img { height: 19rem; }
