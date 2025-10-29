@@ -558,12 +558,15 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                     display: flex;
                                     align-items: center;
                                     justify-content: center;
-                                    font-size: 2rem;
-                                    background: linear-gradient(135deg, rgba(226, 0, 26, 0.1) 0%, rgba(226, 0, 26, 0.05) 100%);
+                                    background: transparent;
                                     border-radius: 1rem;
                                     flex-shrink: 0;
-                                    color: #e2001a;
-                                    border: 2px solid rgba(226, 0, 26, 0.1);
+                                    border: none;
+                                }
+                                
+                                .order-info-icon img {
+                                    width: 2.5rem;
+                                    height: 2.5rem;
                                 }
                                 
                                 .order-info-title {
@@ -623,7 +626,11 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                     .order-info-icon {
                                         width: 3rem !important;
                                         height: 3rem !important;
-                                        font-size: 1.5rem !important;
+                                    }
+                                    
+                                    .order-info-icon img {
+                                        width: 2rem !important;
+                                        height: 2rem !important;
                                     }
                                     
                                     .order-info-title {
@@ -636,7 +643,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                 <!-- Siguranța -->
                                 <div class="order-info-card">
                                     <div class="order-info-header">
-                                        <div class="order-info-icon">🔒</div>
+                                        <div class="order-info-icon"><img src="/content/site/page/icons-order/safety-1.png" alt="Security icon"></div>
                                         <h3 class="order-info-title">'.$lng['w']['order_info_security_title'].'</h3>
                                     </div>
                                     <div class="order-info-content">
@@ -650,7 +657,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                 <!-- Avantaje -->
                                 <div class="order-info-card">
                                     <div class="order-info-header">
-                                        <div class="order-info-icon">✓</div>
+                                        <div class="order-info-icon"><img src="/content/site/page/icons-order/winner-2.png" alt="Advantages icon"></div>
                                         <h3 class="order-info-title">'.$lng['w']['order_info_advantages_title'].'</h3>
                                     </div>
                                     <div class="order-info-content">
@@ -663,7 +670,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                 <!-- Transparența -->
                                 <div class="order-info-card">
                                     <div class="order-info-header">
-                                        <div class="order-info-icon">📄</div>
+                                        <div class="order-info-icon"><img src="/content/site/page/icons-order/magnifying-glass-3.png" alt="Transparency icon"></div>
                                         <h3 class="order-info-title">'.$lng['w']['order_info_transparency_title'].'</h3>
                                     </div>
                                     <div class="order-info-content">
@@ -1119,12 +1126,15 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                             display: flex;
                             align-items: center;
                             justify-content: center;
-                            font-size: 1.5rem;
-                            background: linear-gradient(135deg, rgba(226, 0, 26, 0.1) 0%, rgba(226, 0, 26, 0.05) 100%);
+                            background: transparent;
                             border-radius: 1rem;
                             flex-shrink: 0;
-                            color: #e2001a;
-                            border: 2px solid rgba(226, 0, 26, 0.1);
+                            border: none;
+                        }
+                        
+                        .order-info-grid-mobile .order-info-icon img {
+                            width: 2rem;
+                            height: 2rem;
                         }
                         
                         .order-info-grid-mobile .order-info-title {
@@ -1183,7 +1193,7 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                         <!-- Siguranța -->
                         <div class="order-info-card">
                             <div class="order-info-header">
-                                <div class="order-info-icon">🔒</div>
+                                <div class="order-info-icon"><img src="/content/site/page/icons-order/safety-1.png" alt="Security icon"></div>
                                 <h3 class="order-info-title">'.$lng['w']['order_info_security_title'].'</h3>
                             </div>
                             <div class="order-info-content">
@@ -1197,7 +1207,7 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                         <!-- Avantaje -->
                         <div class="order-info-card">
                             <div class="order-info-header">
-                                <div class="order-info-icon">✓</div>
+                                <div class="order-info-icon"><img src="/content/site/page/icons-order/winner-2.png" alt="Advantages icon"></div>
                                 <h3 class="order-info-title">'.$lng['w']['order_info_advantages_title'].'</h3>
                             </div>
                             <div class="order-info-content">
@@ -1210,7 +1220,7 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                         <!-- Transparența -->
                         <div class="order-info-card">
                             <div class="order-info-header">
-                                <div class="order-info-icon">📄</div>
+                                <div class="order-info-icon"><img src="/content/site/page/icons-order/magnifying-glass-3.png" alt="Transparency icon"></div>
                                 <h3 class="order-info-title">'.$lng['w']['order_info_transparency_title'].'</h3>
                             </div>
                             <div class="order-info-content">
