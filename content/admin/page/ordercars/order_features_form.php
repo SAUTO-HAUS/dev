@@ -57,7 +57,7 @@ if (!isset($new999)) $new999 = true;
                 </div>
                 <div style="display: inline-block; text-align: center;">
                     <label>
-                        <input type="radio" name="scenario" value="maximal" <?php if (!empty($car999['scenario']) && $car999['scenario'] == "maximal") : ?> checked disabled <?php endif; ?> class="scenario-option-radio">
+                        <input type="radio" name="scenario" value="maximal" <?php if (!empty($car999['scenario']) && $car999['scenario'] == "maximal") : ?> checked disabled <?php elseif (!isset($car999['scenario']) || empty($car999['scenario'])) : ?> checked <?php endif; ?> class="scenario-option-radio">
                         <span><?= __('cars.maximal') ?></span>
                     </label>
                 </div>
@@ -305,6 +305,13 @@ if (!isset($new999)) $new999 = true;
             // Trigger change event after texts are loaded
             $('#announcement_type').trigger('change');
         });
+        
+        // Trigger scenario change event to show checkboxes for default maximal
+        setTimeout(function() {
+            $('.scenario-option-radio:checked').trigger('change');
+            // Trigger account change to load contacts for default account
+            $('.account_999_id').trigger('change');
+        }, 500);
         
         // Override the announcement_type change handler for order cars
         $(document).off('change', '#announcement_type').on('change', '#announcement_type', function() {

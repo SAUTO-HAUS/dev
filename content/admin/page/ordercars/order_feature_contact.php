@@ -1,6 +1,8 @@
 <?php
 use App\Helper\DefaultText;
-$contacts = (new DefaultText)->getContacts(__post('account_id', $car['999_api_id'] ?? 1));
+// For new order cars, use account 3 as default, otherwise use existing account
+$account_id = __post('account_id') ?: ($car['999_api_id'] ?? 3);
+$contacts = (new DefaultText)->getContacts($account_id);
 foreach ($contacts as $contact): ?>
     <div class="form-check contact-container">
         <input
