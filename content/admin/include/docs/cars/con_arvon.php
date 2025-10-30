@@ -115,7 +115,7 @@ $rtrn = '
 			<div class="ws"></div>
 			<div class="sign">
 				<div class="s1">Olăriță Sergiu<span style="position: absolute;bottom: -7mm;">'.App\Helper\PhoneHelper::formatPhone(App\Helper\PhoneHelper::getGeneralPhone(), 'display').' </span><div class="ln"></div>'.(isset($_POST['stamp'])&&$_POST['stamp']==1?'<div class="stamp ghost"><div class="signature"></div></div>':'').'</div>
-				<div class="s2"><span class="txt_cpt">'.strtolower($_POST['u_nm']).'</span><div class="ln"></div></div>
+				<div class="s2"><span class="txt_cpt">'.strtolower($_POST['u_nm']).'</span><span style="position: absolute;bottom: -7mm; font-size: 1rem;">IDNO: '.($_POST['u_cf_idno'] ?? '').'</span><div class="ln"></div></div>
 			</div>
 		</div>
 	</div>';
