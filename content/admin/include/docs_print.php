@@ -256,19 +256,22 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 		$cont_q = isset($cont_q)?$cont_q:'';
 		$cont_n = isset($cont_n)?$cont_n:'';
 		
-		//GROUP BY `nm`
-		$pdo = $db->prepare('SELECT * FROM '.$prefx.'_docs_u WHERE `cf_idno`=:cf_idno ');
+			//GROUP BY `nm`
+		$pdo = $db->prepare('SELECT * FROM '.$prefx.'_docs_u WHERE `cf_idno`=:cf_idno LIMIT 1 ');
 		$pdo->execute([ 'cf_idno'=>$u_cf_idno ]);
-		//if( $pdo->fetchColumn() ){ echo $u_cf_idno.' found :)'; }else{ echo $u_cf_idno.' not found :('; }
-		$i=0;
-		foreach ($pdo as $r){//IF FOUND
-			$i++;
-			$u_id = $r['id'];
-		}
-		if ($i==0){// IF NOT FOUND - MAKE IT
+		$existing_user = $pdo->fetch(PDO::FETCH_ASSOC);
+		
+		if (!$existing_user){// IF NOT FOUND - MAKE IT
 			$pdo = $db->prepare('INSERT INTO '.$prefx.'_docs_u (`tp`, `nm`, `cf_idno`, `tva_dt`, `iban_dt_tk`, `adr`, `phn`, `eml`) VALUES (:tp, :nm, :cf_idno, :tva_dt, :iban_dt_tk, :adr, :phn, :eml) ');
 			$pdo->execute([ 'tp'=>$u_tp, 'nm'=>$u_nm, 'cf_idno'=>$u_cf_idno, 'tva_dt'=>$u_tva_dt, 'iban_dt_tk'=>$u_iban_dt_tk, 'adr'=>$u_adr, 'phn'=>$u_phn, 'eml'=>$u_eml ]);
 			$u_id = $db->lastInsertId();
+		} else {
+			// User exists - get the ID and update
+			$u_id = $existing_user['id'];
+			$pdo = $db->prepare('UPDATE '.$prefx.'_docs_u SET 
+			`tp`=:tp, `nm`=:nm, `cf_idno`=:cf_idno, `tva_dt`=:tva_dt, `iban_dt_tk`=:iban_dt_tk, `adr`=:adr, `phn`=:phn, `eml`=:eml
+			WHERE `id`=:id');
+			$pdo->execute([ 'tp'=>$u_tp, 'nm'=>$u_nm, 'cf_idno'=>$u_cf_idno, 'tva_dt'=>$u_tva_dt, 'iban_dt_tk'=>$u_iban_dt_tk, 'adr'=>$u_adr, 'phn'=>$u_phn, 'eml'=>$u_eml, 'id'=>$u_id ]);
 		}
 		
 		//__________________INFO generator
@@ -316,6 +319,15 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 		//__________________
 		
 		//ADD INFO TO CTLG
+		// Ensure we have a valid user ID before inserting
+		if ($u_id == 0 && $u_cf_idno != 0) {
+			$pdo = $db->prepare('SELECT `id` FROM '.$prefx.'_docs_u WHERE `cf_idno`=:cf_idno LIMIT 1');
+			$pdo->execute(['cf_idno' => $u_cf_idno]);
+			$user_check = $pdo->fetch(PDO::FETCH_ASSOC);
+			if ($user_check) {
+				$u_id = $user_check['id'];
+			}
+		}
 		$pdo = $db->prepare('
 			INSERT INTO '.$prefx.'_docs_ctlg (`gr`, `f`, `abr`, `y`, `q`, `n`, `cd`, `inf`, `u`, `date`, `adm`, `crtd`)
 			VALUES (:gr, :f, :abr, :y, :q, :n, :cd, :inf, :u, :date, :adm, :crtd)
