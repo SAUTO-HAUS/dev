@@ -99,6 +99,17 @@ if ( $_POST['fn']=='edit_sbmt' ){
 	
 	//UPDATE INFO CTLG
 	$last_edited_by = isset($_SESSION) && isset($_SESSION['user_id']) && $_SESSION['user_id'] !== '' ? $_SESSION['user_id'] : ( $_COOKIE['usr_id'] ?? 0 );
+
+    // Ensure we have a valid user ID
+	if ($u_id == 0 && $u_cf_idno != 0) {
+		$pdo = $db->prepare('SELECT `id` FROM '.$prefx.'_docs_u WHERE `cf_idno`=:cf_idno LIMIT 1');
+		$pdo->execute(['cf_idno' => $u_cf_idno]);
+		$user_check = $pdo->fetch(PDO::FETCH_ASSOC);
+		if ($user_check) {
+			$u_id = $user_check['id'];
+		}
+	}
+
 	$pdo = $db->prepare('UPDATE '.$prefx.'_docs_ctlg SET `cd`=:cd, `inf`=:inf, `u`=:u, `date`=:date, `last_edited_by`=:last_edited_by WHERE `id`=:id');
 	$pdo->execute([ 'cd'=>$it_cd, 'inf'=>$inf, 'u'=>$u_id, 'date'=>$doc_date, 'last_edited_by'=>$last_edited_by, 'id'=>$it_id ]);
 	
