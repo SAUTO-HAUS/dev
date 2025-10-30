@@ -17,6 +17,7 @@ INSERT INTO countries (name, code, flag, is_european) VALUES
 ('Czech Republic', 'CZ', 'cz.svg', 1),
 ('Denmark', 'DK', 'dk.svg', 1),
 ('Estonia', 'EE', 'ee.svg', 1),
+('Europe', 'EU', 'ue.svg', 1),
 ('Finland', 'FI', 'fi.svg', 1),
 ('France', 'FR', 'fr.svg', 1),
 ('Germany', 'DE', 'de.svg', 1),
