@@ -1110,11 +1110,11 @@ JAVASCRIPT;
 		<div class="btn" data-fn="add_it" data-next="1">Add car</div>
 		
 		<div class="ttl">Cumparator</div>
-		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp"><option value="fiz">Fizic</option><option value="jur" selected>Juridic</option></select></label>
-		<label class="lbl"><span class="ttl">CF</span><input class="need fj" type="text" name="u_cf_idno" title="CF" data-fiz="IDNO" data-jur="CF" /></label>
-		<label class="lbl"><span class="ttl">SRL</span><input class="need fj" type="text" name="u_nm" title="SRL" data-fiz="Name" data-jur="SRL" /></label>
-		<label class="lbl"><span class="ttl">TVA</span><input class="need fj dt" type="text" name="u_tva_dt" min="1900-01-01" max="2099-12-31" title="TVA" data-fiz="Data nasterii" data-jur="TVA" /></label> <!--onfocus=\'(this.type="date")\'-->
-		<label class="lbl"><span class="ttl">IBAN</span><input class="need fj dt" type="text" name="u_iban_dt_tk" min="1900-01-01" max="2099-12-31" title="IBAN" data-fiz="Data elibirat" data-jur="IBAN" /></label>
+		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp"><option value="fiz" selected>Fizic</option><option value="jur">Juridic</option></select></label>
+		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" /></label>
+		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" /></label>
+		<label class="lbl"><span class="ttl">Data nasterii</span><input class="need fj dt" type="date" name="u_tva_dt" min="1900-01-01" max="2099-12-31" title="Data nasterii" data-fiz="Data nasterii" data-jur="TVA" /></label> <!--onfocus=\'(this.type="date")\'-->
+		<label class="lbl"><span class="ttl">Data elibirat</span><input class="need fj dt" type="date" name="u_iban_dt_tk" min="1900-01-01" max="2099-12-31" title="Data elibirat" data-fiz="Data elibirat" data-jur="IBAN" /></label>
 		<label class="lbl"><span class="ttl">Adress</span><input class="need" type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" /></label>
 		';
 		
