@@ -169,14 +169,33 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                 <!-----COUNTRY OF IMPORT----->
                 <div class="form-group col-md-4">
                     <select class="country form-control" name="import_country_id" tabindex="9" title="<?= __('cars.import_country') ?>">
+                        <?php if (!$new) : ?>
                         <option value=""><?= strtoupper(__('cars.import_country')) ?></option>
-                        <?php foreach ($countries as $country) : ?>
-                            <option value="<?= $country['id'] ?>" 
-                                <?= ((isset($car['import_country_id']) && $country['id'] == $car['import_country_id']) ? 'selected' : '') ?>
-                                data-flag="<?= $country['flag'] ?>">
-                                <?= $country['name'] ?>
-                            </option>
-                        <?php endforeach; ?>
+                        <?php endif; ?>
+                        <?php if ($new) : ?>
+                            <?php foreach ($countries as $country) : ?>
+                                <?php if ($country['code'] == 'EU') : ?>
+                                    <option value="<?= $country['id'] ?>" selected data-flag="<?= $country['flag'] ?>">
+                                        <?= $country['name'] ?>
+                                    </option>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                            <?php foreach ($countries as $country) : ?>
+                                <?php if ($country['code'] != 'EU') : ?>
+                                    <option value="<?= $country['id'] ?>" data-flag="<?= $country['flag'] ?>">
+                                        <?= $country['name'] ?>
+                                    </option>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        <?php else : ?>
+                            <?php foreach ($countries as $country) : ?>
+                                <option value="<?= $country['id'] ?>" 
+                                    <?= (isset($car['import_country_id']) && $country['id'] == $car['import_country_id']) ? 'selected' : '' ?>
+                                    data-flag="<?= $country['flag'] ?>">
+                                    <?= $country['name'] ?>
+                                </option>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     </select>
                 </div>
 
