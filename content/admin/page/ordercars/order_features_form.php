@@ -256,7 +256,7 @@ if (!isset($new999)) $new999 = true;
                     <?php elseif ($feature['type'] === 'contacts'): ?>
                         <div class="feature-contacts" data-feature-id="<?=$feature['id']?>">
                             <?php $feature_id = $feature['id']; ?>
-                            <?php include('feature_contact.php') ?>
+                            <?php include('order_feature_contact.php') ?>
                         </div>
                     <?php endif; ?>
                 </div>
