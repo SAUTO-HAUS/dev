@@ -189,14 +189,14 @@ if (!isset($new999)) $new999 = true;
                             <option value=""><?= __('cars.select') ?> ...</option>
                             <?php if (!empty($feature['options'])) : ?>
                                 <?php foreach ($feature['options'] as $option): ?>
-                                    <option value="<?= htmlspecialchars($option['id']) ?>" <?php if($feature['id'] == 5 || (!empty($car999features[$feature['id']]) && $car999features[$feature['id']]['value'] == $option['id'])) :?> selected <?php endif; ?>>
+                                    <option value="<?= htmlspecialchars($option['id']) ?>" <?php if($feature['id'] == 5 || (!empty($car999features[$feature['id']]) && $car999features[$feature['id']]['value'] == $option['id']) || (($option['id'] == '18594' && $option['title'] == 'Другое') || ($option['id'] == '29677' && $option['title'] == 'Еврозона') || ($option['id'] == '18668' && $option['title'] == 'С пробегом') || ($option['id'] == '29672' && $option['title'] == 'Под заказ') || ($option['id'] == '12900' && $option['title'] == 'Кишинёв мун.') || ($option['id'] == '23241' && $option['title'] == 'Автодилер') || ($option['id'] == '21979' && $option['title'] == 'Левый') || ($option['id'] == '19119' && $option['title'] == '5') || ($option['id'] == '19086' && $option['title'] == '5')) && empty($car999features[$feature['id']]['value'])) :?> selected <?php endif; ?>>
                                         <?= htmlspecialchars($option['title']) ?>
                                     </option>
                                 <?php endforeach; ?>
                             <?php elseif(!empty($feature['depends_on']) && !empty($car999)) : ?>
                                 <?php $featureDepends = (new Api999Service())->getDependentOptions($car999['subcategory_id'], $feature['depends_on'], $car999features[$feature['depends_on']]['value']); ?>
                                 <?php foreach ($featureDepends['Options'] as $option): ?>
-                                    <option value="<?= htmlspecialchars($option['id']) ?>" <?php if(!empty($car999features[$feature['id']]) && $car999features[$feature['id']]['value'] == $option['id']) :?> selected <?php endif; ?>>
+                                    <option value="<?= htmlspecialchars($option['id']) ?>" <?php if((!empty($car999features[$feature['id']]) && $car999features[$feature['id']]['value'] == $option['id']) || (($option['id'] == '18594' && $option['title'] == 'Другое') || ($option['id'] == '29677' && $option['title'] == 'Еврозона') || ($option['id'] == '18668' && $option['title'] == 'С пробегом') || ($option['id'] == '29672' && $option['title'] == 'Под заказ') || ($option['id'] == '12900' && $option['title'] == 'Кишинёв мун.') || ($option['id'] == '23241' && $option['title'] == 'Автодилер') || ($option['id'] == '21979' && $option['title'] == 'Левый') || ($option['id'] == '19119' && $option['title'] == '5') || ($option['id'] == '19086' && $option['title'] == '5')) && empty($car999features[$feature['id']]['value'])) :?> selected <?php endif; ?>>
                                         <?= htmlspecialchars($option['title']) ?>
                                     </option>
                                 <?php endforeach; ?>
