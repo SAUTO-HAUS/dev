@@ -32,6 +32,7 @@ INSERT INTO countries (name, code, flag, is_european) VALUES
 ('Netherlands', 'NL', 'nl.svg', 1),
 ('Poland', 'PL', 'pl.svg', 1),
 ('Portugal', 'PT', 'pt.svg', 1),
+('Moldova', 'MD', 'md.svg', 1),
 ('Romania', 'RO', 'ro.svg', 1),
 ('Slovakia', 'SK', 'sk.svg', 1),
 ('Slovenia', 'SI', 'si.svg', 1),

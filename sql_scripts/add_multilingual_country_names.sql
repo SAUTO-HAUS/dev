@@ -73,7 +73,7 @@ UPDATE countries SET name_ru = 'Словения' WHERE code = 'SI';
 UPDATE countries SET name_ru = 'Испания' WHERE code = 'ES';
 UPDATE countries SET name_ru = 'Швеция' WHERE code = 'SE';
 UPDATE countries SET name_ru = 'Великобритания' WHERE code = 'GB';
-UPDATE countries SET name_ru = 'Молдавия' WHERE code = 'MD';
+UPDATE countries SET name_ru = 'Молдова' WHERE code = 'MD';
 UPDATE countries SET name_ru = 'Швейцария' WHERE code = 'CH';
 UPDATE countries SET name_ru = 'Норвегия' WHERE code = 'NO';
 UPDATE countries SET name_ru = 'США' WHERE code = 'US';
