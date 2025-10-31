@@ -1087,6 +1087,336 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+    // SINCRONIZARE AUTOMATĂ - Începem cu MARCA
+    function syncBrandTo999() {
+        console.log('=== SINCRONIZARE MARCA ===');
+        
+        // Obținem valoarea mărcii din formularul principal
+        const brandField = document.querySelector('select[name="br"]');
+        if (!brandField || !brandField.value) {
+            console.log('Nu există marca selectată în formularul principal');
+            return;
+        }
+        
+        const brandValue = brandField.value;
+        console.log('Marca selectată:', brandValue);
+        
+        // Căutăm câmpul mărcii în forma 999 (feature[20])
+        const brand999Field = document.querySelector('select[name="feature[20]"]');
+        if (!brand999Field) {
+            console.log('Câmpul marca din forma 999 nu a fost găsit');
+            return;
+        }
+        
+        console.log('Câmpul marca 999 găsit, căutăm opțiunea potrivită...');
+        
+        // Căutăm opțiunea potrivită
+        const options = brand999Field.querySelectorAll('option');
+        let brandSynced = false;
+        
+        console.log('Căutăm potrivire pentru valoarea:', brandValue);
+        console.log('Opțiuni disponibile în forma 999:');
+        options.forEach((option, index) => {
+            console.log(`  ${index}: value="${option.value}" text="${option.textContent.trim()}"`);
+        });
+        
+        // Încearcă mai întâi potrivirea exactă după valoare
+        options.forEach(option => {
+            if (!brandSynced && option.value === brandValue) {
+                brand999Field.value = option.value;
+                brandSynced = true;
+                console.log('✅ Marca sincronizată după valoare:', option.textContent);
+                
+                // Actualizare vizuală - elimină clasa "empty" și declanșează doar change pentru modele
+                brand999Field.classList.remove('empty');
+                
+                // Declanșează încărcarea modelelor pentru marca selectată (doar un change, fără input)
+                console.log('🔄 Declanșez încărcarea modelelor pentru marca selectată...');
+                brand999Field.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+        
+        // Dacă nu s-a găsit după valoare, încearcă după text
+        if (!brandSynced) {
+            // Obținem textul mărcii din formularul principal
+            const brandText = brandField.options[brandField.selectedIndex]?.textContent?.trim();
+            console.log('Căutăm după textul mărcii:', brandText);
+            
+            if (brandText) {
+                options.forEach(option => {
+                    const optionText = option.textContent.trim();
+                    if (!brandSynced && optionText.toLowerCase() === brandText.toLowerCase()) {
+                        brand999Field.value = option.value;
+                        brandSynced = true;
+                        console.log('✅ Marca sincronizată după text:', option.textContent);
+                        
+                        // Actualizare vizuală - elimină clasa "empty" și declanșează doar change pentru modele
+                        brand999Field.classList.remove('empty');
+                        
+                        // Declanșează încărcarea modelelor pentru marca selectată (doar un change, fără input)
+                        console.log('🔄 Declanșez încărcarea modelelor pentru marca selectată...');
+                        brand999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                });
+            }
+        }
+        
+        // Dacă încă nu s-a găsit, încearcă potrivire parțială
+        if (!brandSynced) {
+            const brandText = brandField.options[brandField.selectedIndex]?.textContent?.trim();
+            if (brandText) {
+                options.forEach(option => {
+                    const optionText = option.textContent.trim();
+                    if (!brandSynced && (
+                        optionText.toLowerCase().includes(brandText.toLowerCase()) ||
+                        brandText.toLowerCase().includes(optionText.toLowerCase())
+                    )) {
+                        brand999Field.value = option.value;
+                        brandSynced = true;
+                        console.log('✅ Marca sincronizată după potrivire parțială:', option.textContent);
+                        
+                        // Actualizare vizuală - elimină clasa "empty" și declanșează doar change pentru modele
+                        brand999Field.classList.remove('empty');
+                        
+                        // Declanșează încărcarea modelelor pentru marca selectată (doar un change, fără input)
+                        console.log('🔄 Declanșez încărcarea modelelor pentru marca selectată...');
+                        brand999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                });
+            }
+        }
+        
+        if (!brandSynced) {
+            console.log('❌ Nu s-a găsit nicio potrivire pentru marca:', brandValue);
+        }
+    }
+
+    // SINCRONIZARE MODEL - Aceeași logică ca marca
+    function syncModelTo999() {
+        console.log('=== SINCRONIZARE MODEL ===');
+        
+        // Obținem valoarea modelului din formularul principal
+        const modelField = document.querySelector('select[name="mo"]');
+        if (!modelField || !modelField.value) {
+            console.log('Nu există modelul selectat în formularul principal');
+            return;
+        }
+        
+        const modelValue = modelField.value;
+        console.log('Modelul selectat:', modelValue);
+        
+        // Căutăm câmpul modelului în forma 999 (feature[21])
+        const model999Field = document.querySelector('select[name="feature[21]"]');
+        if (!model999Field) {
+            console.log('Câmpul model din forma 999 nu a fost găsit');
+            return;
+        }
+        
+        // Verificăm dacă câmpul este disabled (depinde de marca)
+        if (model999Field.disabled) {
+            console.log('⚠️ Câmpul model este disabled - probabil marca nu este selectată în forma 999');
+            console.log('Încerc să sincronizez mai întâi marca...');
+            syncBrandTo999();
+            // Încearcă din nou după o întârziere
+            setTimeout(() => {
+                if (!model999Field.disabled) {
+                    console.log('Câmpul model s-a activat, încerc din nou sincronizarea...');
+                    syncModelTo999();
+                }
+            }, 1000);
+            return;
+        }
+        
+        console.log('Câmpul model 999 găsit și activ, căutăm opțiunea potrivită...');
+        
+        // Căutăm opțiunea potrivită
+        const options = model999Field.querySelectorAll('option');
+        let modelSynced = false;
+        
+        // Verificăm dacă avem opțiuni încărcate (mai mult decât doar opțiunea default)
+        if (options.length <= 1) {
+            console.log('⚠️ Câmpul model nu are opțiuni încărcate (doar opțiunea default)');
+            console.log('Încerc să sincronizez marca pentru a încărca modelele...');
+            syncBrandTo999();
+            
+            // Așteaptă încărcarea modelelor cu mai multe încercări
+            let attempts = 0;
+            const maxAttempts = 5;
+            
+            const waitForModels = () => {
+                attempts++;
+                setTimeout(() => {
+                    const newOptions = model999Field.querySelectorAll('option');
+                    console.log(`Încercare ${attempts}: găsite ${newOptions.length} opțiuni pentru model`);
+                    
+                    if (newOptions.length > 1) {
+                        console.log('✅ Opțiunile pentru model s-au încărcat, încerc din nou sincronizarea...');
+                        syncModelTo999();
+                    } else if (attempts < maxAttempts) {
+                        console.log(`⏳ Aștept încă puțin... (încercare ${attempts}/${maxAttempts})`);
+                        waitForModels();
+                    } else {
+                        console.log('❌ Opțiunile pentru model nu s-au încărcat după 5 încercări');
+                    }
+                }, 300); // Redus la 300ms pentru sincronizare mai rapidă
+            };
+            
+            waitForModels();
+            return;
+        }
+        
+        console.log('Căutăm potrivire pentru valoarea:', modelValue);
+        console.log('Opțiuni disponibile în forma 999:');
+        options.forEach((option, index) => {
+            console.log(`  ${index}: value="${option.value}" text="${option.textContent.trim()}"`);
+        });
+        
+        // Încearcă mai întâi potrivirea exactă după valoare
+        options.forEach(option => {
+            if (!modelSynced && option.value === modelValue) {
+                model999Field.value = option.value;
+                modelSynced = true;
+                console.log('✅ Modelul sincronizat după valoare:', option.textContent);
+                
+                // Actualizare vizuală - doar elimină clasa empty (fără evenimente care resetează)
+                model999Field.classList.remove('empty');
+                console.log('🎯 Model sincronizat și memorat (fără evenimente pentru a evita resetarea)');
+            }
+        });
+        
+        // Dacă nu s-a găsit după valoare, încearcă după text
+        if (!modelSynced) {
+            // Obținem textul modelului din formularul principal
+            const modelText = modelField.options[modelField.selectedIndex]?.textContent?.trim();
+            console.log('Căutăm după textul modelului:', modelText);
+            
+            if (modelText) {
+                options.forEach(option => {
+                    const optionText = option.textContent.trim();
+                    if (!modelSynced && optionText.toLowerCase() === modelText.toLowerCase()) {
+                        model999Field.value = option.value;
+                        modelSynced = true;
+                        console.log('✅ Modelul sincronizat după text:', option.textContent);
+                        
+                        // Actualizare vizuală - EXACT ca la marca
+                        model999Field.classList.remove('empty');
+                        model999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                        console.log('🎯 Model sincronizat și actualizat vizual EXACT ca la marca');
+                    }
+                });
+            }
+        }
+        
+        // Dacă încă nu s-a găsit, încearcă potrivire parțială
+        if (!modelSynced) {
+            const modelText = modelField.options[modelField.selectedIndex]?.textContent?.trim();
+            if (modelText) {
+                options.forEach(option => {
+                    const optionText = option.textContent.trim();
+                    if (!modelSynced && (
+                        optionText.toLowerCase().includes(modelText.toLowerCase()) ||
+                        modelText.toLowerCase().includes(optionText.toLowerCase())
+                    )) {
+                        model999Field.value = option.value;
+                        modelSynced = true;
+                        console.log('✅ Modelul sincronizat după potrivire parțială:', option.textContent);
+                        
+                        // Actualizare vizuală - EXACT ca la marca
+                        model999Field.classList.remove('empty');
+                        model999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                        console.log('🎯 Model sincronizat și actualizat vizual EXACT ca la marca');
+                    }
+                });
+            }
+        }
+        
+        if (!modelSynced) {
+            console.log('❌ Nu s-a găsit nicio potrivire pentru modelul:', modelValue);
+        }
+    }
+
+    // SINCRONIZARE FORM-LABEL - Selectează automat "Другое"
+    function setDefaultFormLabel() {
+        console.log('=== SETARE FORM-LABEL DEFAULT ===');
+        
+        // Căutăm câmpul form-label în forma 999
+        const formLabelField = document.querySelector('select[name*="form-label"], select[name*="label"]');
+        if (!formLabelField) {
+            console.log('Câmpul form-label nu a fost găsit');
+            return;
+        }
+        
+        console.log('Câmpul form-label găsit, setez "Другое"...');
+        
+        // Căutăm opțiunea "Другое" cu valoarea "18594"
+        const options = formLabelField.querySelectorAll('option');
+        let labelSet = false;
+        
+        options.forEach(option => {
+            if (!labelSet && (option.value === '18594' || option.textContent.trim() === 'Другое')) {
+                formLabelField.value = option.value;
+                labelSet = true;
+                console.log('✅ Form-label setat la "Другое":', option.textContent, 'valoare:', option.value);
+                
+                // Actualizare vizuală
+                formLabelField.classList.remove('empty');
+                formLabelField.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+        
+        if (!labelSet) {
+            console.log('❌ Nu s-a găsit opțiunea "Другое" în form-label');
+            console.log('Opțiuni disponibile:', Array.from(options).map(opt => `${opt.value}: ${opt.textContent.trim()}`));
+        }
+    }
+    
+    // Event listeners pentru schimbarea câmpurilor în formularul principal
+    const brandField = document.querySelector('select[name="br"]');
+    if (brandField) {
+        brandField.addEventListener('change', function() {
+            console.log('Marca schimbată în formularul principal');
+            setTimeout(syncBrandTo999, 100);
+        });
+    }
+    
+    const modelField = document.querySelector('select[name="mo"]');
+    if (modelField) {
+        modelField.addEventListener('change', function() {
+            console.log('Modelul schimbat în formularul principal');
+            setTimeout(syncModelTo999, 100);
+        });
+    }
+    
+    // Sincronizare inițială când se încarcă forma 999
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList') {
+                const featuresContainer = document.querySelector('.features');
+                if (featuresContainer && featuresContainer.children.length > 0) {
+                    console.log('Forma 999 încărcată, sincronizez marca, modelul și form-label...');
+                    setTimeout(syncBrandTo999, 200); // Redus pentru sincronizare mai rapidă
+                    setTimeout(syncModelTo999, 400); // Redus pentru sincronizare mai rapidă
+                    setTimeout(setDefaultFormLabel, 500); // Setează form-label default
+                    observer.disconnect(); // Oprim observarea după prima sincronizare
+                }
+            }
+        });
+    });
+    
+    // Începem să observăm pentru încărcarea formei 999
+    const featuresContainer = document.querySelector('.features');
+    if (featuresContainer) {
+        if (featuresContainer.children.length > 0) {
+            // Forma 999 este deja încărcată
+            setTimeout(syncBrandTo999, 200); // Redus pentru sincronizare mai rapidă
+            setTimeout(syncModelTo999, 400); // Redus pentru sincronizare mai rapidă
+            setTimeout(setDefaultFormLabel, 500); // Setează form-label default
+        } else {
+            // Așteptăm să se încarce forma 999
+            observer.observe(featuresContainer, { childList: true, subtree: true });
+        }
+    }
 });
 </script>
 
