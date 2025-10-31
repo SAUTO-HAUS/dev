@@ -67,7 +67,7 @@ if (!isset($new999)) $new999 = true;
             <label for="scenario"><?= __('cars.promotions') ?>:</label>
             <span class="text-danger">*</span>
             <div id="text_options" class="d-flex" style="margin-top: 10px;">
-                <div style="<?php if ($new999 || (!empty($car) && $car['promotions'] !== 'basic')) : ?>display: none;<?php endif; ?> text-align: center; margin-right: 5px;">
+                <div style="<?php if (!$new999 && (!empty($car) && $car['promotions'] !== 'basic')) : ?>display: none;<?php endif; ?> text-align: center; margin-right: 5px;">
                     <label>
                         <input type="radio" checked name="promotions" value="basic" class="promotions-option-radio"
                             <?php if (!$new999 && !empty($car) && $car['promotions'] === 'basic') : ?> checked disabled <?php endif; ?>>
@@ -82,7 +82,7 @@ if (!isset($new999)) $new999 = true;
                         <?php $scheduleType = 'basic'; include('schedule_detail.php'); ?>
                     </div>
                 </div>
-                <div style="<?php if ($new999 || (!empty($car) && $car['promotions'] !== 'lite')) : ?>display: none;<?php endif; ?> text-align: center; margin-right: 5px;">
+                <div style="<?php if (!$new999 && (!empty($car) && $car['promotions'] !== 'lite')) : ?>display: none;<?php endif; ?> text-align: center; margin-right: 5px;">
                     <label>
                         <input type="radio" name="promotions" value="lite" class="promotions-option-radio"
                             <?php if (!$new999 && !empty($car) && $car['promotions'] === 'lite') : ?> checked disabled <?php endif; ?>>
@@ -97,7 +97,7 @@ if (!isset($new999)) $new999 = true;
                         <?php $scheduleType = 'lite'; include('schedule_detail.php'); ?>
                     </div>
                 </div>
-                <div style="<?php if ($new999 || (!empty($car) && $car['promotions'] !== 'plus')) : ?>display: none;<?php endif; ?> text-align: center; margin-right: 5px;">
+                <div style="<?php if (!$new999 && (!empty($car) && $car['promotions'] !== 'plus')) : ?>display: none;<?php endif; ?> text-align: center; margin-right: 5px;">
                     <label>
                         <input type="radio" name="promotions" value="plus" class="promotions-option-radio"
                             <?php if (!$new999 && !empty($car) && $car['promotions'] === 'plus') : ?> checked disabled <?php endif; ?>>
@@ -112,7 +112,7 @@ if (!isset($new999)) $new999 = true;
                         <?php $scheduleType = 'plus'; include('schedule_detail.php'); ?>
                     </div>
                 </div>
-                <div style="<?php if ($new999 || (!empty($car) && $car['promotions'] !== 'turbo')) : ?>display: none;<?php endif; ?> text-align: center; margin-right: 5px;">
+                <div style="<?php if (!$new999 && (!empty($car) && $car['promotions'] !== 'turbo')) : ?>display: none;<?php endif; ?> text-align: center; margin-right: 5px;">
                     <label>
                         <input type="radio" name="promotions" value="turbo" class="promotions-option-radio"
                             <?php if (!$new999 && !empty($car) && $car['promotions'] === 'turbo') : ?> checked disabled <?php endif; ?>>
