@@ -18,11 +18,20 @@ ini_set('display_errors', 1);
 date_default_timezone_set('Europe/Chisinau');
 
 try {
-    // Database connection using Container
-    require_once __DIR__ . '/App/Core/Container.php';
-    $container = new App\Core\Container();
-    $db = $container->get('db');
-    $prefx = $container->get('prefx');
+    // Database connection using environment settings
+    require_once __DIR__ . '/environment.php';
+    
+    $db = new PDO(
+        'mysql:host=' . SQL_HOST . ';dbname=' . SQL_DB . ';charset=' . SQL_CHARSET,
+        SQL_USER,
+        SQL_PASS,
+        [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+        ]
+    );
+    
+    $prefx = 'gh3sp';
     
     echo "[" . date('Y-m-d H:i:s') . "] Facebook Cron Started\n";
     

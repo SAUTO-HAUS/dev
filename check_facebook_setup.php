@@ -1,11 +1,18 @@
 <?php
 // Check Facebook setup
-require_once 'App/Core/Container.php';
+require_once 'environment.php';
 
 try {
-    $container = new App\Core\Container();
-    $db = $container->get('db');
-    $prefx = $container->get('prefx');
+    $db = new PDO(
+        'mysql:host=' . SQL_HOST . ';dbname=' . SQL_DB . ';charset=' . SQL_CHARSET,
+        SQL_USER,
+        SQL_PASS,
+        [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+        ]
+    );
+    $prefx = 'gh3sp';
     
     echo "=== FACEBOOK SETTINGS CHECK ===\n";
     
