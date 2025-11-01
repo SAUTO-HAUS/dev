@@ -1,8 +1,11 @@
 <?php
 // Check Facebook setup
+require_once 'App/Core/Container.php';
+
 try {
-    $db = new PDO('mysql:host=localhost;dbname=sauto_db;charset=utf8mb4', 'root', '');
-    $prefx = 'gh3sp';
+    $container = new App\Core\Container();
+    $db = $container->get('db');
+    $prefx = $container->get('prefx');
     
     echo "=== FACEBOOK SETTINGS CHECK ===\n";
     
