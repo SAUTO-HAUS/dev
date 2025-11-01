@@ -126,8 +126,11 @@ class PublicationService
      */
     public function generateFacebookMessage($carData, $catalogType)
     {
-        // Build car title
-        $title = trim(($carData['br'] ?? '') . ' ' . ($carData['mo'] ?? ''));
+        // Build car title with proper capitalization
+        $brand = ucfirst(strtolower($carData['br'] ?? ''));
+        $model = ucwords(strtolower($carData['mo'] ?? ''));
+        $title = trim($brand . ' ' . $model);
+        
         if (empty($title)) {
             $title = $carData['name'] ?? 'Автомобиль';
         }
@@ -155,9 +158,10 @@ class PublicationService
         // Body type
         if (!empty($carData['bt'])) {
             $bodyTypes = [
-                1 => 'Sedan', 2 => 'Hatchback', 3 => 'Combi', 4 => 'Coupe', 
-                5 => 'Cabriolet', 6 => 'SUV', 7 => 'Pickup', 8 => 'Minivan',
-                9 => 'Limuzină', 10 => 'Roadster'
+                'sdn' => 'Sedan', 'suv' => 'SUV', 'hbk' => 'Hatchback', 'unv' => 'Universal', 
+                'cup' => 'Coupe', 'crv' => 'Crossover', 'mnv' => 'Minivan', 'pkp' => 'Pickup', 
+                'van' => 'Furgon', 'mbs' => 'Microbus', 'cbr' => 'Cabriolet', 'cmb' => 'Combi', 
+                'rod' => 'Roadster', 'frg' => 'Frigider', 'crr' => 'Purtător'
             ];
             $bodyType = $bodyTypes[$carData['bt']] ?? 'Necunoscut';
             $message .= "\n🚗 Tip caroserie: " . $bodyType;
@@ -172,7 +176,7 @@ class PublicationService
         
         // Engine capacity
         if (!empty($carData['vol'])) {
-            $message .= "\n🔧 Capacitate motor: " . number_format($carData['vol'] * 1000, 0) . ' cm3';
+            $message .= "\n🔧 Capacitate motor: " . $carData['vol'] . ' cc';
         }
         
         // Power
@@ -184,8 +188,9 @@ class PublicationService
         // Fuel type
         if (!empty($carData['fl'])) {
             $fuelTypes = [
-                1 => 'Benzină', 2 => 'Diesel', 3 => 'Gaz', 4 => 'Hibrid',
-                5 => 'Electric', 6 => 'Plug-in Hybrid', 7 => 'Etanol'
+                'gsl' => 'Benzină', 'gmn' => 'Benzină / Gaz (metan)', 'gpn' => 'Benzină / Gaz (propan)', 
+                'hbd' => 'Hibrid', 'dsl' => 'Diesel', 'pih' => 'Plug-in Hibrid', 
+                'elc' => 'Electricitate', 'gas' => 'Gaz'
             ];
             $fuel = $fuelTypes[$carData['fl']] ?? 'Necunoscut';
             $message .= "\n⛽ Tip combustibil: " . $fuel;
@@ -194,8 +199,8 @@ class PublicationService
         // Transmission
         if (!empty($carData['tra'])) {
             $transTypes = [
-                1 => 'Manuală', 2 => 'Automată', 3 => 'Semiautomată',
-                4 => 'CVT', 5 => 'Robotizată'
+                'tpt' => 'Tiptronic', 'atm' => 'Automată', 'mnl' => 'Mecanică', 
+                'rbt' => 'Robotizată', 'vrr' => 'Variator'
             ];
             $transmission = $transTypes[$carData['tra']] ?? 'Necunoscut';
             $message .= "\n⚙️ Cutia de viteze: " . $transmission;
@@ -204,7 +209,7 @@ class PublicationService
         // Drive type
         if (!empty($carData['wd'])) {
             $driveTypes = [
-                1 => 'Din față', 2 => 'Din spate', 3 => 'Integrală'
+                '44' => '4x4', 're' => 'Din spate', 'fr' => 'Din față'
             ];
             $drive = $driveTypes[$carData['wd']] ?? 'Necunoscut';
             $message .= "\n🔄 Tip tracțiune: " . $drive;
@@ -213,9 +218,12 @@ class PublicationService
         // Color
         if (!empty($carData['clr'])) {
             $colors = [
-                1 => 'Alb', 2 => 'Negru', 3 => 'Gri', 4 => 'Argintiu',
-                5 => 'Roșu', 6 => 'Albastru', 7 => 'Verde', 8 => 'Galben',
-                9 => 'Maro', 10 => 'Violet', 11 => 'Portocaliu', 12 => 'Bej'
+                'l_grn' => 'Verde deschis', 'blu' => 'Albastru', 'brn' => 'Maro', 'cmn' => 'Carmin', 
+                'cml' => 'Cameleon', 'bge' => 'Bej', 'wht' => 'Alb', 'vns' => 'Vișiniu', 
+                'azr' => 'Azuriu', 'ylw' => 'Galben', 'grn' => 'Verde', 'gld' => 'Auriu', 
+                'red' => 'Roșu', 'orn' => 'Portocaliu', 'pnk' => 'Roz', 'slv' => 'Argintiu', 
+                'gra' => 'Gri', 'd_grn' => 'Verde închis', 'prp' => 'Violet', 'blk' => 'Negru', 
+                'wap' => 'Asfalt umed', 'snd' => 'Nisip'
             ];
             $color = $colors[$carData['clr']] ?? 'Altă culoare';
             $message .= "\n🎨 Culoare: " . $color;
