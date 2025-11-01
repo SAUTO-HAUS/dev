@@ -6,3 +6,4 @@ filter_debug.log
 *.zip
 *.log
 environment.php
+scheduled_facebook_posts.php
