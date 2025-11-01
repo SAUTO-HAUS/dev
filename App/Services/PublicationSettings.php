@@ -163,6 +163,9 @@ if ($_POST) {
         // Auto-publication settings
         'auto_publish_regular' => isset($_POST['auto_publish_regular']) ? 1 : 0,
         'auto_publish_order' => isset($_POST['auto_publish_order']) ? 1 : 0,
+        
+        // Facebook default schedule time
+        'facebook_default_schedule_time' => $_POST['facebook_default_schedule_time'] ?? '20:00',
     ];
     
       // Save settings to database
@@ -181,7 +184,7 @@ if ($_POST) {
 
 // Load current settings - force fresh data
 $current_settings = [];
-$stmt = $db->prepare("SELECT name, value FROM {$prefx}_settings WHERE name IN ('regular_999md_account', 'regular_999md_token', 'regular_telegram_bot_token', 'regular_telegram_chat_id', 'order_999md_account', 'order_999md_token', 'order_telegram_bot_token', 'order_telegram_chat_id', 'location_1_facebook_page_id', 'location_1_facebook_token', 'location_2_facebook_page_id', 'location_2_facebook_token', 'auto_publish_regular', 'auto_publish_order')");
+$stmt = $db->prepare("SELECT name, value FROM {$prefx}_settings WHERE name IN ('regular_999md_account', 'regular_999md_token', 'regular_telegram_bot_token', 'regular_telegram_chat_id', 'order_999md_account', 'order_999md_token', 'order_telegram_bot_token', 'order_telegram_chat_id', 'location_1_facebook_page_id', 'location_1_facebook_token', 'location_2_facebook_page_id', 'location_2_facebook_token', 'auto_publish_regular', 'auto_publish_order', 'facebook_default_schedule_time')");
 $stmt->execute();
 while ($row = $stmt->fetch()) {
     $current_settings[$row['name']] = $row['value'];
@@ -300,6 +303,13 @@ $rtrn .= '
                     <input type="checkbox" name="auto_publish_order" ' . (($current_settings['auto_publish_order'] ?? 0) ? 'checked' : '') . '>
                     ' . ($lng[$_COOKIE['lang']]['w']['auto_publish_order'] ?? 'Автоматическая публикация при добавлении автомобиля под заказ') . '
                 </label>
+            </div>
+            
+            <div class="setting-group">
+                <h4>' . ($lng[$_COOKIE['lang']]['w']['facebook_default_time'] ?? 'Время по умолчанию для планирования постов Facebook') . '</h4>
+                <label>' . ($lng[$_COOKIE['lang']]['w']['facebook_default_time'] ?? 'Время по умолчанию:') . '</label>
+                <input type="time" name="facebook_default_schedule_time" value="' . htmlspecialchars($current_settings['facebook_default_schedule_time'] ?? '20:00') . '" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                <small style="display: block; color: #666; margin-top: 5px;">' . ($lng[$_COOKIE['lang']]['w']['placeholder_facebook_default_time'] ?? 'Время по умолчанию (напр: 20:00)') . '</small>
             </div>
                 </div>
             </div>
