@@ -101,7 +101,8 @@ try {
                 throw new Exception("No photos found for car: {$post['car_id']}");
             }
             
-            $photoPath = __DIR__ . '/content/admin/uploads/cars/' . $photo['name'];
+            // Build correct photo path based on database structure
+            $photoPath = __DIR__ . '/media/images/' . $photo['path'] . '/' . $post['car_id'] . '/high/' . $photo['name'] . '.jpg';
             if (!file_exists($photoPath)) {
                 throw new Exception("Photo file not found: {$photoPath}");
             }
