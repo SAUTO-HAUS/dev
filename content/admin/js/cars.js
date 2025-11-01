@@ -726,7 +726,7 @@ $(document).ready(function(){
 
 	function checkFormValidity() {
 		let confirmButton = $('.confirm_999');
-		let requiredFields = $('.form-control.required, .form-check-input[required]');
+		let requiredFields = $('.form-control.required, .form-check-input[required]:not(#confirm_rules)');
 		let contactCheckboxes = $('.form-check-input.contact');
 		let confirmRulesCheckbox = $('#confirm_rules');
 
@@ -767,6 +767,17 @@ $(document).ready(function(){
 		}
 	}
 
+	// Ensure confirm_rules checkbox stays checked
+	$('#confirm_rules').prop('checked', true);
+	
+	// Force confirm_rules to stay checked with interval
+	setInterval(function() {
+		if ($('#confirm_rules').length && !$('#confirm_rules').is(':checked')) {
+			$('#confirm_rules').prop('checked', true);
+			console.log(' Forțat confirm_rules să rămână bifat');
+		}
+	}, 100);
+	
 	// Initial check
 	checkFormValidity();
 
@@ -783,6 +794,8 @@ $(document).ready(function(){
 		$(this).removeClass('empty');
 		checkFormValidity();
 	}).on('change', '#confirm_rules', function () {
+		// Forțează checkbox-ul să rămână bifat
+		$(this).prop('checked', true);
 		$(this).parent('.form-check').removeClass('empty');
 		checkFormValidity();
 	}).on('change', "#feature_20, #feature_21", function () {

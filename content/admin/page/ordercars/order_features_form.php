@@ -273,7 +273,7 @@ if (!isset($new999)) $new999 = true;
                     id="confirm_rules"
                     class="form-check-input"
                     required
-                    <?php if(!empty($car['999_id'])) : ?> checked <?php endif; ?>
+                    checked
                 >
                 <label class="form-check-label" for="confirm_rules">
                     <?= __('cars.confirm_rules_hint') ?><span class="text-danger">*</span>
