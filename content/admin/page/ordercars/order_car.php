@@ -1797,19 +1797,19 @@ document.addEventListener('DOMContentLoaded', function() {
             if (mutation.type === 'childList') {
                 const featuresContainer = document.querySelector('.features');
                 if (featuresContainer && featuresContainer.children.length > 0) {
-                    setTimeout(syncBrandTo999, 200); 
-                    setTimeout(syncModelTo999, 400); 
-                    setTimeout(syncPriceTo999, 600); 
-                    setTimeout(syncYearTo999, 800); 
-                    setTimeout(syncBodyTypeTo999, 1000); 
-                    setTimeout(syncMileageTo999, 1200); 
-                    setTimeout(syncEngineVolumeTo999, 1400); 
-                    setTimeout(syncHorsePowerTo999, 1600); 
-                    setTimeout(syncFuelTypeTo999, 1800); 
-                    setTimeout(syncTransmissionTo999, 2000); 
-                    setTimeout(syncWheelDriveTo999, 2200); 
-                    setTimeout(syncColorTo999, 2400); 
-                    setTimeout(setDefaultFormLabel, 2600); 
+                    setTimeout(syncBrandTo999, 50); 
+                    setTimeout(syncModelTo999, 100); 
+                    setTimeout(syncPriceTo999, 150); 
+                    setTimeout(syncYearTo999, 200); 
+                    setTimeout(syncBodyTypeTo999, 250); 
+                    setTimeout(syncMileageTo999, 300); 
+                    setTimeout(syncEngineVolumeTo999, 350); 
+                    setTimeout(syncHorsePowerTo999, 400); 
+                    setTimeout(syncFuelTypeTo999, 450); 
+                    setTimeout(syncTransmissionTo999, 500); 
+                    setTimeout(syncWheelDriveTo999, 550); 
+                    setTimeout(syncColorTo999, 600); 
+                    setTimeout(setDefaultFormLabel, 650); 
                     observer.disconnect(); 
                 }
             }
@@ -1821,19 +1821,19 @@ document.addEventListener('DOMContentLoaded', function() {
     if (featuresContainer) {
         if (featuresContainer.children.length > 0) {
         
-            setTimeout(syncBrandTo999, 200); 
-            setTimeout(syncModelTo999, 400); 
-            setTimeout(syncPriceTo999, 600); 
-            setTimeout(syncYearTo999, 800); 
-            setTimeout(syncBodyTypeTo999, 1000); 
-            setTimeout(syncMileageTo999, 1200); 
-            setTimeout(syncEngineVolumeTo999, 1400); 
-            setTimeout(syncHorsePowerTo999, 1600); 
-            setTimeout(syncFuelTypeTo999, 1800); 
-            setTimeout(syncTransmissionTo999, 2000); 
-            setTimeout(syncWheelDriveTo999, 2200); 
-            setTimeout(syncColorTo999, 2400); 
-            setTimeout(setDefaultFormLabel, 2600);
+            setTimeout(syncBrandTo999, 50); 
+            setTimeout(syncModelTo999, 100); 
+            setTimeout(syncPriceTo999, 150); 
+            setTimeout(syncYearTo999, 200); 
+            setTimeout(syncBodyTypeTo999, 250); 
+            setTimeout(syncMileageTo999, 300); 
+            setTimeout(syncEngineVolumeTo999, 350); 
+            setTimeout(syncHorsePowerTo999, 400); 
+            setTimeout(syncFuelTypeTo999, 450); 
+            setTimeout(syncTransmissionTo999, 500); 
+            setTimeout(syncWheelDriveTo999, 550); 
+            setTimeout(syncColorTo999, 600); 
+            setTimeout(setDefaultFormLabel, 650);
         } else {
        
             observer.observe(featuresContainer, { childList: true, subtree: true });
