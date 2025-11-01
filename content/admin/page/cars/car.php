@@ -883,4 +883,760 @@ SVG
 
 <?php endif; ?>
 
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // BRAND SYNC: Sauto form -> 999 form
+    function syncBrandTo999() {
+        const brandField = document.querySelector('select[name="br"]');
+        if (!brandField || !brandField.value) return;
+        
+        const brandValue = brandField.value;
+        const brand999Field = document.querySelector('select[name="feature[20]"]');
+        if (!brand999Field) return;
+        
+        const options = brand999Field.querySelectorAll('option');
+        let brandSynced = false;
+        
+        // Brand mapping: Sauto values -> 999 IDs
+        const brandMapping = {
+            'acura': ['392'], 
+            'alfa_romeo': ['295'], 
+            'audi': ['57'], 
+            'bentley': ['288'], 
+            'bmw': ['34'], 
+            'brilliance': ['748'], 
+            'byd': ['487'], 
+            'cadillac': ['439'], 
+            'chery': ['119'], 
+            'chevrolet': ['167'], 
+            'chrysler': ['101'], 
+            'citroen': ['32'], 
+            'cupra': ['24455'], 
+            'dacia': ['375'], 
+            'daewoo': ['99'], 
+            'daihatsu': ['132'], 
+            'dodge': ['89'], 
+            'ds_automobiles': ['24352'], 
+            'faw': ['504'],                 
+            'fiat': ['41'], 
+            'ford': ['139'], 
+            'geely': ['587'], 
+            'gmc': ['616'], 
+            'great_wall': ['202'], 
+            'haima': ['521'], 
+            'haval': ['23260'], 
+            'honda': ['149'], 
+            'hummer': ['247'], 
+            'hyundai': ['111'], 
+            'infiniti': ['419'], 
+            'isuzu': ['14'], 
+            'iveco': ['1049'], 
+            'jaguar': ['369'], 
+            'jeep': ['186'], 
+            'kia': ['130'], 
+            'lamborghini': ['12462'], 
+            'lancia': ['210'], 
+            'land_rover': ['291'], 
+            'lexus': ['136'], 
+            'lifan': ['414'], 
+            'lincoln': ['305'], 
+            'lotus': ['1743'], 
+            'maserati': ['1704'], 
+            'mazda': ['45'], 
+            'mercedes_benz': ['22'], 
+            'mini': ['577'], 
+            'mitsubishi': ['36'], 
+            'nissan': ['28'], 
+            'opel': ['1'], 
+            'peugeot': ['76'], 
+            'pontiac': ['284'], 
+            'porsche': ['282'], 
+            'renault': ['8'], 
+            'renault_samsung': ['27737'], 
+            'rolls_royce': ['266'], 
+            'rover': ['62'], 
+            'saab': ['344'], 
+            'seat': ['200'], 
+            'skoda': ['143'], 
+            'smart': ['263'], 
+            'ssangyong': ['397'], 
+            'subaru': ['121'], 
+            'suzuki': ['43'], 
+            'tata': ['883'], 
+            'tesla': ['17483'], 
+            'toyota': ['47'], 
+            'volkswagen': ['20'], 
+            'volvo': ['193'], 
+        };
+        
+        // Try mapping first
+        if (brandMapping[brandValue]) {
+            const mappedIds = brandMapping[brandValue];
+            for (const mappedId of mappedIds) {
+                if (!brandSynced) {
+                    const matchedOption = Array.from(options).find(opt => opt.value === mappedId);
+                    if (matchedOption) {
+                        brand999Field.value = matchedOption.value;
+                        brandSynced = true;
+                        brand999Field.classList.remove('empty');
+                        brand999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Fallback: exact value match
+        if (!brandSynced) {
+            options.forEach(option => {
+                if (!brandSynced && option.value === brandValue) {
+                    brand999Field.value = option.value;
+                    brandSynced = true;
+                    brand999Field.classList.remove('empty');
+                    brand999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+        }
+        
+        // Fallback: text match
+        if (!brandSynced) {
+            const brandText = brandField.options[brandField.selectedIndex]?.textContent?.trim();
+            if (brandText) {
+                options.forEach(option => {
+                    const optionText = option.textContent.trim();
+                    if (!brandSynced && (
+                        optionText.toLowerCase() === brandText.toLowerCase() ||
+                        optionText.toLowerCase().includes(brandText.toLowerCase()) ||
+                        brandText.toLowerCase().includes(optionText.toLowerCase())
+                    )) {
+                        brand999Field.value = option.value;
+                        brandSynced = true;
+                        brand999Field.classList.remove('empty');
+                        brand999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                });
+            }
+        }
+    }
+
+    // MODEL SYNC: Sauto form -> 999 form (depends on brand)
+    function syncModelTo999() {
+        const modelField = document.querySelector('select[name="mo"]');
+        if (!modelField || !modelField.value) return;
+        
+        const modelValue = modelField.value;
+        const model999Field = document.querySelector('select[name="feature[21]"]');
+        if (!model999Field) return;
+        
+        // Check if model field is disabled (depends on brand)
+        if (model999Field.disabled) {
+            syncBrandTo999();
+            setTimeout(() => {
+                if (!model999Field.disabled) syncModelTo999();
+            }, 1000);
+            return;
+        }
+        
+        const options = model999Field.querySelectorAll('option');
+        let modelSynced = false;
+        
+        // Wait for models to load if needed
+        if (options.length <= 1) {
+            syncBrandTo999();
+            let attempts = 0;
+            const maxAttempts = 5;
+            
+            const waitForModels = () => {
+                attempts++;
+                setTimeout(() => {
+                    const newOptions = model999Field.querySelectorAll('option');
+                    if (newOptions.length > 1) {
+                        syncModelTo999();
+                    } else if (attempts < maxAttempts) {
+                        waitForModels();
+                    }
+                }, 300);
+            };
+            waitForModels();
+            return;
+        }
+        
+        // Try exact value match first
+        options.forEach(option => {
+            if (!modelSynced && option.value === modelValue) {
+                model999Field.value = option.value;
+                modelSynced = true;
+                model999Field.classList.remove('empty');
+            }
+        });
+        
+        // Try text match
+        if (!modelSynced) {
+            const modelText = modelField.options[modelField.selectedIndex]?.textContent?.trim();
+            if (modelText) {
+                options.forEach(option => {
+                    const optionText = option.textContent.trim();
+                    if (!modelSynced && (
+                        optionText.toLowerCase() === modelText.toLowerCase() ||
+                        optionText.toLowerCase().includes(modelText.toLowerCase()) ||
+                        modelText.toLowerCase().includes(optionText.toLowerCase())
+                    )) {
+                        model999Field.value = option.value;
+                        modelSynced = true;
+                        model999Field.classList.remove('empty');
+                        model999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                });
+            }
+        }
+    }
+
+    // FORM LABEL: Set default "Другое"
+    function setDefaultFormLabel() {
+        const formLabelField = document.querySelector('select[name*="form-label"], select[name*="label"]');
+        if (!formLabelField) return;
+        
+        const options = formLabelField.querySelectorAll('option');
+        let labelSet = false;
+        
+        options.forEach(option => {
+            if (!labelSet && (option.value === '18594' || option.textContent.trim() === 'Другое')) {
+                formLabelField.value = option.value;
+                labelSet = true;
+                formLabelField.classList.remove('empty');
+                formLabelField.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+        
+    }
+    
+    // PRICE SYNC: Sauto form -> 999 form
+    function syncPriceTo999() {
+        const priceField = document.querySelector('input[name="prc"]');
+        if (!priceField || !priceField.value) return;
+        
+        const price999Field = document.querySelector('input[name="feature[2]"]');
+        if (!price999Field) return;
+        
+        price999Field.value = priceField.value;
+        price999Field.classList.remove('empty');
+    }
+
+    // YEAR SYNC: Sauto form -> 999 form
+    function syncYearTo999() {
+        const yearField = document.querySelector('input[name="yr"]');
+        if (!yearField || !yearField.value) return;
+        
+        const year999Field = document.querySelector('input[name="feature[19]"]');
+        if (!year999Field) return;
+        
+        year999Field.value = yearField.value;
+        year999Field.classList.remove('empty');
+    }
+
+    // BODY TYPE SYNC: Sauto form -> 999 form
+    function syncBodyTypeTo999() {
+        const bodyTypeField = document.querySelector('select[name="bt"]');
+        if (!bodyTypeField || !bodyTypeField.value) return;
+        
+        const bodyTypeValue = bodyTypeField.value;
+        const bodyType999Field = document.querySelector('select[name="feature[102]"]');
+        if (!bodyType999Field) return;
+        
+        const options = bodyType999Field.querySelectorAll('option');
+        let bodyTypeSynced = false;
+        
+        // Body type mapping
+        const bodyTypeMapping = {
+            'sdn': ['6'], // Sedan -> Седан
+            'suv': ['18', '74'], // SUV -> Внедорожник sau Кроссовер
+            'hbk': ['11'], // Hatchback -> Хетчбэк
+            'unv': ['27'], // Universal -> Универсал
+            'cup': ['96'], // Coupe -> Купе
+            'crv': ['74'], // Crossover -> Кроссовер
+            'mnv': ['49'], // Minivan -> Минивэн
+            'pkp': ['61'], // Pickup -> Пикап
+            'van': ['97'], // Furgon -> Фургон
+            'mbs': ['53'], // Microbus -> Микровэн
+            'cbr': ['156'], // Cabriolet -> Кабриолет
+            'cmb': ['68'], // Combi -> Комби
+            'rod': ['265'], // Roadster -> Родстер
+        };
+        
+        // Try mapping first
+        if (bodyTypeMapping[bodyTypeValue]) {
+            const mappedIds = bodyTypeMapping[bodyTypeValue];
+            for (const mappedId of mappedIds) {
+                if (!bodyTypeSynced) {
+                    const matchedOption = Array.from(options).find(opt => opt.value === mappedId);
+                    if (matchedOption) {
+                        bodyType999Field.value = matchedOption.value;
+                        bodyTypeSynced = true;
+                        bodyType999Field.classList.remove('empty');
+                        bodyType999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Fallback: exact value match
+        if (!bodyTypeSynced) {
+            options.forEach(option => {
+                if (!bodyTypeSynced && option.value === bodyTypeValue) {
+                    bodyType999Field.value = option.value;
+                    bodyTypeSynced = true;
+                    bodyType999Field.classList.remove('empty');
+                    bodyType999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+        }
+        
+        // Fallback: text match
+        if (!bodyTypeSynced) {
+            const bodyTypeText = bodyTypeField.options[bodyTypeField.selectedIndex]?.textContent?.trim();
+            if (bodyTypeText) {
+                options.forEach(option => {
+                    const optionText = option.textContent.trim();
+                    if (!bodyTypeSynced && (
+                        optionText.toLowerCase() === bodyTypeText.toLowerCase() ||
+                        optionText.toLowerCase().includes(bodyTypeText.toLowerCase()) ||
+                        bodyTypeText.toLowerCase().includes(optionText.toLowerCase())
+                    )) {
+                        bodyType999Field.value = option.value;
+                        bodyTypeSynced = true;
+                        bodyType999Field.classList.remove('empty');
+                        bodyType999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                });
+            }
+        }
+        
+    }
+
+    function syncMileageTo999() {
+        const mileageField = document.querySelector('input[name="mlg"]');
+        if (!mileageField || !mileageField.value) return;
+        
+        const mileageValue = mileageField.value;
+        
+        const mileage999Field = document.querySelector('input[name="feature[104]"]');
+        if (!mileage999Field) return;
+        
+        mileage999Field.value = mileageValue;
+        mileage999Field.classList.remove('empty');
+        
+        const unitField = document.querySelector('select[name="unit"]');
+        if (unitField && unitField.value) {
+            const unitValue = unitField.value;
+            const unit999Field = document.querySelector('select[name="feature_units[104]"]');
+            if (unit999Field) {
+                unit999Field.value = unitValue;
+            }
+        } 
+    }
+
+    function syncEngineVolumeTo999() {
+        
+        // Obținem valoarea volumului motorului din formularul principal
+        const engineVolumeField = document.querySelector('input[name="vol"]');
+        if (!engineVolumeField || !engineVolumeField.value) return;
+        
+        const engineVolumeValue = engineVolumeField.value;
+        
+        const engineVolume999Field = document.querySelector('input[name="feature[103]"]');
+        if (!engineVolume999Field) return;
+        
+        engineVolume999Field.value = engineVolumeValue;
+        engineVolume999Field.classList.remove('empty');
+    }
+
+    function syncHorsePowerTo999() {
+
+        const horsePowerField = document.querySelector('input[name="hp"]');
+        if (!horsePowerField || !horsePowerField.value) return;
+        
+        const horsePowerValue = horsePowerField.value;
+
+        const horsePower999Field = document.querySelector('input[name="feature[107]"]');
+        if (!horsePower999Field) return;
+        
+        horsePower999Field.value = horsePowerValue;
+        horsePower999Field.classList.remove('empty');
+    }
+
+    function syncFuelTypeTo999() {
+
+        const fuelTypeField = document.querySelector('select[name="fl"]');
+        if (!fuelTypeField || !fuelTypeField.value) {
+            return;
+        }
+        
+        const fuelTypeValue = fuelTypeField.value;
+        const fuelTypeText = fuelTypeField.options[fuelTypeField.selectedIndex]?.textContent?.trim();
+        
+        const fuelType999Field = document.querySelector('select[name="feature[151]"]');
+        if (!fuelType999Field) {
+            return;
+        }
+        
+        const options = fuelType999Field.querySelectorAll('option');
+        let fuelTypeSynced = false;
+        
+        const fuelTypeMapping = {
+            'gsl': ['10'], 
+            'gmn': ['159'], 
+            'gpn': ['3'], 
+            'hbd': ['161'], 
+            'dsl': ['24'], 
+            'pih': ['22987'], 
+            'elc': ['12617'], 
+            'gas': ['21311'], 
+        };
+
+        if (fuelTypeMapping[fuelTypeValue]) {
+            const mappedIds = fuelTypeMapping[fuelTypeValue];
+            for (const mappedId of mappedIds) {
+                if (!fuelTypeSynced) {
+                    const matchedOption = Array.from(options).find(opt => opt.value === mappedId);
+                    if (matchedOption) {
+                        fuelType999Field.value = matchedOption.value;
+                        fuelTypeSynced = true;
+                        
+                        fuelType999Field.classList.remove('empty');
+                        fuelType999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (!fuelTypeSynced) {
+            options.forEach(option => {
+                if (!fuelTypeSynced && option.value === fuelTypeValue) {
+                    fuelType999Field.value = option.value;
+                    fuelTypeSynced = true;
+
+                    fuelType999Field.classList.remove('empty');
+                    fuelType999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+        }
+        
+    }
+
+    function syncTransmissionTo999() {
+        
+        const transmissionField = document.querySelector('select[name="tra"]');
+        if (!transmissionField || !transmissionField.value) {
+            return;
+        }
+        
+        const transmissionValue = transmissionField.value;
+        const transmissionText = transmissionField.options[transmissionField.selectedIndex]?.textContent?.trim();
+        
+        const transmission999Field = document.querySelector('select[name="feature[101]"]');
+        if (!transmission999Field) {
+            return;
+        }
+        
+        const options = transmission999Field.querySelectorAll('option');
+        let transmissionSynced = false;
+        
+        const transmissionMapping = {
+            'tpt': ['16'], 
+            'atm': ['16'], 
+            'mnl': ['4'], 
+            'rbt': ['1054'], 
+            'vrr': ['1051'],
+        };
+                if (transmissionMapping[transmissionValue]) {
+            const mappedIds = transmissionMapping[transmissionValue];
+            for (const mappedId of mappedIds) {
+                if (!transmissionSynced) {
+                    const matchedOption = Array.from(options).find(opt => opt.value === mappedId);
+                    if (matchedOption) {
+                        transmission999Field.value = matchedOption.value;
+                        transmissionSynced = true;
+                        
+                        transmission999Field.classList.remove('empty');
+                        transmission999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                        break;
+                    }
+                }
+            }
+        }
+        
+        if (!transmissionSynced) {
+            options.forEach(option => {
+                if (!transmissionSynced && option.value === transmissionValue) {
+                    transmission999Field.value = option.value;
+                    transmissionSynced = true;
+                    
+                    transmission999Field.classList.remove('empty');
+                    transmission999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+        }
+    }
+
+    function syncWheelDriveTo999() {
+        
+        const wheelDriveField = document.querySelector('select[name="wd"]');
+        if (!wheelDriveField || !wheelDriveField.value) return;
+        
+        const wheelDriveValue = wheelDriveField.value;
+        
+        const wheelDrive999Field = document.querySelector('select[name="feature[108]"]');
+        if (!wheelDrive999Field) return;
+        
+        const options = wheelDrive999Field.querySelectorAll('option');
+        let wheelDriveSynced = false;
+        
+        const wheelDriveMapping = {
+            '44': ['17'], 
+            're': ['25'], 
+            'fr': ['5'], 
+        };
+        
+        if (wheelDriveMapping[wheelDriveValue]) {
+            const mappedIds = wheelDriveMapping[wheelDriveValue];
+            for (const mappedId of mappedIds) {
+                if (!wheelDriveSynced) {
+                    const matchedOption = Array.from(options).find(opt => opt.value === mappedId);
+                    if (matchedOption) {
+                        wheelDrive999Field.value = matchedOption.value;
+                        wheelDriveSynced = true;
+                        
+                        wheelDrive999Field.classList.remove('empty');
+                        wheelDrive999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                        break;
+                    }
+                }
+            }
+        }
+        
+        if (!wheelDriveSynced) {
+            options.forEach(option => {
+                if (!wheelDriveSynced && option.value === wheelDriveValue) {
+                    wheelDrive999Field.value = option.value;
+                    wheelDriveSynced = true;
+                    
+                    wheelDrive999Field.classList.remove('empty');
+                    wheelDrive999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+        }
+        
+    }
+
+    function syncColorTo999() {
+
+        const colorField = document.querySelector('select[name="clr"]');
+        if (!colorField || !colorField.value) return;
+        
+        const colorValue = colorField.value;
+        
+        const color999Field = document.querySelector('select[name="feature[17]"]');
+        if (!color999Field) return;
+        
+        const options = color999Field.querySelectorAll('option');
+        let colorSynced = false;
+        
+        const colorMapping = {
+            'l_grn': ['176'], 
+            'blu': ['40'], 
+            'brn': ['208'], 
+            'cmn': ['309'], 
+            'cml': ['79'], 
+            'bge': ['87'], 
+            'wht': ['19'], 
+            'vns': ['65'], 
+            'azr': ['31'], 
+            'ylw': ['179'], 
+            'grn': ['13'], 
+            'gld': ['72'], 
+            'red': ['38'], 
+            'orn': ['334'], 
+            'pnk': ['554'], 
+            'slv': ['56'], 
+            'gra': ['50'], 
+            'd_grn': ['12'], 
+            'prp': ['93'], 
+            'blk': ['7'], 
+        };
+        
+
+        if (colorMapping[colorValue]) {
+            const mappedIds = colorMapping[colorValue];
+            for (const mappedId of mappedIds) {
+                if (!colorSynced) {
+                    const matchedOption = Array.from(options).find(opt => opt.value === mappedId);
+                    if (matchedOption) {
+                        color999Field.value = matchedOption.value;
+                        colorSynced = true;
+                        
+                        color999Field.classList.remove('empty');
+                        color999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                        break;
+                    }
+                }
+            }
+        }
+        
+        if (!colorSynced) {
+            options.forEach(option => {
+                if (!colorSynced && option.value === colorValue) {
+                    color999Field.value = option.value;
+                    colorSynced = true;
+                    
+                    color999Field.classList.remove('empty');
+                    color999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+        }
+        
+    }
+
+    const brandField = document.querySelector('select[name="br"]');
+    if (brandField) {
+        brandField.addEventListener('change', function() {
+            setTimeout(syncBrandTo999, 100);
+        });
+    }
+    
+    const modelField = document.querySelector('select[name="mo"]');
+    if (modelField) {
+        modelField.addEventListener('change', function() {
+            setTimeout(syncModelTo999, 100);
+        });
+    }
+    
+    const priceField = document.querySelector('input[name="prc"]');
+    if (priceField) {
+        priceField.addEventListener('input', function() {
+            setTimeout(syncPriceTo999, 100);
+        });
+    }
+    
+    const yearField = document.querySelector('input[name="yr"]');
+    if (yearField) {
+        yearField.addEventListener('input', function() {
+            setTimeout(syncYearTo999, 100);
+        });
+    }
+    
+    const bodyTypeField = document.querySelector('select[name="bt"]');
+    if (bodyTypeField) {
+        bodyTypeField.addEventListener('change', function() {
+            setTimeout(syncBodyTypeTo999, 100);
+        });
+    }
+    
+    const mileageField = document.querySelector('input[name="mlg"]');
+    if (mileageField) {
+        mileageField.addEventListener('input', function() {
+            setTimeout(syncMileageTo999, 100);
+        });
+    }
+    
+    const unitField = document.querySelector('select[name="unit"]');
+    if (unitField) {
+        unitField.addEventListener('change', function() {
+            setTimeout(syncMileageTo999, 100);
+        });
+    }
+    
+    const engineVolumeField = document.querySelector('input[name="vol"]');
+    if (engineVolumeField) {
+        engineVolumeField.addEventListener('input', function() {
+            setTimeout(syncEngineVolumeTo999, 100);
+        });
+    }
+    
+    const horsePowerField = document.querySelector('input[name="hp"]');
+    if (horsePowerField) {
+        horsePowerField.addEventListener('input', function() {
+            setTimeout(syncHorsePowerTo999, 100);
+        });
+    }
+    
+    const fuelTypeField = document.querySelector('select[name="fl"]');
+    if (fuelTypeField) {
+        fuelTypeField.addEventListener('change', function() {
+            setTimeout(syncFuelTypeTo999, 100);
+        });
+    }
+    
+    const transmissionField = document.querySelector('select[name="tra"]');
+    if (transmissionField) {
+        transmissionField.addEventListener('change', function() {
+            setTimeout(syncTransmissionTo999, 100);
+        });
+    }
+    
+    const wheelDriveField = document.querySelector('select[name="wd"]');
+    if (wheelDriveField) {
+        wheelDriveField.addEventListener('change', function() {
+            setTimeout(syncWheelDriveTo999, 100);
+        });
+    }
+    
+    const colorField = document.querySelector('select[name="clr"]');
+    if (colorField) {
+        colorField.addEventListener('change', function() {
+            setTimeout(syncColorTo999, 100);
+        });
+    }
+    
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if (mutation.type === 'childList') {
+                const featuresContainer = document.querySelector('.features');
+                if (featuresContainer && featuresContainer.children.length > 0) {
+                    setTimeout(syncBrandTo999, 50); 
+                    setTimeout(syncModelTo999, 100); 
+                    setTimeout(syncPriceTo999, 150); 
+                    setTimeout(syncYearTo999, 200); 
+                    setTimeout(syncBodyTypeTo999, 250); 
+                    setTimeout(syncMileageTo999, 300); 
+                    setTimeout(syncEngineVolumeTo999, 350); 
+                    setTimeout(syncHorsePowerTo999, 400); 
+                    setTimeout(syncFuelTypeTo999, 450); 
+                    setTimeout(syncTransmissionTo999, 500); 
+                    setTimeout(syncWheelDriveTo999, 550); 
+                    setTimeout(syncColorTo999, 600); 
+                    setTimeout(setDefaultFormLabel, 650); 
+                    observer.disconnect(); 
+                }
+            }
+        });
+    });
+    
+    
+    const featuresContainer = document.querySelector('.features');
+    if (featuresContainer) {
+        if (featuresContainer.children.length > 0) {
+        
+            setTimeout(syncBrandTo999, 50); 
+            setTimeout(syncModelTo999, 100); 
+            setTimeout(syncPriceTo999, 150); 
+            setTimeout(syncYearTo999, 200); 
+            setTimeout(syncBodyTypeTo999, 250); 
+            setTimeout(syncMileageTo999, 300); 
+            setTimeout(syncEngineVolumeTo999, 350); 
+            setTimeout(syncHorsePowerTo999, 400); 
+            setTimeout(syncFuelTypeTo999, 450); 
+            setTimeout(syncTransmissionTo999, 500); 
+            setTimeout(syncWheelDriveTo999, 550); 
+            setTimeout(syncColorTo999, 600); 
+            setTimeout(setDefaultFormLabel, 650);
+        } else {
+       
+            observer.observe(featuresContainer, { childList: true, subtree: true });
+        }
+    }
+});
+</script>
+
 <?php include(__DIR__ . '/country_flags_include.php'); ?>
