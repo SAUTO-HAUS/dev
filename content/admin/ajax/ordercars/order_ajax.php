@@ -395,6 +395,20 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
     try {
         // Calculate scheduled datetime
         $scheduled_date = date('Y-m-d');
+        // Get default schedule time from database settings
+        $default_time = '20:00'; // Fallback default
+        try {
+            $stmt = $db->prepare("SELECT value FROM {$prefx}_settings WHERE name = 'facebook_default_schedule_time' LIMIT 1");
+            $stmt->execute();
+            $setting = $stmt->fetch();
+            if ($setting && !empty($setting['value'])) {
+                $default_time = $setting['value'];
+            }
+        } catch (Exception $e) {
+            // Use fallback if database query fails
+        }
+        
+        $schedule_time = __post('schedule_time') ?: $default_time;
         $scheduled_datetime = $scheduled_date . ' ' . $schedule_time . ':00';
         
         // If the time has already passed today, schedule for tomorrow

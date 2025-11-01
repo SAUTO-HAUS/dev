@@ -42,6 +42,8 @@ $lng['ro']['w']['auto_publish_order'] = 'Publicare automată la adăugarea autom
 $lng['ro']['w']['save_settings'] = 'Salvează setările';
 $lng['ro']['w']['separate_account'] = 'Cont separat pentru comenzi';
 $lng['ro']['w']['same_page_id'] = 'ID pagină Facebook pentru comenzi';
+$lng['ro']['w']['facebook_default_time'] = 'Ora implicită pentru programarea postărilor Facebook';
+$lng['ro']['w']['placeholder_facebook_default_time'] = 'Ora implicită (ex: 20:00)';
 
 // Placeholder translations - Romanian
 $lng['ro']['w']['placeholder_main_999md_account'] = 'Contul principal 999.md';
@@ -79,6 +81,8 @@ $lng['ru']['w']['auto_publish_order'] = 'Автоматическая публи
 $lng['ru']['w']['save_settings'] = 'Сохранить настройки';
 $lng['ru']['w']['separate_account'] = 'Отдельный аккаунт для заказов';
 $lng['ru']['w']['same_page_id'] = 'ID Facebook страницы для заказов';
+$lng['ru']['w']['facebook_default_time'] = 'Время по умолчанию для планирования постов Facebook';
+$lng['ru']['w']['placeholder_facebook_default_time'] = 'Время по умолчанию (напр: 20:00)';
 
 // Placeholder translations - Russian
 $lng['ru']['w']['placeholder_main_999md_account'] = 'Основной аккаунт 999.md';
@@ -116,6 +120,8 @@ $lng['en']['w']['auto_publish_order'] = 'Auto-publish when adding car on order';
 $lng['en']['w']['save_settings'] = 'Save Settings';
 $lng['en']['w']['separate_account'] = 'Separate account for orders';
 $lng['en']['w']['same_page_id'] = 'Facebook page ID for orders';
+$lng['en']['w']['facebook_default_time'] = 'Default time for Facebook post scheduling';
+$lng['en']['w']['placeholder_facebook_default_time'] = 'Default time (e.g: 20:00)';
 
 // Placeholder translations - English
 $lng['en']['w']['placeholder_main_999md_account'] = 'Main 999.md account';

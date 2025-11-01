@@ -257,7 +257,20 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
 
     $carId = $it_id = __post('id');
     $local_id = __post('local_id');
-    $schedule_time = __post('schedule_time') ?: '20:00'; // Default to 20:00 if not provided
+    // Get default schedule time from database settings
+    $default_time = '20:00'; // Fallback default
+    try {
+        $stmt = $db->prepare("SELECT value FROM {$prefx}_settings WHERE name = 'facebook_default_schedule_time' LIMIT 1");
+        $stmt->execute();
+        $setting = $stmt->fetch();
+        if ($setting && !empty($setting['value'])) {
+            $default_time = $setting['value'];
+        }
+    } catch (Exception $e) {
+        // Use fallback if database query fails
+    }
+    
+    $schedule_time = __post('schedule_time') ?: $default_time;
 
     $_COOKIE['lang']='ro';
     require (_DEFAULT.'/language.php');

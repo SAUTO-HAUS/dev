@@ -961,7 +961,21 @@ SVG
                                 </svg>
                             </span>
                     </div>
-                    <input type="time" id="facebook_schedule_time" value="20:00" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;" onclick="event.stopPropagation();">
+                    <?php
+                    // Get default schedule time from database
+                    $default_schedule_time = '20:00';
+                    try {
+                        $stmt = $db->prepare("SELECT value FROM {$prefx}_settings WHERE name = 'facebook_default_schedule_time' LIMIT 1");
+                        $stmt->execute();
+                        $setting = $stmt->fetch();
+                        if ($setting && !empty($setting['value'])) {
+                            $default_schedule_time = $setting['value'];
+                        }
+                    } catch (Exception $e) {
+                        // Use fallback if query fails
+                    }
+                    ?>
+                    <input type="time" id="facebook_schedule_time" value="<?= $default_schedule_time ?>" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;" onclick="event.stopPropagation();">
                 </div>
 
                     <?/*
