@@ -1115,13 +1115,105 @@ document.addEventListener('DOMContentLoaded', function() {
         const options = brand999Field.querySelectorAll('option');
         let brandSynced = false;
         
-        console.log('Căutăm potrivire pentru valoarea:', brandValue);
-        console.log('Opțiuni disponibile în forma 999:');
-        options.forEach((option, index) => {
-            console.log(`  ${index}: value="${option.value}" text="${option.textContent.trim()}"`);
-        });
+                console.log('Căutăm potrivire pentru valoarea:', brandValue);
         
-        // Încearcă mai întâi potrivirea exactă după valoare
+        // Mapare specifică pentru mărci (valori exacte din Sauto -> 999)
+        const brandMapping = {
+            'acura': ['392'], // Acura -> Acura
+            'alfa_romeo': ['295'], // Alfa Romeo -> Alfa Romeo
+            'audi': ['57'], // Audi -> Audi
+            'bentley': ['288'], // Bentley -> Bentley
+            'bmw': ['34'], // BMW -> BMW
+            'brilliance': ['748'], // Brilliance -> Brilliance
+            'byd': ['487'], // Byd -> Byd
+            'cadillac': ['439'], // Cadillac -> Cadillac
+            'chery': ['119'], // Chery -> Chery
+            'chevrolet': ['167'], // Chevrolet -> Chevrolet
+            'chrysler': ['101'], // Chrysler -> Chrysler
+            'citroen': ['32'], // Citroen -> Citroen
+            'cupra': ['24455'], // Cupra -> Cupra
+            'dacia': ['375'], // Dacia -> Dacia
+            'daewoo': ['99'], // Daewoo -> Daewoo
+            'daihatsu': ['132'], // Daihatsu -> Daihatsu
+            'dodge': ['89'], // Dodge -> Dodge
+            'ds_automobiles': ['24352'], // DS Automobiles -> DS Automobiles
+            'faw': ['504'], // Faw -> FAW
+            'fiat': ['41'], // Fiat -> Fiat
+            'ford': ['139'], // Ford -> Ford
+            'geely': ['587'], // Geely -> Geely
+            'gmc': ['616'], // GMC -> GMC
+            'great_wall': ['202'], // Great Wall -> Great Wall
+            'haima': ['521'], // Haima -> Haima
+            'haval': ['23260'], // Haval -> Haval
+            'honda': ['149'], // Honda -> Honda
+            'hummer': ['247'], // Hummer -> Hummer
+            'hyundai': ['111'], // Hyundai -> Hyundai
+            'infiniti': ['419'], // Infiniti -> Infiniti
+            'isuzu': ['14'], // Isuzu -> Isuzu
+            'iveco': ['1049'], // Iveco -> Iveco
+            'jaguar': ['369'], // Jaguar -> Jaguar
+            'jeep': ['186'], // Jeep -> Jeep
+            'kia': ['130'], // Kia -> KIA
+            'lamborghini': ['12462'], // Lamborghini -> Lamborghini
+            'lancia': ['210'], // Lancia -> Lancia
+            'land_rover': ['291'], // Land Rover -> Land Rover
+            'lexus': ['136'], // Lexus -> Lexus
+            'lifan': ['414'], // Lifan -> Lifan
+            'lincoln': ['305'], // Lincoln -> Lincoln
+            'lotus': ['1743'], // Lotus -> Lotus
+            'maserati': ['1704'], // Maserati -> Maserati
+            'mazda': ['45'], // Mazda -> Mazda
+            'mercedes_benz': ['22'], // Mercedes Benz -> Mercedes
+            'mini': ['577'], // MINI -> Mini
+            'mitsubishi': ['36'], // Mitsubishi -> Mitsubishi
+            'nissan': ['28'], // Nissan -> Nissan
+            'opel': ['1'], // Opel -> Opel
+            'peugeot': ['76'], // Peugeot -> Peugeot
+            'pontiac': ['284'], // Pontiac -> Pontiac
+            'porsche': ['282'], // Porsche -> Porsche
+            'renault': ['8'], // Renault -> Renault
+            'renault_samsung': ['27737'], // Renault Samsung -> Renault Samsung
+            'rolls_royce': ['266'], // Rolls Royce -> Rolls-Royce
+            'rover': ['62'], // Rover -> Rover
+            'saab': ['344'], // Saab -> Saab
+            'seat': ['200'], // Seat -> Seat
+            'skoda': ['143'], // Skoda -> Skoda
+            'smart': ['263'], // Smart -> Smart
+            'ssangyong': ['397'], // Ssangyong -> Ssangyong
+            'subaru': ['121'], // Subaru -> Subaru
+            'suzuki': ['43'], // Suzuki -> Suzuki
+            'tata': ['883'], // Tata -> Tata
+            'tesla': ['17483'], // Tesla -> Tesla
+            'toyota': ['47'], // Toyota -> Toyota
+            'volkswagen': ['20'], // Volkswagen -> Volkswagen
+            'volvo': ['193'], // Volvo -> Volvo
+        };
+        
+        // Încearcă maparea specifică mai întâi (folosește valoarea din select)
+        if (brandMapping[brandValue]) {
+            const mappedIds = brandMapping[brandValue];
+            for (const mappedId of mappedIds) {
+                if (!brandSynced) {
+                    const matchedOption = Array.from(options).find(opt => opt.value === mappedId);
+                    if (matchedOption) {
+                        brand999Field.value = matchedOption.value;
+                        brandSynced = true;
+                        console.log('✅ Marca sincronizată prin mapare:', matchedOption.textContent);
+                        
+                        // Actualizare vizuală - elimină clasa "empty" și declanșează doar change pentru modele
+                        brand999Field.classList.remove('empty');
+                        
+                        // Declanșează încărcarea modelelor pentru marca selectată (doar un change, fără input)
+                        console.log('🔄 Declanșez încărcarea modelelor pentru marca selectată...');
+                        brand999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Încearcă mai întâi potrivirea exactă după valoare (fallback)
+      
         options.forEach(option => {
             if (!brandSynced && option.value === brandValue) {
                 brand999Field.value = option.value;
@@ -1371,6 +1463,596 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // SINCRONIZARE PREȚ - Din formularul principal la forma 999
+    function syncPriceTo999() {
+        console.log('=== SINCRONIZARE PREȚ ===');
+        
+        // Obținem valoarea prețului din formularul principal
+        const priceField = document.querySelector('input[name="prc"]');
+        if (!priceField || !priceField.value) {
+            console.log('❌ Nu s-a găsit câmpul preț sau nu are valoare în formularul principal');
+            return;
+        }
+        
+        const priceValue = priceField.value;
+        console.log('Prețul selectat:', priceValue);
+        
+        // Căutăm câmpul preț în forma 999 (feature[2])
+        const price999Field = document.querySelector('input[name="feature[2]"]');
+        if (!price999Field) {
+            console.log('❌ Nu s-a găsit câmpul feature[2] în forma 999');
+            return;
+        }
+        
+        // Sincronizăm prețul
+        price999Field.value = priceValue;
+        price999Field.classList.remove('empty');
+        console.log('✅ Prețul sincronizat cu succes:', priceValue);
+    }
+
+    // SINCRONIZARE AN PRODUCERE - Din formularul principal la forma 999
+    function syncYearTo999() {
+        console.log('=== SINCRONIZARE AN PRODUCERE ===');
+        
+        // Obținem valoarea anului din formularul principal
+        const yearField = document.querySelector('input[name="yr"]');
+        if (!yearField || !yearField.value) {
+            console.log('❌ Nu s-a găsit câmpul an sau nu are valoare în formularul principal');
+            return;
+        }
+        
+        const yearValue = yearField.value;
+        console.log('Anul selectat:', yearValue);
+        
+        // Căutăm câmpul an în forma 999 (feature[19])
+        const year999Field = document.querySelector('input[name="feature[19]"]');
+        if (!year999Field) {
+            console.log('❌ Nu s-a găsit câmpul feature[19] în forma 999');
+            return;
+        }
+        
+        // Sincronizăm anul
+        year999Field.value = yearValue;
+        year999Field.classList.remove('empty');
+        console.log('✅ Anul sincronizat cu succes:', yearValue);
+    }
+
+    // SINCRONIZARE TIP CAROSERIE - Din formularul principal la forma 999
+    function syncBodyTypeTo999() {
+        console.log('=== SINCRONIZARE TIP CAROSERIE ===');
+        
+        // Obținem valoarea tipului de caroserie din formularul principal
+        const bodyTypeField = document.querySelector('select[name="bt"]');
+        if (!bodyTypeField || !bodyTypeField.value) {
+            console.log('❌ Nu s-a găsit câmpul tip caroserie sau nu are valoare în formularul principal');
+            return;
+        }
+        
+        const bodyTypeValue = bodyTypeField.value;
+        const bodyTypeText = bodyTypeField.options[bodyTypeField.selectedIndex]?.textContent?.trim();
+        console.log('Tipul caroserie selectat:', bodyTypeValue, '(' + bodyTypeText + ')');
+        
+        // Căutăm câmpul tip caroserie în forma 999 (feature[102])
+        const bodyType999Field = document.querySelector('select[name="feature[102]"]');
+        if (!bodyType999Field) {
+            console.log('❌ Nu s-a găsit câmpul feature[102] în forma 999');
+            return;
+        }
+        
+        console.log('Căutăm potrivire pentru tipul caroserie...');
+        const options = bodyType999Field.querySelectorAll('option');
+        let bodyTypeSynced = false;
+        
+        // Mapare specifică pentru tipurile de caroserie (valori exacte din Sauto)
+        const bodyTypeMapping = {
+            'sdn': ['6'], // Sedan -> Седан
+            'suv': ['18', '74'], // SUV -> Внедорожник sau Кроссовер
+            'hbk': ['11'], // Hatchback -> Хетчбэк
+            'unv': ['27'], // Universal -> Универсал
+            'cup': ['96'], // Coupe -> Купе
+            'crv': ['74'], // Crossover -> Кроссовер
+            'mnv': ['49'], // Minivan -> Минивэн
+            'pkp': ['61'], // Pickup -> Пикап
+            'van': ['97'], // Furgon -> Фургон
+            'mbs': ['53'], // Microbus -> Микровэн
+            'cbr': ['156'], // Cabriolet -> Кабриолет
+            'cmb': ['68'], // Combi -> Комби
+            'rod': ['265'], // Roadster -> Родстер
+        };
+        
+        // Încearcă maparea specifică mai întâi (folosește valoarea din select)
+        if (bodyTypeMapping[bodyTypeValue]) {
+            const mappedIds = bodyTypeMapping[bodyTypeValue];
+            for (const mappedId of mappedIds) {
+                if (!bodyTypeSynced) {
+                    const matchedOption = Array.from(options).find(opt => opt.value === mappedId);
+                    if (matchedOption) {
+                        bodyType999Field.value = matchedOption.value;
+                        bodyTypeSynced = true;
+                        console.log('✅ Tipul caroserie sincronizat prin mapare:', matchedOption.textContent);
+                        
+                        // Actualizare vizuală
+                        bodyType999Field.classList.remove('empty');
+                        bodyType999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Încearcă mai întâi potrivirea exactă după valoare
+        options.forEach(option => {
+            if (!bodyTypeSynced && option.value === bodyTypeValue) {
+                bodyType999Field.value = option.value;
+                bodyTypeSynced = true;
+                console.log('✅ Tipul caroserie sincronizat după valoare:', option.textContent);
+                
+                // Actualizare vizuală
+                bodyType999Field.classList.remove('empty');
+                bodyType999Field.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        });
+        
+        // Dacă nu s-a găsit după valoare, încearcă după text
+        if (!bodyTypeSynced && bodyTypeText) {
+            options.forEach(option => {
+                const optionText = option.textContent.trim();
+                if (!bodyTypeSynced && optionText.toLowerCase() === bodyTypeText.toLowerCase()) {
+                    bodyType999Field.value = option.value;
+                    bodyTypeSynced = true;
+                    console.log('✅ Tipul caroserie sincronizat după text:', option.textContent);
+                    
+                    // Actualizare vizuală
+                    bodyType999Field.classList.remove('empty');
+                    bodyType999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+        }
+        
+        // Dacă încă nu s-a găsit, încearcă potrivire parțială
+        if (!bodyTypeSynced && bodyTypeText) {
+            options.forEach(option => {
+                const optionText = option.textContent.trim();
+                if (!bodyTypeSynced && (
+                    optionText.toLowerCase().includes(bodyTypeText.toLowerCase()) ||
+                    bodyTypeText.toLowerCase().includes(optionText.toLowerCase())
+                )) {
+                    bodyType999Field.value = option.value;
+                    bodyTypeSynced = true;
+                    console.log('✅ Tipul caroserie sincronizat după potrivire parțială:', option.textContent);
+                    
+                    // Actualizare vizuală
+                    bodyType999Field.classList.remove('empty');
+                    bodyType999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+        }
+        
+        if (!bodyTypeSynced) {
+            console.log('❌ Nu s-a găsit nicio potrivire pentru tipul caroserie:', bodyTypeValue, '(' + bodyTypeText + ')');
+            console.log('Opțiuni disponibile:', Array.from(options).map(opt => `${opt.value}: ${opt.textContent.trim()}`));
+        }
+    }
+
+    // SINCRONIZARE KILOMETRAJ - Din formularul principal la forma 999
+    function syncMileageTo999() {
+        console.log('=== SINCRONIZARE KILOMETRAJ ===');
+        
+        // Obținem valoarea kilometrajului din formularul principal
+        const mileageField = document.querySelector('input[name="mlg"]');
+        if (!mileageField || !mileageField.value) {
+            console.log('❌ Nu s-a găsit câmpul kilometraj sau nu are valoare în formularul principal');
+            return;
+        }
+        
+        const mileageValue = mileageField.value;
+        console.log('Kilometrajul selectat:', mileageValue);
+        
+        // Căutăm câmpul kilometraj în forma 999 (feature[104])
+        const mileage999Field = document.querySelector('input[name="feature[104]"]');
+        if (!mileage999Field) {
+            console.log('❌ Nu s-a găsit câmpul feature[104] în forma 999');
+            return;
+        }
+        
+        // Sincronizăm kilometrajul
+        mileage999Field.value = mileageValue;
+        mileage999Field.classList.remove('empty');
+        console.log('✅ Kilometrajul sincronizat cu succes:', mileageValue);
+        
+        // Sincronizăm și unitatea de măsură
+        const unitField = document.querySelector('select[name="unit"]');
+        if (unitField && unitField.value) {
+            const unitValue = unitField.value;
+            console.log('Unitatea selectată:', unitValue);
+            
+            // Căutăm câmpul unitate în forma 999 (feature_units[104])
+            const unit999Field = document.querySelector('select[name="feature_units[104]"]');
+            if (unit999Field) {
+                unit999Field.value = unitValue;
+                console.log('✅ Unitatea sincronizată cu succes:', unitValue);
+            } else {
+                console.log('❌ Nu s-a găsit câmpul feature_units[104] în forma 999');
+            }
+        } else {
+            console.log('❌ Nu s-a găsit câmpul unitate sau nu are valoare în formularul principal');
+        }
+    }
+
+    // SINCRONIZARE VOLUM MOTOR - Din formularul principal la forma 999
+    function syncEngineVolumeTo999() {
+        console.log('=== SINCRONIZARE VOLUM MOTOR ===');
+        
+        // Obținem valoarea volumului motorului din formularul principal
+        const engineVolumeField = document.querySelector('input[name="vol"]');
+        if (!engineVolumeField || !engineVolumeField.value) {
+            console.log('❌ Nu s-a găsit câmpul volum motor sau nu are valoare în formularul principal');
+            return;
+        }
+        
+        const engineVolumeValue = engineVolumeField.value;
+        console.log('Volumul motorului selectat:', engineVolumeValue);
+        
+        // Căutăm câmpul volum motor în forma 999 (feature[103])
+        const engineVolume999Field = document.querySelector('input[name="feature[103]"]');
+        if (!engineVolume999Field) {
+            console.log('❌ Nu s-a găsit câmpul feature[103] în forma 999');
+            return;
+        }
+        
+        // Sincronizăm volumul motorului
+        engineVolume999Field.value = engineVolumeValue;
+        engineVolume999Field.classList.remove('empty');
+        console.log('✅ Volumul motorului sincronizat cu succes:', engineVolumeValue);
+    }
+
+    // SINCRONIZARE PUTERE MOTOR (HP) - Din formularul principal la forma 999
+    function syncHorsePowerTo999() {
+        console.log('=== SINCRONIZARE PUTERE MOTOR (HP) ===');
+        
+        // Obținem valoarea puterii motorului din formularul principal
+        const horsePowerField = document.querySelector('input[name="hp"]');
+        if (!horsePowerField || !horsePowerField.value) {
+            console.log('❌ Nu s-a găsit câmpul putere motor sau nu are valoare în formularul principal');
+            return;
+        }
+        
+        const horsePowerValue = horsePowerField.value;
+        console.log('Puterea motorului selectată:', horsePowerValue);
+        
+        // Căutăm câmpul putere motor în forma 999 (feature[107])
+        const horsePower999Field = document.querySelector('input[name="feature[107]"]');
+        if (!horsePower999Field) {
+            console.log('❌ Nu s-a găsit câmpul feature[107] în forma 999');
+            return;
+        }
+        
+        // Sincronizăm puterea motorului
+        horsePower999Field.value = horsePowerValue;
+        horsePower999Field.classList.remove('empty');
+        console.log('✅ Puterea motorului sincronizată cu succes:', horsePowerValue);
+    }
+
+    // SINCRONIZARE TIP COMBUSTIBIL - Din formularul principal la forma 999
+    function syncFuelTypeTo999() {
+        console.log('=== SINCRONIZARE TIP COMBUSTIBIL ===');
+        
+        // Obținem valoarea tipului de combustibil din formularul principal
+        const fuelTypeField = document.querySelector('select[name="fl"]');
+        if (!fuelTypeField || !fuelTypeField.value) {
+            console.log('❌ Nu s-a găsit câmpul tip combustibil sau nu are valoare în formularul principal');
+            return;
+        }
+        
+        const fuelTypeValue = fuelTypeField.value;
+        const fuelTypeText = fuelTypeField.options[fuelTypeField.selectedIndex]?.textContent?.trim();
+        console.log('Tipul combustibil selectat:', fuelTypeValue, '(' + fuelTypeText + ')');
+        
+        // Căutăm câmpul tip combustibil în forma 999 (feature[151])
+        const fuelType999Field = document.querySelector('select[name="feature[151]"]');
+        if (!fuelType999Field) {
+            console.log('❌ Nu s-a găsit câmpul feature[151] în forma 999');
+            return;
+        }
+        
+        console.log('Căutăm potrivire pentru tipul combustibil...');
+        const options = fuelType999Field.querySelectorAll('option');
+        let fuelTypeSynced = false;
+        
+        // Mapare specifică pentru tipurile de combustibil (valori exacte din Sauto)
+        const fuelTypeMapping = {
+            'gsl': ['10'], // Benzină -> Бензин
+            'gmn': ['159'], // Benzină / Gaz (metan) -> Газ / Бензин (метан)
+            'gpn': ['3'], // Benzină / Gaz (propan) -> Газ / Бензин (пропан)
+            'hbd': ['161'], // Hybrid -> Гибрид
+            'dsl': ['24'], // Diesel -> Дизель
+            'pih': ['22987'], // Plug-in Hybrid -> Плагин-гибрид
+            'elc': ['12617'], // Electricitate -> Электричество
+            'gas': ['21311'], // Gaz -> Газ
+        };
+        
+        // Încearcă maparea specifică mai întâi (folosește valoarea din select)
+        if (fuelTypeMapping[fuelTypeValue]) {
+            const mappedIds = fuelTypeMapping[fuelTypeValue];
+            for (const mappedId of mappedIds) {
+                if (!fuelTypeSynced) {
+                    const matchedOption = Array.from(options).find(opt => opt.value === mappedId);
+                    if (matchedOption) {
+                        fuelType999Field.value = matchedOption.value;
+                        fuelTypeSynced = true;
+                        console.log('✅ Tipul combustibil sincronizat prin mapare:', matchedOption.textContent);
+                        
+                        // Actualizare vizuală
+                        fuelType999Field.classList.remove('empty');
+                        fuelType999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Încearcă potrivirea exactă după valoare (fallback)
+        if (!fuelTypeSynced) {
+            options.forEach(option => {
+                if (!fuelTypeSynced && option.value === fuelTypeValue) {
+                    fuelType999Field.value = option.value;
+                    fuelTypeSynced = true;
+                    console.log('✅ Tipul combustibil sincronizat după valoare:', option.textContent);
+                    
+                    // Actualizare vizuală
+                    fuelType999Field.classList.remove('empty');
+                    fuelType999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+        }
+        
+        if (!fuelTypeSynced) {
+            console.log('❌ Nu s-a găsit nicio potrivire pentru tipul combustibil:', fuelTypeValue, '(' + fuelTypeText + ')');
+            console.log('Opțiuni disponibile:', Array.from(options).map(opt => `${opt.value}: ${opt.textContent.trim()}`));
+        }
+    }
+
+    // SINCRONIZARE TIP TRANSMISIE - Din formularul principal la forma 999
+    function syncTransmissionTo999() {
+        console.log('=== SINCRONIZARE TIP TRANSMISIE ===');
+        
+        // Obținem valoarea tipului de transmisie din formularul principal
+        const transmissionField = document.querySelector('select[name="tra"]');
+        if (!transmissionField || !transmissionField.value) {
+            console.log('❌ Nu s-a găsit câmpul tip transmisie sau nu are valoare în formularul principal');
+            return;
+        }
+        
+        const transmissionValue = transmissionField.value;
+        const transmissionText = transmissionField.options[transmissionField.selectedIndex]?.textContent?.trim();
+        console.log('Tipul transmisie selectat:', transmissionValue, '(' + transmissionText + ')');
+        
+        // Căutăm câmpul tip transmisie în forma 999 (feature[101])
+        const transmission999Field = document.querySelector('select[name="feature[101]"]');
+        if (!transmission999Field) {
+            console.log('❌ Nu s-a găsit câmpul feature[101] în forma 999');
+            return;
+        }
+        
+        console.log('Căutăm potrivire pentru tipul transmisie...');
+        const options = transmission999Field.querySelectorAll('option');
+        let transmissionSynced = false;
+        
+        // Mapare specifică pentru tipurile de transmisie (valori exacte din Sauto)
+        const transmissionMapping = {
+            'tpt': ['16'], // Tiptronic -> Автоматическая (nu există Tiptronic separat)
+            'atm': ['16'], // Automată -> Автоматическая
+            'mnl': ['4'], // Mecanică -> Механическая
+            'rbt': ['1054'], // Robotizată -> Роботизированная
+            'vrr': ['1051'], // Variator -> Вариатор
+        };
+        
+        // Încearcă maparea specifică mai întâi (folosește valoarea din select)
+        if (transmissionMapping[transmissionValue]) {
+            const mappedIds = transmissionMapping[transmissionValue];
+            for (const mappedId of mappedIds) {
+                if (!transmissionSynced) {
+                    const matchedOption = Array.from(options).find(opt => opt.value === mappedId);
+                    if (matchedOption) {
+                        transmission999Field.value = matchedOption.value;
+                        transmissionSynced = true;
+                        console.log('✅ Tipul transmisie sincronizat prin mapare:', matchedOption.textContent);
+                        
+                        // Actualizare vizuală
+                        transmission999Field.classList.remove('empty');
+                        transmission999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Încearcă potrivirea exactă după valoare (fallback)
+        if (!transmissionSynced) {
+            options.forEach(option => {
+                if (!transmissionSynced && option.value === transmissionValue) {
+                    transmission999Field.value = option.value;
+                    transmissionSynced = true;
+                    console.log('✅ Tipul transmisie sincronizat după valoare:', option.textContent);
+                    
+                    // Actualizare vizuală
+                    transmission999Field.classList.remove('empty');
+                    transmission999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+        }
+        
+        if (!transmissionSynced) {
+            console.log('❌ Nu s-a găsit nicio potrivire pentru tipul transmisie:', transmissionValue, '(' + transmissionText + ')');
+            console.log('Opțiuni disponibile:', Array.from(options).map(opt => `${opt.value}: ${opt.textContent.trim()}`));
+        }
+    }
+
+    // SINCRONIZARE TIP TRACȚIUNE - Din formularul principal la forma 999
+    function syncWheelDriveTo999() {
+        console.log('=== SINCRONIZARE TIP TRACȚIUNE ===');
+        
+        // Obținem valoarea tipului de tracțiune din formularul principal
+        const wheelDriveField = document.querySelector('select[name="wd"]');
+        if (!wheelDriveField || !wheelDriveField.value) {
+            console.log('❌ Nu s-a găsit câmpul tip tracțiune sau nu are valoare în formularul principal');
+            return;
+        }
+        
+        const wheelDriveValue = wheelDriveField.value;
+        const wheelDriveText = wheelDriveField.options[wheelDriveField.selectedIndex]?.textContent?.trim();
+        console.log('Tipul tracțiune selectat:', wheelDriveValue, '(' + wheelDriveText + ')');
+        
+        // Căutăm câmpul tip tracțiune în forma 999 (feature[108])
+        const wheelDrive999Field = document.querySelector('select[name="feature[108]"]');
+        if (!wheelDrive999Field) {
+            console.log('❌ Nu s-a găsit câmpul feature[108] în forma 999');
+            return;
+        }
+        
+        console.log('Căutăm potrivire pentru tipul tracțiune...');
+        const options = wheelDrive999Field.querySelectorAll('option');
+        let wheelDriveSynced = false;
+        
+        // Mapare specifică pentru tipurile de tracțiune (valori exacte din Sauto -> 999)
+        const wheelDriveMapping = {
+            '44': ['17'], // 4x4 -> 4х4 (ID: 17)
+            're': ['25'], // Din spate -> Задний (ID: 25)
+            'fr': ['5'], // Din față -> Передний (ID: 5)
+        };
+        
+        // Încearcă maparea specifică mai întâi (folosește valoarea din select)
+        if (wheelDriveMapping[wheelDriveValue]) {
+            const mappedIds = wheelDriveMapping[wheelDriveValue];
+            for (const mappedId of mappedIds) {
+                if (!wheelDriveSynced) {
+                    const matchedOption = Array.from(options).find(opt => opt.value === mappedId);
+                    if (matchedOption) {
+                        wheelDrive999Field.value = matchedOption.value;
+                        wheelDriveSynced = true;
+                        console.log('✅ Tipul tracțiune sincronizat prin mapare:', matchedOption.textContent);
+                        
+                        // Actualizare vizuală
+                        wheelDrive999Field.classList.remove('empty');
+                        wheelDrive999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Încearcă potrivirea exactă după valoare (fallback)
+        if (!wheelDriveSynced) {
+            options.forEach(option => {
+                if (!wheelDriveSynced && option.value === wheelDriveValue) {
+                    wheelDrive999Field.value = option.value;
+                    wheelDriveSynced = true;
+                    console.log('✅ Tipul tracțiune sincronizat după valoare:', option.textContent);
+                    
+                    // Actualizare vizuală
+                    wheelDrive999Field.classList.remove('empty');
+                    wheelDrive999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+        }
+        
+        if (!wheelDriveSynced) {
+            console.log('❌ Nu s-a găsit nicio potrivire pentru tipul tracțiune:', wheelDriveValue, '(' + wheelDriveText + ')');
+            console.log('Opțiuni disponibile:', Array.from(options).map(opt => `${opt.value}: ${opt.textContent.trim()}`));
+        }
+    }
+
+    // SINCRONIZARE CULOARE - Din formularul principal la forma 999
+    function syncColorTo999() {
+        console.log('=== SINCRONIZARE CULOARE ===');
+        
+        // Obținem valoarea culorii din formularul principal
+        const colorField = document.querySelector('select[name="clr"]');
+        if (!colorField || !colorField.value) {
+            console.log('❌ Nu s-a găsit câmpul culoare sau nu are valoare în formularul principal');
+            return;
+        }
+        
+        const colorValue = colorField.value;
+        const colorText = colorField.options[colorField.selectedIndex]?.textContent?.trim();
+        console.log('Culoarea selectată:', colorValue, '(' + colorText + ')');
+        
+        // Căutăm câmpul culoare în forma 999 (feature[17])
+        const color999Field = document.querySelector('select[name="feature[17]"]');
+        if (!color999Field) {
+            console.log('❌ Nu s-a găsit câmpul feature[17] în forma 999');
+            return;
+        }
+        
+        console.log('Căutăm potrivire pentru culoare...');
+        const options = color999Field.querySelectorAll('option');
+        let colorSynced = false;
+        
+        // Mapare specifică pentru culori (valori exacte din Sauto -> 999)
+        const colorMapping = {
+            'l_grn': ['176'], // Verde deschis -> Салатовый
+            'blu': ['40'], // Albastru -> Синий
+            'brn': ['208'], // Brun -> Коричневый
+            'cmn': ['309'], // Purpuriu -> Малины
+            'cml': ['79'], // Cameleon -> Хамелеон
+            'bge': ['87'], // Bej -> Бежевый
+            'wht': ['19'], // Alb -> Белый
+            'vns': ['65'], // Roșu visiniu -> Бордовый
+            'azr': ['31'], // Albastru -> Голубой
+            'ylw': ['179'], // Galben -> Желтый
+            'grn': ['13'], // Verde -> Зелёный
+            'gld': ['72'], // Aur -> Золотой
+            'red': ['38'], // Roșu -> Красный
+            'orn': ['334'], // Portocalie -> Оранжевый
+            'pnk': ['554'], // Roz -> Розовый
+            'slv': ['56'], // Argint -> Серебряный
+            'gra': ['50'], // Gri -> Серый
+            'd_grn': ['12'], // Verde inchis -> Тёмно-зелёный
+            'prp': ['93'], // Violet -> Фиолетовый
+            'blk': ['7'], // Negru -> Черный
+        };
+        
+        // Încearcă maparea specifică mai întâi (folosește valoarea din select)
+        if (colorMapping[colorValue]) {
+            const mappedIds = colorMapping[colorValue];
+            for (const mappedId of mappedIds) {
+                if (!colorSynced) {
+                    const matchedOption = Array.from(options).find(opt => opt.value === mappedId);
+                    if (matchedOption) {
+                        color999Field.value = matchedOption.value;
+                        colorSynced = true;
+                        console.log('✅ Culoarea sincronizată prin mapare:', matchedOption.textContent);
+                        
+                        // Actualizare vizuală
+                        color999Field.classList.remove('empty');
+                        color999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Încearcă potrivirea exactă după valoare (fallback)
+        if (!colorSynced) {
+            options.forEach(option => {
+                if (!colorSynced && option.value === colorValue) {
+                    color999Field.value = option.value;
+                    colorSynced = true;
+                    console.log('✅ Culoarea sincronizată după valoare:', option.textContent);
+                    
+                    // Actualizare vizuală
+                    color999Field.classList.remove('empty');
+                    color999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            });
+        }
+        
+        if (!colorSynced) {
+            console.log('❌ Nu s-a găsit nicio potrivire pentru culoarea:', colorValue, '(' + colorText + ')');
+            console.log('Opțiuni disponibile:', Array.from(options).map(opt => `${opt.value}: ${opt.textContent.trim()}`));
+        }
+    }
+    
     // Event listeners pentru schimbarea câmpurilor în formularul principal
     const brandField = document.querySelector('select[name="br"]');
     if (brandField) {
@@ -1388,16 +2070,114 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    const priceField = document.querySelector('input[name="prc"]');
+    if (priceField) {
+        priceField.addEventListener('input', function() {
+            console.log('Prețul schimbat în formularul principal');
+            setTimeout(syncPriceTo999, 100);
+        });
+    }
+    
+    const yearField = document.querySelector('input[name="yr"]');
+    if (yearField) {
+        yearField.addEventListener('input', function() {
+            console.log('Anul schimbat în formularul principal');
+            setTimeout(syncYearTo999, 100);
+        });
+    }
+    
+    const bodyTypeField = document.querySelector('select[name="bt"]');
+    if (bodyTypeField) {
+        bodyTypeField.addEventListener('change', function() {
+            console.log('Tipul caroserie schimbat în formularul principal');
+            setTimeout(syncBodyTypeTo999, 100);
+        });
+    }
+    
+    const mileageField = document.querySelector('input[name="mlg"]');
+    if (mileageField) {
+        mileageField.addEventListener('input', function() {
+            console.log('Kilometrajul schimbat în formularul principal');
+            setTimeout(syncMileageTo999, 100);
+        });
+    }
+    
+    const unitField = document.querySelector('select[name="unit"]');
+    if (unitField) {
+        unitField.addEventListener('change', function() {
+            console.log('Unitatea schimbată în formularul principal');
+            setTimeout(syncMileageTo999, 100);
+        });
+    }
+    
+    const engineVolumeField = document.querySelector('input[name="vol"]');
+    if (engineVolumeField) {
+        engineVolumeField.addEventListener('input', function() {
+            console.log('Volumul motorului schimbat în formularul principal');
+            setTimeout(syncEngineVolumeTo999, 100);
+        });
+    }
+    
+    const horsePowerField = document.querySelector('input[name="hp"]');
+    if (horsePowerField) {
+        horsePowerField.addEventListener('input', function() {
+            console.log('Puterea motorului schimbată în formularul principal');
+            setTimeout(syncHorsePowerTo999, 100);
+        });
+    }
+    
+    const fuelTypeField = document.querySelector('select[name="fl"]');
+    if (fuelTypeField) {
+        fuelTypeField.addEventListener('change', function() {
+            console.log('Tipul combustibil schimbat în formularul principal');
+            setTimeout(syncFuelTypeTo999, 100);
+        });
+    }
+    
+    const transmissionField = document.querySelector('select[name="tra"]');
+    if (transmissionField) {
+        transmissionField.addEventListener('change', function() {
+            console.log('Tipul transmisie schimbat în formularul principal');
+            setTimeout(syncTransmissionTo999, 100);
+        });
+    }
+    
+    const wheelDriveField = document.querySelector('select[name="wd"]');
+    if (wheelDriveField) {
+        wheelDriveField.addEventListener('change', function() {
+            console.log('Tipul tracțiune schimbat în formularul principal');
+            setTimeout(syncWheelDriveTo999, 100);
+        });
+    }
+    
+    const colorField = document.querySelector('select[name="clr"]');
+    if (colorField) {
+        colorField.addEventListener('change', function() {
+            console.log('Culoarea schimbată în formularul principal');
+            setTimeout(syncColorTo999, 100);
+        });
+    }
+    
     // Sincronizare inițială când se încarcă forma 999
     const observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
             if (mutation.type === 'childList') {
                 const featuresContainer = document.querySelector('.features');
                 if (featuresContainer && featuresContainer.children.length > 0) {
-                    console.log('Forma 999 încărcată, sincronizez marca, modelul și form-label...');
+                    console.log('Forma 999 încărcată, sincronizez toate câmpurile...');
                     setTimeout(syncBrandTo999, 200); // Redus pentru sincronizare mai rapidă
                     setTimeout(syncModelTo999, 400); // Redus pentru sincronizare mai rapidă
-                    setTimeout(setDefaultFormLabel, 500); // Setează form-label default
+                    setTimeout(syncPriceTo999, 600); // Sincronizare preț
+                    setTimeout(syncYearTo999, 800); // Sincronizare an
+                    setTimeout(syncBodyTypeTo999, 1000); // Sincronizare tip caroserie
+                    setTimeout(syncMileageTo999, 1200); // Sincronizare kilometraj
+                    setTimeout(syncEngineVolumeTo999, 1400); // Sincronizare volum motor
+                    setTimeout(syncHorsePowerTo999, 1600); // Sincronizare putere motor
+                    setTimeout(syncFuelTypeTo999, 1800); // Sincronizare tip combustibil
+                    setTimeout(syncTransmissionTo999, 2000); // Sincronizare tip transmisie
+                    setTimeout(syncWheelDriveTo999, 2200); // Sincronizare tip tracțiune
+                    setTimeout(syncColorTo999, 2400); // Sincronizare culoare
+                    setTimeout(setDefaultFormLabel, 2600); // Setează form-label default
                     observer.disconnect(); // Oprim observarea după prima sincronizare
                 }
             }
@@ -1411,7 +2191,17 @@ document.addEventListener('DOMContentLoaded', function() {
             // Forma 999 este deja încărcată
             setTimeout(syncBrandTo999, 200); // Redus pentru sincronizare mai rapidă
             setTimeout(syncModelTo999, 400); // Redus pentru sincronizare mai rapidă
-            setTimeout(setDefaultFormLabel, 500); // Setează form-label default
+            setTimeout(syncPriceTo999, 600); // Sincronizare preț
+            setTimeout(syncYearTo999, 800); // Sincronizare an
+            setTimeout(syncBodyTypeTo999, 1000); // Sincronizare tip caroserie
+            setTimeout(syncMileageTo999, 1200); // Sincronizare kilometraj
+            setTimeout(syncEngineVolumeTo999, 1400); // Sincronizare volum motor
+            setTimeout(syncHorsePowerTo999, 1600); // Sincronizare putere motor
+            setTimeout(syncFuelTypeTo999, 1800); // Sincronizare tip combustibil
+            setTimeout(syncTransmissionTo999, 2000); // Sincronizare tip transmisie
+            setTimeout(syncWheelDriveTo999, 2200); // Sincronizare tip tracțiune
+            setTimeout(syncColorTo999, 2400); // Sincronizare culoare
+            setTimeout(setDefaultFormLabel, 2600); // Setează form-label default
         } else {
             // Așteptăm să se încarce forma 999
             observer.observe(featuresContainer, { childList: true, subtree: true });
