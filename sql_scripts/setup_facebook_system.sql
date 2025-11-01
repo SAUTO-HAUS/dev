@@ -1,14 +1,7 @@
--- Setup Facebook Scheduling System
--- Run this SQL to configure everything needed
 
--- 1. Add Facebook settings if they don't exist
+
+-- 1. Add missing Facebook settings 
 INSERT IGNORE INTO gh3sp_settings (name, value) VALUES
--- Facebook settings (location-based)
-('location_1_facebook_page_id', '725963964220309'),
-('location_1_facebook_token', 'EAAPYJ3JWk0UBPsgxBX8CZAarZAbDkllOe5rkXFZAfW29EnDKf7S68aVZC4Y4zvyswEGiLns1JMkp2iNPRYm5ZCoTgUFUyz2k6cfnlGNzHFAWAhRtYcYAZC8BlkBxKbpNj1cPU4jSdeXLeeRDwEoLXySRidMrUQVz2TrtR8gIe1AelIQWfqYOVPowDqosS10Y2GJjCO'),
-('location_2_facebook_page_id', '482777831588669'),
-('location_2_facebook_token', 'EAAPYJ3JWk0UBPhHoFrglY8vNF9Jrm40RdjCvuPkYB0mO226K3yqF5qQrZAUasvkmAidLqK87dTZCCRyVwpMReuR5EKscMKwJjoAFZAiTUwjMSjLdstz15BmWr6QQfJR8YBKZAkBy0ksMHXwdvL8vzZAUpoF5K7osglWrLVQZB91xbtFJnUkw2MZCMhZAB6YRMATSJc46'),
--- Default schedule time
 ('facebook_default_schedule_time', '20:00');
 
 -- 2. Create scheduled Facebook posts table
