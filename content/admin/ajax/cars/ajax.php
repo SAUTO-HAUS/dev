@@ -512,19 +512,39 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
             $scheduled_date = date('Y-m-d', strtotime('+1 day'));
         }
         
-        // Insert into scheduled posts table
-        $stmt = $db->prepare("
-            INSERT INTO {$prefx}_scheduled_facebook_posts 
-            (car_id, catalog_type, scheduled_date, scheduled_time, status) 
-            VALUES (:car_id, :catalog_type, :scheduled_date, :scheduled_time, 'pending')
-        ");
-        
-        $stmt->execute([
-            'car_id' => $it_id,
-            'catalog_type' => 'in_stock',
-            'scheduled_date' => $scheduled_date,
-            'scheduled_time' => $schedule_time . ':00'
-        ]);
+        // Insert into scheduled posts table with retry logic for error 1615
+        try {
+            $stmt = $db->prepare("
+                INSERT INTO {$prefx}_scheduled_facebook_posts 
+                (car_id, catalog_type, scheduled_date, scheduled_time, status) 
+                VALUES (:car_id, :catalog_type, :scheduled_date, :scheduled_time, 'pending')
+            ");
+            
+            $stmt->execute([
+                'car_id' => $it_id,
+                'catalog_type' => 'in_stock',
+                'scheduled_date' => $scheduled_date,
+                'scheduled_time' => $schedule_time . ':00'
+            ]);
+        } catch (PDOException $e) {
+            // Retry once for error 1615 (prepared statement needs re-preparation)
+            if ($e->getCode() == 1615 || strpos($e->getMessage(), '1615') !== false) {
+                $stmt = $db->prepare("
+                    INSERT INTO {$prefx}_scheduled_facebook_posts 
+                    (car_id, catalog_type, scheduled_date, scheduled_time, status) 
+                    VALUES (:car_id, :catalog_type, :scheduled_date, :scheduled_time, 'pending')
+                ");
+                
+                $stmt->execute([
+                    'car_id' => $it_id,
+                    'catalog_type' => 'in_stock',
+                    'scheduled_date' => $scheduled_date,
+                    'scheduled_time' => $schedule_time . ':00'
+                ]);
+            } else {
+                throw $e; // Re-throw other errors
+            }
+        }
         
         // Update car as scheduled for Facebook
         $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `facebook_published`=:facebook_published WHERE `id`= :id ');

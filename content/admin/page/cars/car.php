@@ -784,19 +784,21 @@ SVG
                 target="_blank" rel="noopener noreferrer" */?>
             >
 
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <input type="time" id="facebook_schedule_time" value="20:00" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
-                    <div onclick="sendToFacebookCars()" style="cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                <div style="display: flex; align-items: center; justify-content: center; gap: 15px;" onclick=" sendToFacebookCars() ">
+                    <div style="display: flex; align-items: center;">
                         Опубликовать в facebook
                         <span class="icon_tg">
-                            <svg style="top: 7px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                                <circle cx="256" cy="256" r="256" fill="#1877F2"/>
-                                <path fill="#ffffff" d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.5 90.9 225.8 209 245v-173h-63v-72h63v-55
-                                c0-62.3 37-96.5 93.7-96.5 27.1 0 55.5 4.8 55.5 4.8v61h-31.2
-                                c-30.8 0-40.4 19.1-40.4 38.7v46.1h68.8l-11 72h-57.8v173
-                                c118.1-19.2 209-121.5 209-245z"/>
-                            </svg>
-                        </span>
+                                <svg style="top: 7px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                                    <circle cx="256" cy="256" r="256" fill="#1877F2"/>
+                                    <path fill="#ffffff" d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.5 90.9 225.8 209 245v-173h-63v-72h63v-55
+                                    c0-62.3 37-96.5 93.7-96.5 27.1 0 55.5 4.8 55.5 4.8v61h-31.2
+                                    c-30.8 0-40.4 19.1-40.4 38.7v46.1h68.8l-11 72h-57.8v173
+                                    c118.1-19.2 209-121.5 209-245z"/>
+                                </svg>
+                            </span>
+                    </div>
+                    <input type="time" id="facebook_schedule_time" value="20:00" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
 
                     <?/*
                             <svg aria-hidden="true" width="16" height="16"><!-- иконка FB --></svg>
@@ -813,9 +815,7 @@ SVG
                                     'width=600,height=500,toolbar=0,location=0');
                             });
                         </script> */?>
-                </div>
             </a>
-
 
             <div class="adm_tg_btn" onclick=" sendToTelegramCars() ">
                 Опубликовать в telegram
