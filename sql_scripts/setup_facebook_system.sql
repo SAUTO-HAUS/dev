@@ -1,5 +1,3 @@
-
-
 -- 1. Add missing Facebook settings 
 INSERT IGNORE INTO gh3sp_settings (name, value) VALUES
 ('facebook_default_schedule_time', '20:00');
