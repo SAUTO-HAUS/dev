@@ -135,24 +135,26 @@ class PublicationService
             $title = $carData['name'] ?? 'Автомобиль';
         }
         
-        // Start with title
-        $message = $title;
+        // Add catalog type label first
+        if ($catalogType === 'on_order') {
+            $message = "📋 LA COMANDĂ";
+            $message .= "\n⏰ Termen de livrare: " . ($carData['delivery_time'] ?? '14 zile');
+        } else {
+            $message = "✅ În stoc";
+        }
+        
+        // Add car title
+        $message .= "\n🚘 " . $title;
         
         // Add price
         if (!empty($carData['prc'])) {
             $price = number_format($carData['prc'], 0, '.', ',') . ' €';
-            $message .= "\n" . $price;
-        }
-        
-        // Add catalog type label for orders
-        if ($catalogType === 'on_order') {
-            $message .= "\n\n📋 LA COMANDĂ";
-            $message .= "\n⏰ Termen de livrare: " . ($carData['delivery_time'] ?? '14 zile');
+            $message .= "\n💰 Preț: " . $price;
         }
         
         // Add detailed specifications with icons
         if (!empty($carData['yr'])) {
-            $message .= "\n📅 An de fabricație: " . $carData['yr'];
+            $message .= "\n📅 An fabricație: " . $carData['yr'];
         }
         
         // Body type
@@ -171,18 +173,18 @@ class PublicationService
         if (!empty($carData['mlg'])) {
             $unit = ($carData['unit'] ?? 'km') === 'mi' ? 'mile' : 'km';
             $mileage = number_format($carData['mlg'], 0, '.', ',');
-            $message .= "\n📏 Parcurs: " . $mileage . ' ' . $unit;
+            $message .= "\n📏 Kilometraj: " . $mileage . ' ' . $unit;
         }
         
         // Engine capacity
         if (!empty($carData['vol'])) {
-            $message .= "\n🔧 Capacitate motor: " . $carData['vol'] . ' cc';
+            $message .= "\n🔧 Capacitate motor: " . number_format($carData['vol'], 0, '.', ',') . ' cm³';
         }
         
         // Power
         if (!empty($carData['hp'])) {
             $kw = round($carData['hp'] * 0.735);
-            $message .= "\n⚡ Putere: " . $carData['hp'] . ' hp (' . $kw . ' kw)';
+            $message .= "\n⚡ Putere: " . $carData['hp'] . ' hp (' . $kw . ' kW)';
         }
         
         // Fuel type
@@ -193,7 +195,7 @@ class PublicationService
                 'elc' => 'Electricitate', 'gas' => 'Gaz'
             ];
             $fuel = $fuelTypes[$carData['fl']] ?? 'Necunoscut';
-            $message .= "\n⛽ Tip combustibil: " . $fuel;
+            $message .= "\n⛽ Combustibil: " . $fuel;
         }
         
         // Transmission
@@ -203,7 +205,7 @@ class PublicationService
                 'rbt' => 'Robotizată', 'vrr' => 'Variator'
             ];
             $transmission = $transTypes[$carData['tra']] ?? 'Necunoscut';
-            $message .= "\n⚙️ Cutia de viteze: " . $transmission;
+            $message .= "\n⚙️ Cutie de viteze: " . $transmission;
         }
         
         // Drive type
@@ -212,7 +214,7 @@ class PublicationService
                 '44' => '4x4', 're' => 'Din spate', 'fr' => 'Din față'
             ];
             $drive = $driveTypes[$carData['wd']] ?? 'Necunoscut';
-            $message .= "\n🔄 Tip tracțiune: " . $drive;
+            $message .= "\n🔄 Tracțiune: " . $drive;
         }
         
         // Color
@@ -231,7 +233,7 @@ class PublicationService
         
         // Seats
         if (!empty($carData['sts'])) {
-            $message .= "\n👥 Numărul de locuri: " . $carData['sts'];
+            $message .= "\n👥 Locuri: " . $carData['sts'];
         }
         
         // Address based on location
@@ -243,15 +245,14 @@ class PublicationService
         $message .= "\n📍 Adresă: " . $address;
         
         // Phone number
-        $message .= "\n📞 +37379600361";
+        $message .= "\n📞 Telefon: +373 796 00 361";
         
         // Link to more models
         if (!empty($carData['br'])) {
             $brand = str_replace('_', '-', strtolower($carData['br']));
             $model = str_replace('_', '-', strtolower($carData['mo'] ?? ''));
-            $catalogPath = $catalogType === 'on_order' ? 'ordercars' : 'cars';
             
-            $message .= "\n🔗 Alte modele aici: https://www.sauto.md/ro/{$catalogPath}/{$brand}-{$model}?utm_source=social&utm_medium=facebook&utm_campaign=auto_post";
+            $message .= "\n🔗 Alte modele: sauto.md/ro/cars/{$brand}-{$model}";
         }
         
         return $message;

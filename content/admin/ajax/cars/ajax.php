@@ -413,9 +413,6 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
     
     // Generate message using PublicationService
     $message = $publicationService->generateFacebookMessage($carDataForMessage, 'in_stock');
-    
-    // Add phone number
-    $message .= "\n\n📞 " . $phone;
 
 // ─────────── 3. Универсальный вызов Graph API ───────────
     function graphCall( $endpoint, array $params = [],  $method = 'POST') {

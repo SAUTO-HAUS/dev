@@ -390,9 +390,6 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
     
     // Generate message using PublicationService with order car label
     $message = $publicationService->generateFacebookMessage($carDataForMessage, 'on_order');
-    
-    // Add phone number
-    $message .= "\n\n📞 " . $phone;
 
 // ─────────── 3. Универсальный вызов Graph API ───────────
     function graphCall( $endpoint, array $params = [],  $method = 'POST') {
