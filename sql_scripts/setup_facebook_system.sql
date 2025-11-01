@@ -19,13 +19,3 @@ CREATE TABLE IF NOT EXISTS gh3sp_scheduled_facebook_posts (
     INDEX idx_status (status)
 );
 
--- 3. Show current Facebook settings
-SELECT 'Current Facebook Settings:' as info;
-SELECT name, 
-       CASE 
-           WHEN name LIKE '%token%' THEN CONCAT(LEFT(value, 20), '...')
-           ELSE value 
-       END as value 
-FROM gh3sp_settings 
-WHERE name LIKE '%facebook%' 
-ORDER BY name;

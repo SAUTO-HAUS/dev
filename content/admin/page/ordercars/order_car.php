@@ -948,9 +948,11 @@ SVG
                 target="_blank" rel="noopener noreferrer" */?>
             >
 
-                <div class="" onclick=" sendToFacebookCars() ">
-                    Опубликовать в facebook
-                    <span class="icon_tg">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <input type="time" id="facebook_schedule_time" value="20:00" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                    <div onclick="sendToFacebookCars()" style="cursor: pointer; display: flex; align-items: center; gap: 5px;">
+                        Опубликовать в facebook
+                        <span class="icon_tg">
                             <svg style="top: 7px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                                 <circle cx="256" cy="256" r="256" fill="#1877F2"/>
                                 <path fill="#ffffff" d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.5 90.9 225.8 209 245v-173h-63v-72h63v-55

@@ -257,6 +257,7 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
 
     $carId = $it_id = __post('id');
     $local_id = __post('local_id');
+    $schedule_time = __post('schedule_time') ?: '20:00'; // Default to 20:00 if not provided
 
     $_COOKIE['lang']='ro';
     require (_DEFAULT.'/language.php');
@@ -500,63 +501,47 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
     );
     // echo "📎 Перманентная ссылка: ", $plink['permalink_url'], PHP_EOL;
 
-    if($post_id_arr['0']>0){
-        // echo json_encode(['status' => 'ok', 'post_id' => $post['id']]);
-
-        try {
-            // Проверяем соединение с базой данных перед выполнением запроса
-            if (!$db) {
-                throw new Exception('Database connection lost');
-            }
-            
-            $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `facebook_published`=:facebook_published WHERE `id`= :id ');
-            $pdo->execute([ 'id' => $it_id, 'facebook_published' => 1 ]);
-            $returnIt['status'] = true;
-            $returnIt['post_id'] = $post['id'];
-            
-            // Log successful publication
-            $publicationService->logPublication($it_id, 'in_stock', 'facebook', true, 'Published to regular cars Facebook page, post_id: ' . $post['id']);
-            
-            error_log('Facebook publication successful for car ID: ' . $it_id . ', post_id: ' . $post['id']);
-        } catch (PDOException $e) {
-            error_log('Facebook publication database error for car ID ' . $it_id . ': ' . $e->getMessage());
-            
-            // Если ошибка 1615 - попробуем переподключиться и повторить
-            if ($e->getCode() == 1615 || strpos($e->getMessage(), '1615') !== false) {
-                try {
-                    // Создаем новое соединение
-                    $new_pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `facebook_published`=:facebook_published WHERE `id`= :id ');
-                    $new_pdo->execute([ 'id' => $it_id, 'facebook_published' => 1 ]);
-                    $returnIt['status'] = true;
-                    $returnIt['post_id'] = $post['id'];
-                    
-                    error_log('Facebook publication successful after retry for car ID: ' . $it_id);
-                } catch (Exception $retry_e) {
-                    error_log('Facebook publication failed after retry for car ID ' . $it_id . ': ' . $retry_e->getMessage());
-                    $returnIt['status'] = true; // Все равно возвращаем успех, так как пост опубликован
-                    $returnIt['post_id'] = $post['id'];
-                    $returnIt['db_warning'] = 'Database update failed but post was published';
-                }
-            } else {
-                // Для других ошибок логируем и продолжаем
-                $returnIt['status'] = true; // Пост опубликован, это главное
-                $returnIt['post_id'] = $post['id'];
-                $returnIt['db_warning'] = 'Database update failed: ' . $e->getMessage();
-            }
-        } catch (Exception $e) {
-            error_log('Facebook publication general error for car ID ' . $it_id . ': ' . $e->getMessage());
-            $returnIt['status'] = true; // Пост опубликован, это главное
-            $returnIt['post_id'] = $post['id'];
-            $returnIt['db_warning'] = 'Database update failed: ' . $e->getMessage();
-        }
-    }
-    else {
-        // Log failed publication
-        $publicationService->logPublication($it_id, 'in_stock', 'facebook', false, 'Facebook API error: ' . json_encode($post));
+    // Instead of publishing immediately, schedule the post
+    try {
+        // Calculate scheduled datetime
+        $scheduled_date = date('Y-m-d');
+        $scheduled_datetime = $scheduled_date . ' ' . $schedule_time . ':00';
         
+        // If the time has already passed today, schedule for tomorrow
+        if (strtotime($scheduled_datetime) <= time()) {
+            $scheduled_date = date('Y-m-d', strtotime('+1 day'));
+        }
+        
+        // Insert into scheduled posts table
+        $stmt = $db->prepare("
+            INSERT INTO {$prefx}_scheduled_facebook_posts 
+            (car_id, catalog_type, scheduled_date, scheduled_time, status) 
+            VALUES (:car_id, :catalog_type, :scheduled_date, :scheduled_time, 'pending')
+        ");
+        
+        $stmt->execute([
+            'car_id' => $it_id,
+            'catalog_type' => 'in_stock',
+            'scheduled_date' => $scheduled_date,
+            'scheduled_time' => $schedule_time . ':00'
+        ]);
+        
+        // Update car as scheduled for Facebook
+        $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `facebook_published`=:facebook_published WHERE `id`= :id ');
+        $pdo->execute([ 'id' => $it_id, 'facebook_published' => 2 ]); // 2 = scheduled
+        
+        $returnIt['status'] = true;
+        $returnIt['message'] = "Programat pentru publicare la {$scheduled_date} {$schedule_time}";
+        
+        // Log scheduling
+        $publicationService->logPublication($it_id, 'in_stock', 'facebook', true, "Scheduled for {$scheduled_date} {$schedule_time}");
+        
+    } catch (Exception $e) {
         $returnIt['status'] = false;
-        $returnIt['message'] = ($post);
-        $returnIt['post_id'] = 0;
+        $returnIt['message'] = 'Eroare la programare: ' . $e->getMessage();
+        
+        // Log failed scheduling
+        $publicationService->logPublication($it_id, 'in_stock', 'facebook', false, 'Scheduling error: ' . $e->getMessage());
     }
 
 }

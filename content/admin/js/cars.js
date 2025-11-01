@@ -11,7 +11,9 @@ function getReqPage() {
 var reqPage = getReqPage();
 
 function sendToFacebookCars() {
-	var confirmation = confirm( 'Опубликовать в facebook?' );
+	// Get selected time
+	const selectedTime = document.getElementById('facebook_schedule_time').value;
+	var confirmation = confirm( 'Опубликовать в facebook в ' + selectedTime + '?' );
 	if (confirmation){
 
 		$('body').addClass('ajx');
@@ -30,7 +32,8 @@ function sendToFacebookCars() {
 				pg: reqPage,
 				fn: 'sendToFacebookCars', // Имя обработчика в PHP
 				id: carId,
-				local_id: $('select[name=loc]').val()
+				local_id: $('select[name=loc]').val(),
+				schedule_time: selectedTime
 			},
 			statusCode: {
 				0: function(){
