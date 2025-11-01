@@ -101,10 +101,28 @@ try {
                 throw new Exception("No photos found for car: {$post['car_id']}");
             }
             
-            // Build correct photo path based on database structure
-            $photoPath = __DIR__ . '/media/images/' . $photo['path'] . '/' . $post['car_id'] . '/high/' . $photo['name'] . '.jpg';
+            // Build correct photo path using the same structure as in AJAX
+            $photoPath = __DIR__ . '/media/images/upload/car/' . $photo['path'] . '/' . $post['car_id'] . '/high/' . $photo['name'] . '.jpg';
+            
+            // Debug: log the exact path being checked
+            echo "[DEBUG] Checking photo path: {$photoPath}\n";
+            echo "[DEBUG] Photo data: " . json_encode($photo) . "\n";
+            
             if (!file_exists($photoPath)) {
-                throw new Exception("Photo file not found: {$photoPath}");
+                // Try alternative paths
+                $altPath1 = __DIR__ . '/content/admin/uploads/cars/' . $photo['name'] . '.jpg';
+                $altPath2 = __DIR__ . '/media/images/cars/' . $post['car_id'] . '/' . $photo['name'] . '.jpg';
+                
+                echo "[DEBUG] Alt path 1: {$altPath1} - " . (file_exists($altPath1) ? 'EXISTS' : 'NOT FOUND') . "\n";
+                echo "[DEBUG] Alt path 2: {$altPath2} - " . (file_exists($altPath2) ? 'EXISTS' : 'NOT FOUND') . "\n";
+                
+                if (file_exists($altPath1)) {
+                    $photoPath = $altPath1;
+                } elseif (file_exists($altPath2)) {
+                    $photoPath = $altPath2;
+                } else {
+                    throw new Exception("Photo file not found in any location. Tried: {$photoPath}, {$altPath1}, {$altPath2}");
+                }
             }
             
             // Publish to Facebook
