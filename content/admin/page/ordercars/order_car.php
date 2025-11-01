@@ -961,7 +961,7 @@ SVG
                                 </svg>
                             </span>
                     </div>
-                    <input type="time" id="facebook_schedule_time" value="20:00" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;">
+                    <input type="time" id="facebook_schedule_time" value="20:00" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;" onclick="event.stopPropagation();">
                 </div>
 
                     <?/*
