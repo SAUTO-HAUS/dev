@@ -35,17 +35,9 @@ try {
     
     echo "[" . date('Y-m-d H:i:s') . "] Telegram Cron Started\n";
     
-    // Get Telegram settings
-    $settings = [];
-    $stmt = $db->prepare("SELECT name, value FROM {$prefx}_settings WHERE name LIKE '%telegram%'");
-    $stmt->execute();
-    while ($row = $stmt->fetch()) {
-        $settings[$row['name']] = $row['value'];
-    }
-    
-    if (empty($settings['regular_telegram_bot_token']) || empty($settings['regular_telegram_chat_id'])) {
-        throw new Exception('Telegram settings not configured');
-    }
+    // Include PublicationService
+    require_once __DIR__ . '/App/Services/PublicationService.php';
+    $publicationService = new \App\Services\PublicationService($db, $prefx);
     
     // Get pending posts that should be published now
     $currentDateTime = date('Y-m-d H:i:s');
@@ -65,10 +57,6 @@ try {
     }
     
     echo "[" . date('Y-m-d H:i:s') . "] Found " . count($pendingPosts) . " posts to publish\n";
-    
-    // Include PublicationService
-    require_once __DIR__ . '/App/Services/PublicationService.php';
-    $publicationService = new \App\Services\PublicationService($db, $prefx);
     
     foreach ($pendingPosts as $post) {
         try {
@@ -155,6 +143,19 @@ try {
                 'post_id' => $telegramMessageId,
                 'id' => $post['id']
             ]);
+            
+            // Update car as published
+            $stmt = $db->prepare("UPDATE {$prefx}_car_ctlg SET telegram_published = 1 WHERE id = :car_id");
+            $stmt->execute(['car_id' => $post['car_id']]);
+            
+            // Log success
+            $publicationService->logPublication(
+                $post['car_id'], 
+                $post['catalog_type'], 
+                'telegram', 
+                true, 
+                "Published via cron at " . date('Y-m-d H:i:s')
+            );
             
             echo "[" . date('Y-m-d H:i:s') . "] Successfully published post ID: {$post['id']}, Telegram ID: {$telegramMessageId}\n";
             
