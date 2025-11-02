@@ -89,53 +89,58 @@ try {
                 throw new Exception('Telegram settings not found for car catalog type');
             }
             
-            // Generate Telegram message (simplified version)
-            $carTitle = $carData['br_nm'] . ' ' . $carData['mo_nm'];
-            $price = number_format($carData['prc'], 0, '.', ' ');
-            $year = $carData['yr'];
-            $status = $post['catalog_type'] === 'on_order' ? '📋 La comandă' : '✅ În stoc';
+            // Generate Telegram message using PublicationService
+            $message = $publicationService->generateTelegramMessage($carData, $post['catalog_type']);
             
-            $message = "<b>#{$carData['br_nm']}{$carData['mo_nm']}</b>\n";
-            $message .= "{$status}\n";
-            $message .= "<b>{$year}, {$price} {$carData['cur']}</b>\n";
-            $message .= "📞 +373 796 00 361\n";
-            $message .= "🌐 sauto.md";
-            
-            // Get car photos
-            $stmt = $db->prepare("SELECT * FROM {$prefx}_car_pht WHERE it_id = :car_id ORDER BY pos ASC LIMIT 1");
+            // Get car photos (multiple photos like in AJAX)
+            $photo_folder = __DIR__ . '/media/images/upload/car';
+            $stmt = $db->prepare("SELECT * FROM {$prefx}_car_pht WHERE it_id = :car_id ORDER BY pos ASC LIMIT 10");
             $stmt->execute(['car_id' => $post['car_id']]);
-            $photo = $stmt->fetch();
+            $photos = $stmt->fetchAll();
             
-            if (!$photo) {
+            if (empty($photos)) {
                 throw new Exception("No photos found for car: {$post['car_id']}");
             }
             
-            // Build correct photo path using the same structure as in AJAX
-            $photoPath = __DIR__ . '/media/images/upload/car/' . $photo['path'] . '/' . $post['car_id'] . '/high/' . $photo['name'] . '.jpg';
-            
-            // Debug: log the exact path being checked
-            echo "[DEBUG] Checking photo path: {$photoPath}\n";
-            echo "[DEBUG] Photo data: " . json_encode($photo) . "\n";
-            
-            if (!file_exists($photoPath)) {
-                // Try alternative paths
-                $altPath1 = __DIR__ . '/content/admin/uploads/cars/' . $photo['name'] . '.jpg';
-                $altPath2 = __DIR__ . '/media/images/cars/' . $post['car_id'] . '/' . $photo['name'] . '.jpg';
+            // Build media array like in AJAX
+            $media = [];
+            foreach ($photos as $photo) {
+                $file_path = $photo_folder . '/' . $photo['path'] . '/' . $post['car_id'] . '/high/' . $photo['name'] . '.jpg';
                 
-                echo "[DEBUG] Alt path 1: {$altPath1} - " . (file_exists($altPath1) ? 'EXISTS' : 'NOT FOUND') . "\n";
-                echo "[DEBUG] Alt path 2: {$altPath2} - " . (file_exists($altPath2) ? 'EXISTS' : 'NOT FOUND') . "\n";
-                
-                if (file_exists($altPath1)) {
-                    $photoPath = $altPath1;
-                } elseif (file_exists($altPath2)) {
-                    $photoPath = $altPath2;
-                } else {
-                    throw new Exception("Photo file not found in any location. Tried: {$photoPath}, {$altPath1}, {$altPath2}");
+                if (file_exists($file_path)) {
+                    $media[] = [
+                        'type' => 'photo',
+                        'media' => new \CURLFile(
+                            $file_path,
+                            mime_content_type($file_path),
+                            basename($file_path)
+                        )
+                    ];
                 }
             }
             
-            // Publish to Telegram
-            $telegramMessageId = publishToTelegram($telegramSettings, $message, $photoPath);
+            if (empty($media)) {
+                throw new Exception("No valid photo files found for car: {$post['car_id']}");
+            }
+            
+            // Include Telegram class
+            require_once __DIR__ . '/content/admin/ajax/cars/CTelegram.php';
+            
+            // Initialize Telegram bot
+            $bot = new Telegram([
+                'bot_token' => $telegramSettings['bot_token'],
+                'chat_id' => $telegramSettings['chat_id']
+            ]);
+            
+            // Send album with caption
+            $result = $bot->send_album_with_caption($media, $message, 'HTML');
+            $response = json_decode($result, true);
+            
+            if (!$response || !$response['ok']) {
+                throw new Exception("Telegram API error: " . ($response['description'] ?? 'Unknown error'));
+            }
+            
+            $telegramMessageId = $response['result'][0]['message_id'] ?? null;
             
             // Update post as published
             $stmt = $db->prepare("
@@ -180,52 +185,4 @@ try {
     exit(1);
 }
 
-/**
- * Publish photo and message to Telegram
- */
-function publishToTelegram($settings, $message, $photoPath) {
-    $botToken = $settings['bot_token'];
-    $chatId = $settings['chat_id'];
-    
-    // Send photo with caption to Telegram
-    $url = "https://api.telegram.org/bot{$botToken}/sendPhoto";
-    
-    $postData = [
-        'chat_id' => $chatId,
-        'caption' => $message,
-        'photo' => new CURLFile($photoPath),
-        'parse_mode' => 'HTML'
-    ];
-    
-    $ch = curl_init();
-    curl_setopt_array($ch, [
-        CURLOPT_URL => $url,
-        CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => $postData,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_SSL_VERIFYPEER => true,
-        CURLOPT_CONNECTTIMEOUT => 30,
-        CURLOPT_TIMEOUT => 60
-    ]);
-    
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    
-    if (curl_errno($ch)) {
-        $error = curl_error($ch);
-        curl_close($ch);
-        throw new Exception("cURL Error: {$error}");
-    }
-    
-    curl_close($ch);
-    
-    $data = json_decode($response, true);
-    
-    if ($httpCode !== 200 || !$data['ok']) {
-        $errorMsg = isset($data['description']) ? $data['description'] : 'Unknown Telegram API error';
-        throw new Exception("Telegram API Error (HTTP {$httpCode}): {$errorMsg}");
-    }
-    
-    return $data['result']['message_id'];
-}
 ?>

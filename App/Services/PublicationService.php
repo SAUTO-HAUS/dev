@@ -258,6 +258,99 @@ class PublicationService
         return $message;
     }
 
+     /**
+     * Generate Telegram message for car
+     * 
+     * @param array $carData Car data from database
+     * @param string $catalogType 'in_stock' or 'on_order'
+     * @return string Formatted message
+     */
+    public function generateTelegramMessage($carData, $catalogType)
+    {
+        // Set language for message generation
+        $_COOKIE['lang'] = 'ro';
+        require_once $_SERVER['DOCUMENT_ROOT'] . '/language.php';
+        
+        $caption_lines = [];
+        
+        if ($catalogType === 'on_order') {
+            // Order cars format
+            $caption_lines[] = '✅ Pretul masinii la licitatii Europene ' . parseCurr($carData['prc']) . '€';
+            $caption_lines[] = '✨ Plus Garanție de la dealer European';
+            $caption_lines[] = '';
+            $caption_lines[] = '📋 Detalii despre o mașină disponibilă acum la comandă:';
+            
+            $car_title = '#' . str_replace(" ", "", $carData['br_nm']) . str_replace(" ", "", $carData['mo_nm']);
+            $caption_lines[] = '🚘 Model: ' . $car_title;
+            $caption_lines[] = '▪️ An fabricație: ' . $carData['yr'];
+            $caption_lines[] = '▪️ Kilometraj: ' . parseCurr($carData['mlg']) . ' km';
+            $caption_lines[] = '';
+            $caption_lines[] = '✅ Specificații:';
+            $caption_lines[] = '▪️ Motor: ' . $carData['vol'] . 'cc ' . $carData['hp'] . 'hp';
+            
+            // Fuel type
+            $fuel_types = ['1' => 'Benzină', '2' => 'Diesel', '3' => 'Hybrid', '4' => 'Electric'];
+            $fuel = $fuel_types[$carData['fl']] ?? 'Necunoscut';
+            $caption_lines[] = '▪️ Combustibil: ' . $fuel;
+            
+            // Transmission
+            $transmissions = ['1' => 'Manuală', '2' => 'Automată'];
+            $transmission = $transmissions[$carData['tra']] ?? 'Necunoscut';
+            $caption_lines[] = '▪️ Transmisie: ' . $transmission;
+            $caption_lines[] = '';
+            $caption_lines[] = '📞 Pentru detalii: +37379600352';
+            $caption_lines[] = '';
+            $caption_lines[] = 'Sauto la comandă – deschideți chatul pentru întrebări! (https://t.me/Sauto_LA_Comanda_bot)';
+            
+        } else {
+            // In stock cars format
+            $car_title = '#' . str_replace(" ", "", $carData['br_nm']) . str_replace(" ", "", $carData['mo_nm']);
+            $caption_lines[] = $car_title;
+            
+            $cur = $carData['cur'];
+            $prc = ($carData['prc_t'] != 0 && $carData['prc_t'] > time()) ? $carData['prc_n'] : $carData['prc'];
+            $caption_lines[] = '✅ ' . $carData['yr'] . ', ' . parseCurr($prc) . ' ' . symb_rplc($cur);
+            
+            // Specifications with icons
+            $spec_ar = ['bt', 'mlg', 'vol', 'hp', 'fl', 'tra', 'wd', 'clr', 'sts', 'loc'];
+            $iconParams = [
+                'bt'  => '🚙',   'mlg' => '🛣️',  'vol' => '⚙️',   'hp'  => '💪',
+                'fl'  => '🔌⛽', 'tra' => '🔄',   'wd'  => '⬆️',   'clr' => '⚪',
+                'sts' => '👥',   'loc' => '📍'
+            ];
+            
+            foreach ($spec_ar as $v) {
+                if ($v == 'loc' && $carData[$v] == '0') continue;
+                
+                $v_lng = isset($lng['l']['car'][$v][$carData[$v]]) ? $lng['l']['car'][$v][$carData[$v]] : $carData[$v];
+                $v_lng = $v == 'mlg' ? parseCurr($carData[$v]) . ' km' : $v_lng;
+                $v_lng = $v == 'vol' ? $carData[$v] . ' cm3' : $v_lng;
+                $v_lng = $v == 'hp' ? $carData[$v] . ' hp (' . round($carData['hp'] * 0.735, 0) . ' kw)' : $v_lng;
+                $v_lng = $v == 'loc' ? $lng['t']['x']['address'][$carData[$v]] : $v_lng;
+                
+                if (isset($carData[$v]) && $carData[$v] != '') {
+                    $v_lng = str_replace("sup", "i", $v_lng);
+                    
+                    if ($v == 'loc') {
+                        $caption_lines[] = $iconParams[$v] . ' ' . $lng['l']['car']['spec'][$v] . ': Chișinău, ' . $v_lng;
+                    } else {
+                        $caption_lines[] = $iconParams[$v] . ' ' . $lng['l']['car']['spec'][$v] . ': ' . $v_lng;
+                    }
+                }
+            }
+            
+            $caption_lines[] = '📌 Apasă pe hashtag pentru a vedea alte mașini similare';
+            $caption_lines[] = '';
+            
+            $marka_auto = str_replace(" ", "", $carData['br_nm']);
+            $model_auto = str_replace(" ", "", $carData['mo_nm']);
+            $caption_lines[] = '<a href="https://t.me/Sauto_B24_bot?start=' . $marka_auto . '_' . $model_auto . '_' . $prc . '_' . $carData['yr'] . '">👉 Comentariile le citim și răspundem imediat 👈</a>';
+        }
+        
+        return implode("\n", $caption_lines);
+    }
+
+
     /**
      * Log publication attempt
      * 
