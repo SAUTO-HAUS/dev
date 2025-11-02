@@ -44,6 +44,8 @@ $lng['ro']['w']['separate_account'] = 'Cont separat pentru comenzi';
 $lng['ro']['w']['same_page_id'] = 'ID pagină Facebook pentru comenzi';
 $lng['ro']['w']['facebook_default_time'] = 'Ora implicită pentru programarea postărilor Facebook';
 $lng['ro']['w']['placeholder_facebook_default_time'] = 'Ora implicită (ex: 20:00)';
+$lng['ro']['w']['telegram_default_time'] = 'Ora implicită pentru programarea postărilor Telegram';
+$lng['ro']['w']['placeholder_telegram_default_time'] = 'Ora implicită (ex: 20:00)';
 
 // Placeholder translations - Romanian
 $lng['ro']['w']['placeholder_main_999md_account'] = 'Contul principal 999.md';
@@ -83,6 +85,8 @@ $lng['ru']['w']['separate_account'] = 'Отдельный аккаунт для 
 $lng['ru']['w']['same_page_id'] = 'ID Facebook страницы для заказов';
 $lng['ru']['w']['facebook_default_time'] = 'Время по умолчанию для планирования постов Facebook';
 $lng['ru']['w']['placeholder_facebook_default_time'] = 'Время по умолчанию (напр: 20:00)';
+$lng['ru']['w']['telegram_default_time'] = 'Время по умолчанию для планирования постов Telegram';
+$lng['ru']['w']['placeholder_telegram_default_time'] = 'Время по умолчанию (напр: 20:00)';
 
 // Placeholder translations - Russian
 $lng['ru']['w']['placeholder_main_999md_account'] = 'Основной аккаунт 999.md';
@@ -122,6 +126,8 @@ $lng['en']['w']['separate_account'] = 'Separate account for orders';
 $lng['en']['w']['same_page_id'] = 'Facebook page ID for orders';
 $lng['en']['w']['facebook_default_time'] = 'Default time for Facebook post scheduling';
 $lng['en']['w']['placeholder_facebook_default_time'] = 'Default time (e.g: 20:00)';
+$lng['en']['w']['telegram_default_time'] = 'Default time for Telegram post scheduling';
+$lng['en']['w']['placeholder_telegram_default_time'] = 'Default time (e.g: 20:00)';
 
 // Placeholder translations - English
 $lng['en']['w']['placeholder_main_999md_account'] = 'Main 999.md account';
@@ -166,6 +172,9 @@ if ($_POST) {
         
         // Facebook default schedule time
         'facebook_default_schedule_time' => $_POST['facebook_default_schedule_time'] ?? '20:00',
+        
+        // Telegram default schedule time
+        'telegram_default_schedule_time' => $_POST['telegram_default_schedule_time'] ?? '20:00',
     ];
     
       // Save settings to database
@@ -184,7 +193,7 @@ if ($_POST) {
 
 // Load current settings - force fresh data
 $current_settings = [];
-$stmt = $db->prepare("SELECT name, value FROM {$prefx}_settings WHERE name IN ('regular_999md_account', 'regular_999md_token', 'regular_telegram_bot_token', 'regular_telegram_chat_id', 'order_999md_account', 'order_999md_token', 'order_telegram_bot_token', 'order_telegram_chat_id', 'location_1_facebook_page_id', 'location_1_facebook_token', 'location_2_facebook_page_id', 'location_2_facebook_token', 'auto_publish_regular', 'auto_publish_order', 'facebook_default_schedule_time')");
+$stmt = $db->prepare("SELECT name, value FROM {$prefx}_settings WHERE name IN ('regular_999md_account', 'regular_999md_token', 'regular_telegram_bot_token', 'regular_telegram_chat_id', 'order_999md_account', 'order_999md_token', 'order_telegram_bot_token', 'order_telegram_chat_id', 'location_1_facebook_page_id', 'location_1_facebook_token', 'location_2_facebook_page_id', 'location_2_facebook_token', 'auto_publish_regular', 'auto_publish_order', 'facebook_default_schedule_time', 'telegram_default_schedule_time')");
 $stmt->execute();
 while ($row = $stmt->fetch()) {
     $current_settings[$row['name']] = $row['value'];
@@ -310,6 +319,13 @@ $rtrn .= '
                 <label>' . ($lng[$_COOKIE['lang']]['w']['facebook_default_time'] ?? 'Время по умолчанию:') . '</label>
                 <input type="time" name="facebook_default_schedule_time" value="' . htmlspecialchars($current_settings['facebook_default_schedule_time'] ?? '20:00') . '" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
                 <small style="display: block; color: #666; margin-top: 5px;">' . ($lng[$_COOKIE['lang']]['w']['placeholder_facebook_default_time'] ?? 'Время по умолчанию (напр: 20:00)') . '</small>
+            </div>
+            
+            <div class="setting-group">
+                <h4>' . ($lng[$_COOKIE['lang']]['w']['telegram_default_time'] ?? 'Время по умолчанию для планирования постов Telegram') . '</h4>
+                <label>' . ($lng[$_COOKIE['lang']]['w']['telegram_default_time'] ?? 'Время по умолчанию:') . '</label>
+                <input type="time" name="telegram_default_schedule_time" value="' . htmlspecialchars($current_settings['telegram_default_schedule_time'] ?? '20:00') . '" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                <small style="display: block; color: #666; margin-top: 5px;">' . ($lng[$_COOKIE['lang']]['w']['placeholder_telegram_default_time'] ?? 'Время по умолчанию (напр: 20:00)') . '</small>
             </div>
                 </div>
             </div>
