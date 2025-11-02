@@ -163,23 +163,36 @@ try {
             echo "[" . date('Y-m-d H:i:s') . "] Successfully published post ID: {$post['id']}, Telegram ID: {$telegramMessageId}\n";
             
         } catch (Exception $e) {
-            // Update post as failed
-            $stmt = $db->prepare("
-                UPDATE {$prefx}_scheduled_telegram_posts 
-                SET status = 'failed', 
-                    error_message = :error
-                WHERE id = :id
-            ");
-            $stmt->execute([
-                'error' => $e->getMessage(),
-                'id' => $post['id']
-            ]);
-            
-            echo "[" . date('Y-m-d H:i:s') . "] Failed to publish post ID: {$post['id']}, Error: " . $e->getMessage() . "\n";
+            // Check if it's a rate limit error
+            if (strpos($e->getMessage(), 'Too Many Requests') !== false) {
+                // Extract retry time and wait
+                preg_match('/retry after (\d+)/', $e->getMessage(), $matches);
+                $retryAfter = isset($matches[1]) ? (int)$matches[1] : 5;
+                
+                echo "[" . date('Y-m-d H:i:s') . "] Rate limited, waiting {$retryAfter} seconds before retry...\n";
+                sleep($retryAfter + 1);
+                
+                // Don't mark as failed, will retry on next cron run
+                echo "[" . date('Y-m-d H:i:s') . "] Will retry post ID: {$post['id']} on next cron run\n";
+            } else {
+                // Update post as failed for other errors
+                $stmt = $db->prepare("
+                    UPDATE {$prefx}_scheduled_telegram_posts 
+                    SET status = 'failed', 
+                        error_message = :error
+                    WHERE id = :id
+                ");
+                $stmt->execute([
+                    'error' => $e->getMessage(),
+                    'id' => $post['id']
+                ]);
+                
+                echo "[" . date('Y-m-d H:i:s') . "] Failed to publish post ID: {$post['id']}, Error: " . $e->getMessage() . "\n";
+            }
         }
         
-        // Small delay between posts
-        sleep(2);
+        // Longer delay between posts to avoid rate limiting
+        sleep(5);
     }
     
     echo "[" . date('Y-m-d H:i:s') . "] Telegram Cron Completed\n";

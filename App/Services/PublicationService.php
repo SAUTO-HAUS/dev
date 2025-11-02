@@ -315,25 +315,21 @@ class PublicationService
             ];
         }
         
-        // Define helper functions if they don't exist
-        if (!function_exists('parseCurr')) {
-            function parseCurr($number) {
-                return number_format($number, 0, '.', ',');
-            }
-        }
+        // Use local helper functions to avoid redeclaration
+        $parseCurr = function($number) {
+            return number_format($number, 0, '.', ',');
+        };
         
-        if (!function_exists('symb_rplc')) {
-            function symb_rplc($currency) {
-                $symbols = ['USD' => '$', 'EUR' => '€', 'MDL' => 'lei'];
-                return $symbols[$currency] ?? $currency;
-            }
-        }
+        $symb_rplc = function($currency) {
+            $symbols = ['USD' => '$', 'EUR' => '€', 'MDL' => 'lei'];
+            return $symbols[$currency] ?? $currency;
+        };
         
         $caption_lines = [];
         
         if ($catalogType === 'on_order') {
             // Order cars format
-            $caption_lines[] = '✅ Pretul masinii la licitatii Europene ' . parseCurr($carData['prc']) . '€';
+            $caption_lines[] = '✅ Pretul masinii la licitatii Europene ' . $parseCurr($carData['prc']) . '€';
             $caption_lines[] = '✨ Plus Garanție de la dealer European';
             $caption_lines[] = '';
             $caption_lines[] = '📋 Detalii despre o mașină disponibilă acum la comandă:';
@@ -341,7 +337,7 @@ class PublicationService
             $car_title = '#' . str_replace(" ", "", $carData['br_nm']) . str_replace(" ", "", $carData['mo_nm']);
             $caption_lines[] = '🚘 Model: ' . $car_title;
             $caption_lines[] = '▪️ An fabricație: ' . $carData['yr'];
-            $caption_lines[] = '▪️ Kilometraj: ' . parseCurr($carData['mlg']) . ' km';
+            $caption_lines[] = '▪️ Kilometraj: ' . $parseCurr($carData['mlg']) . ' km';
             $caption_lines[] = '';
             $caption_lines[] = '✅ Specificații:';
             $caption_lines[] = '▪️ Motor: ' . $carData['vol'] . 'cc ' . $carData['hp'] . 'hp';
@@ -367,7 +363,7 @@ class PublicationService
             
             $cur = $carData['cur'];
             $prc = ($carData['prc_t'] != 0 && $carData['prc_t'] > time()) ? $carData['prc_n'] : $carData['prc'];
-            $caption_lines[] = '✅ ' . $carData['yr'] . ', ' . parseCurr($prc) . ' ' . symb_rplc($cur);
+            $caption_lines[] = '✅ ' . $carData['yr'] . ', ' . $parseCurr($prc) . ' ' . $symb_rplc($cur);
             
             // Specifications with icons
             $spec_ar = ['bt', 'mlg', 'vol', 'hp', 'fl', 'tra', 'wd', 'clr', 'sts', 'loc'];
@@ -381,7 +377,7 @@ class PublicationService
                 if ($v == 'loc' && $carData[$v] == '0') continue;
                 
                 $v_lng = isset($lng['l']['car'][$v][$carData[$v]]) ? $lng['l']['car'][$v][$carData[$v]] : $carData[$v];
-                $v_lng = $v == 'mlg' ? parseCurr($carData[$v]) . ' km' : $v_lng;
+                $v_lng = $v == 'mlg' ? $parseCurr($carData[$v]) . ' km' : $v_lng;
                 $v_lng = $v == 'vol' ? $carData[$v] . ' cm3' : $v_lng;
                 $v_lng = $v == 'hp' ? $carData[$v] . ' hp (' . round($carData['hp'] * 0.735, 0) . ' kw)' : $v_lng;
                 $v_lng = $v == 'loc' ? $lng['t']['x']['address'][$carData[$v]] : $v_lng;
