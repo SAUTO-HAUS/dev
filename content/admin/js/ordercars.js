@@ -84,7 +84,9 @@ function sendToFacebookCars() {
 }
 
 function sendToTelegramCars() {
-	var confirmation = confirm( 'Опубликовать в telegram?' );
+	// Get selected time
+	const selectedTime = document.getElementById('telegram_schedule_time').value;
+	var confirmation = confirm( 'Программировать в telegram в ' + selectedTime + '?' );
 	if (confirmation){
 
 		$('body').addClass('ajx');
@@ -102,7 +104,8 @@ function sendToTelegramCars() {
 				tp: reqType,
 				pg: reqPage,
 				fn: 'sendToTelegramCars', // Имя обработчика в PHP
-				id: carId
+				id: carId,
+				schedule_time: selectedTime
 			},
 			statusCode: {
 				0: function(){
