@@ -269,7 +269,65 @@ class PublicationService
     {
         // Set language for message generation
         $_COOKIE['lang'] = 'ro';
-        require_once $_SERVER['DOCUMENT_ROOT'] . '/language.php';
+        
+        // Try to include language file from different possible locations
+        $languageFile = null;
+        $possiblePaths = [
+            $_SERVER['DOCUMENT_ROOT'] . '/language.php',
+            __DIR__ . '/../../language.php',
+            __DIR__ . '/../../content/default/language.php'
+        ];
+        
+        foreach ($possiblePaths as $path) {
+            if (file_exists($path)) {
+                $languageFile = $path;
+                break;
+            }
+        }
+        
+        if ($languageFile) {
+            require_once $languageFile;
+        } else {
+            // Fallback - define basic language arrays if language file not found
+            global $lng;
+            $lng = [
+                'l' => [
+                    'car' => [
+                        'spec' => [
+                            'bt' => 'Tip caroserie',
+                            'mlg' => 'Parcurs', 
+                            'vol' => 'Capacitate motor',
+                            'hp' => 'Putere',
+                            'fl' => 'Tip combustibil',
+                            'tra' => 'Cutia de viteze',
+                            'wd' => 'Tip tracțiune',
+                            'clr' => 'Culoare',
+                            'sts' => 'Numărul de locuri',
+                            'loc' => 'Adresă'
+                        ]
+                    ]
+                ],
+                't' => [
+                    'x' => [
+                        'address' => []
+                    ]
+                ]
+            ];
+        }
+        
+        // Define helper functions if they don't exist
+        if (!function_exists('parseCurr')) {
+            function parseCurr($number) {
+                return number_format($number, 0, '.', ',');
+            }
+        }
+        
+        if (!function_exists('symb_rplc')) {
+            function symb_rplc($currency) {
+                $symbols = ['USD' => '$', 'EUR' => '€', 'MDL' => 'lei'];
+                return $symbols[$currency] ?? $currency;
+            }
+        }
         
         $caption_lines = [];
         
