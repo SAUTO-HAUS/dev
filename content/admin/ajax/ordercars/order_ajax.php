@@ -631,11 +631,6 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
     // 2) Формируем подпись: заголовок + список характеристик с эмодзи
     $caption = implode("\n", $caption_lines);
 
-    // 3) Отправляем «одно» объявление
-    $res = $Cbot->send_album_with_caption($media, $caption, 'HTML');
-
-    $res = json_decode( $res , true);
-
     // Schedule Telegram Post instead of publishing immediately
     try {
         // Calculate scheduled datetime

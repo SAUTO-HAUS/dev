@@ -652,30 +652,6 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
     // 2) Формируем подпись: заголовок + список характеристик с эмодзи
     $caption = implode("\n", $caption_lines);
 
-    // 3) Отправляем «одно» объявление
-    $res = $Cbot->send_album_with_caption($media, $caption, 'HTML');
-
-    $res = json_decode( $res , true);
-
-    if($res['ok']) {
-        /*
-        $captionkeyboard = html_entity_decode('&nbsp;');
-
-        $keyboard = [
-            'inline_keyboard' => [
-                [
-                    ['text' => '🔼 Comentariile le citim și răspundem imediat', 'url' => "https://t.me/Sauto_B24_bot?start=" . $marka_auto . "_" . $model_auto . "_" . $price_auto . "_" . $year_auto . ""]
-                ]
-            ]
-        ];
-        $res2 = $Cbot->send_caption_with_button("\xE3\x85\xA4", $keyboard);
-        */
-    }
-
-    // var_dump( $media);
-    // var_dump( $caption);
-    // var_dump( $res);
-
     // Schedule Telegram Post instead of publishing immediately
     try {
         // Calculate scheduled datetime
