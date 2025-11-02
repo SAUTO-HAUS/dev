@@ -472,6 +472,7 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
 elseif ( __post('fn')=='sendToTelegramCars' ){
 
     $it_id = __post('id');
+    $schedule_time = __post('schedule_time') ?: '20:00'; // Default to 20:00 if not provided
 
     $_COOKIE['lang']='ro';
     require (_DEFAULT.'/language.php');
@@ -635,27 +636,49 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
 
     $res = json_decode( $res , true);
 
-    $returnIt = [];
-    if($res['ok']) {
-        // Mark as published in database
-        $stmt = $db->prepare("UPDATE {$prefx}_car_ctlg SET telegram_published = 1 WHERE id = ?");
-        $stmt->execute([$it_id]);
+    // Schedule Telegram Post instead of publishing immediately
+    try {
+        // Calculate scheduled datetime
+        $scheduled_date = date('Y-m-d');
+        $scheduled_datetime = $scheduled_date . ' ' . $schedule_time . ':00';
         
-        // Log successful publication
-        $publicationService->logPublication($it_id, 'on_order', 'telegram', true, 'Published to order cars channel');
+        // If the time has already passed today, schedule for tomorrow
+        if (strtotime($scheduled_datetime) <= time()) {
+            $scheduled_date = date('Y-m-d', strtotime('+1 day'));
+        }
+        
+        // Insert into scheduled posts table
+        $stmt = $db->prepare("
+            INSERT INTO {$prefx}_scheduled_telegram_posts 
+            (car_id, catalog_type, scheduled_date, scheduled_time, status) 
+            VALUES (:car_id, :catalog_type, :scheduled_date, :scheduled_time, 'pending')
+        ");
+        
+        $stmt->execute([
+            'car_id' => $it_id,
+            'catalog_type' => 'on_order',
+            'scheduled_date' => $scheduled_date,
+            'scheduled_time' => $schedule_time . ':00'
+        ]);
+        
+        // Update car as scheduled for Telegram
+        $stmt = $db->prepare("UPDATE {$prefx}_car_ctlg SET telegram_published = 2 WHERE id = ?");
+        $stmt->execute([$it_id]); // 2 = scheduled
         
         $returnIt['status'] = true;
-    } else {
-        // Log failed publication
-        $publicationService->logPublication($it_id, 'on_order', 'telegram', false, $res['description'] ?? 'Unknown error');
+        $returnIt['message'] = "Programat pentru publicare Telegram la {$scheduled_date} {$schedule_time}";
         
+        // Log scheduling
+        $publicationService->logPublication($it_id, 'on_order', 'telegram', true, "Scheduled for {$scheduled_date} {$schedule_time}");
+        
+    } catch (Exception $e) {
         $returnIt['status'] = false;
-        $returnIt['error'] = $res['description'] ?? 'Unknown error';
-        $returnIt['telegram_response'] = $res;
+        $returnIt['message'] = 'Eroare la programare Telegram: ' . $e->getMessage();
+        
+        // Log failed scheduling
+        $publicationService->logPublication($it_id, 'on_order', 'telegram', false, 'Scheduling error: ' . $e->getMessage());
     }
     
     echo json_encode($returnIt);
-
-    // End of Telegram publication for order cars
 }
 
