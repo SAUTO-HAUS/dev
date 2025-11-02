@@ -7,3 +7,4 @@ filter_debug.log
 *.log
 environment.php
 scheduled_facebook_posts.php
+scheduled_telegram_posts.php
