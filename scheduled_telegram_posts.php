@@ -17,6 +17,9 @@ ini_set('display_errors', 1);
 // Set timezone
 date_default_timezone_set('Europe/Chisinau');
 
+// Define security constant for included files
+define('_DOIT', true);
+
 try {
     // Database connection using environment settings
     require_once __DIR__ . '/environment.php';
