@@ -41,7 +41,7 @@ return [
     'middle' => 'Средний',
     'maximal' => 'Максимальный',
     'new_ad' => 'Новое объявление',
-    'edit_ad' => 'Редактирование объявления',
+    'edit_ad' => 'Редактировать объявление',
     'processing' => 'Обработка',
     'promotions' => 'Продвижения',
     'date_next_public' => 'Дата следующего продвижения',
@@ -50,5 +50,14 @@ return [
     'fuel' => 'Топливо',
     'transmission' => 'КПП',
     'power' => 'Мощность',
-    'car_year' => 'Год выпуска'
+    'car_year' => 'Год выпуска',
+
+    // SAUTO Personal Scheduling
+    'personal_scheduling' => 'Персональное расписание',
+    'select_date' => 'Выберите дату',
+    'scheduled_publications' => 'Запланированные публикации',
+    'set_time' => 'Установить время',
+    'time' => 'Время',
+    'save' => 'Сохранить',
+    'cancel' => 'Отмена',
 ];

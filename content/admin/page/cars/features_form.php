@@ -144,12 +144,12 @@ if (!isset($new999)) $new999 = true;
         <div id="sauto_personal_scheduling" class="form-group" style="display: none;">
             <label><?= __('cars.promotions') ?>:</label>
             <div style="border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-top: 10px; background: #f9f9f9;">
-                <h4 style="margin-bottom: 20px; color: #333; text-align: center;">📅 Programare Personalizată</h4>
+                <h4 style="margin-bottom: 20px; color: #333; text-align: center;">📅 <?= __('cars.personal_scheduling') ?></h4>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <!-- Calendar Section -->
                     <div style="background: white; border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px;">
-                        <h5 style="margin-bottom: 15px; color: #495057; text-align: center;">📅 Selectează Data</h5>
+                        <h5 style="margin-bottom: 15px; color: #495057; text-align: center;">📅 <?= __('cars.select_date') ?></h5>
                         
                         <!-- Calendar Navigation -->
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -166,7 +166,7 @@ if (!isset($new999)) $new999 = true;
                     
                     <!-- Scheduled Publications -->
                     <div style="background: white; border: 1px solid #e0e0e0; border-radius: 6px; padding: 15px;">
-                        <h5 style="margin-bottom: 15px; color: #495057; text-align: center;">📋 Programări Setate</h5>
+                        <h5 style="margin-bottom: 15px; color: #495057; text-align: center;">📋 <?= __('cars.scheduled_publications') ?></h5>
                         
                         <div id="schedules_list" style="max-height: 300px; overflow-y: auto;">
                             <div id="no_schedules_message" style="text-align: center; color: #6c757d; font-style: italic; padding: 20px;">
@@ -179,20 +179,20 @@ if (!isset($new999)) $new999 = true;
                 <!-- Time Selection Modal (Hidden by default) -->
                 <div id="time_modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
                     <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3); min-width: 300px;">
-                        <h5 style="margin-bottom: 20px; text-align: center; color: #495057;">🕐 Setează Ora</h5>
+                        <h5 style="margin-bottom: 20px; text-align: center; color: #495057;">🕐 <?= __('cars.set_time') ?></h5>
                         <p id="selected_date_display" style="text-align: center; margin-bottom: 20px; font-weight: 500; color: #007bff;"></p>
                         
                         <div style="margin-bottom: 20px;">
-                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #495057;">Ora:</label>
+                            <label style="display: block; margin-bottom: 8px; font-weight: 500; color: #495057;"><?= __('cars.time') ?>:</label>
                             <input type="time" id="modal_time" style="width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 16px;">
                         </div>
                         
                         <div style="display: flex; gap: 10px; justify-content: center;">
                             <button type="button" id="save_schedule" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: 500;">
-                                ✅ Salvează
+                                ✅ <?= __('cars.save') ?>
                             </button>
                             <button type="button" id="cancel_schedule" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: 500;">
-                                ❌ Anulează
+                                ❌ <?= __('cars.cancel') ?>
                             </button>
                         </div>
                     </div>

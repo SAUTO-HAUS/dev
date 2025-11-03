@@ -1490,7 +1490,13 @@ $(document).ready(function() {
 	$(document).on('click', '#save_schedule', function() {
 		const time = $('#modal_time').val();
 		if (!time) {
-			alert('Te rog selectează o oră.');
+			const currentLang = $('html').attr('lang') || 'ro';
+			const translations = {
+				ro: 'Te rog selectează o oră.',
+				ru: 'Пожалуйста, выберите время.',
+				en: 'Please select a time.'
+			};
+			alert(translations[currentLang] || translations.ro);
 			return;
 		}
 		
@@ -1518,10 +1524,45 @@ $(document).ready(function() {
 	}
 	
 	function renderCalendar() {
-		const monthNames = ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie',
-			'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie'];
+		// Get current language from page or default to Romanian
+		const currentLang = $('html').attr('lang') || 'ro';
 		
-		$('#calendar_month_year').text(`${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`);
+		const translations = {
+			ro: {
+				months: ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie',
+					'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie'],
+				days: ['L', 'M', 'M', 'J', 'V', 'S', 'D'],
+				noSchedules: 'Nu există programări setate.<br>Fă click pe o dată din calendar.',
+				setTime: 'Setează Ora',
+				save: 'Salvează',
+				cancel: 'Anulează',
+				selectTime: 'Te rog selectează o oră.'
+			},
+			ru: {
+				months: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+					'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
+				days: ['П', 'В', 'С', 'Ч', 'П', 'С', 'В'],
+				noSchedules: 'Нет установленных расписаний.<br>Нажмите на дату в календаре.',
+				setTime: 'Установить время',
+				save: 'Сохранить',
+				cancel: 'Отмена',
+				selectTime: 'Пожалуйста, выберите время.'
+			},
+			en: {
+				months: ['January', 'February', 'March', 'April', 'May', 'June',
+					'July', 'August', 'September', 'October', 'November', 'December'],
+				days: ['M', 'T', 'W', 'T', 'F', 'S', 'S'],
+				noSchedules: 'No schedules set.<br>Click on a date in the calendar.',
+				setTime: 'Set Time',
+				save: 'Save',
+				cancel: 'Cancel',
+				selectTime: 'Please select a time.'
+			}
+		};
+		
+		const t = translations[currentLang] || translations.ro;
+		
+		$('#calendar_month_year').text(`${t.months[currentDate.getMonth()]} ${currentDate.getFullYear()}`);
 		
 		const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
 		const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
@@ -1531,8 +1572,7 @@ $(document).ready(function() {
 		let calendarHTML = '';
 		
 		// Day headers
-		const dayHeaders = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
-		dayHeaders.forEach(day => {
+		t.days.forEach(day => {
 			calendarHTML += `<div style="padding: 8px; font-weight: 600; color: #6c757d; background: #f8f9fa;">${day}</div>`;
 		});
 		
@@ -1572,7 +1612,10 @@ $(document).ready(function() {
 	}
 	
 	function showTimeModal() {
-		const formattedDate = selectedDate.toLocaleDateString('ro-RO', {
+		const currentLang = $('html').attr('lang') || 'ro';
+		const localeMap = { ro: 'ro-RO', ru: 'ru-RU', en: 'en-US' };
+		
+		const formattedDate = selectedDate.toLocaleDateString(localeMap[currentLang] || 'ro-RO', {
 			weekday: 'long',
 			year: 'numeric',
 			month: 'long',
@@ -1600,10 +1643,17 @@ $(document).ready(function() {
 	}
 	
 	function renderSchedulesList() {
+		const currentLang = $('html').attr('lang') || 'ro';
+		const translations = {
+			ro: '📝 Nu există programări setate.<br>Fă click pe o dată din calendar.',
+			ru: '📝 Нет установленных расписаний.<br>Нажмите на дату в календаре.',
+			en: '📝 No schedules set.<br>Click on a date in the calendar.'
+		};
+		
 		if (schedules.length === 0) {
 			$('#schedules_list').html(`
 				<div id="no_schedules_message" style="text-align: center; color: #6c757d; font-style: italic; padding: 20px;">
-					📝 Nu există programări setate.<br>Fă click pe o dată din calendar.
+					${translations[currentLang] || translations.ro}
 				</div>
 			`);
 			return;
@@ -1614,7 +1664,10 @@ $(document).ready(function() {
 		
 		let schedulesHTML = '';
 		schedules.forEach((schedule, index) => {
-			const formattedDate = schedule.date.toLocaleDateString('ro-RO', {
+			const currentLang = $('html').attr('lang') || 'ro';
+			const localeMap = { ro: 'ro-RO', ru: 'ru-RU', en: 'en-US' };
+			
+			const formattedDate = schedule.date.toLocaleDateString(localeMap[currentLang] || 'ro-RO', {
 				weekday: 'short',
 				month: 'short',
 				day: 'numeric'

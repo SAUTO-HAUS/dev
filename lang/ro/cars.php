@@ -8,4 +8,13 @@ return [
     'edit_ad' => 'Editare anunț',
     'new_ad' => 'Anunț nou',
     '999_block_title' => 'INTEGRARE 999.MD',
+    
+    // SAUTO Personal Scheduling
+    'personal_scheduling' => 'Programare Personalizată',
+    'select_date' => 'Selectează Data',
+    'scheduled_publications' => 'Programări Setate',
+    'set_time' => 'Setează Ora',
+    'time' => 'Ora',
+    'save' => 'Salvează',
+    'cancel' => 'Anulează',
 ];
