@@ -760,6 +760,11 @@ $(document).ready(function(){
 	function showSautoPersonalScheduling() {
 		$('#sauto_personal_scheduling').show();
 		$('#text_options_wrapper').show();
+		
+		// Auto-select BASIC promotion for SAUTO Personal
+		$('input[name="promotions"][value="basic"]').prop('checked', true);
+		$('input[name="promotions"][value="basic"]').closest('div').show();
+		$('input[name="promotions"][value="basic"]').prop('disabled', false);
 	}
 
 	function hideSautoPersonalScheduling() {
