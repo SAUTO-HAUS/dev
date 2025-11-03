@@ -641,12 +641,18 @@ $(document).ready(function(){
 		const dependentSelect = document.querySelector(`.feature-select[data-depends-on="${featureId}"]`);
 
 		if (dependentSelect) {
+			const dependentFeatureId = dependentSelect.dataset.featureId;
+			
+			// Clear dependent select immediately
+			const defText = $(dependentSelect).attr('def_text') || 'Select...';
+			$(dependentSelect).html(`<option value="">${defText}</option>`);
+			
 			let data = {
 				tp: reqType,
 				pg: reqPage,
 				fn: '999_catalog',
 				sub: 'get_features_depends',
-				feature_id: $(this).val(),
+				feature_id: dependentFeatureId,
 				subcategory: $(this).closest('.bx').find('.subcategory').val(),
 				dependency_feature_id: featureId,
 				parent_option_id: dependsOnId,
@@ -654,11 +660,14 @@ $(document).ready(function(){
 			};
 
 			if ($(this).val()) {
-				ajaxMain(data, function (response) {
-					var defText = $(dependentSelect).attr('def_text');
-					defText = '<option value="">'+defText+'</option>';
-					$(dependentSelect).html(defText + response.rtrn.str)
-				});
+				// Add small delay to ensure DOM is ready
+				setTimeout(() => {
+					ajaxMain(data, function (response) {
+						var defText = $(dependentSelect).attr('def_text') || 'Select...';
+						defText = '<option value="">'+defText+'</option>';
+						$(dependentSelect).html(defText + response.rtrn.str);
+					});
+				}, 100);
 			}
 		}
 	}).on('change', '.scenario-option-radio', function(){

@@ -1306,23 +1306,37 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Try text match
+        // Try text match with priority for exact and longer matches
         if (!modelSynced) {
             const modelText = modelField.options[modelField.selectedIndex]?.textContent?.trim();
             if (modelText) {
+                let bestMatch = null;
+                let bestMatchScore = 0;
+                
                 options.forEach(option => {
                     const optionText = option.textContent.trim();
-                    if (!modelSynced && (
-                        optionText.toLowerCase() === modelText.toLowerCase() ||
-                        optionText.toLowerCase().includes(modelText.toLowerCase()) ||
-                        modelText.toLowerCase().includes(optionText.toLowerCase())
-                    )) {
-                        model999Field.value = option.value;
-                        modelSynced = true;
-                        model999Field.classList.remove('empty');
-                        model999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                    let score = 0;
+                    
+                    if (optionText.toLowerCase() === modelText.toLowerCase()) {
+                        score = 100; // Exact match - highest priority
+                    } else if (optionText.toLowerCase().includes(modelText.toLowerCase())) {
+                        score = 80 + optionText.length; // Option contains model text
+                    } else if (modelText.toLowerCase().includes(optionText.toLowerCase())) {
+                        score = 60 - optionText.length; // Model text contains option (prefer longer options)
+                    }
+                    
+                    if (score > bestMatchScore) {
+                        bestMatch = option;
+                        bestMatchScore = score;
                     }
                 });
+                
+                if (bestMatch) {
+                    model999Field.value = bestMatch.value;
+                    modelSynced = true;
+                    model999Field.classList.remove('empty');
+                    model999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                }
             }
         }
     }
