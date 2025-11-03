@@ -1703,27 +1703,6 @@ $(document).ready(function() {
 	}
 	
 	function generatePresetSchedules(frequency, duration, time) {
-		const currentLang = $('html').attr('lang') || 'ro';
-		const translations = {
-			ro: {
-				confirm: `Vrei să generezi ${frequency}x/lună pentru ${duration} ${duration === 1 ? 'lună' : 'luni'} la ora ${time}?\n\nAceasta va adăuga aproximativ ${frequency * duration} programări.`,
-				success: `✅ Au fost generate ${frequency * duration} programări!`
-			},
-			ru: {
-				confirm: `Хотите создать ${frequency}x/месяц на ${duration} ${duration === 1 ? 'месяц' : 'месяца'} в ${time}?\n\nЭто добавит примерно ${frequency * duration} расписаний.`,
-				success: `✅ Создано ${frequency * duration} расписаний!`
-			},
-			en: {
-				confirm: `Generate ${frequency}x/month for ${duration} month${duration > 1 ? 's' : ''} at ${time}?\n\nThis will add approximately ${frequency * duration} schedules.`,
-				success: `✅ Generated ${frequency * duration} schedules!`
-			}
-		};
-		
-		const t = translations[currentLang] || translations.ro;
-		
-		if (!confirm(t.confirm)) {
-			return;
-		}
 		
 		// Clear existing schedules
 		schedules = [];
@@ -1786,8 +1765,6 @@ $(document).ready(function() {
 		// Update UI
 		renderSchedulesList();
 		renderCalendar();
-		
-		alert(t.success);
 	}
 	
 	function renderSchedulesList() {
