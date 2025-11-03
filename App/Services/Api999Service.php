@@ -547,7 +547,7 @@ class Api999Service
             'turbo' => Schedules::turbo
         ];
 
-        $promotionType = $input['promotions'];
+        $promotionType = $input['promotions'] ?? 'basic';
         $schedule = $scheduleTypes[$promotionType] ?? [];
 
         $currentDatetime = (new DateTime())->format('Y-m-d H:i:s');
