@@ -202,20 +202,23 @@ if (__post('sub') == 'get_subcategory') {
             $rtrn = ['error' => 'Failed to submit to 999.md API'];
         } else {
 
+        $featuresJsonData = json_encode([
+            'category_id' => $input["car"]["category"],
+            'subcategory_id' => $input["car"]["subcategory"],
+            'offer_type' => $input["car"]["subcategory_offer_types"],
+            'announcement_type' => $input["announcement_type"],
+            'scenario' => $input["scenario"] ?? 'maximal',
+            'features' => $features,
+        ]);
+        
         $stmt = $pdo->prepare("
             UPDATE gh3sp_car_ctlg
-            SET `999` = :featuresJson, `features_json` = :featuresJson, `999_id` = :car999Id, `promotions` = :promotions, `999_api_id` = :999_api_id, `n_a_new` = :n_a_new
+            SET `999` = :featuresJson, `features_json` = :featuresJson2, `999_id` = :car999Id, `promotions` = :promotions, `999_api_id` = :999_api_id, `n_a_new` = :n_a_new
             WHERE id = :carId
         ");
         $stmt->execute([
-            ':featuresJson' => json_encode([
-                'category_id' => $input["car"]["category"],
-                'subcategory_id' => $input["car"]["subcategory"],
-                'offer_type' => $input["car"]["subcategory_offer_types"],
-                'announcement_type' => $input["announcement_type"],
-                'scenario' => $input["scenario"] ?? 'maximal',
-                'features' => $features,
-            ]),
+            ':featuresJson' => $featuresJsonData,
+            ':featuresJson2' => $featuresJsonData,
             ':car999Id' => ($input['announcement_type'] === 'sauto_personal' && !empty($input['sauto_schedules'])) ? null : $request['advert']['id'],
             ':carId' => $carId,
             ':promotions' => $input['promotions'] ?? 'basic',
