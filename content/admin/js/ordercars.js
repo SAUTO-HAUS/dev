@@ -1455,55 +1455,192 @@ function handleDisplayLimitChange(newLimit) {
 
 initializeDisplayLimit();
 
-// SAUTO Personal Scheduling Management
+// SAUTO Personal Calendar Scheduling
 $(document).ready(function() {
-	let scheduleCounter = 0;
+	let currentDate = new Date();
+	let selectedDate = null;
+	let schedules = [];
 	
-	// Add new schedule row
-	$(document).on('click', '#add_schedule_btn', function() {
-		addScheduleRow();
-	});
-	
-	// Remove schedule row
-	$(document).on('click', '.remove_schedule_btn', function() {
-		$(this).closest('tr').remove();
-	});
-	
-	function addScheduleRow(date = '', time = '') {
-		scheduleCounter++;
-		const currentDate = new Date().toISOString().split('T')[0];
-		const currentTime = new Date().toTimeString().split(' ')[0].substring(0, 5);
-		
-		const row = `
-			<tr>
-				<td style="border: 1px solid #ddd; padding: 8px;">
-					<input type="date" name="schedule_dates[]" class="form-control" 
-						   value="${date || currentDate}" 
-						   style="width: 100%; border: 1px solid #ccc; padding: 5px; border-radius: 3px;">
-				</td>
-				<td style="border: 1px solid #ddd; padding: 8px;">
-					<input type="time" name="schedule_times[]" class="form-control" 
-						   value="${time || currentTime}" 
-						   style="width: 100%; border: 1px solid #ccc; padding: 5px; border-radius: 3px;">
-				</td>
-				<td style="border: 1px solid #ddd; padding: 8px; text-align: center;">
-					<button type="button" class="remove_schedule_btn" 
-							style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">
-						✕
-					</button>
-				</td>
-			</tr>
-		`;
-		
-		$('#scheduling_table_body').append(row);
-	}
-	
-	// Initialize with one row when SAUTO Personal is selected
+	// Initialize calendar when SAUTO Personal is selected
 	$(document).on('change', '#announcement_type', function() {
 		if ($(this).val() === 'sauto_personal') {
-			// Clear existing rows and add one default row
-			$('#scheduling_table_body').empty();
-			addScheduleRow();
+			initializeCalendar();
 		}
 	});
+	
+	// Calendar navigation
+	$(document).on('click', '#prev_month', function() {
+		currentDate.setMonth(currentDate.getMonth() - 1);
+		renderCalendar();
+	});
+	
+	$(document).on('click', '#next_month', function() {
+		currentDate.setMonth(currentDate.getMonth() + 1);
+		renderCalendar();
+	});
+	
+	// Calendar day click
+	$(document).on('click', '.calendar-day', function() {
+		if ($(this).hasClass('disabled')) return;
+		
+		const day = parseInt($(this).text());
+		selectedDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+		
+		// Show time modal
+		showTimeModal();
+	});
+	
+	// Modal actions
+	$(document).on('click', '#save_schedule', function() {
+		const time = $('#modal_time').val();
+		if (!time) {
+			alert('Te rog selectează o oră.');
+			return;
+		}
+		
+		addSchedule(selectedDate, time);
+		hideTimeModal();
+	});
+	
+	$(document).on('click', '#cancel_schedule', function() {
+		hideTimeModal();
+	});
+	
+	// Remove schedule
+	$(document).on('click', '.remove_schedule', function() {
+		const index = $(this).data('index');
+		schedules.splice(index, 1);
+		renderSchedulesList();
+		renderCalendar(); // Refresh calendar to update indicators
+	});
+	
+	function initializeCalendar() {
+		currentDate = new Date();
+		schedules = [];
+		renderCalendar();
+		renderSchedulesList();
+	}
+	
+	function renderCalendar() {
+		const monthNames = ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie',
+			'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie'];
+		
+		$('#calendar_month_year').text(`${monthNames[currentDate.getMonth()]} ${currentDate.getFullYear()}`);
+		
+		const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+		const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+		const startDate = new Date(firstDay);
+		startDate.setDate(startDate.getDate() - (firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1));
+		
+		let calendarHTML = '';
+		
+		// Day headers
+		const dayHeaders = ['L', 'M', 'M', 'J', 'V', 'S', 'D'];
+		dayHeaders.forEach(day => {
+			calendarHTML += `<div style="padding: 8px; font-weight: 600; color: #6c757d; background: #f8f9fa;">${day}</div>`;
+		});
+		
+		// Calendar days
+		const today = new Date();
+		for (let i = 0; i < 42; i++) {
+			const date = new Date(startDate);
+			date.setDate(startDate.getDate() + i);
+			
+			const isCurrentMonth = date.getMonth() === currentDate.getMonth();
+			const isPast = date < today.setHours(0,0,0,0);
+			const hasSchedule = schedules.some(s => 
+				s.date.toDateString() === date.toDateString()
+			);
+			
+			let dayClass = 'calendar-day';
+			let dayStyle = 'padding: 8px; cursor: pointer; border-radius: 4px; position: relative;';
+			
+			if (!isCurrentMonth) {
+				dayStyle += 'color: #ccc;';
+				dayClass += ' disabled';
+			} else if (isPast) {
+				dayStyle += 'color: #ccc; cursor: not-allowed;';
+				dayClass += ' disabled';
+			} else {
+				dayStyle += 'color: #495057; hover: background: #e9ecef;';
+			}
+			
+			if (hasSchedule) {
+				dayStyle += 'background: #d4edda; border: 2px solid #28a745;';
+			}
+			
+			calendarHTML += `<div class="${dayClass}" style="${dayStyle}">${date.getDate()}${hasSchedule ? '<div style="position: absolute; top: 2px; right: 2px; width: 6px; height: 6px; background: #28a745; border-radius: 50%;"></div>' : ''}</div>`;
+		}
+		
+		$('#calendar_grid').html(calendarHTML);
+	}
+	
+	function showTimeModal() {
+		const formattedDate = selectedDate.toLocaleDateString('ro-RO', {
+			weekday: 'long',
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric'
+		});
+		
+		$('#selected_date_display').text(formattedDate);
+		$('#modal_time').val('');
+		$('#time_modal').show();
+	}
+	
+	function hideTimeModal() {
+		$('#time_modal').hide();
+		selectedDate = null;
+	}
+	
+	function addSchedule(date, time) {
+		schedules.push({
+			date: new Date(date),
+			time: time
+		});
+		
+		renderSchedulesList();
+		renderCalendar();
+	}
+	
+	function renderSchedulesList() {
+		if (schedules.length === 0) {
+			$('#schedules_list').html(`
+				<div id="no_schedules_message" style="text-align: center; color: #6c757d; font-style: italic; padding: 20px;">
+					📝 Nu există programări setate.<br>Fă click pe o dată din calendar.
+				</div>
+			`);
+			return;
+		}
+		
+		// Sort schedules by date
+		schedules.sort((a, b) => a.date - b.date);
+		
+		let schedulesHTML = '';
+		schedules.forEach((schedule, index) => {
+			const formattedDate = schedule.date.toLocaleDateString('ro-RO', {
+				weekday: 'short',
+				month: 'short',
+				day: 'numeric'
+			});
+			const isoDate = schedule.date.toISOString().split('T')[0];
+			
+			schedulesHTML += `
+				<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; background: #f8f9fa; margin-bottom: 5px; border-radius: 4px;">
+					<div>
+						<strong style="color: #495057;">${formattedDate}</strong><br>
+						<span style="color: #007bff; font-weight: 500;">🕐 ${schedule.time}</span>
+						<input type="hidden" name="schedule_dates[]" value="${isoDate}">
+						<input type="hidden" name="schedule_times[]" value="${schedule.time}">
+					</div>
+					<button type="button" class="remove_schedule" data-index="${index}" 
+							style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+						🗑️
+					</button>
+				</div>
+			`;
+		});
+		
+		$('#schedules_list').html(schedulesHTML);
+	}
 });
