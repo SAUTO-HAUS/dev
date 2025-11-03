@@ -252,7 +252,7 @@ $(document).ready(function(){
 			console.log('Syncing brand from SAUTO to 999:', brandValue);
 			$('#main_form_999').find('select[name="feature[20]"]').val(brandValue);
 		}
-	}).on('change', '#content_box .model', function(){
+	}).on('change', 'select[name="mo"]', function(){
 		// Sync model from SAUTO to 999 form
 		const modelValue = $(this).val();
 		if (modelValue) {
