@@ -209,7 +209,7 @@ if (__post('sub') == 'get_subcategory') {
 
         $stmt = $pdo->prepare("
             UPDATE gh3sp_car_ctlg
-            SET `999` = :featuresJson, `999_id` = :car999Id, `promotions` = :promotions, `999_api_id` = :999_api_id, `n_a_new` = :n_a_new
+            SET `999` = :featuresJson, `features_json` = :featuresJson, `999_id` = :car999Id, `promotions` = :promotions, `999_api_id` = :999_api_id, `n_a_new` = :n_a_new
             WHERE id = :carId
         ");
         $stmt->execute([

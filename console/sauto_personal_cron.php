@@ -169,7 +169,7 @@ try {
                 $carStmt->execute(['car_id' => $schedule['car_id']]);
                 $carData = $carStmt->fetch();
                 
-                if (!$carData || empty($carData['features_json'])) {
+                if (!$carData || (empty($carData['features_json']) && empty($carData['999']))) {
                     $errorMsg = !$carData ? 'Car not found in database' : 'No features data saved for car';
                     $stmt = $db->prepare("
                         UPDATE gh3sp_sauto_personal_schedules 
@@ -181,8 +181,20 @@ try {
                     continue;
                 }
                 
-                // Parse saved features
-                $featuresData = json_decode($carData['features_json'], true);
+                // Parse saved features - try features_json first, then 999 column
+                $featuresData = null;
+                echo "[" . date('Y-m-d H:i:s') . "] Checking for saved features data...\n";
+                echo "[" . date('Y-m-d H:i:s') . "] features_json: " . (empty($carData['features_json']) ? 'EMPTY' : 'FOUND') . "\n";
+                echo "[" . date('Y-m-d H:i:s') . "] 999 column: " . (empty($carData['999']) ? 'EMPTY' : 'FOUND') . "\n";
+                
+                if (!empty($carData['features_json'])) {
+                    $featuresData = json_decode($carData['features_json'], true);
+                    echo "[" . date('Y-m-d H:i:s') . "] Using features_json data\n";
+                } elseif (!empty($carData['999'])) {
+                    $featuresData = json_decode($carData['999'], true);
+                    echo "[" . date('Y-m-d H:i:s') . "] Using 999 column data\n";
+                }
+                
                 if (!$featuresData || !isset($featuresData['features'])) {
                     $stmt = $db->prepare("
                         UPDATE gh3sp_sauto_personal_schedules 
