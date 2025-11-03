@@ -1535,12 +1535,12 @@ $(document).ready(function() {
 			ro: {
 				months: ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie',
 					'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie'],
-				days: ['L', 'M', 'M', 'J', 'V', 'S', 'D']
+				days: ['Lu', 'Ma', 'Mi', 'Jo', 'Vi', 'Sâ', 'Du']
 			},
 			ru: {
 				months: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
 					'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
-				days: ['П', 'В', 'С', 'Ч', 'П', 'С', 'В']
+				days: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс']
 			},
 			en: {
 				months: ['January', 'February', 'March', 'April', 'May', 'June',

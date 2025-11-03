@@ -1531,7 +1531,7 @@ $(document).ready(function() {
 			ro: {
 				months: ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie',
 					'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie'],
-				days: ['L', 'M', 'M', 'J', 'V', 'S', 'D'],
+				days: ['Lu', 'Ma', 'Mi', 'Jo', 'Vi', 'Sâ', 'Du'],
 				noSchedules: 'Nu există programări setate.<br>Fă click pe o dată din calendar.',
 				setTime: 'Setează Ora',
 				save: 'Salvează',
@@ -1541,7 +1541,7 @@ $(document).ready(function() {
 			ru: {
 				months: ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
 					'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'],
-				days: ['П', 'В', 'С', 'Ч', 'П', 'С', 'В'],
+				days: ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'],
 				noSchedules: 'Нет установленных расписаний.<br>Нажмите на дату в календаре.',
 				setTime: 'Установить время',
 				save: 'Сохранить',
