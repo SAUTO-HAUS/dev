@@ -158,19 +158,94 @@ try {
                     echo "[" . date('Y-m-d H:i:s') . "] ❌ Failed to republish car {$schedule['car_id']} on {$apiAccount}: $errorMsg\n";
                 }
             } else {
-                // Car doesn't have 999.md listing yet
-                echo "[" . date('Y-m-d H:i:s') . "] Car {$schedule['car_id']} doesn't have existing 999.md listing - skipping\n";
+                // Car doesn't have 999.md listing yet - create new one for SAUTO Personal
+                echo "[" . date('Y-m-d H:i:s') . "] Car {$schedule['car_id']} is new - creating first 999.md listing\n";
                 
-                $stmt = $db->prepare("
-                    UPDATE gh3sp_sauto_personal_schedules 
-                    SET status = 'failed', 
-                        error_message = :error
-                    WHERE id = :id
+                // Get car data and features from database
+                $carStmt = $db->prepare("
+                    SELECT * FROM {$prefx}_car_ctlg 
+                    WHERE id = :car_id
                 ");
-                $stmt->execute([
-                    'error' => 'No existing 999.md listing found',
-                    'id' => $schedule['id']
-                ]);
+                $carStmt->execute(['car_id' => $schedule['car_id']]);
+                $carData = $carStmt->fetch();
+                
+                if (!$carData || empty($carData['features_json'])) {
+                    $errorMsg = !$carData ? 'Car not found in database' : 'No features data saved for car';
+                    $stmt = $db->prepare("
+                        UPDATE gh3sp_sauto_personal_schedules 
+                        SET status = 'failed', error_message = :error
+                        WHERE id = :id
+                    ");
+                    $stmt->execute(['error' => $errorMsg, 'id' => $schedule['id']]);
+                    echo "[" . date('Y-m-d H:i:s') . "] ❌ $errorMsg\n";
+                    continue;
+                }
+                
+                // Parse saved features
+                $featuresData = json_decode($carData['features_json'], true);
+                if (!$featuresData || !isset($featuresData['features'])) {
+                    $stmt = $db->prepare("
+                        UPDATE gh3sp_sauto_personal_schedules 
+                        SET status = 'failed', error_message = 'Invalid features data format'
+                        WHERE id = :id
+                    ");
+                    $stmt->execute(['id' => $schedule['id']]);
+                    echo "[" . date('Y-m-d H:i:s') . "] ❌ Invalid features data format\n";
+                    continue;
+                }
+                
+                // Create new 999.md listing using saved data
+                try {
+                    $api999Service = \App\Services\Api999Service::createFromSettings($catalogType);
+                    $result = $api999Service->setAdvert(
+                        $featuresData['category_id'],
+                        $featuresData['subcategory_id'], 
+                        $featuresData['offer_type'],
+                        $featuresData['features']
+                    );
+                    
+                    if ($result && isset($result['advert']['id'])) {
+                        $new999Id = $result['advert']['id'];
+                        
+                        // Update car with new 999.md ID
+                        $updateCarStmt = $db->prepare("
+                            UPDATE {$prefx}_car_ctlg 
+                            SET 999_id = :new_999_id
+                            WHERE id = :car_id
+                        ");
+                        $updateCarStmt->execute([
+                            'new_999_id' => $new999Id,
+                            'car_id' => $schedule['car_id']
+                        ]);
+                        
+                        // Update schedule as published
+                        $stmt = $db->prepare("
+                            UPDATE gh3sp_sauto_personal_schedules 
+                            SET status = 'published', published_at = NOW(), `999_id` = :api_id
+                            WHERE id = :id
+                        ");
+                        $stmt->execute(['api_id' => $new999Id, 'id' => $schedule['id']]);
+                        
+                        echo "[" . date('Y-m-d H:i:s') . "] ✅ Successfully created new 999.md listing {$new999Id} for car {$schedule['car_id']}\n";
+                    } else {
+                        $errorMsg = isset($result['error']) ? $result['error'] : 'Failed to create 999.md listing';
+                        $stmt = $db->prepare("
+                            UPDATE gh3sp_sauto_personal_schedules 
+                            SET status = 'failed', error_message = :error
+                            WHERE id = :id
+                        ");
+                        $stmt->execute(['error' => $errorMsg, 'id' => $schedule['id']]);
+                        echo "[" . date('Y-m-d H:i:s') . "] ❌ Failed to create listing: $errorMsg\n";
+                    }
+                } catch (Exception $e) {
+                    $stmt = $db->prepare("
+                        UPDATE gh3sp_sauto_personal_schedules 
+                        SET status = 'failed', error_message = :error
+                        WHERE id = :id
+                    ");
+                    $stmt->execute(['error' => $e->getMessage(), 'id' => $schedule['id']]);
+                    echo "[" . date('Y-m-d H:i:s') . "] ❌ Exception: " . $e->getMessage() . "\n";
+                }
             }
             
         } catch (Exception $e) {
