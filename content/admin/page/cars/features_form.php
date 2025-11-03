@@ -22,6 +22,7 @@ if (!isset($new999)) $new999 = true;
             </label>
             <select id="announcement_type" name="announcement_type" <?php if (!$new999) : ?> disabled <?php endif; ?> class="form-control" required>
                 <option value=""><?= __('cars.type_ad_hint') ?></option>
+                <option value="sauto_personal" <?php if (!empty($car999['announcement_type']) && $car999['announcement_type'] == "sauto_personal") : ?> selected <?php endif; ?>>SAUTO Personal</option>
                 <option value="auto_company" <?php if (!empty($car999['announcement_type']) && $car999['announcement_type'] == "auto_company") : ?> selected <?php endif; ?>><?= __('cars.auto_companies') ?></option>
                 <option value="auto_company_min" <?php if (!empty($car999['announcement_type']) && $car999['announcement_type'] == "auto_company_min") : ?> selected <?php endif; ?>><?= __('cars.auto_companies_minimal_promotion') ?></option>
                 <option value="auto_realization" <?php if (!empty($car999['announcement_type']) && $car999['announcement_type'] == "auto_realization") : ?> selected <?php endif; ?>><?= __('cars.auto_for_sale') ?></option>
@@ -135,6 +136,35 @@ if (!isset($new999)) $new999 = true;
                             Тестовое.<br>
                         </p>
                     </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- SAUTO Personal Custom Scheduling -->
+        <div id="sauto_personal_scheduling" class="form-group" style="display: none;">
+            <label><?= __('cars.promotions') ?>:</label>
+            <div style="border: 1px solid #ddd; border-radius: 8px; padding: 20px; margin-top: 10px; background: #f9f9f9;">
+                <h4 style="margin-bottom: 15px; color: #333;">Programare Personalizată</h4>
+                
+                <div class="scheduling-table">
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 15px;">
+                        <thead>
+                            <tr style="background: #e9ecef;">
+                                <th style="border: 1px solid #ddd; padding: 10px; text-align: center;">Data</th>
+                                <th style="border: 1px solid #ddd; padding: 10px; text-align: center;">Ora</th>
+                                <th style="border: 1px solid #ddd; padding: 10px; text-align: center;">Acțiuni</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scheduling_table_body">
+                            <!-- Rows will be added dynamically -->
+                        </tbody>
+                    </table>
+                    
+                    <div style="text-align: center;">
+                        <button type="button" id="add_schedule_btn" class="btn btn-primary" style="background: #007bff; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer;">
+                            + Adaugă programare
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

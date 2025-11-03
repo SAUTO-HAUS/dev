@@ -694,20 +694,29 @@ $(document).ready(function(){
 		$('input[name="promotions"]').prop('checked', false);
 
 		switch($(this).val()) {
+			case 'sauto_personal':
+				hideAllPromotions();
+				showSautoPersonalScheduling();
+				break;
 			case 'auto_company':
 				showPromotions(['plus', 'turbo', 'test'], 'plus');
+				hideSautoPersonalScheduling();
 				break;
 			case 'auto_company_min':
 				showPromotions(['basic', 'lite'], 'basic');
+				hideSautoPersonalScheduling();
 				break;
 			case 'auto_realization':
 				showPromotions(['plus'], 'plus');
+				hideSautoPersonalScheduling();
 				break;
 			case 'auto_realization_min':
 				showPromotions(['lite'], 'lite');
+				hideSautoPersonalScheduling();
 				break;
 			default:
 				showAllPromotions();
+				hideSautoPersonalScheduling();
 		}
 		initializeSchedules();
 	})
@@ -737,6 +746,24 @@ $(document).ready(function(){
 			.prop('disabled', false);
 
 		$('input[name="promotions"]:first').prop('checked', true);
+	}
+
+	function hideAllPromotions() {
+		$('input[name="promotions"]')
+			.closest('div')
+			.hide()
+			.find('input')
+			.prop('disabled', true);
+		$('input[name="promotions"]').prop('checked', false);
+	}
+
+	function showSautoPersonalScheduling() {
+		$('#sauto_personal_scheduling').show();
+		$('#text_options_wrapper').show();
+	}
+
+	function hideSautoPersonalScheduling() {
+		$('#sauto_personal_scheduling').hide();
 	}
 
 	function checkFormValidity() {
@@ -825,7 +852,10 @@ $(document).ready(function(){
 		textOptions.empty();
 		textArea.val("");
 
-		if (type === "auto_company" || type === "auto_company_min") {
+		if (type === "sauto_personal") {
+			// For SAUTO Personal, show text options wrapper but don't populate with predefined texts
+			textOptionsWrapper.show();
+		} else if (type === "auto_company" || type === "auto_company_min") {
 			texts['auto_company'].forEach((item, index) => {
 				const radioButton = `
 						<div class="text-option-wrapper" style="margin-right: 20px; margin-bottom: 10px;">
@@ -1418,3 +1448,56 @@ function handleDisplayLimitChange(newLimit) {
 }
 
 initializeDisplayLimit();
+
+// SAUTO Personal Scheduling Management
+$(document).ready(function() {
+	let scheduleCounter = 0;
+	
+	// Add new schedule row
+	$(document).on('click', '#add_schedule_btn', function() {
+		addScheduleRow();
+	});
+	
+	// Remove schedule row
+	$(document).on('click', '.remove_schedule_btn', function() {
+		$(this).closest('tr').remove();
+	});
+	
+	function addScheduleRow(date = '', time = '') {
+		scheduleCounter++;
+		const currentDate = new Date().toISOString().split('T')[0];
+		const currentTime = new Date().toTimeString().split(' ')[0].substring(0, 5);
+		
+		const row = `
+			<tr>
+				<td style="border: 1px solid #ddd; padding: 8px;">
+					<input type="date" name="schedule_dates[]" class="form-control" 
+						   value="${date || currentDate}" 
+						   style="width: 100%; border: 1px solid #ccc; padding: 5px; border-radius: 3px;">
+				</td>
+				<td style="border: 1px solid #ddd; padding: 8px;">
+					<input type="time" name="schedule_times[]" class="form-control" 
+						   value="${time || currentTime}" 
+						   style="width: 100%; border: 1px solid #ccc; padding: 5px; border-radius: 3px;">
+				</td>
+				<td style="border: 1px solid #ddd; padding: 8px; text-align: center;">
+					<button type="button" class="remove_schedule_btn" 
+							style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;">
+						✕
+					</button>
+				</td>
+			</tr>
+		`;
+		
+		$('#scheduling_table_body').append(row);
+	}
+	
+	// Initialize with one row when SAUTO Personal is selected
+	$(document).on('change', '#announcement_type', function() {
+		if ($(this).val() === 'sauto_personal') {
+			// Clear existing rows and add one default row
+			$('#scheduling_table_body').empty();
+			addScheduleRow();
+		}
+	});
+});
