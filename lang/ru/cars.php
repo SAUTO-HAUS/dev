@@ -60,4 +60,15 @@ return [
     'time' => 'Время',
     'save' => 'Сохранить',
     'cancel' => 'Отмена',
+    
+    // Quick Presets
+    'quick_presets' => 'Быстрые настройки',
+    'frequency' => 'Частота',
+    'duration' => 'Длительность',
+    '1_month' => '1 месяц',
+    '2_months' => '2 месяца',
+    '3_months' => '3 месяца',
+    '4_months' => '4 месяца',
+    '5_months' => '5 месяцев',
+    'generate_schedules' => 'Создать расписания',
 ];

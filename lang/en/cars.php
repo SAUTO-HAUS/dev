@@ -17,4 +17,15 @@ return [
     'time' => 'Time',
     'save' => 'Save',
     'cancel' => 'Cancel',
+    
+    // Quick Presets
+    'quick_presets' => 'Quick Presets',
+    'frequency' => 'Frequency',
+    'duration' => 'Duration',
+    '1_month' => '1 month',
+    '2_months' => '2 months',
+    '3_months' => '3 months',
+    '4_months' => '4 months',
+    '5_months' => '5 months',
+    'generate_schedules' => 'Generate Schedules',
 ];

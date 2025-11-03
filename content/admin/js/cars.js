@@ -1567,6 +1567,15 @@ $(document).ready(function() {
 		renderCalendar(); // Refresh calendar to update indicators
 	});
 	
+	// Generate preset schedules
+	$(document).on('click', '#generate_presets', function() {
+		const frequency = parseInt($('#preset_frequency').val());
+		const duration = parseInt($('#preset_duration').val());
+		const time = $('#preset_time').val();
+		
+		generatePresetSchedules(frequency, duration, time);
+	});
+	
 	function initializeCalendar() {
 		currentDate = new Date();
 		schedules = [];
@@ -1691,6 +1700,89 @@ $(document).ready(function() {
 		
 		renderSchedulesList();
 		renderCalendar();
+	}
+	
+	function generatePresetSchedules(frequency, duration, time) {
+		const currentLang = $('html').attr('lang') || 'ro';
+		const translations = {
+			ro: {
+				confirm: `Vrei să generezi ${frequency}x/săptămână pentru ${duration} ${duration === 1 ? 'lună' : 'luni'} la ora ${time}?\n\nAceasta va adăuga aproximativ ${frequency * 4 * duration} programări.`,
+				success: `✅ Au fost generate ${frequency * 4 * duration} programări!`,
+				cleared: 'Programările existente au fost șterse.'
+			},
+			ru: {
+				confirm: `Хотите создать ${frequency}x/неделю на ${duration} ${duration === 1 ? 'месяц' : 'месяца'} в ${time}?\n\nЭто добавит примерно ${frequency * 4 * duration} расписаний.`,
+				success: `✅ Создано ${frequency * 4 * duration} расписаний!`,
+				cleared: 'Существующие расписания были удалены.'
+			},
+			en: {
+				confirm: `Generate ${frequency}x/week for ${duration} month${duration > 1 ? 's' : ''} at ${time}?\n\nThis will add approximately ${frequency * 4 * duration} schedules.`,
+				success: `✅ Generated ${frequency * 4 * duration} schedules!`,
+				cleared: 'Existing schedules have been cleared.'
+			}
+		};
+		
+		const t = translations[currentLang] || translations.ro;
+		
+		if (!confirm(t.confirm)) {
+			return;
+		}
+		
+		// Clear existing schedules
+		schedules = [];
+		
+		// Calculate schedules
+		const startDate = new Date();
+		startDate.setDate(startDate.getDate() + 1); // Start from tomorrow
+		
+		const endDate = new Date(startDate);
+		endDate.setMonth(endDate.getMonth() + duration);
+		
+		// Generate schedules
+		let currentWeekStart = new Date(startDate);
+		// Move to Monday of current week
+		const dayOfWeek = currentWeekStart.getDay();
+		const daysToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+		currentWeekStart.setDate(currentWeekStart.getDate() + daysToMonday);
+		
+		while (currentWeekStart < endDate) {
+			// Generate schedules for this week
+			const weekDays = [];
+			
+			// Add weekdays (Monday to Friday)
+			for (let i = 0; i < 5; i++) {
+				const day = new Date(currentWeekStart);
+				day.setDate(currentWeekStart.getDate() + i);
+				if (day >= startDate && day < endDate) {
+					weekDays.push(day);
+				}
+			}
+			
+			// Select random days based on frequency
+			const selectedDays = [];
+			const shuffled = [...weekDays].sort(() => 0.5 - Math.random());
+			
+			for (let i = 0; i < Math.min(frequency, shuffled.length); i++) {
+				selectedDays.push(shuffled[i]);
+			}
+			
+			// Add schedules for selected days
+			selectedDays.forEach(date => {
+				schedules.push({
+					date: new Date(date),
+					time: time
+				});
+			});
+			
+			// Move to next week
+			currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+		}
+		
+		// Update UI
+		renderSchedulesList();
+		renderCalendar();
+		
+		alert(t.success);
 	}
 	
 	function renderSchedulesList() {

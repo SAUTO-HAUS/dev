@@ -168,9 +168,56 @@ if (!isset($new999)) $new999 = true;
                     <div style="background: white; border: 1px solid #e0e0e0; border-radius: 4px; padding: 10px;">
                         <h6 style="margin-bottom: 10px; color: #495057; text-align: center; font-size: 14px;">📋 <?= __('cars.scheduled_publications') ?></h6>
                         
-                        <div id="schedules_list" style="max-height: 200px; overflow-y: auto;">
-                            <div id="no_schedules_message" style="text-align: center; color: #6c757d; font-style: italic; padding: 15px; font-size: 12px;">
-                                📝 Nu există programări setate.<br>Fă click pe o dată din calendar.
+                        <!-- Quick Presets Section -->
+                        <div style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 3px; padding: 8px; margin-bottom: 10px;">
+                            <h6 style="margin: 0 0 8px 0; color: #495057; font-size: 12px; font-weight: 600;">🚀 <?= __('cars.quick_presets') ?></h6>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px;">
+                                <div>
+                                    <label style="font-size: 11px; color: #6c757d; margin-bottom: 2px; display: block;"><?= __('cars.frequency') ?>:</label>
+                                    <select id="preset_frequency" style="width: 100%; padding: 3px; font-size: 11px; border: 1px solid #ced4da; border-radius: 2px;">
+                                        <option value="1">1x/săptămână</option>
+                                        <option value="2">2x/săptămână</option>
+                                        <option value="3">3x/săptămână</option>
+                                        <option value="4">4x/săptămână</option>
+                                        <option value="5">5x/săptămână</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="font-size: 11px; color: #6c757d; margin-bottom: 2px; display: block;"><?= __('cars.duration') ?>:</label>
+                                    <select id="preset_duration" style="width: 100%; padding: 3px; font-size: 11px; border: 1px solid #ced4da; border-radius: 2px;">
+                                        <option value="1"><?= __('cars.1_month') ?></option>
+                                        <option value="2" selected><?= __('cars.2_months') ?></option>
+                                        <option value="3"><?= __('cars.3_months') ?></option>
+                                        <option value="4"><?= __('cars.4_months') ?></option>
+                                        <option value="5"><?= __('cars.5_months') ?></option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 8px;">
+                                <label style="font-size: 11px; color: #6c757d; margin-bottom: 2px; display: block;"><?= __('cars.time') ?>:</label>
+                                <select id="preset_time" style="width: 100%; padding: 3px; font-size: 11px; border: 1px solid #ced4da; border-radius: 2px;">
+                                    <option value="18:00">18:00</option>
+                                    <option value="19:00">19:00</option>
+                                    <option value="20:00" selected>20:00</option>
+                                    <option value="21:00">21:00</option>
+                                    <option value="22:00">22:00</option>
+                                </select>
+                            </div>
+                            
+                            <button type="button" id="generate_presets" style="width: 100%; background: #28a745; color: white; border: none; padding: 6px; border-radius: 3px; cursor: pointer; font-size: 11px; font-weight: 600;">
+                                🎯 <?= __('cars.generate_schedules') ?>
+                            </button>
+                        </div>
+                        
+                        <!-- Manual Schedules List -->
+                        <div>
+                            <h6 style="margin: 0 0 8px 0; color: #495057; font-size: 12px; font-weight: 600;">📅 Programări Manuale</h6>
+                            <div id="schedules_list" style="max-height: 150px; overflow-y: auto;">
+                                <div id="no_schedules_message" style="text-align: center; color: #6c757d; font-style: italic; padding: 15px; font-size: 12px;">
+                                    📝 Nu există programări setate.<br>Fă click pe o dată din calendar.
+                                </div>
                             </div>
                         </div>
                     </div>

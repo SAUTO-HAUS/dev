@@ -17,4 +17,15 @@ return [
     'time' => 'Ora',
     'save' => 'Salvează',
     'cancel' => 'Anulează',
+    
+    // Quick Presets
+    'quick_presets' => 'Programări Rapide',
+    'frequency' => 'Frecvența',
+    'duration' => 'Durata',
+    '1_month' => '1 lună',
+    '2_months' => '2 luni',
+    '3_months' => '3 luni',
+    '4_months' => '4 luni',
+    '5_months' => '5 luni',
+    'generate_schedules' => 'Generează Programări',
 ];
