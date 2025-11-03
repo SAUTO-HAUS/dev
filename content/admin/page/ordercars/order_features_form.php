@@ -22,9 +22,9 @@ if (!isset($new999)) $new999 = true;
             </label>
             <select id="announcement_type" name="announcement_type" <?php if (!$new999) : ?> disabled <?php endif; ?> class="form-control" required>
                 <option value=""><?= __('cars.type_ad_hint') ?></option>
-                <option value="sauto_personal" <?php if (!empty($car999['announcement_type']) && $car999['announcement_type'] == "sauto_personal") : ?> selected <?php endif; ?>>SAUTO Personal</option>
+                <option value="sauto_personal" <?php if (empty($car999['announcement_type']) || $car999['announcement_type'] == "sauto_personal") : ?> selected <?php endif; ?>>SAUTO Personal</option>
                 <option value="auto_company" <?php if (!empty($car999['announcement_type']) && $car999['announcement_type'] == "auto_company") : ?> selected <?php endif; ?>><?= __('cars.auto_companies') ?></option>
-                <option value="auto_company_min" <?php if (!empty($car999['announcement_type']) && $car999['announcement_type'] == "auto_company_min") : ?> selected <?php elseif (!isset($car999['announcement_type']) || empty($car999['announcement_type'])) : ?> selected <?php endif; ?>><?= __('cars.auto_companies_minimal_promotion') ?></option>
+                <option value="auto_company_min" <?php if (!empty($car999['announcement_type']) && $car999['announcement_type'] == "auto_company_min") : ?> selected <?php endif; ?>><?= __('cars.auto_companies_minimal_promotion') ?></option>
                 <option value="auto_realization" <?php if (!empty($car999['announcement_type']) && $car999['announcement_type'] == "auto_realization") : ?> selected <?php endif; ?>><?= __('cars.auto_for_sale') ?></option>
                 <option value="auto_realization_min" <?php if (!empty($car999['announcement_type']) && $car999['announcement_type'] == "auto_realization_min") : ?> selected <?php endif; ?>><?= __('cars.auto_for_sale_minimal_promotion') ?></option>
             </select>
