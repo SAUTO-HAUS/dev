@@ -858,15 +858,6 @@ $(document).ready(function(){
 		textArea.val("");
 
 		if (type === "sauto_personal") {
-			// For SAUTO Personal, show text options wrapper with custom message
-			const customMessage = `
-				<div class="sauto-personal-text-info" style="padding: 15px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px;">
-					<h5 style="margin-bottom: 10px; color: #495057;">📝 SAUTO Personal - Text personalizat</h5>
-					<p style="margin-bottom: 8px; color: #6c757d;">Pentru SAUTO Personal, poți scrie textul anunțului direct în câmpul de descriere de mai jos.</p>
-					<p style="margin: 0; color: #6c757d; font-size: 0.9em;"><strong>Programarea:</strong> Anunțul va fi republicat automat la datele și orele setate în tabelul de programare.</p>
-				</div>
-			`;
-			textOptions.html(customMessage);
 			textOptionsWrapper.show();
 		} else if (type === "auto_company" || type === "auto_company_min") {
 			texts['auto_company'].forEach((item, index) => {
