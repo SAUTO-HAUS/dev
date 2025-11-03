@@ -241,6 +241,20 @@ $(document).ready(function(){
 		var data = {}; data['tp'] = reqType; data['pg'] = reqPage; data['fn'] = 'add_new'; data['sub'] = 'mo_search';
 		data['br'] = $(this).val(); data['bx_id'] = $(this).closest('.bx').data('bx_id');
 		ajaxIt(data);
+		
+		// Sync brand from SAUTO to 999 form
+		const brandValue = $(this).val();
+		if (brandValue) {
+			console.log('Syncing brand from SAUTO to 999:', brandValue);
+			$('#main_form_999').find('select[name="feature[20]"]').val(brandValue);
+		}
+	}).on('change', '#content_box .model', function(){
+		// Sync model from SAUTO to 999 form
+		const modelValue = $(this).val();
+		if (modelValue) {
+			console.log('Syncing model from SAUTO to 999:', modelValue);
+			$('#main_form_999').find('select[name="feature[21]"]').val(modelValue);
+		}
 	})
 	
 	//---------------------------------------------------------input seo changed
