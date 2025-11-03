@@ -180,7 +180,19 @@ if (__post('sub') == 'get_subcategory') {
 
         $featuresJson = json_encode($input, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
-        $request = (new Api999Service($input['999_api_id']))->setAdvert($input["car"]["category"], $input["car"]["subcategory"], $input["car"]["subcategory_offer_types"], $features);
+        // For SAUTO Personal, don't publish immediately - let cron job handle it
+        if ($input['announcement_type'] === 'sauto_personal' && !empty($input['sauto_schedules'])) {
+            // Create a fake successful response for SAUTO Personal
+            $request = [
+                'advert' => [
+                    'id' => 'scheduled_' . time() // Temporary ID until cron job publishes
+                ]
+            ];
+            __log("SAUTO Personal: Skipping immediate publication, will be handled by cron job");
+        } else {
+            // Normal publication for other announcement types
+            $request = (new Api999Service($input['999_api_id']))->setAdvert($input["car"]["category"], $input["car"]["subcategory"], $input["car"]["subcategory_offer_types"], $features);
+        }
 
         __log($request);
         __log($features);
@@ -204,7 +216,7 @@ if (__post('sub') == 'get_subcategory') {
                 'scenario' => $input["scenario"] ?? 'maximal',
                 'features' => $features,
             ]),
-            ':car999Id' => $request['advert']['id'],
+            ':car999Id' => ($input['announcement_type'] === 'sauto_personal' && !empty($input['sauto_schedules'])) ? null : $request['advert']['id'],
             ':carId' => $carId,
             ':promotions' => $input['promotions'] ?? 'basic',
             ':999_api_id' => $input['999_api_id'],
