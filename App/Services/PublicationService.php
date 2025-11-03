@@ -343,7 +343,7 @@ class PublicationService
             $caption_lines[] = '▪️ Motor: ' . $carData['vol'] . 'cc ' . $carData['hp'] . 'hp';
             
             // Fuel type
-            $fuel_types = ['1' => 'Benzină', '2' => 'Diesel', '3' => 'Hybrid', '4' => 'Electric'];
+            $fuel_types = ['1' => 'Benzină', '2' => 'Diesel', '3' => 'Hybrid', '4' => 'Electric', '5' => 'Plug-in'];
             $fuel = $fuel_types[$carData['fl']] ?? 'Necunoscut';
             $caption_lines[] = '▪️ Combustibil: ' . $fuel;
             
@@ -368,7 +368,7 @@ class PublicationService
             // Specifications with icons
             $spec_ar = ['bt', 'mlg', 'vol', 'hp', 'fl', 'tra', 'wd', 'clr', 'sts', 'loc'];
             $iconParams = [
-                'bt'  => '🚙',   'mlg' => '🛣️',  'vol' => '⚙️',   'hp'  => '💪',
+                'bt'  => '🚙',   'mlg' => '🛣',  'vol' => '⚙️',   'hp'  => '💪',
                 'fl'  => '🔌⛽', 'tra' => '🔄',   'wd'  => '⬆️',   'clr' => '⚪',
                 'sts' => '👥',   'loc' => '📍'
             ];
