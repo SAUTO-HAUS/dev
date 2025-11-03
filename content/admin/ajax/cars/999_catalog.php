@@ -211,20 +211,41 @@ if (__post('sub') == 'get_subcategory') {
             'features' => $features,
         ]);
         
-        $stmt = $pdo->prepare("
-            UPDATE gh3sp_car_ctlg
-            SET `999` = :featuresJson, `features_json` = :featuresJson2, `999_id` = :car999Id, `promotions` = :promotions, `999_api_id` = :999_api_id, `n_a_new` = :n_a_new
-            WHERE id = :carId
-        ");
-        $stmt->execute([
-            ':featuresJson' => $featuresJsonData,
-            ':featuresJson2' => $featuresJsonData,
-            ':car999Id' => ($input['announcement_type'] === 'sauto_personal' && !empty($input['sauto_schedules'])) ? null : $request['advert']['id'],
-            ':carId' => $carId,
-            ':promotions' => $input['promotions'] ?? 'basic',
-            ':999_api_id' => $input['999_api_id'],
-            ':n_a_new' => $isChecked
-        ]);
+        // Check if features_json column exists
+        $columnsStmt = $pdo->prepare("SHOW COLUMNS FROM gh3sp_car_ctlg LIKE 'features_json'");
+        $columnsStmt->execute();
+        $hasFeatureJsonColumn = $columnsStmt->rowCount() > 0;
+        
+        if ($hasFeatureJsonColumn) {
+            $stmt = $pdo->prepare("
+                UPDATE gh3sp_car_ctlg
+                SET `999` = :featuresJson, `features_json` = :featuresJson2, `999_id` = :car999Id, `promotions` = :promotions, `999_api_id` = :999_api_id, `n_a_new` = :n_a_new
+                WHERE id = :carId
+            ");
+            $stmt->execute([
+                ':featuresJson' => $featuresJsonData,
+                ':featuresJson2' => $featuresJsonData,
+                ':car999Id' => ($input['announcement_type'] === 'sauto_personal' && !empty($input['sauto_schedules'])) ? null : $request['advert']['id'],
+                ':carId' => $carId,
+                ':promotions' => $input['promotions'] ?? 'basic',
+                ':999_api_id' => $input['999_api_id'],
+                ':n_a_new' => $isChecked
+            ]);
+        } else {
+            $stmt = $pdo->prepare("
+                UPDATE gh3sp_car_ctlg
+                SET `999` = :featuresJson, `999_id` = :car999Id, `promotions` = :promotions, `999_api_id` = :999_api_id, `n_a_new` = :n_a_new
+                WHERE id = :carId
+            ");
+            $stmt->execute([
+                ':featuresJson' => $featuresJsonData,
+                ':car999Id' => ($input['announcement_type'] === 'sauto_personal' && !empty($input['sauto_schedules'])) ? null : $request['advert']['id'],
+                ':carId' => $carId,
+                ':promotions' => $input['promotions'] ?? 'basic',
+                ':999_api_id' => $input['999_api_id'],
+                ':n_a_new' => $isChecked
+            ]);
+        }
         if($advert['n_a_new'] != $isChecked){
             if(!empty($advert['999_id'])){
                 $status = $isChecked == 0 ? 'public' : 'private';
