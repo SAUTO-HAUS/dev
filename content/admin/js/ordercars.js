@@ -1495,11 +1495,12 @@ function handleDisplayLimitChange(newLimit) {
 
 initializeDisplayLimit();
 
-// SAUTO Personal Calendar Scheduling
+// SAUTO Personal Calendar Scheduling - Global variables
+let currentDate = new Date();
+let selectedDate = null;
+let schedules = [];
+
 $(document).ready(function() {
-	let currentDate = new Date();
-	let selectedDate = null;
-	let schedules = [];
 	
 	setTimeout(function() {
 		$('#announcement_type').trigger('change');

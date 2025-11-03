@@ -30,7 +30,7 @@ class SautoPersonalSchedulingService
             
             // Insert new schedules
             $stmt = $this->pdo->prepare("
-                INSERT INTO sauto_personal_schedules 
+                INSERT INTO gh3sp_sauto_personal_schedules 
                 (car_id, catalog_type, schedule_date, schedule_time, status) 
                 VALUES (?, ?, ?, ?, 'pending')
             ");
@@ -62,8 +62,8 @@ class SautoPersonalSchedulingService
     {
         $stmt = $this->pdo->prepare("
             SELECT s.*, c.id as car_id, c.999_id as existing_999_id
-            FROM sauto_personal_schedules s
-            LEFT JOIN sauto_car_ctlg c ON s.car_id = c.id
+            FROM gh3sp_sauto_personal_schedules s
+            LEFT JOIN gh3sp_car_ctlg c ON s.car_id = c.id
             WHERE s.status = 'pending' 
             AND CONCAT(s.schedule_date, ' ', s.schedule_time) <= NOW()
             ORDER BY s.schedule_date, s.schedule_time
@@ -83,7 +83,7 @@ class SautoPersonalSchedulingService
     public function markAsPublished($scheduleId, $apiId = null)
     {
         $stmt = $this->pdo->prepare("
-            UPDATE sauto_personal_schedules 
+            UPDATE gh3sp_sauto_personal_schedules 
             SET status = 'published', published_at = NOW(), `999_id` = ?
             WHERE id = ?
         ");
@@ -101,7 +101,7 @@ class SautoPersonalSchedulingService
     public function markAsFailed($scheduleId, $errorMessage)
     {
         $stmt = $this->pdo->prepare("
-            UPDATE sauto_personal_schedules 
+            UPDATE gh3sp_sauto_personal_schedules 
             SET status = 'failed', error_message = ?
             WHERE id = ?
         ");
@@ -119,7 +119,7 @@ class SautoPersonalSchedulingService
     public function getCarSchedules($carId, $catalogType)
     {
         $stmt = $this->pdo->prepare("
-            SELECT * FROM sauto_personal_schedules 
+            SELECT * FROM gh3sp_sauto_personal_schedules 
             WHERE car_id = ? AND catalog_type = ?
             ORDER BY schedule_date, schedule_time
         ");
@@ -138,7 +138,7 @@ class SautoPersonalSchedulingService
     private function clearPendingSchedules($carId, $catalogType)
     {
         $stmt = $this->pdo->prepare("
-            DELETE FROM sauto_personal_schedules 
+            DELETE FROM gh3sp_sauto_personal_schedules 
             WHERE car_id = ? AND catalog_type = ? AND status = 'pending'
         ");
         
@@ -155,7 +155,7 @@ class SautoPersonalSchedulingService
     public function cancelSchedules($carId, $catalogType)
     {
         $stmt = $this->pdo->prepare("
-            UPDATE sauto_personal_schedules 
+            UPDATE gh3sp_sauto_personal_schedules 
             SET status = 'cancelled'
             WHERE car_id = ? AND catalog_type = ? AND status = 'pending'
         ");

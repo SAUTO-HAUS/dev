@@ -521,7 +521,11 @@ $(document).ready(function(){
 				date: schedule.date.toISOString().split('T')[0], // YYYY-MM-DD format
 				time: schedule.time
 			}));
+			console.log('SAUTO Personal schedules data:', schedulesData);
 			$('#sauto_schedules_data').val(JSON.stringify(schedulesData));
+			console.log('Hidden field value set to:', $('#sauto_schedules_data').val());
+		} else {
+			console.log('No SAUTO Personal schedules to send. Type:', $('#announcement_type').val(), 'Schedules count:', schedules.length);
 		}
 		
 		const $form = $(this);
@@ -1491,11 +1495,12 @@ function handleDisplayLimitChange(newLimit) {
 
 initializeDisplayLimit();
 
-// SAUTO Personal Calendar Scheduling
+// SAUTO Personal Calendar Scheduling - Global variables
+let currentDate = new Date();
+let selectedDate = null;
+let schedules = [];
+
 $(document).ready(function() {
-	let currentDate = new Date();
-	let selectedDate = null;
-	let schedules = [];
 	
 	setTimeout(function() {
 		$('#announcement_type').trigger('change');

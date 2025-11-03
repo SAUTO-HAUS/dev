@@ -218,10 +218,16 @@ if (__post('sub') == 'get_subcategory') {
         }
         // Handle SAUTO Personal custom scheduling
         if ($input['announcement_type'] === 'sauto_personal' && !empty($input['sauto_schedules'])) {
+            __log("SAUTO Personal scheduling detected");
+            __log("Raw schedules data: " . $input['sauto_schedules']);
             $schedulesData = json_decode($input['sauto_schedules'], true);
+            __log("Parsed schedules data: " . json_encode($schedulesData));
             if ($schedulesData && is_array($schedulesData)) {
                 $sautoSchedulingService = new \App\Services\SautoPersonalSchedulingService();
-                $sautoSchedulingService->saveSchedules(__post('carId'), 'in_stock', $schedulesData);
+                $result = $sautoSchedulingService->saveSchedules(__post('carId'), 'in_stock', $schedulesData);
+                __log("Save schedules result: " . ($result ? 'SUCCESS' : 'FAILED'));
+            } else {
+                __log("Invalid schedules data format");
             }
         } elseif (($input['promotions'] ?? 'basic') == 'test') {
             (new Api999Service($input['999_api_id']))->setTestAdvertSchedules($images999, $request['advert']['id'], __post('carId'));
