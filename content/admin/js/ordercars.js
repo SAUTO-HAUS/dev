@@ -1461,6 +1461,10 @@ $(document).ready(function() {
 	let selectedDate = null;
 	let schedules = [];
 	
+	setTimeout(function() {
+		$('#announcement_type').trigger('change');
+	}, 100);
+	
 	// Initialize calendar when SAUTO Personal is selected
 	$(document).on('change', '#announcement_type', function() {
 		if ($(this).val() === 'sauto_personal') {
