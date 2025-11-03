@@ -52,8 +52,11 @@ try {
     
     // Get pending schedules that should be published now
     $currentDateTime = date('Y-m-d H:i:s');
+    echo "[" . date('Y-m-d H:i:s') . "] Current server time: {$currentDateTime}\n";
+    
     $stmt = $db->prepare("
-        SELECT s.*, c.id as car_id, c.999_id as existing_999_id, s.catalog_type
+        SELECT s.*, c.id as car_id, c.999_id as existing_999_id, s.catalog_type,
+               CONCAT(s.schedule_date, ' ', s.schedule_time) as full_schedule_time
         FROM gh3sp_sauto_personal_schedules s
         LEFT JOIN {$prefx}_car_ctlg c ON s.car_id = c.id
         WHERE s.status = 'pending' 
@@ -63,6 +66,22 @@ try {
     ");
     $stmt->execute(['current_time' => $currentDateTime]);
     $pendingSchedules = $stmt->fetchAll();
+    
+    // Debug: Show all pending schedules regardless of time
+    $debugStmt = $db->prepare("
+        SELECT s.*, CONCAT(s.schedule_date, ' ', s.schedule_time) as full_schedule_time
+        FROM gh3sp_sauto_personal_schedules s
+        WHERE s.status = 'pending'
+        ORDER BY s.schedule_date, s.schedule_time
+    ");
+    $debugStmt->execute();
+    $allPending = $debugStmt->fetchAll();
+    
+    echo "[" . date('Y-m-d H:i:s') . "] All pending schedules:\n";
+    foreach ($allPending as $schedule) {
+        echo "  - ID: {$schedule['id']}, Time: {$schedule['full_schedule_time']}, Should publish: " . 
+             ($schedule['full_schedule_time'] <= $currentDateTime ? 'YES' : 'NO') . "\n";
+    }
     
     if (empty($pendingSchedules)) {
         echo "[" . date('Y-m-d H:i:s') . "] No pending schedules to publish\n";

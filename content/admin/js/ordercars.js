@@ -522,7 +522,9 @@ $(document).ready(function(){
 		// Populate SAUTO Personal schedules data before form serialization
 		if ($('#announcement_type').val() === 'sauto_personal' && schedules.length > 0) {
 			const schedulesData = schedules.map(schedule => ({
-				date: schedule.date.toISOString().split('T')[0], // YYYY-MM-DD format
+				date: schedule.date.getFullYear() + '-' + 
+					  String(schedule.date.getMonth() + 1).padStart(2, '0') + '-' + 
+					  String(schedule.date.getDate()).padStart(2, '0'), // Local date format
 				time: schedule.time
 			}));
 			$('#sauto_schedules_data').val(JSON.stringify(schedulesData));
