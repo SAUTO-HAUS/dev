@@ -761,10 +761,8 @@ $(document).ready(function(){
 		$('#sauto_personal_scheduling').show();
 		$('#text_options_wrapper').show();
 		
-		// Auto-select BASIC promotion for SAUTO Personal
-		$('input[name="promotions"][value="basic"]').prop('checked', true);
-		$('input[name="promotions"][value="basic"]').closest('div').show();
-		$('input[name="promotions"][value="basic"]').prop('disabled', false);
+		// For SAUTO Personal, don't show any standard promotion options
+		// The custom scheduling table replaces all promotion scenarios
 	}
 
 	function hideSautoPersonalScheduling() {
