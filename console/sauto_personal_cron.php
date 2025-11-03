@@ -71,8 +71,14 @@ try {
     
     echo "[" . date('Y-m-d H:i:s') . "] Found " . count($pendingSchedules) . " schedules to process\n";
     
-    // Include Api999Service
+    // Include required services
+    require_once __DIR__ . '/../App/Core/Container.php';
+    require_once __DIR__ . '/../App/Services/PublicationService.php';
     require_once __DIR__ . '/../App/Services/Api999Service.php';
+    
+    // Initialize Container with database and prefix
+    \App\Core\Container::set('db', $db);
+    \App\Core\Container::set('prefix', $prefx);
     
     foreach ($pendingSchedules as $schedule) {
         try {
