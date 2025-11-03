@@ -1735,42 +1735,52 @@ $(document).ready(function() {
 		const endDate = new Date(startDate);
 		endDate.setMonth(endDate.getMonth() + duration);
 		
-		// Generate schedules monthly
-		let currentMonth = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+		// Generate schedules with uniform distribution
+		const intervalDays = Math.floor(30 / frequency); // Days between publications
 		
-		while (currentMonth < endDate) {
-			// Get all weekdays in this month
-			const monthDays = [];
-			const lastDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
+		// Start with today's date
+		let currentDate = new Date(startDate);
+		let monthsProcessed = 0;
+		
+		while (monthsProcessed < duration) {
+			const currentMonth = currentDate.getMonth();
+			let publicationsThisMonth = 0;
 			
-			for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
-				const currentDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
-				const dayOfWeek = currentDay.getDay();
+			// Generate publications for current month
+			while (publicationsThisMonth < frequency && currentDate < endDate) {
+				// Skip weekends (Saturday=6, Sunday=0)
+				while (currentDate.getDay() === 0 || currentDate.getDay() === 6) {
+					currentDate.setDate(currentDate.getDate() + 1);
+				}
 				
-				// Only weekdays (Monday to Friday)
-				if (dayOfWeek >= 1 && dayOfWeek <= 5 && currentDay >= startDate && currentDay < endDate) {
-					monthDays.push(currentDay);
+				// Add schedule if still in valid range
+				if (currentDate < endDate) {
+					schedules.push({
+						date: new Date(currentDate),
+						time: time
+					});
+					publicationsThisMonth++;
+				}
+				
+				// Move to next publication date
+				if (publicationsThisMonth < frequency) {
+					currentDate.setDate(currentDate.getDate() + intervalDays);
+					
+					// If we moved to next month, break to start new month cycle
+					if (currentDate.getMonth() !== currentMonth) {
+						break;
+					}
 				}
 			}
 			
-			// Select random days based on frequency
-			const selectedDays = [];
-			const shuffled = [...monthDays].sort(() => 0.5 - Math.random());
-			
-			for (let i = 0; i < Math.min(frequency, shuffled.length); i++) {
-				selectedDays.push(shuffled[i]);
+			// Move to first day of next month and reset pattern
+			monthsProcessed++;
+			if (monthsProcessed < duration) {
+				const nextMonth = new Date(startDate);
+				nextMonth.setMonth(startDate.getMonth() + monthsProcessed);
+				nextMonth.setDate(startDate.getDate()); // Keep same day as start
+				currentDate = nextMonth;
 			}
-			
-			// Add schedules for selected days
-			selectedDays.forEach(date => {
-				schedules.push({
-					date: new Date(date),
-					time: time
-				});
-			});
-			
-			// Move to next month
-			currentMonth.setMonth(currentMonth.getMonth() + 1);
 		}
 		
 		// Update UI
