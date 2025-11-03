@@ -176,11 +176,11 @@ if (!isset($new999)) $new999 = true;
                                 <div>
                                     <label style="font-size: 11px; color: #6c757d; margin-bottom: 2px; display: block;"><?= __('cars.frequency') ?>:</label>
                                     <select id="preset_frequency" style="width: 100%; padding: 3px; font-size: 11px; border: 1px solid #ced4da; border-radius: 2px;">
-                                        <option value="1">1x/săptămână</option>
-                                        <option value="2">2x/săptămână</option>
-                                        <option value="3">3x/săptămână</option>
-                                        <option value="4">4x/săptămână</option>
-                                        <option value="5">5x/săptămână</option>
+                                        <option value="1"><?= __('cars.1x_month') ?></option>
+                                        <option value="2"><?= __('cars.2x_month') ?></option>
+                                        <option value="3"><?= __('cars.3x_month') ?></option>
+                                        <option value="4"><?= __('cars.4x_month') ?></option>
+                                        <option value="5"><?= __('cars.5x_month') ?></option>
                                     </select>
                                 </div>
                                 <div>

@@ -1706,19 +1706,16 @@ $(document).ready(function() {
 		const currentLang = $('html').attr('lang') || 'ro';
 		const translations = {
 			ro: {
-				confirm: `Vrei să generezi ${frequency}x/săptămână pentru ${duration} ${duration === 1 ? 'lună' : 'luni'} la ora ${time}?\n\nAceasta va adăuga aproximativ ${frequency * 4 * duration} programări.`,
-				success: `✅ Au fost generate ${frequency * 4 * duration} programări!`,
-				cleared: 'Programările existente au fost șterse.'
+				confirm: `Vrei să generezi ${frequency}x/lună pentru ${duration} ${duration === 1 ? 'lună' : 'luni'} la ora ${time}?\n\nAceasta va adăuga aproximativ ${frequency * duration} programări.`,
+				success: `✅ Au fost generate ${frequency * duration} programări!`
 			},
 			ru: {
-				confirm: `Хотите создать ${frequency}x/неделю на ${duration} ${duration === 1 ? 'месяц' : 'месяца'} в ${time}?\n\nЭто добавит примерно ${frequency * 4 * duration} расписаний.`,
-				success: `✅ Создано ${frequency * 4 * duration} расписаний!`,
-				cleared: 'Существующие расписания были удалены.'
+				confirm: `Хотите создать ${frequency}x/месяц на ${duration} ${duration === 1 ? 'месяц' : 'месяца'} в ${time}?\n\nЭто добавит примерно ${frequency * duration} расписаний.`,
+				success: `✅ Создано ${frequency * duration} расписаний!`
 			},
 			en: {
-				confirm: `Generate ${frequency}x/week for ${duration} month${duration > 1 ? 's' : ''} at ${time}?\n\nThis will add approximately ${frequency * 4 * duration} schedules.`,
-				success: `✅ Generated ${frequency * 4 * duration} schedules!`,
-				cleared: 'Existing schedules have been cleared.'
+				confirm: `Generate ${frequency}x/month for ${duration} month${duration > 1 ? 's' : ''} at ${time}?\n\nThis will add approximately ${frequency * duration} schedules.`,
+				success: `✅ Generated ${frequency * duration} schedules!`
 			}
 		};
 		
@@ -1738,29 +1735,27 @@ $(document).ready(function() {
 		const endDate = new Date(startDate);
 		endDate.setMonth(endDate.getMonth() + duration);
 		
-		// Generate schedules
-		let currentWeekStart = new Date(startDate);
-		// Move to Monday of current week
-		const dayOfWeek = currentWeekStart.getDay();
-		const daysToMonday = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
-		currentWeekStart.setDate(currentWeekStart.getDate() + daysToMonday);
+		// Generate schedules monthly
+		let currentMonth = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
 		
-		while (currentWeekStart < endDate) {
-			// Generate schedules for this week
-			const weekDays = [];
+		while (currentMonth < endDate) {
+			// Get all weekdays in this month
+			const monthDays = [];
+			const lastDayOfMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0);
 			
-			// Add weekdays (Monday to Friday)
-			for (let i = 0; i < 5; i++) {
-				const day = new Date(currentWeekStart);
-				day.setDate(currentWeekStart.getDate() + i);
-				if (day >= startDate && day < endDate) {
-					weekDays.push(day);
+			for (let day = 1; day <= lastDayOfMonth.getDate(); day++) {
+				const currentDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+				const dayOfWeek = currentDay.getDay();
+				
+				// Only weekdays (Monday to Friday)
+				if (dayOfWeek >= 1 && dayOfWeek <= 5 && currentDay >= startDate && currentDay < endDate) {
+					monthDays.push(currentDay);
 				}
 			}
 			
 			// Select random days based on frequency
 			const selectedDays = [];
-			const shuffled = [...weekDays].sort(() => 0.5 - Math.random());
+			const shuffled = [...monthDays].sort(() => 0.5 - Math.random());
 			
 			for (let i = 0; i < Math.min(frequency, shuffled.length); i++) {
 				selectedDays.push(shuffled[i]);
@@ -1774,8 +1769,8 @@ $(document).ready(function() {
 				});
 			});
 			
-			// Move to next week
-			currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+			// Move to next month
+			currentMonth.setMonth(currentMonth.getMonth() + 1);
 		}
 		
 		// Update UI
