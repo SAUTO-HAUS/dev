@@ -514,6 +514,16 @@ $(document).ready(function(){
 		};
 
 		console.log('Preparing final data for ajaxMain:', data);
+		
+		// Populate SAUTO Personal schedules data before form serialization
+		if ($('#announcement_type').val() === 'sauto_personal' && schedules.length > 0) {
+			const schedulesData = schedules.map(schedule => ({
+				date: schedule.date.toISOString().split('T')[0], // YYYY-MM-DD format
+				time: schedule.time
+			}));
+			$('#sauto_schedules_data').val(JSON.stringify(schedulesData));
+		}
+		
 		const $form = $(this);
 		data['form_data'] = $form.serialize();
 

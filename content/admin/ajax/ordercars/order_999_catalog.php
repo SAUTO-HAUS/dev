@@ -221,7 +221,14 @@ if (__post('sub') == 'get_subcategory') {
                 (new Api999Service($advert['999_api_id']))->changeAccessPolicy($advert, $status);
             }
         }
-        if (($input['promotions'] ?? 'basic') == 'test') {
+        // Handle SAUTO Personal custom scheduling
+        if ($input['announcement_type'] === 'sauto_personal' && !empty($input['sauto_schedules'])) {
+            $schedulesData = json_decode($input['sauto_schedules'], true);
+            if ($schedulesData && is_array($schedulesData)) {
+                $sautoSchedulingService = new \App\Services\SautoPersonalSchedulingService();
+                $sautoSchedulingService->saveSchedules(__post('carId'), 'on_order', $schedulesData);
+            }
+        } elseif (($input['promotions'] ?? 'basic') == 'test') {
             (new Api999Service($input['999_api_id']))->setTestAdvertSchedules($images999, $request['advert']['id'], __post('carId'));
         } else {
             (new Api999Service($input['999_api_id']))->setAdvertSchedules($input, $images999, $request['advert']['id'], __post('carId'));

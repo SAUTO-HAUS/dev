@@ -198,6 +198,9 @@ if (!isset($new999)) $new999 = true;
                     </div>
                 </div>
             </div>
+            
+            <!-- Hidden fields for schedule data -->
+            <input type="hidden" id="sauto_schedules_data" name="sauto_schedules" value="">
         </div>
     </fieldset>
 
