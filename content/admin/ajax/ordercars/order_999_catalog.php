@@ -211,7 +211,7 @@ if (__post('sub') == 'get_subcategory') {
             ]),
             ':car999Id' => $request['advert']['id'],
             ':carId' => $carId,
-            ':promotions' => $input['promotions'],
+            ':promotions' => $input['promotions'] ?? 'basic',
             ':999_api_id' => $input['999_api_id'],
             ':n_a_new' => $isChecked
         ]);
@@ -221,7 +221,7 @@ if (__post('sub') == 'get_subcategory') {
                 (new Api999Service($advert['999_api_id']))->changeAccessPolicy($advert, $status);
             }
         }
-        if ($input['promotions'] == 'test') {
+        if (($input['promotions'] ?? 'basic') == 'test') {
             (new Api999Service($input['999_api_id']))->setTestAdvertSchedules($images999, $request['advert']['id'], __post('carId'));
         } else {
             (new Api999Service($input['999_api_id']))->setAdvertSchedules($input, $images999, $request['advert']['id'], __post('carId'));
