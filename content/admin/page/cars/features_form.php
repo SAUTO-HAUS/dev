@@ -186,8 +186,8 @@ if (!isset($new999)) $new999 = true;
                                 <div>
                                     <label style="font-size: 11px; color: #6c757d; margin-bottom: 2px; display: block;"><?= __('cars.duration') ?>:</label>
                                     <select id="preset_duration" style="width: 100%; padding: 3px; font-size: 11px; border: 1px solid #ced4da; border-radius: 2px;">
-                                        <option value="1"><?= __('cars.1_month') ?></option>
-                                        <option value="2" selected><?= __('cars.2_months') ?></option>
+                                        <option value="1" selected><?= __('cars.1_month') ?></option>
+                                        <option value="2"><?= __('cars.2_months') ?></option>
                                         <option value="3"><?= __('cars.3_months') ?></option>
                                         <option value="4"><?= __('cars.4_months') ?></option>
                                         <option value="5"><?= __('cars.5_months') ?></option>
