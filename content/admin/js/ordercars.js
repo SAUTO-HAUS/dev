@@ -1562,7 +1562,7 @@ $(document).ready(function() {
 		
 		// Day headers
 		t.days.forEach(day => {
-			calendarHTML += `<div style="padding: 8px; font-weight: 600; color: #6c757d; background: #f8f9fa;">${day}</div>`;
+			calendarHTML += `<div style="padding: 4px; font-weight: 600; color: #6c757d; background: #f8f9fa; font-size: 11px;">${day}</div>`;
 		});
 		
 		// Calendar days
@@ -1578,7 +1578,7 @@ $(document).ready(function() {
 			);
 			
 			let dayClass = 'calendar-day';
-			let dayStyle = 'padding: 8px; cursor: pointer; border-radius: 4px; position: relative;';
+			let dayStyle = 'padding: 4px; cursor: pointer; border-radius: 3px; position: relative; font-size: 11px;';
 			
 			if (!isCurrentMonth) {
 				dayStyle += 'color: #ccc;';
@@ -1594,7 +1594,7 @@ $(document).ready(function() {
 				dayStyle += 'background: #d4edda; border: 2px solid #28a745;';
 			}
 			
-			calendarHTML += `<div class="${dayClass}" style="${dayStyle}">${date.getDate()}${hasSchedule ? '<div style="position: absolute; top: 2px; right: 2px; width: 6px; height: 6px; background: #28a745; border-radius: 50%;"></div>' : ''}</div>`;
+			calendarHTML += `<div class="${dayClass}" style="${dayStyle}">${date.getDate()}${hasSchedule ? '<div style="position: absolute; top: 1px; right: 1px; width: 4px; height: 4px; background: #28a745; border-radius: 50%;"></div>' : ''}</div>`;
 		}
 		
 		$('#calendar_grid').html(calendarHTML);
@@ -1663,15 +1663,15 @@ $(document).ready(function() {
 			const isoDate = schedule.date.toISOString().split('T')[0];
 			
 			schedulesHTML += `
-				<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #eee; background: #f8f9fa; margin-bottom: 5px; border-radius: 4px;">
+				<div style="display: flex; justify-content: space-between; align-items: center; padding: 6px; border-bottom: 1px solid #eee; background: #f8f9fa; margin-bottom: 3px; border-radius: 3px;">
 					<div>
-						<strong style="color: #495057;">${formattedDate}</strong><br>
-						<span style="color: #007bff; font-weight: 500;">🕐 ${schedule.time}</span>
+						<strong style="color: #495057; font-size: 12px;">${formattedDate}</strong><br>
+						<span style="color: #007bff; font-weight: 500; font-size: 11px;">🕐 ${schedule.time}</span>
 						<input type="hidden" name="schedule_dates[]" value="${isoDate}">
 						<input type="hidden" name="schedule_times[]" value="${schedule.time}">
 					</div>
 					<button type="button" class="remove_schedule" data-index="${index}" 
-							style="background: #dc3545; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;">
+							style="background: #dc3545; color: white; border: none; padding: 3px 6px; border-radius: 3px; cursor: pointer; font-size: 10px;">
 						🗑️
 					</button>
 				</div>
