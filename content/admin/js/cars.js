@@ -551,12 +551,15 @@ $(document).ready(function(){
 				error: function(jqXHR, textStatus, errorThrown) {
 					// Handle AJAX failure
 					console.error('AJAX request failed:', textStatus, errorThrown);
+					console.error('Response text:', jqXHR.responseText);
+					console.error('Status code:', jqXHR.status);
 					showError('Failed to complete the car submission. Please try again.');
 					finishProcess(confirmButton);
 				}
 			});
 		} catch (error) {
 			console.error('Exception in form submission:', error);
+			console.error('Actual server response:', error.responseText);
 			showError('An error occurred during form submission: ' + error.message);
 			finishProcess(confirmButton);
 		}

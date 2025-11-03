@@ -206,7 +206,7 @@ if (__post('sub') == 'get_subcategory') {
                 'subcategory_id' => $input["car"]["subcategory"],
                 'offer_type' => $input["car"]["subcategory_offer_types"],
                 'announcement_type' => $input["announcement_type"],
-                'scenario' => $input["scenario"],
+                'scenario' => $input["scenario"] ?? 'maximal',
                 'features' => $features,
             ]),
             ':car999Id' => $request['advert']['id'],
