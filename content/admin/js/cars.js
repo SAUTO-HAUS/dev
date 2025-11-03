@@ -827,8 +827,14 @@ $(document).ready(function(){
 	checkFormValidity();
 
 	let texts = {};
+	let stockPersonalTexts = {};
+	
 	$.getJSON("/api/texts.json", function (data) {
 		texts = data;
+	});
+	
+	$.getJSON("/api/stock_personal_texts.json", function (data) {
+		stockPersonalTexts = data;
 	});
 
 	// Attach event listeners
@@ -856,6 +862,22 @@ $(document).ready(function(){
 		textArea.val("");
 
 		if (type === "sauto_personal") {
+			if (stockPersonalTexts['auto_company']) {
+				stockPersonalTexts['auto_company'].forEach((item, index) => {
+					const radioButton = `
+							<div class="text-option-wrapper" style="margin-right: 20px; margin-bottom: 10px;">
+								<label style="display: inline-block; text-align: center;">
+									<input type="radio" name="text_option" value="${index}" class="text-option-radio sauto-personal-radio">
+									<span>${item.title}</span>
+								</label>
+								<div class="text-preview" style="border: 1px solid #ccc; padding: 10px; margin-top: 5px; border-radius: 5px; background: #f9f9f9;">
+									${item.text}
+								</div>
+							</div>
+						`;
+					textOptions.append(radioButton);
+				});
+			}
 			textOptionsWrapper.show();
 		} else if (type === "auto_company" || type === "auto_company_min") {
 			texts['auto_company'].forEach((item, index) => {
@@ -878,8 +900,13 @@ $(document).ready(function(){
 		}
 	}).on("change", ".text-option-radio", function () {
 		const index = $(this).val();
-		const selectedText = texts['auto_company'][index].text;
-		$("#feature_13").val(selectedText);
+		if ($(this).hasClass('sauto-personal-radio')) {
+			const selectedText = stockPersonalTexts['auto_company'][index].text;
+			$("#feature_13").val(selectedText);
+		} else {
+			const selectedText = texts['auto_company'][index].text;
+			$("#feature_13").val(selectedText);
+		}
 	});
 });
 
