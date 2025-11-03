@@ -1,5 +1,5 @@
 -- Create table for SAUTO Personal custom scheduling
-CREATE TABLE IF NOT EXISTS `sauto_personal_schedules` (
+CREATE TABLE IF NOT EXISTS `gh3sp_sauto_personal_schedules` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `car_id` int(11) NOT NULL,
   `catalog_type` enum('in_stock','on_order') NOT NULL DEFAULT 'in_stock',
@@ -19,4 +19,4 @@ CREATE TABLE IF NOT EXISTS `sauto_personal_schedules` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Add index for efficient cron job queries
-CREATE INDEX `idx_pending_schedules` ON `sauto_personal_schedules` (`status`, `schedule_date`, `schedule_time`);
+CREATE INDEX `idx_pending_schedules` ON `gh3sp_sauto_personal_schedules` (`status`, `schedule_date`, `schedule_time`);

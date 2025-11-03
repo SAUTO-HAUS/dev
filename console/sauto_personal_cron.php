@@ -54,7 +54,7 @@ try {
     $currentDateTime = date('Y-m-d H:i:s');
     $stmt = $db->prepare("
         SELECT s.*, c.id as car_id, c.999_id as existing_999_id, s.catalog_type
-        FROM sauto_personal_schedules s
+        FROM gh3sp_sauto_personal_schedules s
         LEFT JOIN {$prefx}_car_ctlg c ON s.car_id = c.id
         WHERE s.status = 'pending' 
         AND CONCAT(s.schedule_date, ' ', s.schedule_time) <= :current_time
@@ -103,7 +103,7 @@ try {
                 if ($result && isset($result['success']) && $result['success']) {
                     // Update schedule as published
                     $stmt = $db->prepare("
-                        UPDATE sauto_personal_schedules 
+                        UPDATE gh3sp_sauto_personal_schedules 
                         SET status = 'published', 
                             published_at = NOW(), 
                             `999_id` = :api_id
@@ -120,7 +120,7 @@ try {
                     
                     // Update schedule as failed
                     $stmt = $db->prepare("
-                        UPDATE sauto_personal_schedules 
+                        UPDATE gh3sp_sauto_personal_schedules 
                         SET status = 'failed', 
                             error_message = :error
                         WHERE id = :id
@@ -137,7 +137,7 @@ try {
                 echo "[" . date('Y-m-d H:i:s') . "] Car {$schedule['car_id']} doesn't have existing 999.md listing - skipping\n";
                 
                 $stmt = $db->prepare("
-                    UPDATE sauto_personal_schedules 
+                    UPDATE gh3sp_sauto_personal_schedules 
                     SET status = 'failed', 
                         error_message = :error
                     WHERE id = :id
@@ -151,7 +151,7 @@ try {
         } catch (Exception $e) {
             // Update schedule as failed
             $stmt = $db->prepare("
-                UPDATE sauto_personal_schedules 
+                UPDATE gh3sp_sauto_personal_schedules 
                 SET status = 'failed', 
                     error_message = :error
                 WHERE id = :id
