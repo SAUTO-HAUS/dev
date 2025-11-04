@@ -374,7 +374,6 @@ $rtrn .= '
                         </select>
                     </div>
                 </div>
-                <small style="display: block; color: #666; margin-top: 5px;">📊 Fiecare mașină va primi timp random în acest interval</small>
             </div>
             
             <div class="setting-group">
@@ -401,7 +400,6 @@ $rtrn .= '
                         </select>
                     </div>
                 </div>
-                <small style="display: block; color: #666; margin-top: 5px;">📊 Fiecare mașină va primi timp random în acest interval</small>
             </div>
             
             <div class="setting-group">
@@ -428,7 +426,6 @@ $rtrn .= '
                         </select>
                     </div>
                 </div>
-                <small style="display: block; color: #666; margin-top: 5px;">🏪 Înlocuiește dropdown-ul cu ore fixe cu timpuri random</small>
             </div>
                 </div>
             </div>
