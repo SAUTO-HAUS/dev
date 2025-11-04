@@ -196,14 +196,14 @@ if (!isset($new999)) $new999 = true;
                             </div>
                             
                             <div style="margin-bottom: 8px;">
-                                <label style="font-size: 11px; color: #6c757d; margin-bottom: 2px; display: block;"><?= __('cars.time') ?>:</label>
-                                <select id="preset_time" style="width: 100%; padding: 3px; font-size: 11px; border: 1px solid #ced4da; border-radius: 2px;">
-                                    <option value="18:00">18:00</option>
-                                    <option value="19:00">19:00</option>
-                                    <option value="20:00" selected>20:00</option>
-                                    <option value="21:00">21:00</option>
-                                    <option value="22:00">22:00</option>
-                                </select>
+                                <label style="font-size: 11px; color: #6c757d; margin-bottom: 2px; display: block;"><?= __('cars.time') ?> (Random):</label>
+                                <?php
+                                // Generate random 999.md posting time using configurable settings
+                                require_once __DIR__ . '/../../../../App/Helper/RandomTimeHelper.php';
+                                $random_999md_time = \App\Helper\RandomTimeHelper::generateRandom999mdTime();
+                                ?>
+                                <input type="time" id="preset_time" value="<?= $random_999md_time ?>" style="width: 100%; padding: 3px; font-size: 11px; border: 1px solid #ced4da; border-radius: 2px;">
+                                <small style="font-size: 10px; color: #6c757d; display: block; margin-top: 2px;">🎲 Timp generat automat din setări</small>
                             </div>
                             
                             <button type="button" id="generate_presets" style="width: 100%; background: #28a745; color: white; border: none; padding: 6px; border-radius: 3px; cursor: pointer; font-size: 11px; font-weight: 600;">

@@ -28,9 +28,19 @@ class RandomTimeHelper
     }
     
     /**
+     * Generate a random 999.md time using configurable settings from database
+     * 
+     * @return string Time in H:i format (e.g., "18:05", "21:35")
+     */
+    public static function generateRandom999mdTime(): string 
+    {
+        return self::generateRandomTimeFromSettings('999md');
+    }
+    
+    /**
      * Generate random time based on database settings for specified platform
      * 
-     * @param string $platform Either 'facebook' or 'telegram'
+     * @param string $platform Either 'facebook', 'telegram', or '999md'
      * @return string Time in H:i format
      */
     private static function generateRandomTimeFromSettings(string $platform): string 

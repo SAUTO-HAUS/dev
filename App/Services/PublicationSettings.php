@@ -48,6 +48,9 @@ $lng['ro']['w']['facebook_end_time'] = 'Ora de sfârșit:';
 $lng['ro']['w']['telegram_random_time_range'] = 'Interval ore random pentru Telegram';
 $lng['ro']['w']['telegram_start_time'] = 'Ora de început:';
 $lng['ro']['w']['telegram_end_time'] = 'Ora de sfârșit:';
+$lng['ro']['w']['999md_random_time_range'] = 'Interval ore random pentru 999.md';
+$lng['ro']['w']['999md_start_time'] = 'Ora de început:';
+$lng['ro']['w']['999md_end_time'] = 'Ora de sfârșit:';
 $lng['ro']['w']['random_interval_minutes'] = 'Interval minute:';
 $lng['ro']['w']['placeholder_start_time'] = 'Ora de început (ex: 18:00)';
 $lng['ro']['w']['placeholder_end_time'] = 'Ora de sfârșit (ex: 22:00)';
@@ -95,6 +98,9 @@ $lng['ru']['w']['facebook_end_time'] = 'Время окончания:';
 $lng['ru']['w']['telegram_random_time_range'] = 'Диапазон случайного времени для Telegram';
 $lng['ru']['w']['telegram_start_time'] = 'Время начала:';
 $lng['ru']['w']['telegram_end_time'] = 'Время окончания:';
+$lng['ru']['w']['999md_random_time_range'] = 'Диапазон случайного времени для 999.md';
+$lng['ru']['w']['999md_start_time'] = 'Время начала:';
+$lng['ru']['w']['999md_end_time'] = 'Время окончания:';
 $lng['ru']['w']['random_interval_minutes'] = 'Интервал в минутах:';
 $lng['ru']['w']['placeholder_start_time'] = 'Время начала (напр: 18:00)';
 $lng['ru']['w']['placeholder_end_time'] = 'Время окончания (напр: 22:00)';
@@ -142,6 +148,9 @@ $lng['en']['w']['facebook_end_time'] = 'End time:';
 $lng['en']['w']['telegram_random_time_range'] = 'Random time range for Telegram';
 $lng['en']['w']['telegram_start_time'] = 'Start time:';
 $lng['en']['w']['telegram_end_time'] = 'End time:';
+$lng['en']['w']['999md_random_time_range'] = 'Random time range for 999.md';
+$lng['en']['w']['999md_start_time'] = 'Start time:';
+$lng['en']['w']['999md_end_time'] = 'End time:';
 $lng['en']['w']['random_interval_minutes'] = 'Interval minutes:';
 $lng['en']['w']['placeholder_start_time'] = 'Start time (e.g: 18:00)';
 $lng['en']['w']['placeholder_end_time'] = 'End time (e.g: 22:00)';
@@ -197,6 +206,11 @@ if ($_POST) {
         'telegram_random_start_time' => $_POST['telegram_random_start_time'] ?? '18:00',
         'telegram_random_end_time' => $_POST['telegram_random_end_time'] ?? '22:00',
         'telegram_random_interval_minutes' => $_POST['telegram_random_interval_minutes'] ?? '5',
+        
+        // 999.md random time range settings
+        '999md_random_start_time' => $_POST['999md_random_start_time'] ?? '18:00',
+        '999md_random_end_time' => $_POST['999md_random_end_time'] ?? '22:00',
+        '999md_random_interval_minutes' => $_POST['999md_random_interval_minutes'] ?? '5',
     ];
     
       // Save settings to database
@@ -215,7 +229,7 @@ if ($_POST) {
 
 // Load current settings - force fresh data
 $current_settings = [];
-$stmt = $db->prepare("SELECT name, value FROM {$prefx}_settings WHERE name IN ('regular_999md_account', 'regular_999md_token', 'regular_telegram_bot_token', 'regular_telegram_chat_id', 'order_999md_account', 'order_999md_token', 'order_telegram_bot_token', 'order_telegram_chat_id', 'location_1_facebook_page_id', 'location_1_facebook_token', 'location_2_facebook_page_id', 'location_2_facebook_token', 'auto_publish_regular', 'auto_publish_order', 'facebook_random_start_time', 'facebook_random_end_time', 'facebook_random_interval_minutes', 'telegram_random_start_time', 'telegram_random_end_time', 'telegram_random_interval_minutes')");
+$stmt = $db->prepare("SELECT name, value FROM {$prefx}_settings WHERE name IN ('regular_999md_account', 'regular_999md_token', 'regular_telegram_bot_token', 'regular_telegram_chat_id', 'order_999md_account', 'order_999md_token', 'order_telegram_bot_token', 'order_telegram_chat_id', 'location_1_facebook_page_id', 'location_1_facebook_token', 'location_2_facebook_page_id', 'location_2_facebook_token', 'auto_publish_regular', 'auto_publish_order', 'facebook_random_start_time', 'facebook_random_end_time', 'facebook_random_interval_minutes', 'telegram_random_start_time', 'telegram_random_end_time', 'telegram_random_interval_minutes', '999md_random_start_time', '999md_random_end_time', '999md_random_interval_minutes')");
 $stmt->execute();
 while ($row = $stmt->fetch()) {
     $current_settings[$row['name']] = $row['value'];
@@ -388,6 +402,33 @@ $rtrn .= '
                     </div>
                 </div>
                 <small style="display: block; color: #666; margin-top: 5px;">📊 Fiecare mașină va primi timp random în acest interval</small>
+            </div>
+            
+            <div class="setting-group">
+                <h4>🏪 ' . ($lng[$_COOKIE['lang']]['w']['999md_random_time_range'] ?? 'Диапазон случайного времени для 999.md') . '</h4>
+                
+                <div class="time-range-container">
+                    <div class="time-input-group">
+                        <label>' . ($lng[$_COOKIE['lang']]['w']['999md_start_time'] ?? 'Время начала:') . '</label>
+                        <input type="time" name="999md_random_start_time" value="' . htmlspecialchars($current_settings['999md_random_start_time'] ?? '18:00') . '" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                    </div>
+                    
+                    <div class="time-input-group">
+                        <label>' . ($lng[$_COOKIE['lang']]['w']['999md_end_time'] ?? 'Время окончания:') . '</label>
+                        <input type="time" name="999md_random_end_time" value="' . htmlspecialchars($current_settings['999md_random_end_time'] ?? '22:00') . '" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                    </div>
+                    
+                    <div class="time-input-group">
+                        <label>' . ($lng[$_COOKIE['lang']]['w']['random_interval_minutes'] ?? 'Интервал в минутах:') . '</label>
+                        <select name="999md_random_interval_minutes" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                            <option value="5"' . (($current_settings['999md_random_interval_minutes'] ?? '5') == '5' ? ' selected' : '') . '>5 минут</option>
+                            <option value="10"' . (($current_settings['999md_random_interval_minutes'] ?? '5') == '10' ? ' selected' : '') . '>10 минут</option>
+                            <option value="15"' . (($current_settings['999md_random_interval_minutes'] ?? '5') == '15' ? ' selected' : '') . '>15 минут</option>
+                            <option value="30"' . (($current_settings['999md_random_interval_minutes'] ?? '5') == '30' ? ' selected' : '') . '>30 минут</option>
+                        </select>
+                    </div>
+                </div>
+                <small style="display: block; color: #666; margin-top: 5px;">🏪 Înlocuiește dropdown-ul cu ore fixe cu timpuri random</small>
             </div>
                 </div>
             </div>

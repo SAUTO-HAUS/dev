@@ -1,3 +1,9 @@
+-- Add configurable random time range settings for 999.md
+INSERT IGNORE INTO gh3sp_settings (name, value) VALUES
+('999md_random_start_time', '18:00'),
+('999md_random_end_time', '22:00'),
+('999md_random_interval_minutes', '5');
+
 -- Create table for SAUTO Personal custom scheduling
 CREATE TABLE IF NOT EXISTS `gh3sp_sauto_personal_schedules` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
