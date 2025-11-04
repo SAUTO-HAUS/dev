@@ -42,10 +42,16 @@ $lng['ro']['w']['auto_publish_order'] = 'Publicare automată la adăugarea autom
 $lng['ro']['w']['save_settings'] = 'Salvează setările';
 $lng['ro']['w']['separate_account'] = 'Cont separat pentru comenzi';
 $lng['ro']['w']['same_page_id'] = 'ID pagină Facebook pentru comenzi';
-$lng['ro']['w']['facebook_default_time'] = 'Ora implicită pentru programarea postărilor Facebook';
-$lng['ro']['w']['placeholder_facebook_default_time'] = 'Ora implicită (ex: 20:00)';
-$lng['ro']['w']['telegram_default_time'] = 'Ora implicită pentru programarea postărilor Telegram';
-$lng['ro']['w']['placeholder_telegram_default_time'] = 'Ora implicită (ex: 20:00)';
+$lng['ro']['w']['facebook_random_time_range'] = 'Interval ore random pentru Facebook';
+$lng['ro']['w']['facebook_start_time'] = 'Ora de început:';
+$lng['ro']['w']['facebook_end_time'] = 'Ora de sfârșit:';
+$lng['ro']['w']['telegram_random_time_range'] = 'Interval ore random pentru Telegram';
+$lng['ro']['w']['telegram_start_time'] = 'Ora de început:';
+$lng['ro']['w']['telegram_end_time'] = 'Ora de sfârșit:';
+$lng['ro']['w']['random_interval_minutes'] = 'Interval minute:';
+$lng['ro']['w']['placeholder_start_time'] = 'Ora de început (ex: 18:00)';
+$lng['ro']['w']['placeholder_end_time'] = 'Ora de sfârșit (ex: 22:00)';
+$lng['ro']['w']['placeholder_interval'] = 'Interval în minute (ex: 5)';
 
 // Placeholder translations - Romanian
 $lng['ro']['w']['placeholder_main_999md_account'] = 'Contul principal 999.md';
@@ -83,10 +89,16 @@ $lng['ru']['w']['auto_publish_order'] = 'Автоматическая публи
 $lng['ru']['w']['save_settings'] = 'Сохранить настройки';
 $lng['ru']['w']['separate_account'] = 'Отдельный аккаунт для заказов';
 $lng['ru']['w']['same_page_id'] = 'ID Facebook страницы для заказов';
-$lng['ru']['w']['facebook_default_time'] = 'Время по умолчанию для планирования постов Facebook';
-$lng['ru']['w']['placeholder_facebook_default_time'] = 'Время по умолчанию (напр: 20:00)';
-$lng['ru']['w']['telegram_default_time'] = 'Время по умолчанию для планирования постов Telegram';
-$lng['ru']['w']['placeholder_telegram_default_time'] = 'Время по умолчанию (напр: 20:00)';
+$lng['ru']['w']['facebook_random_time_range'] = 'Диапазон случайного времени для Facebook';
+$lng['ru']['w']['facebook_start_time'] = 'Время начала:';
+$lng['ru']['w']['facebook_end_time'] = 'Время окончания:';
+$lng['ru']['w']['telegram_random_time_range'] = 'Диапазон случайного времени для Telegram';
+$lng['ru']['w']['telegram_start_time'] = 'Время начала:';
+$lng['ru']['w']['telegram_end_time'] = 'Время окончания:';
+$lng['ru']['w']['random_interval_minutes'] = 'Интервал в минутах:';
+$lng['ru']['w']['placeholder_start_time'] = 'Время начала (напр: 18:00)';
+$lng['ru']['w']['placeholder_end_time'] = 'Время окончания (напр: 22:00)';
+$lng['ru']['w']['placeholder_interval'] = 'Интервал в минутах (напр: 5)';
 
 // Placeholder translations - Russian
 $lng['ru']['w']['placeholder_main_999md_account'] = 'Основной аккаунт 999.md';
@@ -124,10 +136,16 @@ $lng['en']['w']['auto_publish_order'] = 'Auto-publish when adding car on order';
 $lng['en']['w']['save_settings'] = 'Save Settings';
 $lng['en']['w']['separate_account'] = 'Separate account for orders';
 $lng['en']['w']['same_page_id'] = 'Facebook page ID for orders';
-$lng['en']['w']['facebook_default_time'] = 'Default time for Facebook post scheduling';
-$lng['en']['w']['placeholder_facebook_default_time'] = 'Default time (e.g: 20:00)';
-$lng['en']['w']['telegram_default_time'] = 'Default time for Telegram post scheduling';
-$lng['en']['w']['placeholder_telegram_default_time'] = 'Default time (e.g: 20:00)';
+$lng['en']['w']['facebook_random_time_range'] = 'Random time range for Facebook';
+$lng['en']['w']['facebook_start_time'] = 'Start time:';
+$lng['en']['w']['facebook_end_time'] = 'End time:';
+$lng['en']['w']['telegram_random_time_range'] = 'Random time range for Telegram';
+$lng['en']['w']['telegram_start_time'] = 'Start time:';
+$lng['en']['w']['telegram_end_time'] = 'End time:';
+$lng['en']['w']['random_interval_minutes'] = 'Interval minutes:';
+$lng['en']['w']['placeholder_start_time'] = 'Start time (e.g: 18:00)';
+$lng['en']['w']['placeholder_end_time'] = 'End time (e.g: 22:00)';
+$lng['en']['w']['placeholder_interval'] = 'Interval in minutes (e.g: 5)';
 
 // Placeholder translations - English
 $lng['en']['w']['placeholder_main_999md_account'] = 'Main 999.md account';
@@ -170,11 +188,15 @@ if ($_POST) {
         'auto_publish_regular' => isset($_POST['auto_publish_regular']) ? 1 : 0,
         'auto_publish_order' => isset($_POST['auto_publish_order']) ? 1 : 0,
         
-        // Facebook default schedule time
-        'facebook_default_schedule_time' => $_POST['facebook_default_schedule_time'] ?? '20:00',
+        // Facebook random time range settings
+        'facebook_random_start_time' => $_POST['facebook_random_start_time'] ?? '18:00',
+        'facebook_random_end_time' => $_POST['facebook_random_end_time'] ?? '22:00',
+        'facebook_random_interval_minutes' => $_POST['facebook_random_interval_minutes'] ?? '5',
         
-        // Telegram default schedule time
-        'telegram_default_schedule_time' => $_POST['telegram_default_schedule_time'] ?? '20:00',
+        // Telegram random time range settings
+        'telegram_random_start_time' => $_POST['telegram_random_start_time'] ?? '18:00',
+        'telegram_random_end_time' => $_POST['telegram_random_end_time'] ?? '22:00',
+        'telegram_random_interval_minutes' => $_POST['telegram_random_interval_minutes'] ?? '5',
     ];
     
       // Save settings to database
@@ -193,7 +215,7 @@ if ($_POST) {
 
 // Load current settings - force fresh data
 $current_settings = [];
-$stmt = $db->prepare("SELECT name, value FROM {$prefx}_settings WHERE name IN ('regular_999md_account', 'regular_999md_token', 'regular_telegram_bot_token', 'regular_telegram_chat_id', 'order_999md_account', 'order_999md_token', 'order_telegram_bot_token', 'order_telegram_chat_id', 'location_1_facebook_page_id', 'location_1_facebook_token', 'location_2_facebook_page_id', 'location_2_facebook_token', 'auto_publish_regular', 'auto_publish_order', 'facebook_default_schedule_time', 'telegram_default_schedule_time')");
+$stmt = $db->prepare("SELECT name, value FROM {$prefx}_settings WHERE name IN ('regular_999md_account', 'regular_999md_token', 'regular_telegram_bot_token', 'regular_telegram_chat_id', 'order_999md_account', 'order_999md_token', 'order_telegram_bot_token', 'order_telegram_chat_id', 'location_1_facebook_page_id', 'location_1_facebook_token', 'location_2_facebook_page_id', 'location_2_facebook_token', 'auto_publish_regular', 'auto_publish_order', 'facebook_random_start_time', 'facebook_random_end_time', 'facebook_random_interval_minutes', 'telegram_random_start_time', 'telegram_random_end_time', 'telegram_random_interval_minutes')");
 $stmt->execute();
 while ($row = $stmt->fetch()) {
     $current_settings[$row['name']] = $row['value'];
@@ -315,17 +337,57 @@ $rtrn .= '
             </div>
             
             <div class="setting-group">
-                <h4>' . ($lng[$_COOKIE['lang']]['w']['facebook_default_time'] ?? 'Время по умолчанию для планирования постов Facebook') . '</h4>
-                <label>' . ($lng[$_COOKIE['lang']]['w']['facebook_default_time'] ?? 'Время по умолчанию:') . '</label>
-                <input type="time" name="facebook_default_schedule_time" value="' . htmlspecialchars($current_settings['facebook_default_schedule_time'] ?? '20:00') . '" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
-                <small style="display: block; color: #666; margin-top: 5px;">' . ($lng[$_COOKIE['lang']]['w']['placeholder_facebook_default_time'] ?? 'Время по умолчанию (напр: 20:00)') . '</small>
+                <h4>📘 ' . ($lng[$_COOKIE['lang']]['w']['facebook_random_time_range'] ?? 'Диапазон случайного времени для Facebook') . '</h4>
+                
+                <div class="time-range-container">
+                    <div class="time-input-group">
+                        <label>' . ($lng[$_COOKIE['lang']]['w']['facebook_start_time'] ?? 'Время начала:') . '</label>
+                        <input type="time" name="facebook_random_start_time" value="' . htmlspecialchars($current_settings['facebook_random_start_time'] ?? '18:00') . '" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                    </div>
+                    
+                    <div class="time-input-group">
+                        <label>' . ($lng[$_COOKIE['lang']]['w']['facebook_end_time'] ?? 'Время окончания:') . '</label>
+                        <input type="time" name="facebook_random_end_time" value="' . htmlspecialchars($current_settings['facebook_random_end_time'] ?? '22:00') . '" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                    </div>
+                    
+                    <div class="time-input-group">
+                        <label>' . ($lng[$_COOKIE['lang']]['w']['random_interval_minutes'] ?? 'Интервал в минутах:') . '</label>
+                        <select name="facebook_random_interval_minutes" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                            <option value="5"' . (($current_settings['facebook_random_interval_minutes'] ?? '5') == '5' ? ' selected' : '') . '>5 минут</option>
+                            <option value="10"' . (($current_settings['facebook_random_interval_minutes'] ?? '5') == '10' ? ' selected' : '') . '>10 минут</option>
+                            <option value="15"' . (($current_settings['facebook_random_interval_minutes'] ?? '5') == '15' ? ' selected' : '') . '>15 минут</option>
+                            <option value="30"' . (($current_settings['facebook_random_interval_minutes'] ?? '5') == '30' ? ' selected' : '') . '>30 минут</option>
+                        </select>
+                    </div>
+                </div>
+                <small style="display: block; color: #666; margin-top: 5px;">📊 Fiecare mașină va primi timp random în acest interval</small>
             </div>
             
             <div class="setting-group">
-                <h4>' . ($lng[$_COOKIE['lang']]['w']['telegram_default_time'] ?? 'Время по умолчанию для планирования постов Telegram') . '</h4>
-                <label>' . ($lng[$_COOKIE['lang']]['w']['telegram_default_time'] ?? 'Время по умолчанию:') . '</label>
-                <input type="time" name="telegram_default_schedule_time" value="' . htmlspecialchars($current_settings['telegram_default_schedule_time'] ?? '20:00') . '" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
-                <small style="display: block; color: #666; margin-top: 5px;">' . ($lng[$_COOKIE['lang']]['w']['placeholder_telegram_default_time'] ?? 'Время по умолчанию (напр: 20:00)') . '</small>
+                <h4>📱 ' . ($lng[$_COOKIE['lang']]['w']['telegram_random_time_range'] ?? 'Диапазон случайного времени для Telegram') . '</h4>
+                
+                <div class="time-range-container">
+                    <div class="time-input-group">
+                        <label>' . ($lng[$_COOKIE['lang']]['w']['telegram_start_time'] ?? 'Время начала:') . '</label>
+                        <input type="time" name="telegram_random_start_time" value="' . htmlspecialchars($current_settings['telegram_random_start_time'] ?? '18:00') . '" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                    </div>
+                    
+                    <div class="time-input-group">
+                        <label>' . ($lng[$_COOKIE['lang']]['w']['telegram_end_time'] ?? 'Время окончания:') . '</label>
+                        <input type="time" name="telegram_random_end_time" value="' . htmlspecialchars($current_settings['telegram_random_end_time'] ?? '22:00') . '" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                    </div>
+                    
+                    <div class="time-input-group">
+                        <label>' . ($lng[$_COOKIE['lang']]['w']['random_interval_minutes'] ?? 'Интервал в минутах:') . '</label>
+                        <select name="telegram_random_interval_minutes" style="padding: 8px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px;">
+                            <option value="5"' . (($current_settings['telegram_random_interval_minutes'] ?? '5') == '5' ? ' selected' : '') . '>5 минут</option>
+                            <option value="10"' . (($current_settings['telegram_random_interval_minutes'] ?? '5') == '10' ? ' selected' : '') . '>10 минут</option>
+                            <option value="15"' . (($current_settings['telegram_random_interval_minutes'] ?? '5') == '15' ? ' selected' : '') . '>15 минут</option>
+                            <option value="30"' . (($current_settings['telegram_random_interval_minutes'] ?? '5') == '30' ? ' selected' : '') . '>30 минут</option>
+                        </select>
+                    </div>
+                </div>
+                <small style="display: block; color: #666; margin-top: 5px;">📊 Fiecare mașină va primi timp random în acest interval</small>
             </div>
                 </div>
             </div>
@@ -520,6 +582,56 @@ $rtrn .= '
 .setting-group label:has(input[type="checkbox"]):hover {
     background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
     transform: translateY(-1px);
+}
+
+.time-range-container {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.time-input-group {
+    flex: 1;
+    min-width: 150px;
+}
+
+.time-input-group label {
+    margin: 0 0 5px 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: #495057;
+    text-transform: uppercase;
+}
+
+.time-input-group input[type="time"],
+.time-input-group select {
+    width: 100%;
+    padding: 8px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    background: rgba(255,255,255,0.9);
+}
+
+.time-input-group input[type="time"]:focus,
+.time-input-group select:focus {
+    outline: none;
+    border-color: #e53e3e;
+    box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.15);
+    background: white;
+}
+
+@media (max-width: 768px) {
+    .time-range-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .time-input-group {
+        min-width: auto;
+    }
 }
 
 .publication-settings .form-actions {

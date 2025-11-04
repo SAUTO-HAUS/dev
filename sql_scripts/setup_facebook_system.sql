@@ -1,3 +1,10 @@
+-- Add configurable random time range settings
+INSERT IGNORE INTO gh3sp_settings (name, value) VALUES
+('facebook_random_start_time', '18:00'),
+('facebook_random_end_time', '22:00'),
+('facebook_random_interval_minutes', '5');
+
+-- Create scheduled Facebook posts table
 CREATE TABLE IF NOT EXISTS gh3sp_scheduled_facebook_posts (
     id INT AUTO_INCREMENT PRIMARY KEY,
     car_id INT NOT NULL,
