@@ -8,6 +8,13 @@ return [
     'edit_ad' => 'Editare anunț',
     'new_ad' => 'Anunț nou',
     '999_block_title' => 'INTEGRARE 999.MD',
+    'type_ad' => 'Tip de promovare',
+    'type_ad_hint' => 'Selectează tipul de promovare',
+    'personal_promotion' => 'Promovare Personalizată',
+    'auto_companies' => 'Promovare maximală + 5 clonuri <em>(produsul companiei)</em>',
+    'auto_companies_minimal_promotion' => 'Promovare minimală + 5 clonuri <em>(produsul companiei)</em>',
+    'auto_for_sale' => 'Promovare maximală + 5 clonuri <em>(produs la realizare)</em>',
+    'auto_for_sale_minimal_promotion' => 'Promovare minimală + 5 clonuri <em>(produs la realizare)</em>',
     
     // SAUTO Personal Scheduling
     'personal_scheduling' => 'Programare Personalizată',

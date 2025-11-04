@@ -8,6 +8,13 @@ return [
     'edit_ad' => 'Edit ad',
     'new_ad' => 'New ad',
     '999_block_title' => 'INTEGRATION 999.MD',
+    'type_ad' => 'Promotion Type',
+    'type_ad_hint' => 'Select promotion type',
+    'personal_promotion' => 'Personal Promotion',
+    'auto_companies' => 'Maximum promotion + 5 clones <em>(company product)</em>',
+    'auto_companies_minimal_promotion' => 'Minimal promotion + 5 clones <em>(company product)</em>',
+    'auto_for_sale' => 'Maximum promotion + 5 clones <em>(product for sale)</em>',
+    'auto_for_sale_minimal_promotion' => 'Minimal promotion + 5 clones <em>(product for sale)</em>',
     
     // SAUTO Personal Scheduling
     'personal_scheduling' => 'Personal Scheduling',
