@@ -798,20 +798,11 @@ SVG
                             </span>
                     </div>
                     <?php
-                    // Get default schedule time from database
-                    $default_schedule_time = '20:00';
-                    try {
-                        $stmt = $db->prepare("SELECT value FROM {$prefx}_settings WHERE name = 'facebook_default_schedule_time' LIMIT 1");
-                        $stmt->execute();
-                        $setting = $stmt->fetch();
-                        if ($setting && !empty($setting['value'])) {
-                            $default_schedule_time = $setting['value'];
-                        }
-                    } catch (Exception $e) {
-                        // Use fallback if query fails
-                    }
+                    // Generate random Facebook posting time between 18:00 and 22:00
+                    require_once __DIR__ . '/../../../../App/Helper/RandomTimeHelper.php';
+                    $random_schedule_time = \App\Helper\RandomTimeHelper::generateRandomFacebookTime();
                     ?>
-                    <input type="time" id="facebook_schedule_time" value="<?= $default_schedule_time ?>" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;" onclick="event.stopPropagation();">
+                    <input type="time" id="facebook_schedule_time" value="<?= $random_schedule_time ?>" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;" onclick="event.stopPropagation();">
                 </div>
 
                     <?/*
@@ -848,20 +839,11 @@ SVG
                     </span>
                 </div>
                 <?php
-                // Get default schedule time from database
-                $default_schedule_time = '20:00';
-                try {
-                    $stmt = $db->prepare("SELECT value FROM {$prefx}_settings WHERE name = 'telegram_default_schedule_time' LIMIT 1");
-                    $stmt->execute();
-                    $setting = $stmt->fetch();
-                    if ($setting && !empty($setting['value'])) {
-                        $default_schedule_time = $setting['value'];
-                    }
-                } catch (Exception $e) {
-                    // Use fallback if query fails
-                }
+                // Generate random Telegram posting time between 18:00 and 22:00
+                require_once __DIR__ . '/../../../../App/Helper/RandomTimeHelper.php';
+                $random_telegram_time = \App\Helper\RandomTimeHelper::generateRandomTelegramTime();
                 ?>
-                <input type="time" id="telegram_schedule_time" value="<?= $default_schedule_time ?>" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;" onclick="event.stopPropagation();">
+                <input type="time" id="telegram_schedule_time" value="<?= $random_telegram_time ?>" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;" onclick="event.stopPropagation();">
             </div>
 
         </div>
