@@ -257,14 +257,16 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
 
     $carId = $it_id = __post('id');
     $local_id = __post('local_id');
-    // Get default schedule time from database settings
-    $default_time = '20:00'; // Fallback default
+    // Generate random Facebook time using configurable settings
+    $default_time = \App\Helper\RandomTimeHelper::generateRandomFacebookTime();
     try {
+        // Keep database fallback for compatibility
         $stmt = $db->prepare("SELECT value FROM {$prefx}_settings WHERE name = 'facebook_default_schedule_time' LIMIT 1");
         $stmt->execute();
         $setting = $stmt->fetch();
         if ($setting && !empty($setting['value'])) {
-            $default_time = $setting['value'];
+            // Override with random time instead of fixed setting
+            $default_time = \App\Helper\RandomTimeHelper::generateRandomFacebookTime();
         }
     } catch (Exception $e) {
         // Use fallback if database query fails
@@ -495,7 +497,7 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
 elseif ( __post('fn')=='sendToTelegramCars' ){
 
     $it_id = __post('id');
-    $schedule_time = __post('schedule_time') ?: '20:00'; // Default to 20:00 if not provided
+    $schedule_time = __post('schedule_time') ?: \App\Helper\RandomTimeHelper::generateRandomTelegramTime(); // Generate random Telegram time
 
     $_COOKIE['lang']='ro';
     require (_DEFAULT.'/language.php');
