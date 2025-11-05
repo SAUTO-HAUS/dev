@@ -76,6 +76,13 @@ class PhoneHelper
             return self::getOrderPhone();
         }
         
+        // Check if we're on the ordercars page (/ordercars)
+        if (is_array($urlSegments) && 
+            count($urlSegments) >= 3 && 
+            $urlSegments[2] === 'ordercars') {
+            return self::getOrderPhone();
+        }
+        
         if (is_array($urlSegments) && 
             count($urlSegments) >= 3 && 
             $urlSegments[2] === 'cars' && 

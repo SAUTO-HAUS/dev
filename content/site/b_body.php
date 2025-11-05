@@ -109,6 +109,9 @@ if (isset($t_mp[2]) && $t_mp[2] == 'ordercars') {
 				} elseif ( isset($t_mp[2])&&$t_mp[2]=='services'&&isset($t_mp[3])&&$t_mp[3]=='order' ) {
 					$orderPhone = PhoneHelper::getOrderPhone();
 					echo'href="tel:'.$orderPhone.'" title="'.PhoneHelper::formatPhone($orderPhone, 'display').'"';
+				} elseif ( isset($t_mp[2])&&$t_mp[2]=='ordercars' ) {
+					$orderPhone = PhoneHelper::getOrderPhone();
+					echo'href="tel:'.$orderPhone.'" title="'.PhoneHelper::formatPhone($orderPhone, 'display').'"';
 				} else {
 					$generalPhone = PhoneHelper::getGeneralPhone();
 					echo'href="tel:'.$generalPhone.'" title="'.PhoneHelper::formatPhone($generalPhone, 'display').'"';
