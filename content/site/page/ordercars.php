@@ -1032,6 +1032,8 @@ $iconTelegramParams = array(
                 if( trim($rseo['params_html']) != '' ) {
                     $bnt_params_mobile = ' <div class="btn_params mobile" onclick=" openParamsPopAuto(\'open\')  " > '.$lng['w']['characteristics'].' </div> ';
                 }
+                
+                $dynamicPhone = PhoneHelper::getOrderPhone();
 
                 $rtrn .= '
                             <div class="prc  desktop">
