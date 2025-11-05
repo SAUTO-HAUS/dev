@@ -128,7 +128,7 @@ class PublicationService
     {
         // Build car title with proper capitalization
         $brand = ucfirst(strtolower($carData['br'] ?? ''));
-        $model = ucwords(strtolower($carData['mo'] ?? ''));
+        $model = ucwords(strtolower(str_replace('_', ' ', $carData['mo'] ?? '')));
         $title = trim($brand . ' ' . $model);
         
         if (empty($title)) {
@@ -138,18 +138,21 @@ class PublicationService
         // Add catalog type label first
         if ($catalogType === 'on_order') {
             $message = "📋 LA COMANDĂ";
+            $message .= "\n🚘 " . $title;
             $message .= "\n⏰ Termen de livrare: " . ($carData['delivery_time'] ?? '14 zile');
         } else {
             $message = "✅ În stoc";
+            $message .= "\n🚘 " . $title;
         }
         
-        // Add car title
-        $message .= "\n🚘 " . $title;
-        
-        // Add price
+        // Add price (different text for on_order cars)
         if (!empty($carData['prc'])) {
             $price = number_format($carData['prc'], 0, '.', ',') . ' €';
-            $message .= "\n💰 Preț: " . $price;
+            if ($catalogType === 'on_order') {
+                $message .= "\n💰 Pretul masinii la licitatii Europene: " . $price;
+            } else {
+                $message .= "\n💰 Preț: " . $price;
+            }
         }
         
         // Add detailed specifications with icons
@@ -244,8 +247,12 @@ class PublicationService
         $address = $addresses[$carData['loc'] ?? 1] ?? 'Chișinău';
         $message .= "\n📍 Adresă: " . $address;
         
-        // Phone number
-        $message .= "\n📞 Telefon: +373 796 00 361";
+        // Phone number (different for on_order cars)
+        if ($catalogType === 'on_order') {
+            $message .= "\n📞 Telefon: +37379600352";
+        } else {
+            $message .= "\n📞 Telefon: +373 796 00 361";
+        }
         
         // Link to more models
         if (!empty($carData['br'])) {

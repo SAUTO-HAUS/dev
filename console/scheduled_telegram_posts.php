@@ -22,7 +22,7 @@ define('_DOIT', true);
 
 try {
     // Database connection using environment settings
-    require_once __DIR__ . '/environment.php';
+    require_once __DIR__ . '/../environment.php';
     
     $db = new PDO(
         'mysql:host=' . SQL_HOST . ';dbname=' . SQL_DB . ';charset=' . SQL_CHARSET,
@@ -39,7 +39,7 @@ try {
     echo "[" . date('Y-m-d H:i:s') . "] Telegram Cron Started\n";
     
     // Include PublicationService
-    require_once __DIR__ . '/App/Services/PublicationService.php';
+    require_once __DIR__ . '/../App/Services/PublicationService.php';
     $publicationService = new \App\Services\PublicationService($db, $prefx);
     
     // Get pending posts that should be published now
@@ -84,7 +84,21 @@ try {
             $message = $publicationService->generateTelegramMessage($carData, $post['catalog_type']);
             
             // Get car photos (multiple photos like in AJAX)
-            $photo_folder = __DIR__ . '/media/images/upload/car';
+            // Auto-detect site structure for photo path
+            $document_root = $_SERVER['DOCUMENT_ROOT'] ?? dirname(__DIR__);
+            
+            // Ensure we have the full path
+            if (!$document_root || $document_root === dirname(__DIR__)) {
+                $document_root = '/home/sautom/public_html';
+            }
+            
+            if (strpos($document_root, 'testline8392.sauto.md') !== false) {
+                // Test site: public_html/testline8392.sauto.md/media
+                $photo_folder = $document_root . '/media/images/upload/car';
+            } else {
+                // Production site: public_html/media  
+                $photo_folder = $document_root . '/media/images/upload/car';
+            }
             $stmt = $db->prepare("SELECT * FROM {$prefx}_car_pht WHERE it_id = :car_id ORDER BY pos ASC LIMIT 10");
             $stmt->execute(['car_id' => $post['car_id']]);
             $photos = $stmt->fetchAll();
@@ -92,6 +106,9 @@ try {
             if (empty($photos)) {
                 throw new Exception("No photos found for car: {$post['car_id']}");
             }
+            
+            echo "[" . date('Y-m-d H:i:s') . "] Photo folder: {$photo_folder}\n";
+            echo "[" . date('Y-m-d H:i:s') . "] Found " . count($photos) . " photos in database for car {$post['car_id']}\n";
             
             // Build media array like in AJAX
             $media = [];
@@ -107,15 +124,42 @@ try {
                             basename($file_path)
                         )
                     ];
+                    echo "[" . date('Y-m-d H:i:s') . "] Found photo: {$file_path}\n";
+                } else {
+                    echo "[" . date('Y-m-d H:i:s') . "] Photo not found: {$file_path}\n";
+                    
+                    // Try alternative paths
+                    $alt_paths = [
+                        $photo_folder . '/' . $photo['path'] . '/' . $post['car_id'] . '/' . $photo['name'] . '.jpg',
+                        $photo_folder . '/' . $post['car_id'] . '/high/' . $photo['name'] . '.jpg',
+                        $photo_folder . '/' . $post['car_id'] . '/' . $photo['name'] . '.jpg'
+                    ];
+                    
+                    foreach ($alt_paths as $alt_path) {
+                        if (file_exists($alt_path)) {
+                            $media[] = [
+                                'type' => 'photo',
+                                'media' => new \CURLFile(
+                                    $alt_path,
+                                    mime_content_type($alt_path),
+                                    basename($alt_path)
+                                )
+                            ];
+                            echo "[" . date('Y-m-d H:i:s') . "] Found alternative photo: {$alt_path}\n";
+                            break;
+                        }
+                    }
                 }
             }
+            
+            echo "[" . date('Y-m-d H:i:s') . "] Total media files found: " . count($media) . "\n";
             
             if (empty($media)) {
                 throw new Exception("No valid photo files found for car: {$post['car_id']}");
             }
             
             // Include Telegram class
-            require_once __DIR__ . '/content/admin/ajax/cars/CTelegram.php';
+            require_once __DIR__ . '/../content/admin/ajax/cars/CTelegram.php';
             
             // Initialize Telegram bot
             $bot = new Telegram([

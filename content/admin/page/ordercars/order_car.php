@@ -1243,39 +1243,20 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!modelField || !modelField.value) return;
         
         const modelValue = modelField.value;
+        const modelText = modelField.options[modelField.selectedIndex]?.textContent?.trim();
         const model999Field = document.querySelector('select[name="feature[21]"]');
         if (!model999Field) return;
         
         // Check if model field is disabled (depends on brand)
         if (model999Field.disabled) {
-            syncBrandTo999();
-            setTimeout(() => {
-                if (!model999Field.disabled) syncModelTo999();
-            }, 1000);
-            return;
+            return; // Don't sync if disabled
         }
         
         const options = model999Field.querySelectorAll('option');
         let modelSynced = false;
         
-        // Wait for models to load if needed
+        // If no options available, don't sync
         if (options.length <= 1) {
-            syncBrandTo999();
-            let attempts = 0;
-            const maxAttempts = 5;
-            
-            const waitForModels = () => {
-                attempts++;
-                setTimeout(() => {
-                    const newOptions = model999Field.querySelectorAll('option');
-                    if (newOptions.length > 1) {
-                        syncModelTo999();
-                    } else if (attempts < maxAttempts) {
-                        waitForModels();
-                    }
-                }, 300);
-            };
-            waitForModels();
             return;
         }
         
@@ -1364,6 +1345,57 @@ document.addEventListener('DOMContentLoaded', function() {
         
         year999Field.value = yearField.value;
         year999Field.classList.remove('empty');
+    }
+
+    // GENERATION SYNC: Based on year from Sauto form (depends on model)
+    function syncGenerationTo999() {
+        const yearField = document.querySelector('input[name="yr"]');
+        if (!yearField || !yearField.value) return;
+        
+        const year = parseInt(yearField.value);
+        if (isNaN(year) || year < 1900 || year > 2030) return;
+        
+        const generationField = document.querySelector('select[name="feature[2095]"]');
+        if (!generationField) return;
+        
+        const options = generationField.querySelectorAll('option');
+        if (options.length <= 1) {
+            // Retry after 500ms if options not loaded yet
+            setTimeout(syncGenerationTo999, 500);
+            return;
+        }
+        
+        let generationSynced = false;
+        
+        options.forEach(option => {
+            if (generationSynced || !option.value) return;
+            
+            const optionText = option.textContent.trim();
+            
+            // Extract year ranges from text like "XA10 (1994 - 2000)" or "I (1995 - 2002)" or "XA50 (2018 - н.в)"
+            const yearRangeMatch = optionText.match(/\((\d{4})\s*[-–]\s*(\d{4}|н\.в|н\. в)\)/);
+            
+            if (yearRangeMatch) {
+                const startYear = parseInt(yearRangeMatch[1]);
+                const endYearText = yearRangeMatch[2];
+                
+                let endYear;
+                if (endYearText === 'н.в' || endYearText === 'н. в') {
+                    // "н.в" means "настоящее время" (present time)
+                    endYear = new Date().getFullYear();
+                } else {
+                    endYear = parseInt(endYearText);
+                }
+                
+                // Check if car year falls within this generation range
+                if (year >= startYear && year <= endYear) {
+                    generationField.value = option.value;
+                    generationSynced = true;
+                    generationField.classList.remove('empty');
+                    generationField.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            }
+        });
     }
 
     // BODY TYPE SYNC: Sauto form -> 999 form
@@ -1755,6 +1787,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (yearField) {
         yearField.addEventListener('input', function() {
             setTimeout(syncYearTo999, 100);
+            setTimeout(syncGenerationTo999, 200);
         });
     }
     
@@ -1826,19 +1859,22 @@ document.addEventListener('DOMContentLoaded', function() {
             if (mutation.type === 'childList') {
                 const featuresContainer = document.querySelector('.features');
                 if (featuresContainer && featuresContainer.children.length > 0) {
-                    setTimeout(syncBrandTo999, 50); 
-                    setTimeout(syncModelTo999, 100); 
-                    setTimeout(syncPriceTo999, 150); 
-                    setTimeout(syncYearTo999, 200); 
-                    setTimeout(syncBodyTypeTo999, 250); 
-                    setTimeout(syncMileageTo999, 300); 
-                    setTimeout(syncEngineVolumeTo999, 350); 
-                    setTimeout(syncHorsePowerTo999, 400); 
-                    setTimeout(syncFuelTypeTo999, 450); 
-                    setTimeout(syncTransmissionTo999, 500); 
-                    setTimeout(syncWheelDriveTo999, 550); 
-                    setTimeout(syncColorTo999, 600); 
-                    setTimeout(setDefaultFormLabel, 650); 
+                    setTimeout(syncBrandTo999, 100); 
+                    setTimeout(syncPriceTo999, 200); 
+                    setTimeout(syncYearTo999, 300); 
+                    setTimeout(syncBodyTypeTo999, 400); 
+                    setTimeout(syncMileageTo999, 500); 
+                    setTimeout(syncEngineVolumeTo999, 600); 
+                    setTimeout(syncHorsePowerTo999, 700); 
+                    setTimeout(syncFuelTypeTo999, 800); 
+                    setTimeout(syncTransmissionTo999, 900); 
+                    setTimeout(syncWheelDriveTo999, 1000); 
+                    setTimeout(syncColorTo999, 1100); 
+                    setTimeout(setDefaultFormLabel, 1200);
+                    // Sync model LAST, after brand options are loaded
+                    setTimeout(syncModelTo999, 1500);
+                    // Sync generation AFTER model, when generation options are loaded
+                    setTimeout(syncGenerationTo999, 3000); 
                     observer.disconnect(); 
                 }
             }
@@ -1850,19 +1886,22 @@ document.addEventListener('DOMContentLoaded', function() {
     if (featuresContainer) {
         if (featuresContainer.children.length > 0) {
         
-            setTimeout(syncBrandTo999, 50); 
-            setTimeout(syncModelTo999, 100); 
-            setTimeout(syncPriceTo999, 150); 
-            setTimeout(syncYearTo999, 200); 
-            setTimeout(syncBodyTypeTo999, 250); 
-            setTimeout(syncMileageTo999, 300); 
-            setTimeout(syncEngineVolumeTo999, 350); 
-            setTimeout(syncHorsePowerTo999, 400); 
-            setTimeout(syncFuelTypeTo999, 450); 
-            setTimeout(syncTransmissionTo999, 500); 
-            setTimeout(syncWheelDriveTo999, 550); 
-            setTimeout(syncColorTo999, 600); 
-            setTimeout(setDefaultFormLabel, 650);
+            setTimeout(syncBrandTo999, 100); 
+            setTimeout(syncPriceTo999, 200); 
+            setTimeout(syncYearTo999, 300); 
+            setTimeout(syncBodyTypeTo999, 400); 
+            setTimeout(syncMileageTo999, 500); 
+            setTimeout(syncEngineVolumeTo999, 600); 
+            setTimeout(syncHorsePowerTo999, 700); 
+            setTimeout(syncFuelTypeTo999, 800); 
+            setTimeout(syncTransmissionTo999, 900); 
+            setTimeout(syncWheelDriveTo999, 1000); 
+            setTimeout(syncColorTo999, 1100); 
+            setTimeout(setDefaultFormLabel, 1200);
+            // Sync model LAST, after brand options are loaded
+            setTimeout(syncModelTo999, 1500);
+            // Sync generation AFTER model, when generation options are loaded
+            setTimeout(syncGenerationTo999, 3000);
         } else {
        
             observer.observe(featuresContainer, { childList: true, subtree: true });

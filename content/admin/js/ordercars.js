@@ -1808,4 +1808,14 @@ $(document).ready(function() {
 		
 		$('#schedules_list').html(schedulesHTML);
 	}
+
+	// Apply scenario features on page load for order cars
+	$(document).ready(function() {
+		setTimeout(function() {
+			const checkedScenario = $('input[name="scenario"]:checked');
+			if (checkedScenario.length) {
+				checkedScenario.trigger('change');
+			}
+		}, 100);
+	});
 });

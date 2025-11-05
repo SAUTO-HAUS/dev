@@ -142,6 +142,9 @@ try {
                     echo "[" . date('Y-m-d H:i:s') . "] ✅ Successfully republished car {$schedule['car_id']} on 999.md ({$apiAccount})\n";
                 } else {
                     $errorMsg = isset($result['error']) ? $result['error'] : 'Unknown error during republish';
+                    if (is_array($errorMsg)) {
+                        $errorMsg = json_encode($errorMsg, JSON_UNESCAPED_UNICODE);
+                    }
                     
                     // Update schedule as failed
                     $stmt = $db->prepare("
@@ -241,6 +244,9 @@ try {
                         echo "[" . date('Y-m-d H:i:s') . "] ✅ Successfully created new 999.md listing {$new999Id} for car {$schedule['car_id']}\n";
                     } else {
                         $errorMsg = isset($result['error']) ? $result['error'] : 'Failed to create 999.md listing';
+                        if (is_array($errorMsg)) {
+                            $errorMsg = json_encode($errorMsg, JSON_UNESCAPED_UNICODE);
+                        }
                         $stmt = $db->prepare("
                             UPDATE gh3sp_sauto_personal_schedules 
                             SET status = 'failed', error_message = :error
