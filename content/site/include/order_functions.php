@@ -232,8 +232,8 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 			// Add visibility conditions
 			$sql .= ' AND `vis`="1" AND `act`="1"';
 			
-			// Add ORDER BY and LIMIT - prioritize in_stock cars first, then on_order
-			$sql .= ' ORDER BY CASE WHEN catalog_type = "in_stock" THEN 1 WHEN catalog_type = "on_order" THEN 2 ELSE 3 END, `n_a` ASC, `id` DESC LIMIT :lmt';
+			// Add ORDER BY and LIMIT - prioritize on_order cars first, then in_stock (for ordercars page)
+			$sql .= ' ORDER BY CASE WHEN catalog_type = "on_order" THEN 1 WHEN catalog_type = "in_stock" THEN 2 ELSE 3 END, `n_a` ASC, `id` DESC LIMIT :lmt';
 			
 			// Log final SQL and parameters
 			file_put_contents('debug_sql.log', "\nFinal SQL: {$sql}\n", FILE_APPEND);
