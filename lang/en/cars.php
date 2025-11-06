@@ -40,4 +40,14 @@ return [
     '4_months' => '4 months',
     '5_months' => '5 months',
     'generate_schedules' => 'Generate Schedules',
+    
+    // Schedule History
+    'schedule_history' => 'Schedule History',
+    'no_schedules' => 'No schedules',
+    
+    // Schedule Status
+    'status_pending' => 'Pending',
+    'status_published' => 'Published',
+    'status_failed' => 'Failed',
+    'status_cancelled' => 'Cancelled',
 ];

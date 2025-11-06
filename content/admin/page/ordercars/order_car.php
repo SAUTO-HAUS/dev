@@ -943,11 +943,10 @@ SVG
 
         <div class="btns_fb_tg">
 
-            <a  class="fb-share  adm_tg_btn"
+            <a class="fb-share adm_tg_btn"
                 <?/* href="https://www.facebook.com/sharer/sharer.php?u=<?= $site_url . '/ro/cars/' . $car['id'] ?>"
                 target="_blank" rel="noopener noreferrer" */?>
             >
-
                 <div style="display: flex; align-items: center; justify-content: center; gap: 15px;" onclick=" sendToFacebookCars() ">
                     <div style="display: flex; align-items: center;">
                         Опубликовать в facebook
@@ -967,6 +966,54 @@ SVG
                     $random_schedule_time = \App\Helper\RandomTimeHelper::generateRandomFacebookTime();
                     ?>
                     <input type="time" id="facebook_schedule_time" value="<?= $random_schedule_time ?>" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;" onclick="event.stopPropagation();">
+                    <?php
+                    // Get Facebook schedule status
+                    $facebookStatus = '';
+                    $facebookStatusIcon = '';
+                    $facebookStatusText = '';
+                    $facebookStatusColor = '';
+                    if (!empty($car['id'])) {
+                        try {
+                            $catalogType = 'on_order';
+                            $stmt = $db->prepare("SELECT status FROM {$prefx}_scheduled_facebook_posts WHERE car_id = ? AND catalog_type = ? ORDER BY created_at DESC LIMIT 1");
+                            $stmt->execute([$car['id'], $catalogType]);
+                            $facebookSchedule = $stmt->fetch();
+                            if ($facebookSchedule) {
+                                $facebookStatus = $facebookSchedule['status'];
+                                switch ($facebookStatus) {
+                                    case 'pending':
+                                        $facebookStatusIcon = '⏳';
+                                        $facebookStatusText = __('cars.status_pending');
+                                        $facebookStatusColor = '#ffc107';
+                                        break;
+                                    case 'published':
+                                        $facebookStatusIcon = '✅';
+                                        $facebookStatusText = __('cars.status_published');
+                                        $facebookStatusColor = '#28a745';
+                                        break;
+                                    case 'failed':
+                                        $facebookStatusIcon = '❌';
+                                        $facebookStatusText = __('cars.status_failed');
+                                        $facebookStatusColor = '#dc3545';
+                                        break;
+                                    case 'cancelled':
+                                        $facebookStatusIcon = '🚫';
+                                        $facebookStatusText = __('cars.status_cancelled');
+                                        $facebookStatusColor = '#6c757d';
+                                        break;
+                                }
+                            }
+                        } catch (Exception $e) {
+                            // Ignore error
+                        }
+                    }
+                    ?>
+                    <?php if ($facebookStatus): ?>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <span style="font-size: 14px;"><?= $facebookStatusIcon ?></span>
+                            <span style="font-size: 10px; color: <?= $facebookStatusColor ?>; font-weight: 500;"><?= $facebookStatusText ?></span>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
                     <?/*
@@ -1008,6 +1055,54 @@ SVG
                 $random_telegram_time = \App\Helper\RandomTimeHelper::generateRandomTelegramTime();
                 ?>
                 <input type="time" id="telegram_schedule_time" value="<?= $random_telegram_time ?>" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;" onclick="event.stopPropagation();">
+                <?php
+                // Get Telegram schedule status
+                $telegramStatus = '';
+                $telegramStatusIcon = '';
+                $telegramStatusText = '';
+                $telegramStatusColor = '';
+                if (!empty($car['id'])) {
+                    try {
+                        $catalogType = 'on_order';
+                        $stmt = $db->prepare("SELECT status FROM {$prefx}_scheduled_telegram_posts WHERE car_id = ? AND catalog_type = ? ORDER BY created_at DESC LIMIT 1");
+                        $stmt->execute([$car['id'], $catalogType]);
+                        $telegramSchedule = $stmt->fetch();
+                        if ($telegramSchedule) {
+                            $telegramStatus = $telegramSchedule['status'];
+                            switch ($telegramStatus) {
+                                case 'pending':
+                                    $telegramStatusIcon = '⏳';
+                                    $telegramStatusText = __('cars.status_pending');
+                                    $telegramStatusColor = '#ffc107';
+                                    break;
+                                case 'published':
+                                    $telegramStatusIcon = '✅';
+                                    $telegramStatusText = __('cars.status_published');
+                                    $telegramStatusColor = '#28a745';
+                                    break;
+                                case 'failed':
+                                    $telegramStatusIcon = '❌';
+                                    $telegramStatusText = __('cars.status_failed');
+                                    $telegramStatusColor = '#dc3545';
+                                    break;
+                                case 'cancelled':
+                                    $telegramStatusIcon = '🚫';
+                                    $telegramStatusText = __('cars.status_cancelled');
+                                    $telegramStatusColor = '#6c757d';
+                                    break;
+                            }
+                        }
+                    } catch (Exception $e) {
+                        // Ignore error
+                    }
+                }
+                ?>
+                <?php if ($telegramStatus): ?>
+                    <div style="display: flex; align-items: center; gap: 4px;">
+                        <span style="font-size: 14px;"><?= $telegramStatusIcon ?></span>
+                        <span style="font-size: 10px; color: <?= $telegramStatusColor ?>; font-weight: 500;"><?= $telegramStatusText ?></span>
+                    </div>
+                <?php endif; ?>
             </div>
 
         </div>
@@ -1501,18 +1596,52 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function syncEngineVolumeTo999() {
-        
-        // Obținem valoarea volumului motorului din formularul principal
         const engineVolumeField = document.querySelector('input[name="vol"]');
         if (!engineVolumeField || !engineVolumeField.value) return;
         
-        const engineVolumeValue = engineVolumeField.value;
+        const engineVolumeValue = parseInt(engineVolumeField.value);
         
-        const engineVolume999Field = document.querySelector('input[name="feature[103]"]');
+        let engineVolume999Field = document.querySelector('input[name="feature[103]"]');
+        if (!engineVolume999Field) {
+            engineVolume999Field = document.querySelector('select[name="feature[2553]"]');
+        }
+        
         if (!engineVolume999Field) return;
         
-        engineVolume999Field.value = engineVolumeValue;
-        engineVolume999Field.classList.remove('empty');
+        if (engineVolume999Field.tagName === 'SELECT') {
+            const options = engineVolume999Field.querySelectorAll('option');
+            let volumeSynced = false;
+            const volumeInLiters = (engineVolumeValue / 1000).toFixed(1);
+            
+            options.forEach(option => {
+                if (!volumeSynced) {
+                    const optionText = option.textContent.trim();
+                    
+                    if (optionText.includes(volumeInLiters + ' л')) {
+                        engineVolume999Field.value = option.value;
+                        volumeSynced = true;
+                        engineVolume999Field.classList.remove('empty');
+                        engineVolume999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                    else if (optionText.includes(engineVolumeValue.toString())) {
+                        engineVolume999Field.value = option.value;
+                        volumeSynced = true;
+                        engineVolume999Field.classList.remove('empty');
+                        engineVolume999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                    else if (optionText.includes(volumeInLiters.replace('.', ',') + ' л') || 
+                             optionText.includes(Math.round(engineVolumeValue / 1000) + ' л')) {
+                        engineVolume999Field.value = option.value;
+                        volumeSynced = true;
+                        engineVolume999Field.classList.remove('empty');
+                        engineVolume999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                }
+            });
+        } else {
+            engineVolume999Field.value = engineVolumeValue;
+            engineVolume999Field.classList.remove('empty');
+        }
     }
 
     function syncHorsePowerTo999() {

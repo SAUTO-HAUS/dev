@@ -77,4 +77,14 @@ return [
     '4_months' => '4 месяца',
     '5_months' => '5 месяцев',
     'generate_schedules' => 'Создать расписания',
+    
+    // Schedule History
+    'schedule_history' => 'История расписаний',
+    'no_schedules' => 'Нет расписаний',
+    
+    // Schedule Status
+    'status_pending' => 'В ожидании',
+    'status_published' => 'Опубликовано',
+    'status_failed' => 'Неудачно',
+    'status_cancelled' => 'Отменено',
 ];

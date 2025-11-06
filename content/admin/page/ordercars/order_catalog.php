@@ -120,31 +120,73 @@ $last_car_id = 0;
                 <?php if (!empty($r['br'])) : ?>
                     <img src="/media/images/site/v2/logo_b.svg" class="log_sauto" title="Published on 999" alt="Published on SAUTO"/>
                 <?php endif; ?>
-                <?php if (!empty($r['999_id'])) : ?>
+                <?php 
+                // Check for all 999.md schedules
+                $pending999Schedules = [];
+                $all999Schedules = [];
+                try {
+                    // Get ALL schedules for tooltip display
+                    $stmt = $db->prepare("SELECT * FROM {$prefx}_sauto_personal_schedules WHERE car_id = ? AND catalog_type = 'on_order' ORDER BY schedule_date, schedule_time");
+                    $stmt->execute([$r['id']]);
+                    $all999Schedules = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+                    
+                    // Get pending schedules for display logic
+                    $stmt = $db->prepare("SELECT * FROM {$prefx}_sauto_personal_schedules WHERE car_id = ? AND status = 'pending' AND catalog_type = 'on_order' ORDER BY schedule_date, schedule_time");
+                    $stmt->execute([$r['id']]);
+                    $pending999Schedules = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+                } catch (Exception $e) {
+                    $pending999Schedules = [];
+                    $all999Schedules = [];
+                }
+                
+                if (!empty($r['999_id']) || !empty($pending999Schedules) || !empty($all999Schedules)) : ?>
                     <?php $adverts = (new \App\Db\Adverts())->getActiveAdvertsByCarId($r['id']);
+                        $tooltip = '';
                         if (!empty($adverts)) :
                             $tooltip = __('cars.date_next_public') . ':<br>';
                             foreach ($adverts as $advert) {
                                 $tooltip .= 'Clone #' . $advert['type'] . ' - ' . $advert['publish_datetime'] . '<br>';
                             }
                         endif;
+                        
+                        // Display all personal schedules
+                        if (!empty($all999Schedules)) {
+                            foreach ($all999Schedules as $schedule) {
+                                $scheduleDateTime = DateTime::createFromFormat('Y-m-d H:i:s', $schedule['schedule_date'] . ' ' . $schedule['schedule_time']);
+                                $formattedDate = $scheduleDateTime ? $scheduleDateTime->format('d.m.Y, H:i') : $schedule['schedule_date'] . ' ' . $schedule['schedule_time'];
+                                
+                                if ($schedule['status'] === 'published') {
+                                    $tooltip .= ($tooltip ? '<br>' : '') . $formattedDate . ' - опубликовано';
+                                } else {
+                                    $tooltip .= ($tooltip ? '<br>' : '') . 'Запланировано: ' . $formattedDate;
+                                }
+                            }
+                        }
                     ?>
-                    <a href="https://999.md/<?= $r['999_id'] ?>" target="_blank">
-                        <img src="/media/images/site/logo_999.svg" class="log_999"
+                    <?php if (!empty($r['999_id'])) : ?>
+                        <a href="https://999.md/<?= $r['999_id'] ?>" target="_blank">
+                            <img src="/media/images/site/logo_999.svg" class="log_999"
+                                 data-tooltip="<?= $tooltip ?? '' ?>"
+                                 alt="Published on 999"/>
+                        </a>
+                    <?php else : ?>
+                        <!-- Pending schedule - gray icon -->
+                        <img src="/media/images/site/logo_999.svg" class="log_999" 
+                             style="filter: grayscale(100%) opacity(0.6);"
                              data-tooltip="<?= $tooltip ?? '' ?>"
-                             alt="Published on 999"/>
-                    </a>
+                             alt="Scheduled for 999"/>
+                    <?php endif; ?>
                 <?php endif; ?>
             </div>
 
-            <? if($r['telegram_published'] == 1 || $r['facebook_published'] == 1) {?>
+            <? if($r['telegram_published'] >= 1 || $r['facebook_published'] >= 1) {?>
                 <div class="icon_list_cattg">
 
-                    <? if($r['telegram_published'] == 1) {?>
-                        <div class="icon_tg" title="Опубликовано в Telegram">
+                    <? if($r['telegram_published'] >= 1) {?>
+                        <div class="icon_tg" title="<?= $r['telegram_published'] == 1 ? 'Опубликовано в Telegram' : 'Запланировано в Telegram' ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512">
-                                <!-- Синий круг -->
-                                <circle cx="248" cy="256" r="248" fill="#0088cc"/>
+                                <!-- Круг - синий если опубликовано, серый если запланировано -->
+                                <circle cx="248" cy="256" r="248" fill="<?= $r['telegram_published'] == 1 ? '#0088cc' : '#888888' ?>"/>
                                 <!-- Логотип Telegram (белый) -->
                                 <path fill="#ffffff" d="M248,8C111.033,8,0,119.033,0,256S111.033,504,248,504,496,392.967,496,256,384.967,8,248,8ZM362.952,176.66
                                     c-3.732,39.215-19.881,134.378-28.1,178.3-3.476,18.584-10.322,24.816-16.948,25.425-14.4,1.326-25.338-9.517-39.287-18.661
@@ -157,11 +199,11 @@ $last_car_id = 0;
                         </div>
                     <?} ?>
 
-                    <? if($r['facebook_published'] == 1) {?>
-                        <div class="icon_tg" title="Опубликовано в Facebook">
+                    <? if($r['facebook_published'] >= 1) {?>
+                        <div class="icon_tg" title="<?= $r['facebook_published'] == 1 ? 'Опубликовано в Facebook' : 'Запланировано в Facebook' ?>">
                             <svg style="top: 7px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-                                <!-- Синий круг -->
-                                <circle cx="256" cy="256" r="256" fill="#1877F2"/>
+                                <!-- Круг - синий если опубликовано, серый если запланировано -->
+                                <circle cx="256" cy="256" r="256" fill="<?= $r['facebook_published'] == 1 ? '#1877F2' : '#888888' ?>"/>
                                 <!-- Логотип Facebook (белый "f") -->
                                 <path fill="#ffffff" d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.5 90.9 225.8 209 245v-173h-63v-72h63v-55
                                 c0-62.3 37-96.5 93.7-96.5 27.1 0 55.5 4.8 55.5 4.8v61h-31.2

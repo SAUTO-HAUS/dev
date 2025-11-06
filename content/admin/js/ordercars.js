@@ -52,7 +52,6 @@ function sendToFacebookCars() {
 				}
 			},
 			success: function(response) {
-				console.log('Статус обновлен:', response);
 				let d = JSON.parse( response);
 
 				if(d['status'] == false) {
@@ -76,8 +75,7 @@ function sendToFacebookCars() {
 				*/
 			},
 			error: function(xhr, status, error) {
-				console.error('Ошибка AJAX:', error);
-			}
+				}
 		});
 
 	}
@@ -124,8 +122,7 @@ function sendToTelegramCars() {
 				}
 			},
 			success: function(response) {
-				console.log('Статус обновлен:', response);
-
+		
 				try {
 					let d = JSON.parse(response);
 					if(d['status'] == false) {
@@ -135,8 +132,7 @@ function sendToTelegramCars() {
 						alert("Опубликовано");
 					}
 				} catch (e) {
-					console.error('JSON parse error:', e);
-					alert("Ошибка обработки ответа");
+						alert("Ошибка обработки ответа");
 				}
 				$('#stts_bar').removeClass('act');
 				$('#stts_bar > .ln').attr('style','');
@@ -152,8 +148,7 @@ function sendToTelegramCars() {
 				*/
 			},
 			error: function(xhr, status, error) {
-				console.error('Ошибка AJAX:', error);
-			}
+				}
 		});
 
 	}
@@ -176,7 +171,6 @@ $(document).ready(function(){
 	
 	// Handle display limit dropdown change
 	$(document).on('change', '#cars-display-limit', function() {
-		console.log('Dropdown changed to:', $(this).val());
 		handleDisplayLimitChange($(this).val());
 	});
 	
@@ -249,7 +243,6 @@ $(document).ready(function(){
 		// Sync brand from SAUTO to 999 form
 		const brandValue = $(this).val();
 		if (brandValue) {
-			console.log('Syncing brand from SAUTO to 999:', brandValue);
 			$('#main_form_999').find('select[name="feature[20]"]').val(brandValue);
 		}
 	})
@@ -434,48 +427,31 @@ $(document).ready(function(){
 		});
 
 		// Synchronize price from 999 form to main form before data collection
-		console.log('=== SEARCHING FOR PRICE FIELD ===');
 		let allNumberInputs = $('#main_form_999').find('input[type="number"]');
-		console.log('All number inputs found:', allNumberInputs.length);
 		allNumberInputs.each(function(index) {
-			console.log(`Input ${index}:`, this, 'name:', $(this).attr('name'), 'value:', $(this).val());
 		});
 		
 		let priceField = $('#main_form_999').find('input[type="number"]').filter(function() {
 			return $(this).attr('name') && $(this).attr('name').includes('feature[') && 
 				   $(this).closest('.form-group').find('select[name*="feature_units"]').length > 0;
 		});
-		console.log('Price field after filtering:', priceField.length);
 		
 		if (priceField.length > 0) {
 			let priceValue = priceField.val();
 			let priceUnitSelect = priceField.closest('.form-group').find('select[name*="feature_units"]');
 			let priceUnit = priceUnitSelect.val();
 			
-			console.log('=== PRICE SYNCHRONIZATION DEBUG ===');
-			console.log('Price field found:', priceField.length);
-			console.log('Price field element:', priceField[0]);
-			console.log('Price field name attribute:', priceField.attr('name'));
-			console.log('Price field raw DOM value:', priceField[0].value);
-			console.log('Price field jQuery val():', priceValue, 'type:', typeof priceValue);
-			console.log('Price unit select:', priceUnitSelect[0]);
-			console.log('Price unit value:', priceUnit);
 			
 			// Update the main form's price field
 			if (priceValue && priceUnit) {
 				let prcField = $formSauto.find('input[name="prc"]');
 				let curField = $formSauto.find('select[name="cur"], input[name="cur"]');
 				
-				console.log('Before update - prc field value:', prcField.val());
-				console.log('Before update - cur field value:', curField.val());
 				
 				prcField.val(priceValue);
 				curField.val(priceUnit.toUpperCase());
 				
-				console.log('After update - prc field value:', prcField.val());
-				console.log('After update - cur field value:', curField.val());
 			}
-			console.log('=== END PRICE SYNCHRONIZATION DEBUG ===');
 		}
 		
 		let dataSauto = collectFormDataSauto($formSauto, bx_id);
@@ -495,14 +471,11 @@ $(document).ready(function(){
 		let checkbox_n_a_new = $('.car-checkbox-n_a_new');
 		let isChecked = checkbox_n_a_new.prop('checked');
 
-		console.log('Form submission started');
 
 		let carId = await ajaxCarImg(fileInput, dataSauto);
-		console.log('ajaxCarImg returned with carId:', carId);
 		
 		if (!carId) {
 			// Handle the case when ajaxCarImg fails
-			console.error('Failed to get car ID from ajaxCarImg');
 			showError('Failed to upload car data. Please try again.');
 			finishProcess(confirmButton);
 			return false;
@@ -510,7 +483,6 @@ $(document).ready(function(){
 
 		if ($('#content_box').data('car-id')) {
 			carId = $('#content_box').data('car-id');
-			console.log('Using car ID from content_box data attribute:', carId);
 		}
 		
 		let data = {
@@ -524,7 +496,6 @@ $(document).ready(function(){
 			isChecked: isChecked
 		};
 
-		console.log('Preparing final data for ajaxMain:', data);
 		
 		// Populate SAUTO Personal schedules data before form serialization
 		if ($('#announcement_type').val() === 'sauto_personal' && schedules.length > 0) {
@@ -540,7 +511,6 @@ $(document).ready(function(){
 		const $form = $(this);
 		data['form_data'] = $form.serialize();
 
-		console.log('Calling ajaxMain...');
 		try {
 			$.ajax({
 				url: '/ajax.php',
@@ -548,8 +518,7 @@ $(document).ready(function(){
 				data: data,
 				dataType: 'json',
 				success: function(response) {
-					console.log('ajaxMain response received:', response);
-					if (response.rtrn?.error) {
+						if (response.rtrn?.error) {
 						let errorMessages = '';
 						if (response.rtrn.error.reason) {
 							errorMessages = 'Reason: ' + response.rtrn.error.reason + '\n';
@@ -567,8 +536,7 @@ $(document).ready(function(){
 
 						showError(errorMessages);
 					} else {
-						console.log('ajaxMain completed successfully');
-					}
+						}
 					finishProcess(confirmButton); // Always finish the process regardless of success or error
 				},
 				error: function(jqXHR, textStatus, errorThrown) {
@@ -581,8 +549,6 @@ $(document).ready(function(){
 				}
 			});
 		} catch (error) {
-			console.error('Exception in form submission:', error);
-			console.error('Error stack:', error.stack);
 			showError('An error occurred during form submission: ' + error.message);
 			finishProcess(confirmButton);
 		}
@@ -845,7 +811,6 @@ $(document).ready(function(){
 	setInterval(function() {
 		if ($('#confirm_rules').length && !$('#confirm_rules').is(':checked')) {
 			$('#confirm_rules').prop('checked', true);
-			console.log(' Forțat confirm_rules să rămână bifat');
 		}
 	}, 100);
 	
@@ -890,10 +855,11 @@ $(document).ready(function(){
 		if (type === "sauto_personal") {
 			if (orderPersonalTexts['auto_company']) {
 				orderPersonalTexts['auto_company'].forEach((item, index) => {
+					const isChecked = index === 0 ? 'checked' : '';
 					const radioButton = `
 							<div class="text-option-wrapper" style="margin-right: 20px; margin-bottom: 10px;">
 								<label style="display: inline-block; text-align: center;">
-									<input type="radio" name="text_option" value="${index}" class="text-option-radio order-personal-radio">
+									<input type="radio" name="text_option" value="${index}" class="text-option-radio order-personal-radio" ${isChecked}>
 									<span>${item.title}</span>
 								</label>
 								<div class="text-preview" style="border: 1px solid #ccc; padding: 10px; margin-top: 5px; border-radius: 5px; background: #f9f9f9;">
@@ -903,6 +869,10 @@ $(document).ready(function(){
 						`;
 					textOptions.append(radioButton);
 				});
+				
+				if (orderPersonalTexts['auto_company'][0]) {
+					$("#feature_13").val(orderPersonalTexts['auto_company'][0].text);
+				}
 			}
 			textOptionsWrapper.show();
 		} else if (type === "auto_company" || type === "auto_company_min") {
@@ -946,7 +916,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 	// Only proceed if booster modal elements exist
 	if (!modal) {
-		console.log('Booster modal not found - skipping booster functionality');
 		return;
 	}
 
@@ -1059,7 +1028,6 @@ document.addEventListener("DOMContentLoaded", function () {
 		$.ajax({
 			url:'/ajax.php', method:'POST', type:'POST', data:dataX, async:true, datatype:'json', enctype:'multipart/form-data',
 			success: function(data){
-				console.log(data);
 				modal.style.display = "none";
 				location.reload();
 			}
@@ -1318,8 +1286,7 @@ $(document).on('change', '.car-checkbox-n_a_new', function() {
 			n_a_new: status
 		},
 		success: function(response) {
-			console.log('Статус обновлен:', response);
-
+	
 			// Изменяем текст в зависимости от состояния чекбокса
 			if (status === 1) {
 				statusText.text('Нет в наличии');
@@ -1328,7 +1295,6 @@ $(document).on('change', '.car-checkbox-n_a_new', function() {
 			}
 		},
 		error: function(xhr, status, error) {
-			console.error('Ошибка AJAX:', error);
 		}
 	});
 });
@@ -1369,7 +1335,6 @@ $(document).on('change', 'select[name="br"], select[name="br_search"]', function
 		modelSelect.append('<option>Loading...</option>');
 		
 		// Make AJAX call to get models for selected brand
-		console.log('Loading models for brand:', selectedBrand, 'Type:', typeof selectedBrand);
 		$.ajax({
 			url: '/ajax.php',
 			method: 'POST',
@@ -1382,11 +1347,9 @@ $(document).on('change', 'select[name="br"], select[name="br_search"]', function
 				bx_id: bxId
 			},
 			success: function(response) {
-				console.log('Model AJAX response received:', response);
 				try {
 					var data = typeof response === 'string' ? JSON.parse(response) : response;
-					console.log('Parsed model data:', data);
-					
+						
 					// Clear loading state and add default option
 					if ($(this).attr('name') === 'br_search') {
 						// For filter, use "all" option
@@ -1407,18 +1370,14 @@ $(document).on('change', 'select[name="br"], select[name="br_search"]', function
 					}
 					
 					if (modelsHtml) {
-						console.log('Adding models to dropdown:', modelsHtml);
-						modelSelect.append(modelsHtml);
+							modelSelect.append(modelsHtml);
 					} else {
-						console.warn('No models returned for brand:', selectedBrand, 'Full response:', data);
-					}
+						}
 					
 					// Re-enable the dropdown
 					modelSelect.prop('disabled', false);
-					console.log('Model dropdown re-enabled');
-				} catch (e) {
-					console.error('Error parsing model response:', e, 'Raw response:', response);
-					if ($(this).attr('name') === 'br_search') {
+					} catch (e) {
+						if ($(this).attr('name') === 'br_search') {
 						modelSelect.html('<option value="all">All</option>');
 					} else {
 						modelSelect.html('<option value="">' + defaultText + '</option>');
@@ -1427,7 +1386,6 @@ $(document).on('change', 'select[name="br"], select[name="br_search"]', function
 				}
 			}.bind(this),
 			error: function(xhr, status, error) {
-				console.error('Error loading models:', error);
 				if ($(this).attr('name') === 'br_search') {
 					modelSelect.html('<option value="all">All</option>');
 				} else {

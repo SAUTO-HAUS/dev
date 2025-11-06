@@ -209,6 +209,61 @@ try {
                     continue;
                 }
                 
+                // Apply smart engine volume conversion before API call
+                if (!empty($carData['vol'])) {
+                    $engineVolumeCm3 = (int)$carData['vol'];
+                    $engineVolumeLiters = $engineVolumeCm3 / 1000;
+                    
+                    // Map engine volume to 999.md option IDs
+                    $volumeMap = [
+                        0.7 => "43671", 0.8 => "43672", 0.9 => "43673", 1.0 => "43674",
+                        1.1 => "43675", 1.2 => "43676", 1.3 => "43677", 1.4 => "43678",
+                        1.5 => "43679", 1.6 => "43680", 1.7 => "43681", 1.8 => "43682",
+                        1.9 => "43683", 2.0 => "43684", 2.1 => "43685", 2.2 => "43686",
+                        2.3 => "43687", 2.4 => "43688", 2.5 => "43689", 2.6 => "43690",
+                        2.7 => "43691", 2.8 => "43692", 2.9 => "43693", 3.0 => "43694",
+                        3.1 => "43695", 3.2 => "43696", 3.3 => "43697", 3.4 => "43698",
+                        3.5 => "43699", 3.6 => "43700", 3.8 => "43701", 3.9 => "43702",
+                        4.0 => "43703", 4.2 => "43704", 4.3 => "43705", 4.4 => "43706",
+                        4.5 => "43707", 4.6 => "43708", 4.7 => "43709", 4.8 => "43710",
+                        5.0 => "43711", 5.2 => "43712", 5.3 => "43713", 5.4 => "43714",
+                        5.5 => "43715", 5.6 => "43716", 5.7 => "43717", 5.8 => "43718",
+                        5.9 => "43719", 6.0 => "43720", 6.2 => "43721", 6.4 => "43722",
+                        6.6 => "43723", 6.7 => "43724"
+                    ];
+                    
+                    // Round to nearest 0.1 liter
+                    $roundedVolume = round($engineVolumeLiters, 1);
+                    $optionId = $volumeMap[$roundedVolume] ?? null;
+                    
+                    // Check existing features and fix empty engine volume
+                    $hasFeature103 = false;
+                    $hasFeature2553 = false;
+                    
+                    foreach ($featuresData['features'] as $index => $feature) {
+                        if ($feature['id'] === '103') {
+                            $hasFeature103 = true;
+                        }
+                        if ($feature['id'] === '2553') {
+                            $hasFeature2553 = true;
+                            // Check if feature 2553 is empty or invalid
+                            if (empty($feature['value']) || trim($feature['value']) === '') {
+                                if ($optionId) {
+                                    $featuresData['features'][$index]['value'] = $optionId;
+                                }
+                            }
+                        }
+                    }
+                    
+                    // If no engine volume features exist, add feature 2553 (liters)
+                    if (!$hasFeature103 && !$hasFeature2553 && $optionId) {
+                        $featuresData['features'][] = [
+                            "id" => "2553",
+                            "value" => $optionId
+                        ];
+                    }
+                }
+                
                 // Create new 999.md listing using saved data
                 try {
                     $api999Service = \App\Services\Api999Service::createFromSettings($catalogType);

@@ -40,4 +40,14 @@ return [
     '4_months' => '4 luni',
     '5_months' => '5 luni',
     'generate_schedules' => 'Generează Programări',
+    
+    // Schedule History
+    'schedule_history' => 'Istoricul programărilor',
+    'no_schedules' => 'Nu există programări',
+    
+    // Schedule Status
+    'status_pending' => 'În așteptare',
+    'status_published' => 'Publicat',
+    'status_failed' => 'Eșuat',
+    'status_cancelled' => 'Anulat',
 ];

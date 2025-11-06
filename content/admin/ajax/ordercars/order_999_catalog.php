@@ -95,6 +95,14 @@ if (__post('sub') == 'get_subcategory') {
 
     $features = [];
 
+    // Get car data for engine volume conversion
+    $carData = null;
+    if (!empty($carId)) {
+        $stmt = $pdo->prepare("SELECT vol FROM gh3sp_car_ctlg WHERE id = ?");
+        $stmt->execute([$carId]);
+        $carData = $stmt->fetch(\PDO::FETCH_ASSOC);
+    }
+
     // Safety check for features array
     if (!empty($input["feature"]) && is_array($input["feature"])) {
         foreach ($input["feature"] as $id => $value) {
@@ -120,6 +128,56 @@ if (__post('sub') == 'get_subcategory') {
         }
 
         $features[] = $feature;
+        }
+    }
+
+    // Smart engine volume conversion for SAUTO Personal schedules
+    if ($input['announcement_type'] === 'sauto_personal' && !empty($carData['vol'])) {
+        $engineVolumeCm3 = (int)$carData['vol'];
+        
+        // Check existing features and fix empty engine volume
+        $hasFeature103 = false;
+        $hasFeature2553 = false;
+        $feature2553Index = -1;
+        $feature103Index = -1;
+        
+        foreach ($features as $index => $feature) {
+            if ($feature['id'] === '103') {
+                $hasFeature103 = true;
+                $feature103Index = $index;
+            }
+            if ($feature['id'] === '2553') {
+                $hasFeature2553 = true;
+                $feature2553Index = $index;
+                // Check if feature 2553 is empty or invalid
+                if (empty($feature['value']) || trim($feature['value']) === '') {
+                    // Convert cm3 to liters and update existing feature
+                    $engineVolumeLiters = number_format($engineVolumeCm3 / 1000, 1);
+                    $features[$index]['value'] = $engineVolumeLiters;
+                    __log("SAUTO Personal: Fixed empty feature 2553 - converted {$engineVolumeCm3}cm³ to {$engineVolumeLiters}L");
+                }
+            }
+        }
+        
+        // If no engine volume features exist, add the appropriate one
+        if (!$hasFeature103 && !$hasFeature2553 && $engineVolumeCm3 > 0) {
+            // Default to feature 2553 (liters) for newer 999.md forms
+            $engineVolumeLiters = number_format($engineVolumeCm3 / 1000, 1);
+            $features[] = [
+                "id" => "2553",
+                "value" => $engineVolumeLiters
+            ];
+            __log("SAUTO Personal: Auto-added engine volume {$engineVolumeCm3}cm³ as {$engineVolumeLiters}L for feature 2553");
+        }
+        
+        // If only feature 103 exists but form expects 2553, add 2553 as well
+        if ($hasFeature103 && !$hasFeature2553 && isset($input['feature']['2553'])) {
+            $engineVolumeLiters = number_format($engineVolumeCm3 / 1000, 1);
+            $features[] = [
+                "id" => "2553",
+                "value" => $engineVolumeLiters
+            ];
+            __log("SAUTO Personal: Added feature 2553 ({$engineVolumeLiters}L) alongside existing feature 103");
         }
     }
 
