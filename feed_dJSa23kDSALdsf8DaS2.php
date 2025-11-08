@@ -47,7 +47,7 @@ foreach ($lang_feed as $this_lang => $csv_name){
 			ucwords( str_replace('-', ' ', $row['brand'] ) ).' '.ucwords( str_replace('-', ' ', $row['model'] ) ),
 			$lang_subtitle[ $this_lang ],
 			$row['year'].','.$l_bodytype.','.$row['mileage'].' '.$l_km_or_mi.','.$l_fuel,
-			'https://www.sauto.md/ru/car/'.$row['brand'].'-'.$row['model'].'-'.$row['id'],
+			'https://www.sauto.md/ru/cars/'.$row['brand'].'-'.$row['model'].'-'.$row['id'],
 			'https://www.sauto.md/'._CAR_IMG.'/'.$row2['path'].'/'.$row['id'].'/med/'.$main_photo.'.jpg',
 			$z_price.' EUR'
 		);

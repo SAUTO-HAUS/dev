@@ -48,7 +48,7 @@ foreach ($pdo as $row){
 <div class="left_window">
 	<div class="left_side_name"><div></div>'.$lang_daily_offer.'</div>
 	
-    <a class="car_box daily_item" href="/'.$_COOKIE['lang'].'/car/'.$c_brand.'-'.$c_model.'-'.$c_id.'" title="'.$c_brand_name.' '.$c_model_name.'">
+    <a class="car_box daily_item" href="/'.$_COOKIE['lang'].'/cars/'.$c_brand.'-'.$c_model.'-'.$c_id.'" title="'.$c_brand_name.' '.$c_model_name.'">
 		<div class="img_container">
 			<img src="/'._CAR_IMG.'/'.$c_path.'/'.$c_id.'/med/'.$c_photo_name.'.jpg" alt="'.$c_brand_name.' '.$c_model_name.'" />
 		</div>

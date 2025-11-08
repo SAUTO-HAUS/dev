@@ -3,14 +3,14 @@
 $car_count = 4;
 $car_array = array();
 
-$arr_types = array('id','brand','model', 'brand_name', 'model_name', 'year','engine','fuel','transmission','prima_rata','price','currency','hp','photo_path');
+$arr_types = array('id','brand','model', 'brand_name', 'model_name', 'year','engine','fuel','transmission','prima_rata','price','currency','hp','photo_path','catalog_type');
 
 $query_args = array();
 $sql = 'SELECT * FROM '.$prefx.'_catalog WHERE 1=1 ';
 
 $sql .= " AND `brand` = :brand"; $query_args["brand"] = $tv_mp[3];
 
-if ($car_count>0){//Схоже по модели
+if ($car_count>0){ // Similar by model
 
 	$pdo = $db->prepare('SELECT * FROM '.$prefx.'_catalog WHERE `brand`=:brand AND `model`=:model AND id<>:id AND `visible`="1" AND `active`="1" ORDER BY RAND() LIMIT :count');
 	$pdo->execute(array('brand' => $c_brand, 'model' => $c_model, 'id' => $url_id, 'count' => $car_count));
@@ -24,7 +24,7 @@ if ($car_count>0){//Схоже по модели
 	
 }
 
-if ($car_count>0){//Схоже по типу кузова
+if ($car_count>0){ // Similar by body type
 
 	$pdo = $db->prepare('SELECT * FROM '.$prefx.'_catalog WHERE `bodytype`=:bodytype AND `model`<>:model AND `visible`="1" AND `active`="1" ORDER BY RAND() LIMIT :count');
 	$pdo->execute(array('bodytype' => $c_bodytype, 'model' => $c_model, 'count' => $car_count));
@@ -38,7 +38,7 @@ if ($car_count>0){//Схоже по типу кузова
 	
 }
 
-if ($car_count>0){//Схоже по цене
+if ($car_count>0 && $c_price > 100){ // Similar by price (only for cars with real price, not negotiable)
 
 	$price_from = $c_price - 500; if($price_from < 0){$price_from=0;}
 	$price_to = $c_price + 500;
@@ -56,7 +56,7 @@ if ($car_count>0){//Схоже по цене
 	
 }
 
-if ($car_count>0){//Произвольно
+if ($car_count>0){ // Random
 
 	$pdo = $db->prepare('SELECT * FROM '.$prefx.'_catalog WHERE `model`<>:model AND `visible`="1" AND `active`="1" ORDER BY RAND() LIMIT :count');
 	$pdo->execute(array('model' => $c_model, 'count' => $car_count));
@@ -80,8 +80,11 @@ foreach($car_array as $key => $value){
 	
 	if($value['hp']!='0'){$c_hp = $value['hp'].' '.$lang_hp.'<br /><span>'.round($value['hp']*0.735,0).' '.$lang_kw.'</span>';}else{$c_hp='';}
 	
+	// Generate correct URL based on catalog_type
+	$page_type = (isset($value['catalog_type']) && $value['catalog_type'] == 'on_order') ? 'ordercars' : 'cars';
+	
 	echo '
-    <a class="car_box similar" style="position:relative;" href="/'.$_COOKIE['lang'].'/car/'.$value['brand'].'-'.$value['model'].'-'.$value['id'].'">
+    <a class="car_box similar" style="position:relative;" href="/'.$_COOKIE['lang'].'/'.$page_type.'/'.$value['brand'].'-'.$value['model'].'-'.$value['id'].'">
 		<div style="width:100%; height:30px; text-align:center; float:left; position:absolute; left:0; z-index:15; background-color:rgba(0,0,0,0.7); color:#fff; line-height:30px;">'.${'lang_info_by_'.$value['similiar_by']}.'</div>
 		<div class="img_container">
 			<img src="/'._CAR_IMG.'/'.$value['photo_path'].'/'.$value['id'].'/med/'.$c_photo_name.'.jpg" alt="'.$value['brand_name'].' '.$value['model_name'].'" title="'.$value['brand_name'].' '.$value['model_name'].'" />
@@ -108,7 +111,6 @@ foreach($car_array as $key => $value){
     ';
 ;}
 
-//echo '</div>';//закрытие последнего цикла
 
 unset($result);
 unset($result_photo);

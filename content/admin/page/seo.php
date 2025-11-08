@@ -211,7 +211,7 @@ $content .= '
 							$n++;
 						}
 					}
-				}elseif ( strpos($pg, '/car/') !== false ){//________________________________CAR
+				}elseif ( strpos($pg, '/cars/') !== false || strpos($pg, '/ordercars/') !== false ){//________________________________CAR
 					
 				}else{//________________________________PAGE
 					$trnsltd = ucfirst($zlang['pg']);

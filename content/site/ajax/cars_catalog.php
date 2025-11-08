@@ -46,6 +46,7 @@ foreach ($pdo as $row){
 	$c_date = $row['date'];
 	$c_hp = $row['hp'];
 	$c_path = $row['photo_path'];
+	$c_catalog_type = isset($row['catalog_type']) ? $row['catalog_type'] : '';
 	
 	if ( ($c_new==1) && (( time() - $c_date ) > 172800) ){
 		$pdo = $db->prepare('UPDATE '.$prefx.'_catalog SET `new`=0 WHERE `id`=:id');
@@ -67,8 +68,11 @@ foreach ($pdo as $row){
 	$c_soon = ($c_soon==1) ? '<div class="soon_on_sale">'.$lang_soon.'</div>' : '';
 	$not_av = ($row['not_av']==1) ? '<div class="not_av">'.$lang_not_av.'</div>' : '';
 	
+	// Generate correct URL based on catalog_type
+	$page_type = ($c_catalog_type == 'on_order') ? 'ordercars' : 'cars';
+	
 	$cars[] = '
-	<a class="car_box" href="/'.$_COOKIE['lang'].'/car/'.$c_brand.'-'.$c_model.'-'.$c_id.'" title="'.$c_brand_name.' '.$c_model_name.'">
+	<a class="car_box" href="/'.$_COOKIE['lang'].'/'.$page_type.'/'.$c_brand.'-'.$c_model.'-'.$c_id.'" title="'.$c_brand_name.' '.$c_model_name.'">
 		<div class="img_container">
 			'.$top_sales.'
 			<img src="/'._CAR_IMG.'/'.$c_path.'/'.$c_id.'/med/'.$c_photo_name.'.jpg" alt="'.$c_brand_name.' '.$c_model_name.'" />
