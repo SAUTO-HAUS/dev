@@ -1702,7 +1702,7 @@ elseif ($_COOKIE['lang']=='ro'){
             'calc_title_btn' => 'Aplică acum',
             'in_stock'=>'În stoc',
             'on_order'=>'La comandă',
-			'not_available'=>'Nu este in stoc',
+			'not_available'=>'Nu este în stoc',
 			'order_info_security_title'=>'Siguranța',
             'order_info_security_desc1'=>'Verificarea vânzătorului.',
             'order_info_security_desc2'=>'Verificare de istoric a autovehiculului',
