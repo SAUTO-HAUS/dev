@@ -183,13 +183,6 @@
   main .gr > .cnt > .lnk {width:23.5%; height:17rem; padding:1rem 2rem; background-color:#fff; border-radius:12px; transition:.3s; text-align:center; display: flex; flex-direction: column; align-items: center;}
   main .gr > .cnt > .lnk:hover {transform:scale(1.025); box-shadow:0 5px 10px 0 rgba(0,0,0,.3);}
   main .gr > .cnt > .lnk > img {max-width: 100%;}
-  /* Insurance image adjustment - 30% size and centered */
-  main .gr > .cnt > .lnk[href$="insurance"] > img {
-    width: 30%;
-    height: auto;
-    object-fit: contain;
-    margin: 0 auto;
-  }
   main .gr > .cnt > .lnk > h4 {font-size:1.35rem; text-align:left; margin-top:1.4rem;}
   main .gr > .cnt > .lnk > .txt {color:#515151; text-align:left; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; max-height: 4.2rem;}
   
@@ -560,10 +553,6 @@
   #services > .info > a {width:49%; padding:.5rem;}
   #services > .info > a > .img {height:15vh;}
   
-  #services > .grp > a[href$="/insurance"] > .img {
-      background-size: 30% auto !important;
-      background-position: center !important;
-  }
   
   #services .func {display:flex; flex-flow:row wrap; justify-content:space-between; position:relative; width:100%; padding:0 2rem;}
   

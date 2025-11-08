@@ -27,10 +27,10 @@ $sc_ar = [
 
 $grp_arr = [
 	'o_serv'=>[
-		['img'=>'serv_sale',		'ttl'=>$lng['p']['services']['sale']['name'], 			'txt'=>$lng['p']['services']['sale']['ttl'], 		'href'=>'sale'],
-		['img'=>'serv_estimation',	'ttl'=>$lng['p']['services']['estimation']['name'], 	'txt'=>$lng['p']['services']['estimation']['ttl'], 	'href'=>'estimation'],
-		['img'=>'serv_tradein',		'ttl'=>$lng['p']['services']['tradein']['name'],		'txt'=>$lng['p']['services']['tradein']['ttl'], 	'href'=>'tradein'],
-		['img'=>'serv_insurance',	'ttl'=>$lng['p']['services']['insurance']['name'], 	'txt'=>$lng['p']['services']['insurance']['ttl'], 	'href'=>'insurance']
+		['img'=>'car-sales-v2',		'ttl'=>$lng['p']['services']['sale']['name'], 			'txt'=>$lng['p']['services']['sale']['ttl'], 		'href'=>'sale'],
+		['img'=>'invoice-v2',		'ttl'=>$lng['p']['services']['estimation']['name'], 	'txt'=>$lng['p']['services']['estimation']['ttl'], 	'href'=>'estimation'],
+		['img'=>'web-v2',			'ttl'=>$lng['p']['services']['tradein']['name'],		'txt'=>$lng['p']['services']['tradein']['ttl'], 	'href'=>'tradein'],
+		['img'=>'insurance-v2',		'ttl'=>$lng['p']['services']['insurance']['name'], 	'txt'=>$lng['p']['services']['insurance']['ttl'], 	'href'=>'insurance']
 	]
 ];
 
@@ -52,19 +52,19 @@ $email = ['def'=>'info@sauto.md'];
 $serv_arr = [
 	'transportation'=>['img'=>'serv_transportation'.$img_frmt, 'grp'=>'none'],
 
-	'sale'=>['img'=>'serv_sale.svg', 'grp'=>'menu'],
-	'estimation'=>['img'=>'serv_estimation.svg', 'grp'=>'menu'],
-	'tradein'=>['img'=>'serv_tradein.svg', 'grp'=>'menu'],
-	'insurance'=>['img'=>'serv_insurance.svg', 'grp'=>'menu'],
-	'testdrive'=>['img'=>'serv_test_drive.svg', 'grp'=>'menu'],
-	'order'=>['img'=>'serv_order.svg', 'grp'=>'menu'],
+	'sale'=>['img'=>'car-sales-v2.svg', 'grp'=>'menu'],
+	'estimation'=>['img'=>'invoice-v2.svg', 'grp'=>'menu'],
+	'tradein'=>['img'=>'web-v2.svg', 'grp'=>'menu'],
+	'insurance'=>['img'=>'insurance-v2.svg', 'grp'=>'menu'],
+	'testdrive'=>['img'=>'test-drive-v2.svg', 'grp'=>'menu'],
+	'order'=>['img'=>'car-v2.svg', 'grp'=>'menu'],
 	
 	'calc_credit'=>['img'=>'serv_calc_cred.svg', 'grp'=>'calc'],
 	'calc_insurance'=>['img'=>'serv_calc_insr.svg', 'grp'=>'calc'],
 	'calc_customs'=>['img'=>'serv_calc_cust.svg', 'grp'=>'calc'],
 	
-	'payment'=>['img'=>'serv_payment.svg', 'grp'=>'info'],
-	'terms'=>['img'=>'serv_terms.svg', 'grp'=>'info']
+	'payment'=>['img'=>'edc-v2.svg', 'grp'=>'info'],
+	'terms'=>['img'=>'terms-v2.svg', 'grp'=>'info']
 ];
 $info_arr = ['about', 'privacy', 'credit', 'terms', 'warranty'];
 
