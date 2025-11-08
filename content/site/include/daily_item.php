@@ -33,7 +33,8 @@ foreach ($pdo as $row){
     $c_old_price = $row['old_price'];
 	$c_new_item = $row['new'];
 	$c_hp = $row['hp'];
-	$c_path = $row['photo_path'];
+    $c_path = $row['photo_path'];
+    $c_catalog_type = isset($row['catalog_type']) ? $row['catalog_type'] : '';
     
     $c_img_folder = str_replace("-","_",mb_strtolower($c_brand));
     
@@ -44,11 +45,14 @@ foreach ($pdo as $row){
 			$c_photo_name = $row['name'];
         ;}
 	
+	// Generate correct URL based on catalog_type
+	$page_type = ($c_catalog_type == 'on_order') ? 'ordercars' : 'cars';
+	
     echo '
 <div class="left_window">
 	<div class="left_side_name"><div></div>'.$lang_daily_offer.'</div>
 	
-    <a class="car_box daily_item" href="/'.$_COOKIE['lang'].'/cars/'.$c_brand.'-'.$c_model.'-'.$c_id.'" title="'.$c_brand_name.' '.$c_model_name.'">
+    <a class="car_box daily_item" href="/'.$_COOKIE['lang'].'/'.$page_type.'/'.$c_brand.'-'.$c_model.'-'.$c_id.'" title="'.$c_brand_name.' '.$c_model_name.'">
 		<div class="img_container">
 			<img src="/'._CAR_IMG.'/'.$c_path.'/'.$c_id.'/med/'.$c_photo_name.'.jpg" alt="'.$c_brand_name.' '.$c_model_name.'" />
 		</div>
@@ -73,6 +77,5 @@ foreach ($pdo as $row){
     ';
 }
 
-//закрытие последнего цикла
 
 ?>
