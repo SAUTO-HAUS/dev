@@ -17,12 +17,12 @@ class FileService
     public function createImage($tmp_f, $path, $n_nm, $size_cr, $frmt_cr): bool
     {
         list($w, $h) = getimagesize($tmp_f);
-        $ratio = $h / $w; // Получаем размеры исходного фото
+        $ratio = $h / $w; // Get original photo dimensions
 
-        foreach ($frmt_cr as $frmt) {//Цикл форматов
-            foreach ($size_cr as $k => $v) {// Цикл размеров
-                $full_path = $path.'/'.$k.'/'.$n_nm.'.'.$frmt; // создаем путь для выходного фото
-                // задаем размеры для выходного фото
+        foreach ($frmt_cr as $frmt) { // Format loop
+            foreach ($size_cr as $k => $v) { // Size loop
+                $full_path = $path.'/'.$k.'/'.$n_nm.'.'.$frmt; // Create output photo path
+                // Set dimensions for output photo
                 if ( $w > $h ) {
                     $img_w = $v['sz'];
                     $img_h = (int)($img_w * $ratio);
@@ -34,11 +34,11 @@ class FileService
                     $img_h = $v['sz'];
                 }
 
-                $img_new = imagecreatetruecolor($img_w, $img_h); // создаем выходное фото с указанными выше размерами
-                $img_old = imagecreatefromjpeg($tmp_f); // исходное фото
-                imagecopyresampled($img_new, $img_old, 0, 0, 0, 0, $img_w, $img_h, $w, $h); // наложение исходного на выходное фото
+                $img_new = imagecreatetruecolor($img_w, $img_h); // Create output photo with dimensions above
+                $img_old = imagecreatefromjpeg($tmp_f); // Source photo
+                imagecopyresampled($img_new, $img_old, 0, 0, 0, 0, $img_w, $img_h, $w, $h); // Apply source to output photo
 
-                // сохраняем выходное фото
+                // Save output photo
                 if ( $frmt == 'jpg' || $frmt == 'jpeg' ) {
                     imagejpeg($img_new, $full_path, $v['ql']);
                 } elseif ($frmt == 'webp') {
@@ -46,10 +46,10 @@ class FileService
                 }
 
                 imagedestroy($img_new);
-                imagedestroy($img_old); // очищаем память
+                imagedestroy($img_old); // Clear memory
             }
         }
-        unlink($tmp_f); // уничтожаем исходное фото
+        unlink($tmp_f); // Delete source photo
         return true;
     }
 

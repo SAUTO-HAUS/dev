@@ -328,7 +328,7 @@ if($t_mp[2]=='cars' || ($t_mp[2]=='services' && $t_mp[3]=='credit') ) {
             let inputTermenTimeout;
 
             var $input_suma_creditului = $("#view_suma_creditului");
-            // Сумма кредита
+            // Loan amount
             const sliderSuma = $("#suma-creditului").ionRangeSlider({
                 skin: "round",
                 min: 2000,
@@ -341,15 +341,15 @@ if($t_mp[2]=='cars' || ($t_mp[2]=='services' && $t_mp[3]=='credit') ) {
                 onChange: function (data) {
                     $input_suma_creditului.prop("value", data.from);
 
-                    clearTimeout(updateRateTimeout); // сбрасываем предыдущий таймер
-                    updateRateTimeout = setTimeout(updateRate, 300); // устанавливаем новый
+                    clearTimeout(updateRateTimeout); // reset previous timer
+                    updateRateTimeout = setTimeout(updateRate, 300); // set new timer
                     <?php /* console.log("Сумма изменена:", data.from);
                     updateRate(); */ ?>
                 }
             }).data("ionRangeSlider");
 
             var $input_termen_creditului = $("#view_termen_creditului");
-            // Срок кредита
+            // Loan term
             const sliderTermen = $("#termen-creditului").ionRangeSlider({
                 skin: "round",
                 min: 6,
@@ -362,30 +362,30 @@ if($t_mp[2]=='cars' || ($t_mp[2]=='services' && $t_mp[3]=='credit') ) {
                 onChange: function (data) {
                     $input_termen_creditului.prop("value", data.from);
                     
-                    clearTimeout(updateRateTimeout); // сбрасываем предыдущий таймер
-                    updateRateTimeout = setTimeout(updateRate, 300); // устанавливаем новый
+                    clearTimeout(updateRateTimeout); // reset previous timer
+                    updateRateTimeout = setTimeout(updateRate, 300); // set new timer
                     <?php /* console.log("Срок изменен:", data.from);
                     updateRate(); */ ?>
                 }
             }).data("ionRangeSlider");
 
-            // Ввод вручную — СУММА
+            // Manual input — AMOUNT
             $input_suma_creditului.on("input", function () {
                 clearTimeout(inputSumaTimeout);
                 inputSumaTimeout = setTimeout(() => {
                     let val = parseInt($(this).val(), 10);
                     if (isNaN(val)) val = 2000;
-                    val = Math.max(2000, Math.min(50000, val)); // ограничение min/max
-                    val = Math.round(val / 500) * 500; // округление до ближайшего 500
+                    val = Math.max(2000, Math.min(50000, val)); // min/max limit
+                    val = Math.round(val / 500) * 500; // round to nearest 500
                     $(this).val(val);
                     sliderSuma.update({ from: val });
 
-                    clearTimeout(updateRateTimeout); // сбрасываем предыдущий таймер
-                    updateRateTimeout = setTimeout(updateRate, 300); // устанавливаем новый
+                    clearTimeout(updateRateTimeout); // reset previous timer
+                    updateRateTimeout = setTimeout(updateRate, 300); // set new timer
                 }, 300);
             });
 
-            // Ввод вручную — СРОК
+            // Manual input — TERM
             $input_termen_creditului.on("input", function () {
                 clearTimeout(inputTermenTimeout);
                 inputTermenTimeout = setTimeout(() => {
@@ -395,8 +395,8 @@ if($t_mp[2]=='cars' || ($t_mp[2]=='services' && $t_mp[3]=='credit') ) {
                     $(this).val(val);
                     sliderTermen.update({ from: val });
 
-                    clearTimeout(updateRateTimeout); // сбрасываем предыдущий таймер
-                    updateRateTimeout = setTimeout(updateRate, 300); // устанавливаем новый
+                    clearTimeout(updateRateTimeout); // reset previous timer
+                    updateRateTimeout = setTimeout(updateRate, 300); // set new timer
                 }, 300);
             });
 
@@ -406,7 +406,7 @@ if($t_mp[2]=='cars' || ($t_mp[2]=='services' && $t_mp[3]=='credit') ) {
                 console.log(`Сумма: ${suma}, Срок: ${termen}`);
                 $('.calc_btt_r1_nrl').text( termen);
 
-                <?php /* // Тут можешь вызвать свою логику перерасчета RATA LUNARĂ */ ?>
+                <?php /* // Here you can call your own logic for recalculating MONTHLY PAYMENT */ ?>
 
                     const formData = new FormData();
                     formData.append("tp", 'ste');

@@ -544,14 +544,14 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                         <?
                         $ICON_SVG_PARAMS = [
-                            /* Год выпуска (календарь) */
+                            /* Year of manufacture (calendar) */
                             'year' => '
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <rect x="3" y="4" width="18" height="16" rx="2"></rect>
   <path d="M8 2v4M16 2v4M3 10h18"></path>
 </svg>',
 
-                            /* Пробег (спидометр/одометр) */
+                            /* Mileage (speedometer/odometer) */
                             'mileage' => <<<'SVG'
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <path d="M20 13a8 8 0 10-16 0"></path>
@@ -561,7 +561,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 SVG
                             ,
 
-                            /* Объём двигателя (мотор) */
+                            /* Engine volume (motor) */
                             'engine' => <<<'SVG'
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <rect x="3" y="8" width="13" height="8" rx="2"></rect>
@@ -571,7 +571,7 @@ SVG
 SVG
                             ,
 
-                            /* Трансмиссия (двунаправленные стрелки) */
+                            /* Transmission (bidirectional arrows) */
                             'transmission' => <<<'SVG'
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <path d="M7 4v8a3 3 0 003 3h4"></path>
@@ -582,7 +582,7 @@ SVG
 SVG
                             ,
 
-                            /* Тип топлива (колонка) */
+                            /* Fuel type (pump) */
                             'fuel' => <<<'SVG'
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <rect x="3" y="3" width="10" height="18" rx="2"></rect>
@@ -593,7 +593,7 @@ SVG
 SVG
                             ,
 
-                            /* Климат-контроль (термометр/снежинка) */
+                            /* Climate control (thermometer/snowflake) */
                             'climate' => <<<'SVG'
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <path d="M12 2v8"></path>
@@ -604,7 +604,7 @@ SVG
 SVG
                             ,
 
-                            /* Круиз-контроль (компас) */
+                            /* Cruise control (compass) */
                             'cruise' => <<<'SVG'
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <circle cx="12" cy="12" r="9"></circle>
@@ -613,7 +613,7 @@ SVG
 SVG
                             ,
 
-                            /* Парктроники (буква P + дуги) */
+                            /* Parking sensors (letter P + arcs) */
                             'parking' => <<<'SVG'
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <path d="M6 20V4h6a4 4 0 010 8H6"></path>
@@ -623,7 +623,7 @@ SVG
 SVG
                             ,
 
-                            /* Навигация (пин на карте/стрела) */
+                            /* Navigation (map pin/arrow) */
                             'navigation' => <<<'SVG'
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <circle cx="12" cy="10" r="3.5"></circle>
@@ -632,7 +632,7 @@ SVG
 SVG
                             ,
 
-                            /* Подогрев сидений (кресло + волны) */
+                            /* Heated seats (seat + waves) */
                             'heated_seat' => <<<'SVG'
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <path d="M6 12v3a3 3 0 003 3h7"></path>
@@ -648,7 +648,7 @@ SVG
   <path d="M7 7l10 10-5 5V2l5 5L7 17"></path>
 </svg>',
 
-                            /* USB (трезубец) */
+                            /* USB (trident) */
                             'usb' => '
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <path d="M12 3v12"></path>
@@ -663,136 +663,136 @@ SVG
                         <?php // webs25 ?>
                         <script>
                             /* ============================
-                       Константы проверки
+                       Validation constants
                        ============================ */
-                            const FORBIDDEN_TAGS = ['script','iframe','embed','object'];  /* Вставка скриптов и фреймов запрещена + общие опасные */
-                            const IMG_EXT_HOST_RE = /^https?:\/\//i;                      /* Внешние изображения */
-                            const ABS_URL_RE = /^https?:\/\//i;                           /* Проверка внешних ссылок */
-                            const JS_URL_RE  = /^\s*javascript\s*:/i;                     /* javascript: в href/src запрещено */
-                            const UNSAFE_STYLE_RE = /(expression\s*\(|url\s*\(\s*javascript\s*:)/i; /* опасные inline-стили */
+                            const FORBIDDEN_TAGS = ['script','iframe','embed','object'];  /* Scripts and frames insertion forbidden + common dangerous */
+                            const IMG_EXT_HOST_RE = /^https?:\/\//i;                      /* External images */
+                            const ABS_URL_RE = /^https?:\/\//i;                           /* External links check */
+                            const JS_URL_RE  = /^\s*javascript\s*:/i;                     /* javascript: in href/src forbidden */
+                            const UNSAFE_STYLE_RE = /(expression\s*\(|url\s*\(\s*javascript\s*:)/i; /* dangerous inline styles */
 
                             /* ============================
                                sanitizeAndValidateHtml(inputHtml)
-                               - чистит HTML (удаляет запрещённое)
-                               - собирает сообщения по каждому случаю
-                               - возвращает { cleanHtml, messages }
+                               - cleans HTML (removes forbidden)
+                               - collects messages for each case
+                               - returns { cleanHtml, messages }
                                ============================ */
                             function sanitizeAndValidateHtml(inputHtml) {
-                                const messages = [];            /* Сюда складываем сообщения по каждому найденному случаю */
-                                const externalLinks = [];       /* Соберём внешние ссылки для отчёта */
+                                const messages = [];            /* Store messages for each found case */
+                                const externalLinks = [];       /* Collect external links for report */
 
-                                /* Парсим как HTML-фрагмент в <template> */
+                                /* Parse as HTML fragment in <template> */
                                 const tpl = document.createElement('template');
                                 tpl.innerHTML = inputHtml;
 
-                                /* Пройдёмся по wszystkim элементам */
+                                /* Walk through all elements */
                                 const walker = document.createTreeWalker(tpl.content, NodeFilter.SHOW_ELEMENT);
 
-                                const toRemove = []; /* сюда сложим элементы, которые удалим после прохода */
+                                const toRemove = []; /* elements to remove after walk */
 
                                 while (walker.nextNode()) {
                                     const el = walker.currentNode;
                                     const tag = el.tagName ? el.tagName.toLowerCase() : '';
 
-                                    /* 1) Запрещённые теги: script/iframe/embed/object */
+                                    /* 1) Forbidden tags: script/iframe/embed/object */
                                     if (FORBIDDEN_TAGS.indexOf(tag) !== -1) {
                                         messages.push({
                                             type: 'error',
                                             rule: 'forbiddenTag',
-                                            text: `Запрещённый тег <${tag}>`
+                                            text: `Forbidden tag <${tag}>`
                                         });
                                         toRemove.push(el);
-                                        continue; /* к следующему элементу */
+                                        continue; /* to next element */
                                     }
 
-                                    /* 2) Удаляем inline-обработчики on* (инлайн-скрипты) */
+                                    /* 2) Remove inline on* handlers (inline scripts) */
                                     [...el.attributes].forEach(attr => {
                                         const name = attr.name.toLowerCase();
                                         const value = attr.value || '';
 
-                                        /* on* атрибуты (onclick, onload, ...) */
+                                        /* on* attributes (onclick, onload, ...) */
                                         if (name.startsWith('on')) {
                                             messages.push({
                                                 type: 'error',
                                                 rule: 'inlineHandler',
-                                                text: ` инлайн-обработчик "${name}" на теге <${tag}>.`
+                                                text: ` inline handler "${name}" on tag <${tag}>.`
                                             });
                                             el.removeAttribute(attr.name);
                                             return;
                                         }
 
-                                        /* javascript: в href/src */
+                                        /* javascript: in href/src */
                                         if ((name === 'href' || name === 'src') && JS_URL_RE.test(value)) {
                                             messages.push({
                                                 type: 'error',
                                                 rule: 'javascriptUrl',
-                                                text: `Атрибут ${name} с "javascript:"  на теге <${tag}>.`
+                                                text: `Attribute ${name} with "javascript:" on tag <${tag}>.`
                                             });
                                             el.removeAttribute(attr.name);
                                             return;
                                         }
 
-                                        /* опасные inline-стили (expression(), url(javascript:)) */
+                                        /* dangerous inline styles (expression(), url(javascript:)) */
                                         if (name === 'style' && UNSAFE_STYLE_RE.test(value)) {
                                             messages.push({
                                                 type: 'error',
                                                 rule: 'unsafeStyle',
-                                                text: `Опасный inline-style  на теге <${tag}>.`
+                                                text: `Dangerous inline-style on tag <${tag}>.`
                                             });
                                             el.removeAttribute('style');
                                             return;
                                         }
                                     });
 
-                                    /* 3) Проверка внешних изображений */
+                                    /* 3) External images check */
                                     if (tag === 'img') {
                                         const src = (el.getAttribute('src') || '').trim();
 
-                                        /* внешнее изображение: http/https → запрещено */
+                                        /* external image: http/https → forbidden */
                                         if (IMG_EXT_HOST_RE.test(src)) {
                                             messages.push({
                                                 type: 'error',
                                                 rule: 'externalImage',
-                                                text: `Внешнее изображение запрещено и удалено: ${src}`
+                                                text: `External image forbidden and removed: ${src}`
                                             });
                                             toRemove.push(el);
                                             continue;
                                         }
-                                        /* data:, относительные пути — оставляем */
+                                        /* data:, relative paths — keep */
                                     }
 
-                                    /* 4) Проверка внешних ссылок (не запрещаем, но фиксируем) */
+                                    /* 4) External links check (not forbidden, but logged) */
                                     if (tag === 'a') {
                                         const href = (el.getAttribute('href') || '').trim();
 
                                         if (JS_URL_RE.test(href)) {
-                                            /* javascript: в ссылке уже снят выше, но на всякий — сообщение */
+                                            /* javascript: in link already removed above, but just in case — message */
                                             messages.push({
                                                 type: 'error',
                                                 rule: 'javascriptUrl',
-                                                text: `Атрибут href с "javascript:"  на теге <a>.`
+                                                text: `Attribute href with "javascript:" on tag <a>.`
                                             });
                                             el.removeAttribute('href');
                                         } else if (ABS_URL_RE.test(href)) {
-                                            /* абсолютная внешняя ссылка — просто сообщаем */
+                                            /* absolute external link — just report */
                                             externalLinks.push(href);
                                         }
                                     }
                                 }
 
-                                /* Удаляем накопленные элементы */
+                                /* Remove accumulated elements */
                                 toRemove.forEach(node => node.remove());
 
-                                /* Если есть внешние ссылки — выводим инфо по каждой */
+                                /* If there are external links — output info for each */
                                 externalLinks.forEach(url => {
                                     messages.push({
                                         type: 'info',
                                         rule: 'externalLink',
-                                        text: `Найдена внешняя ссылка: ${url}`
+                                        text: `External link found: ${url}`
                                     });
                                 });
 
-                                /* Готовый очищенный HTML */
+                                /* Ready cleaned HTML */
                                 const cleanHtml = tpl.innerHTML;
 
                                 return { cleanHtml, messages };
@@ -800,18 +800,18 @@ SVG
 
                             /* ============================
                                attachTextareaValidation(textareaEl, messagesEl, onCleaned)
-                               - навешивает проверку при вводе
-                               - выводит сообщения в messagesEl
-                               - колбэк onCleaned(cleanHtml) получит очищенный HTML
+                               - attaches validation on input
+                               - outputs messages to messagesEl
+                               - callback onCleaned(cleanHtml) receives cleaned HTML
                                ============================ */
                             function attachTextareaValidation(textareaEl, messagesEl, onCleaned) {
                                 function renderMessages(msgs) {
-                                    /* Очищаем контейнер и рендерим список сообщений как текстовые строки */
+                                    /* Clear container and render message list as text strings */
                                     messagesEl.innerHTML = '';
                                     msgs.forEach(m => {
                                         const p = document.createElement('div');
                                         p.textContent = (m.type.toUpperCase()) + ': ' + m.text;
-                                        /* можно стилизовать по типам: error/info */
+                                        /* can style by types: error/info */
                                         p.setAttribute('data-type', m.type);
                                         messagesEl.appendChild(p);
                                     });
@@ -825,7 +825,7 @@ SVG
                                     }
                                 }
 
-                                /* первая прогонка + реагируем на ввод */
+                                /* first run + react to input */
                                 handle();
                                 textareaEl.addEventListener('input', handle);
                             }
@@ -873,20 +873,20 @@ SVG
 
                             }
 
-                            /* убираем экранирование сущностей */
+                            /* remove entity escaping */
                             $html = htmlspecialchars_decode($html, ENT_QUOTES);
 
-                            /* нормализуем переносы строк */
+                            /* normalize line breaks */
                             $normalized = str_replace(["\r\n", "\r"], "\n", $html);
 
                             // $textareaSafe = htmlspecialchars($normalized, ENT_NOQUOTES, 'UTF-8');
 
                             // var_dump( $rseo);
 
-                            /* Для вывода ВНУТРИ textarea обязательно экранируем HTML-сущности */
+                            /* For output INSIDE textarea must escape HTML entities */
                             $textareaSafe = htmlspecialchars($normalized, ENT_QUOTES, 'UTF-8');
 
-                            /* Для вывода в обычный <div> с видимыми переносами — используем nl2br */
+                            /* For output in regular <div> with visible line breaks — use nl2br */
                             //  $divSafe = nl2br(htmlspecialchars($normalized, ENT_QUOTES, 'UTF-8'));
 
                             ?>
@@ -896,19 +896,19 @@ SVG
 
 
 
-                                <!-- Куда выводить сообщения -->
+                                <!-- Where to output messages -->
                                 <div style="color: red" id="html_checks_<?= $v ?>"></div>
 
-                                <!-- (необязательно) предпросмотр очищенного HTML -->
+                                <!-- (optional) preview of cleaned HTML -->
                                 <div id="clean_preview_<?= $v ?>"></div>
 
                                 <script>
-                                    /* Привязка валидатора к textarea */
+                                    /* Attach validator to textarea */
                                     var ta = document.getElementById('params_html_<?= $v ?>');
                                     var out = document.getElementById('html_checks_<?= $v ?>');
                                     var preview = document.getElementById('clean_preview_<?= $v ?>');
 
-                                    /* Колбэк: показываем очищенный HTML в превью (как innerHTML) */
+                                    /* Callback: show cleaned HTML in preview (as innerHTML) */
                                     attachTextareaValidation(ta, out);
                                     /*
                                     attachTextareaValidation(ta, out, function(cleanHtml) {

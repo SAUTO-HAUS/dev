@@ -425,10 +425,10 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                     $z_stat .= ($r['tva']==1) ? '<div class="stat top1">'.$lng['l']['stat']['vat'].'</div>' : '';
                     $z_stat .= ($r['gift']==1) ? '<div class="stat gift">+ '.$lng['l']['stat']['gift'].'</div>' : '';
 
-                    // Adăugare țară de import cu stil evident
+                    // Add import country with prominent style
                     $import_country_id = isset($r['import_country_id']) ? $r['import_country_id'] : null;
 
-                    // Forțăm verificarea în baza de date dacă nu avem import_country_id
+                    // Force database check if we don't have import_country_id
                     if (empty($import_country_id)) {
                         $stmt = $db->prepare("SELECT import_country_id FROM ".$prefx."_car_ctlg WHERE id = :id LIMIT 1");
                         $stmt->execute(['id' => $r['id']]);
@@ -770,10 +770,10 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                     <div class="clear"> </div>
                             ';
 
-                // Colectăm informațiile despre țara de import
+                // Collect information about import country
                 $import_country_id = isset($r['import_country_id']) ? $r['import_country_id'] : null;
 
-                // Verificăm direct în baza de date dacă nu găsim import_country_id
+                // Check directly in database if we don't find import_country_id
                 if (empty($import_country_id)) {
                     $stmt = $db->prepare("SELECT import_country_id FROM ".$prefx."_car_ctlg WHERE id = :id LIMIT 1");
                     $stmt->execute(['id' => $r['id']]);
@@ -783,7 +783,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                     }
                 }
 
-                // Pregătim informația despre țara de import
+                // Prepare information about import country
                 $import_country_html = '';
                 if (!empty($import_country_id)) {
                     $country_name = getImportCountryName($import_country_id, $_COOKIE['lang']);
@@ -882,7 +882,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
 
                 <?php
 $iconTelegramParams = array(
-    /* 'yr'  => год выпуска (календарь) */
+    /* 'yr'  => year of manufacture (calendar) */
     'yr' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false" role="img" >
                 <rect x="3" y="5" width="18" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
                 <line x1="16" y1="3" x2="16" y2="7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
@@ -890,21 +890,21 @@ $iconTelegramParams = array(
                 <line x1="3" y1="11" x2="21" y2="11" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
               </svg>',
 
-    /* 'bt'  => тип кузова (автомобиль) */
+    /* 'bt'  => body type (car) */
     'bt' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
                 <path d="M3 13 L5 8 H19 L21 13 V17 H19 A1 1 0 0 1 17 15 H7 A1 1 0 0 1 5 17 H3 z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
                 <circle cx="7.5" cy="17.5" r="1.4" fill="none" stroke="currentColor" stroke-width="1.4"/>
                 <circle cx="16.5" cy="17.5" r="1.4" fill="none" stroke="currentColor" stroke-width="1.4"/>
               </svg>',
 
-    /* 'mlg' => пробег (дорога / счётчик) */
+    /* 'mlg' => mileage (road / odometer) */
     'mlg' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
                 <path d="M3 17 L21 17" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
                 <path d="M6 17 L9 8 L12 14 L15 9 L18 17" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                 <circle cx="12" cy="10" r="1.2" fill="currentColor"/>
               </svg>',
 
-    /* 'vol' => объём двигателя (значок блока/двигателя) */
+    /* 'vol' => engine volume (engine block icon) */
     'vol' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
                 <rect x="3.5" y="7" width="17" height="10" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/>
                 <rect x="6" y="4" width="3" height="4" rx="0.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
@@ -912,14 +912,14 @@ $iconTelegramParams = array(
                 <line x1="9.5" y1="12.5" x2="14.5" y2="12.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
               </svg>',
 
-    /* 'hp'  => мощность (измеритель / стрелка) */
+    /* 'hp'  => power (gauge / arrow) */
     'hp' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
                 <path d="M12 3 A9 9 0 1 0 21 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
                 <path d="M12 12 L16 8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
                 <circle cx="12" cy="12" r="1.2" fill="currentColor"/>
               </svg>',
 
-    /* 'fl'  => топливо (электричество / заряд) */
+    /* 'fl'  => fuel (electricity / charge) */
     'fl' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
                 <rect x="3.5" y="5" width="13" height="14" rx="1.2" fill="none" stroke="currentColor" stroke-width="1.4"/>
                 <path d="M21 9 v6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
@@ -927,7 +927,7 @@ $iconTelegramParams = array(
                 <rect x="6.5" y="7" width="6" height="3" rx="0.4" fill="none" stroke="currentColor" stroke-width="1.1"/>
               </svg>',
 
-    /* 'tra' => КПП (шестерня / трансмиссия) */
+    /* 'tra' => transmission (gear / gearbox) */
     'tra' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
                 <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.6"/>
                 <g stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
@@ -938,20 +938,20 @@ $iconTelegramParams = array(
                 </g>
               </svg>',
 
-    /* 'wd'  => привод (стрелка/ось — задний/передний/полный можно менять цвет) */
+    /* 'wd'  => drivetrain (arrow/axle — rear/front/all-wheel, color can be changed) */
     'wd' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
                 <circle cx="6" cy="17" r="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
                 <circle cx="18" cy="17" r="1.6" fill="none" stroke="currentColor" stroke-width="1.4"/>
                 <path d="M6 17 L10 10 L14 14 L18 10" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>',
 
-    /* 'clr' => цвет (капля краски) */
+    /* 'clr' => color (paint drop) */
     'clr' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
                 <path d="M12 2 C14.5 6 18 9 18 12 A6 6 0 1 1 6 12 C6 9 9.5 6 12 2 Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
                 <circle cx="12" cy="15" r="0.9" fill="currentColor"/>
               </svg>',
 
-    /* 'sts' => количество мест (иконки людей) */
+    /* 'sts' => number of seats (people icons) */
     'sts' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
                 <circle cx="8" cy="8" r="1.6" fill="none" stroke="currentColor" stroke-width="1.3"/>
                 <path d="M6 12 C6 11 7 10 8 10 C9 10 10 11 10 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
@@ -959,20 +959,20 @@ $iconTelegramParams = array(
                 <path d="M14 12 C14 11 15 10 16 10 C17 10 18 11 18 12" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
               </svg>',
 
-    /* 'loc' => адрес (маркер местоположения) */
+    /* 'loc' => address (location marker) */
     'loc' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
                 <path d="M12 2 C8 2 5 5.5 5 9.5 C5 14.5 12 22 12 22 C12 22 19 14.5 19 9.5 C19 5.5 16 2 12 2 Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
                 <circle cx="12" cy="10" r="1.4" fill="currentColor"/>
               </svg>',
 
-    /* 'delivery_time' => время доставки (часы/календарь) */
+    /* 'delivery_time' => delivery time (clock/calendar) */
     'delivery_time' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
                 <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.4"/>
                 <path d="M12 7 L12 12 L16 16" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
                 <circle cx="12" cy="12" r="1" fill="currentColor"/>
               </svg>',
 
-    /* 'advance_amount' => сумма аванса (банкнота) */
+    /* 'advance_amount' => advance payment amount (banknote) */
     'advance_amount' => '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" role="img">
                 <rect x="2" y="8" width="20" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4"/>
                 <circle cx="12" cy="12" r="1.8" fill="none" stroke="currentColor" stroke-width="1.2"/>
@@ -1386,46 +1386,46 @@ $iconTelegramParams = array(
                                 });
                                 
                                 function updateRate() {
-                                    // Obținem valorile direct din input fields pentru consistență
+                                    // Get values directly from input fields for consistency
                                     const suma = parseInt($input_suma_creditului.val(), 10);
                                     const termen = parseInt($input_termen_creditului.val(), 10);
                                     
-                                    // Verificăm dacă valorile sunt valide
+                                    // Check if values are valid
                                     if (isNaN(suma) || isNaN(termen)) {
-                                        return; // Evităm calculul cu valori invalide
+                                        return; // Avoid calculation with invalid values
                                     }
                                     
                                     $(".calc_btt_r1_nrl").text(termen);
                                     
-                                    // Calcul pentru rata minimă (9.2%)
-                                    const dobanda_min = 9.2; // procente
-                                    const rata_lunara_min = dobanda_min / 1200; // convertim în decimal și lunar (9.2/100/12)
+                                    // Calculate minimum rate (9.2%)
+                                    const dobanda_min = 9.2; // percentage
+                                    const rata_lunara_min = dobanda_min / 1200; // convert to decimal and monthly (9.2/100/12)
                                     const pmtMin = suma * rata_lunara_min / (1 - Math.pow(1 + rata_lunara_min, -termen));
                                     
-                                    // Calcul pentru rata maximă (24%)
-                                    const dobanda_max = 24; // procente
-                                    const rata_lunara_max = dobanda_max / 1200; // convertim în decimal și lunar (24/100/12)
+                                    // Calculate maximum rate (24%)
+                                    const dobanda_max = 24; // percentage
+                                    const rata_lunara_max = dobanda_max / 1200; // convert to decimal and monthly (24/100/12)
                                     const pmtMax = suma * rata_lunara_max / (1 - Math.pow(1 + rata_lunara_max, -termen));
                                     
-                                    // Rotunjire la numere întregi
+                                    // Round to integers
                                     const rata_min_final = Math.floor(pmtMin);
-                                    const rata_max_final = Math.floor(pmtMax); // Folosim Math.floor pentru ambele rate pentru consistență
+                                    const rata_max_final = Math.floor(pmtMax); // Use Math.floor for both rates for consistency
                                     
-                                    // Afișare rate
+                                    // Display rates
                                     $(".calc_btt_r2_nrl").text(rata_min_final);
                                     $(".calc_btt_r3_nrl").text(rata_max_final);
                                 }
                                 
-                                // Setare valori inițiale
+                                // Set initial values
                                 const initialAmount = Math.min(Math.max(carPrice, 2000), 50000);
                                 $input_suma_creditului.val(initialAmount);
                                 $input_termen_creditului.val(60);
                                 
-                                // Actualizăm și slider-ele pentru a fi sincronizate
+                                // Update sliders to be synchronized
                                 sliderSuma.update({ from: initialAmount });
                                 sliderTermen.update({ from: 60 });                         
 
-                                // Amânăm prima calculare pentru a ne asigura că toate componentele sunt inițializate corect
+                                // Delay first calculation to ensure all components are properly initialized
                                 setTimeout(updateRate, 100);
                             });
                             </script>';

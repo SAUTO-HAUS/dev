@@ -99,45 +99,45 @@ echo '
 		if ($t_mp[3]!='transportation'){ // credit
 
             $rtrnCalculatorBlock = "";
-		    if($t_mp[2]=='services' && $t_mp[3]=='credit'){ // калькулятор кредита // вызывается в body.php
+		    if($t_mp[2]=='services' && $t_mp[3]=='credit'){ // credit calculator // called in body.php
                 $rtrnCalculatorBlock = '
                             <div style="clear: both"> </div>
                             <div class="spc_bx  d_right_b spc_bx_calc_b"> 
                                 <div class="calc_head"> '.$lng['w']['calc_title'].' </div>
                                 
                                 <div class="calc_block_sum">
-                                    <!-- заголовок и отображение текущего значения слайдера -->
+                                    <!-- title and display of current slider value -->
                                     <div class="calc_inpt_cont">
                                         <div class="calc_ipt_tl">
                                             '.$lng['w']['calc_title_sum_tl'].'
                                         </div>
                                         <div class="calc_inpt_blk">
-                                            <!-- отображение текущего значения слайдера -->
+                                            <!-- display current slider value -->
                                             <input type="text" id="view_suma_creditului"  class="clacl_inpt_vie">
                                         </div>
                                     </div>
-                                    <!-- элемент вызова слайдера -->
+                                    <!-- slider element -->
                                     <input type="text" id="suma-creditului" >
                                 </div>
                                     
                                 <div class="calc_block_terms">
-                                    <!-- заголовок и отображение текущего значения слайдера -->
+                                    <!-- title and display of current slider value -->
                                     <div class="calc_inpt_cont">
                                         <div class="calc_ipt_tl">
                                             '.$lng['w']['calc_title_term_tl'].'
                                         </div>
                                         <div class="calc_inpt_blk">
-                                        <!-- отображение текущего значения слайдера -->
+                                            <!-- display current slider value -->
                                             <input type="text" id="view_termen_creditului"  class="clacl_inpt_vie">
                                         </div>
                                     </div>
-                                        <!-- элемент вызова слайдера -->
+                                        <!-- slider element -->
                                     <input type="text" id="termen-creditului" name="termen_creditului">
                                 </div>
                                 
                                 <div style="clear: both"> </div>
                                 
-                                <!-- отображение результатов расчета калькулятора -->
+                                <!-- display calculator results -->
                                 <div class="calc_btt_word">
                                     <div class="calc_btt_left">
                                         '.$lng['w']['calc_title_rata'].'
@@ -164,7 +164,7 @@ echo '
                  * */
             }
 
-			// Încărcăm fișierul de limbă specific pentru asigurare
+			// Load language file specific for insurance
 if ($t_mp[3] == 'insurance') {
 			include_once($_SERVER['DOCUMENT_ROOT'] . '/content/default/lang-insurance.php');
 			include_once($_SERVER['DOCUMENT_ROOT'] . '/plugins/dev_tools/meta_gen.php');
