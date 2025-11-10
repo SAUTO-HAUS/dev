@@ -181,39 +181,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     initLazyLoading();
-    initOfferTimers();
 });
-
-// Timer countdown functionality for offer timers
-function initOfferTimers() {
-    function updateTimers() {
-        const timerDisplays = document.querySelectorAll('.timer-display');
-        timerDisplays.forEach(function(display) {
-            const endTime = parseInt(display.getAttribute('data-end-time'));
-            const now = Math.floor(Date.now() / 1000);
-            const remaining = endTime - now;
-            
-            if (remaining > 0) {
-                const days = Math.floor(remaining / 86400);
-                const hours = Math.floor((remaining % 86400) / 3600);
-                const minutes = Math.floor((remaining % 3600) / 60);
-                const seconds = remaining % 60;
-                display.textContent = String(days).padStart(2, '0') + ':' + 
-                                     String(hours).padStart(2, '0') + ':' + 
-                                     String(minutes).padStart(2, '0') + ':' + 
-                                     String(seconds).padStart(2, '0');
-            } else {
-                // Timer expired - reload page to show "Oferta a expirat"
-                location.reload();
-            }
-        });
-    }
-    
-    // Update timers every second
-    if (document.querySelectorAll('.timer-display').length > 0) {
-        setInterval(updateTimers, 1000);
-    }
-}
 
 // Lazy loading for mobile slider images
 function initLazyLoading() {
