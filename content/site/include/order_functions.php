@@ -685,6 +685,44 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 				$ar['txt'] .= '</div>';
 			}
 			
+			// Display offer timer for on_order cars
+			if (!empty($r['offer_timer_end'])) {
+				$time_remaining = $r['offer_timer_end'] - time();
+				if ($time_remaining > 0) {
+					$days = floor($time_remaining / 86400);
+					$hours = floor(($time_remaining % 86400) / 3600);
+					$minutes = floor(($time_remaining % 3600) / 60);
+					$seconds = $time_remaining % 60;
+					
+					$timer_label = 'Oferta expiră în:';
+					if (isset($_COOKIE['lang']) && $_COOKIE['lang'] == 'ru') {
+						$timer_label = 'Предложение истекает через:';
+					} elseif (isset($_COOKIE['lang']) && $_COOKIE['lang'] == 'en') {
+						$timer_label = 'Offer expires in:';
+					}
+					
+					$ar['txt'] .= '
+			<div class="offer-timer" style="padding: 10px; text-align: center; background: #f8f9fa; border-top: 1px solid #dee2e6; margin-top: 10px;">
+				<div style="color: #6c757d; font-size: 0.75rem; margin-bottom: 5px;">'.$timer_label.'</div>
+				<div class="timer-display" data-end-time="'.$r['offer_timer_end'].'" style="font-weight: bold; color: #dc3545; font-size: 1.1rem;">
+					'.sprintf('%02d:%02d:%02d:%02d', $days, $hours, $minutes, $seconds).'
+				</div>
+			</div>';
+				} else {
+					$expired_text = 'Oferta a expirat';
+					if (isset($_COOKIE['lang']) && $_COOKIE['lang'] == 'ru') {
+						$expired_text = 'Предложение истекло';
+					} elseif (isset($_COOKIE['lang']) && $_COOKIE['lang'] == 'en') {
+						$expired_text = 'Offer expired';
+					}
+					
+					$ar['txt'] .= '
+			<div class="offer-expired" style="padding: 10px; text-align: center; background: #f8d7da; border-top: 1px solid #f5c6cb; margin-top: 10px;">
+				<div style="color: #721c24; font-weight: bold;">'.$expired_text.'</div>
+			</div>';
+				}
+			}
+			
 			$ar['txt'] .= '
 		</a>';
 		
