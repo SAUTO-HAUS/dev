@@ -1182,6 +1182,7 @@ if ($_COOKIE['lang']=='ru'){
 
 //TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----
 $lang_offer_expires = 'Предложение истекает через';
+$lang_offer_expired = 'Предложение истекло';
 	
     $lang_req_form = [
         'main_btn_form' => 'Заявка на кредит',
@@ -1984,6 +1985,7 @@ elseif ($_COOKIE['lang']=='ro'){
 	);
 	
 	$lang_offer_expires = 'Oferta expiră în';
+	$lang_offer_expired = 'Oferta a expirat';
 	
     $lang_req_form = [
         'main_btn_form' => 'Cerere de creditare',
@@ -3419,6 +3421,7 @@ elseif ($_COOKIE['lang']=='en'){
 	);
 	
 	$lang_offer_expires = 'Offer expires in';
+    $lang_offer_expired = 'Offer expired'; 
 
     $lang_req_form = [
         'main_btn_form' => 'LOAN APPLICATION',

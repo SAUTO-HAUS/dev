@@ -394,11 +394,7 @@ $last_car_id = 0;
                     </div>
                 <?php else : ?>
                     <div class="offer-expired" style="color: #dc3545; font-weight: bold; font-size: 0.9rem;">
-                        <?php 
-                            if ($_COOKIE['lang'] == 'ro') echo 'Oferta a expirat';
-                            elseif ($_COOKIE['lang'] == 'ru') echo 'Предложение истекло';
-                            else echo 'Offer expired';
-                        ?>
+                        <?= isset($lang_offer_expired) ? $lang_offer_expired : 'Offer expired' ?>
                     </div>
                 <?php 
                     endif;
