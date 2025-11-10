@@ -943,25 +943,6 @@ $(document).on('click', '#overlay .tradein form input[type="submit"]', function(
 
 //-------------------------------------------------------------------------------------- GLOBAL -------------------------------------------------------
 
-window.setInterval(function(){
-	$('.countdown').each(function(){
-		var timer = $(this).attr( 'data-timer' );
-		$(this).attr( 'data-timer' , timer-1 );
-		
-		var tD = Math.floor( timer / (24*60*60) );
-		var tH = Math.floor( ( timer - (tD*24*60*60) ) / (60*60) );
-		var tM = Math.floor( ( timer - (tD*24*60*60) - (tH*60*60) ) / 60 );
-		var tS = Math.floor( timer - (tD*24*60*60) - (tH*60*60) - (tM*60) );
-		
-		if ( tD/10 < 1 ){ tD = '0'+tD ;}
-		if ( tH/10 < 1 ){ tH = '0'+tH ;}
-		if ( tM/10 < 1 ){ tM = '0'+tM ;}
-		if ( tS/10 < 1 ){ tS = '0'+tS ;}
-		
-		$(this).html( tD +', '+ tH +':'+ tM +':'+ tS );		
-	})
-}, 1000);
-
 // Update offer timers on product cards
 setInterval(function(){
 	$('.timer-display').each(function(){
