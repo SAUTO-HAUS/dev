@@ -469,6 +469,19 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 		// Check if mobile - simple detection
 		$is_mobile = (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/Mobile|Android|iPhone|iPad/', $_SERVER['HTTP_USER_AGENT']));
 		
+		// Generate timer HTML first (will be used in image generation)
+		$timer_html_for_image = '';
+		if (!empty($r['offer_timer_end'])) {
+			$time_remaining_check = $r['offer_timer_end'] - time();
+			if ($time_remaining_check > 0) {
+				$days_check = floor($time_remaining_check / 86400);
+				$hours_check = floor(($time_remaining_check % 86400) / 3600);
+				$minutes_check = floor(($time_remaining_check % 3600) / 60);
+				$seconds_check = $time_remaining_check % 60;
+				$timer_html_for_image = '<div class="offer-timer" style="position: absolute; bottom: 32px; right: 1.3rem; color: #dc3545; font-weight: bold; font-size: 1rem; background: rgba(255,255,255,0.9); padding: 5px 10px; border-radius: 4px; z-index: 10;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.sprintf('%02d:%02d:%02d:%02d', $days_check, $hours_check, $minutes_check, $seconds_check).'</div></div>';
+			}
+		}
+		
 		if ($is_mobile) {
 			// Mobile: Get all images for slider (limited to 10 with lazy loading)
 			$pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `main` DESC, `pos` ASC LIMIT 10'); 
@@ -481,8 +494,8 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 			}
 			
 			if (count($all_images) > 1) {
-				// Multiple images - create slider HTML
-				$image_html = '<div class="mobile-card-slider"><div class="mobile-card-slider__container"><div class="mobile-card-slider__track">';
+				// Multiple images - create slider HTML with timer overlay
+				$image_html = '<div class="mobile-card-slider" style="position: relative;"><div class="mobile-card-slider__container"><div class="mobile-card-slider__track">';
 				foreach ($all_images as $idx => $img) {
 					// For order cars (catalog_type = 'on_order'), use .jpg extension instead of $img_frmt
 					$image_extension = (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
@@ -496,18 +509,18 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 				}
 				$image_html .= '</div>';
 				$image_html .= '<div class="mobile-card-slider__line-indicator"></div>';
-				$image_html .= '</div></div>';
+				$image_html .= '</div>'.$timer_html_for_image.'</div>';
 			} else {
-				// Single image - normal display
+				// Single image - normal display with timer
 				$p = $all_images[0] ?? null;
 				$p_src = isset($p['name']) ? '/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/' : '/'._SITE_IMG.'/v2/';
 				// For order cars (catalog_type = 'on_order'), use .jpg extension instead of $img_frmt
 				$image_extension = (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
 				$p_name = isset($p['name']) ? $p['name'].$image_extension : 'no_image.svg';
-				$image_html = '<img src="'.$p_src.$p_name.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' main photo" />';
+				$image_html = '<div style="position: relative;"><img src="'.$p_src.$p_name.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' main photo" />'.$timer_html_for_image.'</div>';
 			}
 		} else {
-			// Desktop: Single image as before
+			// Desktop: Single image without wrapper (timer will be in .prc section)
 			$pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id AND `main`="1" LIMIT 1'); 
 			$pdo2->execute([ 'it_id'=>$r['id'] ]); 
 			$p = $pdo2->fetch();
@@ -555,16 +568,16 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 			$o_prc_bl = '';
 		}
 		
-		// Generate timer HTML if exists
+		// Generate timer HTML if exists (only for desktop)
 		$timer_html = '';
-		if (!empty($r['offer_timer_end'])) {
+		if (!$is_mobile && !empty($r['offer_timer_end'])) {
 			$time_remaining = $r['offer_timer_end'] - time();
 			if ($time_remaining > 0) {
 				$days = floor($time_remaining / 86400);
 				$hours = floor(($time_remaining % 86400) / 3600);
 				$minutes = floor(($time_remaining % 3600) / 60);
 				$seconds = $time_remaining % 60;
-				$timer_html = '<div class="offer-timer" style="position: absolute; top: 17.5rem; right: 0.7rem; color: #dc3545; font-weight: bold; font-size: 0.85rem; background: rgba(255,255,255,0.9); padding: 5px 10px; border-radius: 4px; z-index: 10;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.sprintf('%02d:%02d:%02d:%02d', $days, $hours, $minutes, $seconds).'</div></div>';
+				$timer_html = '<div class="offer-timer" style="position: absolute; top: 17.5rem; right: 0.8rem; color: #dc3545; font-weight: bold; font-size: 0.85rem; background: rgba(255,255,255,0.9); padding: 5px 10px; border-radius: 4px; z-index: 10;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.sprintf('%02d:%02d:%02d:%02d', $days, $hours, $minutes, $seconds).'</div></div>';
 			}
 		}
 		
