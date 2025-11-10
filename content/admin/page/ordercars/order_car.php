@@ -524,7 +524,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                             else echo 'OFFER TIMER (Days:Hours:Minutes:Seconds):';
                         ?>
                     </label>
-                    <input class="offer_timer need nmb form-control" type="text" name="offer_timer" tabindex="19"
+                    <input class="offer_timer nmb form-control" type="text" name="offer_timer" tabindex="19"
                            value="<?= $car['offer_timer'] ?? '30:00:00:00' ?>"
                            placeholder="30:00:00:00"
                            pattern="\d{1,3}:\d{2}:\d{2}:\d{2}"
