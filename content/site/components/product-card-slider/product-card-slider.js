@@ -197,9 +197,11 @@ function initOfferTimers() {
                 const days = Math.floor(remaining / 86400);
                 const hours = Math.floor((remaining % 86400) / 3600);
                 const minutes = Math.floor((remaining % 3600) / 60);
+                const seconds = remaining % 60;
                 display.textContent = String(days).padStart(2, '0') + ':' + 
                                      String(hours).padStart(2, '0') + ':' + 
-                                     String(minutes).padStart(2, '0');
+                                     String(minutes).padStart(2, '0') + ':' + 
+                                     String(seconds).padStart(2, '0');
             } else {
                 // Timer expired - reload page to show "Oferta a expirat"
                 location.reload();
@@ -207,9 +209,9 @@ function initOfferTimers() {
         });
     }
     
-    // Update timers every minute
+    // Update timers every second
     if (document.querySelectorAll('.timer-display').length > 0) {
-        setInterval(updateTimers, 60000);
+        setInterval(updateTimers, 1000);
     }
 }
 

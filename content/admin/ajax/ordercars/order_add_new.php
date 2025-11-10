@@ -111,15 +111,16 @@ if (__post('sub') == 'mo_search') {
                 }
             }
             
-            // Convert offer_timer from DD:HH:MM to timestamp
-            $offer_timer_str = __post('offer_timer', '30:00:00');
+            // Convert offer_timer from DD:HH:MM:SS to timestamp
+            $offer_timer_str = __post('offer_timer', '30:00:00:00');
             $timer_parts = explode(':', $offer_timer_str);
             $timer_seconds = 0;
-            if (count($timer_parts) == 3) {
+            if (count($timer_parts) == 4) {
                 $days = (int)$timer_parts[0];
                 $hours = (int)$timer_parts[1];
                 $minutes = (int)$timer_parts[2];
-                $timer_seconds = ($days * 86400) + ($hours * 3600) + ($minutes * 60);
+                $seconds = (int)$timer_parts[3];
+                $timer_seconds = ($days * 86400) + ($hours * 3600) + ($minutes * 60) + $seconds;
             }
             $offer_timer_end = time() + $timer_seconds;
             
@@ -280,15 +281,16 @@ if (__post('sub') == 'mo_search') {
             }
 
         } else {
-            // Convert offer_timer from DD:HH:MM to timestamp for new car
-            $offer_timer_str = __post('offer_timer', '30:00:00');
+            // Convert offer_timer from DD:HH:MM:SS to timestamp for new car
+            $offer_timer_str = __post('offer_timer', '30:00:00:00');
             $timer_parts = explode(':', $offer_timer_str);
             $timer_seconds = 0;
-            if (count($timer_parts) == 3) {
+            if (count($timer_parts) == 4) {
                 $days = (int)$timer_parts[0];
                 $hours = (int)$timer_parts[1];
                 $minutes = (int)$timer_parts[2];
-                $timer_seconds = ($days * 86400) + ($hours * 3600) + ($minutes * 60);
+                $seconds = (int)$timer_parts[3];
+                $timer_seconds = ($days * 86400) + ($hours * 3600) + ($minutes * 60) + $seconds;
             }
             $offer_timer_end = time() + $timer_seconds;
 

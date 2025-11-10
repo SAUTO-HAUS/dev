@@ -198,6 +198,7 @@ function car_card_with_slider($v1='', $lmt='4', $zreq=null, $stts='av', $enable_
                 $days = floor($time_remaining / 86400);
                 $hours = floor(($time_remaining % 86400) / 3600);
                 $minutes = floor(($time_remaining % 3600) / 60);
+                $seconds = $time_remaining % 60;
                 
                 $timer_label = 'Oferta expiră în:';
                 if (isset($_COOKIE['lang']) && $_COOKIE['lang'] == 'ru') {
@@ -210,7 +211,7 @@ function car_card_with_slider($v1='', $lmt='4', $zreq=null, $stts='av', $enable_
         <div class="offer-timer" style="padding: 10px; text-align: center; background: #f8f9fa; border-top: 1px solid #dee2e6; margin-top: 10px;">
             <div style="color: #6c757d; font-size: 0.75rem; margin-bottom: 5px;">'.$timer_label.'</div>
             <div class="timer-display" data-end-time="'.$r['offer_timer_end'].'" style="font-weight: bold; color: #dc3545; font-size: 1.1rem;">
-                '.sprintf('%02d:%02d:%02d', $days, $hours, $minutes).'
+                '.sprintf('%02d:%02d:%02d:%02d', $days, $hours, $minutes, $seconds).'
             </div>
         </div>';
             } else {

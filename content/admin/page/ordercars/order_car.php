@@ -519,19 +519,19 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                 <div class="form-group col-md-6">
                     <label class="form-label" style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">
                         <?php 
-                            if ($_COOKIE['lang'] == 'ro') echo 'TIMER OFERTĂ (Zile:Ore:Minute):';
-                            elseif ($_COOKIE['lang'] == 'ru') echo 'ТАЙМЕР ПРЕДЛОЖЕНИЯ (Дни:Часы:Минуты):';
-                            else echo 'OFFER TIMER (Days:Hours:Minutes):';
+                            if ($_COOKIE['lang'] == 'ro') echo 'TIMER OFERTĂ (Zile:Ore:Minute:Secunde):';
+                            elseif ($_COOKIE['lang'] == 'ru') echo 'ТАЙМЕР ПРЕДЛОЖЕНИЯ (Дни:Часы:Минуты:Секунды):';
+                            else echo 'OFFER TIMER (Days:Hours:Minutes:Seconds):';
                         ?>
                     </label>
                     <input class="offer_timer need nmb form-control" type="text" name="offer_timer" tabindex="19"
-                           value="<?= $car['offer_timer'] ?? '30:00:00' ?>"
-                           placeholder="30:00:00"
-                           pattern="\d{1,3}:\d{2}:\d{2}"
+                           value="<?= $car['offer_timer'] ?? '30:00:00:00' ?>"
+                           placeholder="30:00:00:00"
+                           pattern="\d{1,3}:\d{2}:\d{2}:\d{2}"
                            title="<?php 
-                               if ($_COOKIE['lang'] == 'ro') echo 'Format: Zile:Ore:Minute (ex: 30:00:00)';
-                               elseif ($_COOKIE['lang'] == 'ru') echo 'Формат: Дни:Часы:Минуты (пример: 30:00:00)';
-                               else echo 'Format: Days:Hours:Minutes (ex: 30:00:00)';
+                               if ($_COOKIE['lang'] == 'ro') echo 'Format: Zile:Ore:Minute:Secunde (ex: 30:00:00:00)';
+                               elseif ($_COOKIE['lang'] == 'ru') echo 'Формат: Дни:Часы:Минуты:Секунды (пример: 30:00:00:00)';
+                               else echo 'Format: Days:Hours:Minutes:Seconds (ex: 30:00:00:00)';
                            ?>">
                 </div>
             </div>

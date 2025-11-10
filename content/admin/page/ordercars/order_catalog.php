@@ -402,6 +402,7 @@ $last_car_id = 0;
                     $days = floor($time_remaining / 86400);
                     $hours = floor(($time_remaining % 86400) / 3600);
                     $minutes = floor(($time_remaining % 3600) / 60);
+                    $seconds = $time_remaining % 60;
             ?>
                 <div class="offer-timer" style="padding: 8px; text-align: center; background: #f8f9fa; border-top: 1px solid #dee2e6; font-size: 0.9rem;">
                     <div style="color: #6c757d; font-size: 0.75rem; margin-bottom: 3px;">
@@ -412,7 +413,7 @@ $last_car_id = 0;
                         ?>
                     </div>
                     <div class="timer-display" data-end-time="<?= $r['offer_timer_end'] ?>" style="font-weight: bold; color: #dc3545; font-size: 1rem;">
-                        <?= sprintf('%02d:%02d:%02d', $days, $hours, $minutes) ?>
+                        <?= sprintf('%02d:%02d:%02d:%02d', $days, $hours, $minutes, $seconds) ?>
                     </div>
                 </div>
             <?php else : ?>
@@ -489,9 +490,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 const days = Math.floor(remaining / 86400);
                 const hours = Math.floor((remaining % 86400) / 3600);
                 const minutes = Math.floor((remaining % 3600) / 60);
+                const seconds = remaining % 60;
                 display.textContent = String(days).padStart(2, '0') + ':' + 
                                      String(hours).padStart(2, '0') + ':' + 
-                                     String(minutes).padStart(2, '0');
+                                     String(minutes).padStart(2, '0') + ':' + 
+                                     String(seconds).padStart(2, '0');
             } else {
                 // Timer expired - reload page to show "Oferta a expirat"
                 location.reload();
@@ -499,9 +502,9 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
-    // Update timers every minute
+    // Update timers every second
     if (document.querySelectorAll('.timer-display').length > 0) {
-        setInterval(updateTimers, 60000);
+        setInterval(updateTimers, 1000);
     }
 });
 </script>
