@@ -555,6 +555,19 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 			$o_prc_bl = '';
 		}
 		
+		// Generate timer HTML if exists
+		$timer_html = '';
+		if (!empty($r['offer_timer_end'])) {
+			$time_remaining = $r['offer_timer_end'] - time();
+			if ($time_remaining > 0) {
+				$days = floor($time_remaining / 86400);
+				$hours = floor(($time_remaining % 86400) / 3600);
+				$minutes = floor(($time_remaining % 3600) / 60);
+				$seconds = $time_remaining % 60;
+				$timer_html = '<div class="offer-timer" style="color: #dc3545; font-weight: bold; font-size: 0.85rem;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.sprintf('%02d:%02d:%02d:%02d', $days, $hours, $minutes, $seconds).'</div></div>';
+			}
+		}
+		
 		$ar['txt'] .= '
 		<a class="it car" href="/'.$_COOKIE['lang'].'/'.$page_type.'/'.$r['id'].'">
 			<div class="name">'.$r['br_nm'].' '.$r['mo_nm'].'</div>
@@ -565,6 +578,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 			'.$image_html.'
 			<div class="prc">
 				<strong class="val">'.($r['prc'] > 100 ? $prc.' &#8364;' : $lng['w']['negociabil']).'</strong>'.$o_prc_bl.'
+				'.$timer_html.'
 				<span class="stock-status'.($r['catalog_type'] == 'on_order' ? ' on-order' : '').'">'.($r['n_a'] == '1' ? $lng['w']['not_available'] : ($r['catalog_type'] == 'on_order' ? $lng['w']['on_order'] : $lng['w']['in_stock'])).'</span>
 			</div>
 			<div class="txt">';
