@@ -393,6 +393,42 @@ $last_car_id = 0;
                     </div>
                 <?php endif; ?>
             </div>
+            
+            <?php 
+            // Display offer timer
+            if (!empty($r['offer_timer_end'])) :
+                $time_remaining = $r['offer_timer_end'] - time();
+                if ($time_remaining > 0) :
+                    $days = floor($time_remaining / 86400);
+                    $hours = floor(($time_remaining % 86400) / 3600);
+                    $minutes = floor(($time_remaining % 3600) / 60);
+            ?>
+                <div class="offer-timer" style="padding: 8px; text-align: center; background: #f8f9fa; border-top: 1px solid #dee2e6; font-size: 0.9rem;">
+                    <div style="color: #6c757d; font-size: 0.75rem; margin-bottom: 3px;">
+                        <?php 
+                            if ($_COOKIE['lang'] == 'ro') echo 'Oferta expiră în:';
+                            elseif ($_COOKIE['lang'] == 'ru') echo 'Предложение истекает через:';
+                            else echo 'Offer expires in:';
+                        ?>
+                    </div>
+                    <div class="timer-display" data-end-time="<?= $r['offer_timer_end'] ?>" style="font-weight: bold; color: #dc3545; font-size: 1rem;">
+                        <?= sprintf('%02d:%02d:%02d', $days, $hours, $minutes) ?>
+                    </div>
+                </div>
+            <?php else : ?>
+                <div class="offer-expired" style="padding: 8px; text-align: center; background: #f8d7da; border-top: 1px solid #f5c6cb; font-size: 0.9rem;">
+                    <div style="color: #721c24; font-weight: bold;">
+                        <?php 
+                            if ($_COOKIE['lang'] == 'ro') echo 'Oferta a expirat';
+                            elseif ($_COOKIE['lang'] == 'ru') echo 'Предложение истекло';
+                            else echo 'Offer expired';
+                        ?>
+                    </div>
+                </div>
+            <?php 
+                endif;
+            endif; 
+            ?>
         </div>
     <?php
         $i++;
@@ -439,6 +475,33 @@ document.addEventListener('DOMContentLoaded', function() {
                 vinSearchBtn.click();
             }
         });
+    }
+    
+    // Timer countdown functionality
+    function updateTimers() {
+        const timerDisplays = document.querySelectorAll('.timer-display');
+        timerDisplays.forEach(function(display) {
+            const endTime = parseInt(display.getAttribute('data-end-time'));
+            const now = Math.floor(Date.now() / 1000);
+            const remaining = endTime - now;
+            
+            if (remaining > 0) {
+                const days = Math.floor(remaining / 86400);
+                const hours = Math.floor((remaining % 86400) / 3600);
+                const minutes = Math.floor((remaining % 3600) / 60);
+                display.textContent = String(days).padStart(2, '0') + ':' + 
+                                     String(hours).padStart(2, '0') + ':' + 
+                                     String(minutes).padStart(2, '0');
+            } else {
+                // Timer expired - reload page to show "Oferta a expirat"
+                location.reload();
+            }
+        });
+    }
+    
+    // Update timers every minute
+    if (document.querySelectorAll('.timer-display').length > 0) {
+        setInterval(updateTimers, 60000);
     }
 });
 </script>

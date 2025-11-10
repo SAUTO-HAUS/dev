@@ -111,13 +111,25 @@ if (__post('sub') == 'mo_search') {
                 }
             }
             
+            // Convert offer_timer from DD:HH:MM to timestamp
+            $offer_timer_str = __post('offer_timer', '30:00:00');
+            $timer_parts = explode(':', $offer_timer_str);
+            $timer_seconds = 0;
+            if (count($timer_parts) == 3) {
+                $days = (int)$timer_parts[0];
+                $hours = (int)$timer_parts[1];
+                $minutes = (int)$timer_parts[2];
+                $timer_seconds = ($days * 86400) + ($hours * 3600) + ($minutes * 60);
+            }
+            $offer_timer_end = time() + $timer_seconds;
+            
             $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET 
                 `gr`=:gr, `br`=:br, `mo`=:mo, `br_nm`=:br_nm, `mo_nm`=:mo_nm, `yr`=:yr,
                 `bt`=:bt, `sts`=:sts, `mlg`=:mlg, `unit`=:unit, `vol`=:vol, `hp`=:hp, `fl`=:fl,
                 `tra`=:tra, `wd`=:wd, `clr`=:clr, `loc`=:loc, `txt`=:txt, `vin`=:vin,
                 `prc`=:prc, `cur`=:cur, `soon`=:soon, `n_a`=:n_a, `tva`=:tva, `top`=:top,
                 `gift`=:gift, `import_country_id`=:import_country_id, `catalog_type`=:catalog_type,
-                `delivery_time`=:delivery_time, `advance_amount`=:advance_amount, `prc_t`=:prc_t, `prc_n`=:prc_n, `999`=:data_999 
+                `delivery_time`=:delivery_time, `advance_amount`=:advance_amount, `offer_timer`=:offer_timer, `offer_timer_end`=:offer_timer_end, `prc_t`=:prc_t, `prc_n`=:prc_n, `999`=:data_999 
                 WHERE `id`=:id');
             $pdo->execute([
                 'id' => __post('id'),
@@ -151,6 +163,8 @@ if (__post('sub') == 'mo_search') {
                 'catalog_type' => 'on_order',
                 'delivery_time' => __post('delivery_time', 14),
                 'advance_amount' => __post('advance_amount', 0),
+                'offer_timer' => $offer_timer_str,
+                'offer_timer_end' => $offer_timer_end,
                 'prc_t' => (strtotime(__post('prc_t'))!=''&&strtotime(__post('prc_t'))!=0?strtotime(__post('prc_t')):0),
                 'prc_n' => __post('prc_n', __post('prc', 0)),
                 'data_999' => $updated_999_data
@@ -266,9 +280,20 @@ if (__post('sub') == 'mo_search') {
             }
 
         } else {
+            // Convert offer_timer from DD:HH:MM to timestamp for new car
+            $offer_timer_str = __post('offer_timer', '30:00:00');
+            $timer_parts = explode(':', $offer_timer_str);
+            $timer_seconds = 0;
+            if (count($timer_parts) == 3) {
+                $days = (int)$timer_parts[0];
+                $hours = (int)$timer_parts[1];
+                $minutes = (int)$timer_parts[2];
+                $timer_seconds = ($days * 86400) + ($hours * 3600) + ($minutes * 60);
+            }
+            $offer_timer_end = time() + $timer_seconds;
 
-            $pdo = $db->prepare('INSERT INTO ' . $prefx . '_car_ctlg (`gr`, `br`, `mo`, `br_nm`, `mo_nm`, `yr`, `vin`,`bt`, `sts`, `mlg`, `unit`, `vol`, `hp`, `fl`, `tra`, `wd`, `clr`, `loc`, `txt`, `prc`, `cur`, `soon`, `n_a`, `top`, `tva`, `gift`, `import_country_id`, `catalog_type`, `delivery_time`, `advance_amount`, `p_path`, `date`, `author`, `vis`) 
-                VALUES (:gr, :br, :mo, :br_nm, :mo_nm, :yr, :vin, :bt, :sts, :mlg, :unit, :vol, :hp, :fl, :tra, :wd, :clr, :loc, :txt, :prc, :cur, :soon, :n_a, :top, :tva, :gift, :import_country_id, :catalog_type, :delivery_time, :advance_amount, :p_path, :date, :author, "1")');//, `vis`, "0"
+            $pdo = $db->prepare('INSERT INTO ' . $prefx . '_car_ctlg (`gr`, `br`, `mo`, `br_nm`, `mo_nm`, `yr`, `vin`,`bt`, `sts`, `mlg`, `unit`, `vol`, `hp`, `fl`, `tra`, `wd`, `clr`, `loc`, `txt`, `prc`, `cur`, `soon`, `n_a`, `top`, `tva`, `gift`, `import_country_id`, `catalog_type`, `delivery_time`, `advance_amount`, `offer_timer`, `offer_timer_end`, `p_path`, `date`, `author`, `vis`) 
+                VALUES (:gr, :br, :mo, :br_nm, :mo_nm, :yr, :vin, :bt, :sts, :mlg, :unit, :vol, :hp, :fl, :tra, :wd, :clr, :loc, :txt, :prc, :cur, :soon, :n_a, :top, :tva, :gift, :import_country_id, :catalog_type, :delivery_time, :advance_amount, :offer_timer, :offer_timer_end, :p_path, :date, :author, "1")');//, `vis`, "0"
 
             $pdo->execute([
                 'gr' => __post('gr'),
@@ -301,6 +326,8 @@ if (__post('sub') == 'mo_search') {
                 'catalog_type' => 'on_order',
                 'delivery_time' => __post('delivery_time', 14),
                 'advance_amount' => __post('advance_amount', 0),
+                'offer_timer' => $offer_timer_str,
+                'offer_timer_end' => $offer_timer_end,
                 'p_path' => $zY . '/' . $zM,
                 'date' => time(),
                 'author' => __post('author')
