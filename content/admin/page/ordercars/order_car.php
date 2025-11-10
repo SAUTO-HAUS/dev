@@ -52,7 +52,41 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 			<div class="title"><?= !empty($car) ? (__('cars.edit_ad') . ' #' . $car['id']) : __('cars.new_ad') ?></div>
             <a class="close" href="<?= '/'.$_COOKIE['lang'].'/'.$admin_dir.'/ordercars/ctlg' ?>">X</a>
 		</div>
-
+		
+		<?php 
+		// Display warning banner if offer has expired
+		if (!empty($car['offer_timer_end']) && $car['offer_timer_end'] < time()) : 
+		?>
+		<div class="offer-expired-warning" style="background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%); border: 2px solid #dc3545; border-radius: 8px; padding: 20px; margin: 20px 0; box-shadow: 0 4px 6px rgba(220, 53, 69, 0.2);">
+			<div style="display: flex; align-items: center; gap: 15px;">
+				<div style="font-size: 48px; line-height: 1;">⚠️</div>
+				<div style="flex: 1;">
+					<h3 style="margin: 0 0 8px 0; color: #721c24; font-size: 1.4rem; font-weight: bold;">
+						<?php 
+							if ($_COOKIE['lang'] == 'ro') echo '⏰ OFERTA A EXPIRAT!';
+							elseif ($_COOKIE['lang'] == 'ru') echo '⏰ ПРЕДЛОЖЕНИЕ ИСТЕКЛО!';
+							else echo '⏰ OFFER EXPIRED!';
+						?>
+					</h3>
+					<p style="margin: 0; color: #721c24; font-size: 1rem; line-height: 1.5;">
+						<?php 
+							if ($_COOKIE['lang'] == 'ro') {
+								echo 'Această ofertă a expirat la <strong>' . date('d.m.Y H:i', $car['offer_timer_end']) . '</strong>.<br>';
+								echo 'Actualizați câmpul "TIMER OFERTĂ" pentru a prelungi oferta sau modificați alte detalii după necesitate.';
+							} elseif ($_COOKIE['lang'] == 'ru') {
+								echo 'Это предложение истекло <strong>' . date('d.m.Y H:i', $car['offer_timer_end']) . '</strong>.<br>';
+								echo 'Обновите поле "ТАЙМЕР ПРЕДЛОЖЕНИЯ" для продления предложения или измените другие детали по необходимости.';
+							} else {
+								echo 'This offer expired on <strong>' . date('d.m.Y H:i', $car['offer_timer_end']) . '</strong>.<br>';
+								echo 'Update the "OFFER TIMER" field to extend the offer or modify other details as needed.';
+							}
+						?>
+					</p>
+				</div>
+			</div>
+		</div>
+		<?php endif; ?>
+		
 		<form class="img_bx" id="img_bx" enctype="multipart/form-data">
 			<h3 class="ttl ghost"><?=$lng['w']['imgs']?></h3>
 			<div class="order_upload_hint" style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 4px; padding: 10px; margin-bottom: 10px; font-size: 12px; color: #856404;">
