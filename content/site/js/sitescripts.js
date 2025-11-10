@@ -962,6 +962,36 @@ window.setInterval(function(){
 	})
 }, 1000);
 
+// Update offer timers on product cards
+setInterval(function(){
+	$('.timer-display').each(function(){
+		var endTime = $(this).data('end-time');
+		var now = Math.floor(Date.now() / 1000);
+		var timer = endTime - now;
+		
+		if (timer <= 0) {
+			var expiredText = 'Offer expired';
+			var lang = document.cookie.match(/lang=([^;]+)/);
+			if (lang && lang[1] == 'ro') expiredText = 'Oferta a expirat';
+			else if (lang && lang[1] == 'ru') expiredText = 'Предложение истекло';
+			$(this).css('color', '#dc3545').html(expiredText);
+			return;
+		}
+		
+		var tD = Math.floor(timer / (24*60*60));
+		var tH = Math.floor((timer - (tD*24*60*60)) / (60*60));
+		var tM = Math.floor((timer - (tD*24*60*60) - (tH*60*60)) / 60);
+		var tS = Math.floor(timer - (tD*24*60*60) - (tH*60*60) - (tM*60));
+		
+		if (tD < 10) { tD = '0' + tD; }
+		if (tH < 10) { tH = '0' + tH; }
+		if (tM < 10) { tM = '0' + tM; }
+		if (tS < 10) { tS = '0' + tS; }
+		
+		$(this).html(tD + ':' + tH + ':' + tM + ':' + tS);
+	});
+}, 1000);
+
 //-------------------------------------------------------------------------------------- ON LOAD -------------------------------------------------------
 
 $(window).on('load', function() {

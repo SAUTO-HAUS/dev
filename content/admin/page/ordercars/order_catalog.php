@@ -393,7 +393,7 @@ $last_car_id = 0;
                         <?= sprintf('%02d:%02d:%02d:%02d', $days, $hours, $minutes, $seconds) ?>
                     </div>
                 <?php else : ?>
-                    <div class="offer-expired" style="color: #721c24; font-weight: bold; font-size: 0.9rem;">
+                    <div class="offer-expired" style="color: #dc3545; font-weight: bold; font-size: 0.9rem;">
                         <?php 
                             if ($_COOKIE['lang'] == 'ro') echo 'Oferta a expirat';
                             elseif ($_COOKIE['lang'] == 'ru') echo 'Предложение истекло';
