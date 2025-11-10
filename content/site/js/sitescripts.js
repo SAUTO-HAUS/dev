@@ -951,12 +951,6 @@ setInterval(function(){
 		var timer = endTime - now;
 		
 		if (timer <= 0) {
-			var expiredText = 'Offer expired';
-			var lang = document.cookie.match(/lang=([^;]+)/);
-			if (lang && lang[1] == 'ro') expiredText = 'Oferta a expirat';
-			else if (lang && lang[1] == 'ru') expiredText = 'Предложение истекло';
-			$(this).html(expiredText);
-			$(this).parent('.offer-timer').css({'font-size': '0.75rem', 'padding': '3px 8px'});
 			return;
 		}		
 		var tD = Math.floor(timer / (24*60*60));
