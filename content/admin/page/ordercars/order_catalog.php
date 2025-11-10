@@ -438,8 +438,13 @@ $last_car_id = 0;
                                              String(minutes).padStart(2, '0') + ':' + 
                                              String(seconds).padStart(2, '0');
                     } else {
-                        // Timer expired - reload page to show "Oferta a expirat"
-                        location.reload();
+                        // Timer expired - show expired text
+                        var expiredText = 'Offer expired';
+                        var lang = document.cookie.match(/lang=([^;]+)/);
+                        if (lang && lang[1] == 'ro') expiredText = 'Oferta a expirat';
+                        else if (lang && lang[1] == 'ru') expiredText = 'Предложение истекло';
+                        display.textContent = expiredText;
+                        display.parentElement.style.fontSize = '0.9rem';
                     }
                 });
             });
@@ -510,8 +515,13 @@ document.addEventListener('DOMContentLoaded', function() {
                                      String(minutes).padStart(2, '0') + ':' + 
                                      String(seconds).padStart(2, '0');
             } else {
-                // Timer expired - reload page to show "Oferta a expirat"
-                location.reload();
+                // Timer expired - show expired text
+                var expiredText = 'Offer expired';
+                var lang = document.cookie.match(/lang=([^;]+)/);
+                if (lang && lang[1] == 'ro') expiredText = 'Oferta a expirat';
+                else if (lang && lang[1] == 'ru') expiredText = 'Предложение истекло';
+                display.textContent = expiredText;
+                display.parentElement.style.fontSize = '0.9rem';
             }
         });
     }
