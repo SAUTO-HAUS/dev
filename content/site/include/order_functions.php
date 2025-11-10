@@ -481,7 +481,11 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 				$timer_html_for_image = '<div class="offer-timer" style="position: absolute; bottom: 32px; right: 1.3rem; color: #dc3545; font-weight: bold; font-size: 1rem; background: rgba(255,255,255,0.9); padding: 5px 10px; border-radius: 4px; z-index: 10;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.sprintf('%02d:%02d:%02d:%02d', $days_check, $hours_check, $minutes_check, $seconds_check).'</div></div>';
 			} else {
 				// Timer expired - show expired text
-				$expired_text = isset($lng['offer_expired']) ? $lng['offer_expired'] : 'Offer expired';
+				$expired_text = 'Offer expired';
+				if (isset($_COOKIE['lang'])) {
+					if ($_COOKIE['lang'] == 'ro') $expired_text = 'Oferta a expirat';
+					elseif ($_COOKIE['lang'] == 'ru') $expired_text = 'Предложение истекло';
+				}
 				$timer_html_for_image = '<div class="offer-timer" style="position: absolute; bottom: 32px; right: 1.3rem; color: #dc3545; font-weight: bold; font-size: 0.75rem; background: rgba(255,255,255,0.9); padding: 3px 8px; border-radius: 4px; z-index: 10;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.$expired_text.'</div></div>';
 			}
 		}
@@ -584,7 +588,11 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 				$timer_html = '<div class="offer-timer active" style="position: absolute; top: 17.5rem; right: 0.8rem; color: #dc3545; font-weight: bold; font-size: 0.85rem; background: rgba(255,255,255,0.9); padding: 5px 10px; border-radius: 4px; z-index: 10;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.sprintf('%02d:%02d:%02d:%02d', $days, $hours, $minutes, $seconds).'</div></div>';
 			} else {
 				// Timer expired - show expired text
-				$expired_text = isset($lng['offer_expired']) ? $lng['offer_expired'] : 'Oferta expirată';
+				$expired_text = 'Offer expired';
+				if (isset($_COOKIE['lang'])) {
+					if ($_COOKIE['lang'] == 'ro') $expired_text = 'Oferta a expirat';
+					elseif ($_COOKIE['lang'] == 'ru') $expired_text = 'Предложение истекло';
+				}
 				$timer_html = '<div class="offer-timer expired" style="position: absolute; top: 17.5rem; right: 0.8rem; color: #dc3545; font-weight: bold; font-size: 0.75rem; background: rgba(255,255,255,0.9); padding: 3px 8px; border-radius: 4px; z-index: 10;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.$expired_text.'</div></div>';
 			}
 		}
