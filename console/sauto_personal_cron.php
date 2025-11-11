@@ -231,9 +231,11 @@ try {
                 }
                 
                 // Apply smart engine volume conversion before API call
+                echo "[" . date('Y-m-d H:i:s') . "] Car volume from DB: " . ($carData['vol'] ?? 'NULL') . " cm³\n";
                 if (!empty($carData['vol'])) {
                     $engineVolumeCm3 = (int)$carData['vol'];
                     $engineVolumeLiters = $engineVolumeCm3 / 1000;
+                    echo "[" . date('Y-m-d H:i:s') . "] Converted to: {$engineVolumeLiters} liters\n";
                     
                     // Map engine volume to 999.md option IDs
                     $volumeMap = [
