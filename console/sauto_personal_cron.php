@@ -103,12 +103,31 @@ try {
         try {
             echo "[" . date('Y-m-d H:i:s') . "] Processing schedule ID: {$schedule['id']}, Car ID: {$schedule['car_id']}, Type: {$schedule['catalog_type']}\n";
             
-            // Determine which 999.md account to use based on catalog_type
+            // Get car data to determine which 999.md account to use
+            $carStmt = $db->prepare("SELECT 999_api_id FROM {$prefx}_car_ctlg WHERE id = :car_id");
+            $carStmt->execute(['car_id' => $schedule['car_id']]);
+            $carInfo = $carStmt->fetch();
+            
+            // Determine which 999.md account to use based on car's 999_api_id or catalog_type
             $catalogType = $schedule['catalog_type'];
+            $apiAccountId = !empty($carInfo['999_api_id']) ? $carInfo['999_api_id'] : null;
+            
             if ($catalogType === 'in_stock') {
-                $apiAccount = $settings['regular_999md_account']; // SAUTO-HAUS
-                $apiToken = $settings['regular_999md_token'];
-                echo "[" . date('Y-m-d H:i:s') . "] Using STOCK account: {$apiAccount}\n";
+                // For in_stock cars, use 999_api_id from car or default to regular account
+                if ($apiAccountId == 1) {
+                    $apiAccount = $settings['sautohaus_999md_account'] ?? 'SAUTO-HAUS';
+                    $apiToken = $settings['sautohaus_999md_token'] ?? $settings['regular_999md_token'];
+                    echo "[" . date('Y-m-d H:i:s') . "] Using STOCK account: {$apiAccount} (Account ID: 1)\n";
+                } elseif ($apiAccountId == 2) {
+                    $apiAccount = 'Sauto-auto-comerciale';
+                    $apiToken = $settings['regular_999md_token'];
+                    echo "[" . date('Y-m-d H:i:s') . "] Using STOCK account: {$apiAccount} (Account ID: 2)\n";
+                } else {
+                    // Default to regular account (currently Sauto-auto-comerciale)
+                    $apiAccount = $settings['regular_999md_account'];
+                    $apiToken = $settings['regular_999md_token'];
+                    echo "[" . date('Y-m-d H:i:s') . "] Using STOCK account: {$apiAccount} (Default)\n";
+                }
             } elseif ($catalogType === 'on_order') {
                 $apiAccount = $settings['order_999md_account']; // Sauto-stock-extern
                 $apiToken = $settings['order_999md_token'];
@@ -122,7 +141,9 @@ try {
                 echo "[" . date('Y-m-d H:i:s') . "] Car {$schedule['car_id']} has existing 999.md ID: {$schedule['existing_999_id']} - republishing on {$apiAccount}\n";
                 
                 // Use 999.md API to republish/boost the ad with correct account
-                $api999Service = \App\Services\Api999Service::createFromSettings($catalogType);
+                // Create API service with the determined account ID
+                $accountIdForApi = ($catalogType === 'in_stock') ? ($apiAccountId ?? 2) : 3;
+                $api999Service = new \App\Services\Api999Service($accountIdForApi);
                 $result = $api999Service->republishAdvert($schedule['existing_999_id']);
                 
                 if ($result && isset($result['success']) && $result['success']) {
@@ -266,7 +287,9 @@ try {
                 
                 // Create new 999.md listing using saved data
                 try {
-                    $api999Service = \App\Services\Api999Service::createFromSettings($catalogType);
+                    // Create API service with the determined account ID
+                    $accountIdForApi = ($catalogType === 'in_stock') ? ($apiAccountId ?? 2) : 3;
+                    $api999Service = new \App\Services\Api999Service($accountIdForApi);
                     $result = $api999Service->setAdvert(
                         $featuresData['category_id'],
                         $featuresData['subcategory_id'], 
