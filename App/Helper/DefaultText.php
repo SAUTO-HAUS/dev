@@ -41,8 +41,8 @@ class DefaultText
             }
         }
         
-        // for Sauto-auto-comerciale
-        if ($account_id == 2 && !in_array('37379600616', $contacts)) {
+        // Add 37379600616 for SAUTO-HAUS (account 1) and Sauto-auto-comerciale (account 2)
+        if (($account_id == 1 || $account_id == 2) && !in_array('37379600616', $contacts)) {
             $contacts[] = '37379600616';
         }
         
