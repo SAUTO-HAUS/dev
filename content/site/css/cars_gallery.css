@@ -5,14 +5,16 @@
 .timer-display {
     font-family: 'Orbitron', monospace !important;
     font-weight: 900 !important;
-    font-size: 1.1rem !important;
+    font-size: 1rem !important;
     letter-spacing: 0.15em !important;
     color: #FF0000 !important;
     background: #000000 !important;
-    padding: 8px 12px !important;
+    padding: 4px 4px !important;
     border-radius: 4px !important;
     display: inline-block !important;
     line-height: 1 !important;
+    width: 150px !important;
+    text-align: center !important;
 }
 
 .param_b {
