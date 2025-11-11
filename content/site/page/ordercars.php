@@ -860,7 +860,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                         }
 
                         // Prepare the import country text with flag aligned on mobile
-                        $import_country_text = '<div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px; font-weight: bold; min-width: 200px;">
+                        $import_country_text = '<div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 10px; font-weight: bold; min-width: 200px;">
                             <div style="text-align: right;"><span style="color: #666; font-weight: 500;">' . $country_label . ': </span><span style="color: #000000; font-weight: bold;">' . $country_name . '</span></div>
                             ' . (!empty($flag_html) ? $flag_html : '') . '
                         </div>';
