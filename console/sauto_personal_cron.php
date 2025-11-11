@@ -266,13 +266,16 @@ try {
                     foreach ($featuresData['features'] as $index => $feature) {
                         if ($feature['id'] === '103') {
                             $hasFeature103 = true;
+                            echo "[" . date('Y-m-d H:i:s') . "] Found feature 103 with value: " . ($feature['value'] ?? 'NULL') . "\n";
                         }
                         if ($feature['id'] === '2553') {
                             $hasFeature2553 = true;
+                            echo "[" . date('Y-m-d H:i:s') . "] Found feature 2553 with value: " . ($feature['value'] ?? 'NULL') . "\n";
                             // Check if feature 2553 is empty or invalid
                             if (empty($feature['value']) || trim($feature['value']) === '') {
                                 if ($optionId) {
                                     $featuresData['features'][$index]['value'] = $optionId;
+                                    echo "[" . date('Y-m-d H:i:s') . "] Updated feature 2553 to: {$optionId}\n";
                                 }
                             }
                         }
@@ -284,7 +287,10 @@ try {
                             "id" => "2553",
                             "value" => $optionId
                         ];
+                        echo "[" . date('Y-m-d H:i:s') . "] Added feature 2553 with value: {$optionId}\n";
                     }
+                    
+                    echo "[" . date('Y-m-d H:i:s') . "] Final check - hasFeature103: " . ($hasFeature103 ? 'YES' : 'NO') . ", hasFeature2553: " . ($hasFeature2553 ? 'YES' : 'NO') . ", optionId: " . ($optionId ?? 'NULL') . "\n";
                 }
                 
                 // Create new 999.md listing using saved data
