@@ -856,11 +856,14 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                         // Check if the flag exists and add it
                         $flag_html = '';
                         if (!empty($country_code) && file_exists($_SERVER['DOCUMENT_ROOT'] . '/media/images/flags/' . $country_code . '.svg')) {
-                            $flag_html = '<img src="/media/images/flags/' . $country_code . '.svg" alt="' . $country_name . ' flag" style="width: 38px; height: 32px; display: block; margin-left: auto;">';
+                            $flag_html = '<img src="/media/images/flags/' . $country_code . '.svg" alt="' . $country_name . ' flag" style="width: 38px; height: 32px;">';
                         }
 
-                        // Prepare the import country text with same styling as product cards
-                        $import_country_text = '<div style="font-weight: bold; text-align: right; min-width: 200px;"><span style="color: #666; font-weight: 500;">' . $country_label . ': </span><span style="color: #000000; font-weight: bold;">' . $country_name . '</span></div>';
+                        // Prepare the import country text with flag aligned on mobile
+                        $import_country_text = '<div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px; font-weight: bold; min-width: 200px;">
+                            <div style="text-align: right;"><span style="color: #666; font-weight: 500;">' . $country_label . ': </span><span style="color: #000000; font-weight: bold;">' . $country_name . '</span></div>
+                            ' . (!empty($flag_html) ? $flag_html : '') . '
+                        </div>';
                     }
                 }
 
@@ -868,10 +871,6 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
 
                 // Display the characteristics title
                 $rtrn .= '<div>';
-                // Add flag above if exists
-                if (!empty($flag_html)) {
-                    $rtrn .= '<div style="text-align: right; margin-bottom: -5px; margin-top: -20px; margin-right: -5px;">' . $flag_html . '</div>';
-                }
                 // Title and import country text aligned horizontally
                 $rtrn .= '<div style="display: flex; justify-content: space-between; align-items: center; margin: 0; padding: 0;">';
 
