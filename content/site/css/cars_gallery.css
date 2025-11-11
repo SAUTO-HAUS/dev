@@ -378,7 +378,7 @@ html.with-fancybox body {
         display: none;
     }
     .prc.pricemobile {
-        display: none;
+        display: none !important;
     }
     .btn_params.mobile {
         display: none;
