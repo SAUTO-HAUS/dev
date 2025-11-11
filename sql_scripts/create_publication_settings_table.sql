@@ -14,13 +14,19 @@ INSERT INTO `gh3sp_settings` (`name`, `value`) VALUES
 ('location_2_facebook_token', 'EAAPYJ3JWk0UBPhHoFrglY8vNF9Jrm40RdjCvuPkYB0mO226K3yqF5qQrZAUasvkmAidLqK87dTZCCRyVwpMReuR5EKscMKwJjoAFZAiTUwjMSjLdstz15BmWr6QQfJR8YBKZAkBy0ksMHXwdvL8vzZAUpoF5K7osglWrLVQZB91xbtFJnUkw2MZCMhZAB6YRMATSJc46'),
 
 -- 999.md API settings
+-- Account 1: SAUTO-HAUS (pentru mașini in_stock standard)
 ('regular_999md_account', 'SAUTO-HAUS'),
 ('regular_999md_token', 'I_SKyGEvvG5Rfm7lRZeiOTwk7r_F'),
+-- Account 2: Sauto-auto-comerciale (pentru promovare personalizată)
+('comerciale_999md_account', 'Sauto-auto-comerciale'),
+('comerciale_999md_token', 'EeKkPqGFjEhJZIK3S5KWh59w8jNG'),
+-- Account 3: Sauto-stock-extern (pentru mașini on_order)
 ('order_999md_account', 'Sauto-stock-extern'),
 ('order_999md_token', 'jMEsHjO0FhoRZm0KSsONLpkGLMIK'),
 
 -- Auto-publication settings
 ('auto_publish_regular', '1'),
+('auto_publish_comerciale', '1'),
 ('auto_publish_order', '1')
 AS new_values
 ON DUPLICATE KEY UPDATE value = new_values.value;
