@@ -1092,7 +1092,15 @@ $iconTelegramParams = array(
                                 
                                 <a class="btn call" href="tel:'.$dynamicPhone.'">'.$lng['w']['call'].'</a>
                                 
-                                 <div class="btn msg2" onclick="showBitrixFormOrdercars()" style="display: inline-flex; align-items: center; justify-content: center; height: 3rem; box-sizing: border-box;">'.$lng['w']['message'].'</div>
+                                                                 <div class="btn msg2">
+                                  <script data-b24-form="click/6/ijhsqr" data-skip-moving="true">
+(function(w,d,u){
+var s=d.createElement(\'script\');s.async=true;s.src=u+\'?\'+(Date.now()/180000|0);
+var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
+})(window,document,\'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_6.js\');
+</script>
+                                </div>
+ 
                                 
 
                                 <div class="btn msg" style="display: none" >
@@ -1538,115 +1546,5 @@ $iconTelegramParams = array(
         }
     }
 }
-
-// Add Bitrix24 modal and hidden forms for order cars
-$rtrn .= '
-<!-- Bitrix24 Modal for Order Cars -->
-<div id="bitrix-modal-ordercars" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:10000;">
-    <div style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
-        <div style="width:90%; max-width:600px; max-height:80%; background:white; border-radius:8px; overflow:auto; padding:20px; position:relative;">
-            <!-- Close button inside container -->
-            <button id="close-modal-ordercars" onclick="closeBitrixModalOrdercars()" style="position:absolute; top:10px; right:15px; background:#e74c3c; border:none; color:white; font-size:20px; font-weight:normal; cursor:pointer; z-index:2; width:34px; height:34px; display:flex; align-items:center; justify-content:center; border-radius:50%; line-height:1; transition: all 0.2s;" onmouseover="this.style.backgroundColor=\'#d62c1a\'; this.style.transform=\'scale(1.1)\'" onmouseout="this.style.backgroundColor=\'#e74c3c\'; this.style.transform=\'scale(1)\'">&times;</button>
-            <!-- Container for Bitrix Forms -->
-            <div id="bitrix-form-container-ordercars">
-                <!-- Forms will be loaded here dynamically -->
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Hidden Bitrix24 Forms for Order Cars -->
-<div style="position: absolute; left: -9999px; top: -9999px;">
-    <!-- RO Form -->
-    <div id="bitrix-form-ordercars-ro">
-        <script data-b24-form="inline/26/8tdsm4" data-skip-moving="true">
-        (function(w,d,u){
-        var s=d.createElement(\'script\');s.async=true;s.src=u+\'?\'+(Date.now()/180000|0);
-        var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
-        })(window,document,\'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_26.js\');
-        </script>
-    </div>
-    
-    <!-- EN Form -->
-    <div id="bitrix-form-ordercars-en">
-        <script data-b24-form="inline/16/h3xj6k" data-skip-moving="true">
-        (function(w,d,u){
-        var s=d.createElement(\'script\');s.async=true;s.src=u+\'?\'+(Date.now()/180000|0);
-        var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
-        })(window,document,\'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_16.js\');
-        </script>
-    </div>
-    
-    <!-- RU Form -->
-    <div id="bitrix-form-ordercars-ru">
-        <script data-b24-form="inline/10/rh1qfd" data-skip-moving="true">
-        (function(w,d,u){
-        var s=d.createElement(\'script\');s.async=true;s.src=u+\'?\'+(Date.now()/180000|0);
-        var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
-        })(window,document,\'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_10.js\');
-        </script>
-    </div>
-</div>
-
-<script>
-// JavaScript for Bitrix24 Forms in Order Cars
-function showBitrixFormOrdercars() {
-    var currentLang = "'.($_COOKIE['lang'] ?? 'ro').'";
-    console.log(\'Showing Bitrix form for language:\', currentLang);
-    
-    var formElement = document.getElementById(\'bitrix-form-ordercars-\' + currentLang);
-    if (!formElement) {
-        console.log(\'Language not found, falling back to Romanian\');
-        formElement = document.getElementById(\'bitrix-form-ordercars-ro\');
-    }
-    
-    if (formElement) {
-        console.log(\'Moving form to modal container...\');
-        
-        var container = document.getElementById(\'bitrix-form-container-ordercars\');
-        container.innerHTML = \'\';
-        
-        var formClone = formElement.cloneNode(true);
-        container.appendChild(formClone);
-        
-        document.getElementById(\'bitrix-modal-ordercars\').style.display = \'block\';
-        document.body.style.overflow = \'hidden\';
-        document.documentElement.style.overflow = \'hidden\';
-        
-        var scriptElement = formClone.querySelector(\'script\');
-        if (scriptElement) {
-            console.log(\'Executing Bitrix script in modal...\');
-            try {
-                var newScript = document.createElement(\'script\');
-                newScript.innerHTML = scriptElement.innerHTML;
-                Array.from(scriptElement.attributes).forEach(attr => {
-                    newScript.setAttribute(attr.name, attr.value);
-                });
-                container.appendChild(newScript);
-            } catch(e) {
-                console.log(\'Error executing script:\', e);
-            }
-        }
-    } else {
-        console.log(\'No form element found!\');
-    }
-}
-
-function closeBitrixModalOrdercars() {
-    document.getElementById(\'bitrix-modal-ordercars\').style.display = \'none\';
-    document.getElementById(\'bitrix-form-container-ordercars\').innerHTML = \'\';
-    document.body.style.overflow = \'\';
-    document.documentElement.style.overflow = \'\';
-}
-
-// Close modal when clicking outside
-window.onclick = function(event) {
-    var modal = document.getElementById(\'bitrix-modal-ordercars\');
-    if (event.target == modal) {
-        closeBitrixModalOrdercars();
-    }
-}
-</script>
-';
 
 echo $rtrn;
