@@ -13,8 +13,6 @@ $(document).ready(function(){
 	
 })
 
-var zHtml = $('#hidden > .folder').prop('outerHTML');
-overlay(1, $('#hidden > .folder'), 'full');
 //-------------------------------------------------------------------------------------- GLOBAL -------------------------------------------------------
 function overlay(e, zHtml, zCont){
 	if (typeof e !== 'undefined'){
