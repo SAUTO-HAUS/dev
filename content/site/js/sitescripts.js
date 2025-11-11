@@ -1049,7 +1049,11 @@ function animatePredatorCanvas() {
 	});
 }
 
-initPredatorCanvas();
+setTimeout(function() {
+	initPredatorCanvas();
+	animatePredatorCanvas();
+}, 50);
+
 setInterval(animatePredatorCanvas, 1000);
 setInterval(initPredatorCanvas, 1000);
 
