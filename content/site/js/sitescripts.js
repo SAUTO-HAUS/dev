@@ -981,10 +981,76 @@ setInterval(function(){
 $(window).on('load', function() {
 /*
 $('#info_left .gallery_image img').each(function(){
-	var imgSrc = $(this).attr('src');
-	var newSrc = imgSrc.replace('/low/','/high/');
-	$('#preloaded_img').append('<img src="'+newSrc+'" />');
+var imgSrc = $(this).attr('src');
+var newSrc = imgSrc.replace('/low/','/high/');
+$('#preloaded_img').append('<img src="'+newSrc+'" />');
 })	
 */
+
+// Predator LED segments after timer
+const activeColor = "#ff0707";
+const passiveColor = "#330000";
+
+// Segment coordinates (diagonal style like in your code)
+const segmentCoordinates = [
+	[30, 7, 35, 1],   // top mid
+	[35, 7, 42, 6],   // right up
+	[28, 7, 24, 3],   // left up
+	[28, 9, 24, 10],  // left bottom
+	[32, 9, 42, 12],  // right bottom
+	[35, 17, 42, 16], // right up bottom
+	[28, 17, 24, 13], // left up bottom
+	[30, 20, 35, 28], // bottom
+	[28, 19, 22, 20], // left bottom lower
+	[32, 19, 42, 22]  // right bottom lower
+];
+
+function initPredatorCanvas() {
+	$('.timer-display').each(function() {
+		// Check if predator wrapper already exists next to timer
+		if (!$(this).next('.predator-wrapper').length) {
+			const canvasId = 'predator-' + Math.random().toString(36).substr(2, 9);
+			$(this).after('<div class="predator-wrapper" style="display: inline-block; vertical-align: middle;"><canvas class="predator-canvas" id="' + canvasId + '" width="50" height="35"></canvas></div>');
+		}
+	});
+}
+
+function drawLine(ctx, startX, startY, endX, endY, color) {
+	ctx.beginPath();
+	ctx.lineWidth = 3;
+	ctx.lineCap = "round";
+	ctx.strokeStyle = color;
+	ctx.moveTo(startX, startY);
+	ctx.lineTo(endX, endY);
+	ctx.stroke();
+}
+
+function drawSegments(ctx, coordinates, offsetX) {
+	for (let i = 0; i < coordinates.length; i++) {
+		const color = Math.random() > 0.5 ? activeColor : passiveColor;
+		drawLine(
+			ctx,
+			coordinates[i][0] + offsetX,
+			coordinates[i][1],
+			coordinates[i][2] + offsetX,
+			coordinates[i][3],
+			color
+		);
+	}
+}
+
+function animatePredatorCanvas() {
+	$('.predator-canvas').each(function() {
+		const ctx = this.getContext('2d');
+		ctx.clearRect(0, 0, this.width, this.height);
+		
+		// Draw 1 symbol with random segments
+		drawSegments(ctx, segmentCoordinates, 0);
+	});
+}
+
+initPredatorCanvas();
+setInterval(animatePredatorCanvas, 1000);
+setInterval(initPredatorCanvas, 1000);
 
 })
