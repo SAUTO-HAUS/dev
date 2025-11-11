@@ -419,14 +419,41 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
 
                 $z_stat = '';
                 if ( $r['n_a']==0 && $r['act']==1 ){
-                    $z_stat .= ( $r['soon']==1 ) ? '<div class="stat soon1">'.$lng['l']['stat']['soon1'].'</div>' : '<div class="stat n_a0">'.$lng['l']['stat']['n_a0'].'</div>';
-                    $z_stat .= ($r['top']==1) ? '<div class="stat top1">'.$lng['l']['stat']['top1'].'</div>' : '';
-                    $z_stat .= ($r['prc_n']!=0 && $r['prc_t']>time()) ? '<div class="stat prc_n">'.$lng['l']['stat']['prc_n'].'</div>' : '';
-                    $z_stat .= ($r['tva']==1) ? '<div class="stat top1">'.$lng['l']['stat']['vat'].'</div>' : '';
-                    $z_stat .= ($r['gift']==1) ? '<div class="stat gift">+ '.$lng['l']['stat']['gift'].'</div>' : '';
+                    // For on_order catalog type, show "On Order" status and timer
+                    if (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') {
+                        // Add "On Order" status with same style as in cards
+                        $on_order_text = $lng['w']['on_order'] ?? 'On Order';
+                        $z_stat .= '<div class="stat" style="background-color: #CE3226; color: #fff; font-weight: bold;"><span class="stock-status on-order">'.$on_order_text.'</span></div>';
+                        
+                        // Add offer timer if exists
+                        if (!empty($r['offer_timer_end'])) {
+                            $time_remaining = $r['offer_timer_end'] - time();
+                            if ($time_remaining > 0) {
+                                $days = floor($time_remaining / 86400);
+                                $hours = floor(($time_remaining % 86400) / 3600);
+                                $minutes = floor(($time_remaining % 3600) / 60);
+                                $seconds = $time_remaining % 60;
+                                $z_stat .= '<div class="stat" style="background: #dc3545; color: white; font-weight: bold;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.sprintf('%02d:%02d:%02d:%02d', $days, $hours, $minutes, $seconds).'</div></div>';
+                            } else {
+                                $expired_text = 'Offer expired';
+                                if (isset($_COOKIE['lang'])) {
+                                    if ($_COOKIE['lang'] == 'ro') $expired_text = 'Oferta a expirat';
+                                    elseif ($_COOKIE['lang'] == 'ru') $expired_text = 'Предложение истекло';
+                                }
+                                $z_stat .= '<div class="stat" style="background: #dc3545; color: white; font-weight: bold;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.$expired_text.'</div></div>';
+                            }
+                        }
+                    } else {
+                        // For regular cars, show all statuses
+                        $z_stat .= ( $r['soon']==1 ) ? '<div class="stat soon1">'.$lng['l']['stat']['soon1'].'</div>' : '<div class="stat n_a0">'.$lng['l']['stat']['n_a0'].'</div>';
+                        $z_stat .= ($r['top']==1) ? '<div class="stat top1">'.$lng['l']['stat']['top1'].'</div>' : '';
+                        $z_stat .= ($r['prc_n']!=0 && $r['prc_t']>time()) ? '<div class="stat prc_n">'.$lng['l']['stat']['prc_n'].'</div>' : '';
+                        $z_stat .= ($r['tva']==1) ? '<div class="stat top1">'.$lng['l']['stat']['vat'].'</div>' : '';
+                        $z_stat .= ($r['gift']==1) ? '<div class="stat gift">+ '.$lng['l']['stat']['gift'].'</div>' : '';
+                    }
 
-                    // Add import country with prominent style
-                    $import_country_id = isset($r['import_country_id']) ? $r['import_country_id'] : null;
+                // Add import country with prominent style
+                $import_country_id = isset($r['import_country_id']) ? $r['import_country_id'] : null;
 
                     // Force database check if we don't have import_country_id
                     if (empty($import_country_id)) {
