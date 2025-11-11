@@ -32,6 +32,13 @@ class DefaultText
             return ['37379600326'];
         }
         
+        // Special case for Sauto-auto-comerciale 
+        if ($account_id == 2) {
+            __log("Returning hardcoded phone for Sauto-auto-comerciale: 37379600616", 'phone_debug.log');
+            return ['37379600616'];
+        }
+        
+        // For other accounts (SAUTO-HAUS, etc.), get phones from API
         __log("Getting phones from API for account_id: " . $account_id, 'phone_debug.log');
         $phones = (new Api999Service($account_id))->getPhones();
         $contacts = [];
@@ -39,11 +46,6 @@ class DefaultText
             foreach ($phones['phone_numbers'] as $phone) {
                 $contacts[] = $phone['phone_number'];
             }
-        }
-        
-        // Add 37379600616 ONLY for Sauto-auto-comerciale (account 2)
-        if ($account_id == 2 && !in_array('37379600616', $contacts)) {
-            $contacts[] = '37379600616';
         }
         
         __log("API returned contacts: " . json_encode($contacts), 'phone_debug.log');
