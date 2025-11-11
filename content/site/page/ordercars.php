@@ -789,9 +789,30 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 $rtrn .= '<div class="spc_bx">';
                 $rtrn .= '<h1 class="name">'.$r['br_nm'].' '.$r['mo_nm'].' <span class="fl">'. $r['mlg'].', '.$lng['l']['car']['fl'][$r['fl']].', '.$lng['l']['car']['tra'][$r['tra']].'</span></h1>';
 
-                $rtrn .= ' <div class="prc pricemobile">
+                // Generate mobile timer HTML if exists
+                $mobile_timer_html = '';
+                if (!empty($r['offer_timer_end'])) {
+                    $time_remaining_mobile = $r['offer_timer_end'] - time();
+                    if ($time_remaining_mobile > 0) {
+                        $days_m = floor($time_remaining_mobile / 86400);
+                        $hours_m = floor(($time_remaining_mobile % 86400) / 3600);
+                        $minutes_m = floor(($time_remaining_mobile % 3600) / 60);
+                        $seconds_m = $time_remaining_mobile % 60;
+                        $mobile_timer_html = '<div style="display: inline-block; background: #dc3545; color: white; font-weight: bold; padding: 5px 10px; border-radius: 4px; margin-left: 10px; font-size: 0.9rem;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.sprintf('%02d:%02d:%02d:%02d', $days_m, $hours_m, $minutes_m, $seconds_m).'</div></div>';
+                    } else {
+                        $expired_text_m = 'Offer expired';
+                        if (isset($_COOKIE['lang'])) {
+                            if ($_COOKIE['lang'] == 'ro') $expired_text_m = 'Oferta a expirat';
+                            elseif ($_COOKIE['lang'] == 'ru') $expired_text_m = 'Предложение истекло';
+                        }
+                        $mobile_timer_html = '<div style="display: inline-block; background: #dc3545; color: white; font-weight: bold; padding: 5px 10px; border-radius: 4px; margin-left: 10px; font-size: 0.9rem;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.$expired_text_m.'</div></div>';
+                    }
+                }
+
+                $rtrn .= ' <div class="prc pricemobile" style="display: flex; align-items: center; justify-content: space-between;">
                                         <span class="val" title="'.$lng['w']['prc'].'">'.( $r['prc']>100 ? '<span class="i">'.parseCurr($prc).'</span> <span class="cur">'.( symb_rplc($r['cur']) ).'</span>' : '<span style="font-size: 1.5rem;">'.$lng['w']['negociabil'] ).'</span></span>
                                         '.$o_prc_bl.'
+                                        '.$mobile_timer_html.'
                                     </div> 
                             
                                     <div class="clear"> </div>
