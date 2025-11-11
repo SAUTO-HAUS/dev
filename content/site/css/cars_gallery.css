@@ -383,6 +383,9 @@ html.with-fancybox body {
     .btn_params.mobile {
         display: none;
     }
+    .mobile-only-timer {
+        display: none !important;
+    }
 }
 @media (max-width:640px){
     .block_txt_params .lng {

@@ -798,14 +798,14 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                         $hours_m = floor(($time_remaining_mobile % 86400) / 3600);
                         $minutes_m = floor(($time_remaining_mobile % 3600) / 60);
                         $seconds_m = $time_remaining_mobile % 60;
-                        $mobile_timer_html = '<div style="display: inline-block; background: #dc3545; color: white; font-weight: bold; padding: 5px 10px; border-radius: 4px; margin-left: 10px; font-size: 0.9rem;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.sprintf('%02d:%02d:%02d:%02d', $days_m, $hours_m, $minutes_m, $seconds_m).'</div></div>';
+                        $mobile_timer_html = '<div class="mobile-only-timer" style="display: inline-block; background: #dc3545; color: white; font-weight: bold; padding: 5px 10px; border-radius: 4px; margin-left: 10px; font-size: 0.9rem;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.sprintf('%02d:%02d:%02d:%02d', $days_m, $hours_m, $minutes_m, $seconds_m).'</div></div>';
                     } else {
                         $expired_text_m = 'Offer expired';
                         if (isset($_COOKIE['lang'])) {
                             if ($_COOKIE['lang'] == 'ro') $expired_text_m = 'Oferta a expirat';
                             elseif ($_COOKIE['lang'] == 'ru') $expired_text_m = 'Предложение истекло';
                         }
-                        $mobile_timer_html = '<div style="display: inline-block; background: #dc3545; color: white; font-weight: bold; padding: 5px 10px; border-radius: 4px; margin-left: 10px; font-size: 0.9rem;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.$expired_text_m.'</div></div>';
+                        $mobile_timer_html = '<div class="mobile-only-timer" style="display: inline-block; background: #dc3545; color: white; font-weight: bold; padding: 5px 10px; border-radius: 4px; margin-left: 10px; font-size: 0.9rem;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.$expired_text_m.'</div></div>';
                     }
                 }
 
