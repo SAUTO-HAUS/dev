@@ -41,7 +41,8 @@ class DefaultText
             }
         }
         
-        if (!in_array('37379600616', $contacts)) {
+        // for Sauto-auto-comerciale
+        if ($account_id == 2 && !in_array('37379600616', $contacts)) {
             $contacts[] = '37379600616';
         }
         
