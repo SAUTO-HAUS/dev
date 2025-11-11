@@ -281,8 +281,8 @@ try {
                         }
                     }
                     
-                    // If no engine volume features exist, add feature 2553 (liters)
-                    if (!$hasFeature103 && !$hasFeature2553 && $optionId) {
+                    // If feature 2553 doesn't exist, add it (even if feature 103 exists)
+                    if (!$hasFeature2553 && $optionId) {
                         $featuresData['features'][] = [
                             "id" => "2553",
                             "value" => $optionId
