@@ -951,7 +951,10 @@ setInterval(function(){
 		var timer = endTime - now;
 		
 		if (timer <= 0) {
-			// Timer expired - show expired text
+			var currentText = $(this).text().trim();
+			if (currentText && currentText !== '00:00:00:00') {
+				return;
+			}
 			var expiredText = 'Offer expired';
 			var lang = document.cookie.match(/lang=([^;]+)/);
 			if (lang && lang[1] == 'ro') expiredText = 'Oferta a expirat';
