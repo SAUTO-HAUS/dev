@@ -1092,14 +1092,52 @@ $iconTelegramParams = array(
                                 
                                 <a class="btn call" href="tel:'.$dynamicPhone.'">'.$lng['w']['call'].'</a>
                                 
-                                                                 <div class="btn msg2">
-                                  <script data-b24-form="click/6/ijhsqr" data-skip-moving="true">
+                                <div class="btn msg2" onclick="openBitrixFormPopup()" style="line-height:3rem; padding-top:0; padding-bottom:0;">'.$lng['w']['message'].'</div>
+                                
+                                <!-- Bitrix Form Popup -->
+                                <div id="bitrix-form-popup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
+                                    <div style="position:relative; background:#fff; padding:2rem; border-radius:1rem; max-width:600px; width:90%; max-height:90vh; overflow-y:auto;">
+                                        <button onclick="closeBitrixFormPopup()" style="position:absolute; top:0.2rem; right:0.2rem; background:#e2001a; color:#fff; border:none; width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:20px; line-height:1;">×</button>
+                                        <div id="bitrix-form-container">
+                                            ';
+                                // Determine which form to use based on language
+                                if ($_COOKIE['lang'] == 'ro') {
+                                    $formId = 'inline/26/8tdsm4';
+                                    $loaderId = '26';
+                                } elseif ($_COOKIE['lang'] == 'en') {
+                                    $formId = 'inline/16/h3xj6k';
+                                    $loaderId = '16';
+                                } else { // ru (default)
+                                    $formId = 'inline/10/rh1qfd';
+                                    $loaderId = '10';
+                                }
+                                $rtrn .= '
+                                            <script data-b24-form="'.$formId.'" data-skip-moving="true">
 (function(w,d,u){
 var s=d.createElement(\'script\');s.async=true;s.src=u+\'?\'+(Date.now()/180000|0);
 var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
-})(window,document,\'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_6.js\');
+})(window,document,\'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_'.$loaderId.'.js\');
 </script>
+                                        </div>
+                                    </div>
                                 </div>
+                                
+                                <script>
+                                function openBitrixFormPopup() {
+                                    document.getElementById(\'bitrix-form-popup\').style.display = \'flex\';
+                                    document.body.style.overflow = \'hidden\';
+                                }
+                                function closeBitrixFormPopup() {
+                                    document.getElementById(\'bitrix-form-popup\').style.display = \'none\';
+                                    document.body.style.overflow = \'auto\';
+                                }
+                                // Close on outside click
+                                document.getElementById(\'bitrix-form-popup\').addEventListener(\'click\', function(e) {
+                                    if (e.target.id === \'bitrix-form-popup\') {
+                                        closeBitrixFormPopup();
+                                    }
+                                });
+                                </script>
  
                                 
 
