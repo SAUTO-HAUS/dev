@@ -132,7 +132,11 @@ function sendToTelegramCars() {
 						alert("Опубликовано");
 					}
 				} catch (e) {
+					if (response && response.length > 0) {
+						alert("Опубликовано");
+					} else {
 						alert("Ошибка обработки ответа");
+					}
 				}
 				$('#stts_bar').removeClass('act');
 				$('#stts_bar > .ln').attr('style','');

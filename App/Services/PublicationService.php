@@ -349,14 +349,12 @@ class PublicationService
             $caption_lines[] = '✅ Specificații:';
             $caption_lines[] = '▪️ Motor: ' . $carData['vol'] . 'cc ' . $carData['hp'] . 'hp';
             
-            // Fuel type
-            $fuel_types = ['1' => 'Benzină', '2' => 'Diesel', '3' => 'Hybrid', '4' => 'Electric', '5' => 'Plug-in'];
-            $fuel = $fuel_types[$carData['fl']] ?? 'Necunoscut';
+            // Fuel type (use language mappings like for in_stock)
+            $fuel = isset($lng['l']['car']['fl'][$carData['fl']]) ? $lng['l']['car']['fl'][$carData['fl']] : ($carData['fl'] ?? 'Necunoscut');
             $caption_lines[] = '▪️ Combustibil: ' . $fuel;
             
-            // Transmission
-            $transmissions = ['1' => 'Manuală', '2' => 'Automată'];
-            $transmission = $transmissions[$carData['tra']] ?? 'Necunoscut';
+            // Transmission (use language mappings like for in_stock)
+            $transmission = isset($lng['l']['car']['tra'][$carData['tra']]) ? $lng['l']['car']['tra'][$carData['tra']] : ($carData['tra'] ?? 'Necunoscut');
             $caption_lines[] = '▪️ Transmisie: ' . $transmission;
             $caption_lines[] = '';
             $caption_lines[] = '📞 Pentru detalii: +37379600352';
