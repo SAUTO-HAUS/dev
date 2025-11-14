@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS `gh3sp_sauto_personal_schedules` (
   `catalog_type` enum('in_stock','on_order') NOT NULL DEFAULT 'in_stock',
   `schedule_date` date NOT NULL,
   `schedule_time` time NOT NULL,
-  `status` enum('pending','published','failed','cancelled') NOT NULL DEFAULT 'pending',
+  `status` enum('pending','published','failed','cancelled','postponed') NOT NULL DEFAULT 'pending',
   `published_at` datetime NULL,
   `999_id` varchar(50) NULL,
   `error_message` text NULL,
