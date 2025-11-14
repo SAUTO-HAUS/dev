@@ -33,7 +33,7 @@ echo '
 			foreach ($serv_arr as $k => $v){
 				if ($v['grp']=='menu'){
 					echo '
-					<a href="/'.$_COOKIE['lang'].'/services/'.$k.'">
+					<a href="/'.$_COOKIE['lang'].'/'.($k=='tradein' ? 'tradein' : 'services/'.$k).'">
 						<div class="img" style="background-image:url(/media/images/site/v2/'.$v['img'].');"></div>
 						<h3 class="ttl">'.$lng['p']['services'][ $k ]['name'].'</h3>
 						<div class="txt">'.$lng['p']['services'][ $k ]['ttl'].'</div>
@@ -173,14 +173,15 @@ if ($t_mp[3] == 'insurance') {
 			<h1>'.$sa['meta']['h1'].'</h1>';
 			include_once($_SERVER['DOCUMENT_ROOT'] . '/content/site/page/insurance.php');
 		} else {
-			// New trade-in page
-                        if ($t_mp[3] == 'tradein') {
-                                include(_SITE_PAGE.'/new_pages/tradein/tradein.php');
-                        } elseif ($t_mp[3] == 'sale') {
-                                include(_SITE_PAGE.'/new_pages/sale/sale.php');
-                        } else {
-                                echo '
-                                <img class="m_img" src="/media/images/site/v2/'.$serv_arr[ $t_mp[3] ]['img'].'" />
+	                        if ($t_mp[3] == 'tradein') {
+	                                $lang = isset($_COOKIE['lang']) ? $_COOKIE['lang'] : 'ro';
+	                                header('Location: /' . $lang . '/tradein', true, 301);
+	                                exit;
+	                        } elseif ($t_mp[3] == 'sale') {
+	                                include(_SITE_PAGE.'/new_pages/sale/sale.php');
+	                        } else {
+	                                echo '
+	                                <img class="m_img" src="/media/images/site/v2/'.$serv_arr[ $t_mp[3] ]['img'].'" />
 				<h1>'.$sa['meta']['h1'].'</h1>
 				'. $rtrnCalculatorBlock .'
 				<h2 class="ttl">'.$lng['p']['services'][ $t_mp[3] ]['ttl'].'</h2>
