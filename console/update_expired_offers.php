@@ -12,12 +12,20 @@
  * Cron: Run every 5 minutes
  */
 
-require_once(__DIR__ . '/../config.php');
-require_once(__DIR__ . '/../App/Core/Container.php');
+// Set timezone
+date_default_timezone_set('Europe/Chisinau');
+
+// Define security constant for included files
+define('_DOIT', true);
 
 try {
-    $db = \App\Core\Container::get('db');
-    $prefx = \App\Core\Container::get('prefix');
+    // Database connection using environment settings
+    require_once __DIR__ . '/../environment.php';
+    
+    $db = new PDO("mysql:host=" . SQL_HOST . ";dbname=" . SQL_DB . ";charset=" . SQL_CHARSET, SQL_USER, SQL_PASS);
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    $prefx = 'gh3sp';
     
     $current_time = time();
     
@@ -41,7 +49,29 @@ try {
     
     if ($postponed_count > 0) {
         echo "[" . date('Y-m-d H:i:s') . "] ⏸️  Postponed {$postponed_count} scheduled post(s) - timer expired\n";
-    } else {
+    }
+    
+    // ============================================================================
+    // 2. RESTORE postponed posts if timer has been extended/renewed
+    // ============================================================================
+    $sql_restore = "UPDATE {$prefx}_sauto_personal_schedules s
+                    INNER JOIN {$prefx}_car_ctlg c ON s.car_id = c.id
+                    SET s.status = 'pending',
+                        s.error_message = NULL
+                    WHERE s.status = 'postponed'
+                    AND c.catalog_type = 'on_order'
+                    AND c.offer_timer_end > 0 
+                    AND c.offer_timer_end >= :current_time";
+    
+    $stmt_restore = $db->prepare($sql_restore);
+    $stmt_restore->execute(['current_time' => $current_time]);
+    $restored_count = $stmt_restore->rowCount();
+    
+    if ($restored_count > 0) {
+        echo "[" . date('Y-m-d H:i:s') . "] 🔄 Restored {$restored_count} postponed post(s) - timer renewed\n";
+    }
+    
+    if ($postponed_count === 0 && $restored_count === 0) {
         echo "[" . date('Y-m-d H:i:s') . "] ✅ No changes needed - all scheduled posts are up to date\n";
     }
     
