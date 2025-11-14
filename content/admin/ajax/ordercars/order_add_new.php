@@ -113,16 +113,38 @@ if (__post('sub') == 'mo_search') {
             
             // Convert offer_timer from DD:HH:MM:SS to timestamp
             $offer_timer_str = __post('offer_timer', '30:00:00:00');
-            $timer_parts = explode(':', $offer_timer_str);
-            $timer_seconds = 0;
-            if (count($timer_parts) == 4) {
-                $days = (int)$timer_parts[0];
-                $hours = (int)$timer_parts[1];
-                $minutes = (int)$timer_parts[2];
-                $seconds = (int)$timer_parts[3];
-                $timer_seconds = ($days * 86400) + ($hours * 3600) + ($minutes * 60) + $seconds;
+            $original_offer_timer_end = __post('original_offer_timer_end', 0);
+            
+            // Calculate what the current remaining time would be if timer wasn't changed
+            $current_remaining_time = '';
+            if (!empty($original_offer_timer_end) && $original_offer_timer_end > time()) {
+                $time_remaining = $original_offer_timer_end - time();
+                $days = floor($time_remaining / 86400);
+                $hours = floor(($time_remaining % 86400) / 3600);
+                $minutes = floor(($time_remaining % 3600) / 60);
+                $seconds = $time_remaining % 60;
+                $current_remaining_time = sprintf('%d:%02d:%02d:%02d', $days, $hours, $minutes, $seconds);
             }
-            $offer_timer_end = time() + $timer_seconds;
+            
+            // Check if timer was actually changed by user
+            $timer_was_changed = ($current_remaining_time !== $offer_timer_str);
+            
+            // Only recalculate offer_timer_end if timer was changed
+            if ($timer_was_changed || empty($original_offer_timer_end)) {
+                $timer_parts = explode(':', $offer_timer_str);
+                $timer_seconds = 0;
+                if (count($timer_parts) == 4) {
+                    $days = (int)$timer_parts[0];
+                    $hours = (int)$timer_parts[1];
+                    $minutes = (int)$timer_parts[2];
+                    $seconds = (int)$timer_parts[3];
+                    $timer_seconds = ($days * 86400) + ($hours * 3600) + ($minutes * 60) + $seconds;
+                }
+                $offer_timer_end = time() + $timer_seconds;
+            } else {
+                // Keep the original timer end if timer wasn't changed
+                $offer_timer_end = $original_offer_timer_end;
+            }
             
             $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET 
                 `gr`=:gr, `br`=:br, `mo`=:mo, `br_nm`=:br_nm, `mo_nm`=:mo_nm, `yr`=:yr,
