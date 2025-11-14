@@ -155,11 +155,27 @@ $last_car_id = 0;
                                 $scheduleDateTime = DateTime::createFromFormat('Y-m-d H:i:s', $schedule['schedule_date'] . ' ' . $schedule['schedule_time']);
                                 $formattedDate = $scheduleDateTime ? $scheduleDateTime->format('d.m.Y, H:i') : $schedule['schedule_date'] . ' ' . $schedule['schedule_time'];
                                 
-                                if ($schedule['status'] === 'published') {
-                                    $tooltip .= ($tooltip ? '<br>' : '') . $formattedDate . ' - опубликовано';
-                                } else {
-                                    $tooltip .= ($tooltip ? '<br>' : '') . 'Запланировано: ' . $formattedDate;
+                                switch ($schedule['status']) {
+                                    case 'published':
+                                        $statusText = 'опубликовано';
+                                        break;
+                                    case 'pending':
+                                        $statusText = 'в ожидании';
+                                        break;
+                                    case 'failed':
+                                        $statusText = 'неудачно';
+                                        break;
+                                    case 'cancelled':
+                                        $statusText = 'отменено';
+                                        break;
+                                    case 'postponed':
+                                        $statusText = 'отложено (таймер истёк)';
+                                        break;
+                                    default:
+                                        $statusText = $schedule['status'];
                                 }
+                                
+                                $tooltip .= ($tooltip ? '<br>' : '') . $formattedDate . ' - ' . $statusText;
                             }
                         }
                     ?>
