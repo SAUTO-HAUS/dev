@@ -213,6 +213,11 @@ if (!isset($new999)) $new999 = true;
                                                 $statusText = __('cars.status_cancelled');
                                                 $statusColor = '#6c757d';
                                                 break;
+                                            case 'postponed':
+                                                $statusIcon = '⏸️';
+                                                $statusText = __('cars.status_postponed');
+                                                $statusColor = '#ff9800';
+                                                break;
                                         }
                                         ?>
                                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; margin-bottom: 3px; background: #f8f9fa; border-left: 3px solid <?= $statusColor ?>; border-radius: 3px; font-size: 11px;">

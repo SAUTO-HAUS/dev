@@ -50,4 +50,5 @@ return [
     'status_published' => 'Publicat',
     'status_failed' => 'Eșuat',
     'status_cancelled' => 'Anulat',
+    'status_postponed' => 'Amânat (timer expirat)',
 ];

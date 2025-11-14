@@ -87,4 +87,5 @@ return [
     'status_published' => 'Опубликовано',
     'status_failed' => 'Неудачно',
     'status_cancelled' => 'Отменено',
+    'status_postponed' => 'Отложено (таймер истёк)',
 ];

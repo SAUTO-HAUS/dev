@@ -50,4 +50,5 @@ return [
     'status_published' => 'Published',
     'status_failed' => 'Failed',
     'status_cancelled' => 'Cancelled',
+    'status_postponed' => 'Postponed (timer expired)',
 ];
