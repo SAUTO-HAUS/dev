@@ -1001,10 +1001,19 @@ const segmentCoordinates = [
 
 function initPredatorCanvas() {
 	$('.timer-display').each(function() {
-		// Check if predator wrapper already exists above timer
-		if (!$(this).prev('.predator-wrapper').length) {
-			const canvasId = 'predator-' + Math.random().toString(36).substr(2, 9);
-			$(this).before('<div class="predator-wrapper" style="display: block; text-align: center; margin-bottom: -5px;"><canvas class="predator-canvas" id="' + canvasId + '" width="150" height="20"></canvas></div>');
+		const timerText = $(this).text().trim();
+		// Only add Predator symbols if timer shows time format (contains colons), not expired text
+		const isActiveTimer = timerText.includes(':');
+		
+		if (isActiveTimer) {
+			// Check if predator wrapper already exists above timer
+			if (!$(this).prev('.predator-wrapper').length) {
+				const canvasId = 'predator-' + Math.random().toString(36).substr(2, 9);
+				$(this).before('<div class="predator-wrapper" style="display: block; text-align: center; margin-bottom: -5px;"><canvas class="predator-canvas" id="' + canvasId + '" width="150" height="20"></canvas></div>');
+			}
+		} else {
+			// Remove Predator symbols if timer expired
+			$(this).prev('.predator-wrapper').remove();
 		}
 	});
 }
