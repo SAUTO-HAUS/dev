@@ -423,7 +423,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                     if (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') {
                         // Add "On Order" status with same style as in cards
                         $on_order_text = $lng['w']['on_order'] ?? 'On Order';
-                        $z_stat .= '<div class="stat" style="background-color: #CE3226; color: #fff; font-weight: bold;"><span class="stock-status on-order">'.$on_order_text.'</span></div>';
+                        $z_stat .= '<div class="stat" style="background-color: #CE3226; color: #fff; font-weight: bold; display: flex; align-items: center; justify-content: center;"><span class="stock-status on-order">'.$on_order_text.'</span></div>';
                         
                         // Add offer timer if exists
                         if (!empty($r['offer_timer_end'])) {
