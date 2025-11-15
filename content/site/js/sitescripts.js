@@ -989,20 +989,14 @@ $('#preloaded_img').append('<img src="'+newSrc+'" />');
 
 // Predator LED segments after timer
 const activeColor = "#ff0707";
-const passiveColor = "#330000";
 
-// Segment coordinates (diagonal style like in your code)
+// Segment coordinates (5 lines with gap from center, uniform length ~8-9px)
 const segmentCoordinates = [
-	[30, 7, 35, 1],   // top mid
-	[35, 7, 42, 6],   // right up
-	[28, 7, 24, 3],   // left up
-	[28, 9, 24, 10],  // left bottom
-	[32, 9, 42, 12],  // right bottom
-	[35, 17, 42, 16], // right up bottom
-	[28, 17, 24, 13], // left up bottom
-	[30, 20, 35, 28], // bottom
-	[28, 19, 22, 20], // left bottom lower
-	[32, 19, 42, 22]  // right bottom lower
+	[25, 7, 25, 0],    // top (vertical)
+	[28, 10, 34, 10],  // right (horizontal)
+	[28, 13, 34, 18],  // bottom-right (diagonal)
+	[22, 13, 16, 18],  // bottom-left (diagonal)
+	[16, 10, 22, 10]   // left (horizontal)
 ];
 
 function initPredatorCanvas() {
@@ -1027,15 +1021,18 @@ function drawLine(ctx, startX, startY, endX, endY, color) {
 
 function drawSegments(ctx, coordinates, offsetX) {
 	for (let i = 0; i < coordinates.length; i++) {
-		const color = Math.random() > 0.5 ? activeColor : passiveColor;
-		drawLine(
-			ctx,
-			coordinates[i][0] + offsetX,
-			coordinates[i][1],
-			coordinates[i][2] + offsetX,
-			coordinates[i][3],
-			color
-		);
+		// Randomly show line in red or don't draw it at all (50% chance)
+		if (Math.random() > 0.5) {
+			drawLine(
+				ctx,
+				coordinates[i][0] + offsetX,
+				coordinates[i][1],
+				coordinates[i][2] + offsetX,
+				coordinates[i][3],
+				activeColor
+			);
+		}
+		// else: line is not drawn (invisible/off state)
 	}
 }
 
