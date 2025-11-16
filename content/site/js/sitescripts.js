@@ -1009,7 +1009,7 @@ function initPredatorCanvas() {
 			// Check if predator wrapper already exists above timer
 			if (!$(this).prev('.predator-wrapper').length) {
 				const canvasId = 'predator-' + Math.random().toString(36).substr(2, 9);
-				$(this).before('<div class="predator-wrapper" style="display: block; text-align: center; margin-bottom: 0px;"><canvas class="predator-canvas" id="' + canvasId + '" width="130" height="20"></canvas></div>');
+				$(this).before('<div class="predator-wrapper" style="display: block; text-align: center; margin-bottom: 0px;"><canvas class="predator-canvas" id="' + canvasId + '" width="110" height="20"></canvas></div>');
 			}
 		} else {
 			// Remove Predator symbols if timer expired
@@ -1050,10 +1050,10 @@ function animatePredatorCanvas() {
 		const ctx = this.getContext('2d');
 		ctx.clearRect(0, 0, this.width, this.height);
 		
-		// Draw 3 symbols: above hours, minutes, seconds (adjusted for 130px width)
-		drawSegments(ctx, segmentCoordinates, 6);    // Above hours
-		drawSegments(ctx, segmentCoordinates, 41);   // Above minutes
-		drawSegments(ctx, segmentCoordinates, 76);   // Above seconds
+		// Draw 3 symbols: above hours, minutes, seconds (adjusted for 110px width)
+		drawSegments(ctx, segmentCoordinates, -3);   // Above hours
+		drawSegments(ctx, segmentCoordinates, 32);   // Above minutes
+		drawSegments(ctx, segmentCoordinates, 67);   // Above seconds
 	});
 }
 
