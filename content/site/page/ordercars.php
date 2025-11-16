@@ -429,18 +429,18 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                         if (!empty($r['offer_timer_end'])) {
                             $time_remaining = $r['offer_timer_end'] - time();
                             if ($time_remaining > 0) {
-                                // Add "Offer expires in:" text
-                                $expires_text = 'Oferta expiră peste:';
+                                // Add "Offer expires in:" text with line break
+                                $expires_text = 'Oferta expiră<br>peste:';
                                 if (isset($_COOKIE['lang'])) {
-                                    if ($_COOKIE['lang'] == 'ru') $expires_text = 'Предложение истекает через:';
-                                    elseif ($_COOKIE['lang'] == 'en') $expires_text = 'Offer expires in:';
+                                    if ($_COOKIE['lang'] == 'ru') $expires_text = 'Предложение<br>истекает через:';
+                                    elseif ($_COOKIE['lang'] == 'en') $expires_text = 'Offer expires<br>in:';
                                 }
-                                $z_stat .= '<div class="stat" style="padding: 0; margin: 0; background: transparent; font-weight: normal; color: #333; font-size: 13px; display: flex; align-items: center; line-height: 1;">'.$expires_text.'</div>';
+                                $z_stat .= '<div class="stat" style="padding: 0.3rem 0.5rem !important; margin: 0.3rem 0.3rem 0.3rem 0 !important; background: transparent; font-weight: 600; color: #333; font-size: 1rem; display: inline-block; vertical-align: middle; line-height: 1.3;">'.$expires_text.'</div>';
                                 $days = floor($time_remaining / 86400);
                                 $hours = floor(($time_remaining % 86400) / 3600);
                                 $minutes = floor(($time_remaining % 3600) / 60);
                                 $seconds = $time_remaining % 60;
-                                $z_stat .= '<div class="stat" style="padding:0; margin:0; background:transparent;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.sprintf('%02d:%02d:%02d:%02d', $days, $hours, $minutes, $seconds).'</div></div>';
+                                $z_stat .= '<div class="stat" style="padding:0; margin:0; background:transparent; display: inline-block; vertical-align: top; margin-top: 0.5rem !important;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.sprintf('%02d:%02d:%02d:%02d', $days, $hours, $minutes, $seconds).'</div></div>';
                             } else {
                                 $expired_text = 'Offer expired';
                                 if (isset($_COOKIE['lang'])) {
