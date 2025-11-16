@@ -478,7 +478,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 				$hours_check = floor(($time_remaining_check % 86400) / 3600);
 				$minutes_check = floor(($time_remaining_check % 3600) / 60);
 				$seconds_check = $time_remaining_check % 60;
-				$timer_html_for_image = '<div class="offer-timer" style="position: absolute; bottom: 15px; right: -1rem; color: #dc3545; font-weight: bold; font-size: 1rem; padding: 5px 10px; border-radius: 4px; z-index: 10;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.sprintf('%02d:%02d:%02d:%02d', $days_check, $hours_check, $minutes_check, $seconds_check).'</div></div>';
+				$timer_html_for_image = '<div class="offer-timer" style="position: absolute; bottom: 15px; right: 5px; color: #dc3545; font-weight: bold; font-size: 1rem; padding: 5px 10px; border-radius: 4px; z-index: 10;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.sprintf('%02d:%02d:%02d:%02d', $days_check, $hours_check, $minutes_check, $seconds_check).'</div></div>';
 			} else {
 				// Timer expired - show expired text
 				$expired_text = 'Offer expired';
@@ -486,7 +486,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 					if ($_COOKIE['lang'] == 'ro') $expired_text = 'Oferta a expirat';
 					elseif ($_COOKIE['lang'] == 'ru') $expired_text = 'Предложение истекло';
 				}
-				$timer_html_for_image = '<div class="offer-timer" style="position: absolute; bottom: 15px; right: -1rem; color: #dc3545; font-weight: bold; font-size: 1rem; padding: 5px 10px; border-radius: 4px; z-index: 10;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.$expired_text.'</div></div>';
+				$timer_html_for_image = '<div class="offer-timer" style="position: absolute; bottom: 15px; right: 5px; color: #dc3545; font-weight: bold; font-size: 1rem; padding: 5px 10px; border-radius: 4px; z-index: 10;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.$expired_text.'</div></div>';
 			}
 		}
 		
