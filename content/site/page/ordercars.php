@@ -801,11 +801,17 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 if (!empty($r['offer_timer_end'])) {
                     $time_remaining_mobile = $r['offer_timer_end'] - time();
                     if ($time_remaining_mobile > 0) {
+                        // Add "Offer expires in:" text for mobile with line break
+                        $expires_text_mobile = 'Oferta expiră<br>peste:';
+                        if (isset($_COOKIE['lang'])) {
+                            if ($_COOKIE['lang'] == 'ru') $expires_text_mobile = 'Предложение<br>истекает через:';
+                            elseif ($_COOKIE['lang'] == 'en') $expires_text_mobile = 'Offer expires<br>in:';
+                        }
                         $days_m = floor($time_remaining_mobile / 86400);
                         $hours_m = floor(($time_remaining_mobile % 86400) / 3600);
                         $minutes_m = floor(($time_remaining_mobile % 3600) / 60);
                         $seconds_m = $time_remaining_mobile % 60;
-                        $mobile_timer_html = '<div class="mobile-only-timer" style="display: inline-block; margin-left: 10px;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.sprintf('%02d:%02d:%02d:%02d', $days_m, $hours_m, $minutes_m, $seconds_m).'</div></div>';
+                        $mobile_timer_html = '<div class="mobile-only-timer" style="display: inline-flex; align-items: center; margin-left: 10px; gap: 5px;"><span style="font-weight: 600; color: #333; font-size: 0.85rem; line-height: 1.2;">'.$expires_text_mobile.'</span><div style="display: inline-block;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.sprintf('%02d:%02d:%02d:%02d', $days_m, $hours_m, $minutes_m, $seconds_m).'</div></div></div>';
                     } else {
                         $expired_text_m = 'Offer expired';
                         if (isset($_COOKIE['lang'])) {

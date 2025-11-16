@@ -1009,7 +1009,12 @@ function initPredatorCanvas() {
 			// Check if predator wrapper already exists above timer
 			if (!$(this).prev('.predator-wrapper').length) {
 				const canvasId = 'predator-' + Math.random().toString(36).substr(2, 9);
-				$(this).before('<div class="predator-wrapper" style="display: block; text-align: center; margin-bottom: 0px;"><canvas class="predator-canvas" id="' + canvasId + '" width="110" height="20"></canvas></div>');
+		
+				const isMobile = window.innerWidth <= 768;
+			
+				const isProductPage = $(this).closest('.mobile-only-timer').length > 0;
+				const marginBottom = isMobile ? (isProductPage ? '-15px' : '-5px') : '0px';
+				$(this).before('<div class="predator-wrapper" style="display: block; text-align: center; margin-bottom: ' + marginBottom + ';"><canvas class="predator-canvas" id="' + canvasId + '" width="110" height="20"></canvas></div>');
 			}
 		} else {
 			// Remove Predator symbols if timer expired
