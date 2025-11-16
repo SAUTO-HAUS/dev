@@ -429,6 +429,13 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                         if (!empty($r['offer_timer_end'])) {
                             $time_remaining = $r['offer_timer_end'] - time();
                             if ($time_remaining > 0) {
+                                // Add "Offer expires in:" text
+                                $expires_text = 'Oferta expiră peste:';
+                                if (isset($_COOKIE['lang'])) {
+                                    if ($_COOKIE['lang'] == 'ru') $expires_text = 'Предложение истекает через:';
+                                    elseif ($_COOKIE['lang'] == 'en') $expires_text = 'Offer expires in:';
+                                }
+                                $z_stat .= '<div class="stat" style="padding: 0; margin: 0; background: transparent; font-weight: normal; color: #333; font-size: 13px; display: flex; align-items: center; line-height: 1;">'.$expires_text.'</div>';
                                 $days = floor($time_remaining / 86400);
                                 $hours = floor(($time_remaining % 86400) / 3600);
                                 $minutes = floor(($time_remaining % 3600) / 60);
