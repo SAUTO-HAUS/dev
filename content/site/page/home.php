@@ -24,8 +24,9 @@ $rtrn = '
 	<div class="cnt">';
 		
 		foreach ($grp_arr['o_serv'] as $v){
+			$href = ($v['href'] == 'tradein') ? '/'.$_COOKIE['lang'].'/tradein' : '/'.$_COOKIE['lang'].'/services/'.$v['href'];
 			$rtrn .= '
-			<a href="/'.$_COOKIE['lang'].'/services/'.$v['href'].'" class="lnk">
+			<a href="'.$href.'" class="lnk">
 				<img src="/'._SITE_IMG.'/v2/'.$v['img'].'.svg" />
 				<h4 class="ttl">'.$v['ttl'].'</h4>
 				<p class="txt">'.$v['txt'].'</p>
