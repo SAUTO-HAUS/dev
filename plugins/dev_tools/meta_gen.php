@@ -28,9 +28,33 @@ if (in_array($current_host, ['sauto.md', 'www.sauto.md'], true)) {
 
 $r['ttl']='';$r['h1']='';$r['dsc']='';$r['kwd']='';
 
-// Skip meta generation for credit page - it has custom meta tags
+// Generate meta tags for credit page
 if ($z2 === 'credit') {
-    return;
+    // Get page title and description from credit page variables if they exist
+    if (isset($page_title) && isset($page_description)) {
+        $sa['meta']['ttl'] = $page_title;
+        $sa['meta']['dsc'] = $page_description;
+        $sa['meta']['kwd'] = 'credit auto, finantare auto, credit masina, leasing auto, credit personal auto, credit business auto, sauto credit, Moldova';
+    } else {
+        // Fallback to default credit page meta
+        switch ($zlng) {
+            case 'ru':
+                $sa['meta']['ttl'] = 'Автокредит в Молдове — Кредит на покупку автомобиля | Sauto.md';
+                $sa['meta']['dsc'] = 'Оформите автокредит на выгодных условиях с Sauto.md. Быстрое одобрение, минимальный пакет документов, автомобили в наличии и под заказ. Консультации и сопровождение на всех этапах.';
+                $sa['meta']['kwd'] = 'автокредит, кредит на авто, финансирование авто, лизинг авто, кредит на машину, sauto кредит, Молдова';
+                break;
+            case 'en':
+                $sa['meta']['ttl'] = 'Car Loan in Moldova — Auto Financing Made Easy | Sauto.md';
+                $sa['meta']['dsc'] = 'Get your car financed quickly and easily with Sauto.md. Fast approvals, minimal paperwork, cars available in stock or by order. Expert guidance every step of the way.';
+                $sa['meta']['kwd'] = 'car loan, auto financing, car credit, auto leasing, vehicle financing, sauto credit, Moldova';
+                break;
+            default: // ro
+                $sa['meta']['ttl'] = 'Credit auto în Moldova — Finanțare pentru achiziția unei mașini | Sauto.md';
+                $sa['meta']['dsc'] = 'Obține un credit auto rapid și avantajos cu Sauto.md. Aprobări rapide, documente minime, mașini în stoc sau la comandă. Consultanță gratuită și suport complet.';
+                $sa['meta']['kwd'] = 'credit auto, finantare auto, credit masina, leasing auto, credit personal auto, credit business auto, sauto credit, Moldova';
+                break;
+        }
+    }
 }
 
 $sa['meta']['ttl'] = 'Vînzarea autoturismelor și utilitarelor.';

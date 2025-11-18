@@ -43,11 +43,6 @@ switch($current_lang) {
 }
 ?>
 
-<!-- Page Meta Tags -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title><?php echo htmlspecialchars($page_title); ?></title>
-<meta name="description" content="<?php echo htmlspecialchars($page_description); ?>">
-
 <!-- Include Ion Range Slider CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/css/ion.rangeSlider.min.css">
 
@@ -65,10 +60,10 @@ switch($current_lang) {
                 <div class="calculator-content">
                             <div class="calculator-field">
                                 <div class="field-header" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; width: 100%;">
-                                    <label class="field-label" style="color:rgb(95, 95, 95);"><?php echo get_translation('calc_suma', $current_lang, $lng); ?></label>
+                                    <label for="suma-creditului" class="field-label" style="color:rgb(51, 51, 51);"><?php echo get_translation('calc_suma', $current_lang, $lng); ?></label>
                                     <span class="field-value" id="view_suma_creditului" style="font-weight: bold;"><span style='font-size: 1em; font-weight: bold;'>25 000</span> €</span>
                                 </div>
-                                <input type="text" id="suma-creditului">
+                                <input type="text" id="suma-creditului" aria-label="<?php echo get_translation('calc_suma', $current_lang, $lng); ?>">
                                 <div class="slider-labels">
                                     <span style="margin-top:-5px;">2 000 €</span>
                                     <span style="margin-top:-5px;">50 000 €</span>
@@ -77,10 +72,10 @@ switch($current_lang) {
                             
                             <div class="calculator-field">
                                 <div class="field-header" style="display: flex; align-items: center; justify-content: flex-start; gap: 20px; width: 100%;">
-                                    <label class="field-label" style="color:rgb(95, 95, 95);"><?php echo get_translation('calc_perioada', $current_lang, $lng); ?></label>
+                                    <label for="termen-creditului" class="field-label" style="color:rgb(51, 51, 51);"><?php echo get_translation('calc_perioada', $current_lang, $lng); ?></label>
                                     <span class="field-value" id="view_termen_creditului" style="font-weight: bold;" data-months="<?php echo get_translation('calc_luni', $current_lang, $lng); ?>"><span style='font-size: 1em; font-weight: bold;'>30</span> <?php echo get_translation('calc_luni', $current_lang, $lng); ?></span>
                                 </div>
-                                <input type="text" id="termen-creditului">
+                                <input type="text" id="termen-creditului" aria-label="<?php echo get_translation('calc_perioada', $current_lang, $lng); ?>">
                                 <div class="slider-labels">
                                     <span style="margin-top:-5px;" class="months-label" data-months="<?php echo get_translation('calc_luni', $current_lang, $lng); ?>">6 <?php echo get_translation('calc_luni', $current_lang, $lng); ?></span>
                                     <span style="margin-top:-5px;" class="months-label" data-months="<?php echo get_translation('calc_luni', $current_lang, $lng); ?>">60 <?php echo get_translation('calc_luni', $current_lang, $lng); ?></span>
@@ -423,27 +418,28 @@ switch($current_lang) {
             <h2 class="comments-title"><?php echo get_translation('comments_title', $current_lang, $lng); ?></h2>
             
             <!-- Navigation under title -->
-            <div class="comments-navigation">
-                <button class="nav-btn" onclick="previousComment()">
-                    <img src="/content/site/page/new_pages/credit/credit-media/avatars/left-circle.svg" alt="Previous" width="40" height="40">
+            <div class="comments-navigation" role="navigation" aria-label="Comments navigation">
+                <button class="nav-btn" onclick="previousComment()" aria-label="Previous comment">
+                    <img src="/content/site/page/new_pages/credit/credit-media/avatars/left-circle.svg" alt="" width="40" height="40" aria-hidden="true">
                 </button>
-                <button class="nav-btn" onclick="nextComment()">
-                    <img src="/content/site/page/new_pages/credit/credit-media/avatars/right-circle.svg" alt="Next" width="40" height="40">
+                <button class="nav-btn" onclick="nextComment()" aria-label="Next comment">
+                    <img src="/content/site/page/new_pages/credit/credit-media/avatars/right-circle.svg" alt="" width="40" height="40" aria-hidden="true">
                 </button>
             </div>
         </div>
         
         <div class="comments-slider">
             <!-- Comment 1 -->
-            <div class="comment-card active" data-comment="1">
+            <article class="comment-card active" data-comment="1">
                 <div class="comment-author">
                     <div class="author-avatar">
                         <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar1.jpeg" 
                              alt="<?php echo get_translation('comment_1_name', $current_lang, $lng); ?>" 
+                             width="105" height="105"
                              onerror="this.style.display='none'">
                     </div>
                     <div class="author-info">
-                        <h4 class="author-name"><?php echo get_translation('comment_1_name', $current_lang, $lng); ?></h4>
+                        <h3 class="author-name"><?php echo get_translation('comment_1_name', $current_lang, $lng); ?></h3>
                         <p class="author-location"><?php echo get_translation('comment_1_location', $current_lang, $lng); ?></p>
                     </div>
                 </div>
@@ -451,9 +447,9 @@ switch($current_lang) {
                     <div class="quote-mark">"</div>
                     <p class="comment-text"><?php echo get_translation('comment_1_text', $current_lang, $lng); ?></p>
                 </div>
-            </div>
+            </article>
             
-            <div class="comment-card active" data-comment="2">
+            <article class="comment-card active" data-comment="2">
                 <div class="comment-author">
                     <div class="author-avatar">
                         <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar2.jpg" 
@@ -461,7 +457,7 @@ switch($current_lang) {
                              onerror="this.style.display='none'">
                     </div>
                     <div class="author-info">
-                        <h4 class="author-name"><?php echo get_translation('comment_2_name', $current_lang, $lng); ?></h4>
+                        <h3 class="author-name"><?php echo get_translation('comment_2_name', $current_lang, $lng); ?></h3>
                         <p class="author-location"><?php echo get_translation('comment_2_location', $current_lang, $lng); ?></p>
                     </div>
                 </div>
@@ -469,9 +465,9 @@ switch($current_lang) {
                     <div class="quote-mark">"</div>
                     <p class="comment-text"><?php echo get_translation('comment_2_text', $current_lang, $lng); ?></p>
                 </div>
-            </div>
+            </article>
             
-            <div class="comment-card" data-comment="3">
+            <article class="comment-card" data-comment="3">
                 <div class="comment-author">
                     <div class="author-avatar">
                         <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar3.jpg" 
@@ -479,7 +475,7 @@ switch($current_lang) {
                              onerror="this.style.display='none'">
                     </div>
                     <div class="author-info">
-                        <h4 class="author-name"><?php echo get_translation('comment_3_name', $current_lang, $lng); ?></h4>
+                        <h3 class="author-name"><?php echo get_translation('comment_3_name', $current_lang, $lng); ?></h3>
                         <p class="author-location"><?php echo get_translation('comment_3_location', $current_lang, $lng); ?></p>
                     </div>
                 </div>
@@ -487,9 +483,9 @@ switch($current_lang) {
                     <div class="quote-mark">"</div>
                     <p class="comment-text"><?php echo get_translation('comment_3_text', $current_lang, $lng); ?></p>
                 </div>
-            </div>
+            </article>
             
-            <div class="comment-card" data-comment="4">
+            <article class="comment-card" data-comment="4">
                 <div class="comment-author">
                     <div class="author-avatar">
                         <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar4.jpg" 
@@ -497,7 +493,7 @@ switch($current_lang) {
                              onerror="this.style.display='none'">
                     </div>
                     <div class="author-info">
-                        <h4 class="author-name"><?php echo get_translation('comment_4_name', $current_lang, $lng); ?></h4>
+                        <h3 class="author-name"><?php echo get_translation('comment_4_name', $current_lang, $lng); ?></h3>
                         <p class="author-location"><?php echo get_translation('comment_4_location', $current_lang, $lng); ?></p>
                     </div>
                 </div>
@@ -505,9 +501,9 @@ switch($current_lang) {
                     <div class="quote-mark">"</div>
                     <p class="comment-text"><?php echo get_translation('comment_4_text', $current_lang, $lng); ?></p>
                 </div>
-            </div>
+            </article>
             
-            <div class="comment-card" data-comment="5">
+            <article class="comment-card" data-comment="5">
                 <div class="comment-author">
                     <div class="author-avatar">
                         <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar5.webp" 
@@ -515,7 +511,7 @@ switch($current_lang) {
                              onerror="this.style.display='none'">
                     </div>
                     <div class="author-info">
-                        <h4 class="author-name"><?php echo get_translation('comment_5_name', $current_lang, $lng); ?></h4>
+                        <h3 class="author-name"><?php echo get_translation('comment_5_name', $current_lang, $lng); ?></h3>
                         <p class="author-location"><?php echo get_translation('comment_5_location', $current_lang, $lng); ?></p>
                     </div>
                 </div>
@@ -523,9 +519,9 @@ switch($current_lang) {
                     <div class="quote-mark">"</div>
                     <p class="comment-text"><?php echo get_translation('comment_5_text', $current_lang, $lng); ?></p>
                 </div>
-            </div>
+            </article>
             
-            <div class="comment-card" data-comment="6">
+            <article class="comment-card" data-comment="6">
                 <div class="comment-author">
                     <div class="author-avatar">
                         <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar6.jpg" 
@@ -533,7 +529,7 @@ switch($current_lang) {
                              onerror="this.style.display='none'">
                     </div>
                     <div class="author-info">
-                        <h4 class="author-name"><?php echo get_translation('comment_6_name', $current_lang, $lng); ?></h4>
+                        <h3 class="author-name"><?php echo get_translation('comment_6_name', $current_lang, $lng); ?></h3>
                         <p class="author-location"><?php echo get_translation('comment_6_location', $current_lang, $lng); ?></p>
                     </div>
                 </div>
@@ -541,9 +537,9 @@ switch($current_lang) {
                     <div class="quote-mark">"</div>
                     <p class="comment-text"><?php echo get_translation('comment_6_text', $current_lang, $lng); ?></p>
                 </div>
-            </div>
+            </article>
             
-            <div class="comment-card" data-comment="7">
+            <article class="comment-card" data-comment="7">
                 <div class="comment-author">
                     <div class="author-avatar">
                         <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar7.webp" 
@@ -551,7 +547,7 @@ switch($current_lang) {
                              onerror="this.style.display='none'">
                     </div>
                     <div class="author-info">
-                        <h4 class="author-name"><?php echo get_translation('comment_7_name', $current_lang, $lng); ?></h4>
+                        <h3 class="author-name"><?php echo get_translation('comment_7_name', $current_lang, $lng); ?></h3>
                         <p class="author-location"><?php echo get_translation('comment_7_location', $current_lang, $lng); ?></p>
                     </div>
                 </div>
@@ -559,10 +555,10 @@ switch($current_lang) {
                     <div class="quote-mark">"</div>
                     <p class="comment-text"><?php echo get_translation('comment_7_text', $current_lang, $lng); ?></p>
                 </div>
-            </div>
+            </article>
             
             <!-- Comment 8 -->
-            <div class="comment-card" data-comment="8">
+            <article class="comment-card" data-comment="8">
             <div class="comment-author">
                     <div class="author-avatar">
                         <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar8.jpg" 
@@ -570,7 +566,7 @@ switch($current_lang) {
                              onerror="this.style.display='none'">
                     </div>
                     <div class="author-info">
-                        <h4 class="author-name"><?php echo get_translation('comment_8_name', $current_lang, $lng); ?></h4>
+                        <h3 class="author-name"><?php echo get_translation('comment_8_name', $current_lang, $lng); ?></h3>
                         <p class="author-location"><?php echo get_translation('comment_8_location', $current_lang, $lng); ?></p>
                     </div>
                 </div>
@@ -578,10 +574,10 @@ switch($current_lang) {
                     <div class="quote-mark">"</div>
                     <p class="comment-text"><?php echo get_translation('comment_8_text', $current_lang, $lng); ?></p>
                 </div>     
-            </div>
+            </article>
 
              <!-- Comment 9 -->
-            <div class="comment-card" data-comment="9">
+            <article class="comment-card" data-comment="9">
                 <div class="comment-author">
                     <div class="author-avatar">
                         <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar9.jpg" 
@@ -589,7 +585,7 @@ switch($current_lang) {
                              onerror="this.style.display='none'">
                     </div>
                     <div class="author-info">
-                        <h4 class="author-name"><?php echo get_translation('comment_9_name', $current_lang, $lng); ?></h4>
+                        <h3 class="author-name"><?php echo get_translation('comment_9_name', $current_lang, $lng); ?></h3>
                         <p class="author-location"><?php echo get_translation('comment_9_location', $current_lang, $lng); ?></p>
                     </div>
                 </div>
@@ -597,7 +593,7 @@ switch($current_lang) {
                     <div class="quote-mark">"</div>
                     <p class="comment-text"><?php echo get_translation('comment_9_text', $current_lang, $lng); ?></p>
                 </div>
-            </div>
+            </article>
         </div>
     </div>
 </section>
