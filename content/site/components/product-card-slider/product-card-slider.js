@@ -181,7 +181,60 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     initLazyLoading();
+    initSliderLazyLoading();
 });
+
+// Lazy loading for slider images - loads images when card enters viewport or user interacts
+function initSliderLazyLoading() {
+    const sliders = document.querySelectorAll('.product-card-slider[data-lazy-load="pending"], .mobile-card-slider[data-lazy-load="pending"]');
+    
+    if ('IntersectionObserver' in window) {
+        const sliderObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const slider = entry.target;
+                    loadSliderImages(slider);
+                    slider.setAttribute('data-lazy-load', 'loaded');
+                    sliderObserver.unobserve(slider);
+                }
+            });
+        }, {
+            rootMargin: '50px' // Start loading slightly before card enters viewport
+        });
+        
+        sliders.forEach(slider => {
+            sliderObserver.observe(slider);
+            
+            // Also load images on first interaction (touch/click)
+            const loadOnInteraction = () => {
+                if (slider.getAttribute('data-lazy-load') === 'pending') {
+                    loadSliderImages(slider);
+                    slider.setAttribute('data-lazy-load', 'loaded');
+                }
+            };
+            
+            slider.addEventListener('touchstart', loadOnInteraction, { once: true, passive: true });
+            slider.addEventListener('mouseenter', loadOnInteraction, { once: true });
+        });
+    } else {
+        // Fallback for older browsers - load all immediately
+        sliders.forEach(slider => {
+            loadSliderImages(slider);
+            slider.setAttribute('data-lazy-load', 'loaded');
+        });
+    }
+}
+
+// Helper function to load all images in a slider
+function loadSliderImages(slider) {
+    const images = slider.querySelectorAll('img[data-src]');
+    images.forEach(img => {
+        if (img.dataset.src) {
+            img.src = img.dataset.src;
+            img.removeAttribute('data-src');
+        }
+    });
+}
 
 // Lazy loading for mobile slider images
 function initLazyLoading() {
@@ -422,3 +475,4 @@ class MobileCardSlider {
 
 // Export for manual initialization (e.g., after AJAX content load)
 window.initProductCardSliders = initProductCardSliders;
+window.initSliderLazyLoading = initSliderLazyLoading;

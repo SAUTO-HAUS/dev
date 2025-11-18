@@ -226,11 +226,11 @@ function generateImageSliderHTML($images, $car_data, $enable_slider = true) {
         // For order cars (catalog_type = 'on_order'), use .jpg extension instead of $img_frmt
         $image_extension = (isset($car_data['catalog_type']) && $car_data['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
         $p_name = $image['name'].$image_extension;
-        return '<img src="'.$p_src.$p_name.'" alt="car '.$car_data['br_nm'].' '.$car_data['mo_nm'].' id'.$car_data['id'].' main photo" />';
+        return '<img src="'.$p_src.$p_name.'" loading="lazy" alt="car '.$car_data['br_nm'].' '.$car_data['mo_nm'].' id'.$car_data['id'].' main photo" />';
     }
     
     // Multiple images - generate slider
-    $html = '<div class="product-card-slider">';
+    $html = '<div class="product-card-slider" data-lazy-load="pending">';
     $html .= '<div class="product-card-slider__container">';
     $html .= '<div class="product-card-slider__track">';
     
@@ -240,7 +240,15 @@ function generateImageSliderHTML($images, $car_data, $enable_slider = true) {
         $image_extension = (isset($car_data['catalog_type']) && $car_data['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
         $p_name = $image['name'].$image_extension;
         $html .= '<div class="product-card-slider__slide">';
-        $html .= '<img src="'.$p_src.$p_name.'" alt="car '.$car_data['br_nm'].' '.$car_data['mo_nm'].' id'.$car_data['id'].' photo '.($index+1).'" />';
+        
+        // First image: load immediately with lazy loading
+        // Other images: use data-src for deferred loading
+        if ($index === 0) {
+            $html .= '<img src="'.$p_src.$p_name.'" loading="lazy" alt="car '.$car_data['br_nm'].' '.$car_data['mo_nm'].' id'.$car_data['id'].' photo '.($index+1).'" />';
+        } else {
+            $html .= '<img data-src="'.$p_src.$p_name.'" loading="lazy" alt="car '.$car_data['br_nm'].' '.$car_data['mo_nm'].' id'.$car_data['id'].' photo '.($index+1).'" />';
+        }
+        
         $html .= '</div>';
     }
     

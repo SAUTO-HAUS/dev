@@ -481,17 +481,18 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 			}
 			
 			if (count($all_images) > 1) {
-				// Multiple images - create slider HTML
-				$image_html = '<div class="mobile-card-slider"><div class="mobile-card-slider__container"><div class="mobile-card-slider__track">';
+				// Multiple images - create slider HTML with lazy loading
+				$image_html = '<div class="mobile-card-slider" data-lazy-load="pending"><div class="mobile-card-slider__container"><div class="mobile-card-slider__track">';
 				foreach ($all_images as $idx => $img) {
 					// For order cars (catalog_type = 'on_order'), use .jpg extension instead of $img_frmt
 					$image_extension = (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
 					$img_src = '/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/'.$img['name'].$image_extension;
-					// Lazy load images except the first one
+					// First image: load immediately with lazy loading
+					// Other images: use data-src for deferred loading
 					if ($idx === 0) {
-						$image_html .= '<div class="mobile-card-slider__slide"><img src="'.$img_src.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' photo '.($idx+1).'" /></div>';
+						$image_html .= '<div class="mobile-card-slider__slide"><img src="'.$img_src.'" loading="lazy" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' photo '.($idx+1).'" /></div>';
 					} else {
-						$image_html .= '<div class="mobile-card-slider__slide"><img data-src="'.$img_src.'" src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'200\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23f0f0f0\'/%3E%3C/svg%3E" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' photo '.($idx+1).'" class="lazy-load" /></div>';
+						$image_html .= '<div class="mobile-card-slider__slide"><img src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'200\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23f0f0f0\'/%3E%3C/svg%3E" data-src="'.$img_src.'" loading="lazy" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' photo '.($idx+1).'" /></div>';
 					}
 				}
 				$image_html .= '</div>';
