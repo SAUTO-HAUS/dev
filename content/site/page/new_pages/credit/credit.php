@@ -435,7 +435,6 @@ switch($current_lang) {
                     <div class="author-avatar">
                         <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar1.jpg" 
                              alt="<?php echo get_translation('comment_1_name', $current_lang, $lng); ?>" 
-                             width="105" height="105"
                              onerror="this.style.display='none'">
                     </div>
                     <div class="author-info">
