@@ -433,7 +433,7 @@ switch($current_lang) {
             <article class="comment-card active" data-comment="1">
                 <div class="comment-author">
                     <div class="author-avatar">
-                        <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar1.jpeg" 
+                        <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar1.jpg" 
                              alt="<?php echo get_translation('comment_1_name', $current_lang, $lng); ?>" 
                              width="105" height="105"
                              onerror="this.style.display='none'">
@@ -506,7 +506,7 @@ switch($current_lang) {
             <article class="comment-card" data-comment="5">
                 <div class="comment-author">
                     <div class="author-avatar">
-                        <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar5.webp" 
+                        <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar5.jpg" 
                              alt="<?php echo get_translation('comment_5_name', $current_lang, $lng); ?>" 
                              onerror="this.style.display='none'">
                     </div>
@@ -542,7 +542,7 @@ switch($current_lang) {
             <article class="comment-card" data-comment="7">
                 <div class="comment-author">
                     <div class="author-avatar">
-                        <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar7.webp" 
+                        <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar7.jpg" 
                              alt="<?php echo get_translation('comment_7_name', $current_lang, $lng); ?>" 
                              onerror="this.style.display='none'">
                     </div>
