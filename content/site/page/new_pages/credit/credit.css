@@ -152,7 +152,7 @@
 }
 
 /* Mobile styles for calculator title */
-@media (max-width: 768px) {
+@media (max-width: 768px), (max-height: 768px) and (max-width: 1024px) {
     .calculator-title {
         font-size: 1.7rem;
     }
@@ -1023,8 +1023,8 @@
    MOBILE RESPONSIVE - ALL SECTIONS
    ======================================== */
 
-/* Mobile Responsive - All Sections */
-@media (max-width: 768px) {
+/* Mobile Responsive - All Sections - Portrait AND Landscape */
+@media (max-width: 768px), (max-height: 768px) and (max-width: 1024px) {
     
     /* ========================================
        HERO SECTION MOBILE
@@ -1167,7 +1167,7 @@
     /* ========================================
        CATEGORIES SECTION MOBILE
        ======================================== */
-       @media (max-width: 768px) {
+       @media (max-width: 768px), (max-height: 768px) and (max-width: 1024px) {
 
     .credit-categories-section {
         padding: 0 !important;
@@ -1574,7 +1574,7 @@
            /* ========================================
        PARTNERS SECTION MOBILE
        ======================================== */
-       @media (max-width: 768px) {
+       @media (max-width: 768px), (max-height: 768px) and (max-width: 1024px) {
 
     /* Partners section container */
     .partners-section {
@@ -1655,7 +1655,7 @@
     }
     
     /* Force partner card dimensions - very specific selector */
-    @media (max-width: 768px) {
+    @media (max-width: 768px), (max-height: 768px) and (max-width: 1024px) {
         .partners-section .partners-content .partners-grid .partner-card {
             height: 16rem !important;
             min-height: 16rem !important;
@@ -1835,7 +1835,7 @@ margin-top: 2rem !important;
        COMMENTS SECTION MOBILE
        ======================================== */
     
-       @media (max-width: 768px) {
+       @media (max-width: 768px), (max-height: 768px) and (max-width: 1024px) {
     .comments-section {
         padding: 2rem 0.5rem;
     }

@@ -144,7 +144,7 @@ switch($current_lang) {
                         <p class="feature-description"><?php echo get_translation('personal_feature1_desc', $current_lang, $lng); ?></p>
                         <!-- Car image for item1 -->
                         <div class="category-car-image">
-                            <img src="/content/site/page/new_pages/credit/credit-media/car-2.png" alt="Personal Credit Car" class="car-category-image">
+                            <img src="/content/site/page/new_pages/credit/credit-media/car-2.png" alt="Personal Credit Car" class="car-category-image" loading="lazy">
                         </div>
                     </div>
                     
@@ -435,6 +435,8 @@ switch($current_lang) {
                     <div class="author-avatar">
                         <img src="/content/site/page/new_pages/credit/credit-media/avatars/avatar1.jpg" 
                              alt="<?php echo get_translation('comment_1_name', $current_lang, $lng); ?>" 
+                             width="70" height="70"
+                             loading="lazy"
                              onerror="this.style.display='none'">
                     </div>
                     <div class="author-info">
@@ -600,12 +602,12 @@ switch($current_lang) {
 <div class="credit-page">
 </div>
 
-<!-- Include jQuery and Ion Range Slider JS -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/js/ion.rangeSlider.min.js"></script>
+<!-- Include jQuery and Ion Range Slider JS with defer for better performance -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/js/ion.rangeSlider.min.js" defer></script>
 
-<!-- Include page-specific JS with cache busting -->
-<script src="<?php echo $page_js . $js_version; ?>"></script>
+<!-- Include page-specific JS with cache busting and defer -->
+<script src="<?php echo $page_js . $js_version; ?>" defer></script>
 
 <!-- Modal for Bitrix Forms -->
 <div id="bitrix-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:10000;">
