@@ -1,4 +1,11 @@
-<?php defined( '_DOIT' ) or die( 'Restricted access' ); ?>
+<?php defined( '_DOIT' ) or die( 'Restricted access' ); 
+
+// If this is a 404 page, show 404 content and exit
+if (isset($GLOBALS['page_is_404']) && $GLOBALS['page_is_404'] === true) {
+    include(_DEFAULT.'/404.php');
+    exit;
+}
+?>
 <style>
 .payment-amount {
     color: #000;
@@ -88,14 +95,7 @@ echo '
 		}*/
 	
 	}else{
-		// Service slug provided - check if it exists
-		if (!key_exists($t_mp[3], $serv_arr)) {
-			// Invalid service slug - return 404
-			http_response_code(404);
-			include(_DEFAULT.'/404.php');
-			exit;
-		}
-		
+		// Service slug provided (404 check already done in body.php)
 		if ($t_mp[3]!='transportation'){ // credit
 
             $rtrnCalculatorBlock = "";

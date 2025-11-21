@@ -2,6 +2,12 @@
 
 use App\Helper\PhoneHelper;
 
+// If this is a 404 page, show 404 content and exit
+if (isset($GLOBALS['page_is_404']) && $GLOBALS['page_is_404'] === true) {
+    include(_DEFAULT.'/404.php');
+    exit;
+}
+
 $pdo = $db->prepare('SELECT * FROM '.$prefx.'_offer_catalog WHERE `id`=:id');
 $pdo->execute(array('id' => $t_mp[3]));
 
@@ -17,13 +23,6 @@ foreach($pdo as $row){
 	$c_currency = $row['currency'];
 	$c_visible = $row['visible'];
 	$c_active = $row['active'];
-}
-
-// Check if offer exists and is visible/active
-if (!$offer_found || $c_visible != 1 || $c_active != 1) {
-    http_response_code(404);
-    include(_DEFAULT.'/404.php');
-    exit;
 }
 
 $pdo = $db->prepare('SELECT * FROM '.$prefx.'_offer_photo WHERE `id`=:id AND main=1');

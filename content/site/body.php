@@ -8,7 +8,138 @@ if (isset($t_mp[2]) && $t_mp[2] == 'ordercars') {
     include(_SITE_INCL.'/order_functions.php');
 } else {
     include(_SITE_INCL.'/functions.php');
-} ?>
+}
+
+// PRE-CHECK for 404 on detail pages BEFORE generating head
+// This allows us to set proper 404 title and meta tags
+$GLOBALS['page_is_404'] = false;
+
+// Check CARS detail page
+if (isset($t_mp[2]) && $t_mp[2] == 'cars' && isset($t_mp[3]) && !isset($_GET['tg'])) {
+    $check_id = 0;
+    
+    if (is_numeric($t_mp[3])) {
+        $check_id = toNumber($t_mp[3]);
+    } else {
+        // Clean URL format - check if car exists
+        $check_brand = str_replace('-', '_', $t_mp[3]);
+        $check_model = isset($t_mp[4]) ? str_replace('-', '_', $t_mp[4]) : null;
+        
+        $check_sql = 'SELECT id FROM '.$prefx.'_car_ctlg WHERE `br`=:brand';
+        $check_params = ['brand' => $check_brand];
+        
+        if ($check_model) {
+            $check_sql .= ' AND `mo`=:model';
+            $check_params['model'] = $check_model;
+        }
+        
+        $check_sql .= ' AND `vis`="1" AND `act`="1" LIMIT 1';
+        
+        $check_pdo = $db->prepare($check_sql);
+        $check_pdo->execute($check_params);
+        $check_car = $check_pdo->fetch(PDO::FETCH_ASSOC);
+        
+        if ($check_car) {
+            $check_id = $check_car['id'];
+        }
+    }
+    
+    if ($check_id > 0) {
+        $check_pdo = $db->prepare('SELECT id FROM '.$prefx.'_car_ctlg WHERE `id`= :id AND `vis`="1" AND `act`="1" LIMIT 1');
+        $check_pdo->execute(['id' => $check_id]);
+        
+        if ($check_pdo->rowCount() == 0) {
+            $GLOBALS['page_is_404'] = true;
+        }
+    } else {
+        $GLOBALS['page_is_404'] = true;
+    }
+}
+
+// Check TYRES detail page
+if (isset($t_mp[2]) && $t_mp[2] == 'tyres' && isset($t_mp[3]) && !isset($q_mp[1])) {
+    $check_id = toNumber($t_mp[3]);
+    
+    if ($check_id > 0) {
+        $check_pdo = $db->prepare('SELECT id FROM '.$prefx.'_tyre_ctlg WHERE `id`= :id AND `vis`="1" LIMIT 1');
+        $check_pdo->execute(['id' => $check_id]);
+        
+        if ($check_pdo->rowCount() == 0) {
+            $GLOBALS['page_is_404'] = true;
+        }
+    } else {
+        $GLOBALS['page_is_404'] = true;
+    }
+}
+
+// Check OFFER_INFO detail page
+if (isset($t_mp[2]) && $t_mp[2] == 'offer_info' && isset($t_mp[3])) {
+    $check_pdo = $db->prepare('SELECT id, visible, active FROM '.$prefx.'_offer_catalog WHERE `id`=:id');
+    $check_pdo->execute(['id' => $t_mp[3]]);
+    $check_offer = $check_pdo->fetch(PDO::FETCH_ASSOC);
+    
+    if (!$check_offer || $check_offer['visible'] != 1 || $check_offer['active'] != 1) {
+        $GLOBALS['page_is_404'] = true;
+    }
+}
+
+// Check SERVICES page
+if (isset($t_mp[2]) && $t_mp[2] == 'services' && isset($t_mp[3])) {
+    if (!key_exists($t_mp[3], $serv_arr)) {
+        $GLOBALS['page_is_404'] = true;
+    }
+}
+
+// Check OFFERS page
+if (isset($t_mp[2]) && $t_mp[2] == 'offers' && isset($t_mp[3])) {
+    if (!in_array($t_mp[3], $offers_arr)) {
+        $GLOBALS['page_is_404'] = true;
+    }
+}
+
+// Check ORDERCARS detail page (uses same table as cars)
+if (isset($t_mp[2]) && $t_mp[2] == 'ordercars' && isset($t_mp[3]) && !isset($_GET['tg'])) {
+    $check_id = 0;
+    
+    if (is_numeric($t_mp[3])) {
+        $check_id = toNumber($t_mp[3]);
+    } else {
+        // Clean URL format - check if car exists
+        $check_brand = str_replace('-', '_', $t_mp[3]);
+        $check_model = isset($t_mp[4]) ? str_replace('-', '_', $t_mp[4]) : null;
+        
+        $check_sql = 'SELECT id FROM '.$prefx.'_car_ctlg WHERE `br`=:brand';
+        $check_params = ['brand' => $check_brand];
+        
+        if ($check_model) {
+            $check_sql .= ' AND `mo`=:model';
+            $check_params['model'] = $check_model;
+        }
+        
+        $check_sql .= ' AND `vis`="1" AND `act`="1" LIMIT 1';
+        
+        $check_pdo = $db->prepare($check_sql);
+        $check_pdo->execute($check_params);
+        $check_car = $check_pdo->fetch(PDO::FETCH_ASSOC);
+        
+        if ($check_car) {
+            $check_id = $check_car['id'];
+        }
+    }
+    
+    if ($check_id > 0) {
+        $check_pdo = $db->prepare('SELECT id FROM '.$prefx.'_car_ctlg WHERE `id`= :id AND `vis`="1" AND `act`="1" LIMIT 1');
+        $check_pdo->execute(['id' => $check_id]);
+        
+        if ($check_pdo->rowCount() == 0) {
+            $GLOBALS['page_is_404'] = true;
+        }
+    } else {
+        $GLOBALS['page_is_404'] = true;
+    }
+}
+
+?>
 
 <head>
     <?php include(_SITE.'/head.php'); ?>

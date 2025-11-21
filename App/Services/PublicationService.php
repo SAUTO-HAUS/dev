@@ -254,12 +254,21 @@ class PublicationService
             $message .= "\n📞 Telefon: +373 796 00 361";
         }
         
-        // Link to more models
+        // Direct link to this car (use correct path based on catalog type)
+        if (!empty($carData['id'])) {
+            // Use /ordercars/ for on_order cars, /cars/ for in_stock
+            $path = ($catalogType === 'on_order') ? 'ordercars' : 'cars';
+            $message .= "\n🔗 Vezi detalii: sauto.md/ro/{$path}/{$carData['id']}";
+        }
+        
+        // Link to more models (use correct path based on catalog type)
         if (!empty($carData['br'])) {
             $brand = str_replace('_', '-', strtolower($carData['br']));
             $model = str_replace('_', '-', strtolower($carData['mo'] ?? ''));
             
-            $message .= "\n🔗 Alte modele: sauto.md/ro/cars/{$brand}-{$model}";
+            // Use /ordercars/ for on_order cars, /cars/ for in_stock
+            $path = ($catalogType === 'on_order') ? 'ordercars' : 'cars';
+            $message .= "\n🔗 Alte modele: sauto.md/ro/{$path}/{$brand}-{$model}";
         }
         
         return $message;

@@ -3,6 +3,12 @@ defined( '_DOIT' ) or die( 'Restricted access' );
 
 use App\Helper\PhoneHelper;
 
+// If this is a 404 page, show 404 content and exit
+if (isset($GLOBALS['page_is_404']) && $GLOBALS['page_is_404'] === true) {
+    include(_DEFAULT.'/404.php');
+    exit;
+}
+
 // Include order-specific functions for order cars
 include_once( _SITE_INCL.'/order_functions.php' );
 

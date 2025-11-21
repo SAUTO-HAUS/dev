@@ -4,6 +4,18 @@ require_once(dirname(dirname(dirname(__FILE__))) . '/content/default/language.ph
 
 $sa = array();
 
+// Check if this is a 404 page - set by detail pages before head.php is included
+if (isset($GLOBALS['page_is_404']) && $GLOBALS['page_is_404'] === true) {
+    http_response_code(404);
+    echo '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />';
+    echo '<meta name="description" content="Page not found. Error 404.">';
+    echo '<meta name="keywords" content="Error, 404">';
+    echo '<meta name="robots" content="noindex, nofollow">';
+    echo '<meta name="viewport" content="width=800"/>';
+    echo '<title>404 - '.$lang_404.'</title>';
+    return; // Stop processing meta generation
+}
+
 if ( isset($t_mp[1]) ){
 	if ( in_array($t_mp[1], $lang_arr, true) ){ $zlng = $t_mp[1]; }
 	else{ $zlng = 'ro'; }
