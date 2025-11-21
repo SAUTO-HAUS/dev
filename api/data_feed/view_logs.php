@@ -29,6 +29,10 @@ require_once __DIR__ . '/../../environment.php';
 require_once __DIR__ . '/../../content/default/config.php';
 require_once __DIR__ . '/../../content/default/dbi.php';
 
+// Enable error display for debugging
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
 // Auto-refresh functionality
 $autoRefresh = isset($_GET['refresh']) ? (int)$_GET['refresh'] : 30;
 
@@ -36,9 +40,21 @@ $autoRefresh = isset($_GET['refresh']) ? (int)$_GET['refresh'] : 30;
 $logLimit = isset($_GET['limit']) ? (int)$_GET['limit'] : 50;
 
 // Fetch latest statistics
-$sqlLatest = "SELECT * FROM {$prefx}_data_feed_latest_stats ORDER BY feed_type";
-$stmtLatest = $db->query($sqlLatest);
-$latestStats = $stmtLatest->fetchAll(PDO::FETCH_ASSOC);
+try {
+    $sqlLatest = "SELECT * FROM {$prefx}_data_feed_latest_stats ORDER BY feed_type";
+    $stmtLatest = $db->query($sqlLatest);
+    $latestStats = $stmtLatest->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+    // If view doesn't exist, fetch directly from table
+    $sqlLatest = "SELECT feed_type, generation_date, cars_added, cars_removed, total_cars, execution_time, status 
+                  FROM {$prefx}_data_feed_log 
+                  WHERE id IN (
+                      SELECT MAX(id) FROM {$prefx}_data_feed_log GROUP BY feed_type
+                  ) 
+                  ORDER BY feed_type";
+    $stmtLatest = $db->query($sqlLatest);
+    $latestStats = $stmtLatest->fetchAll(PDO::FETCH_ASSOC);
+}
 
 // Fetch recent log entries
 $sqlLogs = "SELECT * FROM {$prefx}_data_feed_log ORDER BY generation_date DESC LIMIT :limit";
