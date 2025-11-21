@@ -84,6 +84,27 @@ if (__post('sub') == 'get_subcategory') {
     // Parse form data
     parse_str($_POST['form_data'], $input);
     
+    // If 999_api_id is missing (disabled field not submitted), get it from database or default to 3 for order cars
+    if (empty($input['999_api_id'])) {
+        if (!empty($carId)) {
+            $stmt = $pdo->prepare("SELECT 999_api_id FROM gh3sp_car_ctlg WHERE id = ?");
+            $stmt->execute([$carId]);
+            $carApiData = $stmt->fetch(\PDO::FETCH_ASSOC);
+            if (!empty($carApiData['999_api_id'])) {
+                $input['999_api_id'] = $carApiData['999_api_id'];
+                __log("Using 999_api_id from database: {$input['999_api_id']}");
+            } else {
+                // Default to API ID 3 (Sauto-stock-extern) for order cars
+                $input['999_api_id'] = 3;
+                __log("Defaulting to 999_api_id = 3 (Sauto-stock-extern) for order cars");
+            }
+        } else {
+            // Default to API ID 3 (Sauto-stock-extern) for new order cars
+            $input['999_api_id'] = 3;
+            __log("Defaulting to 999_api_id = 3 (Sauto-stock-extern) for new order cars");
+        }
+    }
+    
     // Validate required fields
     if (empty($input['999_api_id'])) {
         $rtrn = ['error' => 'API ID is required'];
@@ -243,21 +264,29 @@ if (__post('sub') == 'get_subcategory') {
 
         $featuresJson = json_encode($input, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
+        // Debug: Check announcement type and schedules
+        __log("DEBUG: announcement_type = " . ($input['announcement_type'] ?? 'NOT SET'));
+        __log("DEBUG: sauto_schedules = " . ($input['sauto_schedules'] ?? 'NOT SET'));
+        __log("DEBUG: 999_api_id = " . ($input['999_api_id'] ?? 'NOT SET'));
+
         // For SAUTO Personal, don't publish immediately - let cron job handle it
         if ($input['announcement_type'] === 'sauto_personal' && !empty($input['sauto_schedules'])) {
-            // Create a fake successful response for SAUTO Personal
+            // Create a successful response for SAUTO Personal
             $request = [
+                'success' => true,
+                'scheduled' => true,
                 'advert' => [
                     'id' => 'scheduled_' . time() // Temporary ID until cron job publishes
                 ]
             ];
             __log("SAUTO Personal: Skipping immediate publication, will be handled by cron job");
         } else {
+            __log("DEBUG: Making API call with 999_api_id = " . $input['999_api_id']);
             // Normal publication for other announcement types
             $request = (new Api999Service($input['999_api_id']))->setAdvert($input["car"]["category"], $input["car"]["subcategory"], $input["car"]["subcategory_offer_types"], $features);
         }
 
-        __log($request);
+        __log("DEBUG: Request result = " . json_encode($request));
         __log($features);
 
         // Check if API call was successful
@@ -319,8 +348,20 @@ if (__post('sub') == 'get_subcategory') {
         if ($input['announcement_type'] === 'sauto_personal' && !empty($input['sauto_schedules'])) {
             $schedulesData = json_decode($input['sauto_schedules'], true);
             if ($schedulesData && is_array($schedulesData)) {
+                // Get catalog_type from database
+                $catalogType = 'on_order'; // Default for order cars page
+                if (!empty(__post('carId'))) {
+                    $stmt = $pdo->prepare("SELECT catalog_type FROM gh3sp_car_ctlg WHERE id = ?");
+                    $stmt->execute([__post('carId')]);
+                    $carInfo = $stmt->fetch(\PDO::FETCH_ASSOC);
+                    if (!empty($carInfo['catalog_type'])) {
+                        $catalogType = $carInfo['catalog_type'];
+                    }
+                }
+                
                 $sautoSchedulingService = new \App\Services\SautoPersonalSchedulingService();
-                $sautoSchedulingService->saveSchedules(__post('carId'), 'on_order', $schedulesData);
+                $sautoSchedulingService->saveSchedules(__post('carId'), $catalogType, $schedulesData);
+                __log("SAUTO Personal: Schedules saved successfully for car ID: " . __post('carId') . " with catalog_type: " . $catalogType);
             }
         } elseif (($input['promotions'] ?? 'basic') == 'test') {
             (new Api999Service($input['999_api_id']))->setTestAdvertSchedules($images999, $request['advert']['id'], __post('carId'));

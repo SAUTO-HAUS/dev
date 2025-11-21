@@ -67,21 +67,16 @@ try {
     $stmt->execute(['current_time' => $currentDateTime]);
     $pendingSchedules = $stmt->fetchAll();
     
-    // Debug: Show all pending schedules regardless of time
+    // Debug: Count pending schedules
     $debugStmt = $db->prepare("
-        SELECT s.*, CONCAT(s.schedule_date, ' ', s.schedule_time) as full_schedule_time
+        SELECT COUNT(*) as total_pending
         FROM gh3sp_sauto_personal_schedules s
         WHERE s.status = 'pending'
-        ORDER BY s.schedule_date, s.schedule_time
     ");
     $debugStmt->execute();
-    $allPending = $debugStmt->fetchAll();
+    $totalPending = $debugStmt->fetchColumn();
     
-    echo "[" . date('Y-m-d H:i:s') . "] All pending schedules:\n";
-    foreach ($allPending as $schedule) {
-        echo "  - ID: {$schedule['id']}, Time: {$schedule['full_schedule_time']}, Should publish: " . 
-             ($schedule['full_schedule_time'] <= $currentDateTime ? 'YES' : 'NO') . "\n";
-    }
+    echo "[" . date('Y-m-d H:i:s') . "] Total pending schedules: {$totalPending}\n";
     
     if (empty($pendingSchedules)) {
         echo "[" . date('Y-m-d H:i:s') . "] No pending schedules to publish\n";
