@@ -24,10 +24,11 @@ if (!$authenticated) {
 
 // Database connection
 define('_DOIT', 1);
-require_once __DIR__ . '/../../content/default/defines.php';
-require_once __DIR__ . '/../../environment.php';
-require_once __DIR__ . '/../../content/default/config.php';
-require_once __DIR__ . '/../../content/default/dbi.php';
+define('_DEFAULT', $_SERVER["DOCUMENT_ROOT"].'/content/default');
+require_once (_DEFAULT.'/defines.php');
+require_once ($_SERVER["DOCUMENT_ROOT"].'/environment.php');
+require_once (_DEFAULT.'/config.php');
+require_once (_DEFAULT.'/dbi.php');
 
 // Enable error display for debugging
 ini_set('display_errors', 1);
