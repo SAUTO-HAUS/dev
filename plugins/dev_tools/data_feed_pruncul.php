@@ -1,11 +1,24 @@
 <?php 
+/**
+ * Pruncul Branch Data Feed Generator
+ * 
+ * Generates XML feed for Facebook/Google Shopping containing only cars
+ * from Pruncul branch that are in stock.
+ * 
+ * Output: api/data_feed/df_cars_prunckl.xml
+ * 
+ * @author SAUTO Development Team
+ * @created 2025-11-21
+ */
+
 use LaLit\Array2XML;
 
 include ($_SERVER["DOCUMENT_ROOT"].'/plugins/lalit/Constants.php');
 include ($_SERVER["DOCUMENT_ROOT"].'/plugins/lalit/InitTrait.php');
 include ($_SERVER["DOCUMENT_ROOT"].'/plugins/lalit/Array2XML.php');
 
-$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE `n_a`=0 AND `vis`=1 AND `act`=1 AND `catalog_type`=\'in_stock\' AND `loc`=\'1\' ';
+// Pruncul catalog - only in-stock cars from Pruncul branch (loc=2), no orders
+$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE `n_a`=0 AND `vis`=1 AND `act`=1 AND `catalog_type`=\'in_stock\' AND `loc`=\'2\' ';
 $pdo = $db->prepare($sql);
 $pdo->execute();
 $i=0; $ar=[];
@@ -52,10 +65,10 @@ foreach ($pdo as $r){
 }
 
 $rss=['@attributes'=>['xmlns:g'=>'http://base.google.com/ns/1.0','version'=>'2.0']];
-$rss['channel'] = ['title'=>'Sauto, cars feed', 'link'=>[ '@attributes'=>['rel'=>'self', 'href'=>'https://www.sauto.md/ro/cars'] ]];
+$rss['channel'] = ['title'=>'Sauto, cars feed - Pruncul', 'link'=>[ '@attributes'=>['rel'=>'self', 'href'=>'https://www.sauto.md/ro/cars'] ]];
 $rss['channel']['item'] = $ar;
 
 $xml = Array2XML::createXML('rss', $rss);
 //echo $xml->saveXML();
-$xml->save('api/data_feed/df_cars.xml');
+$xml->save('api/data_feed/df_cars_pruncul.xml');
 ?>
