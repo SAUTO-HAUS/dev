@@ -26,6 +26,7 @@ if (!$authenticated) {
 define('_DOIT', 1);
 define('_DEFAULT', $_SERVER["DOCUMENT_ROOT"].'/content/default');
 require_once (_DEFAULT.'/defines.php');
+require_once (_DEFAULT.'/functions.php');
 require_once ($_SERVER["DOCUMENT_ROOT"].'/environment.php');
 require_once (_DEFAULT.'/config.php');
 require_once (_DEFAULT.'/dbi.php');

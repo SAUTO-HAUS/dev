@@ -42,6 +42,13 @@ try {
 }
 
 try {
+    require_once (_DEFAULT.'/functions.php');
+    echo "functions.php: ✅ Loaded<br>";
+} catch (Exception $e) {
+    echo "functions.php: ❌ ERROR - " . $e->getMessage() . "<br>";
+}
+
+try {
     require_once ($docRoot . '/environment.php');
     echo "environment.php: ✅ Loaded<br>";
 } catch (Exception $e) {
