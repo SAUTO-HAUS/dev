@@ -40,6 +40,7 @@ $autoRefresh = isset($_GET['refresh']) ? (int)$_GET['refresh'] : 30;
 
 // Get number of log entries to display
 $logLimit = isset($_GET['limit']) ? (int)$_GET['limit'] : 50;
+$showAll = isset($_GET['all']) && $_GET['all'] == '1';
 
 // Fetch latest statistics
 try {
@@ -59,11 +60,18 @@ try {
 }
 
 // Fetch recent log entries
-$sqlLogs = "SELECT * FROM {$prefx}_data_feed_log ORDER BY generation_date DESC LIMIT :limit";
-$stmtLogs = $db->prepare($sqlLogs);
-$stmtLogs->bindValue(':limit', $logLimit, PDO::PARAM_INT);
-$stmtLogs->execute();
-$logs = $stmtLogs->fetchAll(PDO::FETCH_ASSOC);
+if ($showAll) {
+    $sqlLogs = "SELECT * FROM {$prefx}_data_feed_log ORDER BY generation_date DESC";
+    $stmtLogs = $db->query($sqlLogs);
+    $logs = $stmtLogs->fetchAll(PDO::FETCH_ASSOC);
+    $logLimit = count($logs); 
+} else {
+    $sqlLogs = "SELECT * FROM {$prefx}_data_feed_log ORDER BY generation_date DESC LIMIT :limit";
+    $stmtLogs = $db->prepare($sqlLogs);
+    $stmtLogs->bindValue(':limit', $logLimit, PDO::PARAM_INT);
+    $stmtLogs->execute();
+    $logs = $stmtLogs->fetchAll(PDO::FETCH_ASSOC);
+}
 
 // Calculate totals
 $totalCars = 0;
@@ -205,48 +213,90 @@ $feedNames = [
         }
         
         .log-section {
-            background: white;
+            background: #f8f9fa;
             margin: 20px 30px;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            overflow: hidden;
+            padding: 30px;
         }
         
         .log-header {
-            background: #343a40;
-            color: white;
-            padding: 20px 30px;
+            background: transparent;
+            color: #343a40;
+            padding: 0 0 20px 0;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-bottom: 3px solid #e2001a;
+            margin-bottom: 20px;
         }
         
         .log-header h2 {
             font-size: 1.5rem;
+            margin: 0;
+        }
+        
+        .log-header span {
+            color: #6c757d;
+            font-size: 0.9rem;
         }
         
         .log-table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+        
+        .log-table thead tr {
+            background: transparent;
         }
         
         .log-table th {
-            background: #495057;
+            background: #343a40;
             color: white;
-            padding: 15px;
+            padding: 12px 15px;
             text-align: left;
             font-weight: 600;
-            position: sticky;
-            top: 0;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .log-table th:first-child {
+            border-radius: 8px 0 0 8px;
+        }
+        
+        .log-table th:last-child {
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .log-table tbody tr {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+        
+        .log-table tbody tr:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
         }
         
         .log-table td {
-            padding: 15px;
-            border-bottom: 1px solid #e9ecef;
+            padding: 16px 15px;
+            border-top: 1px solid #f0f0f0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.95rem;
         }
         
-        .log-table tr:hover {
-            background: #f8f9fa;
+        .log-table td:first-child {
+            border-left: 1px solid #f0f0f0;
+            border-radius: 8px 0 0 8px;
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .log-table td:last-child {
+            border-right: 1px solid #f0f0f0;
+            border-radius: 0 8px 8px 0;
         }
         
         .feed-badge {
@@ -339,10 +389,8 @@ $feedNames = [
         
         <div class="controls">
             <a href="javascript:location.reload()">🔄 Обновить</a>
-            <a href="?pass=<?= $password ?>&refresh=0">⏸️ Отключить авто-обновление</a>
             <a href="?pass=<?= $password ?>&refresh=30">⏱️ Авто-обновление 30с</a>
-            <a href="?pass=<?= $password ?>&limit=50">📄 50 записей</a>
-            <a href="?pass=<?= $password ?>&limit=100">📄 100 записей</a>
+            <a href="?pass=<?= $password ?>&refresh=0">⏸️ Отключить</a>
         </div>
         
         <!-- Current Statistics -->
@@ -395,7 +443,15 @@ $feedNames = [
         <div class="log-section">
             <div class="log-header">
                 <h2>📜 История изменений</h2>
-                <span>Последние <?= $logLimit ?> записей</span>
+                <div>
+                    <?php if ($showAll): ?>
+                        <span>Всего <?= $logLimit ?> записей</span>
+                        <a href="?pass=<?= $password ?>&refresh=<?= $autoRefresh ?>" style="margin-left: 15px; color: #e2001a; text-decoration: none; font-weight: 600;">← Показать последние 50</a>
+                    <?php else: ?>
+                        <span>Последние <?= $logLimit ?> записей</span>
+                        <a href="?pass=<?= $password ?>&all=1&refresh=0" style="margin-left: 15px; color: #e2001a; text-decoration: none; font-weight: 600;">Показать все →</a>
+                    <?php endif; ?>
+                </div>
             </div>
             <div style="overflow-x: auto;">
                 <table class="log-table">
@@ -406,7 +462,6 @@ $feedNames = [
                             <th>Добавлено</th>
                             <th>Удалено</th>
                             <th>Всего</th>
-                            <th>Время (с)</th>
                             <th>Статус</th>
                         </tr>
                     </thead>
@@ -426,7 +481,6 @@ $feedNames = [
                                 <span class="change-indicator negative">-<?= $log['cars_removed'] ?></span>
                             </td>
                             <td><strong><?= number_format($log['total_cars']) ?></strong></td>
-                            <td><?= $log['execution_time'] ?></td>
                             <td>
                                 <span class="status-badge <?= $log['status'] ?>">
                                     <?= $log['status'] === 'success' ? '✅ Успех' : '❌ Ошибка' ?>
@@ -435,7 +489,7 @@ $feedNames = [
                         </tr>
                         <?php if ($log['error_message']): ?>
                         <tr>
-                            <td colspan="7" style="background: #fff3cd; color: #856404; padding: 10px;">
+                            <td colspan="6" style="background: #fff3cd; color: #856404; padding: 10px;">
                                 <strong>Ошибка:</strong> <?= htmlspecialchars($log['error_message']) ?>
                             </td>
                         </tr>
