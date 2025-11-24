@@ -45,10 +45,11 @@ if (isset($t_mp[2]) && $t_mp[2] == 'cars' && isset($t_mp[3]) && !isset($_GET['tg
     }
     
     if ($check_id > 0) {
-        $check_pdo = $db->prepare('SELECT id FROM '.$prefx.'_car_ctlg WHERE `id`= :id AND `vis`="1" AND `act`="1" LIMIT 1');
+        $check_pdo = $db->prepare('SELECT id, catalog_type FROM '.$prefx.'_car_ctlg WHERE `id`= :id AND `vis`="1" AND `act`="1" LIMIT 1');
         $check_pdo->execute(['id' => $check_id]);
+        $check_car = $check_pdo->fetch(PDO::FETCH_ASSOC);
         
-        if ($check_pdo->rowCount() == 0) {
+        if (!$check_car || $check_car['catalog_type'] !== 'in_stock') {
             $GLOBALS['page_is_404'] = true;
         }
     } else {
@@ -128,10 +129,12 @@ if (isset($t_mp[2]) && $t_mp[2] == 'ordercars' && isset($t_mp[3]) && !isset($_GE
     }
     
     if ($check_id > 0) {
-        $check_pdo = $db->prepare('SELECT id FROM '.$prefx.'_car_ctlg WHERE `id`= :id AND `vis`="1" AND `act`="1" LIMIT 1');
+        $check_pdo = $db->prepare('SELECT id, catalog_type FROM '.$prefx.'_car_ctlg WHERE `id`= :id AND `vis`="1" AND `act`="1" LIMIT 1');
         $check_pdo->execute(['id' => $check_id]);
+        $check_car = $check_pdo->fetch(PDO::FETCH_ASSOC);
         
-        if ($check_pdo->rowCount() == 0) {
+        // Validate that on_order cars are accessed via /ordercars/ URL
+        if (!$check_car || $check_car['catalog_type'] !== 'on_order') {
             $GLOBALS['page_is_404'] = true;
         }
     } else {
