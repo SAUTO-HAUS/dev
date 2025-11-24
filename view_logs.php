@@ -401,8 +401,8 @@ $feedNames = [
             <p style="margin-top: 15px;">
                 <strong>🔗 Ссылки на фиды:</strong><br>
                 <a href="/api/data_feed/df_cars.xml" target="_blank" style="color: #007bff;">Основной</a> | 
-                <a href="/api/data_feed/df_cars_pruncul.xml" target="_blank" style="color: #6f42c1;">Pruncul</a> | 
-                <a href="/api/data_feed/df_cars_orders.xml" target="_blank" style="color: #fd7e14;">Orders</a>
+                <a href="/api/data_feed/df_cars_pruncul.xml" target="_blank" style="color: #6f42c1;">Прункул</a> | 
+                <a href="/api/data_feed/df_cars_orders.xml" target="_blank" style="color: #fd7e14;">Под заказ</a>
             </p>
         </div>
         
