@@ -393,6 +393,19 @@ $feedNames = [
             <a href="?pass=<?= $password ?>&refresh=0">⏸️ Отключить</a>
         </div>
         
+        <div class="footer" style="margin: 20px 30px;">
+            <p><strong>🕒 Последнее обновление страницы:</strong> <?= date('d.m.Y H:i:s') ?></p>
+            <?php if ($autoRefresh > 0): ?>
+            <p>⏱️ Авто-обновление через <?= $autoRefresh ?> секунд</p>
+            <?php endif; ?>
+            <p style="margin-top: 15px;">
+                <strong>🔗 Ссылки на фиды:</strong><br>
+                <a href="/api/data_feed/df_cars.xml" target="_blank" style="color: #007bff;">Основной</a> | 
+                <a href="/api/data_feed/df_cars_pruncul.xml" target="_blank" style="color: #6f42c1;">Pruncul</a> | 
+                <a href="/api/data_feed/df_cars_orders.xml" target="_blank" style="color: #fd7e14;">Orders</a>
+            </p>
+        </div>
+        
         <!-- Current Statistics -->
         <div class="stats-grid">
             <?php foreach ($latestStats as $stat): ?>
@@ -498,19 +511,6 @@ $feedNames = [
                     </tbody>
                 </table>
             </div>
-        </div>
-        
-        <div class="footer">
-            <p><strong>🕒 Последнее обновление страницы:</strong> <?= date('d.m.Y H:i:s') ?></p>
-            <?php if ($autoRefresh > 0): ?>
-            <p>⏱️ Авто-обновление через <?= $autoRefresh ?> секунд</p>
-            <?php endif; ?>
-            <p style="margin-top: 15px;">
-                <strong>🔗 Ссылки на фиды:</strong><br>
-                <a href="/api/data_feed/df_cars.xml" target="_blank" style="color: #007bff;">Основной</a> | 
-                <a href="/api/data_feed/df_cars_pruncul.xml" target="_blank" style="color: #6f42c1;">Pruncul</a> | 
-                <a href="/api/data_feed/df_cars_orders.xml" target="_blank" style="color: #fd7e14;">Orders</a>
-            </p>
         </div>
     </div>
 </body>
