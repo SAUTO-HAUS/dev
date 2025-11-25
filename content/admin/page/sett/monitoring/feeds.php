@@ -140,9 +140,9 @@ $feedNames = [
         
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            padding: 30px;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            padding: 20px;
             background: white;
         }
         
@@ -335,6 +335,12 @@ $feedNames = [
             background: white;
             border-radius: 0 0 12px 12px;
             color: #6c757d;
+        }
+        
+        @media (max-width: 1200px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
         
         @media (max-width: 768px) {
