@@ -9,31 +9,8 @@
  * @created 2025-11-21
  */
 
-// Security check - password protection
-$password = 'sauto2025';
-$authenticated = false;
-
-if (isset($_GET['pass']) && $_GET['pass'] === $password) {
-    $authenticated = true;
-}
-
-if (!$authenticated) {
-    http_response_code(403);
-    die('Access denied. Use: ?pass=sauto2025');
-}
-
-// Database connection
-define('_DOIT', 1);
-define('_DEFAULT', $_SERVER["DOCUMENT_ROOT"].'/content/default');
-require_once (_DEFAULT.'/defines.php');
-require_once (_DEFAULT.'/functions.php');
-require_once ($_SERVER["DOCUMENT_ROOT"].'/environment.php');
-require_once (_DEFAULT.'/config.php');
-require_once (_DEFAULT.'/dbi.php');
-
-// Enable error display for debugging
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+// No password needed - already authenticated in admin panel
+// Database connection already available from parent sett.php
 
 // Auto-refresh functionality
 $autoRefresh = isset($_GET['refresh']) ? (int)$_GET['refresh'] : 30;
@@ -389,8 +366,8 @@ $feedNames = [
         
         <div class="controls">
             <a href="javascript:location.reload()">🔄 Обновить</a>
-            <a href="?pass=<?= $password ?>&refresh=30">⏱️ Авто-обновление 30с</a>
-            <a href="?pass=<?= $password ?>&refresh=0">⏸️ Отключить</a>
+            <a href="?refresh=30">⏱️ Авто-обновление 30с</a>
+            <a href="?refresh=0">⏸️ Отключить</a>
         </div>
         
         <div class="footer" style="margin: 20px 30px;">
@@ -459,10 +436,10 @@ $feedNames = [
                 <div>
                     <?php if ($showAll): ?>
                         <span>Всего <?= $logLimit ?> записей</span>
-                        <a href="?pass=<?= $password ?>&refresh=<?= $autoRefresh ?>" style="margin-left: 15px; color: #e2001a; text-decoration: none; font-weight: 600;">← Показать последние 50</a>
+                        <a href="?refresh=<?= $autoRefresh ?>" style="margin-left: 15px; color: #e2001a; text-decoration: none; font-weight: 600;">← Показать последние 50</a>
                     <?php else: ?>
                         <span>Последние <?= $logLimit ?> записей</span>
-                        <a href="?pass=<?= $password ?>&all=1&refresh=0" style="margin-left: 15px; color: #e2001a; text-decoration: none; font-weight: 600;">Показать все →</a>
+                        <a href="?all=1&refresh=0" style="margin-left: 15px; color: #e2001a; text-decoration: none; font-weight: 600;">Показать все →</a>
                     <?php endif; ?>
                 </div>
             </div>

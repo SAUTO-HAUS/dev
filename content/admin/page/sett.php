@@ -407,6 +407,16 @@ if ( isset($t_mp[4]) ){
 		// Include publication settings management page
 		include $_SERVER['DOCUMENT_ROOT'] . '/App/Services/PublicationSettings.php';
 	}
+	elseif ( $t_mp[4]=='monitoring' ){
+		// Include monitoring page or subpages
+		if ( isset($t_mp[5]) ){
+			// Subpage: feeds, sitemap_gen, sitemap_logs
+			include dirname(__FILE__) . '/sett/monitoring/' . $t_mp[5] . '.php';
+		} else {
+			// Main monitoring page
+			include dirname(__FILE__) . '/sett/monitoring.php';
+		}
+	}
 	elseif ( $t_mp[4]=='annc' ){
 		if ( isset($t_mp[5]) ){
 			$link_back = ''; $count = count($t_mp);
