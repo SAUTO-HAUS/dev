@@ -274,7 +274,6 @@ if ($input_pass !== $password) {
   AND vis = 1 
   AND act = 1</div>
             <p><strong>URL:</strong> <a href="https://www.sauto.md/api/data_feed/df_cars_orders.xml" class="url-link" target="_blank">https://www.sauto.md/api/data_feed/df_cars_orders.xml</a></p>
-            <p class="warning">⚠️ Важно: Автомобили под заказ доступны по URL <code>/ro/ordercars/ID</code></p>
         </div>
 
         <h3>4. Автоматическое обновление</h3>
@@ -291,14 +290,6 @@ if ($input_pass !== $password) {
 
         <h3>6. База данных</h3>
         <p>Таблица <code>gh3sp_data_feed_log</code> - логирование всех изменений</p>
-
-        <div class="footer">
-            <p><strong>Система готова к использованию!</strong> 🎉</p>
-            <p>Все каталоги генерируются автоматически, логируются и доступны для интеграции с Facebook Commerce Manager.</p>
-            <p style="margin-top: 20px; font-size: 0.9rem;">
-                <a href="https://www.sauto.md/view_logs.php?pass=sauto2025" class="url-link" target="_blank">Открыть мониторинг</a>
-            </p>
-        </div>
     </div>
 </body>
 </html>
