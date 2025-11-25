@@ -220,28 +220,74 @@ if ($input_pass !== $password) {
         </div>
         
         <div class="meta-info">
-            <p><strong>Дата:</strong> 25 ноября 2025</p>
             <p><strong>Задача:</strong> Разделение Facebook каталога на 3 отдельных фида</p>
-            <p><strong>Сайт:</strong> <a href="https://www.sauto.md" class="url-link" target="_blank">https://www.sauto.md</a></p>
         </div>
 
         <h2>📝 Что было изменено</h2>
 
         <h3>1. Новые файлы</h3>
+        
         <ul>
-            <li><code>plugins/dev_tools/DataFeedGenerator.php</code> - класс для генерации фидов</li>
-            <li><code>plugins/dev_tools/data_feed_pruncul.php</code> - генератор филиала Прункул</li>
-            <li><code>plugins/dev_tools/data_feed_orders.php</code> - генератор под заказ</li>
-            <li><code>plugins/dev_tools/generate_data_feeds.php</code> - скрипт для cron</li>
-            <li><code>sql_scripts/create_data_feed_log_table.sql</code> - таблица логов</li>
-            <li><code>view_logs.php</code> - страница мониторинга</li>
+            <li><code>plugins/dev_tools/DataFeedGenerator.php</code>
+                <ul>
+                    <li>Базовый класс с общей логикой генерации фидов</li>
+                    <li>SQL фильтрация по типу каталога</li>
+                    <li>Алгоритм сравнения текущих и предыдущих данных</li>
+                    <li>Генерация XML в формате Google Shopping</li>
+                    <li>Логирование в базу данных</li>
+                </ul>
+            </li>
+            <li><code>plugins/dev_tools/data_feed_pruncul.php</code>
+                <ul>
+                    <li>Генератор для филиала Прункул</li>
+                    <li>Фильтрация по <code>loc='2'</code></li>
+                </ul>
+            </li>
+            <li><code>plugins/dev_tools/data_feed_orders.php</code>
+                <ul>
+                    <li>Генератор для автомобилей под заказ</li>
+                    <li>Проверка активности таймера</li>
+                    <li>URL формат <code>/ordercars/</code></li>
+                </ul>
+            </li>
+            <li><code>plugins/dev_tools/generate_data_feeds.php</code>
+                <ul>
+                    <li>Главный скрипт координации всех фидов</li>
+                    <li>Последовательный запуск с обработкой ошибок</li>
+                    <li>Сбор статистики</li>
+                </ul>
+            </li>
+            <li><code>sql_scripts/create_data_feed_log_table.sql</code>
+                <ul>
+                    <li>Таблица логирования <code>gh3sp_data_feed_log</code></li>
+                    <li>Индексы для оптимизации</li>
+                </ul>
+            </li>
+            <li><code>view_logs.php</code>
+                <ul>
+                    <li>Веб-интерфейс мониторинга</li>
+                    <li>Защита паролем</li>
+                    <li>Автообновление каждые 30 секунд</li>
+                    <li>История изменений</li>
+                </ul>
+            </li>
         </ul>
 
         <h3>2. Изменённые файлы</h3>
+        
         <ul>
-            <li><code>plugins/dev_tools/data_feed.php</code> - добавлена фильтрация <code>loc='1'</code></li>
-            <li><code>plugins/dev_tools/data_feed_orders.php</code> - исправлен URL на <code>/ordercars/</code></li>
-            <li><code>content/site/body.php</code> - добавлена валидация <code>catalog_type</code></li>
+            <li><code>plugins/dev_tools/data_feed.php</code>
+                <ul>
+                    <li>Добавлена фильтрация <code>loc='1'</code></li>
+                    <li>Исключены филиалы из основного каталога</li>
+                </ul>
+            </li>
+            <li><code>content/site/body.php</code>
+                <ul>
+                    <li>Валидация URL по типу автомобиля</li>
+                    <li>Возврат 404 при несоответствии</li>
+                </ul>
+            </li>
         </ul>
 
         <h3>3. Три каталога с фильтрацией</h3>
@@ -278,18 +324,19 @@ if ($input_pass !== $password) {
 
         <h3>4. Автоматическое обновление</h3>
         <div class="info-box">
-            <p><strong>Cron Job:</strong> Каждый день в <span class="highlight">04:00</span></p>
+            <p><strong>Cron Job:</strong> Ежедневно в <span class="highlight">04:00</span></p>
             <div class="code-block">0 4 * * * cd /home/sautom/public_html/plugins/dev_tools && /usr/local/bin/php generate_data_feeds.php</div>
+            <p>Автоматическая генерация всех трёх фидов с логированием изменений</p>
         </div>
 
         <h3>5. Страница мониторинга</h3>
         <div class="success-box">
             <p><strong>URL:</strong> <a href="https://www.sauto.md/view_logs.php?pass=sauto2025" class="url-link" target="_blank">https://www.sauto.md/view_logs.php?pass=sauto2025</a></p>
-            <p>Показывает: когда прошёл пересчёт, сколько авто добавлено/удалено, итоговое количество.</p>
+            <p>Показывает статистику по каждому каталогу, историю изменений, количество добавленных/удалённых автомобилей</p>
         </div>
 
         <h3>6. База данных</h3>
-        <p>Таблица <code>gh3sp_data_feed_log</code> - логирование всех изменений</p>
+        <p>Таблица <code>gh3sp_data_feed_log</code> для логирования всех генераций с полной статистикой</p>
     </div>
 </body>
 </html>
