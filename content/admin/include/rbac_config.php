@@ -156,6 +156,7 @@ $rbac_admin_menu = [
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['add', 'ctlg'],
         'stock' => ['ctlg', 'extern'],
+        'monitoring' => ['feeds', 'sitemap_gen', 'sitemap_logs'],
         'sett' => ['info', 'adm_usr', 'roles', 'phone_config', 'publication_settings']
     ],
     'admin' => [
