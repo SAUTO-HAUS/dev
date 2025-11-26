@@ -84,9 +84,10 @@ include('plugins/dev_tools/meta_gen.php');
 <?php } */ ?>
 
 <meta name="google-site-verification" content="xi-sPfXyALsoFfQj2jpMiB2bHLkIsxbEM7tPoq9vlRQ" />
+<meta name="yandex-verification" content="61bf9aa380a8610d" />
 
-<?php 
-	if (isset($t_mp[2])&&$t_mp[2]=='cars') {
+<?php
+        if (isset($t_mp[2])&&$t_mp[2]=='cars') {
 	
 	/*
 	$pdo = $db->prepare('SELECT * FROM '.$prefx.'_catalog WHERE `id`= :id AND `visible`="1" AND `active`="1"');
