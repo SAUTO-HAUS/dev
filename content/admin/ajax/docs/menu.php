@@ -502,10 +502,14 @@ JAVASCRIPT;
 				var currency = document.querySelector(\'form.menu_con_plata select[name="cur"]\');
 				
 				function checkKycThreshold() {
-					var price = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
-					var cur = currency ? currency.value : \'MDL\';
-					var showKyc = (price === 0) || (cur === \'EUR\' ? price >= 10000 : price >= 200000);
-					kycSection.style.display = showKyc ? \'block\' : \'none\';
+					// Always show KYC - price threshold check disabled
+					kycSection.style.display = \'block\';
+					
+					// Uncomment below to re-enable price threshold:
+					// var price = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
+					// var cur = currency ? currency.value : \'MDL\';
+					// var showKyc = (price === 0) || (cur === \'EUR\' ? price >= 10000 : price >= 200000);
+					// kycSection.style.display = showKyc ? \'block\' : \'none\';
 				}
 				
 				priceInput.addEventListener(\'input\', checkKycThreshold);
@@ -647,10 +651,14 @@ JAVASCRIPT;
 				var currency = document.querySelector(\'form.menu_con_plata select[name="cur"]\');
 				
 				function checkKycThreshold() {
-					var price = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
-					var cur = currency ? currency.value : \'MDL\';
-					var showKyc = (price === 0) || (cur === \'EUR\' ? price >= 10000 : price >= 200000);
-					kycSection.style.display = showKyc ? \'block\' : \'none\';
+					// Always show KYC - price threshold check disabled
+					kycSection.style.display = \'block\';
+					
+					// Uncomment below to re-enable price threshold:
+					// var price = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
+					// var cur = currency ? currency.value : \'MDL\';
+					// var showKyc = (price === 0) || (cur === \'EUR\' ? price >= 10000 : price >= 200000);
+					// kycSection.style.display = showKyc ? \'block\' : \'none\';
 				}
 				
 				priceInput.addEventListener(\'input\', checkKycThreshold);
@@ -673,6 +681,7 @@ JAVASCRIPT;
 		</script>
 
 		'.( isset($mixall)?'</form>':'' );
+		//}
 	}
 	
 	//__________________________________________________________________________________________CONTRACT JURIDICE
@@ -777,10 +786,14 @@ JAVASCRIPT;
 				var currency = document.querySelector(\'form.menu_con_plata select[name="cur"]\');
 				
 				function checkKycThreshold() {
-					var price = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
-					var cur = currency ? currency.value : \'MDL\';
-					var showKyc = (price === 0) || (cur === \'EUR\' ? price >= 10000 : price >= 200000);
-					kycSection.style.display = showKyc ? \'block\' : \'none\';
+					// Always show KYC - price threshold check disabled
+					kycSection.style.display = \'block\';
+					
+					// Uncomment below to re-enable price threshold:
+					// var price = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
+					// var cur = currency ? currency.value : \'MDL\';
+					// var showKyc = (price === 0) || (cur === \'EUR\' ? price >= 10000 : price >= 200000);
+					// kycSection.style.display = showKyc ? \'block\' : \'none\';
 				}
 				
 				priceInput.addEventListener(\'input\', checkKycThreshold);
@@ -932,10 +945,14 @@ JAVASCRIPT;
 				var currency = document.querySelector(\'form.menu_con_plata select[name="cur"]\');
 				
 				function checkKycThreshold() {
-					var price = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
-					var cur = currency ? currency.value : \'MDL\';
-					var showKyc = (price === 0) || (cur === \'EUR\' ? price >= 10000 : price >= 200000);
-					kycSection.style.display = showKyc ? \'block\' : \'none\';
+					// Always show KYC - price threshold check disabled
+					kycSection.style.display = \'block\';
+					
+					// Uncomment below to re-enable price threshold:
+					// var price = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
+					// var cur = currency ? currency.value : \'MDL\';
+					// var showKyc = (price === 0) || (cur === \'EUR\' ? price >= 10000 : price >= 200000);
+					// kycSection.style.display = showKyc ? \'block\' : \'none\';
 				}
 				
 				priceInput.addEventListener(\'input\', checkKycThreshold);
@@ -1048,10 +1065,14 @@ JAVASCRIPT;
 				var currency = document.querySelector(\'form.menu_con_plata select[name="cur"]\');
 				
 				function checkKycThreshold() {
-					var price = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
-					var cur = currency ? currency.value : \'MDL\';
-					var showKyc = (price === 0) || (cur === \'EUR\' ? price >= 10000 : price >= 200000);
-					kycSection.style.display = showKyc ? \'block\' : \'none\';
+					// Always show KYC - price threshold check disabled
+					kycSection.style.display = \'block\';
+					
+					// Uncomment below to re-enable price threshold:
+					// var price = parseFloat(priceInput.value.replace(/[^0-9.]/g, \'\')) || 0;
+					// var cur = currency ? currency.value : \'MDL\';
+					// var showKyc = (price === 0) || (cur === \'EUR\' ? price >= 10000 : price >= 200000);
+					// kycSection.style.display = showKyc ? \'block\' : \'none\';
 				}
 				
 				priceInput.addEventListener(\'input\', checkKycThreshold);

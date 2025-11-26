@@ -116,14 +116,13 @@ function requiresKycPages($contractType = null, $price = null) {
         return false;
     }
     
-    // Check price threshold based on currency
+    // KYC is always required for relevant contract types, regardless of price
+    // Price threshold check disabled - uncomment below to re-enable
+    /*
     $currency = $_POST['cur'] ?? 'MDL';
     
     if ($price !== null) {
-        // Convert price to numeric value, handling different formats
         $numericPrice = is_numeric($price) ? (float)$price : (float)str_replace([',', ' '], '', $price);
-        
-        // Apply currency-specific thresholds
         if ($currency === 'EUR') {
             return $numericPrice >= 10000; // 10,000 EUR threshold
         } else {
@@ -131,19 +130,16 @@ function requiresKycPages($contractType = null, $price = null) {
         }
     }
     
-    // If no price provided, check $_POST for price
     if (isset($_POST['prc']) && $_POST['prc'] !== '') {
         $numericPrice = is_numeric($_POST['prc']) ? (float)$_POST['prc'] : (float)str_replace([',', ' '], '', $_POST['prc']);
-        
-        // Apply currency-specific thresholds
         if ($currency === 'EUR') {
-            return $numericPrice >= 10000; // 10,000 EUR threshold
+            return $numericPrice >= 10000;
         } else {
-            return $numericPrice >= 200000; // 200,000 MDL threshold
+            return $numericPrice >= 200000;
         }
     }
+    */
     
-    // Default to true if no price available (for backward compatibility)
     return true;
 }
 
