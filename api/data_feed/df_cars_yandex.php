@@ -1,35 +1,33 @@
 <?php
 /**
- * Yandex YML Feed Generator - Web Version
+ * Yandex YML Feed Generator
+ * Direct XML output without HTML wrapper
  * 
- * URL: https://www.sauto.md/api/data_feed/generate_yandex.php?key=sauto2025
+ * URL: https://www.sauto.md/api/data_feed/df_cars_yandex.php?key=sauto2025
  */
 
 // Simple password protection
 $key = $_GET['key'] ?? '';
 if ($key !== 'sauto2025') {
+    header('HTTP/1.0 403 Forbidden');
     die('Access denied');
 }
 
 // Set timezone
 date_default_timezone_set('Europe/Chisinau');
 
-header('Content-Type: text/html; charset=utf-8');
-
-echo "<!DOCTYPE html><html><head><meta charset='utf-8'><title>Yandex YML Generator</title></head><body>";
-echo "<h1>Yandex YML Feed Generator</h1>";
-echo "<p>Started: " . date('Y-m-d H:i:s') . "</p>";
+// Output XML directly
+header('Content-Type: text/xml; charset=utf-8');
 
 try {
     // Configuration
     $inputFile = __DIR__ . '/df_cars.xml';
-    $outputFile = __DIR__ . '/df_cars_yandex.yml';
     $shopName = 'SAUTO.md';
     $shopUrl = 'https://www.sauto.md';
     
     // Load existing XML feed
     if (!file_exists($inputFile)) {
-        throw new Exception("Input XML file not found: {$inputFile}");
+        throw new Exception("Input XML file not found");
     }
     
     $xml = simplexml_load_file($inputFile);
@@ -75,8 +73,6 @@ try {
     // Offers
     $offers = $yml->createElement('offers');
     $shop->appendChild($offers);
-    
-    $totalCars = 0;
     
     // Register Google namespace
     $xml->registerXPathNamespace('g', 'http://base.google.com/ns/1.0');
@@ -167,26 +163,15 @@ try {
         }
         
         $offers->appendChild($offer);
-        $totalCars++;
     }
     
-    // Save YML file
-    $yml->save($outputFile);
-    
-    echo "<p>✅ <strong>Yandex YML feed generated successfully!</strong></p>";
-    echo "<p>📊 Total cars: <strong>{$totalCars}</strong></p>";
-    echo "<p>🔗 <a href='df_cars_yandex.yml' download>Download YML Feed</a></p>";
-    
-    // Display XML content
-    echo "<hr>";
-    echo "<h3>Generated YML Content:</h3>";
-    echo "<pre style='background:#f5f5f5; padding:15px; border:1px solid #ddd; overflow:auto; max-height:600px;'>";
-    echo htmlspecialchars($yml->saveXML());
-    echo "</pre>";
+    // Output XML directly
+    echo $yml->saveXML();
     
 } catch (Exception $e) {
-    echo "<p style='color:red'>❌ ERROR: " . htmlspecialchars($e->getMessage()) . "</p>";
+    // Even errors should be in XML format
+    header('HTTP/1.0 500 Internal Server Error');
+    echo '<?xml version="1.0" encoding="UTF-8"?>';
+    echo '<error>' . htmlspecialchars($e->getMessage()) . '</error>';
 }
-
-echo "</body></html>";
 ?>
