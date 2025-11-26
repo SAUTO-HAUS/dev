@@ -865,7 +865,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 		
 		var yearWrapper = $("<span style=\"position:relative; display:inline-block; float:right; margin-right:1rem;\"></span>");
 		yearWrapper.append(yearFilter);
-		yearWrapper.append("<span style=\"position:absolute; right:0.5rem; top:50%; transform:translateY(-50%); pointer-events:none;\">▼</span>");
+		yearWrapper.append("<span style=\"position:absolute; right:0.3rem; top:50%; transform:translateY(-50%); pointer-events:none; font-size:0.7rem;\">▼</span>");
 		
 		$(".docs > .find.doc").append(yearWrapper);
 		yearFilter.val(currentYear);
