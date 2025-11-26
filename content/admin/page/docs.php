@@ -96,10 +96,10 @@ if ( isset($t_mp[4]) ){
 		</style>
 		
 		<div class="sauto-info">
-			<h3>Date bancare SAUTO SRL</h3>
+			<h3>'.($lng['w']['bank_details'] ?? 'Date bancare').' SAUTO SRL</h3>
 			
 			<div class="sauto-block">
-				<button class="copy-btn" onclick="copySautoData(\'sauto-mdl\', this)">Copiază MDL</button>
+				<button class="copy-btn" onclick="copySautoData(\'sauto-mdl\', this)">'.($lng['w']['copy'] ?? 'Copiază').' MDL</button>
 				<pre id="sauto-mdl">"SAUTO" SRL
 Republica Moldova, MD-2084, mun.Chişinau
 or.Cricova, str.Chisinaului 84, ap.(of.) 39
@@ -109,7 +109,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 			</div>
 			
 			<div class="sauto-block">
-				<button class="copy-btn" onclick="copySautoData(\'sauto-eur\', this)">Copiază EUR</button>
+				<button class="copy-btn" onclick="copySautoData(\'sauto-eur\', this)">'.($lng['w']['copy'] ?? 'Copiază').' EUR</button>
 				<pre id="sauto-eur">"SAUTO" SRL
 Republica Moldova, MD-2084, mun.Chişinau
 or.Cricova, str.Chisinaului 84, ap.(of.) 39
@@ -119,7 +119,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 			</div>
 			
 			<div class="sauto-block">
-				<button class="copy-btn" onclick="copySautoData(\'sauto-usd\', this)">Copiază USD</button>
+				<button class="copy-btn" onclick="copySautoData(\'sauto-usd\', this)">'.($lng['w']['copy'] ?? 'Copiază').' USD</button>
 				<pre id="sauto-usd">"SAUTO" SRL
 Republica Moldova, MD-2084, mun.Chişinau
 or.Cricova, str.Chisinaului 84, ap.(of.) 39
@@ -132,11 +132,12 @@ c/f 1017600006845, c/TVA 0609417</pre>
 		<script>
 		function copySautoData(elementId, btn) {
 			var text = document.getElementById(elementId).textContent;
+			var originalText = btn.textContent;
 			navigator.clipboard.writeText(text).then(function() {
-				btn.textContent = "✓ Copiat!";
+				btn.textContent = "✓ '.($lng['w']['copied'] ?? 'Copiat').'!";
 				btn.classList.add("copied");
 				setTimeout(function() {
-					btn.textContent = "Copiază " + elementId.split("-")[1].toUpperCase();
+					btn.textContent = originalText;
 					btn.classList.remove("copied");
 				}, 2000);
 			});
