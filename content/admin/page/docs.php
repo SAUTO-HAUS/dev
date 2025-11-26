@@ -840,9 +840,49 @@ c/f 1017600006845, c/TVA 0609417</pre>
 					$i++;
 				}
 			$rtrn .= '
-			</div>
-		</div>';
-	}elseif ( isset($t_mp[5]) ){
+		</div>
+	</div>
+	<script>
+	$(document).ready(function(){
+		var years = new Set();
+		var currentYear = new Date().getFullYear();
+		
+		$(".docs > .list > .bx").each(function(){
+			var dateStr = $(this).find(".values").data("date");
+			if (dateStr) {
+				var year = new Date(dateStr).getFullYear();
+				years.add(year);
+				$(this).attr("data-year", year);
+			}
+		});
+		
+		var sortedYears = Array.from(years).sort(function(a, b){ return b - a; });
+		var yearFilter = $("<select style=\"padding:0.5rem; margin:0 0 0 1rem; border:1px solid #ddd; background:#fff; cursor:pointer; display:inline-block; vertical-align:top;\"></select>");
+		yearFilter.append("<option value=\"all\">Toate anii</option>");
+		sortedYears.forEach(function(year){
+			yearFilter.append("<option value=\"" + year + "\">" + year + "</option>");
+		});
+		
+		var yearWrapper = $("<span style=\"position:relative; display:inline-block;\"></span>");
+		yearWrapper.append(yearFilter);
+		yearWrapper.append("<span style=\"position:absolute; right:0.5rem; top:50%; transform:translateY(-50%); pointer-events:none;\">▼</span>");
+		
+		$(".docs > .find.doc > .lbl").after(yearWrapper);
+		yearFilter.val(currentYear);
+		
+		yearFilter.on("change", function(){
+			var year = $(this).val();
+			if (year === "all") {
+				$(".docs > .list > .bx").removeClass("none");
+			} else {
+				$(".docs > .list > .bx").each(function(){
+					$(this).attr("data-year") == year ? $(this).removeClass("none") : $(this).addClass("none");
+				});
+			}
+		}).trigger("change");
+	});
+	</script>';
+}elseif ( isset($t_mp[5]) ){
 		if ( file_exists(_ADM_INCL.'/docs/'.$t_mp[4].'/'.$t_mp[5].'.php') ){
 			$rtrn .= '
 			<style>
