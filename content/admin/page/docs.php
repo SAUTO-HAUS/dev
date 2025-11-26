@@ -857,7 +857,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 		});
 		
 		var sortedYears = Array.from(years).sort(function(a, b){ return b - a; });
-		var yearFilter = $("<select style=\"padding:0.5rem; margin:0 0 0 1rem; border:1px solid #ddd; background:#fff; cursor:pointer; display:inline-block; vertical-align:top;\"></select>");
+		var yearFilter = $("<select style=\"padding:0.5rem 1.5rem 0.5rem 0.5rem; margin:0 0 0 1rem; border:1px solid #ddd; background:#fff; cursor:pointer; display:inline-block; vertical-align:top;\"></select>");
 		yearFilter.append("<option value=\"all\">ALL</option>");
 		sortedYears.forEach(function(year){
 			yearFilter.append("<option value=\"" + year + "\">" + year + "</option>");
@@ -865,7 +865,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 		
 		var yearWrapper = $("<span style=\"position:relative; display:inline-block; float:right; margin-right:1rem;\"></span>");
 		yearWrapper.append(yearFilter);
-		yearWrapper.append("<span style=\"position:absolute; right:0.3rem; top:50%; transform:translateY(-50%); pointer-events:none; font-size:0.7rem;\">▼</span>");
+		yearWrapper.append("<span style=\"position:absolute; right:0.1rem; top:50%; transform:translateY(-50%); pointer-events:none; font-size:1rem;\">▼</span>");
 		
 		$(".docs > .find.doc").append(yearWrapper);
 		yearFilter.val(currentYear);
