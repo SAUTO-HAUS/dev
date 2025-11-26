@@ -654,7 +654,7 @@ if ( isset($t_mp[4]) ){
 						'.$prefx.'_docs_u AS u 
 						INNER JOIN 
 						'.$prefx.'_docs_ctlg AS c 
-					ON u.id=c.u ORDER BY `id` DESC, `id` DESC'); $pdo->execute();
+					ON u.id=c.u ORDER BY c.date DESC, c.id DESC'); $pdo->execute();
 					
 				$rtrn .= '
 				<div class="rowz hdr">
