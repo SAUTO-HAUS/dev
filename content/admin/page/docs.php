@@ -83,6 +83,65 @@ if ( isset($t_mp[4]) ){
 			}
 		$rtrn .= '
 		</div>';
+		
+		$rtrn .= '
+		<style>
+			.sauto-info {margin-top:1.5rem; padding:2rem; background:#f9f9f9; border-radius:8px;}
+			.sauto-info h3 {margin-bottom:1.5rem; color:#333;}
+			.sauto-block {display:inline-block; width:32%; margin:0.5%; padding:0.5rem 1.5rem; background:#fff; border:1px solid #ddd; border-radius:5px; vertical-align:top;}
+			.sauto-block pre {margin:0; font-size:0.85rem; line-height:1.6; white-space:pre-wrap;}
+			.sauto-block .copy-btn {margin-bottom:1rem; padding:0.75rem 1.5rem; background:#e2001a; color:#fff; border:none; border-radius:4px; cursor:pointer; transition:0.3s; width:100%;}
+			.sauto-block .copy-btn:hover {background:#c00016;}
+			.sauto-block .copy-btn.copied {background:#28a745;}
+		</style>
+		
+		<div class="sauto-info">
+			<h3>Date bancare SAUTO SRL</h3>
+			
+			<div class="sauto-block">
+				<button class="copy-btn" onclick="copySautoData(\'sauto-mdl\', this)">Copiază MDL</button>
+				<pre id="sauto-mdl">"SAUTO" SRL
+Republica Moldova, MD-2084, mun.Chişinau
+or.Cricova, str.Chisinaului 84, ap.(of.) 39
+IBAN: MD64VI022512000000171MDL
+în B.C."VICTORIABANK S.A.", VICBMD2XXXX
+c/f 1017600006845, c/TVA 0609417</pre>
+			</div>
+			
+			<div class="sauto-block">
+				<button class="copy-btn" onclick="copySautoData(\'sauto-eur\', this)">Copiază EUR</button>
+				<pre id="sauto-eur">"SAUTO" SRL
+Republica Moldova, MD-2084, mun.Chişinau
+or.Cricova, str.Chisinaului 84, ap.(of.) 39
+IBAN: MD51VI022512000000094EUR
+în B.C."VICTORIABANK S.A.", VICBMD2XXXX
+c/f 1017600006845, c/TVA 0609417</pre>
+			</div>
+			
+			<div class="sauto-block">
+				<button class="copy-btn" onclick="copySautoData(\'sauto-usd\', this)">Copiază USD</button>
+				<pre id="sauto-usd">"SAUTO" SRL
+Republica Moldova, MD-2084, mun.Chişinau
+or.Cricova, str.Chisinaului 84, ap.(of.) 39
+IBAN: MD51VI022512000000094USD
+în B.C."VICTORIABANK S.A.", VICBMD2XXXX
+c/f 1017600006845, c/TVA 0609417</pre>
+			</div>
+		</div>
+		
+		<script>
+		function copySautoData(elementId, btn) {
+			var text = document.getElementById(elementId).textContent;
+			navigator.clipboard.writeText(text).then(function() {
+				btn.textContent = "✓ Copiat!";
+				btn.classList.add("copied");
+				setTimeout(function() {
+					btn.textContent = "Copiază " + elementId.split("-")[1].toUpperCase();
+					btn.classList.remove("copied");
+				}, 2000);
+			});
+		}
+		</script>';
 	}elseif ( $t_mp[4]=='ctlg' ){
 		$rtrn .= '
 		<style>
