@@ -858,7 +858,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 		
 		var sortedYears = Array.from(years).sort(function(a, b){ return b - a; });
 		var yearFilter = $("<select style=\"padding:0.5rem; margin:0 0 0 1rem; border:1px solid #ddd; background:#fff; cursor:pointer; display:inline-block; vertical-align:top;\"></select>");
-		yearFilter.append("<option value=\"all\">Toate anii</option>");
+		yearFilter.append("<option value=\"all\">ALL</option>");
 		sortedYears.forEach(function(year){
 			yearFilter.append("<option value=\"" + year + "\">" + year + "</option>");
 		});
