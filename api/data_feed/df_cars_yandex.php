@@ -178,8 +178,13 @@ try {
         $offers->appendChild($offer);
     }
     
+    // Save XML to static .yml file
+    $outputFile = __DIR__ . '/df_cars_yandex.yml';
+    $xmlContent = $yml->saveXML();
+    file_put_contents($outputFile, $xmlContent);
+    
     // Output XML directly
-    echo $yml->saveXML();
+    echo $xmlContent;
     
 } catch (Exception $e) {
     // Even errors should be in XML format
