@@ -94,6 +94,17 @@ try {
         $engine = (string)$g->engine;
         $mileage = (string)$g->mileage;
         
+        // Collect all images (main + additional, max 10 for Yandex)
+        $allImages = [];
+        if (!empty($imageLink)) {
+            $allImages[] = $imageLink;
+        }
+        foreach ($g->additional_image_link as $additionalImage) {
+            if (count($allImages) < 10) {
+                $allImages[] = (string)$additionalImage;
+            }
+        }
+        
         // Get transmission and drivetrain from product_detail
         $transmission = '';
         $drivetrain = '';
@@ -129,8 +140,10 @@ try {
         $offer->appendChild($yml->createElement('currencyId', 'EUR'));
         $offer->appendChild($yml->createElement('categoryId', $categoryMap[$brand]));
         
-        // Picture
-        $offer->appendChild($yml->createElement('picture', htmlspecialchars($imageLink)));
+        // Pictures (all images, max 10 per Yandex specification)
+        foreach ($allImages as $image) {
+            $offer->appendChild($yml->createElement('picture', htmlspecialchars($image)));
+        }
         
         // Name/Title
         $title = $year . ' ' . $brand . ' ' . $model;
