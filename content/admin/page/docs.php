@@ -18,7 +18,7 @@ if ( isset($t_mp[4]) ){
 						,'con_arvon_com'=>'Contract de arvună (la comanda)'
 						,'com_transport'=>'Comanda pentru transport'
 						,'con_intermed'=>'Contract de intermediere [TEST]'
-						,'vinzare_proc'=>'Contract de vânzare-cumpărare'
+						// ,'vinzare_proc'=>'Contract de vânzare-cumpărare'
 						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
 						,'vinzare_sauto'=>'Contract de vânzare-cumpărare ( Sauto cumparator )'
 						,'invoice'=>'Invoice'
@@ -43,7 +43,7 @@ if ( isset($t_mp[4]) ){
 						,'con_arvon_com'=>'Contract de arvună (la comanda)'
 						,'com_transport'=>'Comanda pentru transport'
 						,'con_intermed'=>'Contract de intermediere [TEST]'
-						,'vinzare_proc'=>'Contract de vânzare-cumpărare'
+						// ,'vinzare_proc'=>'Contract de vânzare-cumpărare'
 						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
 						,'vinzare_sauto'=>'Contract de vânzare-cumpărare ( Sauto cumparator )'
 						,'invoice'=>'Invoice'
@@ -551,40 +551,52 @@ c/f 1017600006845, c/TVA 0609417</pre>
 					var data = {}; data["tp"] = reqType; data["pg"] = reqPage; data["fn"] = $(this).data("fn");
 					data["inp"] = getFormData( $("#overlay form") );
 					//console.log(data["inp"]);
-					ajaxIt(data);
-					var bx = $(".docs > .list > .bx[data-id=\""+data["inp"]["id"]+"\"]");
-					var vals = bx.find(".values");
-					$.each( data["inp"], function(k,v){
-						if ( $.inArray(k, ["br", "mo", "vin", "extras", "dmg_pos", "dmg_txt"]) !== -1 && $.isArray(data["inp"][k]) ){
-							v = "";
-							for (i=0; i<data["inp"][k].length; i++){ v += (i>0?"||":"")+data["inp"][k][i]; }
-							vals.data(k, v).attr("data-"+k, v);
-							// Update visual display for arrays
-							if (k=="br" || k=="mo") {
-								bx.find(".rowz > .col span."+k).text(data["inp"][k].join(", "));
-							}
-						}
-						
-						if (k=="pay_val"){
-							v = "";
-							for (i=0; i<data["inp"]["pay_val"].length; i++){ v += (i>0?"||":"")+data["inp"]["pay_val"][i]+"=>"+data["inp"]["pay_date"][i]; }
-							vals.data("pays", v).attr("data-pays", v);
-						}
-						else if (k=="pay_date"){return;}
-						else {
-							vals.data(k, v).attr("data-"+k, v);
-							bx.find(".rowz > .col span."+k).text(v);
-						}
-						//console.log(k+"::: "+v)
-					})
 					
 					// Store the edited document ID and scroll position before reload
 					localStorage.setItem("keepButtonsVisible", data["inp"]["id"]);
 					localStorage.setItem("docsScrollPosition", window.pageYOffset || document.documentElement.scrollTop);
 					
-					// Close the overlay after successful save - instant
-					$("#overlay").hide();
-					window.location.reload();
+					// Send AJAX request and wait for response
+					$.ajax({
+						url:"/ajax.php", 
+						method:"POST", 
+						type:"POST", 
+						data:data, 
+						async:true, 
+						datatype:"json",
+						success: function(response){
+							// Update UI with saved data
+							var bx = $(".docs > .list > .bx[data-id=\""+data["inp"]["id"]+"\"]");
+							var vals = bx.find(".values");
+							$.each( data["inp"], function(k,v){
+								if ( $.inArray(k, ["br", "mo", "vin", "extras", "dmg_pos", "dmg_txt"]) !== -1 && $.isArray(data["inp"][k]) ){
+									v = "";
+									for (i=0; i<data["inp"][k].length; i++){ v += (i>0?"||":"")+data["inp"][k][i]; }
+									vals.data(k, v).attr("data-"+k, v);
+									// Update visual display for arrays
+									if (k=="br" || k=="mo") {
+										bx.find(".rowz > .col span."+k).text(data["inp"][k].join(", "));
+									}
+								}
+								
+								if (k=="pay_val"){
+									v = "";
+									for (i=0; i<data["inp"]["pay_val"].length; i++){ v += (i>0?"||":"")+data["inp"]["pay_val"][i]+"=>"+data["inp"]["pay_date"][i]; }
+									vals.data("pays", v).attr("data-pays", v);
+								}
+								else if (k=="pay_date"){return;}
+								else {
+									vals.data(k, v).attr("data-"+k, v);
+									bx.find(".rowz > .col span."+k).text(v);
+								}
+								//console.log(k+"::: "+v)
+							})
+							
+							// Close the overlay and reload AFTER successful save
+							$("#overlay").hide();
+							window.location.reload();
+						}
+					});
 				})
 				
 				function getFormData($form){

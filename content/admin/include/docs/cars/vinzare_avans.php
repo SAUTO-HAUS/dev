@@ -243,8 +243,8 @@ $rtrn = '
 						<p>Am primit</p><br/>
 						<p><b><span class="ttl">CUMPĂRĂTOR</span></b></p>
 						<p>_______________</p>
-						<p>Tel._________________</p>
-						<p>Email_________________</p>
+						<p>Tel. '.(isset($_POST['u_phn']) && $_POST['u_phn']!='' ? $_POST['u_phn'] : '_________________').'</p>
+						<p>Email '.(isset($_POST['u_eml']) && $_POST['u_eml']!='' ? $_POST['u_eml'] : '_________________').'</p>
 					</div>
 				</div>
 			</div>
