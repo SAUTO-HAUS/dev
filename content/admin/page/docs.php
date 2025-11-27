@@ -102,7 +102,7 @@ if ( isset($t_mp[4]) ){
 				<button class="copy-btn" onclick="copySautoData(\'sauto-mdl\', this)">'.($lng['w']['copy'] ?? 'Copiază').' MDL</button>
 				<pre id="sauto-mdl">"SAUTO" SRL
 Republica Moldova, MD-2084, mun.Chişinau
-or.Cricova, str.Chisinaului 84, ap.(of.) 39
+or.Cricova, str.Chisinaului 84, of. 39
 IBAN: MD64VI022512000000171MDL
 în B.C."VICTORIABANK S.A.", VICBMD2XXXX
 c/f 1017600006845, c/TVA 0609417</pre>
@@ -112,7 +112,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 				<button class="copy-btn" onclick="copySautoData(\'sauto-eur\', this)">'.($lng['w']['copy'] ?? 'Copiază').' EUR</button>
 				<pre id="sauto-eur">"SAUTO" SRL
 Republica Moldova, MD-2084, mun.Chişinau
-or.Cricova, str.Chisinaului 84, ap.(of.) 39
+or.Cricova, str.Chisinaului 84, of. 39
 IBAN: MD51VI022512000000094EUR
 în B.C."VICTORIABANK S.A.", VICBMD2XXXX
 c/f 1017600006845, c/TVA 0609417</pre>
@@ -122,7 +122,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 				<button class="copy-btn" onclick="copySautoData(\'sauto-usd\', this)">'.($lng['w']['copy'] ?? 'Copiază').' USD</button>
 				<pre id="sauto-usd">"SAUTO" SRL
 Republica Moldova, MD-2084, mun.Chişinau
-or.Cricova, str.Chisinaului 84, ap.(of.) 39
+or.Cricova, str.Chisinaului 84, of. 39
 IBAN: MD51VI022512000000094USD
 în B.C."VICTORIABANK S.A.", VICBMD2XXXX
 c/f 1017600006845, c/TVA 0609417</pre>
