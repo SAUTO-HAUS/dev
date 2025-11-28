@@ -1,27 +1,18 @@
 <?php
 /**
- * Yandex YML Feed Generator
- * Direct XML output without HTML wrapper
- * 
- * URL: https://www.sauto.md/api/data_feed/df_cars_yandex.php?key=sauto2025
+ * Yandex YML Feed Generator - Core Logic
+ * Shared function for both manual and cron execution
  */
 
-// Simple password protection
-$key = $_GET['key'] ?? '';
-if ($key !== 'sauto2025') {
-    header('HTTP/1.0 403 Forbidden');
-    die('Access denied');
-}
-
-// Set timezone
-date_default_timezone_set('Europe/Chisinau');
-
-// Output XML directly
-header('Content-Type: text/xml; charset=utf-8');
-
-try {
+function generateYandexFeed() {
+    // Set timezone
+    date_default_timezone_set('Europe/Chisinau');
+    
     // Configuration
-    $inputFile = __DIR__ . '/df_cars.xml';
+    // Input file is in api/data_feed, output goes there too
+    $apiDataFeedDir = dirname(dirname(__DIR__)) . '/api/data_feed';
+    $inputFile = $apiDataFeedDir . '/df_cars.xml';
+    $outputFile = $apiDataFeedDir . '/df_cars_yandex.yml';
     $shopName = 'SAUTO.md';
     $shopUrl = 'https://www.sauto.md';
     
@@ -184,17 +175,15 @@ try {
     }
     
     // Save XML to static .yml file
-    $outputFile = __DIR__ . '/df_cars_yandex.yml';
     $xmlContent = $yml->saveXML();
     file_put_contents($outputFile, $xmlContent);
     
-    // Output XML directly
-    echo $xmlContent;
-    
-} catch (Exception $e) {
-    // Even errors should be in XML format
-    header('HTTP/1.0 500 Internal Server Error');
-    echo '<?xml version="1.0" encoding="UTF-8"?>';
-    echo '<error>' . htmlspecialchars($e->getMessage()) . '</error>';
+    return [
+        'success' => true,
+        'file' => $outputFile,
+        'size' => filesize($outputFile),
+        'offers' => $offers->childNodes->length,
+        'timestamp' => date('Y-m-d H:i:s')
+    ];
 }
 ?>
