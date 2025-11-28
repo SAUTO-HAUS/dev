@@ -96,12 +96,13 @@ try {
         
         // Collect all images (main + additional, max 10 for Yandex)
         $allImages = [];
-        if (!empty($imageLink)) {
+        if (!empty($imageLink) && filter_var($imageLink, FILTER_VALIDATE_URL)) {
             $allImages[] = $imageLink;
         }
         foreach ($g->additional_image_link as $additionalImage) {
-            if (count($allImages) < 10) {
-                $allImages[] = (string)$additionalImage;
+            $additionalImageUrl = trim((string)$additionalImage);
+            if (count($allImages) < 10 && !empty($additionalImageUrl) && filter_var($additionalImageUrl, FILTER_VALIDATE_URL)) {
+                $allImages[] = $additionalImageUrl;
             }
         }
         
@@ -142,7 +143,11 @@ try {
         
         // Pictures (all images, max 10 per Yandex specification)
         foreach ($allImages as $image) {
-            $offer->appendChild($yml->createElement('picture', htmlspecialchars($image)));
+            // Validate image URL before adding
+            $imageUrl = trim($image);
+            if (!empty($imageUrl) && filter_var($imageUrl, FILTER_VALIDATE_URL)) {
+                $offer->appendChild($yml->createElement('picture', htmlspecialchars($imageUrl)));
+            }
         }
         
         // Name/Title
