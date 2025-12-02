@@ -17,7 +17,8 @@ try {
         loc,
         vis,
         vol,
-        mlg
+        mlg,
+        del_t
     FROM {$prefx}_car_ctlg 
     WHERE act = 1 AND n_a = 0 AND catalog_type = 'on_order'
     ORDER BY br_nm ASC, mo_nm ASC, yr DESC, id DESC";
@@ -27,8 +28,9 @@ try {
     $cars = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
     // Group cars by brand and model, count active/inactive for on_order cars
-    // Main Active = cars with active timer (vis=1)
-    // Main Inactive = cars with expired timer (vis=0)
+    // Main Active = cars with active timer (del_t > current time)
+    // Main Inactive = cars with expired timer (del_t <= current time)
+    $current_time = time();
     $brands = [];
     $totals = [
         'main_active' => 0,      // on_order with active timer
@@ -72,15 +74,15 @@ try {
         // Add car to model
         $brands[$brand]['models'][$model]['cars'][] = $car;
         
-        // For on_order cars: count by visibility (timer status)
-        // vis=0 means active timer (hidden, waiting), vis=1 means expired timer (visible)
-        if ($car['vis'] == '0') {
-            // Active timer (hidden, waiting for timer to expire)
+        // For on_order cars: count by timer status
+        // Check if timer is still active or expired
+        if (!empty($car['del_t']) && $car['del_t'] > $current_time) {
+            // Active timer (timer not expired yet)
             $brands[$brand]['models'][$model]['cnt_main_active']++;
             $brands[$brand]['totals']['main_active']++;
             $totals['main_active']++;
         } else {
-            // Expired timer (visible, timer expired)
+            // Expired timer (timer has expired)
             $brands[$brand]['models'][$model]['cnt_main_inactive']++;
             $brands[$brand]['totals']['main_inactive']++;
             $totals['main_inactive']++;
