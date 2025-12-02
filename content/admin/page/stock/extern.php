@@ -37,6 +37,11 @@ try {
         'total' => 0
     ];
     
+    // Arrays to store car IDs by category
+    $cars_all = [];
+    $cars_active = [];
+    $cars_inactive = [];
+    
     foreach ($cars as $car) {
         $brand = $car['br_nm'];
         $model = $car['mo_nm'];
@@ -71,6 +76,9 @@ try {
         // Add car to model
         $brands[$brand]['models'][$model]['cars'][] = $car;
         
+        // Add to all cars list
+        $cars_all[] = $car['id'];
+        
         // For on_order cars: count by offer timer status
         // Check if offer timer is still active or expired
         if (!empty($car['offer_timer_end']) && $car['offer_timer_end'] > $current_time) {
@@ -78,11 +86,13 @@ try {
             $brands[$brand]['models'][$model]['cnt_main_active']++;
             $brands[$brand]['totals']['main_active']++;
             $totals['main_active']++;
+            $cars_active[] = $car['id'];
         } else {
             // Expired timer (offer timer has expired or not set)
             $brands[$brand]['models'][$model]['cnt_main_inactive']++;
             $brands[$brand]['totals']['main_inactive']++;
             $totals['main_inactive']++;
+            $cars_inactive[] = $car['id'];
         }
         
         // Total count
@@ -107,17 +117,26 @@ try {
     <div class="summary-grid">
         <div class="summary-item">
             <span class="summary-label"><?= $stock_lang['total_cars'] ?>:</span>
-            <span class="summary-value"><?= $totals['total'] ?></span>
+            <span class="summary-value summary-clickable" data-category="all" style="cursor: pointer;"><?= $totals['total'] ?></span>
         </div>
         <div class="summary-item">
             <span class="summary-label"><?= $stock_lang['main_active'] ?>:</span>
-            <span class="summary-value"><?= $totals['main_active'] ?></span>
+            <span class="summary-value summary-clickable" data-category="active" style="cursor: pointer;"><?= $totals['main_active'] ?></span>
         </div>
         <div class="summary-item">
             <span class="summary-label"><?= $stock_lang['main_inactive'] ?>:</span>
-            <span class="summary-value"><?= $totals['main_inactive'] ?></span>
+            <span class="summary-value summary-clickable" data-category="inactive" style="cursor: pointer;"><?= $totals['main_inactive'] ?></span>
         </div>
     </div>
+</div>
+
+<!-- Car list container -->
+<div id="car-list-container" style="display: none; margin: 20px 0; padding: 20px; background: #f8f9fa; border: 2px solid #dc3545; border-radius: 8px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <h3 id="car-list-title" style="margin: 0; color: #dc3545;"></h3>
+        <button id="close-car-list" style="background: #dc3545; color: white; border: none; padding: 5px 15px; border-radius: 4px; cursor: pointer; font-weight: bold;">✕</button>
+    </div>
+    <div id="car-list-content" style="max-height: 400px; overflow-y: auto;"></div>
 </div>
 
 <table class="stock-brands-table">
@@ -361,6 +380,14 @@ try {
     border: 1px solid #dc3545;
     min-width: 50px;
     text-align: center;
+    transition: all 0.2s ease;
+}
+
+.summary-clickable:hover {
+    background: #dc3545;
+    color: #fff !important;
+    transform: scale(1.05);
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
 }
 
 .error {
@@ -409,7 +436,77 @@ try {
 </style>
 
 <script>
+// Car data for displaying lists
+const carData = {
+    all: <?= json_encode($cars_all) ?>,
+    active: <?= json_encode($cars_active) ?>,
+    inactive: <?= json_encode($cars_inactive) ?>
+};
+
+const lang = '<?= $_COOKIE['lang'] ?? 'ro' ?>';
+const baseUrl = 'https://www.sauto.md';
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Add click handlers for summary values
+    const summaryClickables = document.querySelectorAll('.summary-clickable');
+    const carListContainer = document.getElementById('car-list-container');
+    const carListTitle = document.getElementById('car-list-title');
+    const carListContent = document.getElementById('car-list-content');
+    const closeButton = document.getElementById('close-car-list');
+    
+    summaryClickables.forEach(function(element) {
+        element.addEventListener('click', function() {
+            const category = this.getAttribute('data-category');
+            const cars = carData[category];
+            
+            // Set title based on category
+            let title = '';
+            if (category === 'all') {
+                title = lang === 'ro' ? 'Toate automobilele' : (lang === 'ru' ? 'Все автомобили' : 'All cars');
+            } else if (category === 'active') {
+                title = lang === 'ro' ? 'Fil.1 active' : (lang === 'ru' ? 'Фил.1 активные' : 'Branch 1 active');
+            } else if (category === 'inactive') {
+                title = lang === 'ro' ? 'Fil.1 neactive' : (lang === 'ru' ? 'Фил.1 неактивные' : 'Branch 1 inactive');
+            }
+            
+            carListTitle.textContent = title + ' (' + cars.length + ')';
+            
+            // Generate car links
+            let html = '<div style="display: flex; flex-direction: column; gap: 8px;">';
+            cars.forEach(function(carId) {
+                const url = baseUrl + '/' + lang + '/ordercars/' + carId;
+                html += '<a href="' + url + '" target="_blank" style="color: #dc3545; text-decoration: none; padding: 8px; background: white; border-radius: 4px; border: 1px solid #ddd; transition: all 0.2s;">' + url + '</a>';
+            });
+            html += '</div>';
+            
+            carListContent.innerHTML = html;
+            carListContainer.style.display = 'block';
+            
+            // Scroll to list
+            carListContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
+    });
+    
+    // Close button handler
+    closeButton.addEventListener('click', function() {
+        carListContainer.style.display = 'none';
+    });
+    
+    // Add hover effect to links
+    document.addEventListener('mouseover', function(e) {
+        if (e.target.tagName === 'A' && e.target.parentElement.parentElement === carListContent) {
+            e.target.style.background = '#dc3545';
+            e.target.style.color = 'white';
+        }
+    });
+    
+    document.addEventListener('mouseout', function(e) {
+        if (e.target.tagName === 'A' && e.target.parentElement.parentElement === carListContent) {
+            e.target.style.background = 'white';
+            e.target.style.color = '#dc3545';
+        }
+    });
+    
     // Add click handlers for brand expansion
     const brandRows = document.querySelectorAll('.brand-row');
     
