@@ -73,14 +73,14 @@ try {
         $brands[$brand]['models'][$model]['cars'][] = $car;
         
         // For on_order cars: count by visibility (timer status)
-        // vis=1 means active timer, vis=0 means expired timer
-        if ($car['vis'] == '1') {
-            // Active timer
+        // vis=0 means active timer (hidden, waiting), vis=1 means expired timer (visible)
+        if ($car['vis'] == '0') {
+            // Active timer (hidden, waiting for timer to expire)
             $brands[$brand]['models'][$model]['cnt_main_active']++;
             $brands[$brand]['totals']['main_active']++;
             $totals['main_active']++;
         } else {
-            // Expired timer
+            // Expired timer (visible, timer expired)
             $brands[$brand]['models'][$model]['cnt_main_inactive']++;
             $brands[$brand]['totals']['main_inactive']++;
             $totals['main_inactive']++;
