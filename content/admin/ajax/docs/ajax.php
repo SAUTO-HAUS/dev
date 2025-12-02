@@ -51,18 +51,26 @@ if ( $_POST['fn']=='edit_sbmt' ){
 	
 	//__________________INFO generator
 	$inf=''; $qu=0;
-	$inf_ar = ['br', 'mo', 'vin', 'yr', 'clr', 'prc', 'cur', 'prc_eur', 'prc_av', 'loc', 'term_livr', 'cntr_fr', 'cntr_to', 'adr_to', 't2pay', 'plate', 'extras', 'u_nm', 'u_cf_idno', 'cesionar_nm', 'cesionar_cf_idno', 'cesionar_suma', 'cont_nr', 'annexa_nr', 'add_cesionar', 'cesionar_account', 'base_contract_id', 'description', 'dealer', 'sauto_role', 'seller_name', 'seller_vat', 'seller_account', 'seller_address', 'seller_country', 'seller_swift', 'buyer_name', 'buyer_vat', 'buyer_account', 'buyer_address', 'buyer_country', 'buyer_swift', 'kyc_client_name', 'kyc_idnp', 'kyc_address', 'kyc_phone', 'kyc_email', 'kyc_completion_date', 'kyc_residence_addr', 'kyc_transaction_purpose', 'kyc_doc_type', 'kyc_doc_series', 'kyc_doc_office', 'kyc_doc_date', 'kyc_doc_expiry', 'kyc_citizenship', 'kyc_birth_info', 'kyc_occupation', 'kyc_occupation_other', 'kyc_institution_name', 'kyc_position', 'kyc_no_public_function', 'kyc_public_function', 'kyc_public_function_other', 'kyc_affiliated_company', 'kyc_parents_names', 'kyc_spouse_name', 'kyc_children_names', 'kyc_partner_name', 'kyc_transaction_purpose_other', 'kyc_money_source', 'kyc_money_source_other', 'kyc_approval_date', 'kyc_doc_buletin', 'kyc_doc_permis', 'kyc_doc_pasaport', 'kyc_occupation_angajat', 'kyc_occupation_student', 'kyc_occupation_antreprenor', 'kyc_occupation_somer', 'kyc_occupation_pensionar', 'kyc_public_function_deputat', 'kyc_public_function_judecator', 'kyc_public_function_guvern', 'kyc_public_function_primar', 'kyc_public_function_partid', 'kyc_public_function_consilier', 'kyc_transaction_personal', 'kyc_transaction_family', 'kyc_transaction_company', 'kyc_transaction_resale', 'kyc_transaction_commercial', 'kyc_transaction_transfer', 'kyc_funds_salary', 'kyc_funds_dividends', 'kyc_funds_loan', 'kyc_funds_business', 'kyc_funds_inheritance', 'kyc_funds_donations'];
+	$inf_ar = ['br', 'mo', 'vin', 'yr', 'clr', 'prc', 'cur', 'prc_eur', 'prc_av', 'loc', 'term_livr', 'orig', 'cntr_fr', 'cntr_to', 'adr_to', 't2pay', 'plate', 'extras', 'u_nm', 'u_cf_idno', 'u_eur', 'cesionar_nm', 'cesionar_cf_idno', 'cesionar_suma', 'cont_nr', 'annexa_nr', 'add_cesionar', 'cesionar_account', 'base_contract_id', 'description', 'dealer', 'sauto_role', 'seller_name', 'seller_vat', 'seller_account', 'seller_address', 'seller_country', 'seller_swift', 'buyer_name', 'buyer_vat', 'buyer_account', 'buyer_address', 'buyer_country', 'buyer_swift', 'kyc_client_name', 'kyc_idnp', 'kyc_address', 'kyc_phone', 'kyc_email', 'kyc_completion_date', 'kyc_residence_addr', 'kyc_transaction_purpose', 'kyc_doc_type', 'kyc_doc_series', 'kyc_doc_office', 'kyc_doc_date', 'kyc_doc_expiry', 'kyc_citizenship', 'kyc_birth_info', 'kyc_occupation', 'kyc_occupation_other', 'kyc_institution_name', 'kyc_position', 'kyc_no_public_function', 'kyc_public_function', 'kyc_public_function_other', 'kyc_affiliated_company', 'kyc_parents_names', 'kyc_spouse_name', 'kyc_children_names', 'kyc_partner_name', 'kyc_transaction_purpose_other', 'kyc_money_source', 'kyc_money_source_other', 'kyc_approval_date', 'kyc_doc_buletin', 'kyc_doc_permis', 'kyc_doc_pasaport', 'kyc_occupation_angajat', 'kyc_occupation_student', 'kyc_occupation_antreprenor', 'kyc_occupation_somer', 'kyc_occupation_pensionar', 'kyc_public_function_deputat', 'kyc_public_function_judecator', 'kyc_public_function_guvern', 'kyc_public_function_primar', 'kyc_public_function_partid', 'kyc_public_function_consilier', 'kyc_transaction_personal', 'kyc_transaction_family', 'kyc_transaction_company', 'kyc_transaction_resale', 'kyc_transaction_commercial', 'kyc_transaction_transfer', 'kyc_funds_salary', 'kyc_funds_dividends', 'kyc_funds_loan', 'kyc_funds_business', 'kyc_funds_inheritance', 'kyc_funds_donations'];
 	$inf_up_ar = ['vin'];
 	
 	// KYC checkbox fields that need to save both checked (1) and unchecked (0) states
 	$kyc_checkbox_fields = ['kyc_doc_buletin', 'kyc_doc_permis', 'kyc_doc_pasaport', 'kyc_occupation_angajat', 'kyc_occupation_student', 'kyc_occupation_antreprenor', 'kyc_occupation_somer', 'kyc_occupation_pensionar', 'kyc_no_public_function', 'kyc_public_function_deputat', 'kyc_public_function_judecator', 'kyc_public_function_guvern', 'kyc_public_function_primar', 'kyc_public_function_partid', 'kyc_public_function_consilier', 'kyc_transaction_personal', 'kyc_transaction_family', 'kyc_transaction_company', 'kyc_transaction_resale', 'kyc_transaction_commercial', 'kyc_transaction_transfer', 'kyc_funds_salary', 'kyc_funds_dividends', 'kyc_funds_loan', 'kyc_funds_business', 'kyc_funds_inheritance', 'kyc_funds_donations'];
 	$kyc_default_checked_fields = ['kyc_doc_buletin', 'kyc_no_public_function', 'kyc_transaction_personal', 'kyc_funds_salary'];
 	
+	// Numeric fields that should always be saved even if 0 or empty
+	$numeric_fields = ['u_eur'];
+	
 	foreach ($inf_ar as $k => $v){
 		// Special handling for KYC checkbox fields - save both checked and unchecked states
 		if ( in_array($v, $kyc_checkbox_fields) ) {
 			$checkbox_value = (isset($_POST['inp'][$v]) && $_POST['inp'][$v] == '1') ? '1' : '0';
 			$inf .= ($qu>0?'&&':'').$v.'=='.$checkbox_value;
+			$qu++;
+		}
+		// Special handling for numeric fields - save even if 0 or empty
+		elseif ( in_array($v, $numeric_fields) && isset($_POST['inp'][$v]) ) {
+			$inf .= ($qu>0?'&&':'').$v.'=='.$_POST['inp'][$v];
 			$qu++;
 		}
 		// Regular handling for other fields - only save if not empty

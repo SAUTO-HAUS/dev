@@ -364,7 +364,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 							if ( fn=="show_it" || fn=="print_it" || fn=="save_pdf" ){
 								if (e.target !== this){ return; }
 								if ( $("#content > .tmp_form").length ){ $("#content > .tmp_form").remove(); } //remove old one form
-								$("#content").prepend("<form class=\"tmp_form none\" target=\"_blank\" method=\"POST\" action=\"/'._ADM_INCL.'/docs_print.php\"></form>"); //add new one form to html
+								$("#content").prepend("<form class=\"tmp_form none\" target=\"_blank\" method=\"POST\" action=\"/'._ADM_INCL.'/docs_print.php\" novalidate></form>"); //add new one form to html
 								$("#content > .tmp_form").html("" //add html to the form
 									+"<input type=\"hidden\" name=\"doc_gr\" value=\""+vals.data("gr")+"\" />"
 									+"<input type=\"hidden\" name=\"doc_f\" value=\""+vals.data("doc")+"\" />"
@@ -517,6 +517,27 @@ c/f 1017600006845, c/TVA 0609417</pre>
 								}
 							}
 							
+							// Handle grnt_txt (Garanție) data for vinzare_avans
+							if (vals.data("doc") == "vinzare_avans" && vals.data("grnt_txt")) {
+								var grntData = vals.data("grnt_txt").toString();
+								if (grntData && grntData !== "") {
+									var grntTexts = grntData.split("||");
+									for (var i = 0; i < grntTexts.length; i++) {
+										if (grntTexts[i] && grntTexts[i] !== "") {
+											// Add new grnt_txt field
+											base.find(".btn[data-fn=\"add_grnt_fld\"]").trigger("click");
+											
+											// Populate the field
+											var grntInputs = base.find("textarea[name=\"grnt_txt[]\"]");
+											
+											if (grntInputs.length > i) {
+												grntInputs.eq(i).val(grntTexts[i]);
+											}
+										}
+									}
+								}
+							}
+							
 							// After all fields are populated, trigger brand change and then set model value
 							setTimeout(function() {
 								var brandSelect = base.find("select[name=\"br\"]");
@@ -660,8 +681,22 @@ c/f 1017600006845, c/TVA 0609417</pre>
 					$("#its_bx").append( bx.find(".def").html() );
 					
 					var next = $(this).data("next");
-					$("#its_bx > .lbl [data-n=\"x\"]").data( "n", next ).attr( "data-n", next ).removeAttr("disabled");
+					$("#its_bx > .car_group[data-n=\"x\"]").data( "n", next ).attr( "data-n", next );
+					$("#its_bx > .car_group[data-n=\""+next+"\"] [data-n=\"x\"]").data( "n", next ).attr( "data-n", next ).removeAttr("disabled");
 					$(this).data( "next", (next+1) ).attr( "data-next", (next+1) );
+				})
+				
+				$(document).on("click", "#overlay .btn[data-fn=\"del_it\"]", function(){
+					var carGroup = $(this).closest(".car_group");
+					var carCount = $("#its_bx > .car_group").length;
+					
+					// Prevent deleting if only one car remains
+					if (carCount <= 1) {
+						alert("Невозможно удалить последний автомобиль.");
+						return;
+					}
+					
+					carGroup.remove();
 				})
 				
 				$(document).on("change", "#overlay select[name=\"u_tp\"]", function(){
@@ -808,7 +843,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 							'.(isset($inf['t2pay'])?'data-t2pay="'.$inf['t2pay'].'"':'').' '.(isset($inf['plate'])?'data-plate="'.$inf['plate'].'"':'').'
 							'.(isset($inf['vin'])?'data-vin="'.$inf['vin'].'"':'').' '.(isset($inf['mo'])?'data-mo="'.$inf['mo'].'"':'').' '.(isset($inf['br'])?'data-br="'.$inf['br'].'"':'').'
 							'.(isset($inf['prc'])?'data-prc="'.$inf['prc'].'"':'').' '.(isset($inf['prc_eur'])?'data-prc_eur="'.$inf['prc_eur'].'"':'').' '.(isset($inf['term_livr'])?'data-term_livr="'.$inf['term_livr'].'"':'').' 
-							'.(isset($inf['yr'])?'data-yr="'.$inf['yr'].'"':'').' '.(isset($inf['clr'])?'data-clr="'.$inf['clr'].'"':'').' '.(isset($inf['loc'])?'data-loc="'.$inf['loc'].'"':'').' 
+							'.(isset($inf['yr'])?'data-yr="'.$inf['yr'].'"':'').' '.(isset($inf['clr'])?'data-clr="'.$inf['clr'].'"':'').' '.(isset($inf['loc'])?'data-loc="'.$inf['loc'].'"':'').' '.(isset($inf['u_eur'])?'data-u_eur="'.$inf['u_eur'].'"':'').' 
 							'.(isset($inf['pays'])?'data-pays="'.$inf['pays'].'"':'').' '.(isset($inf['grnt_txt'])?'data-grnt_txt="'.$inf['grnt_txt'].'"':'').'
 							'.(isset($inf['extras'])?'data-extras="'.$inf['extras'].'"':'').' '.(isset($inf['dmg_pos'])?'data-dmg_pos="'.$inf['dmg_pos'].'"':'').' '.(isset($inf['dmg_txt'])?'data-dmg_txt="'.$inf['dmg_txt'].'"':'').'
 							'.(isset($inf['orig'])?'data-orig="'.$inf['orig'].'"':'').' 
@@ -935,14 +970,28 @@ c/f 1017600006845, c/TVA 0609417</pre>
 				});
 				
 				$("input[type=\"submit\"]").on("click", function(e){
-					var ok = confirm( "Print?" );
-					if (!ok){ e.preventDefault(); }
-					else {
-						setTimeout(function (){
-							window.location.href = "/"+ Cookies.get("lang") +"/adminsauto/docs/ctlg";
-						}, 1000);
-					}
-				});
+			var ok = confirm( "Print?" );
+			if (!ok){ 
+				e.preventDefault(); 
+			} else {
+				var form = $(this).closest("form")[0];
+				var addressField = form.querySelector("input[name=\"u_adr\"]");
+				var defaultAddress = "Republica Moldova, mun.Chişinau, or.Chisinau, str.";
+				
+				if (addressField && addressField.value.trim() === defaultAddress.trim()) {
+					e.preventDefault();
+					alert("Vă rugăm să completați adresa completă (adăugați strada și numărul)");
+					addressField.focus();
+					return false;
+				}
+				
+				if (form.checkValidity()) {
+					setTimeout(function (){
+						window.location.href = "/"+ Cookies.get("lang") +"/adminsauto/docs/ctlg";
+					}, 1000);
+				}
+			}
+		});
 				
 				$(document).on("change", "select[name=\"br\"], select[name=\"br[]\"]", function(){
 					var br = $(this).val(), n = $(this).data("n");
@@ -956,8 +1005,22 @@ c/f 1017600006845, c/TVA 0609417</pre>
 					$("#its_bx").append( bx.find(".def").html() );
 					
 					var next = $(this).data("next");
-					$("#its_bx > .lbl [data-n=\"x\"]").data( "n", next ).attr( "data-n", next ).removeAttr("disabled");
+					$("#its_bx > .car_group[data-n=\"x\"]").data( "n", next ).attr( "data-n", next );
+					$("#its_bx > .car_group[data-n=\""+next+"\"] [data-n=\"x\"]").data( "n", next ).attr( "data-n", next ).removeAttr("disabled");
 					$(this).data( "next", (next+1) ).attr( "data-next", (next+1) );
+				})
+				
+				$(document).on("click", ".doc_pg form .btn[data-fn=\"del_it\"]", function(){
+					var carGroup = $(this).closest(".car_group");
+					var carCount = $("#its_bx > .car_group").length;
+					
+					// Prevent deleting if only one car remains
+					if (carCount <= 1) {
+						alert("Невозможно удалить последний автомобиль.");
+						return;
+					}
+					
+					carGroup.remove();
 				})
 				
 				$("select[name=\"u_tp\"]").on("change", function(){
