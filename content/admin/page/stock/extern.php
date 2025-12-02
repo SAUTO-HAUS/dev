@@ -3,10 +3,10 @@
 // Include stock translations
 require_once dirname(__FILE__) . '/stock_translations.php';
 
-// Stock extern management - View only for director
+// Stock extern management - View only for director (on_order cars)
 echo '<div class="page_title">' . $stock_lang['stock_extern'] . '</div>';
 
-// Get brand distribution data with active/inactive breakdown for external stock
+// Get brand distribution data with active/inactive breakdown for on_order cars
 try {
     $sql = "SELECT 
         br_nm,
@@ -19,18 +19,20 @@ try {
         vol,
         mlg
     FROM {$prefx}_car_ctlg 
-    WHERE act = 1 AND n_a = 0 AND (loc = '0' OR loc IS NULL OR loc = '')
+    WHERE act = 1 AND n_a = 0 AND catalog_type = 'on_order'
     ORDER BY br_nm ASC, mo_nm ASC, yr DESC, id DESC";
     
     $stmt = $db->prepare($sql);
     $stmt->execute();
     $cars = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
-    // Group cars by brand and model, count active/inactive by location (for external stock)
+    // Group cars by brand and model, count active/inactive for on_order cars
+    // Main Active = cars with active timer (vis=1)
+    // Main Inactive = cars with expired timer (vis=0)
     $brands = [];
     $totals = [
-        'main_active' => 0,
-        'main_inactive' => 0, 
+        'main_active' => 0,      // on_order with active timer
+        'main_inactive' => 0,    // on_order with expired timer
         'branch_active' => 0,
         'branch_inactive' => 0,
         'total' => 0
@@ -70,27 +72,18 @@ try {
         // Add car to model
         $brands[$brand]['models'][$model]['cars'][] = $car;
         
-        // For external stock, we still count by location but these should be mostly 0 or empty
-        if ($car['loc'] == '1') { // Main branch
-            if ($car['vis'] == '1') {
-                $brands[$brand]['models'][$model]['cnt_main_active']++;
-                $brands[$brand]['totals']['main_active']++;
-                $totals['main_active']++;
-            } else {
-                $brands[$brand]['models'][$model]['cnt_main_inactive']++;
-                $brands[$brand]['totals']['main_inactive']++;
-                $totals['main_inactive']++;
-            }
-        } elseif ($car['loc'] == '2') { // Branch
-            if ($car['vis'] == '1') {
-                $brands[$brand]['models'][$model]['cnt_branch_active']++;
-                $brands[$brand]['totals']['branch_active']++;
-                $totals['branch_active']++;
-            } else {
-                $brands[$brand]['models'][$model]['cnt_branch_inactive']++;
-                $brands[$brand]['totals']['branch_inactive']++;
-                $totals['branch_inactive']++;
-            }
+        // For on_order cars: count by visibility (timer status)
+        // vis=1 means active timer, vis=0 means expired timer
+        if ($car['vis'] == '1') {
+            // Active timer
+            $brands[$brand]['models'][$model]['cnt_main_active']++;
+            $brands[$brand]['totals']['main_active']++;
+            $totals['main_active']++;
+        } else {
+            // Expired timer
+            $brands[$brand]['models'][$model]['cnt_main_inactive']++;
+            $brands[$brand]['totals']['main_inactive']++;
+            $totals['main_inactive']++;
         }
         
         // Total count
@@ -125,14 +118,6 @@ try {
             <span class="summary-label"><?= $stock_lang['main_inactive'] ?>:</span>
             <span class="summary-value"><?= $totals['main_inactive'] ?></span>
         </div>
-        <div class="summary-item">
-            <span class="summary-label"><?= $stock_lang['branch_active'] ?>:</span>
-            <span class="summary-value"><?= $totals['branch_active'] ?></span>
-        </div>
-        <div class="summary-item">
-            <span class="summary-label"><?= $stock_lang['branch_inactive'] ?>:</span>
-            <span class="summary-value"><?= $totals['branch_inactive'] ?></span>
-        </div>
     </div>
 </div>
 
@@ -142,8 +127,6 @@ try {
             <th class="brand-column"><?= $stock_lang['table_brand'] ?></th>
             <th><?= $stock_lang['main_active'] ?></th>
             <th><?= $stock_lang['main_inactive'] ?></th>
-            <th><?= $stock_lang['branch_active'] ?></th>
-            <th><?= $stock_lang['branch_inactive'] ?></th>
             <th><?= $stock_lang['table_total'] ?></th>
         </tr>
     </thead>
@@ -156,8 +139,6 @@ try {
                 </td>
                 <td><?= $brandData['totals']['main_active'] ?></td>
                 <td><?= $brandData['totals']['main_inactive'] ?></td>
-                <td><?= $brandData['totals']['branch_active'] ?></td>
-                <td><?= $brandData['totals']['branch_inactive'] ?></td>
                 <td><?= $brandData['totals']['total'] ?></td>
             </tr>
             
@@ -168,8 +149,6 @@ try {
                     </td>
                     <td><?= $model['cnt_main_active'] ?></td>
                     <td><?= $model['cnt_main_inactive'] ?></td>
-                    <td><?= $model['cnt_branch_active'] ?></td>
-                    <td><?= $model['cnt_branch_inactive'] ?></td>
                     <td>
                         <?= $model['cnt_total'] ?>
                         <div class="model-links">
@@ -202,8 +181,6 @@ try {
             <td><strong><?= $stock_lang['total_brands'] ?>: <?= count($brands) ?></strong></td>
             <td><strong><?= $totals['main_active'] ?></strong></td>
             <td><strong><?= $totals['main_inactive'] ?></strong></td>
-            <td><strong><?= $totals['branch_active'] ?></strong></td>
-            <td><strong><?= $totals['branch_inactive'] ?></strong></td>
             <td><strong><?= $totals['total'] ?></strong></td>
         </tr>
     </tbody>

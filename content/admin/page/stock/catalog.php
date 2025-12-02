@@ -19,7 +19,7 @@ try {
         vol,
         mlg
     FROM {$prefx}_car_ctlg 
-    WHERE act = 1 AND n_a = 0 AND loc IN ('1', '2')
+    WHERE act = 1 AND n_a = 0 AND loc IN ('1', '2') AND catalog_type = 'in_stock'
     ORDER BY br_nm ASC, mo_nm ASC, yr DESC, id DESC";
     
     $stmt = $db->prepare($sql);
