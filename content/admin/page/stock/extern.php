@@ -170,7 +170,7 @@ try {
                     <td>
                         <?= $model['cnt_total'] ?>
                         <div class="model-links">
-                            <a href="/adminsauto/cars/ctlg?br_search=<?= urlencode($brandName) ?>&mo_search=<?= urlencode($model['mo_nm']) ?>" 
+                            <a href="/adminsauto/ordercars/ctlg?br_search=<?= urlencode($brandName) ?>&mo_search=<?= urlencode($model['mo_nm']) ?>" 
                                class="show-all-link"><?= $stock_lang['show_all_ads'] ?></a>
                             <?php
                             // Use cars already loaded in model data
@@ -184,7 +184,7 @@ try {
                                 $engine = !empty($car['vol']) ? $car['vol'] : 'N/A';
                                 $mileage = !empty($car['mlg']) ? number_format($car['mlg']) . ' km' : 'N/A';
                             ?>
-                                <a href="/adminsauto/cars/detail?id=<?= $car['id'] ?>" 
+                                <a href="/adminsauto/ordercars/detail?id=<?= $car['id'] ?>" 
                                    class="car-link" title="<?= htmlspecialchars($carTitle, ENT_QUOTES, 'UTF-8') ?>">
                                    ID <?= $car['id'] ?> - <?= $car['yr'] ?> - <?= $engine ?> - <?= $mileage ?>
                                 </a>
