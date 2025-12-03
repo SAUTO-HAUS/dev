@@ -220,11 +220,10 @@ if ( $t_mp[5]=='cesionar' || isset($mixall) ){
 			       u.phn as u_phn, u.eml as u_eml, u.tp as u_tp
 			FROM '.$prefx.'_docs_ctlg c 
 			LEFT JOIN '.$prefx.'_docs_u u ON c.u = u.id 
-			WHERE c.f IN (?, ?) 
-			ORDER BY c.date DESC 
-			LIMIT 100
+			WHERE c.f IN (?, ?, ?, ?, ?)  
+			ORDER BY c.date DESC
 		');
-		$pdo_contracts->execute(['vinzare_proc', 'vinzare_avans']);
+		$pdo_contracts->execute(['vinzare_proc', 'vinzare_sauto', 'vinzare_avans', 'con_arvon', 'con_arvon_com']);
 		
 		$contract_count = 0;
 		
@@ -237,12 +236,17 @@ if ( $t_mp[5]=='cesionar' || isset($mixall) ){
 			$u_phn = $contract['u_phn'] ?: '';
 			$u_eml = $contract['u_eml'] ?: '';
 
-			// Determine contract type display name
 $contract_type_name = '';
 if ($contract['contract_type'] == 'vinzare_proc') {
     $contract_type_name = 'Vânzare-cumpărare';
+} elseif ($contract['contract_type'] == 'vinzare_sauto') {
+    $contract_type_name = 'Vânzare SAUTO';
 } elseif ($contract['contract_type'] == 'vinzare_avans') {
     $contract_type_name = 'Avans';
+} elseif ($contract['contract_type'] == 'con_arvon') {
+    $contract_type_name = 'Arvună';
+} elseif ($contract['contract_type'] == 'con_arvon_com') {
+    $contract_type_name = 'Arvună (comandă)';
 }
 			
 			// Parse inf for currency if available
@@ -258,7 +262,7 @@ if ($contract['contract_type'] == 'vinzare_proc') {
 			}
 			
 			
-			$contracts_html .= '<option value="'.$contract['id'].'" data-cont-nr="'.htmlspecialchars($cont_nr).'" data-u-nm="'.htmlspecialchars($u_nm).'" data-u-cf-idno="'.htmlspecialchars($u_cf_idno).'" data-u-adr="'.htmlspecialchars($u_adr).'" data-u-phn="'.htmlspecialchars($u_phn).'" data-u-eml="'.htmlspecialchars($u_eml).'" data-cur="'.htmlspecialchars($cur).'">ID:'.$contract['id'].' - '.htmlspecialchars($u_nm).' - '.htmlspecialchars($contract_type_name).'</option>';
+			$contracts_html .= '<option value="'.$contract['id'].'" data-cont-nr="'.htmlspecialchars($cont_nr).'" data-u-nm="'.htmlspecialchars($u_nm).'" data-u-cf-idno="'.htmlspecialchars($u_cf_idno).'" data-u-adr="'.htmlspecialchars($u_adr).'" data-u-phn="'.htmlspecialchars($u_phn).'" data-u-eml="'.htmlspecialchars($u_eml).'" data-cur="'.htmlspecialchars($cur).'">'.htmlspecialchars($contract_type_name).' | '.htmlspecialchars($u_nm).' | IDNP: '.htmlspecialchars($u_cf_idno).'</option>';
 			$contract_count++;
 		}
 		
@@ -279,9 +283,34 @@ if ($contract['contract_type'] == 'vinzare_proc') {
 	<label class="lbl"><span class="ttl">Numărul Anexa</span><input class="need" type="text" name="annexa_nr" title="Numărul Anexa" value="'.(isset($_POST['annexa_nr']) ? htmlspecialchars($_POST['annexa_nr']) : $annexa_number).'" /></label>
 	
 	<div class="ttl">Selectare Contract</div>
-	<label class="lbl"><span class="ttl">Contract de referință *</span><select class="need" name="base_contract_id" id="base_contract_id" title="Contract de referință" onchange="loadContractData()">
+	<input type="text" id="contract_search" placeholder="Caută contract după nume, IDNP sau număr..." style="width:100%; padding:0.5rem; margin-bottom:0.5rem; border:1px solid #ddd; border-radius:4px;" />
+	<label class="lbl"><span class="ttl">Contract de referință *</span><select class="need" name="base_contract_id" id="base_contract_id" onchange="loadContractData()" size="10" style="height:auto; min-height:250px; font-size:14px; line-height:1.8; padding:8px;">
 		'.$contracts_html.'
 	</select></label>
+	<script>
+	(function() {
+		var searchInput = document.getElementById("contract_search");
+		var selectElement = document.getElementById("base_contract_id");
+		var allOptions = Array.from(selectElement.options);
+		
+		if (searchInput && selectElement) {
+			searchInput.addEventListener("input", function() {
+				var searchText = this.value.toLowerCase();
+				
+				// Clear current options
+				selectElement.innerHTML = "";
+				
+				// Filter and add matching options
+				allOptions.forEach(function(option) {
+					var optionText = option.textContent.toLowerCase();
+					if (searchText === "" || optionText.indexOf(searchText) !== -1) {
+						selectElement.appendChild(option.cloneNode(true));
+					}
+				});
+			});
+		}
+	})();
+	</script>
 	<label class="lbl"><span class="ttl">Număr contract</span><input class="need" type="text" name="cont_nr" title="Număr contract" value="'.(isset($_POST['cont_nr']) ? htmlspecialchars($_POST['cont_nr']) : '').'" readonly /></label>
 	
 	<div class="ttl">Cumpărător (din contract original)</div>

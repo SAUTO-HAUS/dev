@@ -41,6 +41,7 @@ UPDATE countries SET name_ro = 'Moldova' WHERE code = 'MD';
 UPDATE countries SET name_ro = 'Elveția' WHERE code = 'CH';
 UPDATE countries SET name_ro = 'Norvegia' WHERE code = 'NO';
 UPDATE countries SET name_ro = 'SUA' WHERE code = 'US';
+UPDATE countries SET name_ro = 'Coreea' WHERE code = 'KR';
 
 
 -- Update with Russian names
@@ -77,4 +78,5 @@ UPDATE countries SET name_ru = 'Молдова' WHERE code = 'MD';
 UPDATE countries SET name_ru = 'Швейцария' WHERE code = 'CH';
 UPDATE countries SET name_ru = 'Норвегия' WHERE code = 'NO';
 UPDATE countries SET name_ru = 'США' WHERE code = 'US';
+UPDATE countries SET name_ru = 'Корея' WHERE code = 'KR';
 
