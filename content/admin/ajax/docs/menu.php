@@ -1124,9 +1124,9 @@ JAVASCRIPT;
 		</script>
 
 		'.( isset($mixall)?'</form>':'' );
+	}
 
-			
-	//__________________________________________________________________________________________CONTRACT DE ARVUNA (LA COMANDA)
+		//__________________________________________________________________________________________CONTRACT DE ARVUNA (LA COMANDA)
 	if ( $t_mp[5]=='con_arvon_com' || isset($mixall) ){
 		$rtrn .= ( isset($mixall)?'<form class="menu_con_arvon_com">':'' ).'
 		<div class="ttl">Document</div>
@@ -1204,7 +1204,6 @@ JAVASCRIPT;
 		</div>
 
 		'.( isset($mixall)?'</form>':'' );
-	}
 	}
 	
 	//__________________________________________________________________________________________Comanda pentru transport
