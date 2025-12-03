@@ -49,10 +49,15 @@ function generateYandexFeed() {
     $currencies = $yml->createElement('currencies');
     $shop->appendChild($currencies);
     
-    $currency = $yml->createElement('currency');
-    $currency->setAttribute('id', 'EUR');
-    $currency->setAttribute('rate', '1');
-    $currencies->appendChild($currency);
+    $currencyMDL = $yml->createElement('currency');
+    $currencyMDL->setAttribute('id', 'MDL');
+    $currencyMDL->setAttribute('rate', '1');
+    $currencies->appendChild($currencyMDL);
+    
+    $currencyEUR = $yml->createElement('currency');
+    $currencyEUR->setAttribute('id', 'EUR');
+    $currencyEUR->setAttribute('rate', 'CBRF');
+    $currencies->appendChild($currencyEUR);
     
     // Categories
     $categories = $yml->createElement('categories');
