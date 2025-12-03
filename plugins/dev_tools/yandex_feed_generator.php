@@ -85,18 +85,6 @@ function generateYandexFeed() {
         $engine = (string)$g->engine;
         $mileage = (string)$g->mileage;
         
-        // Collect all images (main + additional, max 10 for Yandex)
-        $allImages = [];
-        if (!empty($imageLink) && filter_var($imageLink, FILTER_VALIDATE_URL)) {
-            $allImages[] = $imageLink;
-        }
-        foreach ($g->additional_image_link as $additionalImage) {
-            $additionalImageUrl = trim((string)$additionalImage);
-            if (count($allImages) < 10 && !empty($additionalImageUrl) && filter_var($additionalImageUrl, FILTER_VALIDATE_URL)) {
-                $allImages[] = $additionalImageUrl;
-            }
-        }
-        
         // Get transmission and drivetrain from product_detail
         $transmission = '';
         $drivetrain = '';
@@ -132,13 +120,9 @@ function generateYandexFeed() {
         $offer->appendChild($yml->createElement('currencyId', 'EUR'));
         $offer->appendChild($yml->createElement('categoryId', $categoryMap[$brand]));
         
-        // Pictures (all images, max 10 per Yandex specification)
-        foreach ($allImages as $image) {
-            // Validate image URL before adding
-            $imageUrl = trim($image);
-            if (!empty($imageUrl) && filter_var($imageUrl, FILTER_VALIDATE_URL)) {
-                $offer->appendChild($yml->createElement('picture', htmlspecialchars($imageUrl)));
-            }
+        // Picture (main image only)
+        if (!empty($imageLink) && filter_var($imageLink, FILTER_VALIDATE_URL)) {
+            $offer->appendChild($yml->createElement('picture', htmlspecialchars($imageLink)));
         }
         
         // Name/Title
