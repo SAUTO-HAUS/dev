@@ -753,7 +753,6 @@ c/f 1017600006845, c/TVA 0609417</pre>
 				$rtrn .= '<script>window.adm_ar = '.json_encode($adm_ar).';</script>';
 				
 				$i=1; $date = '';
-				$currentYear = date('Y');
 				$pdo = $db->prepare('SELECT 
 					u.id u_id, u.nm u_nm, u.tp u_tp, u.cf_idno u_cf_idno, u.tva_dt u_tva_dt, u.iban_dt_tk u_iban_dt_tk, u.adr u_adr, u.phn u_phn, u.eml u_eml, 
 					c.*, 
@@ -763,9 +762,8 @@ c/f 1017600006845, c/TVA 0609417</pre>
 						INNER JOIN 
 						'.$prefx.'_docs_ctlg AS c 
 					ON u.id=c.u 
-					WHERE YEAR(c.date) = :currentYear
 					ORDER BY c.date DESC, c.id DESC'); 
-				$pdo->execute(['currentYear' => $currentYear]);
+				$pdo->execute();
 					
 				$rtrn .= '
 				<div class="rowz hdr">
