@@ -916,11 +916,57 @@ c/f 1017600006845, c/TVA 0609417</pre>
 		yearWrapper.append(yearFilter);
 		yearWrapper.append("<span style=\"position:absolute; right:0.1rem; top:50%; transform:translateY(-50%); pointer-events:none; font-size:1rem;\">▼</span>");
 		
+		// Add date range filters
+		var dateFromInput = $("<input type=\"date\" placeholder=\"De la\" style=\"padding:0.5rem; margin:0 0.5rem; border:1px solid #ddd; background:#fff; cursor:pointer; display:inline-block; vertical-align:top;\" />");
+		var dateToInput = $("<input type=\"date\" placeholder=\"Până la\" style=\"padding:0.5rem; margin:0 0.5rem; border:1px solid #ddd; background:#fff; cursor:pointer; display:inline-block; vertical-align:top;\" />");
+		var dateFilterBtn = $("<button style=\"padding:0.5rem 1rem; margin:0 0.5rem; border:1px solid #ddd; background:#e2001a; color:#fff; cursor:pointer; display:inline-block; vertical-align:top;\">Filtrează</button>");
+		var dateClearBtn = $("<button style=\"padding:0.5rem 1rem; margin:0 0.5rem; border:1px solid #ddd; background:#777; color:#fff; cursor:pointer; display:inline-block; vertical-align:top;\">Reset</button>");
+		
+		$(".docs > .find.doc").append(dateFromInput);
+		$(".docs > .find.doc").append(dateToInput);
+		$(".docs > .find.doc").append(dateFilterBtn);
+		$(".docs > .find.doc").append(dateClearBtn);
 		$(".docs > .find.doc").append(yearWrapper);
 		yearFilter.val(currentYear);
 		
+		// Date range filter function
+		function applyDateRangeFilter() {
+			var dateFrom = dateFromInput.val();
+			var dateTo = dateToInput.val();
+			
+			if (dateFrom || dateTo) {
+				yearFilter.val("all");
+				$(".docs > .list > .bx").each(function(){
+					var dateStr = $(this).find(".values").data("date");
+					if (dateStr) {
+						var docDate = new Date(dateStr);
+						var fromDate = dateFrom ? new Date(dateFrom) : new Date("1900-01-01");
+						var toDate = dateTo ? new Date(dateTo) : new Date("2099-12-31");
+						toDate.setHours(23, 59, 59, 999);
+						
+						if (docDate >= fromDate && docDate <= toDate) {
+							$(this).removeClass("none");
+						} else {
+							$(this).addClass("none");
+						}
+					}
+				});
+			}
+		}
+		
+		dateFilterBtn.on("click", applyDateRangeFilter);
+		
+		dateClearBtn.on("click", function(){
+			dateFromInput.val("");
+			dateToInput.val("");
+			yearFilter.val(currentYear).trigger("change");
+		});
+		
 		yearFilter.on("change", function(){
 			var year = $(this).val();
+			dateFromInput.val("");
+			dateToInput.val("");
+			
 			if (year === "all") {
 				$(".docs > .list > .bx").removeClass("none");
 			} else {
