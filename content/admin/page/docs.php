@@ -919,7 +919,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 		// Add date range filters
 		var dateFromInput = $("<input type=\"date\" placeholder=\"De la\" style=\"padding:0.5rem; margin:0 0.5rem; border:1px solid #ddd; background:#fff; cursor:pointer; display:inline-block; vertical-align:top;\" />");
 		var dateToInput = $("<input type=\"date\" placeholder=\"Până la\" style=\"padding:0.5rem; margin:0 0.5rem; border:1px solid #ddd; background:#fff; cursor:pointer; display:inline-block; vertical-align:top;\" />");
-		var dateFilterBtn = $("<button style=\"padding:0.5rem 1rem; margin:0 0.5rem; border:1px solid #ddd; background:#e2001a; color:#fff; cursor:pointer; display:inline-block; vertical-align:top;\">Filtrează</button>");
+		var dateFilterBtn = $("<button style=\"padding:0.5rem 1rem; margin:0 0.5rem; border:1px solid #ddd; background:#e2001a; color:#fff; cursor:pointer; display:inline-block; vertical-align:top;\">Filter</button>");
 		var dateClearBtn = $("<button style=\"padding:0.5rem 1rem; margin:0 0.5rem; border:1px solid #ddd; background:#777; color:#fff; cursor:pointer; display:inline-block; vertical-align:top;\">Reset</button>");
 		
 		$(".docs > .find.doc").append(dateFromInput);
