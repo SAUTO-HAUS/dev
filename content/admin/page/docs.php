@@ -1104,7 +1104,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 						$("#find_user > p").each(function(){
 							if ( $(this).attr("data-cf_idno").indexOf( srchV ) >= 0 ){
 								var el = $(this).clone(); var tmp = el.html().replace(srchV,"<span style=\"color:var(--clr)\">"+srchV+"</span>"); el.html(tmp);
-								el.append("<span class=\"edit_user_btn\" title=\"Edit user\">&#10000;</span>");
+								el.append("<span class=\"edit_user_btn\" title=\"Edit user\" style=\"background:#ffcccc; padding:0.25rem 0.5rem; border-radius:4px; margin-left:1rem; cursor:pointer;\">✏️</span>");
 								$("#find_user_rslt").append( el.prop("outerHTML") );
 							}
 						})
@@ -1118,9 +1118,9 @@ c/f 1017600006845, c/TVA 0609417</pre>
 						$("#find_user > p").each(function(){
 							if ( $(this).attr("data-nm").toLowerCase().indexOf( srchV ) >= 0 ){
 								var el = $(this).clone(); var tmp = el.html().replace(new RegExp("("+srchV+")", "ig"),"<span style=\"color:var(--clr)\">$1</span>"); el.html(tmp);
-								el.append("<span class=\"edit_user_btn\" title=\"Edit user\">&#10000;</span>");
+								el.append("<span class=\"edit_user_btn\" title=\"Edit user\" style=\"background:#ffcccc; padding:0.25rem 0.5rem; border-radius:4px; margin-left:1rem; cursor:pointer;\">✏️</span>");
 								$("#find_user_rslt").append( el.prop("outerHTML") );
-							}
+							}	
 						})
 					}
 				})
@@ -1204,7 +1204,6 @@ c/f 1017600006845, c/TVA 0609417</pre>
 						method: "POST",
 						data: { tp: "adm", pg: "docs", fn: "edit_user", inp: formData },
 						success: function() {
-							alert("User updated!");
 							$("#overlay").remove();
 							location.reload();
 						},
