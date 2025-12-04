@@ -2,6 +2,26 @@
 
 $ajax_folder = _ADM_AJAX.'/docs';
 $rtrn = '';
+//---------------------------------------------EDIT USER
+if ( $_POST['fn']=='edit_user' ){
+	$user_id = isset($_POST['inp']['user_id']) ? intval($_POST['inp']['user_id']) : 0;
+	$tp = isset($_POST['inp']['tp']) ? $_POST['inp']['tp'] : 'fiz';
+	$nm = isset($_POST['inp']['nm']) ? $_POST['inp']['nm'] : '';
+	$cf_idno = isset($_POST['inp']['cf_idno']) ? $_POST['inp']['cf_idno'] : '';
+	$tva_dt = isset($_POST['inp']['tva_dt']) ? $_POST['inp']['tva_dt'] : '';
+	$iban_dt_tk = isset($_POST['inp']['iban_dt_tk']) ? $_POST['inp']['iban_dt_tk'] : '';
+	$adr = isset($_POST['inp']['adr']) ? $_POST['inp']['adr'] : '';
+	$phn = isset($_POST['inp']['phn']) ? $_POST['inp']['phn'] : '';
+	$eml = isset($_POST['inp']['eml']) ? $_POST['inp']['eml'] : '';
+	
+	if ($user_id > 0) {
+		$pdo = $db->prepare('UPDATE '.$prefx.'_docs_u SET `tp`=:tp, `nm`=:nm, `cf_idno`=:cf_idno, `tva_dt`=:tva_dt, `iban_dt_tk`=:iban_dt_tk, `adr`=:adr, `phn`=:phn, `eml`=:eml WHERE `id`=:id');
+		$pdo->execute([ 'tp'=>$tp, 'nm'=>$nm, 'cf_idno'=>$cf_idno, 'tva_dt'=>$tva_dt, 'iban_dt_tk'=>$iban_dt_tk, 'adr'=>$adr, 'phn'=>$phn, 'eml'=>$eml, 'id'=>$user_id ]);
+		$returnIt = [ 'fn'=>$_POST['fn'], 'success'=>true ];
+	} else {
+		$returnIt = [ 'fn'=>$_POST['fn'], 'error'=>'Invalid user ID' ];
+	}
+}
 //---------------------------------------------SAVE AS PDF
 if ( $_POST['fn']=='save_pdf' ){
 	$returnIt = [ 'fn'=>$_POST['fn'], 'rtrn'=>$rtrn ];

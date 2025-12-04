@@ -158,6 +158,12 @@ c/f 1017600006845, c/TVA 0609417</pre>
 			.docs > .find.user input[type="submit"] {padding:1rem 2rem; transition:.25s;}
 			.docs > .find.user input[type="submit"]:hover {background-color:#b8fb76;}
 			
+			/* User result list styling */
+			#find_user_rslt > p {position:relative; padding-right:3rem; transition:.2s;}
+			#find_user_rslt > p:hover {background-color:#f0f0f0;}
+			#find_user_rslt > p > .edit_user_btn {position:absolute; right:.5rem; top:50%; transform:translateY(-50%); padding:.5rem; cursor:pointer; color:#e2001a; font-size:1.2rem; transition:.2s;}
+			#find_user_rslt > p > .edit_user_btn:hover {color:#bf4040; transform:translateY(-50%) scale(1.2);}
+			
 			.docs > .list {width:100%; font-family:Verdana; font-size:.8rem; border-top: 1px solid; margin:1rem 0 0; padding:1rem 0;}
 			.docs > .list input.srch {cursor:auto;}
 			
@@ -1098,6 +1104,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 						$("#find_user > p").each(function(){
 							if ( $(this).attr("data-cf_idno").indexOf( srchV ) >= 0 ){
 								var el = $(this).clone(); var tmp = el.html().replace(srchV,"<span style=\"color:var(--clr)\">"+srchV+"</span>"); el.html(tmp);
+								el.append("<span class=\"edit_user_btn\" title=\"Edit user\">&#10000;</span>");
 								$("#find_user_rslt").append( el.prop("outerHTML") );
 							}
 						})
@@ -1111,19 +1118,96 @@ c/f 1017600006845, c/TVA 0609417</pre>
 						$("#find_user > p").each(function(){
 							if ( $(this).attr("data-nm").toLowerCase().indexOf( srchV ) >= 0 ){
 								var el = $(this).clone(); var tmp = el.html().replace(new RegExp("("+srchV+")", "ig"),"<span style=\"color:var(--clr)\">$1</span>"); el.html(tmp);
+								el.append("<span class=\"edit_user_btn\" title=\"Edit user\">&#10000;</span>");
 								$("#find_user_rslt").append( el.prop("outerHTML") );
 							}
 						})
 					}
 				})
 				
-				$(document).on("click", "#find_user_rslt > p", function(){
+				$(document).on("click", "#find_user_rslt > p", function(e){
+					if ($(e.target).hasClass("edit_user_btn")) {
+						e.stopPropagation();
+						openUserEditOverlay($(this));
+						return;
+					}
+					
 					$.each($(this).data(), function(k,v){
 						$("form").find("[name=\"u_"+k+"\"]").val(v);
 						if (k=="tp"){ $("form").find("[name=\"u_"+k+"\"]").trigger("change"); }
 					})
 					$("#find_user_rslt").html("");
 				})
+				
+				function openUserEditOverlay($userEl) {
+					var userData = $userEl.data();
+					$("#overlay").remove();
+					
+					var overlayHtml = "<div id=\"overlay\" style=\"position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; align-items:center; justify-content:center; overflow-y:auto; padding:2rem;\">";
+					overlayHtml += "<div style=\"background:#fff; padding:2rem; border-radius:8px; max-width:800px; width:100%; max-height:90vh; overflow-y:auto;\">";
+					overlayHtml += "<h2 style=\"margin-bottom:1.5rem; color:#e2001a;\">Edit User Data</h2>";
+					overlayHtml += "<form id=\"edit_user_form\">";
+					overlayHtml += "<input type=\"hidden\" name=\"user_id\" value=\"" + userData.id + "\" />";
+					
+					overlayHtml += "<label class=\"lbl\"><span class=\"ttl\">Type</span>";
+					overlayHtml += "<select name=\"tp\">";
+					overlayHtml += "<option value=\"fiz\" " + (userData.tp === "fiz" ? "selected" : "") + ">Fizic</option>";
+					overlayHtml += "<option value=\"jur\" " + (userData.tp === "jur" ? "selected" : "") + ">Juridic</option>";
+					overlayHtml += "</select></label>";
+					
+					overlayHtml += "<label class=\"lbl\"><span class=\"ttl\">Name</span>";
+					overlayHtml += "<input type=\"text\" name=\"nm\" value=\"" + (userData.nm || "") + "\" /></label>";
+					
+					overlayHtml += "<label class=\"lbl\"><span class=\"ttl\">IDNP/IDNO</span>";
+					overlayHtml += "<input type=\"text\" name=\"cf_idno\" value=\"" + (userData.cf_idno || "") + "\" /></label>";
+					
+					overlayHtml += "<label class=\"lbl\"><span class=\"ttl\">TVA</span>";
+					overlayHtml += "<input type=\"text\" name=\"tva_dt\" value=\"" + (userData.tva_dt || "") + "\" /></label>";
+					
+					overlayHtml += "<label class=\"lbl\"><span class=\"ttl\">IBAN</span>";
+					overlayHtml += "<input type=\"text\" name=\"iban_dt_tk\" value=\"" + (userData.iban_dt_tk || "") + "\" /></label>";
+					
+					overlayHtml += "<label class=\"lbl max\"><span class=\"ttl\">Address</span>";
+					overlayHtml += "<textarea name=\"adr\" rows=\"2\">" + (userData.adr || "") + "</textarea></label>";
+					
+					overlayHtml += "<label class=\"lbl\"><span class=\"ttl\">Phone</span>";
+					overlayHtml += "<input type=\"text\" name=\"phn\" value=\"" + (userData.phn || "") + "\" /></label>";
+					
+					overlayHtml += "<label class=\"lbl\"><span class=\"ttl\">Email</span>";
+					overlayHtml += "<input type=\"email\" name=\"eml\" value=\"" + (userData.eml || "") + "\" /></label>";
+					
+					overlayHtml += "<div style=\"display:flex; gap:1rem; margin-top:2rem;\">";
+					overlayHtml += "<button type=\"button\" id=\"save_user_btn\" style=\"flex:1; padding:1rem; background:#28a745; color:#fff; border:none; border-radius:4px; cursor:pointer;\">Save</button>";
+					overlayHtml += "<button type=\"button\" class=\"close_overlay\" style=\"flex:1; padding:1rem; background:#6c757d; color:#fff; border:none; border-radius:4px; cursor:pointer;\">Cancel</button>";
+					overlayHtml += "</div></form></div></div>";
+					
+					$("body").append(overlayHtml);
+					
+					$(".close_overlay, #overlay").on("click", function(e) {
+						if (e.target === this) { $("#overlay").remove(); }
+					});
+					
+					$("#save_user_btn").on("click", function() {
+						var formData = {};
+						$("#edit_user_form").serializeArray().forEach(function(field) {
+							formData[field.name] = field.value;
+						});
+						
+						$.ajax({
+							url: "/ajax.php",
+							method: "POST",
+							data: { tp: "adm", pg: "docs", fn: "edit_user", inp: formData },
+							success: function() {
+								alert("User updated!");
+								$("#overlay").remove();
+								location.reload();
+							},
+							error: function() {
+								alert("Error updating user!");
+							}
+						});
+					});
+				}
 			});
 			</script>
 			
