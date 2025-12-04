@@ -1285,7 +1285,7 @@ JAVASCRIPT;
 	</select></label>
 	<label class="lbl"><span class="ttl">Price</span><input class="need" type="text" name="prc" title="Price" required /></label>
 	<label class="lbl"><span class="ttl">Adresa descărcării</span><input class="need" type="text" name="adr_to" value="Chișinău, str. Calea Moșilor 11" title="Adresa descărcării" /></label>
-	<label class="lbl"><span class="ttl">Termenul de achitare</span><input class="need" type="text" name="t2pay" title="Termenul de achitare" required /></label>
+	<label class="lbl"><span class="ttl">Termenul de achitare</span><input class="need" type="text" name="t2pay" value="3" title="Termenul de achitare" required /></label>
 	<label class="lbl"><span class="ttl">Nr. Înma. Camion/remorca</span><textarea class="need" name="plate" title="Nr. Înma. Camion/remorca" rows="1"></textarea></label>
 
 		'.( isset($mixall)?'</form>':'' );
