@@ -2,6 +2,34 @@
 
 $ajax_folder = _ADM_AJAX.'/docs';
 $rtrn = '';
+//---------------------------------------------GET USER FIELDS
+if ( $_POST['fn']=='get_user_fields' ){
+	$user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
+	
+	if ($user_id > 0) {
+		$fields = [];
+		
+		// Get all contracts for this user
+		$pdo = $db->prepare('SELECT `inf` FROM '.$prefx.'_docs_ctlg WHERE `u`=:user_id');
+		$pdo->execute(['user_id' => $user_id]);
+		
+		foreach ($pdo as $r) {
+			if ($r['inf'] != '') {
+				$inf_parts = explode('&&', $r['inf']);
+				foreach ($inf_parts as $part) {
+					$kv = explode('==', $part);
+					if (isset($kv[0]) && strpos($kv[0], 'u_') === 0 && strpos($kv[0], 'kyc_') === false) {
+						$fields[$kv[0]] = true;
+					}
+				}
+			}
+		}
+		
+		$returnIt = ['fn' => $_POST['fn'], 'fields' => array_keys($fields)];
+	} else {
+		$returnIt = ['fn' => $_POST['fn'], 'error' => 'Invalid user ID'];
+	}
+}
 //---------------------------------------------EDIT USER
 if ( $_POST['fn']=='edit_user' ){
 	$user_id = isset($_POST['inp']['user_id']) ? intval($_POST['inp']['user_id']) : 0;

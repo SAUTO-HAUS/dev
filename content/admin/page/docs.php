@@ -1140,74 +1140,94 @@ c/f 1017600006845, c/TVA 0609417</pre>
 				})
 				
 				function openUserEditOverlay($userEl) {
-					var userData = $userEl.data();
-					$("#overlay").remove();
-					
-					var overlayHtml = "<div id=\"overlay\" style=\"position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; align-items:center; justify-content:center; overflow-y:auto; padding:2rem;\">";
-					overlayHtml += "<div style=\"background:#fff; padding:2rem; border-radius:8px; max-width:800px; width:100%; max-height:90vh; overflow-y:auto;\">";
-					overlayHtml += "<h2 style=\"margin-bottom:1.5rem; color:#e2001a;\">Edit User Data</h2>";
-					overlayHtml += "<form id=\"edit_user_form\">";
-					overlayHtml += "<input type=\"hidden\" name=\"user_id\" value=\"" + userData.id + "\" />";
-					
-					overlayHtml += "<label class=\"lbl\"><span class=\"ttl\">Type</span>";
-					overlayHtml += "<select name=\"tp\">";
-					overlayHtml += "<option value=\"fiz\" " + (userData.tp === "fiz" ? "selected" : "") + ">Fizic</option>";
-					overlayHtml += "<option value=\"jur\" " + (userData.tp === "jur" ? "selected" : "") + ">Juridic</option>";
-					overlayHtml += "</select></label>";
-					
-					overlayHtml += "<label class=\"lbl\"><span class=\"ttl\">Name</span>";
-					overlayHtml += "<input type=\"text\" name=\"nm\" value=\"" + (userData.nm || "") + "\" /></label>";
-					
-					overlayHtml += "<label class=\"lbl\"><span class=\"ttl\">IDNP/IDNO</span>";
-					overlayHtml += "<input type=\"text\" name=\"cf_idno\" value=\"" + (userData.cf_idno || "") + "\" /></label>";
-					
-					overlayHtml += "<label class=\"lbl\"><span class=\"ttl\">TVA</span>";
-					overlayHtml += "<input type=\"text\" name=\"tva_dt\" value=\"" + (userData.tva_dt || "") + "\" /></label>";
-					
-					overlayHtml += "<label class=\"lbl\"><span class=\"ttl\">IBAN</span>";
-					overlayHtml += "<input type=\"text\" name=\"iban_dt_tk\" value=\"" + (userData.iban_dt_tk || "") + "\" /></label>";
-					
-					overlayHtml += "<label class=\"lbl max\"><span class=\"ttl\">Address</span>";
-					overlayHtml += "<textarea name=\"adr\" rows=\"2\">" + (userData.adr || "") + "</textarea></label>";
-					
-					overlayHtml += "<label class=\"lbl\"><span class=\"ttl\">Phone</span>";
-					overlayHtml += "<input type=\"text\" name=\"phn\" value=\"" + (userData.phn || "") + "\" /></label>";
-					
-					overlayHtml += "<label class=\"lbl\"><span class=\"ttl\">Email</span>";
-					overlayHtml += "<input type=\"email\" name=\"eml\" value=\"" + (userData.eml || "") + "\" /></label>";
-					
-					overlayHtml += "<div style=\"display:flex; gap:1rem; margin-top:2rem;\">";
-					overlayHtml += "<button type=\"button\" id=\"save_user_btn\" style=\"flex:1; padding:1rem; background:#28a745; color:#fff; border:none; border-radius:4px; cursor:pointer;\">Save</button>";
-					overlayHtml += "<button type=\"button\" class=\"close_overlay\" style=\"flex:1; padding:1rem; background:#6c757d; color:#fff; border:none; border-radius:4px; cursor:pointer;\">Cancel</button>";
-					overlayHtml += "</div></form></div></div>";
-					
-					$("body").append(overlayHtml);
-					
-					$(".close_overlay, #overlay").on("click", function(e) {
-						if (e.target === this) { $("#overlay").remove(); }
+				var userData = $userEl.data();
+				$("#overlay").remove();
+				
+				var overlayHtml = "<div id=\"overlay\" style=\"position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; display:flex; align-items:center; justify-content:center; overflow-y:auto; padding:2rem;\">";
+				overlayHtml += "<div style=\"background:#fff; padding:2rem; border-radius:8px; max-width:800px; width:100%; max-height:90vh; overflow-y:auto;\">";
+				overlayHtml += "<h2 style=\"margin-bottom:1.5rem; color:#e2001a;\">Edit User Data</h2>";
+				overlayHtml += "<form id=\"edit_user_form\">";
+				overlayHtml += "<input type=\"hidden\" name=\"user_id\" value=\"" + userData.id + "\" />";
+				
+				overlayHtml += "<label class=\"lbl\"><span class=\"ttl\">Type</span>";
+				overlayHtml += "<select name=\"tp\" id=\"edit_user_tp\">";
+				overlayHtml += "<option value=\"fiz\" " + (userData.tp === "fiz" ? "selected" : "") + ">Fizic</option>";
+				overlayHtml += "<option value=\"jur\" " + (userData.tp === "jur" ? "selected" : "") + ">Juridic</option>";
+				overlayHtml += "</select></label>";
+				
+				overlayHtml += "<label class=\"lbl\"><span class=\"ttl\" id=\"lbl_nm\">Name</span>";
+				overlayHtml += "<input type=\"text\" name=\"nm\" value=\"" + (userData.nm || "") + "\" /></label>";
+				
+				overlayHtml += "<label class=\"lbl\"><span class=\"ttl\" id=\"lbl_cf_idno\">IDNP</span>";
+				overlayHtml += "<input type=\"text\" name=\"cf_idno\" value=\"" + (userData.cf_idno || "") + "\" /></label>";
+				
+				overlayHtml += "<label class=\"lbl\"><span class=\"ttl\" id=\"lbl_tva_dt\">Data nasterii</span>";
+				overlayHtml += "<input type=\"text\" name=\"tva_dt\" value=\"" + (userData.tva_dt || "") + "\" /></label>";
+				
+				overlayHtml += "<label class=\"lbl\"><span class=\"ttl\" id=\"lbl_iban_dt_tk\">Data eliberarii</span>";
+				overlayHtml += "<input type=\"text\" name=\"iban_dt_tk\" value=\"" + (userData.iban_dt_tk || "") + "\" /></label>";
+				
+				overlayHtml += "<label class=\"lbl max\"><span class=\"ttl\">Address</span>";
+				overlayHtml += "<textarea name=\"adr\" rows=\"2\">" + (userData.adr || "") + "</textarea></label>";
+				
+				overlayHtml += "<label class=\"lbl\"><span class=\"ttl\">Phone</span>";
+				overlayHtml += "<input type=\"text\" name=\"phn\" value=\"" + (userData.phn || "") + "\" /></label>";
+				
+				overlayHtml += "<label class=\"lbl\"><span class=\"ttl\">Email</span>";
+				overlayHtml += "<input type=\"email\" name=\"eml\" value=\"" + (userData.eml || "") + "\" /></label>";
+				
+				overlayHtml += "<div style=\"display:flex; gap:1rem; margin-top:2rem;\">";
+				overlayHtml += "<button type=\"button\" id=\"save_user_btn\" style=\"flex:1; padding:1rem; background:#28a745; color:#fff; border:none; border-radius:4px; cursor:pointer;\">Save</button>";
+				overlayHtml += "<button type=\"button\" class=\"close_overlay\" style=\"flex:1; padding:1rem; background:#6c757d; color:#fff; border:none; border-radius:4px; cursor:pointer;\">Cancel</button>";
+				overlayHtml += "</div></form></div></div>";
+				
+				$("body").append(overlayHtml);
+				
+				updateLabels(userData.tp);
+				
+				$("#edit_user_tp").on("change", function() {
+					updateLabels($(this).val());
+				});
+				
+				$(".close_overlay, #overlay").on("click", function(e) {
+					if (e.target === this) { $("#overlay").remove(); }
+				});
+				
+				$("#save_user_btn").on("click", function() {
+					var formData = {};
+					$("#edit_user_form").serializeArray().forEach(function(field) {
+						formData[field.name] = field.value;
 					});
 					
-					$("#save_user_btn").on("click", function() {
-						var formData = {};
-						$("#edit_user_form").serializeArray().forEach(function(field) {
-							formData[field.name] = field.value;
-						});
-						
-						$.ajax({
-							url: "/ajax.php",
-							method: "POST",
-							data: { tp: "adm", pg: "docs", fn: "edit_user", inp: formData },
-							success: function() {
-								alert("User updated!");
-								$("#overlay").remove();
-								location.reload();
-							},
-							error: function() {
-								alert("Error updating user!");
-							}
-						});
+					$.ajax({
+						url: "/ajax.php",
+						method: "POST",
+						data: { tp: "adm", pg: "docs", fn: "edit_user", inp: formData },
+						success: function() {
+							alert("User updated!");
+							$("#overlay").remove();
+							location.reload();
+						},
+						error: function() {
+							alert("Error updating user!");
+						}
 					});
+				});
+			}
+			
+			function updateLabels(type) {
+				if (type === "fiz") {
+					$("#lbl_nm").text("Name");
+					$("#lbl_cf_idno").text("IDNP");
+					$("#lbl_tva_dt").text("Data nasterii");
+					$("#lbl_iban_dt_tk").text("Data eliberarii");
+				} else {
+					$("#lbl_nm").text("SRL");
+					$("#lbl_cf_idno").text("IDNO");
+					$("#lbl_tva_dt").text("TVA");
+					$("#lbl_iban_dt_tk").text("IBAN");
 				}
+			}
 			});
 			</script>
 			
