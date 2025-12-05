@@ -2,6 +2,21 @@
 
 $rtrn = '';
 
+// Load translations from cars.php for document categories
+$current_lang = $_COOKIE['lang'] ?? 'ro';
+$cars_translations_file = $_SERVER['DOCUMENT_ROOT'] . '/lang/' . $current_lang . '/cars.php';
+if (file_exists($cars_translations_file)) {
+	$cars_translations = include $cars_translations_file;
+	if (!isset($lng['m'])) {
+		$lng['m'] = [];
+	}
+	// Add document category translations to $lng['m']
+	$lng['m']['doc_cat_parcare'] = $cars_translations['doc_cat_parcare'] ?? 'Set de acte parcare';
+	$lng['m']['doc_cat_comanda'] = $cars_translations['doc_cat_comanda'] ?? 'Set de acte auto la comanda';
+	$lng['m']['doc_cat_transport'] = $cars_translations['doc_cat_transport'] ?? 'Transport';
+	$lng['m']['doc_cat_sauto_buyer'] = $cars_translations['doc_cat_sauto_buyer'] ?? 'Sauto cumparator';
+}
+
 //$admin_menu_dev1[$user_type]['docs']
 
 if ( isset($t_mp[4]) ){
@@ -69,32 +84,44 @@ if ( isset($t_mp[4]) ){
 		
 		$rtrn .= '
 		<style>
-			#docs {font-family: Arial, sans-serif;}
-			#docs > .gr {padding-left:1rem; margin-bottom:2rem;}
-			#docs > .gr > .gr-title {font-size:1.5rem; font-weight:bold; color:#333; margin-bottom:1rem;}
+			#docs {font-family: Arial, sans-serif; padding:1rem;}
+			#docs > .gr {margin-bottom:2rem;}
+			#docs > .gr > .gr-title {font-size:1.5rem; font-weight:bold; color:#333; margin-bottom:1.5rem; text-align:center;}
 			
-			#docs > .gr > .tp {margin-bottom:1rem; border:1px solid #ddd; border-radius:8px; overflow:hidden; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,0.1);}
-			#docs > .gr > .tp > .tp-header {padding:1rem 1.5rem; background:linear-gradient(135deg, #e2001a 0%, #bf0016 100%); color:#fff; cursor:pointer; display:flex; justify-content:space-between; align-items:center; transition:0.3s;}
-			#docs > .gr > .tp > .tp-header:hover {background:linear-gradient(135deg, #bf0016 0%, #a00012 100%);}
-			#docs > .gr > .tp > .tp-header > .tp-title {font-size:1.1rem; font-weight:600;}
-			#docs > .gr > .tp > .tp-header > .tp-icon {font-size:1.2rem; transition:transform 0.3s;}
-			#docs > .gr > .tp.collapsed > .tp-header > .tp-icon {transform:rotate(-90deg);}
+			#docs > .gr > .categories-row {display:flex; gap:1rem; justify-content:space-between; flex-wrap:wrap;}
 			
-			#docs > .gr > .tp > .its {max-height:500px; overflow:hidden; transition:max-height 0.3s ease-out; padding:0.5rem 0;}
-			#docs > .gr > .tp.collapsed > .its {max-height:0; padding:0;}
+			#docs > .gr > .categories-row > .tp {flex:1; min-width:calc(25% - 1rem); border:1px solid #ddd; border-radius:8px; overflow:hidden; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,0.1); transition:transform 0.2s;}
+			#docs > .gr > .categories-row > .tp:hover {transform:translateY(-2px); box-shadow:0 4px 8px rgba(0,0,0,0.15);}
 			
-			#docs > .gr > .tp > .its > .it {padding:0.75rem 1.5rem; position:relative; transition:.2s; display:block; border-bottom:1px solid #f0f0f0;}
-			#docs > .gr > .tp > .its > .it:last-child {border-bottom:none;}
-			#docs > .gr > .tp > .its > .it:hover {background-color:#f8f8f8; padding-left:2rem;}
-			#docs > .gr > .tp > .its > .it > .txt {color:#333; font-size:0.95rem;}
-			#docs > .gr > .tp > .its > .it:hover > .txt {color:#e2001a; font-weight:500;}
+			#docs > .gr > .categories-row > .tp > .tp-header {padding:1.5rem 1rem; background:linear-gradient(135deg, #e2001a 0%, #bf0016 100%); color:#fff; cursor:pointer; text-align:center; transition:0.3s; min-height:80px; display:flex; flex-direction:column; justify-content:center; align-items:center;}
+			#docs > .gr > .categories-row > .tp > .tp-header:hover {background:linear-gradient(135deg, #bf0016 0%, #a00012 100%);}
+			#docs > .gr > .categories-row > .tp > .tp-header > .tp-title {font-size:1rem; font-weight:600; line-height:1.4; margin-bottom:0.5rem;}
+			#docs > .gr > .categories-row > .tp > .tp-header > .tp-icon {font-size:1.2rem; transition:transform 0.3s;}
+			#docs > .gr > .categories-row > .tp.collapsed > .tp-header > .tp-icon {transform:rotate(-180deg);}
+			
+			#docs > .gr > .categories-row > .tp > .its {max-height:500px; overflow:hidden; transition:max-height 0.3s ease-out, padding 0.3s ease-out; padding:0.5rem 0;}
+			#docs > .gr > .categories-row > .tp.collapsed > .its {max-height:0; padding:0;}
+			
+			#docs > .gr > .categories-row > .tp > .its > .it {padding:0.75rem 1rem; position:relative; transition:.2s; display:block; border-bottom:1px solid #f0f0f0; text-align:center;}
+			#docs > .gr > .categories-row > .tp > .its > .it:last-child {border-bottom:none;}
+			#docs > .gr > .categories-row > .tp > .its > .it:hover {background-color:#f8f8f8;}
+			#docs > .gr > .categories-row > .tp > .its > .it > .txt {color:#333; font-size:0.9rem;}
+			#docs > .gr > .categories-row > .tp > .its > .it:hover > .txt {color:#e2001a; font-weight:500;}
+			
+			@media (max-width: 1200px) {
+				#docs > .gr > .categories-row > .tp {min-width:calc(50% - 0.5rem);}
+			}
+			@media (max-width: 768px) {
+				#docs > .gr > .categories-row > .tp {min-width:100%;}
+			}
 		</style>
 		<div id="docs">';
 			foreach($docs_ar as $gr => $ar){$rtrn .= '
 				<div class="gr">
-					<div class="gr-title">'.strtoupper($gr).'</div>';
+					<div class="gr-title">'.strtoupper($gr).'</div>
+					<div class="categories-row">';
 					foreach($ar as $tp => $ar2){$rtrn .= '
-						<div class="tp">
+						<div class="tp collapsed">
 							<div class="tp-header" onclick="this.parentElement.classList.toggle(\'collapsed\')">
 								<span class="tp-title">'.$tp.'</span>
 								<span class="tp-icon">▼</span>
@@ -108,6 +135,7 @@ if ( isset($t_mp[4]) ){
 						</div>';
 					}
 				$rtrn .= '
+					</div>
 				</div>';
 			}
 		$rtrn .= '
