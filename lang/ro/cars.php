@@ -51,4 +51,10 @@ return [
     'status_failed' => 'Eșuat',
     'status_cancelled' => 'Anulat',
     'status_postponed' => 'Amânat (timer expirat)',
+    
+    // Document categories
+    'doc_cat_parcare' => 'Set de acte parcare',
+    'doc_cat_comanda' => 'Set de acte auto la comanda',
+    'doc_cat_transport' => 'Transport',
+    'doc_cat_sauto_buyer' => 'Sauto cumparator',
 ];

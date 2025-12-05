@@ -11,17 +11,24 @@ if ( isset($t_mp[4]) ){
 		if ($user_type=='dev'){
 			$docs_ar = [
 				'cars'=>[
-					'sell'=>[ 
-						'cesionar'=>'Annexa (Cesiune drept de plată)'
-						,'con_plata'=>'Cont de plata'
+					($lng['m']['doc_cat_parcare'] ?? 'Set de acte parcare')=>[ 
+						'con_plata'=>'Cont de plata'
 					    ,'con_arvon'=>'Contract de arvună'
-						,'con_arvon_com'=>'Contract de arvună (la comanda)'
-						,'com_transport'=>'Comanda pentru transport'
 						,'con_intermed'=>'Contract de intermediere [TEST]'
 						// ,'vinzare_proc'=>'Contract de vânzare-cumpărare'
 						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
-						,'vinzare_sauto'=>'Contract de vânzare-cumpărare ( Sauto cumparator )'
+					]
+					,($lng['m']['doc_cat_comanda'] ?? 'Set de acte auto la comanda')=>[
+						'con_arvon_com'=>'Contract de arvună (la comanda)'
+						,'con_plata'=>'Cont de plata'
+						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
+					]
+					,($lng['m']['doc_cat_transport'] ?? 'Transport')=>[
+						'com_transport'=>'Comanda pentru transport'
 						,'invoice'=>'Invoice'
+					]
+					,($lng['m']['doc_cat_sauto_buyer'] ?? 'Sauto cumparator')=>[
+						'vinzare_sauto'=>'Contract de vânzare-cumpărare ( Sauto cumparator )'
 					]
 				]
 			];
@@ -36,18 +43,25 @@ if ( isset($t_mp[4]) ){
 		} else {
 			$docs_ar = [
 				'cars'=>[
-					'sell'=>[ 
-						'cesionar'=>'Annexa (Cesiune drept de plată)'
-						,'con_plata'=>'Cont de plata'
+					($lng['m']['doc_cat_parcare'] ?? 'Set de acte parcare')=>[ 
+						'con_plata'=>'Cont de plata'
 					    ,'con_arvon'=>'Contract de arvună'
-						,'con_arvon_com'=>'Contract de arvună (la comanda)'
-						,'com_transport'=>'Comanda pentru transport'
 						,'con_intermed'=>'Contract de intermediere [TEST]'
 						// ,'vinzare_proc'=>'Contract de vânzare-cumpărare'
 						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
-						,'vinzare_sauto'=>'Contract de vânzare-cumpărare ( Sauto cumparator )'
+					]
+					,($lng['m']['doc_cat_comanda'] ?? 'Set de acte auto la comanda')=>[
+						'con_arvon_com'=>'Contract de arvună (la comanda)'
+						,'con_plata'=>'Cont de plata'
+						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
+					]
+					,($lng['m']['doc_cat_transport'] ?? 'Transport')=>[
+						'com_transport'=>'Comanda pentru transport'
 						,'invoice'=>'Invoice'
-					]//,'contract_de_intermediere'=>'Contract de intermediere'
+					]
+					,($lng['m']['doc_cat_sauto_buyer'] ?? 'Sauto cumparator')=>[
+						'vinzare_sauto'=>'Contract de vânzare-cumpărare ( Sauto cumparator )'
+					]
 				]
 			];
 		}
@@ -55,27 +69,42 @@ if ( isset($t_mp[4]) ){
 		
 		$rtrn .= '
 		<style>
-			#docs > .gr {padding-left:2rem;}
-			#docs > .gr > .tp {padding-left:2rem;}
-			#docs > .gr > .tp > .its {border-left:1px solid; padding:0 0 0 .1rem;}
-			#docs > .gr > .tp > .its > .it {padding:.25rem .25rem; position:relative; transition:.2s; display:block;}
-			#docs > .gr > .tp > .its > .it:hover {background-color:var(--clr); color:#fff;}
-			#docs > .gr > .tp > .its > .it > .txt {padding:.25rem;}
+			#docs {font-family: Arial, sans-serif;}
+			#docs > .gr {padding-left:1rem; margin-bottom:2rem;}
+			#docs > .gr > .gr-title {font-size:1.5rem; font-weight:bold; color:#333; margin-bottom:1rem;}
+			
+			#docs > .gr > .tp {margin-bottom:1rem; border:1px solid #ddd; border-radius:8px; overflow:hidden; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,0.1);}
+			#docs > .gr > .tp > .tp-header {padding:1rem 1.5rem; background:linear-gradient(135deg, #e2001a 0%, #bf0016 100%); color:#fff; cursor:pointer; display:flex; justify-content:space-between; align-items:center; transition:0.3s;}
+			#docs > .gr > .tp > .tp-header:hover {background:linear-gradient(135deg, #bf0016 0%, #a00012 100%);}
+			#docs > .gr > .tp > .tp-header > .tp-title {font-size:1.1rem; font-weight:600;}
+			#docs > .gr > .tp > .tp-header > .tp-icon {font-size:1.2rem; transition:transform 0.3s;}
+			#docs > .gr > .tp.collapsed > .tp-header > .tp-icon {transform:rotate(-90deg);}
+			
+			#docs > .gr > .tp > .its {max-height:500px; overflow:hidden; transition:max-height 0.3s ease-out; padding:0.5rem 0;}
+			#docs > .gr > .tp.collapsed > .its {max-height:0; padding:0;}
+			
+			#docs > .gr > .tp > .its > .it {padding:0.75rem 1.5rem; position:relative; transition:.2s; display:block; border-bottom:1px solid #f0f0f0;}
+			#docs > .gr > .tp > .its > .it:last-child {border-bottom:none;}
+			#docs > .gr > .tp > .its > .it:hover {background-color:#f8f8f8; padding-left:2rem;}
+			#docs > .gr > .tp > .its > .it > .txt {color:#333; font-size:0.95rem;}
+			#docs > .gr > .tp > .its > .it:hover > .txt {color:#e2001a; font-weight:500;}
 		</style>
 		<div id="docs">';
 			foreach($docs_ar as $gr => $ar){$rtrn .= '
-				<span>'.strtoupper($gr).'</span><br/>
-				<div class="gr">';
+				<div class="gr">
+					<div class="gr-title">'.strtoupper($gr).'</div>';
 					foreach($ar as $tp => $ar2){$rtrn .= '
-						<span>'.strtoupper($tp).'</span><br/>
 						<div class="tp">
+							<div class="tp-header" onclick="this.parentElement.classList.toggle(\'collapsed\')">
+								<span class="tp-title">'.$tp.'</span>
+								<span class="tp-icon">▼</span>
+							</div>
 							<div class="its">';
 								foreach($ar2 as $k => $v){$rtrn .= '
 									<a class="it" href="'.$gr.'/'.$k.'"><span class="txt">'.$v.'</span></a>';
 								}
 							$rtrn .= '
-							</div>';
-						$rtrn .= '
+							</div>
 						</div>';
 					}
 				$rtrn .= '

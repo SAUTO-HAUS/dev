@@ -88,4 +88,10 @@ return [
     'status_failed' => 'Неудачно',
     'status_cancelled' => 'Отменено',
     'status_postponed' => 'Отложено (таймер истёк)',
+    
+    // Document categories
+    'doc_cat_parcare' => 'Комплект документов парковка',
+    'doc_cat_comanda' => 'Комплект документов авто на заказ',
+    'doc_cat_transport' => 'Транспорт',
+    'doc_cat_sauto_buyer' => 'Sauto покупатель',
 ];

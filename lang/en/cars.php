@@ -51,4 +51,10 @@ return [
     'status_failed' => 'Failed',
     'status_cancelled' => 'Cancelled',
     'status_postponed' => 'Postponed (timer expired)',
+    
+    // Document categories
+    'doc_cat_parcare' => 'Parking documents set',
+    'doc_cat_comanda' => 'Custom order car documents set',
+    'doc_cat_transport' => 'Transport',
+    'doc_cat_sauto_buyer' => 'Sauto buyer',
 ];
