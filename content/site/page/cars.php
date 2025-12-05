@@ -338,7 +338,6 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
         $brand = str_replace('-', '_', $t_mp[3]);
         $model = isset($t_mp[4]) ? str_replace('-', '_', $t_mp[4]) : null;
 
-        // Query using brand and model
         $sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE `br`=:brand';
         $params = ['brand' => $brand];
 
@@ -347,7 +346,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
             $params['model'] = $model;
         }
 
-        $sql .= ' AND `vis`="1" AND `act`="1" LIMIT 1';
+        $sql .= ' AND `vis`="1" AND `act`="1" AND `catalog_type`="in_stock" LIMIT 1';
 
         // Log SQL for debugging
         file_put_contents('debug_sql.log', "Clean URL car query: {$sql} with params: " . print_r($params, true) . "\n", FILE_APPEND);

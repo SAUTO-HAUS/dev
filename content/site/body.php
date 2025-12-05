@@ -49,7 +49,7 @@ if (isset($t_mp[2]) && $t_mp[2] == 'cars' && isset($t_mp[3]) && !isset($_GET['tg
         $check_pdo->execute(['id' => $check_id]);
         $check_car = $check_pdo->fetch(PDO::FETCH_ASSOC);
         
-        if (!$check_car || $check_car['catalog_type'] !== 'in_stock') {
+        if (!$check_car || empty($check_car['catalog_type']) || $check_car['catalog_type'] !== 'in_stock') {
             $GLOBALS['page_is_404'] = true;
         }
     } else {
@@ -133,8 +133,8 @@ if (isset($t_mp[2]) && $t_mp[2] == 'ordercars' && isset($t_mp[3]) && !isset($_GE
         $check_pdo->execute(['id' => $check_id]);
         $check_car = $check_pdo->fetch(PDO::FETCH_ASSOC);
         
-        // Validate that on_order cars are accessed via /ordercars/ URL
-        if (!$check_car || $check_car['catalog_type'] !== 'on_order') {
+        // Return 404 if car not found OR catalog_type is not 'on_order' (including NULL or empty values)
+        if (!$check_car || empty($check_car['catalog_type']) || $check_car['catalog_type'] !== 'on_order') {
             $GLOBALS['page_is_404'] = true;
         }
     } else {
