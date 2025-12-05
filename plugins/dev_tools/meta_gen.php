@@ -74,11 +74,11 @@ $current_lang = isset($_COOKIE['lang']) ? $_COOKIE['lang'] : 'ro';
 
 // Set language-dependent default H1 title
 if ($current_lang == 'ru') {
-    $sa['meta']['h1'] = 'Sauto – Автострахование в Кишиневе';
+    $sa['meta']['h1'] = 'Продажа автомобилей в Кишиневе';
 } elseif ($current_lang == 'en') {
-    $sa['meta']['h1'] = 'Sauto – Car Insurance in Chișinău';
-} else { // Romanian or default
-    $sa['meta']['h1'] = 'Sauto - Asigurări Auto în Chișinău';
+    $sa['meta']['h1'] = 'Cars for Sale in Chișinău';
+} else { 
+    $sa['meta']['h1'] = 'Vânzări auto în Chișinău';
 }
 
 $sa['meta']['dsc'] = 'Sauto - Vânzare de mașini, pagina auto, vă oferim o gamă largă de mașini.';
