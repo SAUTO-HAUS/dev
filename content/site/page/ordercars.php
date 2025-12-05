@@ -355,9 +355,6 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
 
         $sql .= ' AND `vis`="1" AND `act`="1" AND `catalog_type`="on_order" LIMIT 1';
 
-        // Log SQL for debugging
-        file_put_contents('debug_sql.log', "Clean URL car query: {$sql} with params: " . print_r($params, true) . "\n", FILE_APPEND);
-
         $pdo = $db->prepare($sql);
         $pdo->execute($params);
         $car = $pdo->fetch(PDO::FETCH_ASSOC);
@@ -1399,6 +1396,43 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                                 </div> 
                                 
                                 <div style="clear: both"> </div>
+
+ ';
+
+                $seo_link_texts = [
+                    'ro' => [
+                        'all_series' => 'Toate',
+                        'all_brand' => 'Toate automobilele'
+                    ],
+                    'ru' => [
+                        'all_series' => 'Все',
+                        'all_brand' => 'Все автомобили'
+                    ],
+                    'en' => [
+                        'all_series' => 'All',
+                        'all_brand' => 'All'
+                    ]
+                ];
+                
+                $current_lang = $_COOKIE['lang'];
+                $link_text_series = $seo_link_texts[$current_lang]['all_series'];
+                $link_text_brand = $seo_link_texts[$current_lang]['all_brand'];
+                
+                $model_display = ($current_lang == 'ro') ? 'Seria ' . $r['mo_nm'] : $r['mo_nm'];
+                
+                $brand_series_url = buildCarUrl($r['br'], $r['mo']);
+                $brand_url = buildCarUrl($r['br']);
+                
+                $rtrn .= '
+                <div class="seo_links_block" style="margin: 20px 0; padding: 15px; background-color: #FFE6E6; border-radius: 4px;">
+                    <a href="/'.$current_lang.'/ordercars/'.$brand_series_url.'" target="_blank" style="display: block; margin-bottom: 10px; color: #333; text-decoration: none; font-size: 17px;" onmouseover="this.style.textDecoration=\'underline\'; this.style.color=\'#ff0000\'" onmouseout="this.style.textDecoration=\'none\'; this.style.color=\'#333\'">
+                        '.$link_text_series.' '.$r['br_nm'].' '.$model_display.'
+                    </a>
+                    <a href="/'.$current_lang.'/ordercars/'.$brand_url.'" target="_blank" style="display: block; color: #333; text-decoration: none; font-size: 17px;" onmouseover="this.style.textDecoration=\'underline\'; this.style.color=\'#ff0000\'" onmouseout="this.style.textDecoration=\'none\'; this.style.color=\'#333\'">
+                        '.$link_text_brand.' '.$r['br_nm'].'
+                    </a>
+                </div>
+                                
                             </div> ';
 
                 $rtrn .= '<script>
