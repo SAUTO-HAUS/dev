@@ -43,7 +43,7 @@ if ( isset($t_mp[4]) ){
 						,'invoice'=>'Invoice'
 					]
 					,($lng['m']['doc_cat_sauto_buyer'] ?? 'Sauto cumparator')=>[
-						'vinzare_sauto'=>'Contract de vânzare-cumpărare ( Sauto cumparator )'
+						'vinzare_sauto'=>'Contract de vânzare-cumpărare<br>( Sauto cumparator )'
 					]
 				]
 			];
@@ -75,7 +75,7 @@ if ( isset($t_mp[4]) ){
 						,'invoice'=>'Invoice'
 					]
 					,($lng['m']['doc_cat_sauto_buyer'] ?? 'Sauto cumparator')=>[
-						'vinzare_sauto'=>'Contract de vânzare-cumpărare ( Sauto cumparator )'
+						'vinzare_sauto'=>'Contract de vânzare-cumpărare<br>( Sauto cumparator )'
 					]
 				]
 			];
@@ -103,7 +103,7 @@ if ( isset($t_mp[4]) ){
 			#docs > .gr > .categories-row > .tp > .its {max-height:500px; overflow:hidden; transition:max-height 0.3s ease-out, padding 0.3s ease-out, opacity 0.3s ease-out; padding:0.5rem 0; visibility:visible; opacity:1;}
 			#docs > .gr > .categories-row > .tp.collapsed > .its {max-height:0; padding:0; visibility:hidden; opacity:0; height:0;}
 			
-			#docs > .gr > .categories-row > .tp > .its > .it {padding:0.75rem 1rem; position:relative; transition:.2s; display:block; border-bottom:1px solid #f0f0f0; text-align:center;}
+			#docs > .gr > .categories-row > .tp > .its > .it {padding:0.75rem 0; position:relative; transition:.2s; display:block; border-bottom:1px solid #f0f0f0; text-align:center;}
 			#docs > .gr > .categories-row > .tp > .its > .it:last-child {border-bottom:none;}
 			#docs > .gr > .categories-row > .tp > .its > .it:hover {background-color:#f8f8f8;}
 			#docs > .gr > .categories-row > .tp > .its > .it > .txt {color:#333; font-size:0.9rem;}
