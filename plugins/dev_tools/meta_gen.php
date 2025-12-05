@@ -317,8 +317,8 @@ if ( in_array($z2, $url_arr) ){//if t_mp[2] is allowed part of url
 				if (!empty($sa['it']['r']['prc'])) $title_parts[] = $sa['it']['r']['prc'].$lng['l']['cur'][$sa['it']['r']['cur']];
 				$title_parts[] = $lng['t']['seo']['car_inf_ttl'];
 				
-				$sa['meta']['ttl'] = ($r['ttl']!='') ? $r['ttl'] : implode(' ', $title_parts);
-				$sa['meta']['h1'] = ($r['h1']!='') ? $r['h1'] : $sa['it']['r']['br_nm'].' '.$sa['it']['r']['mo_nm'].', id-'.$sa['it']['r']['id'];
+				$sa['meta']['ttl'] = ($ir==1 && $r['ttl']!='') ? $r['ttl'] : implode(' ', $title_parts);
+				$sa['meta']['h1'] = ($ir==1 && $r['h1']!='') ? $r['h1'] : $sa['it']['r']['br_nm'].' '.$sa['it']['r']['mo_nm'].', id-'.$sa['it']['r']['id'];
 				
 				// Build description with year and color
 				$desc_parts = array();
@@ -329,8 +329,8 @@ if ( in_array($z2, $url_arr) ){//if t_mp[2] is allowed part of url
 				if (!empty($sa['it']['r']['clr']) && isset($lng['l']['car']['clr'][$sa['it']['r']['clr']])) $desc_parts[] = $lng['l']['car']['clr'][$sa['it']['r']['clr']];
 				$desc_parts[] = $lng['t']['seo']['car_inf_dsc'];
 				
-				$sa['meta']['dsc'] = ($r['dsc']!='') ? $r['dsc'] : implode(' ', $desc_parts);
-				$sa['meta']['kwd'] = ($r['kwd']!='') ? $r['kwd'] : mb_strtolower('md,'.$lng['w']['moldova'].','.$lng['w']['chisinau'].','.$lng['w']['sale'].','.$lng['w']['auto'].','.$lng['w']['buy'].','.$sa['it']['r']['br'].','.$sa['it']['r']['mo'].','.$lng['l'][$zl]['bt'][$sa['it']['r']['bt']].','.$lng['l'][$zl]['tra'][$sa['it']['r']['tra']].','.$lng['l'][$zl]['fl'][$sa['it']['r']['fl']].','.$lng['l'][$zl]['clr'][$sa['it']['r']['clr']].',id'.$sa['it']['r']['id'], "UTF-8");
+				$sa['meta']['dsc'] = ($ir==1 && $r['dsc']!='') ? $r['dsc'] : implode(' ', $desc_parts);
+				$sa['meta']['kwd'] = ($ir==1 && $r['kwd']!='') ? $r['kwd'] : mb_strtolower('md,'.$lng['w']['moldova'].','.$lng['w']['chisinau'].','.$lng['w']['sale'].','.$lng['w']['auto'].','.$lng['w']['buy'].','.$sa['it']['r']['br'].','.$sa['it']['r']['mo'].','.$lng['l'][$zl]['bt'][$sa['it']['r']['bt']].','.$lng['l'][$zl]['tra'][$sa['it']['r']['tra']].','.$lng['l'][$zl]['fl'][$sa['it']['r']['fl']].','.$lng['l'][$zl]['clr'][$sa['it']['r']['clr']].',id'.$sa['it']['r']['id'], "UTF-8");
 			}elseif ($z2 == 'ordercars'){
 				// Build title for order cars with "La comanda:" prefix
 				$title_parts = array();
@@ -344,8 +344,8 @@ if ( in_array($z2, $url_arr) ){//if t_mp[2] is allowed part of url
 				if (!empty($sa['it']['r']['prc'])) $title_parts[] = $sa['it']['r']['prc'].$lng['l']['cur'][$sa['it']['r']['cur']];
 				$title_parts[] = $lng['t']['seo']['order_car_ttl'];
 				
-				$sa['meta']['ttl'] = ($r['ttl']!='') ? $r['ttl'] : implode(' ', $title_parts);
-				$sa['meta']['h1'] = ($r['h1']!='') ? $r['h1'] : $sa['it']['r']['br_nm'].' '.$sa['it']['r']['mo_nm'].', id-'.$sa['it']['r']['id'];
+				$sa['meta']['ttl'] = ($ir==1 && $r['ttl']!='') ? $r['ttl'] : implode(' ', $title_parts);
+				$sa['meta']['h1'] = ($ir==1 && $r['h1']!='') ? $r['h1'] : $sa['it']['r']['br_nm'].' '.$sa['it']['r']['mo_nm'].', id-'.$sa['it']['r']['id'];
 				
 				// Build description for order cars
 				$desc_parts = array();
@@ -356,15 +356,18 @@ if ( in_array($z2, $url_arr) ){//if t_mp[2] is allowed part of url
 				if (!empty($sa['it']['r']['clr']) && isset($lng['l']['car']['clr'][$sa['it']['r']['clr']])) $desc_parts[] = $lng['l']['car']['clr'][$sa['it']['r']['clr']];
 				$desc_parts[] = $lng['t']['seo']['order_car_dsc_end'];
 				
-				$sa['meta']['dsc'] = ($r['dsc']!='') ? $r['dsc'] : implode(' ', $desc_parts);
-				$sa['meta']['kwd'] = ($r['kwd']!='') ? $r['kwd'] : mb_strtolower('md,'.$lng['w']['moldova'].','.$lng['w']['chisinau'].','.$lng['w']['sale'].','.$lng['w']['auto'].','.$lng['w']['buy'].','.$sa['it']['r']['br'].','.$sa['it']['r']['mo'].','.$lng['l'][$zl]['bt'][$sa['it']['r']['bt']].','.$lng['l'][$zl]['tra'][$sa['it']['r']['tra']].','.$lng['l'][$zl]['fl'][$sa['it']['r']['fl']].','.$lng['l'][$zl]['clr'][$sa['it']['r']['clr']].',id'.$sa['it']['r']['id'], "UTF-8");
-			}elseif ($z2 == 'tyres'){
+				$sa['meta']['dsc'] = ($ir==1 && $r['dsc']!='') ? $r['dsc'] : implode(' ', $desc_parts);
+				$sa['meta']['kwd'] = ($ir==1 && $r['kwd']!='') ? $r['kwd'] : mb_strtolower('md,'.$lng['w']['moldova'].','.$lng['w']['chisinau'].','.$lng['w']['sale'].','.$lng['w']['auto'].','.$lng['w']['buy'].','.$sa['it']['r']['br'].','.$sa['it']['r']['mo'].','.$lng['l'][$zl]['bt'][$sa['it']['r']['bt']].','.$lng['l'][$zl]['tra'][$sa['it']['r']['tra']].','.$lng['l'][$zl]['fl'][$sa['it']['r']['fl']].','.$lng['l'][$zl]['clr'][$sa['it']['r']['clr']].',id'.$sa['it']['r']['id'], "UTF-8");
+			}elseif ($ir==1 && $z2 == 'tyres'){
 				$sa['meta']['ttl'] = ($r['ttl']!='') ? $r['ttl'] : ( $sa['it']['r']['br'].' | '.$sa['it']['r']['w'].'/'.$sa['it']['r']['h'].' R'.$sa['it']['r']['d'].($sa['it']['r']['c']==1?'C':'').' | '.$lng['l']['tyre']['ss'][$sa['it']['r']['ss']].' | '.$sa['it']['r']['prc'].' '.$sa['it']['r']['cur'] );
 				$sa['meta']['h1'] = ($r['h1']!='') ? $r['h1'] : ( $sa['it']['r']['br'].' '.$sa['it']['r']['w'].'/'.$sa['it']['r']['h'].' R'.$sa['it']['r']['d'].($sa['it']['r']['c']==1?'C':'').', id-'.$sa['it']['r']['id'] );
 				$sa['meta']['dsc'] = ($r['dsc']!='') ? $r['dsc'] : ( $lng['w']['sale'].' '.(mb_strtolower($lng['w']['tyres'], "UTF-8")).' '.$sa['it']['r']['br'].' '.$sa['it']['r']['w'].'/'.$sa['it']['r']['h'].' R'.$sa['it']['r']['d'].($sa['it']['r']['c']==1?'C':'').' [ID-'.$sa['it']['r']['id'].'] '.$lng['u']['for'].' '.$sa['it']['r']['prc'].$sa['it']['r']['cur'].' '.$lng['u']['in'].' '.$lng['w']['chisinau'].'/'.$lng['w']['moldova'].'(MD)' );
 				$sa['meta']['kwd'] = ($r['kwd']!='') ? $r['kwd'] : mb_strtolower('md,'.$lng['w']['moldova'].','.$lng['w']['chisinau'].','.$lng['w']['sale'].','.$lng['w']['tyres'].','.$lng['w']['buy'].','.$sa['it']['r']['br'].','.$sa['it']['r']['w'].','.$sa['it']['r']['h'].',r'.$sa['it']['r']['d'].($sa['it']['r']['c']==1?'c':'').','.$lng['l']['tyre']['ss'][$sa['it']['r']['ss']].',id'.$sa['it']['r']['id'], "UTF-8");
 			}elseif ($z2 == 'services'){
-				$sa['meta']['ttl'] = ($r['ttl']!='') ? $r['ttl'] : $sa['meta']['ttl'];
+				$sa['meta']['ttl'] = ($ir==1 && $r['ttl']!='') ? $r['ttl'] : $sa['meta']['ttl'];
+				$sa['meta']['h1'] = ($ir==1 && $r['h1']!='') ? $r['h1'] : $sa['meta']['h1'];
+				$sa['meta']['dsc'] = ($ir==1 && $r['dsc']!='') ? $r['dsc'] : $sa['meta']['dsc'];
+				$sa['meta']['kwd'] = ($ir==1 && $r['kwd']!='') ? $r['kwd'] : $sa['meta']['kwd'];
 				$sa['meta']['h1'] = ($r['h1']!='') ? $r['h1'] : $sa['meta']['h1'];
 				$sa['meta']['dsc'] = ($r['dsc']!='') ? $r['dsc'] : $sa['meta']['dsc'];
 				$sa['meta']['kwd'] = ($r['kwd']!='') ? $r['kwd'] : $sa['meta']['kwd'];
