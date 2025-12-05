@@ -29,7 +29,7 @@ if ( isset($t_mp[4]) ){
 					($lng['m']['doc_cat_parcare'] ?? 'Set de acte parcare')=>[ 
 						'con_plata'=>'Cont de plata'
 					    ,'con_arvon'=>'Contract de arvună'
-						,'con_intermed'=>'Contract de intermediere [TEST]'
+						,'con_intermed'=>'Contract de intermediere'
 						// ,'vinzare_proc'=>'Contract de vânzare-cumpărare'
 						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
 					]
@@ -51,7 +51,7 @@ if ( isset($t_mp[4]) ){
 			$docs_ar = [
 				'cars'=>[
 					'sell'=>[ 
-						'con_intermed'=>'Contract de intermediere [TEST]'
+						'con_intermed'=>'Contract de intermediere'
 					]
 				]
 			];
@@ -61,7 +61,7 @@ if ( isset($t_mp[4]) ){
 					($lng['m']['doc_cat_parcare'] ?? 'Set de acte parcare')=>[ 
 						'con_plata'=>'Cont de plata'
 					    ,'con_arvon'=>'Contract de arvună'
-						,'con_intermed'=>'Contract de intermediere [TEST]'
+						,'con_intermed'=>'Contract de intermediere'
 						// ,'vinzare_proc'=>'Contract de vânzare-cumpărare'
 						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
 					]
