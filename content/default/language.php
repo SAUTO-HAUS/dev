@@ -250,7 +250,11 @@ if ($_COOKIE['lang']=='ru'){
 				'dsc2'=>'Различные модели в наличии. Кредит, перечисление.',
 				'car_inf_ttl'=>'купить в Кишиневе, Молдова',
 				'car_inf_dsc'=>'из Европы в лизинг, в кредит. Помощь в выборе, покупке, доставке в Молдову',
-				'car_inf_h3'=>'Подержанные автомобили по схожей цене'
+				'car_inf_h3'=>'Подержанные автомобили по схожей цене',
+				'order_car_prefix'=>'La comanda:',
+                'order_car_ttl'=>'заказать в Кишиневе, Молдова',
+                'order_car_dsc'=>'Автомобиль под заказ',
+                'order_car_dsc_end'=>'из Европы/Кореи. Поможем подобрать, проверить и привезти в Молдову. Лизинг и кредит'
 			),
 			'services'=>array(
 				'transportation'=>array(
@@ -1803,7 +1807,11 @@ elseif ($_COOKIE['lang']=='ro'){
 				'dsc2'=>'Diverse modele disponibile in stoc. Credit, transfer.',
 				'car_inf_ttl'=>'cc. de vânzare în Chisinau, Moldova',
 				'car_inf_dsc'=>'cc. din Europa pe leasing, pe credit. Asistență la alegere, achiziție, livrare în Moldova',
-				'car_inf_h3'=>'Vehicule second hand cu prețuri similare'
+				'car_inf_h3'=>'Vehicule second hand cu prețuri similare',
+				'order_car_prefix'=>'La comanda:',
+                'order_car_ttl'=>'la comandă în Chișinău, Moldova',
+                'order_car_dsc'=>'Mașină la comandă',
+                'order_car_dsc_end'=>'din Europa/Coreea. Vă ajutăm la selectare, verificare și livrare în Moldova. Leasing și credit'
 			),
 			'services'=>array(
 				'transportation'=>array(
@@ -3297,7 +3305,11 @@ elseif ($_COOKIE['lang']=='en'){
 				'dsc2'=>'Various models available. Credit, transfer.',
 				'car_inf_ttl'=>'cc. for Sale in Chisinau, Moldova',
 				'car_inf_dsc'=>'cc. from Europe in leasing, on credit. Help in choosing, buying, shipping to Moldova',
-				'car_inf_h3'=>'Pre-owned cars with similar prices'
+				'car_inf_h3'=>'Pre-owned cars with similar prices',
+				'order_car_prefix'=>'La comanda:',
+                'order_car_ttl'=>'order to Chisinau, Moldova',
+                'order_car_dsc'=>'Car on order',
+                'order_car_dsc_end'=>'from Europe/Korea. Assistance with selection, inspection and delivery to Moldova. Leasing and credit available'
 			),
 			'services'=>array(
 				'transportation'=>array(
