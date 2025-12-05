@@ -1405,10 +1405,11 @@ class SitemapGeneratorReal {
         
         // Check if URL follows expected structure
         $validPatterns = [
-            '/\/ro\/cars\/\d+$/',           // /ro/cars/123
-            '/\/ro\/tires\/[a-z0-9-]+$/',    // /ro/tires/tire-slug
-            '/\/ro\/[a-z-]+$/',             // /ro/contact, /ro/about
-            '/\/ro\/$/'                      // /ro/
+            '/\/ro\/cars\/\d+$/',                    // /ro/cars/123 (car detail pages)
+            '/\/ro\/cars\/[a-z0-9-]+$/',             // /ro/cars/audi (brand pages)
+            '/\/ro\/tires\/[a-z0-9-]+$/',            // /ro/tires/tire-slug
+            '/\/ro\/[a-z-]+$/',                      // /ro/contact, /ro/about
+            '/\/ro\/$/'                              // /ro/
         ];
         
         foreach ($validPatterns as $pattern) {
