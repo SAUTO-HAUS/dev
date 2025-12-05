@@ -226,6 +226,10 @@ class SitemapGeneratorReal {
      */
     private function shouldIncludePage(array $page) {
         switch ($page['type']) {
+            case 'brand':
+                // Always include brand pages
+                return true;
+            
             case 'car':
                 if (!empty($page['is_archived']) || !empty($page['is_deleted'])) {
                     return false;
@@ -357,9 +361,11 @@ class SitemapGeneratorReal {
     
     /**
      * Get all pages from real SAUTO database
+     * Brand pages are added FIRST to ensure they appear at the top of sitemap-1.xml
      */
     private function getAllPages() {
         $pages = [];
+        $pages = array_merge($pages, $this->getBrandPagesFromDatabase());
         $pages = array_merge($pages, $this->getCarsFromDatabase());
         $pages = array_merge($pages, $this->getTiresFromDatabase());
         $pages = array_merge($pages, $this->getStaticPages());
@@ -480,6 +486,46 @@ class SitemapGeneratorReal {
         return $pages;
     }
     
+    private function getBrandPagesFromDatabase() {
+        $pages = [];
+        $carListTable = $this->prefx . '_car_list';
+        
+        try {
+            if (!$this->tableExists($carListTable)) {
+                $this->log('WARNING: Brand list table does not exist');
+                return [];
+            }
+            
+            $sql = "SELECT DISTINCT `br`, `br_nm` FROM `{$carListTable}` WHERE `br` IS NOT NULL AND `br` != '' ORDER BY `br_nm` ASC";
+            $stmt = $this->db->query($sql);
+            $brands = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            foreach ($brands as $brand) {
+
+                $brandSlug = str_replace('_', '-', strtolower($brand['br']));
+                
+                $pages[] = [
+                    'type' => 'brand',
+                    'url' => '/ro/cars/' . $brandSlug,
+                    'created_at' => new DateTimeImmutable('now'),
+                    'lastmod' => new DateTimeImmutable('now'),
+                    'status' => 'active',
+                    'page_type' => 'brand',
+                    'is_archived' => false,
+                    'is_deleted' => false,
+                    'translations' => $this->languages,
+                    'brand_name' => $brand['br_nm'],
+                    'brand_code' => $brand['br']
+                ];
+            }
+            
+            $this->log('Retrieved ' . count($pages) . ' brand pages for sitemap inclusion');
+        } catch (Exception $e) {
+            $this->log('ERROR retrieving brands: ' . $e->getMessage());
+        }
+        
+        return $pages;
+    }
     
     /**
      * Fetch cars from modern table structure
@@ -760,6 +806,9 @@ class SitemapGeneratorReal {
      */
     private function calculatePriority($page) {
         switch ($page['type']) {
+            case 'brand':
+                return 1.0;
+            
             case 'car':
                 if (!empty($page['status']) && $page['status'] === 'sold') {
                     return 0.2;
@@ -809,6 +858,8 @@ class SitemapGeneratorReal {
      */
     private function getChangeFreq($page) {
         switch ($page['type']) {
+            case 'brand':
+                return 'daily';
             case 'car':
                 return 'daily';
             case 'tire':
