@@ -303,7 +303,8 @@ if ( in_array($z2, $url_arr) ){//if t_mp[2] is allowed part of url
 		$pdo->execute(array( 'lng'=>$zlng, 'p1'=>$z2, 'p2'=>$z3 ));
 		$ir=0;
 		foreach ($pdo as $r){$ir=1;}
-		if ($ir==1){
+		
+		if ($z2 == 'cars' || $z2 == 'ordercars'){
 			if ($z2 == 'cars'){
 				// Build title with year and color for uniqueness
 				$title_parts = array();
