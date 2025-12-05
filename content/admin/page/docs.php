@@ -93,10 +93,10 @@ if ( isset($t_mp[4]) ){
 			#docs > .gr > .categories-row > .tp {flex:1; min-width:calc(25% - 1rem); border:1px solid #ddd; border-radius:8px; overflow:hidden; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,0.1); transition:transform 0.2s;}
 			#docs > .gr > .categories-row > .tp:hover {transform:translateY(-2px); box-shadow:0 4px 8px rgba(0,0,0,0.15);}
 			
-			#docs > .gr > .categories-row > .tp > .tp-header {padding:1.5rem 1rem; background:linear-gradient(135deg, #e2001a 0%, #bf0016 100%); color:#fff; cursor:pointer; text-align:center; transition:0.3s; min-height:80px; display:flex; flex-direction:column; justify-content:center; align-items:center;}
+			#docs > .gr > .categories-row > .tp > .tp-header {padding:1rem 0.75rem; background:linear-gradient(135deg, #e2001a 0%, #bf0016 100%); color:#fff; cursor:pointer; text-align:center; transition:0.3s; min-height:60px; display:flex; flex-direction:column; justify-content:center; align-items:center;}
 			#docs > .gr > .categories-row > .tp > .tp-header:hover {background:linear-gradient(135deg, #bf0016 0%, #a00012 100%);}
-			#docs > .gr > .categories-row > .tp > .tp-header > .tp-title {font-size:1rem; font-weight:600; line-height:1.4; margin-bottom:0.5rem;}
-			#docs > .gr > .categories-row > .tp > .tp-header > .tp-icon {font-size:1.2rem; transition:transform 0.3s;}
+			#docs > .gr > .categories-row > .tp > .tp-header > .tp-title {font-size:0.9rem; font-weight:600; line-height:1.3; margin-bottom:0.3rem;}
+			#docs > .gr > .categories-row > .tp > .tp-header > .tp-icon {font-size:1rem; transition:transform 0.3s;}
 			#docs > .gr > .categories-row > .tp.collapsed > .tp-header > .tp-icon {transform:rotate(-180deg);}
 			
 			#docs > .gr > .categories-row > .tp > .its {max-height:500px; overflow:hidden; transition:max-height 0.3s ease-out, padding 0.3s ease-out; padding:0.5rem 0;}
