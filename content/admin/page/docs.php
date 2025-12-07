@@ -717,6 +717,18 @@ c/f 1017600006845, c/TVA 0609417</pre>
 						}
 					});
 					
+					// Special handling for numeric fields - always include even if 0 or empty
+					var numeric_fields = ["u_eur"];
+					$.each(numeric_fields, function(i, field_name) {
+						var $field = $form.find("input[name=\"" + field_name + "\"]");
+						if ($field.length > 0) {
+							// If field exists but not in serialized data, add it with its value (even if 0)
+							if (!(field_name in kv_ar)) {
+								kv_ar[field_name] = $field.val() || "0";
+							}
+						}
+					});
+					
 					//console.log(kv_ar);
 					return kv_ar;
 				}
