@@ -1409,7 +1409,22 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const modelValue = modelField.value;
         const modelText = modelField.options[modelField.selectedIndex]?.textContent?.trim();
-        const model999Field = document.querySelector('select[name="feature[21]"]');
+        
+        // Try feature[21] first (for subcategory 659 - Легковые автомобили)
+        const model999SelectField = document.querySelector('select[name="feature[21]"]');
+        
+        // Try feature[585] (for subcategories 660, 662 - Автобусы, Грузовые)
+        const model999InputField = document.querySelector('input[name="feature[585]"]');
+        
+        // If it's an input field (subcategories 660, 662), just copy the text
+        if (model999InputField) {
+            model999InputField.value = modelText || '';
+            model999InputField.classList.remove('empty');
+            return;
+        }
+        
+        // If it's a select field (subcategory 659), match options
+        const model999Field = model999SelectField;
         if (!model999Field) return;
         
         // Check if model field is disabled (depends on brand)
@@ -1857,9 +1872,9 @@ document.addEventListener('DOMContentLoaded', function() {
         let wheelDriveSynced = false;
         
         const wheelDriveMapping = {
-            '44': ['17'], 
-            're': ['25'], 
-            'fr': ['5'], 
+            '44': ['17', '1086'],  
+            're': ['25', '1065'],  
+            'fr': ['5', '1065'],   
         };
         
         if (wheelDriveMapping[wheelDriveValue]) {
