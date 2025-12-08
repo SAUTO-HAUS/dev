@@ -643,6 +643,10 @@ $(document).ready(function(){
 		if ($(this).val()) {
 			ajaxMain(data, function (response) {
 				$('#content_box .id_'+response.rtrn.bx_id+' .features').html(response.rtrn.str);
+				// Trigger sync after features reload
+				setTimeout(function() {
+					$(document).trigger('features999Loaded');
+				}, 200);
 			});
 		}
 	}).on('change', '#content_box .account_999_id', function(){

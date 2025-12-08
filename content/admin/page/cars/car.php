@@ -1780,6 +1780,24 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Listen for features reload event
+    $(document).on('features999Loaded', function() {
+        setTimeout(syncBrandTo999, 100); 
+        setTimeout(syncPriceTo999, 200); 
+        setTimeout(syncYearTo999, 300); 
+        setTimeout(syncBodyTypeTo999, 400); 
+        setTimeout(syncMileageTo999, 500); 
+        setTimeout(syncEngineVolumeTo999, 600); 
+        setTimeout(syncHorsePowerTo999, 700); 
+        setTimeout(syncFuelTypeTo999, 800); 
+        setTimeout(syncTransmissionTo999, 900); 
+        setTimeout(syncWheelDriveTo999, 1000); 
+        setTimeout(syncColorTo999, 1100); 
+        setTimeout(setDefaultFormLabel, 1200);
+        setTimeout(syncModelTo999, 1500);
+        setTimeout(syncGenerationTo999, 3000);
+    });
+    
     const observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
             if (mutation.type === 'childList') {
