@@ -617,6 +617,12 @@ $(document).ready(function(){
 				setTimeout(function() {
 					$(document).trigger('features999Loaded');
 				}, 200);
+				// Trigger announcement_type change to show text_options_wrapper
+				setTimeout(function() {
+					if ($('#announcement_type').length) {
+						$('#announcement_type').trigger('change');
+					}
+				}, 300);
 			});
 		}
 	}).on('change', '#content_box .account_999_id', function(){
