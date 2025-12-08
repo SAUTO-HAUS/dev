@@ -1211,6 +1211,18 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // SEATS SYNC: Sauto form -> 999 form
+    function syncSeatsTo999() {
+        const seatsField = document.querySelector('input[name="sts"]');
+        if (!seatsField || !seatsField.value) return;
+        
+        const seats999Field = document.querySelector('input[name="feature[105]"]');
+        if (!seats999Field) return;
+        
+        seats999Field.value = seatsField.value;
+        seats999Field.classList.remove('empty');
+    }
+
     // FORM LABEL: Set default "Другое"
     function setDefaultFormLabel() {
         const formLabelField = document.querySelector('select[name*="form-label"], select[name*="label"]');
@@ -1391,7 +1403,14 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const mileageValue = mileageField.value;
         
-        const mileage999Field = document.querySelector('input[name="feature[104]"]');
+        // Try feature[104] first (for subcategory 659 - Легковые автомобили)
+        let mileage999Field = document.querySelector('input[name="feature[104]"]');
+        
+        // Try feature[1408] (for subcategories 660, 662 - Автобусы, Грузовые)
+        if (!mileage999Field) {
+            mileage999Field = document.querySelector('input[name="feature[1408]"]');
+        }
+        
         if (!mileage999Field) return;
         
         mileage999Field.value = mileageValue;
@@ -1802,6 +1821,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(syncYearTo999, 300); 
         setTimeout(syncBodyTypeTo999, 400); 
         setTimeout(syncMileageTo999, 500); 
+        setTimeout(syncSeatsTo999, 550);
         setTimeout(syncEngineVolumeTo999, 600); 
         setTimeout(syncHorsePowerTo999, 700); 
         setTimeout(syncFuelTypeTo999, 800); 
