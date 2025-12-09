@@ -1789,5 +1789,21 @@ $(document).ready(function() {
 				checkedScenario.trigger('change');
 			}
 		}, 100);
+		
+		// Auto-select 999.md account based on import country
+		$('select[name="import_country_id"]').on('change', function() {
+			const countryId = $(this).val();
+			const account999Select = $('.account_999_id');
+			
+			if (countryId == '41') {
+				account999Select.val('4').trigger('change');
+			} else {
+				account999Select.val('3').trigger('change');
+			}
+		});
+		
+		if ($('select[name="import_country_id"]').val() == '41') {
+			$('.account_999_id').val('4').trigger('change');
+		}
 	});
 });

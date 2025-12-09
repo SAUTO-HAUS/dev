@@ -323,7 +323,8 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                             <?php endforeach; ?>
                             <?php foreach ($countries as $country) : ?>
                                 <?php if ($country['code'] != 'EU') : ?>
-                                    <option value="<?= $country['id'] ?>" data-flag="<?= $country['flag'] ?>">
+                                    <option value="<?= $country['id'] ?>" data-flag="<?= $country['flag'] ?>"
+                                        <?= ($country['id'] == 41) ? 'style="color: #ff0000; font-weight: bold;"' : '' ?>>
                                         <?= $country['name'] ?>
                                     </option>
                                 <?php endif; ?>
@@ -332,7 +333,8 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                             <?php foreach ($countries as $country) : ?>
                                 <option value="<?= $country['id'] ?>" 
                                     <?= (isset($car['import_country_id']) && $country['id'] == $car['import_country_id']) ? 'selected' : '' ?>
-                                    data-flag="<?= $country['flag'] ?>">
+                                    data-flag="<?= $country['flag'] ?>"
+                                    <?= ($country['id'] == 41) ? 'style="color: #ff0000; font-weight: bold;"' : '' ?>>
                                     <?= $country['name'] ?>
                                 </option>
                             <?php endforeach; ?>
