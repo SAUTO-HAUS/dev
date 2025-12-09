@@ -333,7 +333,7 @@ $rtrn .= '
             </div>
             
             <div class="setting-group">
-                <h4>🇰🇷 API "999.md" - Encars-MD (Coreea)</h4>
+                <h4>API "999.md" - Encars-MD (Coreea)</h4>
                 <label>' . ($lng[$_COOKIE['lang']]['w']['account_login'] ?? 'Аккаунт/Login:') . '</label>
                 <input type="text" name="korea_999md_account" value="' . htmlspecialchars($current_settings['korea_999md_account'] ?? 'Encars-MD') . '" autocomplete="off" data-form-type="other">
                 
