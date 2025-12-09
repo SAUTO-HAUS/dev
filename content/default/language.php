@@ -1181,7 +1181,8 @@ if ($_COOKIE['lang']=='ru'){
 		'ctlg'=>'Каталог',
 		'br_lst'=>'Список Брендов',
 		'sett'=>'Настройки',
-		'info'=>'Инфо'
+		'info'=>'Инфо',
+		'brands_seo'=>'SEO Брендов'
 	);
 
 
@@ -2683,7 +2684,8 @@ $adm_lang = array(
 	'ctlg'=>'Catalogul',
 	'br_lst'=>'Lista mărcilor',
 	'sett'=>'Setări',
-	'info'=>'Informații'
+	'info'=>'Informații',
+	'brands_seo'=>'SEO Mărci'
 );
 
 
@@ -4185,7 +4187,8 @@ $adm_lang = array(
 	'ctlg'=>'Catalog',
 	'br_lst'=>'Brand List',
 	'sett'=>'Settings',
-	'info'=>'Info'
+	'info'=>'Info',
+	'brands_seo'=>'Brands SEO'
 );
 
 }
