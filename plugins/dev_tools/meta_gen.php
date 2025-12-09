@@ -311,9 +311,9 @@ if ( in_array($z2, $url_arr) ){//if t_mp[2] is allowed part of url
 				$title_parts[] = $sa['it']['r']['br_nm'];
 				$title_parts[] = $sa['it']['r']['mo_nm'];
 				if (!empty($sa['it']['r']['yr'])) $title_parts[] = $sa['it']['r']['yr'];
-				if (!empty($sa['it']['r']['clr']) && isset($lng['l']['car']['clr'][$sa['it']['r']['clr']])) $title_parts[] = $lng['l']['car']['clr'][$sa['it']['r']['clr']];
 				if (!empty($sa['it']['r']['bt']) && isset($lng['l']['car']['bt'][$sa['it']['r']['bt']])) $title_parts[] = $lng['l']['car']['bt'][$sa['it']['r']['bt']];
 				if (!empty($sa['it']['r']['tra']) && isset($lng['l']['car']['tra'][$sa['it']['r']['tra']])) $title_parts[] = $lng['l']['car']['tra'][$sa['it']['r']['tra']];
+				if (!empty($sa['it']['r']['clr']) && isset($lng['l']['car']['clr'][$sa['it']['r']['clr']])) $title_parts[] = $lng['l']['car']['clr'][$sa['it']['r']['clr']];
 				if (!empty($sa['it']['r']['prc'])) $title_parts[] = $sa['it']['r']['prc'].$lng['l']['cur'][$sa['it']['r']['cur']];
 				$title_parts[] = $lng['t']['seo']['car_inf_ttl'];
 				
@@ -338,9 +338,9 @@ if ( in_array($z2, $url_arr) ){//if t_mp[2] is allowed part of url
 				$title_parts[] = $sa['it']['r']['br_nm'];
 				$title_parts[] = $sa['it']['r']['mo_nm'];
 				if (!empty($sa['it']['r']['yr'])) $title_parts[] = $sa['it']['r']['yr'];
-				if (!empty($sa['it']['r']['clr']) && isset($lng['l']['car']['clr'][$sa['it']['r']['clr']])) $title_parts[] = $lng['l']['car']['clr'][$sa['it']['r']['clr']];
 				if (!empty($sa['it']['r']['bt']) && isset($lng['l']['car']['bt'][$sa['it']['r']['bt']])) $title_parts[] = $lng['l']['car']['bt'][$sa['it']['r']['bt']];
 				if (!empty($sa['it']['r']['tra']) && isset($lng['l']['car']['tra'][$sa['it']['r']['tra']])) $title_parts[] = $lng['l']['car']['tra'][$sa['it']['r']['tra']];
+				if (!empty($sa['it']['r']['clr']) && isset($lng['l']['car']['clr'][$sa['it']['r']['clr']])) $title_parts[] = $lng['l']['car']['clr'][$sa['it']['r']['clr']];
 				if (!empty($sa['it']['r']['prc'])) $title_parts[] = $sa['it']['r']['prc'].$lng['l']['cur'][$sa['it']['r']['cur']];
 				$title_parts[] = $lng['t']['seo']['order_car_ttl'];
 				

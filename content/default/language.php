@@ -1806,8 +1806,8 @@ elseif ($_COOKIE['lang']=='ro'){
 			'seo'=>array(
 				'dsc1'=>'Diverse modele disponibile in stoc. Credit, leasing, transfer, schimb.',
 				'dsc2'=>'Diverse modele disponibile in stoc. Credit, transfer.',
-				'car_inf_ttl'=>'cc. de vânzare în Chisinau, Moldova',
-				'car_inf_dsc'=>'cc. din Europa pe leasing, pe credit. Asistență la alegere, achiziție, livrare în Moldova',
+				'car_inf_ttl'=>'de vânzare în Chisinau, Moldova',
+				'car_inf_dsc'=>'din Europa pe leasing, pe credit. Asistență la alegere, achiziție, livrare în Moldova',
 				'car_inf_h3'=>'Vehicule second hand cu prețuri similare',
 				'order_car_prefix'=>'La comanda:',
                 'order_car_ttl'=>'la comandă în Chișinău, Moldova',
@@ -3305,8 +3305,8 @@ elseif ($_COOKIE['lang']=='en'){
 			'seo'=>array(
 				'dsc1'=>'Various models available. Credit, leasing, transfer, exchange.',
 				'dsc2'=>'Various models available. Credit, transfer.',
-				'car_inf_ttl'=>'cc. for Sale in Chisinau, Moldova',
-				'car_inf_dsc'=>'cc. from Europe in leasing, on credit. Help in choosing, buying, shipping to Moldova',
+				'car_inf_ttl'=>'for Sale in Chisinau, Moldova',
+				'car_inf_dsc'=>'from Europe in leasing, on credit. Help in choosing, buying, shipping to Moldova',
 				'car_inf_h3'=>'Pre-owned cars with similar prices',
 				'order_car_prefix'=>'La comanda:',
                 'order_car_ttl'=>'order to Chisinau, Moldova',
