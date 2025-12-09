@@ -1425,21 +1425,25 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                 $seo_link_texts = [
                     'ro' => [
                         'all_series' => 'Toate',
-                        'all_brand' => 'Toate automobilele'
+                        'all_brand' => 'Toate automobilele',
+                        'suffix' => ' la comandă'
                     ],
                     'ru' => [
                         'all_series' => 'Все',
-                        'all_brand' => 'Все автомобили'
+                        'all_brand' => 'Все автомобили',
+                        'suffix' => ' под заказ'
                     ],
                     'en' => [
                         'all_series' => 'All',
-                        'all_brand' => 'All'
+                        'all_brand' => 'All',
+                        'suffix' => ' on order'
                     ]
                 ];
                 
                 $current_lang = $_COOKIE['lang'];
                 $link_text_series = $seo_link_texts[$current_lang]['all_series'];
                 $link_text_brand = $seo_link_texts[$current_lang]['all_brand'];
+                $suffix = $seo_link_texts[$current_lang]['suffix'];
                 
                 $model_display = ($current_lang == 'ro') ? 'Seria ' . $r['mo_nm'] : $r['mo_nm'];
                 
@@ -1449,10 +1453,10 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                 $rtrn .= '
                 <div class="seo_links_block" style="margin: 20px 0; padding: 15px; background-color: #FFE6E6; border-radius: 4px;">
                     <a href="/'.$current_lang.'/ordercars/'.$brand_series_url.'" target="_blank" style="display: block; margin-bottom: 10px; color: #333; text-decoration: none; font-size: 17px;" onmouseover="this.style.textDecoration=\'underline\'; this.style.color=\'#ff0000\'" onmouseout="this.style.textDecoration=\'none\'; this.style.color=\'#333\'">
-                        '.$link_text_series.' '.$r['br_nm'].' '.$model_display.'
+                        '.$link_text_series.' '.$r['br_nm'].' '.$model_display.$suffix.'
                     </a>
                     <a href="/'.$current_lang.'/ordercars/'.$brand_url.'" target="_blank" style="display: block; color: #333; text-decoration: none; font-size: 17px;" onmouseover="this.style.textDecoration=\'underline\'; this.style.color=\'#ff0000\'" onmouseout="this.style.textDecoration=\'none\'; this.style.color=\'#333\'">
-                        '.$link_text_brand.' '.$r['br_nm'].'
+                        '.$link_text_brand.' '.$r['br_nm'].$suffix.'
                     </a>
                 </div>
                                 
