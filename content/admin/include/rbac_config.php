@@ -149,10 +149,11 @@ function rbac_can_access_branch($user_role, $user_branch_id, $target_branch_id) 
  */
 $rbac_admin_menu = [
     'gordon' => [
-        'cars' => ['add', 'ctlg', 'brands_seo'],
+        'cars' => ['add', 'ctlg'],
         'ordercars' => ['add', 'ctlg'],
         'tyres' => ['ctlg'],
         'seo' => ['ctlg'],
+        'brands_seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['add', 'ctlg'],
         'stock' => ['ctlg', 'extern'],
@@ -184,10 +185,11 @@ $rbac_admin_menu = [
 // Additional allowed actions for internal routing (not shown in menu)
 $rbac_internal_actions = [
     'gordon' => [
-        'cars' => ['add', 'create', 'detail', 'ctlg', 'brands_seo'],
+        'cars' => ['add', 'create', 'detail', 'ctlg'],
         'ordercars' => ['add', 'create', 'detail', 'ctlg'],
         'tyres' => ['add', 'create', 'detail', 'ctlg'],
         'seo' => ['add', 'create', 'detail', 'ctlg'],
+        'brands_seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['add', 'create', 'detail', 'ctlg'],
         'stock' => ['ctlg'],
