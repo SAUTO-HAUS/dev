@@ -16,6 +16,8 @@ use App\Helper\PhoneHelper;?>
 <link rel="stylesheet" href="/content/site/components/product-card-slider/product-card-slider.css?v=<?php echo time(); ?>">
 <script src="/content/site/components/product-card-slider/product-card-slider.js?v=<?php echo time(); ?>" defer></script>
 
+<link rel="stylesheet" href="/content/site/css/brand_seo.css?v=<?php echo time(); ?>">
+
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
