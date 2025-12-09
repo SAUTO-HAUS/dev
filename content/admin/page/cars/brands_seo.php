@@ -143,6 +143,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_brand_seo'])) {
         color: #e65100;
     }
     
+    .lang-indicators {
+        display: flex;
+        gap: 4px;
+        margin-top: 5px;
+        font-size: 10px;
+        font-weight: bold;
+    }
+    
+    .lang-indicator {
+        padding: 2px 5px;
+        border-radius: 3px;
+    }
+    
+    .lang-indicator.has-content {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+    
+    .lang-indicator.no-content {
+        background: #ffebee;
+        color: #c62828;
+    }
+    
     .editor-container {
         background: #fff;
         padding: 20px;
@@ -278,12 +301,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_brand_seo'])) {
             $has_content = !empty(trim($brand['description_ro'])) || 
                           !empty(trim($brand['description_ru'])) || 
                           !empty(trim($brand['description_en']));
+            $has_ro = !empty(trim($brand['description_ro']));
+            $has_ru = !empty(trim($brand['description_ru']));
+            $has_en = !empty(trim($brand['description_en']));
         ?>
             <div class="brand-card" onclick="selectBrand(<?= $brand['id'] ?>, '<?= htmlspecialchars($brand['brand_name']) ?>')">
                 <div class="brand-name"><?= htmlspecialchars($brand['brand_name']) ?></div>
-                <div class="brand-code">Code: <?= htmlspecialchars($brand['brand_code']) ?></div>
                 <div class="brand-status <?= $has_content ? 'status-filled' : 'status-empty' ?>">
                     <?= $has_content ? '✓ Has content' : '○ Empty' ?>
+                </div>
+                <div class="lang-indicators">
+                    <span class="lang-indicator <?= $has_ro ? 'has-content' : 'no-content' ?>">RO</span>
+                    <span class="lang-indicator <?= $has_ru ? 'has-content' : 'no-content' ?>">RU</span>
+                    <span class="lang-indicator <?= $has_en ? 'has-content' : 'no-content' ?>">EN</span>
                 </div>
             </div>
         <?php endforeach; ?>
