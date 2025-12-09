@@ -88,14 +88,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_brand_seo'])) {
     
     .brands-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 10px;
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 8px;
         margin-bottom: 30px;
     }
     
     .brand-card {
         background: #f5f5f5;
-        padding: 10px 12px;
+        padding: 6px 8px;
         border-radius: 4px;
         cursor: pointer;
         transition: all 0.2s;
@@ -127,9 +127,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_brand_seo'])) {
     
     .brand-status {
         font-size: 10px;
-        margin-top: 5px;
-        padding: 2px 6px;
-        border-radius: 3px;
+        margin-top: 3px;
+        padding: 2px 4px;
+        border-radius: 2px;
         display: inline-block;
     }
     
@@ -145,20 +145,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_brand_seo'])) {
     
     .lang-indicators {
         display: flex;
-        gap: 4px;
-        margin-top: 5px;
+        gap: 3px;
+        margin-top: 3px;
         font-size: 10px;
         font-weight: bold;
     }
     
     .lang-indicator {
-        padding: 2px 5px;
-        border-radius: 3px;
+        padding: 2px 4px;
+        border-radius: 2px;
     }
     
     .lang-indicator.has-content {
         background: #e8f5e9;
-        color: #2e7d32;
+        color: #1b5e20;
     }
     
     .lang-indicator.no-content {
