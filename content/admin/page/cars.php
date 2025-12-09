@@ -6,6 +6,8 @@ if (isset($t_mp[4])) {
         include _ADM_PAGE.'/cars/catalog.php';
 	} elseif ($t_mp[4] == 'br_lst') {
         include _ADM_PAGE.'/cars/brands_list.php';
+    } elseif ($t_mp[4] == 'brands_seo') {
+        include _ADM_PAGE.'/cars/brands_seo.php';
     } elseif ($t_mp[4] == 'detail') {
         include _ADM_PAGE.'/cars/car.php';
     } elseif ($t_mp[4] == 'add') {

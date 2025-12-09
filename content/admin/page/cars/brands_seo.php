@@ -1,5 +1,29 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
+// Multilingual titles
+$page_titles = [
+    'ro' => 'Descrieri SEO pentru paginile brandurilor',
+    'ru' => 'SEO-описания для страниц брендов',
+    'en' => 'SEO Descriptions for Brand Pages'
+];
+
+$page_descriptions = [
+    'ro' => '',
+    'ru' => '',
+    'en' => ''
+];
+
+$editor_titles = [
+    'ro' => 'Editează descrierea SEO pentru:',
+    'ru' => 'Редактировать SEO-описание для:',
+    'en' => 'Edit SEO Description for:'
+];
+
+$current_lang = isset($_COOKIE['lang']) ? $_COOKIE['lang'] : 'ro';
+$page_title = $page_titles[$current_lang] ?? $page_titles['ro'];
+$page_description = $page_descriptions[$current_lang] ?? $page_descriptions['ro'];
+$editor_title = $editor_titles[$current_lang] ?? $editor_titles['ro'];
+
 $brands = [];
 try {
     $pdo = $db->prepare('SELECT * FROM '.$prefx.'_brands_seo ORDER BY `brand_name` ASC');
@@ -64,17 +88,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_brand_seo'])) {
     
     .brands-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-        gap: 15px;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 10px;
         margin-bottom: 30px;
     }
     
     .brand-card {
         background: #f5f5f5;
-        padding: 15px;
+        padding: 10px 12px;
         border-radius: 4px;
         cursor: pointer;
-        transition: all 0.3s;
+        transition: all 0.2s;
         border: 2px solid transparent;
     }
     
@@ -91,19 +115,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_brand_seo'])) {
     
     .brand-name {
         font-weight: bold;
-        font-size: 16px;
-        margin-bottom: 5px;
+        font-size: 14px;
+        margin-bottom: 3px;
     }
     
     .brand-code {
-        font-size: 12px;
-        color: #666;
+        font-size: 10px;
+        color: #999;
+        margin-bottom: 4px;
     }
     
     .brand-status {
-        font-size: 11px;
-        margin-top: 8px;
-        padding: 3px 8px;
+        font-size: 10px;
+        margin-top: 5px;
+        padding: 2px 6px;
         border-radius: 3px;
         display: inline-block;
     }
@@ -240,11 +265,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_brand_seo'])) {
 </style>
 
 <div class="brands-seo-container">
-    <div class="page-title">SEO Descriptions for Brand Pages (Task #2528)</div>
+    <div class="page-title"><?= htmlspecialchars($page_title) ?></div>
     
     <p style="margin-bottom: 20px; color: #666;">
-        Select a brand to edit its SEO description. The description will appear at the bottom of the brand page (e.g., /cars/bmw).
-        You can use HTML tags: &lt;p&gt;, &lt;strong&gt;, &lt;em&gt;, &lt;ul&gt;, &lt;li&gt;, &lt;h2&gt;, &lt;h3&gt;, etc.
+        <?= $page_description ?>
     </p>
     
     <div class="brands-grid">
@@ -266,7 +290,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_brand_seo'])) {
     <?php foreach ($brands as $brand): ?>
         <div class="editor-container" id="editor-<?= $brand['id'] ?>">
             <div class="editor-header">
-                Edit SEO Description for: <?= htmlspecialchars($brand['brand_name']) ?>
+                <?= htmlspecialchars($editor_title) ?> <?= htmlspecialchars($brand['brand_name']) ?>
             </div>
             
             <form method="POST" action="">
@@ -275,13 +299,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_brand_seo'])) {
                 
                 <div class="lang-tabs">
                     <button type="button" class="lang-tab active" onclick="switchLang(<?= $brand['id'] ?>, 'ro')">
-                        🇷🇴 Romanian
+                        Romanian
                     </button>
                     <button type="button" class="lang-tab" onclick="switchLang(<?= $brand['id'] ?>, 'ru')">
-                        🇷🇺 Russian
+                        Russian
                     </button>
                     <button type="button" class="lang-tab" onclick="switchLang(<?= $brand['id'] ?>, 'en')">
-                        🇬🇧 English
+                        English
                     </button>
                 </div>
                 
@@ -289,7 +313,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_brand_seo'])) {
                     <div class="form-group">
                         <label class="form-label">Romanian Description (HTML)</label>
                         <textarea name="description_ro" class="form-textarea"><?= htmlspecialchars($brand['description_ro'] ?? '') ?></textarea>
-                        <div class="help-text">This will be displayed on /ro/cars/<?= str_replace('_', '-', $brand['brand_code']) ?></div>
                     </div>
                 </div>
                 
@@ -297,7 +320,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_brand_seo'])) {
                     <div class="form-group">
                         <label class="form-label">Russian Description (HTML)</label>
                         <textarea name="description_ru" class="form-textarea"><?= htmlspecialchars($brand['description_ru'] ?? '') ?></textarea>
-                        <div class="help-text">This will be displayed on /ru/cars/<?= str_replace('_', '-', $brand['brand_code']) ?></div>
                     </div>
                 </div>
                 
@@ -305,7 +327,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_brand_seo'])) {
                     <div class="form-group">
                         <label class="form-label">English Description (HTML)</label>
                         <textarea name="description_en" class="form-textarea"><?= htmlspecialchars($brand['description_en'] ?? '') ?></textarea>
-                        <div class="help-text">This will be displayed on /en/cars/<?= str_replace('_', '-', $brand['brand_code']) ?></div>
                     </div>
                 </div>
                 
