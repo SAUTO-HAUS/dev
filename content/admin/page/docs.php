@@ -32,13 +32,13 @@ if ( isset($t_mp[4]) ){
 						,'con_intermed'=>'Contract de intermediere'
 						// ,'vinzare_proc'=>'Contract de vânzare-cumpărare'
 						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
-						,'anexa_cesiune'=>'Anexa cesiune'
+						,'cesionar'=>'Annexa<br>(Cesiune drept de plată)'
 					]
 					,($lng['m']['doc_cat_comanda'] ?? 'Set de acte auto la comanda')=>[
 						'con_arvon_com'=>'Contract de arvună (la comanda)'
 						,'con_plata'=>'Cont de plata'
 						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
-						,'anexa_cesiune'=>'Anexa cesiune'
+						,'cesionar'=>'Annexa<br>(Cesiune drept de plată)'
 					]
 					,($lng['m']['doc_cat_transport'] ?? 'Transport')=>[
 						'com_transport'=>'Comanda pentru transport'
@@ -66,13 +66,13 @@ if ( isset($t_mp[4]) ){
 						,'con_intermed'=>'Contract de intermediere'
 						// ,'vinzare_proc'=>'Contract de vânzare-cumpărare'
 						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
-						,'anexa_cesiune'=>'Anexa cesiune'
+						,'cesionar'=>'Annexa (Cesiune drept de plată)'
 					]
 					,($lng['m']['doc_cat_comanda'] ?? 'Set de acte auto la comanda')=>[
 						'con_arvon_com'=>'Contract de arvună (la comanda)'
 						,'con_plata'=>'Cont de plata'
 						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
-						,'anexa_cesiune'=>'Anexa cesiune'
+						,'cesionar'=>'Annexa (Cesiune drept de plată)'
 					]
 					,($lng['m']['doc_cat_transport'] ?? 'Transport')=>[
 						'com_transport'=>'Comanda pentru transport'
