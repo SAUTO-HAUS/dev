@@ -17,14 +17,17 @@ if (!isset($_GET['token']) || $_GET['token'] !== ACCESS_TOKEN) {
 
 header('Content-Type: text/html; charset=UTF-8');
 
-$sql = "SELECT 
+$sql = "SELECT
     br_nm,
     COUNT(*) AS cnt_total,
     SUM(CASE WHEN loc = '1' THEN 1 ELSE 0 END) AS cnt_main,
     SUM(CASE WHEN loc = '2' THEN 1 ELSE 0 END) AS cnt_pruncul
-FROM {$prefx}_car_ctlg 
-WHERE n_a = 0 AND vis = 1 AND act = 1 
-GROUP BY br_nm 
+FROM {$prefx}_car_ctlg
+WHERE n_a = 0
+  AND vis = 1
+  AND act = 1
+  AND (catalog_type = 'in_stock' OR catalog_type IS NULL)
+GROUP BY br_nm
 ORDER BY cnt_total DESC, br_nm ASC";
 $stmt = $db->query($sql);
 $brands = $stmt->fetchAll(PDO::FETCH_ASSOC);
