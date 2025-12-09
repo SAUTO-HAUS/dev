@@ -263,6 +263,30 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
     $rtrn .= '<div class="cnt list">';
     $rtrn .= $card['txt'];
     $rtrn .= '</div>';
+
+    if(isset($_GET['br']) && !isset($_GET['mo'])) {
+        $brand_code = str_replace('-', '_', $_GET['br']);
+        $current_lang = isset($_COOKIE['lang']) ? $_COOKIE['lang'] : 'ro';
+        
+        try {
+            $pdo_brand_seo = $db->prepare('SELECT `description_'.$current_lang.'` as description FROM '.$prefx.'_brands_seo WHERE `brand_code`=:brand_code LIMIT 1');
+            $pdo_brand_seo->execute(['brand_code' => $brand_code]);
+            $brand_seo = $pdo_brand_seo->fetch(PDO::FETCH_ASSOC);
+            
+            if($brand_seo && !empty(trim($brand_seo['description']))) {
+                $rtrn .= '<div class="brand-seo-description">';
+                $rtrn .= '<!-- SEO Description Start -->';
+                $rtrn .= $brand_seo['description'];
+                $rtrn .= '<!-- SEO Description End -->';
+                $rtrn .= '</div>';
+            } else {
+                error_log('Brand SEO: No description found or empty for brand: ' . $brand_code);
+            }
+        } catch (PDOException $e) {
+            error_log('Brand SEO description error: ' . $e->getMessage());
+        }
+    }
+
     $rtrn .= '</div>';
 
     // Add Facebook tracking if we have results
@@ -293,25 +317,6 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
             $rtrn .= '</div>';
 
             file_put_contents('debug_sql.log', "No results found for filter parameters: " . print_r($_GET, true) . "\n", FILE_APPEND);
-        }
-    }
-
-    if(isset($_GET['br']) && !isset($_GET['mo'])) {
-        $brand_code = str_replace('-', '_', $_GET['br']);
-        $current_lang = isset($_COOKIE['lang']) ? $_COOKIE['lang'] : 'ro';
-        
-        try {
-            $pdo_brand_seo = $db->prepare('SELECT `description_'.$current_lang.'` as description FROM '.$prefx.'_brands_seo WHERE `brand_code`=:brand_code LIMIT 1');
-            $pdo_brand_seo->execute(['brand_code' => $brand_code]);
-            $brand_seo = $pdo_brand_seo->fetch(PDO::FETCH_ASSOC);
-            
-            if($brand_seo && !empty(trim($brand_seo['description']))) {
-                $rtrn .= '<div class="brand-seo-description">';
-                $rtrn .= $brand_seo['description'];
-                $rtrn .= '</div>';
-            }
-        } catch (PDOException $e) {
-            error_log('Brand SEO description error: ' . $e->getMessage());
         }
     }
 }

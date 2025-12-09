@@ -251,12 +251,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_brand_seo'])) {
     .preview-btn {
         background: #2196F3;
         color: #fff;
-        padding: 8px 16px;
+        padding: 12px 30px;
         border: none;
         border-radius: 4px;
-        font-size: 12px;
+        font-size: 14px;
+        font-weight: bold;
         cursor: pointer;
         margin-left: 10px;
+        transition: all 0.3s;
     }
     
     .preview-btn:hover {
