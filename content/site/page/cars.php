@@ -359,28 +359,57 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
 
     // Check if we're using clean URLs (brand/model format)
     if (!is_numeric($t_mp[3])) {
-        $brand = str_replace('-', '_', $t_mp[3]);
-        $model = isset($t_mp[4]) ? str_replace('-', '_', $t_mp[4]) : null;
-
-        $sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE `br`=:brand';
-        $params = ['brand' => $brand];
-
-        if ($model) {
-            $sql .= ' AND `mo`=:model';
-            $params['model'] = $model;
-        }
-
-        $sql .= ' AND `vis`="1" AND `act`="1" AND `catalog_type`="in_stock" LIMIT 1';
-
-        $pdo = $db->prepare($sql);
-        $pdo->execute($params);
-        $car = $pdo->fetch(PDO::FETCH_ASSOC);
-
-        if ($car) {
-            $it_id = $car['id'];
-            file_put_contents('debug_sql.log', "Found car with ID: {$it_id}\n", FILE_APPEND);
+        $url_segments = explode('-', $t_mp[3]);
+        $last_segment = end($url_segments);
+        
+        if (is_numeric($last_segment) && count($url_segments) > 1) {
+            $old_car_id = (int)$last_segment;
+            
+            try {
+                $pdo_check = $db->prepare('SELECT `id` FROM '.$prefx.'_car_ctlg WHERE `id`= :id AND `vis`="1" AND `act`="1" LIMIT 1');
+                $pdo_check->execute(['id' => $old_car_id]);
+                $old_car = $pdo_check->fetch(PDO::FETCH_ASSOC);
+                
+                if (!$old_car) {
+                    file_put_contents('debug_sql.log', "Old URL format detected with ID {$old_car_id} - car not found, returning 404\n", FILE_APPEND);
+                    http_response_code(404);
+                    include(_DEFAULT.'/404.php');
+                    exit;
+                }
+                
+                $it_id = $old_car_id;
+                file_put_contents('debug_sql.log', "Old URL format detected with ID {$old_car_id} - car found\n", FILE_APPEND);
+            } catch (PDOException $e) {
+                error_log('PDO Error checking old car ID ' . $old_car_id . ': ' . $e->getMessage());
+                http_response_code(404);
+                include(_DEFAULT.'/404.php');
+                exit;
+            }
         } else {
-            file_put_contents('debug_sql.log', "No car found for brand: {$brand}, model: {$model}\n", FILE_APPEND);
+
+            $brand = str_replace('-', '_', $t_mp[3]);
+            $model = isset($t_mp[4]) ? str_replace('-', '_', $t_mp[4]) : null;
+
+            $sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE `br`=:brand';
+            $params = ['brand' => $brand];
+
+            if ($model) {
+                $sql .= ' AND `mo`=:model';
+                $params['model'] = $model;
+            }
+
+            $sql .= ' AND `vis`="1" AND `act`="1" AND `catalog_type`="in_stock" LIMIT 1';
+
+            $pdo = $db->prepare($sql);
+            $pdo->execute($params);
+            $car = $pdo->fetch(PDO::FETCH_ASSOC);
+
+            if ($car) {
+                $it_id = $car['id'];
+                file_put_contents('debug_sql.log', "Found car with ID: {$it_id}\n", FILE_APPEND);
+            } else {
+                file_put_contents('debug_sql.log', "No car found for brand: {$brand}, model: {$model}\n", FILE_APPEND);
+            }
         }
     } else {
         $it_id = toNumber($t_mp[3]);

@@ -129,62 +129,69 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr' && isset($_GET['br'])) {
 if ((isset($t_mp[2]) && ($t_mp[2]=='cars' || $t_mp[2]=='ordercars')) && isset($t_mp[3])) {
     // Check if this is a numeric ID (single car) or a brand/model format
     if (!is_numeric($t_mp[3])) {
-        $_GET['tg'] = 'fltr';
+        $url_segments = explode('-', $t_mp[3]);
+        $last_segment = end($url_segments);
         
-        // Handle URLs like cars/ds-automobiles-ds-7-crossback
-        $url_parts = explode('/', $uri);
-        $brand_model = end($url_parts);
-        
-        // Try to match the brand first from the database
-        $pdo = $db->prepare('SELECT `br`, `br_nm` FROM '.$prefx.'_car_list GROUP BY `br`, `br_nm` ORDER BY LENGTH(`br`) DESC');
-        $pdo->execute();
-        $brands = $pdo->fetchAll(PDO::FETCH_ASSOC);
-        
-        $found_brand = false;
-        foreach ($brands as $brand) {
-            $brand_url = str_replace('_', '-', $brand['br']);
-            if (strpos($brand_model, $brand_url) === 0) {
-                // Found the brand, everything after it is the model
-                $found_brand = true;
-                $model = trim(substr($brand_model, strlen($brand_url)), '-');
-                
-                $_GET['br'] = $brand['br'];
-                if (!empty($model)) {
+        if (is_numeric($last_segment) && count($url_segments) > 1) {
+            file_put_contents('debug_redirect.log', "Old URL format detected in redirect.php: {$t_mp[3]}\n", FILE_APPEND);
+        } else {
+            $_GET['tg'] = 'fltr';
+            
+            // Handle URLs like cars/ds-automobiles-ds-7-crossback
+            $url_parts = explode('/', $uri);
+            $brand_model = end($url_parts);
+            
+            // Try to match the brand first from the database
+            $pdo = $db->prepare('SELECT `br`, `br_nm` FROM '.$prefx.'_car_list GROUP BY `br`, `br_nm` ORDER BY LENGTH(`br`) DESC');
+            $pdo->execute();
+            $brands = $pdo->fetchAll(PDO::FETCH_ASSOC);
+            
+            $found_brand = false;
+            foreach ($brands as $brand) {
+                $brand_url = str_replace('_', '-', $brand['br']);
+                if (strpos($brand_model, $brand_url) === 0) {
+                    // Found the brand, everything after it is the model
+                    $found_brand = true;
+                    $model = trim(substr($brand_model, strlen($brand_url)), '-');
+                    
+                    $_GET['br'] = $brand['br'];
+                    if (!empty($model)) {
+                        $_GET['mo'] = str_replace('-', '_', $model);
+                    }
+                    
+                    // Set t_mp array to match old format for compatibility
+                    $t_mp[3] = $brand_url;
+                    if (!empty($model)) {
+                        $t_mp[4] = $model;
+                    }
+                    break;
+                }
+            }
+            
+            if (!$found_brand) {
+                // Fallback: try to split at the last hyphen
+                $last_brand_pos = strrpos($brand_model, '-');
+                if ($last_brand_pos !== false) {
+                    $brand = substr($brand_model, 0, $last_brand_pos);
+                    $model = substr($brand_model, $last_brand_pos + 1);
+                    
+                    $_GET['br'] = str_replace('-', '_', $brand);
                     $_GET['mo'] = str_replace('-', '_', $model);
-                }
-                
-                // Set t_mp array to match old format for compatibility
-                $t_mp[3] = $brand_url;
-                if (!empty($model)) {
+                    
+                    $t_mp[3] = $brand;
                     $t_mp[4] = $model;
+                } else {
+                    // No model specified, just brand
+                    $_GET['br'] = str_replace('-', '_', $brand_model);
+                    $t_mp[3] = $brand_model;
                 }
-                break;
             }
+            
+            // Log for debugging
+            file_put_contents('debug_redirect.log', "Processing URL: " . print_r($t_mp, true) . "\n", FILE_APPEND);
+            file_put_contents('debug_redirect.log', "Set GET params: " . print_r($_GET, true) . "\n", FILE_APPEND);
+            file_put_contents('debug_redirect.log', "Final URI: {$uri}\n\n", FILE_APPEND);
         }
-        
-        if (!$found_brand) {
-            // Fallback: try to split at the last hyphen
-            $last_brand_pos = strrpos($brand_model, '-');
-            if ($last_brand_pos !== false) {
-                $brand = substr($brand_model, 0, $last_brand_pos);
-                $model = substr($brand_model, $last_brand_pos + 1);
-                
-                $_GET['br'] = str_replace('-', '_', $brand);
-                $_GET['mo'] = str_replace('-', '_', $model);
-                
-                $t_mp[3] = $brand;
-                $t_mp[4] = $model;
-            } else {
-                // No model specified, just brand
-                $_GET['br'] = str_replace('-', '_', $brand_model);
-                $t_mp[3] = $brand_model;
-            }
-        }
-        
-        // Log for debugging
-        file_put_contents('debug_redirect.log', "Processing URL: " . print_r($t_mp, true) . "\n", FILE_APPEND);
-        file_put_contents('debug_redirect.log', "Set GET params: " . print_r($_GET, true) . "\n", FILE_APPEND);
-        file_put_contents('debug_redirect.log', "Final URI: {$uri}\n\n", FILE_APPEND);
     }
 }
 
