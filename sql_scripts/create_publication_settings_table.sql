@@ -23,6 +23,9 @@ INSERT INTO `gh3sp_settings` (`name`, `value`) VALUES
 -- Account 3: Sauto-stock-extern (pentru mașini on_order)
 ('order_999md_account', 'Sauto-stock-extern'),
 ('order_999md_token', 'jMEsHjO0FhoRZm0KSsONLpkGLMIK'),
+-- Account 4: Encars-MD (pentru mașini on_order din Coreea)
+('korea_999md_account', 'Encars-MD'),
+('korea_999md_token', 'dfqNtulPrtU4nHApOI1Hyn_d3gjs'),
 
 -- Auto-publication settings
 ('auto_publish_regular', '1'),

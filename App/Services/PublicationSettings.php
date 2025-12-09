@@ -193,6 +193,10 @@ if ($_POST) {
         'location_2_facebook_page_id' => $_POST['location_2_facebook_page_id'] ?? '',
         'location_2_facebook_token' => $_POST['location_2_facebook_token'] ?? '',
         
+        // Korea cars (on_order from Korea) settings
+        'korea_999md_account' => $_POST['korea_999md_account'] ?? '',
+        'korea_999md_token' => $_POST['korea_999md_token'] ?? '',
+        
         // Auto-publication settings
         'auto_publish_regular' => isset($_POST['auto_publish_regular']) ? 1 : 0,
         'auto_publish_order' => isset($_POST['auto_publish_order']) ? 1 : 0,
@@ -229,7 +233,7 @@ if ($_POST) {
 
 // Load current settings - force fresh data
 $current_settings = [];
-$stmt = $db->prepare("SELECT name, value FROM {$prefx}_settings WHERE name IN ('regular_999md_account', 'regular_999md_token', 'regular_telegram_bot_token', 'regular_telegram_chat_id', 'order_999md_account', 'order_999md_token', 'order_telegram_bot_token', 'order_telegram_chat_id', 'location_1_facebook_page_id', 'location_1_facebook_token', 'location_2_facebook_page_id', 'location_2_facebook_token', 'auto_publish_regular', 'auto_publish_order', 'facebook_random_start_time', 'facebook_random_end_time', 'facebook_random_interval_minutes', 'telegram_random_start_time', 'telegram_random_end_time', 'telegram_random_interval_minutes', '999md_random_start_time', '999md_random_end_time', '999md_random_interval_minutes')");
+$stmt = $db->prepare("SELECT name, value FROM {$prefx}_settings WHERE name IN ('regular_999md_account', 'regular_999md_token', 'regular_telegram_bot_token', 'regular_telegram_chat_id', 'order_999md_account', 'order_999md_token', 'order_telegram_bot_token', 'order_telegram_chat_id', 'korea_999md_account', 'korea_999md_token', 'location_1_facebook_page_id', 'location_1_facebook_token', 'location_2_facebook_page_id', 'location_2_facebook_token', 'auto_publish_regular', 'auto_publish_order', 'facebook_random_start_time', 'facebook_random_end_time', 'facebook_random_interval_minutes', 'telegram_random_start_time', 'telegram_random_end_time', 'telegram_random_interval_minutes', '999md_random_start_time', '999md_random_end_time', '999md_random_interval_minutes')");
 $stmt->execute();
 while ($row = $stmt->fetch()) {
     $current_settings[$row['name']] = $row['value'];
@@ -325,6 +329,18 @@ $rtrn .= '
                 <div class="input-with-button">
                     <input type="password" name="order_999md_token" id="order_999md_token" value="' . htmlspecialchars($current_settings['order_999md_token'] ?? 'jMEsHjO0FhoRZm0KSsONLpkGLMIK') . '" autocomplete="new-password" data-form-type="other">
                     <button type="button" class="generate-btn" onclick="generate999Token(&quot;order&quot;)">🔑 Generează</button>
+                </div>
+            </div>
+            
+            <div class="setting-group">
+                <h4>🇰🇷 API "999.md" - Encars-MD (Coreea)</h4>
+                <label>' . ($lng[$_COOKIE['lang']]['w']['account_login'] ?? 'Аккаунт/Login:') . '</label>
+                <input type="text" name="korea_999md_account" value="' . htmlspecialchars($current_settings['korea_999md_account'] ?? 'Encars-MD') . '" autocomplete="off" data-form-type="other">
+                
+                <label>' . ($lng[$_COOKIE['lang']]['w']['api_token'] ?? 'API Token:') . '</label>
+                <div class="input-with-button">
+                    <input type="password" name="korea_999md_token" id="korea_999md_token" value="' . htmlspecialchars($current_settings['korea_999md_token'] ?? 'dfqNtulPrtU4nHApOI1Hyn_d3gjs') . '" autocomplete="new-password" data-form-type="other">
+                    <button type="button" class="generate-btn" onclick="generate999Token(&quot;korea&quot;)">🔑 Generează</button>
                 </div>
             </div>
             
