@@ -868,8 +868,12 @@ $(document).ready(function(){
 
 		if (type === "sauto_personal") {
 			if (orderPersonalTexts['auto_company']) {
+				// Check if Encars-MD (account 4) is selected
+				const selectedAccount = $('.account_999_id').val();
+				const defaultIndex = (selectedAccount == '4') ? 1 : 0; // Index 1 = AUTO DIN COREEA, Index 0 = AUTO LA COMANDA
+				
 				orderPersonalTexts['auto_company'].forEach((item, index) => {
-					const isChecked = index === 0 ? 'checked' : '';
+					const isChecked = index === defaultIndex ? 'checked' : '';
 					const radioButton = `
 							<div class="text-option-wrapper" style="margin-right: 20px; margin-bottom: 10px;">
 								<label style="display: inline-block; text-align: center;">
@@ -884,8 +888,9 @@ $(document).ready(function(){
 					textOptions.append(radioButton);
 				});
 				
-				if (orderPersonalTexts['auto_company'][0]) {
-					$("#feature_13").val(orderPersonalTexts['auto_company'][0].text);
+				// Set default text based on selected account
+				if (orderPersonalTexts['auto_company'][defaultIndex]) {
+					$("#feature_13").val(orderPersonalTexts['auto_company'][defaultIndex].text);
 				}
 			}
 			textOptionsWrapper.show();

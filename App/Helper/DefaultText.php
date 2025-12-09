@@ -38,6 +38,12 @@ class DefaultText
             return ['37379600616'];
         }
         
+        // Special case for Encars-MD (Korean cars)
+        if ($account_id == 4) {
+            __log("Returning hardcoded phone for Encars-MD: +373 79603161", 'phone_debug.log');
+            return ['+373 79603161'];
+        }
+        
         // For other accounts (SAUTO-HAUS, etc.), get phones from API
         __log("Getting phones from API for account_id: " . $account_id, 'phone_debug.log');
         $phones = (new Api999Service($account_id))->getPhones();
