@@ -124,9 +124,16 @@ try {
                     echo "[" . date('Y-m-d H:i:s') . "] Using STOCK account: {$apiAccount} (Default)\n";
                 }
             } elseif ($catalogType === 'on_order') {
-                $apiAccount = $settings['order_999md_account']; // Sauto-stock-extern
-                $apiToken = $settings['order_999md_token'];
-                echo "[" . date('Y-m-d H:i:s') . "] Using ORDER account: {$apiAccount}\n";
+                // Check if this is a Korean car (account 4 = Encars-MD)
+                if ($apiAccountId == 4) {
+                    $apiAccount = $settings['korea_999md_account'] ?? 'Encars-MD';
+                    $apiToken = $settings['korea_999md_token'];
+                    echo "[" . date('Y-m-d H:i:s') . "] Using ORDER account: {$apiAccount} (Korean cars - Account ID: 4)\n";
+                } else {
+                    $apiAccount = $settings['order_999md_account']; // Sauto-stock-extern
+                    $apiToken = $settings['order_999md_token'];
+                    echo "[" . date('Y-m-d H:i:s') . "] Using ORDER account: {$apiAccount} (Account ID: 3)\n";
+                }
             } else {
                 throw new Exception("Unknown catalog_type: {$catalogType}");
             }
@@ -137,7 +144,13 @@ try {
                 
                 // Use 999.md API to republish/boost the ad with correct account
                 // Create API service with the determined account ID
-                $accountIdForApi = ($catalogType === 'in_stock') ? ($apiAccountId ?? 2) : 3;
+                if ($catalogType === 'in_stock') {
+                    $accountIdForApi = $apiAccountId ?? 2;
+                } elseif ($catalogType === 'on_order') {
+                    $accountIdForApi = ($apiAccountId == 4) ? 4 : 3; 
+                } else {
+                    $accountIdForApi = 3;
+                }
                 $api999Service = new \App\Services\Api999Service($accountIdForApi);
                 $result = $api999Service->republishAdvert($schedule['existing_999_id']);
                 
@@ -291,7 +304,13 @@ try {
                 // Create new 999.md listing using saved data
                 try {
                     // Create API service with the determined account ID
-                    $accountIdForApi = ($catalogType === 'in_stock') ? ($apiAccountId ?? 2) : 3;
+                    if ($catalogType === 'in_stock') {
+                        $accountIdForApi = $apiAccountId ?? 2;
+                    } elseif ($catalogType === 'on_order') {
+                        $accountIdForApi = ($apiAccountId == 4) ? 4 : 3; 
+                    } else {
+                        $accountIdForApi = 3;
+                    }
                     $api999Service = new \App\Services\Api999Service($accountIdForApi);
                     $result = $api999Service->setAdvert(
                         $featuresData['category_id'],
