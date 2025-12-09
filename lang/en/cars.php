@@ -7,6 +7,7 @@ return [
     'edit_publish_sauto' => 'EDIT PUBLICATION SAUTO',
     'edit_ad' => 'Edit ad',
     'new_ad' => 'New ad',
+    'sauto_block_title' => 'PUBLISH SAUTO.MD',
     '999_block_title' => 'INTEGRATION 999.MD',
     'type_ad' => 'Promotion Type',
     'type_ad_hint' => 'Select promotion type',

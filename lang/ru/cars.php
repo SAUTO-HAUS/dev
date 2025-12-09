@@ -2,7 +2,7 @@
 return [
     // Country of import for cars
     'import_country' => 'СТРАНА ИМПОРТА',
-    'sauto_block_title' => 'Данные для автосалона',
+    'sauto_block_title' => 'ПУБЛИКАЦИЯ SAUTO.MD',
     '999_block_title' => 'Данные для 999',
     '999_account' => 'Аккаунт 999',
     'categories' => 'Категории',

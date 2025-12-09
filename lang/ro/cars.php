@@ -7,6 +7,7 @@ return [
     'edit_publish_sauto' => 'EDITARE PUBLICARE SAUTO',
     'edit_ad' => 'Editare anunț',
     'new_ad' => 'Anunț nou',
+    'sauto_block_title' => 'PUBLICARE SAUTO.MD',
     '999_block_title' => 'INTEGRARE 999.MD',
     'type_ad' => 'Tip de promovare',
     'type_ad_hint' => 'Selectează tipul de promovare',
