@@ -4,8 +4,8 @@
  */
 
 .brand-seo-description {
-    margin: 40px 0 30px;
-    padding: 20px 0;
+    margin: 20px 0 30px;
+    padding: 0;
     max-width: 100%;
     text-align: left;
     line-height: 1.8;
@@ -70,8 +70,8 @@
 /* Mobile styles */
 @media (max-width: 768px) {
     .brand-seo-description {
-        margin: 25px 0 20px;
-        padding: 15px 0;
+        margin: 15px 0 30px;
+        padding: 0 15px;
         font-size: 14px;
         line-height: 1.7;
     }
