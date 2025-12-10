@@ -230,12 +230,23 @@ if (__post('sub') == 'get_subcategory') {
                 
                 $linksText = "\n\n«Detalii despre automobil»\n{$carLink}\n«Toate automobilele modelului {$modelText}»\n{$modelLink}\n«Toate automobilele mărcii {$brandText}»\n{$brandLink}";
                 
+                $feature13Found = false;
                 foreach ($features as $index => $feature) {
                     if ($feature['id'] === '13') {
                         $features[$index]['value'] .= $linksText;
                         __log("Added dynamic links to description for on_order car {$carId}");
+                        $feature13Found = true;
                         break;
                     }
+                }
+                
+                // If feature 13 doesn't exist, create it with just the links
+                if (!$feature13Found) {
+                    $features[] = [
+                        "id" => "13",
+                        "value" => $linksText
+                    ];
+                    __log("Created feature 13 with dynamic links for on_order car {$carId}");
                 }
             }
         }
