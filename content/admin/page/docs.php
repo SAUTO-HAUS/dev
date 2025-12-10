@@ -830,9 +830,18 @@ c/f 1017600006845, c/TVA 0609417</pre>
 				foreach ($pdo as $r){ $adm_ar[ $r['id'] ] = $r['name']; }
 				
 				// Make admin array available to JavaScript
-				$rtrn .= '<script>window.adm_ar = '.json_encode($adm_ar).';</script>';
-				
-				$i=1; $date = '';
+			$rtrn .= '<script>window.adm_ar = '.json_encode($adm_ar).';</script>';
+			
+			// Get all available years from database
+			$years_pdo = $db->prepare('SELECT DISTINCT YEAR(c.date) as year FROM '.$prefx.'_docs_ctlg AS c ORDER BY year DESC');
+			$years_pdo->execute();
+			$all_years = [];
+			foreach ($years_pdo as $r) {
+				$all_years[] = $r['year'];
+			}
+			$rtrn .= '<script>window.allYears = '.json_encode($all_years).';</script>';
+			
+			$i=1; $date = '';
 		
 		// Check if we should load all documents (via loadall parameter or if there's a search query)
 		$loadAll = (isset($_GET['loadall']) && $_GET['loadall'] == '1') || (isset($_GET['search']) && $_GET['search'] != '');
@@ -1028,24 +1037,24 @@ c/f 1017600006845, c/TVA 0609417</pre>
 			}, 100);
 		}
 		
-		var years = new Set();
 		var currentYear = new Date().getFullYear();
-		
-		$(".docs > .list > .bx").each(function(){
-			var dateStr = $(this).find(".values").data("date");
-			if (dateStr) {
-				var year = new Date(dateStr).getFullYear();
-				years.add(year);
-				$(this).attr("data-year", year);
-			}
-		});
-		
-		var sortedYears = Array.from(years).sort(function(a, b){ return b - a; });
-		var yearFilter = $("<select style=\"padding:0.5rem 1.5rem 0.5rem 0.5rem; margin:0 0 0 1rem; border:1px solid #ddd; background:#fff; cursor:pointer; display:inline-block; vertical-align:top;\"></select>");
-		yearFilter.append("<option value=\"all\">ALL</option>");
-		sortedYears.forEach(function(year){
-			yearFilter.append("<option value=\"" + year + "\">" + year + "</option>");
-		});
+	
+	// Add data-year attribute to all loaded documents
+	$(".docs > .list > .bx").each(function(){
+		var dateStr = $(this).find(".values").data("date");
+		if (dateStr) {
+			var year = new Date(dateStr).getFullYear();
+			$(this).attr("data-year", year);
+		}
+	});
+	
+	// Use all years from database (loaded via PHP)
+	var sortedYears = window.allYears || [];
+	var yearFilter = $("<select style=\"padding:0.5rem 1.5rem 0.5rem 0.5rem; margin:0 0 0 1rem; border:1px solid #ddd; background:#fff; cursor:pointer; display:inline-block; vertical-align:top;\"></select>");
+	yearFilter.append("<option value=\"all\">ALL</option>");
+	sortedYears.forEach(function(year){
+		yearFilter.append("<option value=\"" + year + "\">" + year + "</option>");
+	});
 		
 		var yearWrapper = $("<span style=\"position:relative; display:inline-block; float:right; margin-right:1rem;\"></span>");
 		yearWrapper.append(yearFilter);
@@ -1098,18 +1107,43 @@ c/f 1017600006845, c/TVA 0609417</pre>
 		});
 		
 		yearFilter.on("change", function(){
-			var year = $(this).val();
-			dateFromInput.val("");
-			dateToInput.val("");
+		var year = $(this).val();
+		dateFromInput.val("");
+		dateToInput.val("");
+		
+		// If year is selected and documents for that year are not loaded, reload page with loadall and year
+		if (year !== "all" && year !== currentYear.toString()) {
+			// Check if we have documents for this year loaded
+			var hasDocsForYear = false;
+			$(".docs > .list > .bx").each(function(){
+				if ($(this).attr("data-year") == year) {
+					hasDocsForYear = true;
+					return false; // break
+				}
+			});
 			
-			if (year === "all") {
-				$(".docs > .list > .bx").removeClass("none");
-			} else {
-				$(".docs > .list > .bx").each(function(){
-					$(this).attr("data-year") == year ? $(this).removeClass("none") : $(this).addClass("none");
-				});
+			// If no documents for this year are loaded, reload with loadall and selected year
+			if (!hasDocsForYear && $("#load_more_btn").length > 0) {
+				window.location.href = window.location.pathname + "?loadall=1&year=" + year;
+				return;
 			}
-		}).trigger("change");
+		}
+		
+		if (year === "all") {
+			$(".docs > .list > .bx").removeClass("none");
+		} else {
+			$(".docs > .list > .bx").each(function(){
+				$(this).attr("data-year") == year ? $(this).removeClass("none") : $(this).addClass("none");
+			});
+		}
+	}).trigger("change");
+	
+	// If year parameter is in URL, set the year filter
+	var urlParams = new URLSearchParams(window.location.search);
+	var yearParam = urlParams.get("year");
+	if (yearParam) {
+		yearFilter.val(yearParam).trigger("change");
+	}
 	});
 	</script>';
 }elseif ( isset($t_mp[5]) ){
