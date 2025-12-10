@@ -220,9 +220,9 @@ if (__post('sub') == 'get_subcategory') {
                 $brandText = $carListInfo['br_nm'];
                 $modelText = $carListInfo['mo_nm'];
                 
-                $carLink = "https://www.sauto.md/ro/cars/{$carId}";
-                $modelLink = "https://www.sauto.md/ro/cars/{$brandSlug}-{$modelSlug}";
-                $brandLink = "https://www.sauto.md/ro/cars/{$brandSlug}";
+                $carLink = "https://www.sauto.md/ro/ordercars/{$carId}";
+                $modelLink = "https://www.sauto.md/ro/ordercars/{$brandSlug}-{$modelSlug}";
+                $brandLink = "https://www.sauto.md/ro/ordercars/{$brandSlug}";
                 
                 $linksText = "\n\nDetalii despre automobil:\n{$carLink}\nToate automobilele modelului {$modelText}:\n{$modelLink}\nToate automobilele mărcii {$brandText}:\n{$brandLink}";
                 
