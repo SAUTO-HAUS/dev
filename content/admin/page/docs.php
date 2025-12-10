@@ -833,17 +833,42 @@ c/f 1017600006845, c/TVA 0609417</pre>
 				$rtrn .= '<script>window.adm_ar = '.json_encode($adm_ar).';</script>';
 				
 				$i=1; $date = '';
-				$pdo = $db->prepare('SELECT 
-					u.id u_id, u.nm u_nm, u.tp u_tp, u.cf_idno u_cf_idno, u.tva_dt u_tva_dt, u.iban_dt_tk u_iban_dt_tk, u.adr u_adr, u.phn u_phn, u.eml u_eml, 
-					c.*, 
-					c.last_edited_by
-					FROM 
-						'.$prefx.'_docs_u AS u 
-						INNER JOIN 
-						'.$prefx.'_docs_ctlg AS c 
-					ON u.id=c.u 
-					ORDER BY c.date DESC, c.id DESC'); 
-				$pdo->execute();
+		
+		// Check if we should load all documents (via loadall parameter or if there's a search query)
+		$loadAll = (isset($_GET['loadall']) && $_GET['loadall'] == '1') || (isset($_GET['search']) && $_GET['search'] != '');
+		
+		// Always load all documents (search works on client-side via data-tags)
+		// We load only last 2 months initially, but search will trigger loading all via JavaScript
+		if (!$loadAll) {
+			// Load only last 2 months initially
+			$twoMonthsAgo = date('Y-m-d', strtotime('-2 months'));
+			
+			$pdo = $db->prepare('SELECT 
+				u.id u_id, u.nm u_nm, u.tp u_tp, u.cf_idno u_cf_idno, u.tva_dt u_tva_dt, u.iban_dt_tk u_iban_dt_tk, u.adr u_adr, u.phn u_phn, u.eml u_eml, 
+				c.*, 
+				c.last_edited_by
+				FROM 
+					'.$prefx.'_docs_u AS u 
+					INNER JOIN 
+					'.$prefx.'_docs_ctlg AS c 
+				ON u.id=c.u 
+				WHERE c.date >= :twoMonthsAgo
+				ORDER BY c.date DESC, c.id DESC'); 
+			$pdo->execute(['twoMonthsAgo' => $twoMonthsAgo]);
+		} else {
+			// Load all documents
+			$pdo = $db->prepare('SELECT 
+				u.id u_id, u.nm u_nm, u.tp u_tp, u.cf_idno u_cf_idno, u.tva_dt u_tva_dt, u.iban_dt_tk u_iban_dt_tk, u.adr u_adr, u.phn u_phn, u.eml u_eml, 
+				c.*, 
+				c.last_edited_by
+				FROM 
+					'.$prefx.'_docs_u AS u 
+					INNER JOIN 
+					'.$prefx.'_docs_ctlg AS c 
+				ON u.id=c.u 
+				ORDER BY c.date DESC, c.id DESC'); 
+			$pdo->execute();
+		}	
 					
 				$rtrn .= '
 				<div class="rowz hdr">
@@ -968,11 +993,41 @@ c/f 1017600006845, c/TVA 0609417</pre>
 					</label>';
 					$i++;
 				}
+		
+		// Add "More" button only if not all documents are loaded
+		if (!$loadAll) {
 			$rtrn .= '
-		</div>
+			<div id="load_more_btn" style="text-align:center; padding:1.5rem; cursor:pointer; background:#f9f9f9; margin:1rem 0; border:1px solid #ddd;">
+				<span style="font-size:1.2rem; color:#666;">More</span>
+				<span style="font-size:1rem; color:#999; margin-left:0.5rem;">▼</span>
+			</div>';
+		}
+		
+		$rtrn .= '
 	</div>
+</div>
 	<script>
 	$(document).ready(function(){
+		// Handle "More" button click
+		$("#load_more_btn").on("click", function(){
+			window.location.href = window.location.pathname + "?loadall=1";
+		});
+		
+		// Auto-load all documents when user clicks on search
+		var searchInput = $(".docs > .find.doc input.srch");
+		searchInput.on("focus", function(){
+			if ($("#load_more_btn").length > 0) {
+				window.location.href = window.location.pathname + "?loadall=1";
+			}
+		});
+		
+		// Auto-focus search if loadall is set
+		if (window.location.search.indexOf("loadall=1") !== -1) {
+			setTimeout(function(){
+				searchInput.focus();
+			}, 100);
+		}
+		
 		var years = new Set();
 		var currentYear = new Date().getFullYear();
 		
