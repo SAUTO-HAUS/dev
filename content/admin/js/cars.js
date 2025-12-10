@@ -1725,8 +1725,7 @@ $(document).ready(function() {
 		schedules = [];
 		
 		// Calculate schedules
-		const startDate = new Date();
-		startDate.setDate(startDate.getDate() + 1); // Start from tomorrow
+		const startDate = new Date(); // Start from today
 		
 		const endDate = new Date(startDate);
 		endDate.setMonth(endDate.getMonth() + duration);
