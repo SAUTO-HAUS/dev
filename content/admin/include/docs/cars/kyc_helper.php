@@ -80,6 +80,11 @@ function populateKycFields() {
 }
 
 function includeKycPages() {
+    // Skip KYC pages for legal entities 
+    if (isset($_POST['u_tp']) && $_POST['u_tp'] !== 'fiz') {
+        return; 
+    }
+    
     // Auto-populate KYC fields from contract data
     populateKycFields();
     
