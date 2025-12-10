@@ -251,7 +251,7 @@ if ($_COOKIE['lang']=='ru'){
 				'car_inf_ttl'=>'купить в Кишиневе, Молдова',
 				'car_inf_dsc'=>'из Европы в лизинг, в кредит. Помощь в выборе, покупке, доставке в Молдову',
 				'car_inf_h3'=>'Подержанные автомобили по схожей цене',
-				'order_car_prefix'=>'La comanda:',
+				'order_car_prefix'=>'Под заказ:',
                 'order_car_ttl'=>'заказать в Кишиневе, Молдова',
                 'order_car_dsc'=>'Автомобиль под заказ',
                 'order_car_dsc_end'=>'из Европы/Кореи. Поможем подобрать, проверить и привезти в Молдову. Лизинг и кредит'
@@ -3308,7 +3308,7 @@ elseif ($_COOKIE['lang']=='en'){
 				'car_inf_ttl'=>'for Sale in Chisinau, Moldova',
 				'car_inf_dsc'=>'from Europe in leasing, on credit. Help in choosing, buying, shipping to Moldova',
 				'car_inf_h3'=>'Pre-owned cars with similar prices',
-				'order_car_prefix'=>'La comanda:',
+				'order_car_prefix'=>'On order:',
                 'order_car_ttl'=>'order to Chisinau, Moldova',
                 'order_car_dsc'=>'Car on order',
                 'order_car_dsc_end'=>'from Europe/Korea. Assistance with selection, inspection and delivery to Moldova. Leasing and credit available'
