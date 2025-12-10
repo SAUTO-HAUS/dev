@@ -47,6 +47,12 @@ try {
         throw new Exception('Facebook settings not configured');
     }
     
+    // Debug: Log token info (first and last 10 chars for security)
+    $token = $settings['location_1_facebook_token'];
+    $tokenPreview = substr($token, 0, 10) . '...' . substr($token, -10);
+    echo "[" . date('Y-m-d H:i:s') . "] Using Facebook Page ID: {$settings['location_1_facebook_page_id']}\n";
+    echo "[" . date('Y-m-d H:i:s') . "] Using Facebook Token: {$tokenPreview}\n";
+    
     // Get pending posts that should be published now
     $currentDateTime = date('Y-m-d H:i:s');
     $stmt = $db->prepare("
