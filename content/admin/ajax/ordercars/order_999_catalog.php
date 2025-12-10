@@ -209,20 +209,16 @@ if (__post('sub') == 'get_subcategory') {
         $carInfo = $stmt->fetch(\PDO::FETCH_ASSOC);
         
         if ($carInfo && !empty($carInfo['br']) && !empty($carInfo['mo'])) {
-            // Get brand and model names
-            $stmtBrand = $pdo->prepare("SELECT br_nm FROM gh3sp_brand WHERE br = ?");
-            $stmtBrand->execute([$carInfo['br']]);
-            $brandInfo = $stmtBrand->fetch(\PDO::FETCH_ASSOC);
+            // Get brand and model names from car_list table
+            $stmtCarList = $pdo->prepare("SELECT br_nm, mo_nm FROM gh3sp_car_list WHERE br = ? AND mo = ? LIMIT 1");
+            $stmtCarList->execute([$carInfo['br'], $carInfo['mo']]);
+            $carListInfo = $stmtCarList->fetch(\PDO::FETCH_ASSOC);
             
-            $stmtModel = $pdo->prepare("SELECT mo_nm FROM gh3sp_model WHERE mo = ?");
-            $stmtModel->execute([$carInfo['mo']]);
-            $modelInfo = $stmtModel->fetch(\PDO::FETCH_ASSOC);
-            
-            if ($brandInfo && $modelInfo) {
+            if ($carListInfo && !empty($carListInfo['br_nm']) && !empty($carListInfo['mo_nm'])) {
                 $brandSlug = strtolower(str_replace('_', '-', $carInfo['br']));
                 $modelSlug = strtolower(str_replace('_', '-', $carInfo['mo']));
-                $brandText = $brandInfo['br_nm'];
-                $modelText = $modelInfo['mo_nm'];
+                $brandText = $carListInfo['br_nm'];
+                $modelText = $carListInfo['mo_nm'];
                 
                 $carLink = "https://www.sauto.md/ro/cars/{$brandSlug}/{$modelSlug}/{$carId}";
                 $modelLink = "https://www.sauto.md/ro/cars/{$brandSlug}-{$modelSlug}";
