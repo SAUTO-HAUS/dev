@@ -43,15 +43,18 @@ try {
         $settings[$row['name']] = $row['value'];
     }
     
-    if (empty($settings['location_1_facebook_page_id']) || empty($settings['location_1_facebook_token'])) {
-        throw new Exception('Facebook settings not configured');
+    // Check if at least one location has Facebook settings configured
+    $hasLocation1 = !empty($settings['location_1_facebook_page_id']) && !empty($settings['location_1_facebook_token']);
+    $hasLocation2 = !empty($settings['location_2_facebook_page_id']) && !empty($settings['location_2_facebook_token']);
+    
+    if (!$hasLocation1 && !$hasLocation2) {
+        throw new Exception('No Facebook settings configured for any location');
     }
     
-    // Debug: Log token info (first and last 10 chars for security)
-    $token = $settings['location_1_facebook_token'];
-    $tokenPreview = substr($token, 0, 10) . '...' . substr($token, -10);
-    echo "[" . date('Y-m-d H:i:s') . "] Using Facebook Page ID: {$settings['location_1_facebook_page_id']}\n";
-    echo "[" . date('Y-m-d H:i:s') . "] Using Facebook Token: {$tokenPreview}\n";
+    echo "[" . date('Y-m-d H:i:s') . "] Facebook settings available for: ";
+    if ($hasLocation1) echo "Location 1 ";
+    if ($hasLocation2) echo "Location 2 ";
+    echo "\n";
     
     // Get pending posts that should be published now
     $currentDateTime = date('Y-m-d H:i:s');
@@ -90,10 +93,18 @@ try {
             }
             
             // Get Facebook settings based on car location
+            $carLocation = $carData['loc'] ?? 1;
+            echo "[" . date('Y-m-d H:i:s') . "] Car location: {$carLocation}\n";
+            
             $facebookSettings = $publicationService->getFacebookSettings($carData);
             if (!$facebookSettings) {
-                throw new Exception('Facebook settings not found for car location');
+                throw new Exception('Facebook settings not found for car location ' . $carLocation);
             }
+            
+            // Log which settings are being used
+            $tokenPreview = substr($facebookSettings['token'], 0, 10) . '...' . substr($facebookSettings['token'], -10);
+            echo "[" . date('Y-m-d H:i:s') . "] Using Page ID: {$facebookSettings['page_id']}\n";
+            echo "[" . date('Y-m-d H:i:s') . "] Using Token: {$tokenPreview}\n";
             
             // Generate message
             $message = $publicationService->generateFacebookMessage($carData, $post['catalog_type']);
