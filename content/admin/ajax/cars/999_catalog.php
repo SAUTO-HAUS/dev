@@ -176,6 +176,45 @@ if (__post('sub') == 'get_subcategory') {
         }
     }
 
+    // Add dynamic links to description (feature 13) for in_stock cars
+    if (!empty($carId)) {
+        $stmt = $pdo->prepare("SELECT br, mo FROM gh3sp_car_ctlg WHERE id = ?");
+        $stmt->execute([$carId]);
+        $carInfo = $stmt->fetch(\PDO::FETCH_ASSOC);
+        
+        if ($carInfo && !empty($carInfo['br']) && !empty($carInfo['mo'])) {
+            // Get brand and model names
+            $stmtBrand = $pdo->prepare("SELECT br_nm FROM gh3sp_brand WHERE br = ?");
+            $stmtBrand->execute([$carInfo['br']]);
+            $brandInfo = $stmtBrand->fetch(\PDO::FETCH_ASSOC);
+            
+            $stmtModel = $pdo->prepare("SELECT mo_nm FROM gh3sp_model WHERE mo = ?");
+            $stmtModel->execute([$carInfo['mo']]);
+            $modelInfo = $stmtModel->fetch(\PDO::FETCH_ASSOC);
+            
+            if ($brandInfo && $modelInfo) {
+                $brandSlug = strtolower(str_replace('_', '-', $carInfo['br']));
+                $modelSlug = strtolower(str_replace('_', '-', $carInfo['mo']));
+                $brandText = $brandInfo['br_nm'];
+                $modelText = $modelInfo['mo_nm'];
+                
+                $carLink = "https://www.sauto.md/ro/cars/{$brandSlug}/{$modelSlug}/{$carId}";
+                $modelLink = "https://www.sauto.md/ro/cars/{$brandSlug}-{$modelSlug}";
+                $brandLink = "https://www.sauto.md/ro/cars/{$brandSlug}";
+                
+                $linksText = "\n\n«Detalii despre automobil»\n{$carLink}\n«Toate automobilele modelului {$modelText}»\n{$modelLink}\n«Toate automobilele mărcii {$brandText}»\n{$brandLink}";
+                
+                foreach ($features as $index => $feature) {
+                    if ($feature['id'] === '13') {
+                        $features[$index]['value'] .= $linksText;
+                        __log("Added dynamic links to description for car {$carId}");
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
     if (!empty($advert['999_id'])) {
 
         $advertFeatures = json_decode($advert['999'], true);
