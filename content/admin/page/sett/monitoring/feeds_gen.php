@@ -153,16 +153,6 @@
         </div>
         
         <div class="content">
-            <div class="status-box">
-                <h3>ℹ️ Информация</h3>
-                <p>Этот инструмент регенерирует все фиды из базы данных и удаляет неактивные автомобили.</p>
-                <p><strong>Генерируются 3 фида:</strong></p>
-                <ul style="margin-top: 10px; margin-left: 20px;">
-                    <li>Основной каталог (in_stock, основная локация)</li>
-                    <li>Филиал Pruncul (in_stock, локация Pruncul)</li>
-                    <li>Авто под заказ (on_order с активным таймером)</li>
-                </ul>
-            </div>
 
 <?php
 // Security check - must be in admin panel
