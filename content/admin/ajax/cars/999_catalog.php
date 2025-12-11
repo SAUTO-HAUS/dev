@@ -90,10 +90,10 @@ if (__post('sub') == 'get_subcategory') {
 
     $features = [];
 
-    // Get car data for engine volume conversion
+    // Get car data for engine volume conversion AND price
     $carData = null;
     if (!empty($carId)) {
-        $stmt = $pdo->prepare("SELECT vol FROM gh3sp_car_ctlg WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT vol, prc, cur FROM gh3sp_car_ctlg WHERE id = ?");
         $stmt->execute([$carId]);
         $carData = $stmt->fetch(\PDO::FETCH_ASSOC);
     }
@@ -123,6 +123,28 @@ if (__post('sub') == 'get_subcategory') {
         }
 
         $features[] = $feature;
+        }
+    }
+    
+    // CRITICAL: Validate and ensure price (feature 2) exists for SAUTO Personal
+    if ($input['announcement_type'] === 'sauto_personal') {
+        $hasPrice = false;
+        foreach ($features as $feature) {
+            if ($feature['id'] === '2' && !empty($feature['value']) && is_numeric($feature['value']) && $feature['value'] > 0) {
+                $hasPrice = true;
+                break;
+            }
+        }
+        
+        // If price is missing or invalid, add it from car table
+        if (!$hasPrice && !empty($carData['prc']) && $carData['prc'] > 0) {
+            $currency = !empty($carData['cur']) ? strtolower($carData['cur']) : 'eur';
+            $features[] = [
+                "id" => "2",
+                "value" => (string)$carData['prc'],
+                "unit" => $currency
+            ];
+            __log("SAUTO Personal: Auto-added missing price {$carData['prc']} {$currency} for car {$carId}");
         }
     }
 

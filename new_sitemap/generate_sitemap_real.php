@@ -601,7 +601,7 @@ class SitemapGeneratorReal {
         }
 
         $preferred = [
-            'n_a', 'act', 'vis', 'it', 'created_at', 'created', 'date', 'updated_at', 'updated', 'upd',
+            'n_a', 'act', 'vis', 'it', 'd', 'created_at', 'created', 'date', 'updated_at', 'updated', 'upd',
             'modified_at', 'last_update', 'time_shift', 'sold_at', 'sold_date', 'sale_date', 'sold_time',
             'sold_timestamp', 'sold_on', 'n_a_date', 'n_a_time', 'n_a_updated', 'n_a_updated_at', 'deleted'
         ];

@@ -395,25 +395,12 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
             $spec_ar = ['yr', 'bt', 'mlg', 'vol', 'hp', 'fl', 'tra', 'wd', 'clr', 'sts', 'delivery_time', 'advance_amount', 'loc', 'import_country_id'];
 
             //Update views
-            file_put_contents('view_counter_log.txt', date('Y-m-d H:i:s') . ' - Car ID: ' . $it_id . ' - View incremented' . PHP_EOL, FILE_APPEND);
             try {
                 $view_update = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `views` = `views` + 1 WHERE `id` = :id');
                 $view_update->execute(['id' => $it_id]);
             } catch (PDOException $e) {
                 // Log the error but don't crash the page
                 error_log('PDO Error updating views for car ID ' . $it_id . ': ' . $e->getMessage());
-                file_put_contents('view_counter_log.txt', date('Y-m-d H:i:s') . ' - ERROR updating views for Car ID: ' . $it_id . ' - ' . $e->getMessage() . PHP_EOL, FILE_APPEND);
-
-                // Try to re-establish connection and retry once
-                try {
-                    $view_update = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `views` = `views` + 1 WHERE `id` = :id');
-                    $view_update->execute(['id' => $it_id]);
-                    file_put_contents('view_counter_log.txt', date('Y-m-d H:i:s') . ' - RETRY SUCCESS for Car ID: ' . $it_id . PHP_EOL, FILE_APPEND);
-                } catch (PDOException $e2) {
-                    // If retry also fails, just log and continue
-                    error_log('PDO Error on retry updating views for car ID ' . $it_id . ': ' . $e2->getMessage());
-                    file_put_contents('view_counter_log.txt', date('Y-m-d H:i:s') . ' - RETRY FAILED for Car ID: ' . $it_id . ' - ' . $e2->getMessage() . PHP_EOL, FILE_APPEND);
-                }
             }
 
             try {
