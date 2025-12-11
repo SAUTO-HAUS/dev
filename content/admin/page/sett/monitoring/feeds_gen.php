@@ -5,20 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SAUTO - Ручной генератор фидов</title>
     <style>
-        * {
+        #feeds-generator-wrapper * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
         
-        body {
+        #feeds-generator-wrapper {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
         
-        .container {
+        #feeds-generator-wrapper .container {
             max-width: 900px;
             margin: 0 auto;
             background: white;
@@ -27,29 +27,29 @@
             overflow: hidden;
         }
         
-        .header {
+        #feeds-generator-wrapper .header {
             background: linear-gradient(135deg, #e2001a 0%, #b30015 100%);
             color: white;
             padding: 30px;
             text-align: center;
         }
         
-        .header h1 {
+        #feeds-generator-wrapper .header h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
             font-weight: 300;
         }
         
-        .header p {
+        #feeds-generator-wrapper .header p {
             font-size: 1.1rem;
             opacity: 0.9;
         }
         
-        .content {
+        #feeds-generator-wrapper .content {
             padding: 30px;
         }
         
-        .status-box {
+        #feeds-generator-wrapper .status-box {
             background: #f8f9fa;
             border-left: 4px solid #007bff;
             padding: 20px;
@@ -57,22 +57,22 @@
             border-radius: 0 8px 8px 0;
         }
         
-        .status-box.success {
+        #feeds-generator-wrapper .status-box.success {
             border-left-color: #28a745;
             background: #d4edda;
         }
         
-        .status-box.error {
+        #feeds-generator-wrapper .status-box.error {
             border-left-color: #dc3545;
             background: #f8d7da;
         }
         
-        .status-box.warning {
+        #feeds-generator-wrapper .status-box.warning {
             border-left-color: #ffc107;
             background: #fff3cd;
         }
         
-        .output {
+        #feeds-generator-wrapper .output {
             background: #1e1e1e;
             color: #f8f8f2;
             padding: 20px;
@@ -85,18 +85,18 @@
             margin: 20px 0;
         }
         
-        .file-check {
+        #feeds-generator-wrapper .file-check {
             display: flex;
             align-items: center;
             padding: 8px 0;
             border-bottom: 1px solid #eee;
         }
         
-        .file-check:last-child {
+        #feeds-generator-wrapper .file-check:last-child {
             border-bottom: none;
         }
         
-        .check-icon {
+        #feeds-generator-wrapper .check-icon {
             width: 20px;
             height: 20px;
             margin-right: 10px;
@@ -107,17 +107,17 @@
             font-weight: bold;
         }
         
-        .check-icon.success {
+        #feeds-generator-wrapper .check-icon.success {
             background: #28a745;
             color: white;
         }
         
-        .check-icon.error {
+        #feeds-generator-wrapper .check-icon.error {
             background: #dc3545;
             color: white;
         }
         
-        .btn {
+        #feeds-generator-wrapper .btn {
             display: inline-block;
             padding: 12px 30px;
             background: #007bff;
@@ -129,22 +129,23 @@
             margin: 10px 5px;
         }
         
-        .btn:hover {
+        #feeds-generator-wrapper .btn:hover {
             background: #0056b3;
             transform: translateY(-2px);
             box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
         
-        .btn.success {
+        #feeds-generator-wrapper .btn.success {
             background: #28a745;
         }
         
-        .btn.success:hover {
+        #feeds-generator-wrapper .btn.success:hover {
             background: #1e7e34;
         }
     </style>
 </head>
 <body>
+<div id="feeds-generator-wrapper">
     <div class="container">
         <div class="header">
             <h1>📊 Генератор фидов Facebook/Yandex</h1>
@@ -309,5 +310,6 @@ $status_class = ($return_code === 0 && $yandex_return_code === 0) ? 'success' : 
             </div>
         </div>
     </div>
+</div>
 </body>
 </html>
