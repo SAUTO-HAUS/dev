@@ -37,6 +37,7 @@ try {
     require_once __DIR__ . '/../../environment.php';
     require_once __DIR__ . '/../../content/default/config.php';
     require_once __DIR__ . '/../../content/default/dbi.php';
+    require_once __DIR__ . '/../../content/default/language.php';
     require_once __DIR__ . '/DataFeedGenerator.php';
     require_once __DIR__ . '/../../plugins/lalit/Constants.php';
     require_once __DIR__ . '/../../plugins/lalit/InitTrait.php';
