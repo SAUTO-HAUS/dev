@@ -79,6 +79,22 @@ if ( $_POST['fn']=='edit_sbmt' ){
 	$it_id = isset($_POST['inp']['id'])&&$_POST['inp']['id']!=''?$_POST['inp']['id']:0;
 	$it_cd = isset($_POST['inp']['vin'])&&$_POST['inp']['vin']!=''?( is_array($_POST['inp']['vin'])?'ar':strtoupper($_POST['inp']['vin']) ):'';
 	
+	$existing_inf_data = [];
+	if ($it_id > 0) {
+		$pdo_doc = $db->prepare('SELECT `inf` FROM '.$prefx.'_docs_ctlg WHERE `id`=:id LIMIT 1');
+		$pdo_doc->execute(['id' => $it_id]);
+		$existing_doc = $pdo_doc->fetch(PDO::FETCH_ASSOC);
+		if ($existing_doc && $existing_doc['inf'] != '') {
+			$inf_parts = explode('&&', $existing_doc['inf']);
+			foreach ($inf_parts as $part) {
+				if (strpos($part, '==') !== false) {
+					list($key, $value) = explode('==', $part, 2);
+					$existing_inf_data[$key] = $value;
+				}
+			}
+		}
+	}
+	
 	//GROUP BY `nm`
 	$pdo = $db->prepare('SELECT * FROM '.$prefx.'_docs_u WHERE `cf_idno`=:cf_idno LIMIT 1 ');
 	$pdo->execute([ 'cf_idno'=>$u_cf_idno ]);
@@ -135,19 +151,31 @@ if ( $_POST['fn']=='edit_sbmt' ){
 			}
 			$qu++;
 		}
+
+		elseif ( isset($existing_inf_data[$v]) && $existing_inf_data[$v] != '' ) {
+			$inf .= ($qu>0?'&&':'').$v.'=='.$existing_inf_data[$v];
+			$qu++;
+		}
 	}
 	
 	if ( isset($_POST['inp']['pay_val']) && $_POST['inp']['pay_val']!='' ){//Paying values, dates
 		$i=0; foreach ($_POST['inp']['pay_val'] as $k => $v){ if ($v!=''){ $inf .= ($i==0?($qu>0?'&&':'').'pays==':'||').( $v.'=>'.( isset($_POST['inp']['pay_date'][$k])?$_POST['inp']['pay_date'][$k]:'' ) ); $i++;} }
+	} elseif ( isset($existing_inf_data['pays']) ) {
+		$inf .= ($qu>0?'&&':'').'pays=='.$existing_inf_data['pays'];
 	}
 	
 	if ( isset($_POST['inp']['grnt_txt']) ){//Additional text Warranty
 		$i=0; foreach ($_POST['inp']['grnt_txt'] as $v){ if ($v!=''){ $inf .= ($i==0?($qu>0?'&&':'').'grnt_txt==':'||').$v; $i++;} }
+	} elseif ( isset($existing_inf_data['grnt_txt']) ) {
+		$inf .= ($qu>0?'&&':'').'grnt_txt=='.$existing_inf_data['grnt_txt'];
 	}
 	
 	if ( isset($_POST['inp']['dmg_pos']) && isset($_POST['inp']['dmg_txt']) ){//Car damages POS / TXT
 		$i=0; foreach ($_POST['inp']['dmg_pos'] as $k => $v){ $inf .= ($i==0?($qu>0?'&&':'').'dmg_pos==':'||').$v; $i++; }
 		$i=0; foreach ($_POST['inp']['dmg_txt'] as $k => $v){ $inf .= ($i==0?($qu>0?'&&':'').'dmg_txt==':'||').($v!=''?$v:'0'); $i++; }
+	} elseif ( isset($existing_inf_data['dmg_pos']) && isset($existing_inf_data['dmg_txt']) ) {
+		$inf .= ($qu>0?'&&':'').'dmg_pos=='.$existing_inf_data['dmg_pos'];
+		$inf .= '&&dmg_txt=='.$existing_inf_data['dmg_txt'];
 	}
 	
 	unset($inf_ar, $qu);
