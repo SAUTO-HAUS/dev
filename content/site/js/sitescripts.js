@@ -163,15 +163,9 @@ $(document).on("change", "#fltr .srch", function(e){
 	var zHref = "";
 	var zData = $("#fltr > .ctrl > .btns > .sbmt").data();
 	var zCnt = 0;
-	// Build the base URL with brand and model
 	if (zData.br) {
-		// Replace underscores with hyphens for URLs
 		var brand = zData.br.replace(/_/g, '-');
 		zHref = zData.link + brand;
-		if (zData.mo) {
-			var model = zData.mo.replace(/_/g, '-');
-			zHref += "-" + model; // Using hyphen format
-		}
 		zCnt++;
 	} else {
 		zHref = $("#fltr > .ctrl > .btns").data("def");
@@ -181,8 +175,13 @@ $(document).on("change", "#fltr .srch", function(e){
 	var queryParams = [];
 	var hasDetailedFilters = false;
 	
-	// Always include tg=fltr parameter
-	queryParams.push("tg=fltr");
+	if (zData.br || zData.mo) {
+		queryParams.push("tg=fltr");
+	}
+	if (zData.mo) {
+		queryParams.push("mo=" + zData.mo.replace(/_/g, '-'));
+		hasDetailedFilters = true;
+	}
 	
 	// Check for body type in URL
 	// First look for bt parameter in the URL - could be in the main query string
