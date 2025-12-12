@@ -307,7 +307,7 @@ function ajaxIt(dataX){
 			// Dynamic success handler based on current page
 			var currentPage = getReqPage();
 			
-			if (currentPage === 'cars') {
+			if (currentPage === 'cars' || currentPage === 'ordercars') {
 				if (typeof ajaxSuccessCars === 'function') {
 					ajaxSuccessCars(data);
 				} else {
