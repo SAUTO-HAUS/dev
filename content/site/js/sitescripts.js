@@ -166,6 +166,10 @@ $(document).on("change", "#fltr .srch", function(e){
 	if (zData.br) {
 		var brand = zData.br.replace(/_/g, '-');
 		zHref = zData.link + brand;
+		if (zData.mo) {
+			var model = zData.mo.replace(/_/g, '-');
+			zHref += "/" + model;
+		}
 		zCnt++;
 	} else {
 		zHref = $("#fltr > .ctrl > .btns").data("def");
@@ -174,14 +178,6 @@ $(document).on("change", "#fltr .srch", function(e){
 	// Reset our query parameters
 	var queryParams = [];
 	var hasDetailedFilters = false;
-	
-	if (zData.br || zData.mo) {
-		queryParams.push("tg=fltr");
-	}
-	if (zData.mo) {
-		queryParams.push("mo=" + zData.mo.replace(/_/g, '-'));
-		hasDetailedFilters = true;
-	}
 	
 	// Check for body type in URL
 	// First look for bt parameter in the URL - could be in the main query string
