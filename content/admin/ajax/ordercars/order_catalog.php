@@ -45,6 +45,9 @@ foreach ($pdo as $r){
 		else {$new_item = 1;}
 	}
 
+	$p_nm = '';
+	$p_ff = '';
+
 	$pdo = $db->prepare('SELECT * FROM '.$prefx.'_car_pht WHERE `it_id`= :it_id AND `main`="1"');
 	$pdo->execute([ 'it_id' => $r['id'] ]);
 	
@@ -60,7 +63,7 @@ foreach ($pdo as $r){
 	$rtrn .= '
 	<div class="bx'.$stts.'" data-id="'.$r['id'].'">
 		<div class="icon comment '.$z_msg.'" title="'.$lng['w']['comment'].'"></div>
-		<textarea class="comment_txt">'.(isset($restrict_admin_menu[$user_id]['act']['com']['cars'])&&$r['loc']==1?'Informatie restrictionata':$r['txt']).'</textarea>
+		<textarea class="comment_txt">'.(isset($restrict_admin_menu[$user_id]['act']['com']['ordercars'])&&$r['loc']==1?'Informatie restrictionata':$r['txt']).'</textarea>
 		<div class="icon print '.$z_msg.'" title="'.$lng['w']['print'].'"></div>
 		<div class="print_bx">
 			<form target="_blank" action="/print.php" method="post">
@@ -109,7 +112,7 @@ foreach ($pdo as $r){
 			if( $r['act'] == 1 ){
 				$rtrn .= '
 				<a class="btn edit" href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/ordercars/detail?id=' . $r['id'].'&v='.time().'" title="'.$lng['adm']['edit'].'"> <div></div> </a><!--data-fn="edit"-->
-				<div class="btn fn_av" data-fn="'.($r['n_a']==0?'av0':'av1').'" title="'.($r['n_a']==0?'-':'+').'" data-alt="'.($r['n_a']==0?'+':'-').'"> <div></div> </div>';
+				<div class="btn fn_av" data-fn="'.($r['n_a']==0?'av0':'av1').'" title="'.($r['n_a']==0?'+':'-').'" data-alt="'.($r['n_a']==0?'-':'+').'"> <div></div> </div>';
 				if ( in_array($user_type, ['dev', 'sad']) ){
 					$rtrn .= '
 					<div class="btn fn_hr" data-fn="'.($r['vis']==0?'reveal':'hide').'" title="'.$lng['adm'][($r['vis']==0?'reveal':'hide')].'" data-alt="'.$lng['adm'][($r['vis']==0?'hide':'reveal')].'" data-fn> <div></div> </div>
@@ -130,7 +133,7 @@ foreach ($pdo as $r){
 			<div class="date" title="'.date('H:i:s', $r['date']).'">'.date('d.m.Y', $r['date']).'</div>
 		</div>
 		
-		<div class="img" style="background-image:url(/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/'.$p_nm.$img_frmt.'), url(/media/images/site/no_image.png);">';
+		<div class="img" style="background-image:url(/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/'.$p_nm.( !empty($p_ff) ? ('.'.$p_ff) : $img_frmt ).'), url(/media/images/site/no_image.png);">';
 			//if($r['top']){$rtrn .= '<div class="top-sales" title="Top Sales">'.$lng['l']['stat']['top1'].'</div>';}
 			if( $r['act'] == 0 ){$rtrn .= '<div class="remove_after" timer="'.( $r['del_t']-time() ).'" ra="'.$r['del_t'].'">**, **:**:**</div>';}
 			$rtrn .= '
