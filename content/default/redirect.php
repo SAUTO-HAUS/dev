@@ -130,7 +130,8 @@ if ((isset($t_mp[2]) && ($t_mp[2]=='cars' || $t_mp[2]=='ordercars')) && isset($t
     // Check if this is a numeric ID (single car) or a brand/model format
     if (!is_numeric($t_mp[3])) {
         if (isset($t_mp[4]) && !empty($t_mp[4])) {
-            file_put_contents('debug_redirect.log', "Clean URL format detected: {$t_mp[3]}/{$t_mp[4]} - skipping redirect processing\n", FILE_APPEND);
+            $_GET['tg'] = 'fltr';
+            file_put_contents('debug_redirect.log', "Clean URL format detected: {$t_mp[3]}/{$t_mp[4]} - setting filter mode\n", FILE_APPEND);
         } else {
             $url_segments = explode('-', $t_mp[3]);
             $last_segment = end($url_segments);
