@@ -63,7 +63,7 @@ foreach ($pdo as $r){
 	$rtrn .= '
 	<div class="bx'.$stts.'" data-id="'.$r['id'].'">
 		<div class="icon comment '.$z_msg.'" title="'.$lng['w']['comment'].'"></div>
-		<textarea class="comment_txt">'.(isset($restrict_admin_menu[$user_id]['act']['com']['ordercars'])&&$r['loc']==1?'Informatie restrictionata':$r['txt']).'</textarea>
+		<textarea class="comment_txt">'.(isset($restrict_admin_menu[$user_id]['act']['com']['cars'])&&$r['loc']==1?'Informatie restrictionata':$r['txt']).'</textarea>
 		<div class="icon print '.$z_msg.'" title="'.$lng['w']['print'].'"></div>
 		<div class="print_bx">
 			<form target="_blank" action="/print.php" method="post">
