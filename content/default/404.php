@@ -35,8 +35,8 @@ http_response_code(404);
 	<style>
 		body {margin:0; padding:0; width:100%; height:100%;}
 		#e404 {width:100%; height:100%; text-align:center; margin:100px auto 0;}
-		a {color:#336FA1;}
-		a:hover {font-weight:bold;}
+		a {color:#282828;}
+		a:hover {color:#e2001a;}
 		p {color:#D36B56;}
 	</style>
 </head>
