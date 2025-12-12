@@ -10,8 +10,6 @@ if (isset($t_mp[2]) && $t_mp[2] == 'ordercars') {
     include(_SITE_INCL.'/functions.php');
 }
 
-// PRE-CHECK for 404 on detail pages BEFORE generating head
-// This allows us to set proper 404 title and meta tags
 $GLOBALS['page_is_404'] = false;
 
 // Check CARS detail page
@@ -418,7 +416,7 @@ if (!isset($t_mp[2]) || $t_mp[2]=='') { ?>
                         
                         <!-- Subcolumns container -->
                         <div class="services-subcolumns">
-                            <!-- Subcoloana 1 -->
+                            <!-- Subcol 1 -->
                             <div class="services-subcolumn">
                                 <div class="section">
                                     <a href="/<?php echo $_COOKIE['lang']; ?>/services/sale"><?php echo $lng['p']['services']['sale']['name']; ?></a>
@@ -427,7 +425,7 @@ if (!isset($t_mp[2]) || $t_mp[2]=='') { ?>
                                 </div>
                             </div>
                             
-                            <!-- Subcoloana 2 -->
+                            <!-- Subcol 2 -->
                             <div class="services-subcolumn">
                                 <div class="section">
                                     <a href="/<?php echo $_COOKIE['lang']; ?>/services/testdrive"><?php echo $lng['p']['services']['testdrive']['name']; ?></a>
@@ -449,7 +447,7 @@ if (!isset($t_mp[2]) || $t_mp[2]=='') { ?>
                         
                         <!-- Subcolumns container -->
                         <div class="information-subcolumns">
-                            <!-- Subcoloana 1 -->
+                            <!-- Subcol 1 -->
                             <div class="information-subcolumn">
                                 <div class="section">
                                     <a href="/<?php echo $_COOKIE['lang']; ?>/about"><?php echo $lng['p']['information']['about']['name']; ?></a>
@@ -458,7 +456,7 @@ if (!isset($t_mp[2]) || $t_mp[2]=='') { ?>
                                 </div>
                             </div>
                             
-                            <!-- Subcoloana 2 -->
+                            <!-- Subcol 2 -->
                             <div class="information-subcolumn">
                                 <div class="section">
                                     <a href="/<?php echo $_COOKIE['lang']; ?>/privacy"><?php echo $lng['p']['information']['privacy']['name']; ?></a>
@@ -479,7 +477,7 @@ if (!isset($t_mp[2]) || $t_mp[2]=='') { ?>
                         
                         <!-- Subcolumns container -->
                         <div class="contacts-subcolumns">
-                            <!-- Subcoloana 1: Locații -->
+                            <!-- Subcol 1 -->
                             <div class="contacts-subcolumn">
                                 <div class="section">
                                     <p class="location-item">
@@ -496,7 +494,7 @@ if (!isset($t_mp[2]) || $t_mp[2]=='') { ?>
                                 </div>
                             </div>
                             
-                            <!-- Subcoloana 2: Program și telefon -->
+                            <!-- Subcol 2 -->
                             <div class="contacts-subcolumn">
                                 <div class="section">
                                     <?php
@@ -520,7 +518,7 @@ if (!isset($t_mp[2]) || $t_mp[2]=='') { ?>
                 </div>
             </div>
 
-            <!-- Column 5: Social Media -->
+            <!-- Col 5 -->
             <div class="column-container col-social-container">
                 <div class="col col-social">
                     <div class="ttl"><?php echo isset($lng['w']['social']) ? $lng['w']['social'] : 'Rețelele sociale'; ?></div>
@@ -666,9 +664,8 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' || ($t_mp[2]=='services' && isset($t_mp[
 
                     clearTimeout(updateRateTimeout); // reset previous timer
                     updateRateTimeout = setTimeout(updateRate, 1500); // set new timer
-                    <?php /* console.log("Сумма изменена:", data.from);
-                    updateRate(); */ ?>
-                }
+                
+}
             }).data("ionRangeSlider");
 
             var $input_termen_creditului = $("#view_termen_creditului");
@@ -742,7 +739,7 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' || ($t_mp[2]=='services' && isset($t_mp[
                     body: formData
                 })
                     .then(async response => {
-                        const data = await response.text(); // response.json()
+                        const data = await response.text(); 
                         var datajson = JSON.parse( data);
 
                         console.log( response);
@@ -800,14 +797,12 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' || $t_mp[2]=='ordercars') ) {
 
         <?
         $ICON_SVG_PARAMS = [
-            /* Год выпуска (календарь) */
             'year' => '
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <rect x="3" y="4" width="18" height="16" rx="2"></rect>
   <path d="M8 2v4M16 2v4M3 10h18"></path>
 </svg>',
 
-            /* Пробег (спидометр/одометр) */
             'mileage' => <<<'SVG'
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <path d="M20 13a8 8 0 10-16 0"></path>
@@ -817,7 +812,6 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' || $t_mp[2]=='ordercars') ) {
 SVG
             ,
 
-            /* Объём двигателя (мотор) */
             'engine' => <<<'SVG'
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <rect x="3" y="8" width="13" height="8" rx="2"></rect>
@@ -827,7 +821,6 @@ SVG
 SVG
             ,
 
-            /* Трансмиссия (двунаправленные стрелки) */
             'transmission' => <<<'SVG'
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <path d="M7 4v8a3 3 0 003 3h4"></path>
@@ -838,7 +831,6 @@ SVG
 SVG
             ,
 
-            /* Тип топлива (колонка) */
             'fuel' => <<<'SVG'
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <rect x="3" y="3" width="10" height="18" rx="2"></rect>
@@ -849,7 +841,6 @@ SVG
 SVG
             ,
 
-            /* Климат-контроль (термометр/снежинка) */
             'climate' => <<<'SVG'
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <path d="M12 2v8"></path>
@@ -860,7 +851,6 @@ SVG
 SVG
             ,
 
-            /* Круиз-контроль (компас) */
             'cruise' => <<<'SVG'
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <circle cx="12" cy="12" r="9"></circle>
@@ -869,7 +859,6 @@ SVG
 SVG
             ,
 
-            /* Парктроники (буква P + дуги) */
             'parking' => <<<'SVG'
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <path d="M6 20V4h6a4 4 0 010 8H6"></path>
@@ -879,7 +868,6 @@ SVG
 SVG
             ,
 
-            /* Навигация (пин на карте/стрела) */
             'navigation' => <<<'SVG'
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <circle cx="12" cy="10" r="3.5"></circle>
@@ -888,7 +876,6 @@ SVG
 SVG
             ,
 
-            /* Подогрев сидений (кресло + волны) */
             'heated_seat' => <<<'SVG'
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <path d="M6 12v3a3 3 0 003 3h7"></path>
@@ -898,13 +885,11 @@ SVG
 SVG
             ,
 
-            /* Bluetooth */
             'bluetooth' => '
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <path d="M7 7l10 10-5 5V2l5 5L7 17"></path>
 </svg>',
 
-            /* USB (трезубец) */
             'usb' => '
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
   <path d="M12 3v12"></path>
@@ -944,27 +929,6 @@ SVG
                     ?>
                 </div>
             <?} ?>
-            <?/*<h2>Общая информация</h2>
-            <p>Просторный семейный автомобиль с надёжным дизельным двигателем и автоматической коробкой передач.</p>
-
-            <h2>Технические характеристики</h2>
-            <ul>
-                <li>Год выпуска: 2018</li>
-                <li>🚗 Пробег: 124 000 км</li>
-                <li>Объем двигателя: 1.6 л</li>
-                <li>Трансмиссия: Автомат</li>
-                <li>Тип топлива: Дизель</li>
-            </ul>
-
-            <h2>Комплектация</h2>
-            <ul>
-                <li>Климат-контроль</li>
-                <li>Круиз-контроль</li>
-                <li>Парктроники</li>
-                <li>Навигация</li>
-                <li>Подогрев сидений</li>
-                <li>Bluetooth и USB</li>
-            </ul> */?>
         </div>
     </div>
 
@@ -974,39 +938,19 @@ SVG
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5/dist/carousel/carousel.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5/dist/fancybox/fancybox.umd.js"></script>
     <script>
-        /* ГАЛЕРЕЯ/КАРУСЕЛЬ ДЛЯ heroCarousel
-        Требования:
-        1) свайпы влево/вправо
-        2) «кусочки» соседних слайдов видны (делаем slidesPerPage:'auto' + центрирование)
-        3) клик по фото открывает Fancybox
-        4) внутри Fancybox — свайпы
-        5) внутри Fancybox — наш блок с названием/ценой (плашка)
-        6) внутри Fancybox — индикатор количества
-        7) последний слайд — HTML 2×3 сетка (#moreLinks) как у тебя
-        8) горизонтальные свайпы листают
-        9) вертикальный вниз — закрывает (dragToClose:true)
-        10) вертикальный вверх — открывает миниатюры (делаю жест через Panzoom)
-        11) pinch-to-zoom — по умолчанию у Fancybox
-        12) возврат на тот же слайд — синхронизация встроена
-        */
 
         $(function(){
             const heroEl = document.getElementById('heroCarousel');
 
             if (heroEl) {
-                heroEl.classList.add('is-booting');  /* прячем все, кроме первого */
+                heroEl.classList.add('is-booting');
             }
 
             const heroCarousel = new Carousel(heroEl, {
-                /* показываем по ширине элемента слайдов */
                 slidesPerPage: 'auto',
-                /* выравниваем по центру, чтобы были видны «кусочки» слева/справа */
                 center: true,
-                /* бесконечность выключена, чтобы отрабатывать «последний слайд-заглушку» */
                 infinite: false,
-                /* немного «вязкости» для приятного ощущение свайпа */
                 friction: 0.12,
-                /* без стрелок и точек — они не нужны в твоём дизайне */
                 Arrows: false,
                 Dots: false
             });
@@ -1015,21 +959,18 @@ SVG
                 heroEl.classList.remove('is-booting');
                 heroEl.classList.add('is-ready');
 
-                // берём все картинки с классом .lazy внутри карусели
                 const imgs = heroEl.querySelectorAll('img.lazy');
 
                 imgs.forEach((img) => {
-                    // если картинка уже загружена (например из кэша)
                     if (img.complete && img.naturalWidth > 0) {
                         img.classList.remove('lazy');
                     } else {
-                        // иначе ждём событие загрузки
                         img.addEventListener('load', () => {
                             img.classList.remove('lazy');
                         }, { once: true });
 
                         img.addEventListener('error', () => {
-                            img.classList.remove('lazy'); // даже если ошибка загрузки
+                            img.classList.remove('lazy'); 
                         }, { once: true });
                     }
                 });
@@ -1072,34 +1013,29 @@ SVG
                 const slide = fb.getSlide && fb.getSlide();
 
                 if (!slide) {
-                    /* карусель ещё не отдала текущий слайд — попробуем на следующем тике */
                     requestAnimationFrame(() => updateInfoBar(fb));
                     return;
                 }
 
-                /* html-слайд типа «Смотреть ещё» — плашку прячем */
                 if (slide.type !== 'image') {
                     bar.style.display = 'none';
                     return;
                 }
 
-                /* ВАЖНО: когда снова image — обратно показываем плашку */
                 bar.style.display = '';
 
-                /* ===== название/цена из data-* текущего триггера ===== */
                 const trg   = slide.triggerEl || slide.el || null;
                 const title = trg?.dataset?.title || '';
                 const price = trg?.dataset?.price || '';
                 bar.querySelector('.fbx-info__title').textContent = title;
                 bar.querySelector('.fbx-info__price').textContent = price;
 
-                /* ===== считаем по DOM, а не по внутренним массивам ===== */
                 const group = (trg?.getAttribute('data-fancybox') || 'product');
                 const all   = Array.from(document.querySelectorAll(`[data-fancybox="${group}"]`));
                 const isImage = (a) => ((a.getAttribute('data-type') || 'image').toLowerCase() === 'image');
                 const total = all.filter(isImage).length;
 
-                const currentGlobalIndex = slide.index; /* 0-based */
+                const currentGlobalIndex = slide.index;
                 let pos = 0;
                 for (let i = 0; i < all.length; i++){
                     if (isImage(all[i])) pos++;
@@ -1109,12 +1045,10 @@ SVG
                 if (!Number.isFinite(pos) || pos < 1) pos = 1;
                 if (!Number.isFinite(total) || total < 1) pos = total = 0;
 
-                /* если нужна надпись pos/total — раскомментируй свой вывод тут */
                 // bar.querySelector('.fbx-info__count').textContent = `${pos} / ${total}`;
             }
 
 
-            /* читаем Set избранного из localStorage */
             function favLoad(){
                 try{
                     const raw = localStorage.getItem('favSet');
@@ -1123,28 +1057,24 @@ SVG
                 }catch(_){ return new Set(); }
             }
 
-            /* сохраняем Set в localStorage */
             function favSave(set){
                 try{
                     localStorage.setItem('favSet', JSON.stringify(Array.from(set)));
                 }catch(_){}
             }
 
-            /* получаем id текущего слайда (из data-id у триггера) */
             function getCurrentId(fb){
                 const slide = fb.getSlide && fb.getSlide();
                 const trg = slide && (slide.triggerEl || slide.el);
                 return trg?.dataset?.id || null;
             }
 
-            /* обновляем состояние/вид кнопки под текущий слайд */
             function updateFavBtn(fb){
                 const btn = fb._favBtn;
                 if (!btn) return;
 
                 const slide = fb.getSlide && fb.getSlide();
                 if (!slide) {
-                    /* карусель ещё не отдала текущий слайд — пробуем на следующем тике */
                     requestAnimationFrame(() => updateFavBtn(fb));
                     return;
                 }
@@ -1169,9 +1099,6 @@ SVG
                 btn.title = isFav ? 'Убрать из избранного' : 'Добавить в избранное';
             }
 
-
-
-            /* обработчик клика по кнопке */
             function onFavClick(fb){
                 const id = getCurrentId(fb);
                 if (!id) return;
@@ -1185,7 +1112,6 @@ SVG
 
 
             function getThumbsPlugin(fb){
-                // в Fancybox v5 плагин живёт в fb.plugins (а не только в fb.Carousel.plugins)
                 // return fb?.plugins?.Thumbs || fb?.carousel?.plugins?.Thumbs || null;
                 return fb?.plugins?.Thumbs || null;
             }
@@ -1193,8 +1119,8 @@ SVG
             function showThumbs(fb){
                 const thumbs = getThumbsPlugin(fb);
                 if (!thumbs) return;
-                fb.container.classList.add('is-thumbs'); // даём CSS разрешение показывать
-                thumbs.show?.();                         // плагин уже строит/показывает ленту
+                fb.container.classList.add('is-thumbs'); 
+                thumbs.show?.();                         
 
                 console.log(" add('is-thumbs') ");
             }
@@ -1214,44 +1140,38 @@ SVG
                 Carousel.Plugins.Thumbs.defaults.showOnStart = false;
             }
             */
-            /* FIX: готовим «HTML-строку» для последнего слайда один раз на старте */
+
             (function prepareMoreLinksAsHtml(){
-                /* находим триггер «more» и исходный блок-контент */
+
                 const moreTrig = document.querySelector('[data-fancybox="product"][data-id="more"]');
                 const moreSrc  = document.getElementById('moreLinks');
                 if (!moreTrig || !moreSrc) return;
 
-                /* Берём HTML содержимое, чтобы Fancybox не трогал живой DOM узел */
-                const html = moreSrc.innerHTML;        /* содержимое сетки 2×3 */
-                const wrapper = `<div class="more-grid">${html}</div>`; /* сохраняем класс-обёртку */
-
-                /* Переключаем триггер на тип html + src = строка HTML
-                   => Fancybox будет рендерить КОПИЮ, а не переносить живой #moreLinks */
+                const html = moreSrc.innerHTML;        
+                const wrapper = `<div class="more-grid">${html}</div>`; 
                 moreTrig.setAttribute('data-type', 'html');
                 moreTrig.setAttribute('data-src', wrapper);
 
-                /* Чтобы не было конфликтов, уберём href на #moreLinks */
                 moreTrig.removeAttribute('href');
             })();
 
 
-            /* ОДИН общий bind — вверх = открыть миниатюры, вниз = закрыть модалку */
             Fancybox.bind('[data-fancybox="product"]', {
                 // groupAll: true,
                 dragToClose: false,
 
-                /* Отключаем все действия, связанные с зумом/панорамированием */
-                contentClick: false,   /* по клику по контенту ничего не делать (v5 по умолчанию мог toggleZoom) */
-                wheel: false,          /* колесо мыши не масштабирует и не листает */
+
+                contentClick: false,  
+                wheel: false,         
                 Images: {
-                    /* подстраховка: просим не создавать panzoom/zoom */
+
                     Panzoom: {
-                        zoom: true,       /* запрет на программный/дабл-тап зум (если поддерживается сборкой) */
-                        touch: true,      /* запрет панорамирования контента внутри кадра */
+                        zoom: true,       
+                        touch: true,      
                         panOnlyZoomed: true
                     }
                 },
-                /* v5: встроенный счётчик называется infobar */
+
                 Toolbar: {
                     enabled: true,
                     display: {
@@ -1260,16 +1180,15 @@ SVG
                         right: []
                     }
                 },
-                /* миниатюры подключены, но старт скрытый */
+
                 Carousel: {
-                    Arrows: false, // убирает стрелки «влево/вправо»
-                    Dots: false    // убирает точки
+                    Arrows: false, 
+                    Dots: false    
                 },
 
                 on: {
-                    /* FIX: использовать событие v5 — работаем со слайдами через carousel */
+
                     'Carousel.init': (fb, carousel) => {
-                        /* /* определяем наш inline-слайд */
                         const isMore = (s) => {
                             if (!s) return false;
                             if (s.triggerEl?.dataset?.id === 'more') return true;
@@ -1278,10 +1197,8 @@ SVG
                             return src?.nodeType === 1 && src.id === 'moreLinks';
                         };
 
-                        /* 1) находим индекс inline-слайда, если он уже попал */
                         let idx = carousel.slides.findIndex(isMore);
 
-                        /* 2) если не попал — добавляем из нашего скрытого триггера */
                         if (idx === -1) {
                             const tr = document.querySelector('#heroCarousel [data-fancybox="product"][data-id="more"]');
                             if (tr) {
@@ -1290,7 +1207,6 @@ SVG
                             }
                         }
 
-                        /* 3) если есть, но не последний — переносим в конец */
                         if (idx > -1 && idx !== carousel.slides.length - 1) {
                             const slide = carousel.slides[idx];
                             carousel.removeSlide(idx);
@@ -1298,50 +1214,38 @@ SVG
                         }
                     },
 
-                    /* готово: создаём плашку, обновляем и прячем миниатюры */
                     ready: (fb) => {
                         console.log('---- .ready');
 
-                        /* на всякий случай сбросим флаг и спрячем превью как только они появятся */
                         fb.container.classList.remove('is-thumbs');
 
                         createInfoBar(fb);
 
-                        /* первый апдейт — на следующий тик (когда карусель уже будет инициализирована) */
                         requestAnimationFrame(() => updateInfoBar(fb));
 
                         hideThumbs(fb);
-                        // hideThumbs(fb); /* гарантированно скрыть превью на старте */
 
-                        /* ===== КНОПКА ИЗБРАННОГО (правый верх) ===== */
                         const fav = document.createElement('button');
                         fav.className = 'fav-btn';
                         fav.type = 'button';
                         fav.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>';
                         fav.setAttribute('aria-label', 'Добавить в избранное');
-                        /* pointer-events у контейнера выключен — поэтому кнопка должна быть кликабельна сама */
                         fav.addEventListener('click', (e) => { e.stopPropagation(); onFavClick(fb); });
                         fb.container.appendChild(fav);
                         fb._favBtn = fav;
                         updateFavBtn(fb);
 
-                        /* ===========================
-                           РЕГИСТРИРУЕМ ЖЕСТЫ НА КОНТЕЙНЕРЕ
-                           =========================== */
                         const el = fb.container;
 
-                        const THRESH = 40; /* порог в пикселях */
+                        const THRESH = 40;
                         let activeId = null, startX = 0, startY = 0;
 
-                        /* сохраняем обработчики на инстансе, чтобы потом снять */
                         fb.__onTouchStart = function(ev){
-                            /* игнорируем, если касание началось на ленте миниатюр */
                             if (ev.target.closest('.f-thumbs')) return;
 
                             const t = ev.touches && ev.touches[0];
                             if (!t) return;
 
-                            /* игнор pinch: если 2+ пальца, не трогаем */
                             if (ev.touches.length !== 1) { activeId = null; return; }
 
                             activeId = t.identifier;
@@ -1352,7 +1256,6 @@ SVG
                         fb.__onTouchEnd = function(ev){
                             if (activeId === null) return;
 
-                            /* найдём именно тот палец, который начался на touchstart */
                             let t = null;
                             if (ev.changedTouches){
                                 for (let i = 0; i < ev.changedTouches.length; i++){
@@ -1367,50 +1270,39 @@ SVG
                             const dy = t.clientY - startY;
                             const absX = Math.abs(dx);
                             const absY = Math.abs(dy);
-                            const THRESH_V = 40;   /* вертикальный порог */
+                            const THRESH_V = 40;
 
-                            /* текущий слайд и его panzoom (v5 разные поля) */
                             const slide = fb.getSlide && fb.getSlide();
                             const pz = slide && (slide.Panzoom || slide.panzoom || slide._Panzoom || slide._panzoom || null);
                             const scale = (pz && (pz.content?.scale ?? pz.scale)) || 1;
 
-                            /* 1) Вертикальный жест доминирует */
                             if (absY > absX && absY > THRESH_V){
                                 if (dy < 0){
-                                    /* ВВЕРХ — показать миниатюры */
                                     showThumbs(fb);
                                 } else {
-                                    /* ВНИЗ — закрыть галерею */
                                     fb.close();
                                 }
                                 activeId = null;
                                 return;
                             }
 
-                            /* 2) ГОРИЗОНТАЛЬ: листать только если в зуме И жест доминирует по X И мы у края */
                             if (scale > 1 && absX > absY) {
-                                const THRESH_H = 90;      /* порог по горизонтали (был 50) — делаем менее чувствительным */
-                                const RATIO_DOM = 1.25;   /* X должен быть заметно больше Y */
-                                const EDGE_TOL = 16;      /* допускаем маленький люфт у края, px */
+                                const THRESH_H = 90;
+                                const RATIO_DOM = 1.25;
+                                const EDGE_TOL = 16;
 
                                 if (absX > THRESH_H && absX > absY * RATIO_DOM) {
-                                    /* проверяем: упрёмся ли в край в сторону жеста */
                                     let atEdge = false;
 
-                                    /* Попытка «умного» способа — если у Panzoom есть координаты и границы */
                                     const c = pz && pz.content;
                                     if (c && typeof c.x === 'number' && typeof c.minX === 'number' && typeof c.maxX === 'number') {
-                                        /* dx < 0 — тянем влево, у края слева => x <= minX + EDGE_TOL */
                                         if (dx < 0) atEdge = (c.x <= c.minX + EDGE_TOL);
-                                        /* dx > 0 — тянем вправо, у края справа => x >= maxX - EDGE_TOL */
                                         else       atEdge = (c.x >= c.maxX - EDGE_TOL);
                                     } else {
-                                        /* Фолбэк: если не можем прочитать границы — требуем ещё больший свайп */
                                         atEdge = absX > 140;
                                     }
 
                                     if (atEdge) {
-                                        /* мгновенно сбрасываем зум/пан, чтобы листалка не конфликтовала */
                                         try { pz && pz.reset && pz.reset(0); } catch(_) {}
 
                                         const goNext = dx < 0;
@@ -1428,13 +1320,11 @@ SVG
                             activeId = null;
                         };
 
-                        /* вешаем слушатели (passive:true — чтобы не ломать скроллы/перформанс) */
                         el.addEventListener('touchstart', fb.__onTouchStart, { passive: true });
                         el.addEventListener('touchend',   fb.__onTouchEnd,   { passive: true });
                         el.addEventListener('touchcancel',fb.__onTouchEnd,   { passive: true });
                     },
 
-                    /* обновляем плашку при смене кадра */
                     'Carousel.change': (fb) => {
                         console.log('Carousel.change');
 
@@ -1442,14 +1332,12 @@ SVG
                         updateFavBtn(fb);
                     },
 
-                    /* подстраховка: если Fancybox вдруг показал ленту сам — спрячем */
                     'Carousel.ready': (fb) => {
                         console.log('Carousel.ready');
                         hideThumbs(fb);
-                        updateInfoBar(fb); /* ← гарантируем апдейт сразу после готовности карусели */
+                        updateInfoBar(fb);
                         updateFavBtn(fb);
 
-                        // разовый дебаг — посмотри в консоль при первом открытии:
                         const t = getThumbsPlugin(fb);
                     },
 
@@ -1467,7 +1355,6 @@ SVG
                         updateFavBtn(fb);
                     },
 
-                    /* снимаем слушатели и сбрасываем флаг при закрытии */
                     closing: (fb) => {
                         try {
                             const el = fb.container;
@@ -1490,21 +1377,19 @@ SVG
     </script>
 
     <script>
-        /* нормализуем URL без #hash для корректного сравнения */
         function stripHash(u){
             try {
                 const x = new URL(u, window.location.href);
-                return x.origin + x.pathname + x.search; /* без hash */
+                return x.origin + x.pathname + x.search; 
             } catch(_){
-                return ''; /* если referrer кривой/пустой */
+                return ''; 
             }
         }
 
-        /* тип захода (Navigation Timing v2) с фолбэком */
         function getNavType(){
             try {
                 const nav = performance.getEntriesByType('navigation')[0];
-                if (nav && nav.type) return nav.type; /* 'navigate' | 'reload' | 'back_forward' | 'prerender' */
+                if (nav && nav.type) return nav.type; 
             } catch(_){}
             if (performance && performance.navigation) {
                 switch (performance.navigation.type) {
@@ -1516,18 +1401,13 @@ SVG
             return 'navigate';
         }
 
-        /* основная логика автопоказа */
         (function autoOpenGalleryOnce(){
-            const navType = getNavType();           /* ожидаем 'navigate' при переходе по ссылке */
-            const ref     = document.referrer || '';/* откуда пришли */
+            const navType = getNavType();           
+            const ref     = document.referrer || '';
             const here    = stripHash(window.location.href);
             const from    = stripHash(ref);
 
-            /* УСЛОВИЯ:
-               1) пришли по навигации (НЕ reload, НЕ back/forward)
-               2) referrer существует (не прямой заход) И это не та же страница
-               3) ещё не открывали в этой сессии (чтобы не надоедать при повторных переходах внутри SPA/сайта)
-            */
+
             const okByType   = (navType === 'navigate');
             const hasRef     = !!from;
             const isSamePage = hasRef && (from === here);
