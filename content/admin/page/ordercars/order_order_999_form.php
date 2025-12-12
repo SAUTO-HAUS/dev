@@ -53,7 +53,7 @@ if (!empty($car['999'])) {
                 <option value=""><?= __('cars.select_subcategory_offer_types') ?>...</option>
                 <?php if (!empty($offer_types['offer_types'])) : ?>
                     <?php foreach ($offer_types['offer_types'] as $offerType) : ?>
-                        <option value="<?= $offerType['id'] ?>" <?php if((!empty($car999['offer_type']) && $car999['offer_type'] == $offerType['id']) || ($offerType['id'] == '776' && empty($car999['offer_type']))) : ?> selected <?php endif; ?>><?= $offerType['title'] ?></option>
+                        <option value="<?= $offerType['id'] ?>" <?php if((!empty($car999['offer_type']) && $car999['offer_type'] == $offerType['id']) || ($offerType['id'] == '23844' && empty($car999['offer_type']))) : ?> selected <?php endif; ?>><?= $offerType['title'] ?></option>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </select>
@@ -79,7 +79,7 @@ if (!empty($car['999'])) {
             $types = (new Api999Service())->getSubcategoryFeatures($car999['category_id'], $car999['subcategory_id'], $car999['offer_type']); ?>
             <?php include('order_features_form.php') ?>
         <?php else : 
-            $types = (new Api999Service())->getSubcategoryFeatures(DefaultText::CATEGORY_AUTO, '659', '776'); ?>
+            $types = (new Api999Service())->getSubcategoryFeatures(DefaultText::CATEGORY_AUTO, '659', '23844'); ?>
             <?php include('order_features_form.php') ?>
         <?php endif; ?>
     </div>
