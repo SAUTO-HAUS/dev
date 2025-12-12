@@ -281,16 +281,11 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
             $brand_seo = $pdo_brand_seo->fetch(PDO::FETCH_ASSOC);
             
             if($brand_seo && !empty(trim($brand_seo['description']))) {
-                $rtrn .= '<div class="brand-seo-description">';
-                $rtrn .= '<!-- SEO Description Start -->';
+                $rtrn .= '<div class="brand-description">';
                 $rtrn .= $brand_seo['description'];
-                $rtrn .= '<!-- SEO Description End -->';
                 $rtrn .= '</div>';
-            } else {
-                error_log('Brand SEO: No description found or empty for brand: ' . $brand_code);
             }
         } catch (PDOException $e) {
-            error_log('Brand SEO description error: ' . $e->getMessage());
         }
     }
     $rtrn .= '</div>';

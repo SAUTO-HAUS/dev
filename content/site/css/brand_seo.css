@@ -1,9 +1,4 @@
-/**
- * Brand SEO Description Styles
- * Task #2528: SEO-описание бренда в подвале страниц брендов
- */
-
-.brand-seo-description {
+.brand-description {
     margin: 20px 0 30px;
     padding: 0;
     max-width: 100%;
@@ -15,7 +10,7 @@
     border-top: 1px solid #e0e0e0;
 }
 
-.brand-seo-description h2 {
+.brand-description h2 {
     font-size: 24px;
     font-weight: bold;
     color: #222;
@@ -23,7 +18,7 @@
     line-height: 1.4;
 }
 
-.brand-seo-description h3 {
+.brand-description h3 {
     font-size: 20px;
     font-weight: bold;
     color: #333;
@@ -31,70 +26,70 @@
     line-height: 1.4;
 }
 
-.brand-seo-description p {
+.brand-description p {
     margin: 0 0 15px;
     line-height: 1.8;
 }
 
-.brand-seo-description strong {
+.brand-description strong {
     font-weight: bold;
     color: #222;
 }
 
-.brand-seo-description em {
+.brand-description em {
     font-style: italic;
 }
 
-.brand-seo-description ul,
-.brand-seo-description ol {
+.brand-description ul,
+.brand-description ol {
     margin: 15px 0;
     padding-left: 30px;
 }
 
-.brand-seo-description li {
+.brand-description li {
     margin: 8px 0;
     line-height: 1.6;
 }
 
-.brand-seo-description a {
+.brand-description a {
     color: #ff0000;
     text-decoration: none;
     transition: color 0.3s;
 }
 
-.brand-seo-description a:hover {
+.brand-description a:hover {
     color: #cc0000;
     text-decoration: underline;
 }
 
 /* Mobile styles */
 @media (max-width: 768px) {
-    .brand-seo-description {
+    .brand-description {
         margin: 15px 0 30px;
         padding: 0 15px;
         font-size: 14px;
         line-height: 1.7;
     }
     
-    .brand-seo-description h2 {
+    .brand-description h2 {
         font-size: 20px;
         margin: 20px 0 12px;
     }
     
-    .brand-seo-description h3 {
+    .brand-description h3 {
         font-size: 18px;
         margin: 15px 0 10px;
     }
     
-    .brand-seo-description ul,
-    .brand-seo-description ol {
+    .brand-description ul,
+    .brand-description ol {
         padding-left: 20px;
     }
 }
 
 /* Tablet styles */
 @media (min-width: 769px) and (max-width: 1024px) {
-    .brand-seo-description {
+    .brand-description {
         margin: 30px 0;
         padding: 18px 0;
     }
