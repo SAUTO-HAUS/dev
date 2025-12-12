@@ -75,7 +75,11 @@ function sendToFacebookCars() {
 				*/
 			},
 			error: function(xhr, status, error) {
-				}
+				console.error('AJAX Error:', status, error);
+				$('#stts_bar').removeClass('act');
+				$('#stts_bar > .ln').attr('style','');
+				$('body').removeClass('ajx');
+			}
 		});
 
 	}
@@ -152,7 +156,11 @@ function sendToTelegramCars() {
 				*/
 			},
 			error: function(xhr, status, error) {
-				}
+				console.error('AJAX Error:', status, error);
+				$('#stts_bar').removeClass('act');
+				$('#stts_bar > .ln').attr('style','');
+				$('body').removeClass('ajx');
+			}
 		});
 
 	}
@@ -1111,7 +1119,7 @@ function checkQueue(bx_id, fileInput, data) {
 
 	if (fn_ajxQ(bx_id, 'chk')) {
 		$(`#id_${bx_id}`).addClass('now');
-		ajaxItImg(fileInput, data);
+		ajaxItImg(fileInp, data);
 	} else {
 		retryCheck();
 	}
@@ -1314,6 +1322,7 @@ $(document).on('change', '.car-checkbox-n_a_new', function() {
 			}
 		},
 		error: function(xhr, status, error) {
+			console.error('AJAX Error:', status, error);
 		}
 	});
 });
@@ -1368,7 +1377,7 @@ $(document).on('change', 'select[name="br"], select[name="br_search"]', function
 			success: function(response) {
 				try {
 					var data = typeof response === 'string' ? JSON.parse(response) : response;
-						
+					
 					// Clear loading state and add default option
 					if ($(this).attr('name') === 'br_search') {
 						// For filter, use "all" option
@@ -1381,22 +1390,24 @@ $(document).on('change', 'select[name="br"], select[name="br_search"]', function
 					// Add the models returned from server
 					// Backend returns data in data.rtrn.str format
 					var modelsHtml = null;
-					if (data.rtrn && data.rtrn.str) {
+					if (data && data.rtrn && data.rtrn.str) {
 						modelsHtml = data.rtrn.str;
-					} else if (data.str) {
+					} else if (data && data.str) {
 						// Fallback for direct str format
 						modelsHtml = data.str;
 					}
 					
 					if (modelsHtml) {
-							modelSelect.append(modelsHtml);
+						modelSelect.append(modelsHtml);
 					} else {
-						}
+						console.warn('No models returned from server', data);
+					}
 					
 					// Re-enable the dropdown
 					modelSelect.prop('disabled', false);
-					} catch (e) {
-						if ($(this).attr('name') === 'br_search') {
+				} catch (e) {
+					console.error('Failed to parse models response', e, response);
+					if ($(this).attr('name') === 'br_search') {
 						modelSelect.html('<option value="all">All</option>');
 					} else {
 						modelSelect.html('<option value="">' + defaultText + '</option>');
@@ -1405,13 +1416,13 @@ $(document).on('change', 'select[name="br"], select[name="br_search"]', function
 				}
 			}.bind(this),
 			error: function(xhr, status, error) {
+				console.error('AJAX Error:', status, error);
 				if ($(this).attr('name') === 'br_search') {
 					modelSelect.html('<option value="all">All</option>');
 				} else {
-					modelSelect.html('<option value="">' + defaultText + '</option>');
+					$(this).closest('.sel').removeClass('wait');
 				}
-				modelSelect.prop('disabled', false);
-			}.bind(this)
+			}
 		});
 	} else {
 		// If no brand selected, just re-enable the model dropdown
