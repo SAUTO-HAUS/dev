@@ -1,5 +1,7 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
+// test deploy 22.10
+
 $sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE catalog_type = "on_order" ';
 
 foreach($arr_types as $k){ if ( isset($_POST[$k.'_search'])&&$_POST[$k.'_search']!='all' ) {$sql .= ' AND `'.$k.'` = :'.$k.''; $query_args[$k] = $_POST[$k.'_search'];} }
@@ -160,6 +162,3 @@ foreach ($pdo as $r){
 }
 
 $c_id = $i<=$_POST['it_qu'] ? null : $r['id'];
-?>
-
-<!-- test deploy 22.10 -->
