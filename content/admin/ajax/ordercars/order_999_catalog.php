@@ -43,7 +43,7 @@ if (__post('sub') == 'get_subcategory') {
         $types = $api999Service->getSubcategoryFeatures(__post('category'), __post('subcategory'), __post('offer_type'));
         $feature_id = __post('subcategory');
         ob_start();
-        include _ADM_PAGE.'/cars/features_form.php';
+        include _ADM_PAGE.'/ordercars/order_features_form.php';
         $rtrn = ob_get_clean();
         $rtrn = [ 'bx_id' => __post('bx_id'), 'str' => $rtrn ];
     }
@@ -51,7 +51,7 @@ if (__post('sub') == 'get_subcategory') {
     $feature_id = 16;
     $contacts = (new DefaultText)->getContacts(__post('account_id'));
     ob_start();
-    include _ADM_PAGE.'/cars/feature_contact.php';
+    include _ADM_PAGE.'/ordercars/order_feature_contact.php';
     $rtrn = ob_get_clean();
     $rtrn = [ 'bx_id' => __post('bx_id'), 'str' => $rtrn ];
 } elseif (__post('sub') == 'get_features_depends') {
@@ -60,7 +60,7 @@ if (__post('sub') == 'get_subcategory') {
         foreach ($types['Options'] as $cat) {
             $rtrn .= '<option value="'.$cat['id'].'">'.$cat['title'].'</option>';
         }
-        $rtrn = [ 'bx_id' => __post('bx_id'), 'str' => $rtrn ];
+        $rtrn = [ 'bx_id'=>__post('bx_id'), 'str'=>$rtrn ];
     }
 } elseif (__post('sub') == 'set_999') {
 
