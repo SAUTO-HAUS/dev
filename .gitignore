@@ -6,3 +6,7 @@ filter_debug.log
 *.zip
 *.log
 environment.php
+
+sitemap-1.xml
+sitemap.xml
+df_cars.xml
