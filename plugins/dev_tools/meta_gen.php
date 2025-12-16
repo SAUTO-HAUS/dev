@@ -151,7 +151,7 @@ if ( in_array($z2, $url_arr) ){//if t_mp[2] is allowed part of url
 		$p_type = $z2=='cars' ? 'car' : $z2;
 		$p_type = $z2=='ordercars' ? 'car' : $p_type;
 		
-		if ($z2=='cars' || $z2=='ordercars'){$pdo = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg WHERE `id`=:id'); $pdo2 = $db->prepare('SELECT `name`, `main` FROM '.$prefx.'_car_pht WHERE `id`=:id AND `main`="1"'); $zl='car';}
+		if ($z2=='cars' || $z2=='ordercars'){$pdo = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg WHERE `id`=:id'); $pdo2 = $db->prepare('SELECT `name`, `main` FROM '.$prefx.'_car_pht WHERE `it_id`=:id AND `main`="1"'); $zl='car';}
 		elseif ($z2=='tyres'){$pdo = $db->prepare('SELECT * FROM '.$prefx.'_tyre_ctlg WHERE `id`=:id'); $pdo2 = $db->prepare('SELECT `name`, `main` FROM '.$prefx.'_tyre_pht WHERE `it_id`=:id AND `main`="1"'); $zl='tyre';}
 		
 		$pdo->execute( array('id'=>$z3) );
@@ -164,7 +164,7 @@ if ( in_array($z2, $url_arr) ){//if t_mp[2] is allowed part of url
                         // require indexing for all car detail pages.
 			
 			$pdo2->execute(array('id'=>$r['id']));
-			foreach ($pdo2 as $r2){ $sa['it']['img']='https://www.sauto.md/media/images/upload/'.$p_type.'/'.$sa['it']['r']['p_path'].'/'.$sa['it']['r']['id'].'/med/'.$r2['name'].'.jpg'; }
+			foreach ($pdo2 as $r2){ $sa['it']['img']='https://www.sauto.md/media/images/upload/'.$p_type.'/'.$sa['it']['r']['p_path'].'/'.$sa['it']['r']['id'].'/high/'.$r2['name'].'.jpg'; }
 			unset($pdo2, $r2);
 		}
 	}
@@ -512,8 +512,13 @@ if ($z2 == 'cars' && !is_numeric($z3) && isset($t_mp[3]) && !empty($t_mp[3]) && 
 <meta property="og:description" content="'.$sa['meta']['dsc'].'">
 <meta property="og:type" content="website">
 <meta property="og:image" content="'.$sa['it']['img'].'">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/jpeg">
 <meta property="og:site_name" content="Sauto.md">
 <meta property="og:url" content="'.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'].'">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="'.$sa['it']['img'].'">
 
 <meta name="description" content="'.$sa['meta']['dsc'].'" />
 <meta name="keywords" content="'.$sa['meta']['kwd'].'" />
@@ -552,8 +557,13 @@ echo '<title>'.$sa['meta']['ttl'].'</title>
 <meta property="og:description" content="'.$sa['meta']['dsc'].'">
 <meta property="og:type" content="website">
 <meta property="og:image" content="'.$sa['it']['img'].'">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/jpeg">
 <meta property="og:site_name" content="Sauto.md">
 <meta property="og:url" content="'.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'].'">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="'.$sa['it']['img'].'">
 
 <meta name="description" content="'.$sa['meta']['dsc'].'" />
 <meta name="keywords" content="'.$sa['meta']['kwd'].'" />
