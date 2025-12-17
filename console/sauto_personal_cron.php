@@ -17,6 +17,99 @@ ini_set('display_errors', 1);
 // Set timezone
 date_default_timezone_set('Europe/Chisinau');
 
+function updateFeaturesWithFreshData($features, $carData, $db, $prefx) {
+    $updatedFeatures = [];
+    
+    foreach ($features as $feature) {
+        $featureId = $feature['id'];
+        
+        if ($featureId === '2' || $featureId === 2) {
+            if (!empty($carData['prc']) && $carData['prc'] > 0) {
+                $currency = !empty($carData['cur']) ? strtolower($carData['cur']) : 'eur';
+                $feature['value'] = (string)$carData['prc'];
+                $feature['unit'] = $currency;
+                echo "[" . date('Y-m-d H:i:s') . "] Обновлена цена: {$carData['prc']} {$currency}\n";
+            }
+        }
+        
+        if ($featureId === '13' || $featureId === 13) {
+            $descriptionText = $feature['value'] ?? '';
+            $linkMarker = "\n\nDetalii despre automobil:";
+            $markerPos = strpos($descriptionText, $linkMarker);
+            if ($markerPos !== false) {
+                $descriptionText = substr($descriptionText, 0, $markerPos);
+            }
+            
+            if (!empty($carData['br']) && !empty($carData['mo'])) {
+                $stmtCarList = $db->prepare("SELECT br_nm, mo_nm FROM {$prefx}_car_list WHERE br = ? AND mo = ? LIMIT 1");
+                $stmtCarList->execute([$carData['br'], $carData['mo']]);
+                $carListInfo = $stmtCarList->fetch(PDO::FETCH_ASSOC);
+                
+                if ($carListInfo && !empty($carListInfo['br_nm']) && !empty($carListInfo['mo_nm'])) {
+                    $brandSlug = strtolower(str_replace('_', '-', $carData['br']));
+                    $modelSlug = strtolower(str_replace('_', '-', $carData['mo']));
+                    $brandText = $carListInfo['br_nm'];
+                    $modelText = $carListInfo['mo_nm'];
+                    
+                    $section = ($carData['catalog_type'] === 'on_order') ? 'ordercars' : 'cars';
+                    
+                    $carLink = "https://www.sauto.md/ro/{$section}/{$carData['id']}";
+                    $modelLink = "https://www.sauto.md/ro/{$section}/{$brandSlug}-{$modelSlug}";
+                    $brandLink = "https://www.sauto.md/ro/{$section}/{$brandSlug}";
+                    
+                    $linksText = "\n\nDetalii despre automobil:\n{$carLink}\nToate automobilele modelului {$modelText}:\n{$modelLink}\nToate automobilele mărcii {$brandText}:\n{$brandLink}";
+                    
+                    $descriptionText .= $linksText;
+                }
+            }
+            
+            $feature['value'] = $descriptionText;
+        }
+        
+        if (($featureId === '103' || $featureId === 103 || $featureId === '2553' || $featureId === 2553) && !empty($carData['vol'])) {
+            $engineVolumeCm3 = (int)$carData['vol'];
+            if ($featureId === '2553' || $featureId === 2553) {
+                $engineVolumeLiters = round($engineVolumeCm3 / 1000, 1);
+                $volumeMap = [
+                    0.7 => "43671", 0.8 => "43672", 0.9 => "43673", 1.0 => "43674",
+                    1.1 => "43675", 1.2 => "43676", 1.3 => "43677", 1.4 => "43678",
+                    1.5 => "43679", 1.6 => "43680", 1.7 => "43681", 1.8 => "43682",
+                    1.9 => "43683", 2.0 => "43684", 2.1 => "43685", 2.2 => "43686",
+                    2.3 => "43687", 2.4 => "43688", 2.5 => "43689", 2.6 => "43690",
+                    2.7 => "43691", 2.8 => "43692", 2.9 => "43693", 3.0 => "43694",
+                    3.1 => "43695", 3.2 => "43696", 3.3 => "43697", 3.4 => "43698",
+                    3.5 => "43699", 3.6 => "43700", 3.8 => "43701", 3.9 => "43702",
+                    4.0 => "43703", 4.2 => "43704", 4.3 => "43705", 4.4 => "43706",
+                    4.5 => "43707", 4.6 => "43708", 4.7 => "43709", 4.8 => "43710",
+                    5.0 => "43711", 5.2 => "43712", 5.3 => "43713", 5.4 => "43714",
+                    5.5 => "43715", 5.6 => "43716", 5.7 => "43717", 5.8 => "43718",
+                    5.9 => "43719", 6.0 => "43720", 6.2 => "43721", 6.4 => "43722",
+                    6.6 => "43723", 6.7 => "43724"
+                ];
+                
+                $optionId = $volumeMap[$engineVolumeLiters] ?? null;
+                if ($optionId) {
+                    $feature['value'] = $optionId;
+                }
+            } else {
+                $feature['value'] = (string)$engineVolumeCm3;
+            }
+        }
+        
+        if (($featureId === '4' || $featureId === 4) && !empty($carData['yr'])) {
+            $feature['value'] = (string)$carData['yr'];
+        }
+        
+        if (($featureId === '5' || $featureId === 5) && isset($carData['mlg'])) {
+            $feature['value'] = (string)$carData['mlg'];
+        }
+        
+        $updatedFeatures[] = $feature;
+    }
+    
+    return $updatedFeatures;
+}
+
 try {
     // Database connection using environment settings
     require_once __DIR__ . '/../environment.php';
@@ -139,11 +232,8 @@ try {
             }
             
             if (!empty($schedule['existing_999_id'])) {
-                // Car already has 999.md listing - republish it
-                echo "[" . date('Y-m-d H:i:s') . "] Car {$schedule['car_id']} has existing 999.md ID: {$schedule['existing_999_id']} - republishing on {$apiAccount}\n";
+                echo "[" . date('Y-m-d H:i:s') . "] Авто {$schedule['car_id']} имеет 999.md ID: {$schedule['existing_999_id']} - обновление и републикация на {$apiAccount}\n";
                 
-                // Use 999.md API to republish/boost the ad with correct account
-                // Create API service with the determined account ID
                 if ($catalogType === 'in_stock') {
                     $accountIdForApi = $apiAccountId ?? 2;
                 } elseif ($catalogType === 'on_order') {
@@ -152,10 +242,40 @@ try {
                     $accountIdForApi = 3;
                 }
                 $api999Service = new \App\Services\Api999Service($accountIdForApi);
+                
+                $carStmt = $db->prepare("SELECT * FROM {$prefx}_car_ctlg WHERE id = :car_id");
+                $carStmt->execute(['car_id' => $schedule['car_id']]);
+                $carData = $carStmt->fetch();
+                
+                if ($carData && (!empty($carData['features_json']) || !empty($carData['999']))) {
+                    $featuresData = null;
+                    if (!empty($carData['features_json'])) {
+                        $featuresData = json_decode($carData['features_json'], true);
+                    } elseif (!empty($carData['999'])) {
+                        $featuresData = json_decode($carData['999'], true);
+                    }
+                    
+                    if ($featuresData && isset($featuresData['features'])) {
+                        $updatedFeatures = updateFeaturesWithFreshData($featuresData['features'], $carData, $db, $prefx);
+                        
+                        echo "[" . date('Y-m-d H:i:s') . "] Обновление объявления актуальными данными перед републикацией...\n";
+                        $updateResult = $api999Service->updateAdvert($schedule['existing_999_id'], $updatedFeatures);
+                        
+                        if ($updateResult) {
+                            echo "[" . date('Y-m-d H:i:s') . "] ✅ Объявление обновлено актуальными данными\n";
+                            $featuresData['features'] = $updatedFeatures;
+                            $updatedFeaturesJson = json_encode($featuresData, JSON_UNESCAPED_UNICODE);
+                            $updateDbStmt = $db->prepare("UPDATE {$prefx}_car_ctlg SET `999` = :features, `features_json` = :features WHERE id = :car_id");
+                            $updateDbStmt->execute(['features' => $updatedFeaturesJson, 'car_id' => $schedule['car_id']]);
+                        } else {
+                            echo "[" . date('Y-m-d H:i:s') . "] ⚠️ Предупреждение: Не удалось обновить данные, продолжаем републикацию\n";
+                        }
+                    }
+                }
+                
                 $result = $api999Service->republishAdvert($schedule['existing_999_id']);
                 
                 if ($result && isset($result['success']) && $result['success']) {
-                    // Update schedule as published
                     $stmt = $db->prepare("
                         UPDATE gh3sp_sauto_personal_schedules 
                         SET status = 'published', 
@@ -168,14 +288,13 @@ try {
                         'id' => $schedule['id']
                     ]);
                     
-                    echo "[" . date('Y-m-d H:i:s') . "] ✅ Successfully republished car {$schedule['car_id']} on 999.md ({$apiAccount})\n";
+                    echo "[" . date('Y-m-d H:i:s') . "] ✅ Успешно републиковано авто {$schedule['car_id']} на 999.md ({$apiAccount})\n";
                 } else {
                     $errorMsg = isset($result['error']) ? $result['error'] : 'Unknown error during republish';
                     if (is_array($errorMsg)) {
                         $errorMsg = json_encode($errorMsg, JSON_UNESCAPED_UNICODE);
                     }
                     
-                    // Update schedule as failed
                     $stmt = $db->prepare("
                         UPDATE gh3sp_sauto_personal_schedules 
                         SET status = 'failed', 
@@ -187,11 +306,11 @@ try {
                         'id' => $schedule['id']
                     ]);
                     
-                    echo "[" . date('Y-m-d H:i:s') . "] ❌ Failed to republish car {$schedule['car_id']} on {$apiAccount}: $errorMsg\n";
+                    echo "[" . date('Y-m-d H:i:s') . "] ❌ Ошибка републикации авто {$schedule['car_id']} на {$apiAccount}: $errorMsg\n";
                 }
             } else {
                 // Car doesn't have 999.md listing yet - create new one for SAUTO Personal
-                echo "[" . date('Y-m-d H:i:s') . "] Car {$schedule['car_id']} is new - creating first 999.md listing\n";
+                echo "[" . date('Y-m-d H:i:s') . "] Авто {$schedule['car_id']} новое - создание первого объявления на 999.md\n";
                 
                 // Get car data and features from database
                 $carStmt = $db->prepare("
@@ -237,6 +356,10 @@ try {
                     echo "[" . date('Y-m-d H:i:s') . "] ❌ Invalid features data format\n";
                     continue;
                 }
+                
+                // CRITICAL FIX: Update features with FRESH data from car card before publishing
+                echo "[" . date('Y-m-d H:i:s') . "] Обновление features актуальными данными из карточки авто...\n";
+                $featuresData['features'] = updateFeaturesWithFreshData($featuresData['features'], $carData, $db, $prefx);
                 
                 // Apply smart engine volume conversion before API call
                 echo "[" . date('Y-m-d H:i:s') . "] Car volume from DB: " . ($carData['vol'] ?? 'NULL') . " cm³\n";

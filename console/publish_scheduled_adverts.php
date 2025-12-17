@@ -57,14 +57,43 @@ foreach ($adverts as $advert) {
         echo "[" . date('Y-m-d H:i:s') . "] IMAGES {$images}\n";
 
     if ($advert['published'] == 1) {
-        //$images = json_decode($advert['images']);
         if (empty($advert['999_id'])) {
             $updateStmt = $db->prepare("UPDATE gh3sp_adverts SET published = 0 WHERE id = :id");
             $updateStmt->execute([':id' => $advert['id']]);
         } else {
             try {
-                $responseUpdate = (new Api999Service($car['999_api_id']))->updateAdvert($advert['999_id'], [["id" => "14", "value" => $images]]);
-                echo "[" . date('Y-m-d H:i:s') . "] Advert {$advert['999_id']} is already update images. Response1: " . json_encode($responseUpdate, JSON_UNESCAPED_UNICODE) . "\n";
+                $ad = json_decode($car['999'], true);
+                if ($ad && isset($ad['features'])) {
+                    $freshFeatures = [];
+                    foreach ($ad['features'] as $feature) {
+                        $featureId = $feature['id'];
+                        
+                        if (($featureId === '2' || $featureId === 2) && !empty($car['prc']) && $car['prc'] > 0) {
+                            $currency = !empty($car['cur']) ? strtolower($car['cur']) : 'eur';
+                            $feature['value'] = (string)$car['prc'];
+                            $feature['unit'] = $currency;
+                            echo "[" . date('Y-m-d H:i:s') . "] Обновлена цена: {$car['prc']} {$currency}\n";
+                        }
+                        
+                        if (($featureId === '4' || $featureId === 4) && !empty($car['yr'])) {
+                            $feature['value'] = (string)$car['yr'];
+                        }
+                        
+                        if (($featureId === '5' || $featureId === 5) && isset($car['mlg'])) {
+                            $feature['value'] = (string)$car['mlg'];
+                        }
+                        
+                        $freshFeatures[] = $feature;
+                    }
+                    
+                    $freshFeatures[] = ["id" => "14", "value" => $images];
+                    
+                    $responseUpdate = (new Api999Service($car['999_api_id']))->updateAdvert($advert['999_id'], $freshFeatures);
+                    echo "[" . date('Y-m-d H:i:s') . "] Объявление {$advert['999_id']} обновлено актуальными данными. Response1: " . json_encode($responseUpdate, JSON_UNESCAPED_UNICODE) . "\n";
+                } else {
+                    $responseUpdate = (new Api999Service($car['999_api_id']))->updateAdvert($advert['999_id'], [["id" => "14", "value" => $images]]);
+                    echo "[" . date('Y-m-d H:i:s') . "] Advert {$advert['999_id']} is already update images. Response1: " . json_encode($responseUpdate, JSON_UNESCAPED_UNICODE) . "\n";
+                }
 
                 $i++;
                 if (!empty($responseUpdate['success']) && $responseUpdate['success']) {
