@@ -345,8 +345,8 @@ class PublicationService
         
         if ($catalogType === 'on_order') {
             // Order cars format
-            $caption_lines[] = '✅ Pretul masinii la licitatii Europene ' . $parseCurr($carData['prc']) . '€';
-            $caption_lines[] = '✨ Plus Garanție de la dealer European';
+            $caption_lines[] = '🏆 Pretul masinii la cheie in MD este de ' . $parseCurr($carData['prc']) . '€';
+            $caption_lines[] = '✨ Termen livrare 15 zile lucratoare';
             $caption_lines[] = '';
             $caption_lines[] = '📋 Detalii despre o mașină disponibilă acum la comandă:';
             
