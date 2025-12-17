@@ -927,7 +927,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                         $v_lng = $v == 'clr' ? $v_lng.( isset($clr_arr[$r[$v]])?'<span class="crcl" style="background-image:linear-gradient(135deg, '.$clr_arr[$r[$v]].')"></span>':'' ) : $v_lng;
                         $v_lng = $v == 'loc' ? $lng['t']['x']['address'][$r[$v]] : $v_lng;
                         $v_lng = $v == 'delivery_time' ? $r[$v].' '.$lng['l']['unit']['days'] : $v_lng;
-                        $v_lng = $v == 'advance_amount' ? parseCurr($r[$v]).' '.$lng['l']['cur'][$r['cur']] : $v_lng;
+                        $v_lng = $v == 'advance_amount' ? parseCurr(intval($r[$v])).' '.$lng['l']['cur'][$r['cur']] : $v_lng;
                         if ($v == 'import_country_id' && !empty($r[$v])) {
                             $country_name = getImportCountryName($r[$v], $_COOKIE['lang']);
                             if (!empty($country_name)) {
@@ -1062,7 +1062,7 @@ $iconTelegramParams = array(
                     $v_lng = $v == 'clr' ? $v_lng.( isset($clr_arr[$r[$v]])?'<span class="crcl" style="background-image:linear-gradient(135deg, '.$clr_arr[$r[$v]].')"></span>':'' ) : $v_lng;
                     $v_lng = $v == 'loc' ? $lng['t']['x']['address'][$r[$v]] : $v_lng;
                     $v_lng = $v == 'delivery_time' ? $r[$v].' '.$lng['l']['unit']['days'] : $v_lng;
-                    $v_lng = $v == 'advance_amount' ? parseCurr($r[$v]).' '.$lng['l']['cur'][$r['cur']] : $v_lng;
+                    $v_lng = $v == 'advance_amount' ? parseCurr(intval($r[$v])).' '.$lng['l']['cur'][$r['cur']] : $v_lng;
                     if ($v == 'import_country_id' && !empty($r[$v])) {
                         $country_name = getImportCountryName($r[$v], $_COOKIE['lang']);
                         if (!empty($country_name)) {
