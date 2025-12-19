@@ -1090,7 +1090,7 @@ function validateInputsSauto($contentBox, fileInput) {
 		} else {
 			isValid = false;
 			$(this).addClass('empty');
-		}
+					}
 	});
 	return isValid;
 }
@@ -1107,6 +1107,10 @@ function collectFormDataSauto($form, bx_id) {
 
 	$form.serializeArray().forEach(({ name, value }) => {
 		data.append(name, value);
+	});
+
+	$form.find('textarea[name^="params_html_"]').each(function() {
+		data.set($(this).attr('name'), $(this).val());
 	});
 
 	return data;

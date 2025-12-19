@@ -1124,6 +1124,10 @@ function collectFormDataSauto($form, bx_id) {
 		data.append(name, value);
 	});
 
+	$form.find('textarea[name^="params_html_"]').each(function() {
+		data.set($(this).attr('name'), $(this).val());
+	});
+
 	return data;
 }
 
