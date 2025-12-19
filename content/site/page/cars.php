@@ -875,14 +875,17 @@ $iconTelegramParams = array(
                 $rseo['params_html'] = (html_entity_decode($rseo['params_html']));
 
                 $bnt_params_mobile = '  ';
+                $bnt_params_desktop = '  ';
                 if( trim($rseo['params_html']) != '' ) {
                     $bnt_params_mobile = ' <div class="btn_params mobile" onclick=" openParamsPopAuto(\'open\')  " > '.$lng['w']['characteristics'].' </div> ';
+                    $bnt_params_desktop = ' <div class="btn_params desktop" onclick=" openParamsPopAuto(\'open\')  " > '.$lng['w']['characteristics'].' </div> ';
                 }
 
                 $rtrn .= '
                             <div class="prc  desktop">
                                 <span class="val" title="'.$lng['w']['prc'].'">'.( $r['prc']>100 ? '<span class="i">'.parseCurr($prc).'</span> <span class="cur">'.( symb_rplc($r['cur']) ).'</span>' : '<span style="font-size: 1.5rem;">'.$lng['w']['negociabil'] ).'</span></span>
                                 '.$o_prc_bl.'
+                                '.$bnt_params_desktop.'
                             </div>
                             <div class="doit">
                                 '. $bnt_params_mobile .'

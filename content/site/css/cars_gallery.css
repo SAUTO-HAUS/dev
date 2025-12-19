@@ -396,11 +396,26 @@ html.with-fancybox body {
     .btn_params.mobile {
         display: none;
     }
+    .btn_params.desktop {
+        display: inline-block;
+        width: 48%;
+        line-height: 3rem;
+        text-align: center;
+        border-radius: .5rem;
+        cursor: pointer;
+        background-color: #fff;
+        color: #515151;
+        border: 1px solid #515151;
+        margin-top: 10px;
+    }
     .mobile-only-timer {
         display: none !important;
     }
 }
 @media (max-width:640px){
+    .btn_params.desktop {
+        display: none;
+    }
     .block_txt_params .lng {
         display: flex;
         flex-direction: row;
