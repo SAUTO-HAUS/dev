@@ -265,7 +265,7 @@ if (__post('sub') == 'mo_search') {
                     'dsc'         => __post('meta_desc_'.$lng, ''),
                     'kwd'         => __post('meta_key_'.$lng, ''),
                     'txt'         => '', /* оставил как у тебя; подставь если нужно */
-                    'params_html' => __post('params_html_'.$lng, ''),
+                    'params_html' => __post('params_html_'.$lng, '', false),
                     'it_id'       => $it_fixed,
                     'tp'          => $tp_fixed,
                     'p1'          => $p1_fixed,
@@ -342,7 +342,7 @@ if (__post('sub') == 'mo_search') {
                     'dsc_'.$i => __post('meta_desc_'.$v, ''),
                     'kwd_'.$i => __post('meta_key_'.$v, ''),
                     'txt_'.$i => '',
-                    'params_html_'.$i => __post('params_html_'.$v, '')
+                    'params_html_'.$i => __post('params_html_'.$v, '', false)
                 ];
             }
             $pdo = $db->prepare('INSERT INTO '.$prefx.'_seo2 (`lng`, `tp`, `p1`, `p2`, `qr`, `it_id`, `ttl`, `h1`, `dsc`, `kwd`, `txt`, `params_html`) VALUES '.$pdo_v);
