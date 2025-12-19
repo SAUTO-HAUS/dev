@@ -406,7 +406,14 @@ html.with-fancybox body {
         background-color: #fff;
         color: #515151;
         border: 1px solid #515151;
-        margin-top: 10px;
+        margin-top: 0;
+        margin-left: auto;
+    }
+    .prc.desktop {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 10px;
     }
     .mobile-only-timer {
         display: none !important;
