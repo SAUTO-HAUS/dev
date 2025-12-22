@@ -1429,8 +1429,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function syncEngineVolumeTo999() {
         const engineVolumeField = document.querySelector('input[name="vol"]');
         if (!engineVolumeField || !engineVolumeField.value) return;
-        
-        const engineVolumeValue = parseInt(engineVolumeField.value);
+
+        const rawEngineVolume = String(engineVolumeField.value).trim().toLowerCase();
+        const numericEngineVolume = parseFloat(rawEngineVolume.replace(',', '.').replace(/[^0-9.]/g, ''));
+        if (!Number.isFinite(numericEngineVolume) || numericEngineVolume <= 0) return;
+
+        const engineVolumeLiters = numericEngineVolume >= 50 ? (numericEngineVolume / 1000) : numericEngineVolume;
+        const targetLitersRounded = Math.round(engineVolumeLiters * 10) / 10;
         
         let engineVolume999Field = document.querySelector('input[name="feature[103]"]');
         if (!engineVolume999Field) {
@@ -1442,26 +1447,25 @@ document.addEventListener('DOMContentLoaded', function() {
         if (engineVolume999Field.tagName === 'SELECT') {
             const options = engineVolume999Field.querySelectorAll('option');
             let volumeSynced = false;
-            const volumeInLiters = (engineVolumeValue / 1000).toFixed(1);
+            const volumeInLitersText = targetLitersRounded.toFixed(1);
             
             options.forEach(option => {
                 if (!volumeSynced) {
                     const optionText = option.textContent.trim();
-                    
-                    if (optionText.includes(volumeInLiters + ' л')) {
-                        engineVolume999Field.value = option.value;
-                        volumeSynced = true;
-                        engineVolume999Field.classList.remove('empty');
-                        engineVolume999Field.dispatchEvent(new Event('change', { bubbles: true }));
+
+                    const m = optionText.match(/([0-9]+(?:[\.,][0-9]+)?)\s*л/i);
+                    const optionLiters = m ? parseFloat(m[1].replace(',', '.')) : null;
+                    if (optionLiters !== null && Number.isFinite(optionLiters)) {
+                        const optionRounded = Math.round(optionLiters * 10) / 10;
+                        if (optionRounded === targetLitersRounded) {
+                            engineVolume999Field.value = option.value;
+                            volumeSynced = true;
+                            engineVolume999Field.classList.remove('empty');
+                            engineVolume999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                        }
                     }
-                    else if (optionText.includes(engineVolumeValue.toString())) {
-                        engineVolume999Field.value = option.value;
-                        volumeSynced = true;
-                        engineVolume999Field.classList.remove('empty');
-                        engineVolume999Field.dispatchEvent(new Event('change', { bubbles: true }));
-                    }
-                    else if (optionText.includes(volumeInLiters.replace('.', ',') + ' л') || 
-                             optionText.includes(Math.round(engineVolumeValue / 1000) + ' л')) {
+
+                    if (!volumeSynced && optionText.includes(volumeInLitersText + ' л')) {
                         engineVolume999Field.value = option.value;
                         volumeSynced = true;
                         engineVolume999Field.classList.remove('empty');
@@ -1470,7 +1474,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         } else {
-            engineVolume999Field.value = engineVolumeValue;
+            engineVolume999Field.value = numericEngineVolume;
             engineVolume999Field.classList.remove('empty');
         }
     }
