@@ -39,15 +39,15 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 	elseif ($v1=='fltr'){
 		if ($zreq!==null){
 			// Clear log file first
-			file_put_contents('debug_sql.log', "");
+			// file_put_contents('debug_sql.log', "");
 			
 			// Debug incoming parameters
-			file_put_contents('debug_sql.log', "\n--------------------\n", FILE_APPEND);
-			file_put_contents('debug_sql.log', "Function parameters:\n", FILE_APPEND);
-			file_put_contents('debug_sql.log', "v1: {$v1}\n", FILE_APPEND);
-			file_put_contents('debug_sql.log', "lmt: {$lmt}\n", FILE_APPEND);
-			file_put_contents('debug_sql.log', "stts: {$stts}\n", FILE_APPEND);
-			file_put_contents('debug_sql.log', "zreq: " . print_r($zreq, true) . "\n", FILE_APPEND);
+			// file_put_contents('debug_sql.log', "\n--------------------\n", FILE_APPEND);
+			// file_put_contents('debug_sql.log', "Function parameters:\n", FILE_APPEND);
+			// file_put_contents('debug_sql.log', "v1: {$v1}\n", FILE_APPEND);
+			// file_put_contents('debug_sql.log', "lmt: {$lmt}\n", FILE_APPEND);
+			// file_put_contents('debug_sql.log', "stts: {$stts}\n", FILE_APPEND);
+			// file_put_contents('debug_sql.log', "zreq: " . print_r($zreq, true) . "\n", FILE_APPEND);
 
 			// Clean up parameters - remove query string from values
 			foreach ($zreq as $k => $v) {
@@ -55,7 +55,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 					$zreq[$k] = explode('?', $v)[0];
 				}
 			}
-			file_put_contents('debug_sql.log', "Cleaned parameters: " . print_r($zreq, true) . "\n", FILE_APPEND);
+			// file_put_contents('debug_sql.log', "Cleaned parameters: " . print_r($zreq, true) . "\n", FILE_APPEND);
 
 			// Handle brand and model separately
 			if (!empty($zreq['br'])) {
@@ -64,53 +64,53 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 				$check_stmt = $db->prepare($check_sql);
 				$check_stmt->execute(['br' => $zreq['br']]);
 				$brand_data = $check_stmt->fetchAll(PDO::FETCH_ASSOC);
-				file_put_contents('debug_sql.log', "\nAvailable cars for brand {$zreq['br']}:\n" . print_r($brand_data, true) . "\n", FILE_APPEND);
+				// file_put_contents('debug_sql.log', "\nAvailable cars for brand {$zreq['br']}:\n" . print_r($brand_data, true) . "\n", FILE_APPEND);
 
 				$sql .= ' AND `br` = :br';
 				$query_args['br'] = $zreq['br'];
-				file_put_contents('debug_sql.log', "Added brand filter: br = {$zreq['br']}\n", FILE_APPEND);
+				// file_put_contents('debug_sql.log', "Added brand filter: br = {$zreq['br']}\n", FILE_APPEND);
 			}
 			
 			// Only add model filter if it's not empty and not a query string
 			if (!empty($zreq['mo']) && strpos($zreq['mo'], '?') === false) {
 				$sql .= ' AND `mo` = :mo';
 				$query_args['mo'] = $zreq['mo'];
-				file_put_contents('debug_sql.log', "Added model filter: mo = {$zreq['mo']}\n", FILE_APPEND);
+				// file_put_contents('debug_sql.log', "Added model filter: mo = {$zreq['mo']}\n", FILE_APPEND);
 			}
 			
 			// Add body type filter if present
 			if (!empty($zreq['bt'])) {
 				$sql .= ' AND `bt` = :bt';
 				$query_args['bt'] = $zreq['bt'];
-				file_put_contents('debug_sql.log', "Added body type filter: bt = {$zreq['bt']}\n", FILE_APPEND);
+				// file_put_contents('debug_sql.log', "Added body type filter: bt = {$zreq['bt']}\n", FILE_APPEND);
 			}
 			
 			// Add color filter if present
 			if (!empty($zreq['clr'])) {
 				$sql .= ' AND `clr` = :clr';
 				$query_args['clr'] = $zreq['clr'];
-				file_put_contents('debug_sql.log', "Added color filter: clr = {$zreq['clr']}\n", FILE_APPEND);
+				// file_put_contents('debug_sql.log', "Added color filter: clr = {$zreq['clr']}\n", FILE_APPEND);
 			}
 			
 			// Add transmission filter if present
 			if (!empty($zreq['tra'])) {
 				$sql .= ' AND `tra` = :tra';
 				$query_args['tra'] = $zreq['tra'];
-				file_put_contents('debug_sql.log', "Added transmission filter: tra = {$zreq['tra']}\n", FILE_APPEND);
+				// file_put_contents('debug_sql.log', "Added transmission filter: tra = {$zreq['tra']}\n", FILE_APPEND);
 			}
 			
 			// Add fuel type filter if present
 			if (!empty($zreq['fl'])) {
 				$sql .= ' AND `fl` = :fl';
 				$query_args['fl'] = $zreq['fl'];
-				file_put_contents('debug_sql.log', "Added fuel type filter: fl = {$zreq['fl']}\n", FILE_APPEND);
+				// file_put_contents('debug_sql.log', "Added fuel type filter: fl = {$zreq['fl']}\n", FILE_APPEND);
 			}
 			
 			// Add drivetrain filter if present
 			if (!empty($zreq['wd'])) {
 				$sql .= ' AND `wd` = :wd';
 				$query_args['wd'] = $zreq['wd'];
-				file_put_contents('debug_sql.log', "Added drivetrain filter: wd = {$zreq['wd']}\n", FILE_APPEND);
+				// file_put_contents('debug_sql.log', "Added drivetrain filter: wd = {$zreq['wd']}\n", FILE_APPEND);
 			}
 			
 			// Handle year range filter
@@ -121,24 +121,24 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 						// Less than max
 						$sql .= " AND `yr` <= :yr_max";
 						$query_args['yr_max'] = (int)$range[1];
-						file_put_contents('debug_sql.log', "Added year max filter: yr <= {$range[1]}\n", FILE_APPEND);
+						// file_put_contents('debug_sql.log', "Added year max filter: yr <= {$range[1]}\n", FILE_APPEND);
 					} elseif ($range[1] == 'x') {
 						// Greater than min
 						$sql .= " AND `yr` >= :yr_min";
 						$query_args['yr_min'] = (int)$range[0];
-						file_put_contents('debug_sql.log', "Added year min filter: yr >= {$range[0]}\n", FILE_APPEND);
+						// file_put_contents('debug_sql.log', "Added year min filter: yr >= {$range[0]}\n", FILE_APPEND);
 					} else {
 						// Between min and max
 						$sql .= " AND `yr` BETWEEN :yr_min AND :yr_max";
 						$query_args['yr_min'] = (int)min($range);
 						$query_args['yr_max'] = (int)max($range);
-						file_put_contents('debug_sql.log', "Added year range filter: yr BETWEEN {$query_args['yr_min']} AND {$query_args['yr_max']}\n", FILE_APPEND);
+						// file_put_contents('debug_sql.log', "Added year range filter: yr BETWEEN {$query_args['yr_min']} AND {$query_args['yr_max']}\n", FILE_APPEND);
 					}
 				} else {
 					// Exact year
 					$sql .= " AND `yr` = :yr";
 					$query_args['yr'] = (int)$zreq['yr'];
-					file_put_contents('debug_sql.log', "Added exact year filter: yr = {$zreq['yr']}\n", FILE_APPEND);
+					// file_put_contents('debug_sql.log', "Added exact year filter: yr = {$zreq['yr']}\n", FILE_APPEND);
 				}
 			}
 			
@@ -150,24 +150,24 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 						// Less than max
 						$sql .= " AND `mlg` <= :mlg_max";
 						$query_args['mlg_max'] = (int)$range[1];
-						file_put_contents('debug_sql.log', "Added mileage max filter: mlg <= {$range[1]}\n", FILE_APPEND);
+						// file_put_contents('debug_sql.log', "Added mileage max filter: mlg <= {$range[1]}\n", FILE_APPEND);
 					} elseif ($range[1] == 'x') {
 						// Greater than min
 						$sql .= " AND `mlg` >= :mlg_min";
 						$query_args['mlg_min'] = (int)$range[0];
-						file_put_contents('debug_sql.log', "Added mileage min filter: mlg >= {$range[0]}\n", FILE_APPEND);
+						// file_put_contents('debug_sql.log', "Added mileage min filter: mlg >= {$range[0]}\n", FILE_APPEND);
 					} else {
 						// Between min and max
 						$sql .= " AND `mlg` BETWEEN :mlg_min AND :mlg_max";
 						$query_args['mlg_min'] = (int)min($range);
 						$query_args['mlg_max'] = (int)max($range);
-						file_put_contents('debug_sql.log', "Added mileage range filter: mlg BETWEEN {$query_args['mlg_min']} AND {$query_args['mlg_max']}\n", FILE_APPEND);
+						// file_put_contents('debug_sql.log', "Added mileage range filter: mlg BETWEEN {$query_args['mlg_min']} AND {$query_args['mlg_max']}\n", FILE_APPEND);
 					}
 				} else {
 					// Exact mileage
 					$sql .= " AND `mlg` = :mlg";
 					$query_args['mlg'] = (int)$zreq['mlg'];
-					file_put_contents('debug_sql.log', "Added exact mileage filter: mlg = {$zreq['mlg']}\n", FILE_APPEND);
+					// file_put_contents('debug_sql.log', "Added exact mileage filter: mlg = {$zreq['mlg']}\n", FILE_APPEND);
 				}
 			}
 			
@@ -179,24 +179,24 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 						// Less than max
 						$sql .= " AND `prc` <= :prc_max";
 						$query_args['prc_max'] = (int)$range[1];
-						file_put_contents('debug_sql.log', "Added price max filter: prc <= {$range[1]}\n", FILE_APPEND);
+						// file_put_contents('debug_sql.log', "Added price max filter: prc <= {$range[1]}\n", FILE_APPEND);
 					} elseif ($range[1] == 'x') {
 						// Greater than min
 						$sql .= " AND `prc` >= :prc_min";
 						$query_args['prc_min'] = (int)$range[0];
-						file_put_contents('debug_sql.log', "Added price min filter: prc >= {$range[0]}\n", FILE_APPEND);
+						// file_put_contents('debug_sql.log', "Added price min filter: prc >= {$range[0]}\n", FILE_APPEND);
 					} else {
 						// Between min and max
 						$sql .= " AND `prc` BETWEEN :prc_min AND :prc_max";
 						$query_args['prc_min'] = (int)min($range);
 						$query_args['prc_max'] = (int)max($range);
-						file_put_contents('debug_sql.log', "Added price range filter: prc BETWEEN {$query_args['prc_min']} AND {$query_args['prc_max']}\n", FILE_APPEND);
+						// file_put_contents('debug_sql.log', "Added price range filter: prc BETWEEN {$query_args['prc_min']} AND {$query_args['prc_max']}\n", FILE_APPEND);
 					}
 				} else {
 					// Exact price
 					$sql .= " AND `prc` = :prc";
 					$query_args['prc'] = (int)$zreq['prc'];
-					file_put_contents('debug_sql.log', "Added exact price filter: prc = {$zreq['prc']}\n", FILE_APPEND);
+					// file_put_contents('debug_sql.log', "Added exact price filter: prc = {$zreq['prc']}\n", FILE_APPEND);
 				}
 			}
 			
@@ -208,24 +208,24 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 						// Less than max
 						$sql .= " AND `vol` <= :vol_max";
 						$query_args['vol_max'] = (int)$range[1];
-						file_put_contents('debug_sql.log', "Added volume max filter: vol <= {$range[1]}\n", FILE_APPEND);
+						// file_put_contents('debug_sql.log', "Added volume max filter: vol <= {$range[1]}\n", FILE_APPEND);
 					} elseif ($range[1] == 'x') {
 						// Greater than min
 						$sql .= " AND `vol` >= :vol_min";
 						$query_args['vol_min'] = (int)$range[0];
-						file_put_contents('debug_sql.log', "Added volume min filter: vol >= {$range[0]}\n", FILE_APPEND);
+						// file_put_contents('debug_sql.log', "Added volume min filter: vol >= {$range[0]}\n", FILE_APPEND);
 					} else {
 						// Between min and max
 						$sql .= " AND `vol` BETWEEN :vol_min AND :vol_max";
 						$query_args['vol_min'] = (int)min($range);
 						$query_args['vol_max'] = (int)max($range);
-						file_put_contents('debug_sql.log', "Added volume range filter: vol BETWEEN {$query_args['vol_min']} AND {$query_args['vol_max']}\n", FILE_APPEND);
+						// file_put_contents('debug_sql.log', "Added volume range filter: vol BETWEEN {$query_args['vol_min']} AND {$query_args['vol_max']}\n", FILE_APPEND);
 					}
 				} else {
 					// Exact volume
 					$sql .= " AND `vol` = :vol";
 					$query_args['vol'] = (int)$zreq['vol'];
-					file_put_contents('debug_sql.log', "Added exact volume filter: vol = {$zreq['vol']}\n", FILE_APPEND);
+					// file_put_contents('debug_sql.log', "Added exact volume filter: vol = {$zreq['vol']}\n", FILE_APPEND);
 				}
 			}
 
@@ -236,20 +236,20 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 			$sql .= ' ORDER BY CASE WHEN catalog_type = "on_order" THEN 1 WHEN catalog_type = "in_stock" THEN 2 ELSE 3 END, `n_a` ASC, `id` DESC LIMIT :lmt';
 			
 			// Log final SQL and parameters
-			file_put_contents('debug_sql.log', "\nFinal SQL: {$sql}\n", FILE_APPEND);
-			file_put_contents('debug_sql.log', "Final parameters: " . print_r($query_args, true) . "\n", FILE_APPEND);
+			// file_put_contents('debug_sql.log', "\nFinal SQL: {$sql}\n", FILE_APPEND);
+			// file_put_contents('debug_sql.log', "Final parameters: " . print_r($query_args, true) . "\n", FILE_APPEND);
 			
 			// Execute query and log results
 			try {
 				$stmt = $db->prepare($sql);
 				$stmt->execute($query_args);
 				$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-				file_put_contents('debug_sql.log', "\nQuery returned " . count($results) . " results\n", FILE_APPEND);
+				// file_put_contents('debug_sql.log', "\nQuery returned " . count($results) . " results\n", FILE_APPEND);
 				if (count($results) > 0) {
-					file_put_contents('debug_sql.log', "First result: " . print_r($results[0], true) . "\n", FILE_APPEND);
+					// file_put_contents('debug_sql.log', "First result: " . print_r($results[0], true) . "\n", FILE_APPEND);
 				}
 			} catch (PDOException $e) {
-				file_put_contents('debug_sql.log', "\nSQL Error: " . $e->getMessage() . "\n", FILE_APPEND);
+				// file_put_contents('debug_sql.log', "\nSQL Error: " . $e->getMessage() . "\n", FILE_APPEND);
 			}
 
 			// Initialize counter
@@ -262,27 +262,27 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 			if (isset($zreq['tra']) && !empty($zreq['tra'])) {
 				$sql .= " AND `tra` = :tra";
 				$query_args['tra'] = $zreq['tra'];
-				file_put_contents('debug_sql.log', "\nDIRECTLY APPLIED TRANSMISSION FILTER: tra = {$zreq['tra']}\n", FILE_APPEND);
+				// file_put_contents('debug_sql.log', "\nDIRECTLY APPLIED TRANSMISSION FILTER: tra = {$zreq['tra']}\n", FILE_APPEND);
 			} else {
-				file_put_contents('debug_sql.log', "\nNO TRANSMISSION FILTER FOUND IN REQUEST\n", FILE_APPEND);
+				// file_put_contents('debug_sql.log', "\nNO TRANSMISSION FILTER FOUND IN REQUEST\n", FILE_APPEND);
 			}
 			
 			// Special handling for fuel type filter
 			if (isset($zreq['fl']) && !empty($zreq['fl'])) {
 				$sql .= " AND `fl` = :fl";
 				$query_args['fl'] = $zreq['fl'];
-				file_put_contents('debug_sql.log', "\nDIRECTLY APPLIED FUEL TYPE FILTER: fl = {$zreq['fl']}\n", FILE_APPEND);
+				// file_put_contents('debug_sql.log', "\nDIRECTLY APPLIED FUEL TYPE FILTER: fl = {$zreq['fl']}\n", FILE_APPEND);
 			} else {
-				file_put_contents('debug_sql.log', "\nNO FUEL TYPE FILTER FOUND IN REQUEST\n", FILE_APPEND);
+				// file_put_contents('debug_sql.log', "\nNO FUEL TYPE FILTER FOUND IN REQUEST\n", FILE_APPEND);
 			}
 			
 			// Special handling for drivetrain filter
 			if (isset($zreq['wd']) && !empty($zreq['wd'])) {
 				$sql .= " AND `wd` = :wd";
 				$query_args['wd'] = $zreq['wd'];
-				file_put_contents('debug_sql.log', "\nDIRECTLY APPLIED DRIVETRAIN FILTER: wd = {$zreq['wd']}\n", FILE_APPEND);
+				// file_put_contents('debug_sql.log', "\nDIRECTLY APPLIED DRIVETRAIN FILTER: wd = {$zreq['wd']}\n", FILE_APPEND);
 			} else {
-				file_put_contents('debug_sql.log', "\nNO DRIVETRAIN FILTER FOUND IN REQUEST\n", FILE_APPEND);
+				// file_put_contents('debug_sql.log', "\nNO DRIVETRAIN FILTER FOUND IN REQUEST\n", FILE_APPEND);
 			}
 			
 			// Process range filters individually for better control
@@ -297,30 +297,30 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 							// Less than max value
 							$sql .= " AND `{$filter}` <= :{$filter}_max";
 							$query_args["{$filter}_max"] = (int)$range_values[1];
-							file_put_contents('debug_sql.log', "RANGE FILTER: {$filter} <= {$range_values[1]}\n", FILE_APPEND);
+							// file_put_contents('debug_sql.log', "RANGE FILTER: {$filter} <= {$range_values[1]}\n", FILE_APPEND);
 						} elseif ($range_values[1] == 'x') {
 							// Greater than min value
 							$sql .= " AND `{$filter}` >= :{$filter}_min";
 							$query_args["{$filter}_min"] = (int)$range_values[0];
-							file_put_contents('debug_sql.log', "RANGE FILTER: {$filter} >= {$range_values[0]}\n", FILE_APPEND);
+							// file_put_contents('debug_sql.log', "RANGE FILTER: {$filter} >= {$range_values[0]}\n", FILE_APPEND);
 						} else {
 							// Between min and max
 							$sql .= " AND `{$filter}` BETWEEN :{$filter}_min AND :{$filter}_max";
 							$query_args["{$filter}_min"] = (int)min($range_values);
 							$query_args["{$filter}_max"] = (int)max($range_values);
-							file_put_contents('debug_sql.log', "RANGE FILTER: {$filter} BETWEEN {$query_args["{$filter}_min"]} AND {$query_args["{$filter}_max"]}\n", FILE_APPEND);
+							// file_put_contents('debug_sql.log', "RANGE FILTER: {$filter} BETWEEN {$query_args["{$filter}_min"]} AND {$query_args["{$filter}_max"]}\n", FILE_APPEND);
 						}
 					} else {
 						// Single value (exact match)
 						$sql .= " AND `{$filter}` = :{$filter}";
 						$query_args[$filter] = (int)$zreq[$filter];
-						file_put_contents('debug_sql.log', "EXACT FILTER: {$filter} = {$zreq[$filter]}\n", FILE_APPEND);
+						// file_put_contents('debug_sql.log', "EXACT FILTER: {$filter} = {$zreq[$filter]}\n", FILE_APPEND);
 					}
 				}
 			}
 			
 			// Log all request parameters for debugging
-			file_put_contents('debug_sql.log', "All request params: " . print_r($zreq, true) . "\n", FILE_APPEND);
+			// file_put_contents('debug_sql.log', "All request params: " . print_r($zreq, true) . "\n", FILE_APPEND);
 			
 			// Handle any remaining special filters (location, status)
 			foreach ($common_filters as $filter) {
@@ -329,7 +329,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 				
 				$sql .= " AND `{$filter}` = :{$filter}";
 				$query_args[$filter] = $zreq[$filter];
-				file_put_contents('debug_sql.log', "Added {$filter} filter: {$filter} = {$zreq[$filter]}\n", FILE_APPEND);
+				// file_put_contents('debug_sql.log', "Added {$filter} filter: {$filter} = {$zreq[$filter]}\n", FILE_APPEND);
 			}
 			
 			// Handle other filter parameters (legacy approach for compatibility)

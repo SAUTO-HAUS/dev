@@ -63,10 +63,10 @@ function getImportCountryName($countryId, $language = 'ro') {
 <?php
 
 // Debug log for all parameters
-file_put_contents('filter_debug.log', "\n\nNew request at: " . date('Y-m-d H:i:s') . "\n", FILE_APPEND);
-file_put_contents('filter_debug.log', "URL: {$_SERVER['REQUEST_URI']}\n", FILE_APPEND);
-file_put_contents('filter_debug.log', "Query string: {$_SERVER['QUERY_STRING']}\n", FILE_APPEND);
-file_put_contents('filter_debug.log', "GET params: " . print_r($_GET, true) . "\n", FILE_APPEND);
+// file_put_contents('filter_debug.log', "\n\nNew request at: " . date('Y-m-d H:i:s') . "\n", FILE_APPEND);
+// file_put_contents('filter_debug.log', "URL: {$_SERVER['REQUEST_URI']}\n", FILE_APPEND);
+// file_put_contents('filter_debug.log', "Query string: {$_SERVER['QUERY_STRING']}\n", FILE_APPEND);
+// file_put_contents('filter_debug.log', "GET params: " . print_r($_GET, true) . "\n", FILE_APPEND);
 
 // Initialize variables
 $rtrn = '';
@@ -105,7 +105,7 @@ if (isset($_SERVER['QUERY_STRING'])) {
 
         // Rebuild clean query string
         $query_string = http_build_query($all_params);
-        file_put_contents('filter_debug.log', "Fixed malformed query string to: {$query_string}\n", FILE_APPEND);
+        // file_put_contents('filter_debug.log', "Fixed malformed query string to: {$query_string}\n", FILE_APPEND);
     }
 
     // Now parse the cleaned query string
@@ -115,7 +115,7 @@ if (isset($_SERVER['QUERY_STRING'])) {
     }
 
     // Log the corrected parameters
-    file_put_contents('filter_debug.log', "Corrected GET params: " . print_r($_GET, true) . "\n", FILE_APPEND);
+    // file_put_contents('filter_debug.log', "Corrected GET params: " . print_r($_GET, true) . "\n", FILE_APPEND);
 }
 
 // Then handle clean URLs for car filters and single car pages
@@ -131,10 +131,10 @@ if (isset($t_mp[3]) && !is_numeric($t_mp[3])) {
     }
 
     // Log for debugging
-    file_put_contents('debug_sql.log', "\nProcessing URL segments:\n", FILE_APPEND);
-    file_put_contents('debug_sql.log', "Brand: {$brand}\n", FILE_APPEND);
-    file_put_contents('debug_sql.log', "Model: " . (isset($model) ? $model : "not set") . "\n", FILE_APPEND);
-    file_put_contents('debug_sql.log', "Final GET params: " . print_r($_GET, true) . "\n", FILE_APPEND);
+    // file_put_contents('debug_sql.log', "\nProcessing URL segments:\n", FILE_APPEND);
+    // file_put_contents('debug_sql.log', "Brand: {$brand}\n", FILE_APPEND);
+    // file_put_contents('debug_sql.log', "Model: " . (isset($model) ? $model : "not set") . "\n", FILE_APPEND);
+    // file_put_contents('debug_sql.log', "Final GET params: " . print_r($_GET, true) . "\n", FILE_APPEND);
 }
 
 
@@ -149,7 +149,7 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
     }
 
     // Log SQL parameters for debugging
-    file_put_contents('debug_sql.log', "Processing filtered catalog with params: " . print_r($_GET, true) . "\n", FILE_APPEND);
+    // file_put_contents('debug_sql.log', "Processing filtered catalog with params: " . print_r($_GET, true) . "\n", FILE_APPEND);
 
     // This is a filtered catalogue page
     $card = $car_card('fltr', $cr_lmt, $_GET, 'av');
@@ -223,8 +223,8 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
                     $sa['meta']['dsc'] = "Automobile {$brand_name} {$model_name} în stoc și la comandă. Prețuri și oferte actuale.";
 
                     // Debug logging
-                    file_put_contents('debug_cars.log', "Applied SEO meta for: {$brand_name} {$model_name}\n", FILE_APPEND);
-                    file_put_contents('debug_cars.log', "Titlu: {$sa['meta']['ttl']}\n", FILE_APPEND);
+                    // file_put_contents('debug_cars.log', "Applied SEO meta for: {$brand_name} {$model_name}\n", FILE_APPEND);
+                    // file_put_contents('debug_cars.log', "Titlu: {$sa['meta']['ttl']}\n", FILE_APPEND);
                 }
             } else {
                 // Override meta values with SEO personalized ones for brand only
@@ -245,8 +245,8 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
                 $sa['meta']['dsc'] = "Automobile {$brand_name} în stoc și la comandă. Prețuri și oferte actuale.";
 
                 // Logging for debugging
-                file_put_contents('debug_cars.log', "Applied SEO meta for brand: {$brand_name}\n", FILE_APPEND);
-                file_put_contents('debug_cars.log', "Titlu: {$sa['meta']['ttl']}\n", FILE_APPEND);
+                // file_put_contents('debug_cars.log', "Applied SEO meta for brand: {$brand_name}\n", FILE_APPEND);
+                // file_put_contents('debug_cars.log', "Titlu: {$sa['meta']['ttl']}\n", FILE_APPEND);
             }
         }
     }
@@ -311,7 +311,7 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
             $rtrn .= '</div>';
             $rtrn .= '</div>';
 
-            file_put_contents('debug_sql.log', "No results found for filter parameters: " . print_r($_GET, true) . "\n", FILE_APPEND);
+            // file_put_contents('debug_sql.log', "No results found for filter parameters: " . print_r($_GET, true) . "\n", FILE_APPEND);
         }
     }
 }
@@ -366,14 +366,14 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 $old_car = $pdo_check->fetch(PDO::FETCH_ASSOC);
                 
                 if (!$old_car) {
-                    file_put_contents('debug_sql.log', "Old URL format detected with ID {$old_car_id} - car not found, returning 404\n", FILE_APPEND);
+                    // file_put_contents('debug_sql.log', "Old URL format detected with ID {$old_car_id} - car not found, returning 404\n", FILE_APPEND);
                     http_response_code(404);
                     include(_DEFAULT.'/404.php');
                     exit;
                 }
                 
                 $it_id = $old_car_id;
-                file_put_contents('debug_sql.log', "Old URL format detected with ID {$old_car_id} - car found\n", FILE_APPEND);
+                // file_put_contents('debug_sql.log', "Old URL format detected with ID {$old_car_id} - car found\n", FILE_APPEND);
             } catch (PDOException $e) {
                 error_log('PDO Error checking old car ID ' . $old_car_id . ': ' . $e->getMessage());
                 http_response_code(404);
@@ -401,9 +401,9 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
 
             if ($car) {
                 $it_id = $car['id'];
-                file_put_contents('debug_sql.log', "Found car with ID: {$it_id}\n", FILE_APPEND);
+                // file_put_contents('debug_sql.log', "Found car with ID: {$it_id}\n", FILE_APPEND);
             } else {
-                file_put_contents('debug_sql.log', "No car found for brand: {$brand}, model: {$model}\n", FILE_APPEND);
+                // file_put_contents('debug_sql.log', "No car found for brand: {$brand}, model: {$model}\n", FILE_APPEND);
             }
         }
     } else {
@@ -427,7 +427,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
             } catch (PDOException $e) {
                 // Log the error but don't crash the page
                 error_log('PDO Error selecting car data for ID ' . $it_id . ': ' . $e->getMessage());
-                file_put_contents('debug_sql.log', "PDO Error selecting car data for ID: {$it_id} - " . $e->getMessage() . "\n", FILE_APPEND);
+                // file_put_contents('debug_sql.log', "PDO Error selecting car data for ID: {$it_id} - " . $e->getMessage() . "\n", FILE_APPEND);
                 // Create empty result to prevent foreach errors
                 $pdo = [];
             }
