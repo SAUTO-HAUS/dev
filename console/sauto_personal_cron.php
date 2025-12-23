@@ -90,9 +90,6 @@ function updateFeaturesWithFreshData($features, $carData, $db, $prefx) {
                 $optionId = $volumeMap[$engineVolumeLiters] ?? null;
                 if ($optionId) {
                     $feature['value'] = $optionId;
-                    echo "[" . date('Y-m-d H:i:s') . "] Engine volume: {$engineVolumeCm3}cc -> {$engineVolumeLiters}L -> option {$optionId}\n";
-                } else {
-                    echo "[" . date('Y-m-d H:i:s') . "] WARNING: No mapping found for engine volume {$engineVolumeLiters}L\n";
                 }
             } else {
                 $feature['value'] = (string)$engineVolumeCm3;
