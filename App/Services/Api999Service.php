@@ -131,7 +131,7 @@ class Api999Service
     public function getSubcategoryFeatures(int $categoryId, int $subcategoryId, int $offerTypeId, string $lang = 'ru'): array
     {
         $url = self::BASE_URL . "/features?category_id=" . urlencode($categoryId) . "&subcategory_id=" . urlencode($subcategoryId) . "&offer_type=" . urlencode($offerTypeId) . "&lang=" . urlencode($lang);
-        return $this->sendCachedRequest($url); //$this->sendRequest($url);
+        return $this->sendCachedRequest($url, 'GET', null, PHP_INT_MAX); 
     }
 
     /**
