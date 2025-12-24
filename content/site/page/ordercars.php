@@ -1301,6 +1301,10 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                                     </div>
                                 </div>
                             </div>';
+                
+                // HTML description
+                $rtrn .= getDesktopDescriptionBlock($rseo['params_html']);
+                
                 $rtrn .= '</div>';
 
                 $rtrn .= '
