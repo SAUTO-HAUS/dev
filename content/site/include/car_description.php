@@ -31,22 +31,82 @@ function parseEquipmentSection($html) {
 }
 
 /**
+ * Split HTML after N emoji sections
+ * @param string $html - Full HTML content
+ * @param int $afterEmoji - Split after this many emojis (default 4)
+ * @return array - ['visible' => first part, 'hidden' => rest]
+ */
+function splitHtmlByEmoji($html, $afterEmoji = 4) {
+    // Common section emojis used in descriptions
+    $emojiPattern = '/[\x{1F300}-\x{1F9FF}]/u';
+    
+    preg_match_all($emojiPattern, $html, $matches, PREG_OFFSET_CAPTURE);
+    
+    if (count($matches[0]) <= $afterEmoji) {
+        // Less than or equal to N emojis - show all
+        return ['visible' => $html, 'hidden' => ''];
+    }
+    
+    // Find position of the (N+1)th emoji to split before it
+    $splitPos = $matches[0][$afterEmoji][1];
+    
+    $visible = substr($html, 0, $splitPos);
+    $hidden = substr($html, $splitPos);
+    
+    return ['visible' => trim($visible), 'hidden' => trim($hidden)];
+}
+
+/**
  * Generate desktop description block HTML
  * @param string $params_html - Full HTML content
+ * @param string $lang - Current language code
  * @return string - HTML block
  */
-function getDesktopDescriptionBlock($params_html) {
+function getDesktopDescriptionBlock($params_html, $lang = 'ro') {
     if (trim($params_html) == '') {
         return '';
     }
     
-    return '
+    $parts = splitHtmlByEmoji($params_html, 4);
+    
+    // Button text in 3 languages
+    $btnText = [
+        'ro' => 'Vezi toată descrierea',
+        'ru' => 'Показать всё описание',
+        'en' => 'Show full description'
+    ];
+    $btnHideText = [
+        'ro' => 'Ascunde',
+        'ru' => 'Скрыть',
+        'en' => 'Hide'
+    ];
+    
+    $showText = isset($btnText[$lang]) ? $btnText[$lang] : $btnText['ro'];
+    $hideText = isset($btnHideText[$lang]) ? $btnHideText[$lang] : $btnHideText['ro'];
+    
+    $html = '
     <div style="clear:both"></div>
     <div class="car-description-block desktop">
         <div class="car-description-content">
-            '.$params_html.'
+            '.$parts['visible'].'
+        </div>';
+    
+    if (!empty($parts['hidden'])) {
+        $html .= '
+        <div class="car-description-hidden" style="display:none;">
+            <div class="car-description-content">
+                '.$parts['hidden'].'
+            </div>
         </div>
+        <button class="btn-show-full-description" onclick="toggleFullDescription(this)" data-show="'.$showText.'" data-hide="'.$hideText.'">
+            '.$showText.'
+        </button>';
+    }
+    
+    $html .= '
     </div>';
+    
+    return $html;
 }
 
 /**

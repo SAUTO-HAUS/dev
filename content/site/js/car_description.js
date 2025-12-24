@@ -14,3 +14,20 @@ function toggleAccordion(header) {
         content.classList.add('active');
     }
 }
+
+/**
+ * Toggle full description visibility on desktop
+ * @param {HTMLElement} button - The button element
+ */
+function toggleFullDescription(button) {
+    var hiddenContent = button.previousElementSibling;
+    var isVisible = hiddenContent.style.display !== 'none';
+    
+    if (isVisible) {
+        hiddenContent.style.display = 'none';
+        button.textContent = button.getAttribute('data-show');
+    } else {
+        hiddenContent.style.display = 'block';
+        button.textContent = button.getAttribute('data-hide');
+    }
+}

@@ -12,6 +12,10 @@
     clear: right;
 }
 
+.btn_params.desktop {
+    display: none !important;
+}
+
 /* Mobile: reset float and width for calculator */
 @media (max-width: 768px) {
     .spc_bx.d_right_b {
@@ -39,6 +43,26 @@
     display: block;
     width: 100%;
     margin-top: 15px;
+}
+
+/* Button to show full description */
+.btn-show-full-description {
+    display: block;
+    width: 100%;
+    padding: 12px 20px;
+    margin-top: 15px;
+    background-color: #e2001a;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-show-full-description:hover {
+    background-color: #c50017;
 }
 
 .car-description-content h1 {

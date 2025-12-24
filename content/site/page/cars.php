@@ -937,7 +937,7 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
 
                 // Desktop description
                 $rtrn .= '<div class="pht_bx d_left_b">';
-                $rtrn .= getDesktopDescriptionBlock($rseo['params_html']);
+                $rtrn .= getDesktopDescriptionBlock($rseo['params_html'], $_COOKIE['lang']);
                 $rtrn .= '</div>';
 
                 $rtrn .= '
