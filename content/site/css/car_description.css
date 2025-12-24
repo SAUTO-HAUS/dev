@@ -12,6 +12,20 @@
     clear: right;
 }
 
+/* Mobile: reset float and width for calculator */
+@media (max-width: 768px) {
+    .spc_bx.d_right_b {
+        float: none;
+        width: 100%;
+        clear: none;
+    }
+    
+    .pht_bx.d_left_b {
+        float: none;
+        width: 100%;
+    }
+}
+
 /* Desktop */
 .car-description-block {
     margin: 20px 0;
