@@ -12,6 +12,9 @@ if (isset($GLOBALS['page_is_404']) && $GLOBALS['page_is_404'] === true) {
 // Include order-specific functions for order cars
 include_once( _SITE_INCL.'/order_functions.php' );
 
+// Include car description functions
+include_once( _SITE_INCL.'/car_description.php' );
+
 /**
  * Get country name by ID in the specified language
  * @param int $countryId - ID of the country
@@ -62,6 +65,10 @@ function getImportCountryName($countryId, $language = 'ro') {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5/dist/fancybox/fancybox.css" />
 
     <link rel="stylesheet" href="/content/site/css/cars_gallery.css?v=<?=time()?>" />
+    
+    <!-- Car Description Assets -->
+    <link rel="stylesheet" href="/content/site/css/car_description.css?v=<?=time()?>" />
+    <script src="/content/site/js/car_description.js?v=<?=time()?>" defer></script>
     
     <!-- Product Card Slider Assets -->
     <link rel="stylesheet" href="/content/site/components/product-card-slider/product-card-slider.css?v=<?=time()?>" />
@@ -549,179 +556,9 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 $z_src = isset($img['main'])?'/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/high/'.$img['main'].$image_extension:'';
                 //$z_src = (@getimagesize($site_url.$z_src)?$z_src:'');
                 $rtrn .= '<div class="big_pht" role="img" aria-label="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' large photo" data-pos="1" data-cnt="'.$img_cnt.'" style="background-image:url('.$z_src.');" data-src="'.$z_src.'"></div>';
-                
-                $rtrn .= '
-                            <style>
-                                .order-info-grid {
-                                    display: grid;
-                                    grid-template-columns: repeat(3, 1fr);
-                                    width: 100%;
-                                    gap: 1rem;
-                                    max-width: 1200px;
-                                    margin-left: auto;
-                                    margin-right: auto;
-                                    padding: 1rem 1rem 1rem 1rem;
-                                    border-radius: 1rem;
-                                    box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.08);
-                                }
-                                
-                                .order-info-card {
-                                    background: #f8f9faff;
-                                    padding: 0.8rem;
-                                    border-radius: 1rem;
-                                    box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.08);
-                                    text-align: left;
-                                    transition: all 0.3s ease;
-                                    border: 0.1rem solid #b6b6b6ff;
-                                    display: flex;
-                                    flex-direction: column;
-                                    overflow: hidden;
-                                    position: relative;
-                                    min-height: 220px;
-                                }
-                                
-                                .order-info-card:hover {
-                                    transform: translateY(-0.5rem);
-                                    box-shadow: 0 1rem 2rem rgba(226, 0, 26, 0.15);
-                                    border-color: #e2001a;
-                                }
-                                
-                                .order-info-header {
-                                    display: flex;
-                                    align-items: center;
-                                    margin-bottom: 1rem;
-                                    gap: 1rem;
-                                }
-                                
-                                .order-info-icon {
-                                    width: 4rem;
-                                    height: 4rem;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                    background: transparent;
-                                    border-radius: 1rem;
-                                    flex-shrink: 0;
-                                    border: none;
-                                }
-                                
-                                .order-info-icon img {
-                                    width: 2.5rem;
-                                    height: 2.5rem;
-                                }
-                                
-                                .order-info-title {
-                                    font-size: 1.25rem;
-                                    font-weight: 700;
-                                    color: #2c3e50;
-                                    margin: 0;
-                                    line-height: 1.3;
-                                }
-                                
-                                .order-info-content {
-                                    flex: 1;
-                                }
-                                
-                                .order-info-desc {
-                                    font-size: 0.95rem;
-                                    color: #6c757d;
-                                    line-height: 1.6;
-                                    margin: 0 0 0.3rem 0;
-                                    position: relative;
-                                    padding-left: 1.2rem;
-                                }
-                                
-                                .order-info-desc::before {
-                                    content: "✓";
-                                    position: absolute;
-                                    left: 0;
-                                    top: 0;
-                                    color: #e2001a;
-                                    font-weight: bold;
-                                    font-size: 1rem;
-                                }
-                                
-                                .order-info-desc:last-child {
-                                    margin-bottom: 0;
-                                }
-                                
-                                @media (max-width: 768px) {
-                                    .order-info-grid {
-                                        grid-template-columns: 1fr !important;
-                                        gap: 1rem !important;
-                                        padding: 1rem 1rem 0 1rem !important;
-                                        margin: 0.5rem 0 -2rem 0 !important;
-                                    }
-                                    
-                                    .order-info-card {
-                                        padding: 1.25rem !important;
-                                        min-height: auto !important;
-                                    }
-                                    
-                                    .order-info-header {
-                                        flex-direction: column !important;
-                                        align-items: flex-start !important;
-                                        gap: 0.75rem !important;
-                                    }
-                                    
-                                    .order-info-icon {
-                                        width: 3rem !important;
-                                        height: 3rem !important;
-                                    }
-                                    
-                                    .order-info-icon img {
-                                        width: 2rem !important;
-                                        height: 2rem !important;
-                                    }
-                                    
-                                    .order-info-title {
-                                        font-size: 1.1rem !important;
-                                    }
-                                }
-                            </style>
-                            
-                            <div class="order-info-grid">
-                                <!-- Siguranța -->
-                                <div class="order-info-card">
-                                    <div class="order-info-header">
-                                        <div class="order-info-icon"><img src="/content/site/page/icons-order/safety-1.png" alt="Security icon"></div>
-                                        <h3 class="order-info-title">'.$lng['w']['order_info_security_title'].'</h3>
-                                    </div>
-                                    <div class="order-info-content">
-                                        <p class="order-info-desc">'.$lng['w']['order_info_security_desc1'].'</p>
-                                        <p class="order-info-desc">'.$lng['w']['order_info_security_desc2'].'</p>
-                                        <p class="order-info-desc">'.$lng['w']['order_info_security_desc3'].'</p>
-                                        <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc3'].'</p>
-                                    </div>
-                                </div>
-                                
-                                <!-- Avantaje -->
-                                <div class="order-info-card">
-                                    <div class="order-info-header">
-                                        <div class="order-info-icon"><img src="/content/site/page/icons-order/winner-2.png" alt="Advantages icon"></div>
-                                        <h3 class="order-info-title">'.$lng['w']['order_info_advantages_title'].'</h3>
-                                    </div>
-                                    <div class="order-info-content">
-                                        <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc1'].'</p>
-                                        <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc2'].'</p>
-                                        <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc4'].'</p>
-                                    </div>
-                                </div>
-                                
-                                <!-- Transparența -->
-                                <div class="order-info-card">
-                                    <div class="order-info-header">
-                                        <div class="order-info-icon"><img src="/content/site/page/icons-order/magnifying-glass-3.png" alt="Transparency icon"></div>
-                                        <h3 class="order-info-title">'.$lng['w']['order_info_transparency_title'].'</h3>
-                                    </div>
-                                    <div class="order-info-content">
-                                        <p class="order-info-desc">'.$lng['w']['order_info_transparency_desc1'].'</p>
-                                        <p class="order-info-desc">'.$lng['w']['order_info_transparency_desc2'].'</p>
-                                        <p class="order-info-desc">'.$lng['w']['order_info_transparency_desc3'].'</p>
-                                    </div>
-                                </div>
-                            </div>';
                 $rtrn .= '</div>';
+                
+                
 
                 $cur = $r['cur'];
                 if ( $r['prc_t']!=0 && $r['prc_t']>time() ){
@@ -1344,10 +1181,129 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                     </div>';
                 }
 
+                // Order info grid in left column (similar to html description in cars.php)
+                $rtrn .= '<div class="pht_bx d_left_b">';
                 $rtrn .= '
+                            <style>
+                                .order-info-grid-desktop {
+                                    display: grid;
+                                    grid-template-columns: repeat(3, 1fr);
+                                    width: 100%;
+                                    gap: 1rem;
+                                    padding: 1rem;
+                                    border-radius: 1rem;
+                                    box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.08);
+                                }
+                                
+                                .order-info-grid-desktop .order-info-card {
+                                    background: #f8f9faff;
+                                    padding: 0.8rem;
+                                    border-radius: 1rem;
+                                    box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.08);
+                                    text-align: left;
+                                    transition: all 0.3s ease;
+                                    border: 0.1rem solid #b6b6b6ff;
+                                    display: flex;
+                                    flex-direction: column;
+                                    min-height: 220px;
+                                }
+                                
+                                .order-info-grid-desktop .order-info-card:hover {
+                                    transform: translateY(-0.5rem);
+                                    box-shadow: 0 1rem 2rem rgba(226, 0, 26, 0.15);
+                                    border-color: #e2001a;
+                                }
+                                
+                                .order-info-grid-desktop .order-info-header {
+                                    display: flex;
+                                    align-items: center;
+                                    margin-bottom: 1rem;
+                                    gap: 1rem;
+                                }
+                                
+                                .order-info-grid-desktop .order-info-icon {
+                                    width: 4rem;
+                                    height: 4rem;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                }
+                                
+                                .order-info-grid-desktop .order-info-icon img {
+                                    width: 2.5rem;
+                                    height: 2.5rem;
+                                }
+                                
+                                .order-info-grid-desktop .order-info-title {
+                                    font-size: 1.25rem;
+                                    font-weight: 700;
+                                    color: #2c3e50;
+                                    margin: 0;
+                                }
+                                
+                                .order-info-grid-desktop .order-info-desc {
+                                    font-size: 0.95rem;
+                                    color: #6c757d;
+                                    line-height: 1.6;
+                                    margin: 0 0 0.3rem 0;
+                                    position: relative;
+                                    padding-left: 1.2rem;
+                                }
+                                
+                                .order-info-grid-desktop .order-info-desc::before {
+                                    content: "✓";
+                                    position: absolute;
+                                    left: 0;
+                                    color: #e2001a;
+                                    font-weight: bold;
+                                }
+                                
+                                @media (max-width: 768px) {
+                                    .order-info-grid-desktop {
+                                        display: none !important;
+                                    }
+                                }
+                            </style>
+                            
+                            <div class="order-info-grid-desktop">
+                                <div class="order-info-card">
+                                    <div class="order-info-header">
+                                        <div class="order-info-icon"><img src="/content/site/page/icons-order/safety-1.png" alt="Security icon"></div>
+                                        <h3 class="order-info-title">'.$lng['w']['order_info_security_title'].'</h3>
+                                    </div>
+                                    <div class="order-info-content">
+                                        <p class="order-info-desc">'.$lng['w']['order_info_security_desc1'].'</p>
+                                        <p class="order-info-desc">'.$lng['w']['order_info_security_desc2'].'</p>
+                                        <p class="order-info-desc">'.$lng['w']['order_info_security_desc3'].'</p>
+                                        <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc3'].'</p>
+                                    </div>
+                                </div>
+                                <div class="order-info-card">
+                                    <div class="order-info-header">
+                                        <div class="order-info-icon"><img src="/content/site/page/icons-order/winner-2.png" alt="Advantages icon"></div>
+                                        <h3 class="order-info-title">'.$lng['w']['order_info_advantages_title'].'</h3>
+                                    </div>
+                                    <div class="order-info-content">
+                                        <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc1'].'</p>
+                                        <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc2'].'</p>
+                                        <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc4'].'</p>
+                                    </div>
+                                </div>
+                                <div class="order-info-card">
+                                    <div class="order-info-header">
+                                        <div class="order-info-icon"><img src="/content/site/page/icons-order/magnifying-glass-3.png" alt="Transparency icon"></div>
+                                        <h3 class="order-info-title">'.$lng['w']['order_info_transparency_title'].'</h3>
+                                    </div>
+                                    <div class="order-info-content">
+                                        <p class="order-info-desc">'.$lng['w']['order_info_transparency_desc1'].'</p>
+                                        <p class="order-info-desc">'.$lng['w']['order_info_transparency_desc2'].'</p>
+                                        <p class="order-info-desc">'.$lng['w']['order_info_transparency_desc3'].'</p>
+                                    </div>
+                                </div>
+                            </div>';
+                $rtrn .= '</div>';
 
-                
-                            <div style="clear: both"> </div>
+                $rtrn .= '
                             <div class="spc_bx  d_right_b"> 
                                 <!--Plugin CSS file with desired skin-->
                                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css"/>

@@ -4,6 +4,14 @@
     margin-top: 15px;
 }
 
+/* Right column block - calculator under specifications */
+.spc_bx.d_right_b {
+    float: right;
+    width: 32%;
+    margin-top: 15px;
+    clear: right;
+}
+
 /* Desktop */
 .car-description-block {
     margin: 20px 0;
