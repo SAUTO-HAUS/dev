@@ -12,7 +12,9 @@
     clear: right;
 }
 
-.btn_params.desktop {
+/* Hide characteristics button - content is shown directly on page (desktop) or in accordions (mobile) */
+.btn_params.desktop,
+.btn_params.mobile {
     display: none !important;
 }
 

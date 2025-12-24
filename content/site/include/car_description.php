@@ -135,7 +135,7 @@ function getMobileAccordions($parsedHtml, $lang) {
     }
     
     // Full description accordion
-    $fullDescriptionTitle = $lang == 'ru' ? 'Полное исчерпывающее описание' : ($lang == 'en' ? 'Full description' : 'Descriere completă');
+    $fullDescriptionTitle = $lang == 'ru' ? 'Полное описание' : ($lang == 'en' ? 'Full description' : 'Descriere completă');
     $html .= '
     <div class="car-accordion mobile">
         <div class="accordion-header" onclick="toggleAccordion(this)">
