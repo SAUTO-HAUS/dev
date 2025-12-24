@@ -1,0 +1,148 @@
+/* Car Description Block - Desktop */
+.car-description-block {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #ff0000;
+}
+
+.car-description-block.desktop {
+    display: block;
+    width: 100%;
+    margin-top: 15px;
+}
+
+.car-description-content h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0 0 15px 0;
+    color: #333;
+}
+
+.car-description-content h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 20px 0 10px 0;
+    color: #444;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+}
+
+.car-description-content h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 15px 0 8px 0;
+    color: #555;
+}
+
+.car-description-content p {
+    margin: 0 0 12px 0;
+    line-height: 1.6;
+    color: #333;
+}
+
+.car-description-content ul {
+    margin: 10px 0 15px 20px;
+    padding: 0;
+    list-style-type: disc;
+}
+
+.car-description-content ul li {
+    margin: 5px 0;
+    line-height: 1.5;
+    color: #333;
+}
+
+.car-description-content ol {
+    margin: 10px 0 15px 20px;
+    padding: 0;
+    list-style-type: decimal;
+}
+
+.car-description-content ol li {
+    margin: 5px 0;
+    line-height: 1.5;
+    color: #333;
+}
+
+/* Car Accordion - Mobile */
+.car-accordion {
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: #fff;
+}
+
+.car-accordion.mobile {
+    display: none;
+}
+
+.accordion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: #f8f9fa;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1rem;
+    color: #333;
+    transition: background-color 0.2s;
+}
+
+.accordion-header:hover {
+    background-color: #e9ecef;
+}
+
+.accordion-header:active {
+    background-color: #dee2e6;
+}
+
+.accordion-icon {
+    font-size: 0.8rem;
+    transition: transform 0.3s ease;
+    color: #666;
+}
+
+.accordion-header.active .accordion-icon {
+    transform: rotate(180deg);
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+    background-color: #fff;
+}
+
+.accordion-content.active {
+    max-height: 2000px;
+    transition: max-height 0.5s ease-in;
+}
+
+.accordion-content .car-description-content {
+    padding: 15px 20px;
+}
+
+/* Media queries for mobile/desktop visibility */
+@media (max-width: 768px) {
+    .car-description-block.desktop {
+        display: none;
+    }
+    
+    .car-accordion.mobile {
+        display: block;
+    }
+}
+
+@media (min-width: 769px) {
+    .car-description-block.desktop {
+        display: block;
+    }
+    
+    .car-accordion.mobile {
+        display: none;
+    }
+}

@@ -3,6 +3,9 @@ defined( '_DOIT' ) or die( 'Restricted access' );
 
 use App\Helper\PhoneHelper;
 
+// Include car description functions
+require_once(__DIR__ . '/../include/car_description.php');
+
 // If this is a 404 page, show 404 content and exit
 if (isset($GLOBALS['page_is_404']) && $GLOBALS['page_is_404'] === true) {
     include(_DEFAULT.'/404.php');
@@ -59,6 +62,8 @@ function getImportCountryName($countryId, $language = 'ro') {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5/dist/fancybox/fancybox.css" />
 
     <link rel="stylesheet" href="/content/site/css/cars_gallery.css?v=<?=time()?>" />
+    <link rel="stylesheet" href="/content/site/css/car_description.css?v=<?=time()?>" />
+    <script src="/content/site/js/car_description.js?v=<?=time()?>"></script>
 
 <?php
 
@@ -926,6 +931,10 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                             </div>
                         </div>';
 
+                // Mobile accordions
+                $parsedHtml = parseEquipmentSection($rseo['params_html']);
+                $rtrn .= getMobileAccordions($parsedHtml, $_COOKIE['lang']);
+
                 $rtrn .= '
                             <div style="clear: both"> </div>
                             <div class="spc_bx  d_right_b"> 
@@ -1024,6 +1033,9 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                     </a>
                 </div>
                             </div> ';
+
+                // Desktop description block
+                $rtrn .= getDesktopDescriptionBlock($rseo['params_html']);
 
                 $rtrn .= '<script>
                             $(document).ready(function () {
