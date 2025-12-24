@@ -54,11 +54,6 @@ function generateYandexFeed() {
     $currencyMDL->setAttribute('rate', '1');
     $currencies->appendChild($currencyMDL);
     
-    $currencyEUR = $yml->createElement('currency');
-    $currencyEUR->setAttribute('id', 'EUR');
-    $currencyEUR->setAttribute('rate', 'CBRF');
-    $currencies->appendChild($currencyEUR);
-    
     // Categories
     $categories = $yml->createElement('categories');
     $shop->appendChild($categories);
@@ -121,8 +116,9 @@ function generateYandexFeed() {
         
         // Basic fields
         $offer->appendChild($yml->createElement('url', htmlspecialchars($link)));
-        $offer->appendChild($yml->createElement('price', $priceValue));
-        $offer->appendChild($yml->createElement('currencyId', 'EUR'));
+        $priceMDL = round($priceValue * 19.5);
+        $offer->appendChild($yml->createElement('price', $priceMDL));
+        $offer->appendChild($yml->createElement('currencyId', 'MDL'));
         $offer->appendChild($yml->createElement('categoryId', $categoryMap[$brand]));
         
         // Picture (main image only)
