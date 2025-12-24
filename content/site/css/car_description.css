@@ -1,4 +1,10 @@
-/* Car Description Block - Desktop */
+.pht_bx.d_left_b {
+    height: auto;
+    min-height: auto;
+    margin-top: 15px;
+}
+
+/* Desktop */
 .car-description-block {
     margin: 20px 0;
     padding: 20px;

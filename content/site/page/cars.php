@@ -935,8 +935,12 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                 $parsedHtml = parseEquipmentSection($rseo['params_html']);
                 $rtrn .= getMobileAccordions($parsedHtml, $_COOKIE['lang']);
 
+                // Desktop description
+                $rtrn .= '<div class="pht_bx d_left_b">';
+                $rtrn .= getDesktopDescriptionBlock($rseo['params_html']);
+                $rtrn .= '</div>';
+
                 $rtrn .= '
-                            <div style="clear: both"> </div>
                             <div class="spc_bx  d_right_b"> 
                                 <!--Plugin CSS file with desired skin-->
                                 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css"/>
@@ -1033,9 +1037,6 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                     </a>
                 </div>
                             </div> ';
-
-                // Desktop description block
-                $rtrn .= getDesktopDescriptionBlock($rseo['params_html']);
 
                 $rtrn .= '<script>
                             $(document).ready(function () {
