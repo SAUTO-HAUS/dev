@@ -1121,6 +1121,9 @@ if ($_COOKIE['lang']=='ru'){
 	//_______________________ADMIN
 	$adm_lang = array(
 		'exit'=>'Выход',
+		'ai_generate'=>'Генерировать AI',
+        'ai_generating'=>'Генерация...',
+        'ai_success'=>'Успешно',
 		'hello'=>'Привет',
 		'last_entrance'=>'Вход',
 		'add'=>'Добавить',
@@ -2625,6 +2628,9 @@ $ste_lang = array(
 //_______________________ADMIN
 $adm_lang = array(
 	'exit'=>'Iesire',
+	'ai_generate'=>'Generare AI',
+    'ai_generating'=>'Generare...',
+    'ai_success'=>'Succes',
 	'hello'=>'Salut',
 	'last_entrance'=>'Intrare',
 	'add'=>'Adauga',
@@ -4129,6 +4135,9 @@ $ste_lang = array(
 //_______________________ADMIN
 $adm_lang = array(
 	'exit'=>'Exit',
+	'ai_generate'=>'Generate AI',
+    'ai_generating'=>'Generating...',
+    'ai_success'=>'Success',
 	'hello'=>'Hello',
 	'last_entrance'=>'Last entrance',
 	'add'=>'Add',

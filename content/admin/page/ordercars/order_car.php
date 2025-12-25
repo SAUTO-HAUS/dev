@@ -612,8 +612,8 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                 <? // webs25 ?>
                 <div class="txt">
                     <div class="button"> Характеристики </div>
-                    <button type="button" id="gemini-generate-btn" onclick="generateWithGemini()" style="background: #4285f4; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px; margin-left: 10px; position: relative; top: -30px; float: right;">
-                        🤖 Генерировать AI
+                    <button type="button" id="gemini-generate-btn" onclick="generateWithGemini()" data-text="<?= $adm_lang['ai_generate'] ?>" data-loading="<?= $adm_lang['ai_generating'] ?>" data-success="<?= $adm_lang['ai_success'] ?>" style="background: #4285f4; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px; margin-left: 10px; position: relative; top: -30px; float: right;">
+                        🤖 <?= $adm_lang['ai_generate'] ?>
                     </button>
                     <div class="content">
 
@@ -2173,8 +2173,10 @@ document.addEventListener('DOMContentLoaded', function() {
 // AI Generate Function - preia date din formular
 function generateWithGemini() {
     const btn = document.getElementById('gemini-generate-btn');
-    const originalText = btn.innerHTML;
-    btn.innerHTML = '⏳ Генерация...';
+    const originalText = '🤖 ' + btn.dataset.text;
+    const loadingText = '⏳ ' + btn.dataset.loading;
+    const successText = '✅ ' + btn.dataset.success;
+    btn.innerHTML = loadingText;
     btn.disabled = true;
     
     const brand = document.querySelector('select[name="br"]');
@@ -2249,14 +2251,14 @@ function generateWithGemini() {
                     }
                 });
                 // Show success in button
-                btn.innerHTML = '✅ Succes';
+                btn.innerHTML = successText;
                 btn.style.background = '#28a745';
                 setTimeout(function() {
                     btn.innerHTML = originalText;
                     btn.style.background = '#4285f4';
                 }, 2000);
             } else {
-                alert('❌ Ошибка: ' + (data.error || 'Unknown error'));
+                alert(' Ошибка: ' + (data.error || 'Unknown error'));
             }
         },
         error: function(xhr, status, error) {
