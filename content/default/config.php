@@ -146,4 +146,13 @@ $n_row = '&#013;';
 
 $img_frmt = (usr_agent()==='IOS'||usr_agent()==='MAC') ? '.jpg' : '.webp';
 
+// AI API Key (Groq) - loaded from .env
+$envFile = $_SERVER['DOCUMENT_ROOT'] . '/.env';
+if (file_exists($envFile)) {
+    $envContent = file_get_contents($envFile);
+    if (preg_match('/GROQ_API_KEY=(.+)/', $envContent, $matches)) {
+        define('GROQ_API_KEY', trim($matches[1]));
+    }
+}
+
 ?>

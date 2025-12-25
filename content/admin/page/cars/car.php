@@ -1964,16 +1964,18 @@ function generateWithGemini() {
             btn.disabled = false;
             
             if (data.success) {
-                const textarea = document.getElementById('params_html_' + data.lang);
-                if (textarea) {
-                    textarea.value = data.html;
-                    textarea.dispatchEvent(new Event('input', { bubbles: true }));
-                    const label = textarea.closest('label');
-                    if (label) label.setAttribute('data-changed', '1');
-                    alert('✅ HTML успешно сгенерирован для языка: ' + data.lang.toUpperCase());
-                } else {
-                    alert('Textarea не найден для языка: ' + data.lang);
-                }
+                const langs = ['ro', 'ru', 'en'];
+                langs.forEach(function(lng) {
+                    const textarea = document.getElementById('params_html_' + lng);
+                    const htmlContent = data['html_' + lng];
+                    if (textarea && htmlContent) {
+                        textarea.value = htmlContent;
+                        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                        const label = textarea.closest('label');
+                        if (label) label.setAttribute('data-changed', '1');
+                    }
+                });
+                alert('✅ HTML generat pentru RO, RU, EN!');
             } else {
                 alert('❌ Ошибка: ' + (data.error || 'Unknown error'));
             }

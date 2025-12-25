@@ -4,7 +4,7 @@
 $lang = __post('lang') ?: 'ro';
 $fromForm = __post('from_form') == '1';
 
-$openRouterApiKey = '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';
+$groqApiKey = defined('GROQ_API_KEY') ? GROQ_API_KEY : '';
 
 if ($fromForm) {
     $car = [
@@ -45,42 +45,38 @@ if ($fromForm) {
     }
 }
 
-$langNames = ['ro' => 'română', 'ru' => 'rusă', 'en' => 'engleză'];
-$langName = $langNames[$lang] ?? 'română';
+$prompt = "Generate professional HTML descriptions for this car in 3 languages: Romanian, Russian, and English.
 
-$prompt = "Generează o descriere HTML profesională pentru acest automobil în limba {$langName}.
-
-Date despre mașină:
-- Marcă: {$car['br_nm']}
+Car data:
+- Brand: {$car['br_nm']}
 - Model: {$car['mo_nm']}
-- An: {$car['yr']}
-- Kilometraj: {$car['mlg']} km
-- Volum motor: {$car['vol']} cm³
-- Putere: {$car['hp']} CP
-- Combustibil: {$car['fl']}
-- Transmisie: {$car['tra']}
-- Tracțiune: {$car['wd']}
-- Culoare: {$car['clr']}
-- Preț: {$car['prc']} {$car['cur']}
+- Year: {$car['yr']}
+- Mileage: {$car['mlg']} km
+- Engine volume: {$car['vol']} cm³
+- Power: {$car['hp']} HP
+- Fuel: {$car['fl']}
+- Transmission: {$car['tra']}
+- Drive: {$car['wd']}
+- Color: {$car['clr']}
+- Price: {$car['prc']} {$car['cur']}
 
-Cerințe pentru HTML:
-1. Folosește tag-uri HTML semantice (h2, h3, p, ul, li)
-2. Creează secțiuni: 'Dotări' (equipment/features) și 'Descriere' (description)
-3. Secțiunea 'Dotări' trebuie să aibă un h2 sau h3 cu cuvântul 'Dotări' (sau echivalent în limba cerută)
-4. Adaugă emoji-uri relevante pentru fiecare secțiune
-5. Fii descriptiv și profesional
-6. NU include tag-uri <html>, <head>, <body> - doar conținutul
-7. Folosește clase CSS simple dacă e necesar
+HTML requirements:
+1. Use semantic HTML tags (h2, h3, p, ul, li)
+2. Create sections: 'Equipment' and 'Description' (translated to each language)
+3. Add relevant emojis
+4. Be descriptive and professional
+5. Do NOT include <html>, <head>, <body> tags
 
-Returnează DOAR codul HTML, fără explicații.";
+IMPORTANT: Return the response EXACTLY in this JSON format (no other text):
+{\"ro\": \"<HTML in Romanian>\", \"ru\": \"<HTML in Russian>\", \"en\": \"<HTML in English>\"}";
 
-$apiUrl = "https://openrouter.ai/api/v1/chat/completions";
+$apiUrl = "https://api.groq.com/openai/v1/chat/completions";
 
 $requestData = [
-    'model' => 'google/gemini-2.0-flash-exp:free',
+    'model' => 'llama-3.3-70b-versatile',
     'messages' => [['role' => 'user', 'content' => $prompt]],
     'temperature' => 0.7,
-    'max_tokens' => 2048
+    'max_tokens' => 4096
 ];
 
 $ch = curl_init($apiUrl);
@@ -89,9 +85,7 @@ curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($requestData));
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
-    'Authorization: Bearer ' . $openRouterApiKey,
-    'HTTP-Referer: https://sauto.md',
-    'X-Title: Sauto Car Description Generator'
+    'Authorization: Bearer ' . $groqApiKey
 ]);
 curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 
@@ -117,9 +111,16 @@ if (!isset($responseData['choices'][0]['message']['content'])) {
     return;
 }
 
-$generatedHtml = $responseData['choices'][0]['message']['content'];
-$generatedHtml = preg_replace('/^```html?\s*/i', '', $generatedHtml);
-$generatedHtml = preg_replace('/\s*```$/i', '', $generatedHtml);
-$generatedHtml = trim($generatedHtml);
+$generatedContent = $responseData['choices'][0]['message']['content'];
+$generatedContent = preg_replace('/^```json?\s*/i', '', $generatedContent);
+$generatedContent = preg_replace('/\s*```$/i', '', $generatedContent);
+$generatedContent = trim($generatedContent);
 
-$returnIt = ['success' => true, 'html' => $generatedHtml, 'lang' => $lang];
+$htmlData = json_decode($generatedContent, true);
+
+if (!$htmlData || !isset($htmlData['ro'])) {
+    $returnIt = ['success' => false, 'error' => 'Invalid JSON response', 'raw' => $generatedContent];
+    return;
+}
+
+$returnIt = ['success' => true, 'html_ro' => $htmlData['ro'] ?? '', 'html_ru' => $htmlData['ru'] ?? '', 'html_en' => $htmlData['en'] ?? ''];

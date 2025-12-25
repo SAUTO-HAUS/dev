@@ -1,4 +1,5 @@
 /.idea/
+.env
 media
 testline8392.sauto.md
 deploy.php
