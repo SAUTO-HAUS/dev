@@ -229,7 +229,7 @@
 @media (max-width: 768px) {
     .mobile-accordions-wrapper {
         display: block;
-        margin-top: 2rem;
+        margin: 1rem 0.5rem 0 0.5rem;
         position: relative;
         z-index: 10;
         clear: both;
@@ -248,7 +248,7 @@
 
 /* Car Accordion - Mobile */
 .car-accordion {
-    margin: 0.625rem 0;
+    margin: 0.625rem 0 1rem 0;
     border: 1px solid #ddd;
     border-radius: 0.5rem;
     overflow: hidden;
