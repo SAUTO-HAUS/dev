@@ -1400,11 +1400,11 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                 $brand_url = buildCarUrl($r['br']);
                 
                 $rtrn .= '
-                <div class="seo_links_block" style="margin: 20px 0; padding: 15px; background-color: #FFE6E6; border-radius: 4px;">
-                    <a href="/'.$current_lang.'/ordercars/'.$brand_series_url.'" target="_blank" style="display: block; margin-bottom: 10px; color: #333; text-decoration: none; font-size: 17px;" onmouseover="this.style.textDecoration=\'underline\'; this.style.color=\'#ff0000\'" onmouseout="this.style.textDecoration=\'none\'; this.style.color=\'#333\'">
+                <div class="seo_links_block" style="margin: 20px 0 0 0; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
+                    <a href="/'.$current_lang.'/ordercars/'.$brand_series_url.'" target="_blank" style="display: inline-block; padding: 12px 20px; background-color: #ffcccc; color: #333; text-decoration: none; font-size: 15px; border-radius: 0.5rem; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor=\'#ffb3b3\'" onmouseout="this.style.backgroundColor=\'#ffcccc\'">
                         '.$link_text_series.' '.$r['br_nm'].' '.$model_display.$suffix.'
                     </a>
-                    <a href="/'.$current_lang.'/ordercars/'.$brand_url.'" target="_blank" style="display: block; color: #333; text-decoration: none; font-size: 17px;" onmouseover="this.style.textDecoration=\'underline\'; this.style.color=\'#ff0000\'" onmouseout="this.style.textDecoration=\'none\'; this.style.color=\'#333\'">
+                    <a href="/'.$current_lang.'/ordercars/'.$brand_url.'" target="_blank" style="display: inline-block; padding: 12px 20px; background-color: #ffcccc; color: #333; text-decoration: none; font-size: 15px; border-radius: 0.5rem; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor=\'#ffb3b3\'" onmouseout="this.style.backgroundColor=\'#ffcccc\'">
                         '.$link_text_brand.' '.$r['br_nm'].$suffix.'
                     </a>
                 </div>

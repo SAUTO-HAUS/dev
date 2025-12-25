@@ -50,12 +50,12 @@
 }
 
 .car-description-block.desktop .car-description-content {
-    max-height: 34.2rem;
+    max-height: 33.6rem;
     overflow: hidden;
 }
 
 .car-description-block.desktop.stock .car-description-content {
-    max-height: 48rem;
+    max-height: 47.7rem;
 }
 
 .car-description-block.desktop.expanded .car-description-content {
