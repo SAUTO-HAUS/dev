@@ -37,7 +37,7 @@
     margin: 10px 0;
     padding: 10px 20px;
     background-color: #f8f9fa;
-    border-radius: 8px;
+    border-radius: 1rem;
     border-left: 4px solid #ff0000;
 }
 
@@ -91,56 +91,129 @@
 }
 
 .car-description-content h1 {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     font-weight: 700;
-    margin: 0 0 15px 0;
-    color: #333;
+    margin: 0 0 12px 0;
+    color: #2c3e50;
+    border-bottom: 2px solid #e2001a;
+    padding-bottom: 8px;
 }
 
 .car-description-content h2 {
     font-size: 1.3rem;
-    font-weight: 600;
-    margin: 20px 0 10px 0;
-    color: #444;
-    border-bottom: 1px solid #ddd;
-    padding-bottom: 5px;
+    font-weight: 700;
+    margin: 15px 0 10px 0;
+    color: #2c3e50;
+    border-bottom: 2px solid #e2001a;
+    padding-bottom: 6px;
 }
 
 .car-description-content h3 {
-    font-size: 1.1rem;
+    font-size: 1.15rem;
     font-weight: 600;
-    margin: 15px 0 8px 0;
+    margin: 12px 0 8px 0;
+    color: #34495e;
+}
+
+.car-description-content h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 10px 0 6px 0;
     color: #555;
 }
 
 .car-description-content p {
-    margin: 0 0 12px 0;
+    margin: 0 0 10px 0;
     line-height: 1.6;
     color: #333;
 }
 
+.car-description-content strong {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
 .car-description-content ul {
-    margin: 10px 0 15px 20px;
-    padding: 0;
-    list-style-type: disc;
+    margin: 8px 0 12px 0;
+    padding-left: 20px;
+    list-style-type: none;
 }
 
 .car-description-content ul li {
-    margin: 5px 0;
+    margin: 4px 0;
     line-height: 1.5;
-    color: #333;
+    color: #444;
+    position: relative;
+    padding-left: 15px;
+}
+
+.car-description-content ul li::before {
+    content: "✓";
+    color: #e2001a;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+    font-size: 0.85rem;
 }
 
 .car-description-content ol {
-    margin: 10px 0 15px 20px;
-    padding: 0;
+    margin: 8px 0 12px 0;
+    padding-left: 20px;
     list-style-type: decimal;
 }
 
 .car-description-content ol li {
-    margin: 5px 0;
+    margin: 4px 0;
     line-height: 1.5;
-    color: #333;
+    color: #444;
+    padding-left: 5px;
+}
+
+.car-description-content a {
+    color: #e2001a;
+    text-decoration: none;
+}
+
+.car-description-content a:hover {
+    text-decoration: underline;
+}
+
+.car-description-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+}
+
+.car-description-content th,
+.car-description-content td {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.car-description-content th {
+    background-color: #f5f5f5;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.car-description-content blockquote {
+    margin: 10px 0;
+    padding: 10px 15px;
+    border-left: 3px solid #e2001a;
+    background-color: #f9f9f9;
+    color: #555;
+}
+
+.car-description-content hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 15px 0;
+}
+
+.car-description-content section {
+    margin: 0;
+    padding: 0;
 }
 
 /* Car Accordion - Mobile */
