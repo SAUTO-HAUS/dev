@@ -229,7 +229,7 @@
 @media (max-width: 768px) {
     .mobile-accordions-wrapper {
         display: block;
-        margin: 1rem 0.5rem 0 0.5rem;
+        padding: 1rem 0.5rem 0 0.5rem;
         position: relative;
         z-index: 10;
         clear: both;
@@ -244,7 +244,7 @@
 @media (max-width: 768px) {
     .car-equipment-block.mobile {
         display: block;
-        margin: 1rem 0 1rem 0;
+        margin: 0 0 1rem 0;
         padding: 0.625rem 1.25rem;
         background-color: #f8f9fa;
         border-radius: 1rem;

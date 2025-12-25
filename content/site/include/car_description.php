@@ -84,11 +84,8 @@ function getDesktopDescriptionBlock($params_html, $lang = 'ro', $pageType = 'ord
  * @return string - HTML accordions
  */
 function getMobileAccordions($parsedHtml, $lang) {
-    // Start wrapper
-    $html = '<div class="mobile-accordions-wrapper" style="display:none;">';
-    
-    // Add display block only for mobile via inline style as backup
-    $html .= '<style>@media(max-width:768px){.mobile-accordions-wrapper{display:block!important;}}</style>';
+
+    $html = '<div class="mobile-accordions-wrapper">';
     
     // Equipment block - displayed directly (no accordion)
     if (!empty($parsedHtml['equipment'])) {
