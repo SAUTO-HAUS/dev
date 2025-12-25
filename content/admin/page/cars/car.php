@@ -1982,6 +1982,13 @@ function generateWithGemini() {
                         if (changeChecker) changeChecker.value = '1';
                     }
                 });
+                // Show success in button
+                btn.innerHTML = '✅ Succes';
+                btn.style.background = '#28a745';
+                setTimeout(function() {
+                    btn.innerHTML = originalText;
+                    btn.style.background = '#4285f4';
+                }, 2000);
             } else {
                 alert('❌ Ошибка: ' + (data.error || 'Unknown error'));
             }
