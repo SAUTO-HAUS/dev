@@ -612,7 +612,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                 <? // webs25 ?>
                 <div class="txt">
                     <div class="button"> Характеристики 
-                        <button type="button" id="gemini-generate-btn" onclick="generateWithGemini(); event.stopPropagation();" data-text="<?= $adm_lang['ai_generate'] ?>" data-loading="<?= $adm_lang['ai_generating'] ?>" data-success="<?= $adm_lang['ai_success'] ?>" style="background: #4285f4; color: #fff; border: none; padding: 4px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; margin-left: 15px;">
+                        <button type="button" id="gemini-generate-btn" onclick="generateWithGemini(); event.stopPropagation();" data-text="<?= $adm_lang['ai_generate'] ?>" data-loading="<?= $adm_lang['ai_generating'] ?>" data-success="<?= $adm_lang['ai_success'] ?>" style="background: #4285f4; color: #fff; border: none; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-size: 13px; margin-left: 15px;">
                             🤖 <?= $adm_lang['ai_generate'] ?>
                         </button>
                     </div>
