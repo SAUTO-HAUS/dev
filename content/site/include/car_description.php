@@ -33,8 +33,9 @@ function parseEquipmentSection($html) {
 /**
  * Generate desktop description block HTML
  * Uses CSS max-height for limiting visible content
+ * @param string $pageType - 'stock' for cars.php, 'order' for ordercars.php
  */
-function getDesktopDescriptionBlock($params_html, $lang = 'ro') {
+function getDesktopDescriptionBlock($params_html, $lang = 'ro', $pageType = 'order') {
     if (trim($params_html) == '') {
         return '';
     }
@@ -53,9 +54,11 @@ function getDesktopDescriptionBlock($params_html, $lang = 'ro') {
     $showText = isset($btnText[$lang]) ? $btnText[$lang] : $btnText['ro'];
     $hideText = isset($btnHideText[$lang]) ? $btnHideText[$lang] : $btnHideText['ro'];
     
+    $extraClass = ($pageType == 'stock') ? ' stock' : '';
+    
     return '
     <div style="clear:both"></div>
-    <div class="car-description-block desktop">
+    <div class="car-description-block desktop'.$extraClass.'">
         <div class="car-description-content">
             '.$params_html.'
         </div>

@@ -54,6 +54,10 @@
     overflow: hidden;
 }
 
+.car-description-block.desktop.stock .car-description-content {
+    max-height: 37rem;
+}
+
 .car-description-block.desktop.expanded .car-description-content {
     max-height: none;
 }
