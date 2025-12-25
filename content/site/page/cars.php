@@ -931,8 +931,6 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                             </div>
                         </div>';
 
-                // Mobile accordions (under specs, before calculator)
-                $rtrn .= '<div style="clear:both;"></div>';
                 $parsedHtml = parseEquipmentSection($rseo['params_html']);
                 $rtrn .= getMobileAccordions($parsedHtml, $_COOKIE['lang']);
 
