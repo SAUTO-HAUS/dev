@@ -495,7 +495,7 @@
   main > .inf_bx > .bx > .cnt.act {height:100%; opacity:1; overflow-y:scroll; width:calc(100% + 3rem); padding-right:3rem; position:absolute; top:0; left:0;}
   main > .inf_bx > .bx > .cnt.act:hover {width:100%; padding-right:0;}
   
-  main > .smlr {float:left; margin-top:5rem;}
+  main > .smlr {float:left; margin-top:1.5rem;}
   main > .smlr > h3 {border-bottom:2px solid #e2001a; margin:0 0 1rem; text-transform:uppercase;}
       
   /*---------------------------------HOME AND CARS PAGE-----------------------------------*/
