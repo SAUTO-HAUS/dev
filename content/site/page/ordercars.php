@@ -1026,6 +1026,10 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                             </div>
                             </div>';
 
+               // Mobile accordions 
+                $parsedHtml = parseEquipmentSection($rseo['params_html']);
+                $rtrn .= getMobileAccordions($parsedHtml, $_COOKIE['lang']);
+
                             // Add order-info-grid after specifications for mobile
                 if (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') {
                     $rtrn .= '
