@@ -699,4 +699,6 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
 }
 elseif (__post('fn') == 'ai_generate') {
     require_once($ajax_folder . '/ai_generate_description.php');
+    echo json_encode($returnIt);
+    exit;
 }

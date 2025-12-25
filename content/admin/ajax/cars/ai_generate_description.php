@@ -4,7 +4,7 @@
 $lang = __post('lang') ?: 'ro';
 $fromForm = __post('from_form') == '1';
 
-$openRouterApiKey = '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';
+$openRouterApiKey = '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';
 
 if ($fromForm) {
     $car = [

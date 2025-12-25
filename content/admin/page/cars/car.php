@@ -1936,40 +1936,53 @@ function generateWithGemini() {
     };
     
     // Send request with form data
-    fetch('/admin/cars?ajax', {
+    $.ajax({
+        url: '/ajax.php',
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
+        data: {
+            tp: 'adm',
+            pg: 'cars',
+            fn: 'ai_generate',
+            lang: lang,
+            from_form: '1',
+            brand: carData.brand,
+            model: carData.model,
+            year: carData.year,
+            mileage: carData.mileage,
+            volume: carData.volume,
+            hp: carData.hp,
+            fuel: carData.fuel,
+            transmission: carData.transmission,
+            wheelDrive: carData.wheelDrive,
+            color: carData.color,
+            price: carData.price,
+            currency: carData.currency
         },
-        body: `fn=ai_generate&lang=${lang}&from_form=1&brand=${encodeURIComponent(carData.brand)}&model=${encodeURIComponent(carData.model)}&year=${carData.year}&mileage=${carData.mileage}&volume=${carData.volume}&hp=${carData.hp}&fuel=${encodeURIComponent(carData.fuel)}&transmission=${encodeURIComponent(carData.transmission)}&wheelDrive=${encodeURIComponent(carData.wheelDrive)}&color=${encodeURIComponent(carData.color)}&price=${carData.price}&currency=${encodeURIComponent(carData.currency)}`
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            // Find the textarea for the current language
-            const textarea = document.getElementById(`params_html_${data.lang}`);
-            if (textarea) {
-                textarea.value = data.html;
-                // Trigger change event
-                textarea.dispatchEvent(new Event('input', { bubbles: true }));
-                // Mark as changed
-                const label = textarea.closest('label');
-                if (label) label.setAttribute('data-changed', '1');
-                
-                alert('✅ HTML успешно сгенерирован для языка: ' + data.lang.toUpperCase());
+        dataType: 'json',
+        success: function(data) {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            
+            if (data.success) {
+                const textarea = document.getElementById('params_html_' + data.lang);
+                if (textarea) {
+                    textarea.value = data.html;
+                    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                    const label = textarea.closest('label');
+                    if (label) label.setAttribute('data-changed', '1');
+                    alert('✅ HTML успешно сгенерирован для языка: ' + data.lang.toUpperCase());
+                } else {
+                    alert('Textarea не найден для языка: ' + data.lang);
+                }
             } else {
-                alert('Textarea не найден для языка: ' + data.lang);
+                alert('❌ Ошибка: ' + (data.error || 'Unknown error'));
             }
-        } else {
-            alert('❌ Ошибка: ' + data.error);
+        },
+        error: function(xhr, status, error) {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            alert('❌ Ошибка сети: ' + error);
         }
-    })
-    .catch(error => {
-        alert('❌ Ошибка сети: ' + error.message);
-    })
-    .finally(() => {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
     });
 }
 </script>
