@@ -1,49 +1,33 @@
 <?php
-ob_start();
-error_reporting(0);
-ini_set('display_errors', 0);
+// Called from ajax.php via fn=ai_generate
 
-defined('_DOIT') or define('_DOIT', true);
-
-require_once($_SERVER['DOCUMENT_ROOT'] . '/content/default/config.php');
-require_once($_SERVER['DOCUMENT_ROOT'] . '/content/default/db.php');
-
-ob_end_clean();
-header('Content-Type: application/json; charset=utf-8');
-
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['success' => false, 'error' => 'Only POST requests allowed']);
-    exit;
-}
-
-$lang = isset($_POST['lang']) ? $_POST['lang'] : 'ro';
-$fromForm = isset($_POST['from_form']) && $_POST['from_form'] == '1';
+$lang = __post('lang') ?: 'ro';
+$fromForm = __post('from_form') == '1';
 
 $openRouterApiKey = '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';
 
 if ($fromForm) {
     $car = [
-        'br_nm' => $_POST['brand'] ?? '',
-        'mo_nm' => $_POST['model'] ?? '',
-        'yr' => $_POST['year'] ?? '',
-        'mlg' => $_POST['mileage'] ?? '',
-        'vol' => $_POST['volume'] ?? '',
-        'hp' => $_POST['hp'] ?? '',
-        'fl' => $_POST['fuel'] ?? '',
-        'tra' => $_POST['transmission'] ?? '',
-        'wd' => $_POST['wheelDrive'] ?? '',
-        'clr' => $_POST['color'] ?? '',
-        'prc' => $_POST['price'] ?? '',
-        'cur' => $_POST['currency'] ?? ''
+        'br_nm' => __post('brand') ?: '',
+        'mo_nm' => __post('model') ?: '',
+        'yr' => __post('year') ?: '',
+        'mlg' => __post('mileage') ?: '',
+        'vol' => __post('volume') ?: '',
+        'hp' => __post('hp') ?: '',
+        'fl' => __post('fuel') ?: '',
+        'tra' => __post('transmission') ?: '',
+        'wd' => __post('wheelDrive') ?: '',
+        'clr' => __post('color') ?: '',
+        'prc' => __post('price') ?: '',
+        'cur' => __post('currency') ?: ''
     ];
 } else {
-    $carId = isset($_POST['car_id']) ? intval($_POST['car_id']) : 0;
+    $carId = intval(__post('car_id'));
     if ($carId <= 0) {
-        echo json_encode(['success' => false, 'error' => 'Invalid car ID']);
-        exit;
+        $returnIt = ['success' => false, 'error' => 'Invalid car ID'];
+        return;
     }
     
-    global $db, $prefx;
     $table = $prefx . '_car_ctlg';
     
     try {
@@ -52,12 +36,12 @@ if ($fromForm) {
         $car = $stmt->fetch(PDO::FETCH_ASSOC);
         
         if (!$car) {
-            echo json_encode(['success' => false, 'error' => 'Car not found']);
-            exit;
+            $returnIt = ['success' => false, 'error' => 'Car not found'];
+            return;
         }
     } catch (PDOException $e) {
-        echo json_encode(['success' => false, 'error' => 'Database error: ' . $e->getMessage()]);
-        exit;
+        $returnIt = ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
+        return;
     }
 }
 
@@ -117,20 +101,20 @@ $curlError = curl_error($ch);
 curl_close($ch);
 
 if ($curlError) {
-    echo json_encode(['success' => false, 'error' => 'cURL error: ' . $curlError]);
-    exit;
+    $returnIt = ['success' => false, 'error' => 'cURL error: ' . $curlError];
+    return;
 }
 
 if ($httpCode !== 200) {
-    echo json_encode(['success' => false, 'error' => 'API error (HTTP ' . $httpCode . '): ' . $response]);
-    exit;
+    $returnIt = ['success' => false, 'error' => 'API error (HTTP ' . $httpCode . '): ' . $response];
+    return;
 }
 
 $responseData = json_decode($response, true);
 
 if (!isset($responseData['choices'][0]['message']['content'])) {
-    echo json_encode(['success' => false, 'error' => 'Invalid API response', 'raw' => $responseData]);
-    exit;
+    $returnIt = ['success' => false, 'error' => 'Invalid API response', 'raw' => $responseData];
+    return;
 }
 
 $generatedHtml = $responseData['choices'][0]['message']['content'];
@@ -138,4 +122,4 @@ $generatedHtml = preg_replace('/^```html?\s*/i', '', $generatedHtml);
 $generatedHtml = preg_replace('/\s*```$/i', '', $generatedHtml);
 $generatedHtml = trim($generatedHtml);
 
-echo json_encode(['success' => true, 'html' => $generatedHtml, 'lang' => $lang]);
+$returnIt = ['success' => true, 'html' => $generatedHtml, 'lang' => $lang];

@@ -697,3 +697,6 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
         $publicationService->logPublication($it_id, 'in_stock', 'telegram', false, 'Scheduling error: ' . $e->getMessage());
     }
 }
+elseif (__post('fn') == 'ai_generate') {
+    require_once($ajax_folder . '/ai_generate_description.php');
+}

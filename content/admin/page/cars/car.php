@@ -1936,12 +1936,12 @@ function generateWithGemini() {
     };
     
     // Send request with form data
-    fetch('/content/admin/ajax/cars/ai_generate_description.php', {
+    fetch('/admin/cars?ajax', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `lang=${lang}&from_form=1&brand=${encodeURIComponent(carData.brand)}&model=${encodeURIComponent(carData.model)}&year=${carData.year}&mileage=${carData.mileage}&volume=${carData.volume}&hp=${carData.hp}&fuel=${encodeURIComponent(carData.fuel)}&transmission=${encodeURIComponent(carData.transmission)}&wheelDrive=${encodeURIComponent(carData.wheelDrive)}&color=${encodeURIComponent(carData.color)}&price=${carData.price}&currency=${encodeURIComponent(carData.currency)}`
+        body: `fn=ai_generate&lang=${lang}&from_form=1&brand=${encodeURIComponent(carData.brand)}&model=${encodeURIComponent(carData.model)}&year=${carData.year}&mileage=${carData.mileage}&volume=${carData.volume}&hp=${carData.hp}&fuel=${encodeURIComponent(carData.fuel)}&transmission=${encodeURIComponent(carData.transmission)}&wheelDrive=${encodeURIComponent(carData.wheelDrive)}&color=${encodeURIComponent(carData.color)}&price=${carData.price}&currency=${encodeURIComponent(carData.currency)}`
     })
     .then(response => response.json())
     .then(data => {
