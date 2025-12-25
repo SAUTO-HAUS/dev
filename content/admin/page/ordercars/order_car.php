@@ -2248,7 +2248,6 @@ function generateWithGemini() {
                         }
                     }
                 });
-                alert('✅ HTML RO, RU, EN!');
             } else {
                 alert('❌ Ошибка: ' + (data.error || 'Unknown error'));
             }

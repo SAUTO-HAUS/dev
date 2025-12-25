@@ -1982,7 +1982,6 @@ function generateWithGemini() {
                         if (changeChecker) changeChecker.value = '1';
                     }
                 });
-                alert('✅ HTML generat pentru RO, RU, EN!');
             } else {
                 alert('❌ Ошибка: ' + (data.error || 'Unknown error'));
             }
