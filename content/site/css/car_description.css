@@ -38,8 +38,8 @@
     padding: 0.625rem 1.25rem;
     background-color: #f8f9fa;
     border-radius: 1rem;
-    border: 1px solid #e0e0e0;
-    border-left: 1px solid #ff0000;
+    border: 2px solid #e0e0e0;
+    border-left: 2px solid #ff0000;
 }
 
 .car-description-block.desktop {
