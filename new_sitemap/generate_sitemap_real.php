@@ -603,7 +603,8 @@ class SitemapGeneratorReal {
         $preferred = [
             'n_a', 'act', 'vis', 'it', 'd', 'created_at', 'created', 'date', 'updated_at', 'updated', 'upd',
             'modified_at', 'last_update', 'time_shift', 'sold_at', 'sold_date', 'sale_date', 'sold_time',
-            'sold_timestamp', 'sold_on', 'n_a_date', 'n_a_time', 'n_a_updated', 'n_a_updated_at', 'deleted'
+            'sold_timestamp', 'sold_on', 'n_a_date', 'n_a_time', 'n_a_updated', 'n_a_updated_at', 'deleted',
+            'catalog_type'
         ];
 
         $selectColumns = array_unique(array_merge(['id'], array_intersect($preferred, $columns)));
@@ -691,17 +692,25 @@ class SitemapGeneratorReal {
             $isArchived = true;
         }
 
+        $catalogType = $row['catalog_type'] ?? 'in_stock';
+        $section = ($catalogType === 'on_order') ? 'ordercars' : 'cars';
+
+        // ordercars nu are traduceri în gh3sp_seo2, folosim toate limbile default
+        $translations = ($section === 'ordercars') 
+            ? $this->languages 
+            : $this->getItemTranslations($section, $id);
+
         return [
             'type' => 'car',
             'id' => $id,
-            'url' => '/ro/cars/' . $id,
+            'url' => '/ro/' . $section . '/' . $id,
             'created_at' => $createdAt,
             'lastmod' => $updatedAt,
             'status' => $status,
             'sold_at' => $soldAt,
             'is_archived' => $isArchived,
             'is_deleted' => $isDeleted,
-            'translations' => $this->getItemTranslations('cars', $id)
+            'translations' => $translations
         ];
     }
 
@@ -1407,6 +1416,8 @@ class SitemapGeneratorReal {
         $validPatterns = [
             '/\/ro\/cars\/\d+$/',                    // /ro/cars/123 (car detail pages)
             '/\/ro\/cars\/[a-z0-9-]+$/',             // /ro/cars/audi (brand pages)
+            '/\/ro\/ordercars\/\d+$/',               // /ro/ordercars/123 (order car detail pages)
+            '/\/ro\/tyres\/\d+$/',                   // /ro/tyres/123 (tyre detail pages)
             '/\/ro\/tires\/[a-z0-9-]+$/',            // /ro/tires/tire-slug
             '/\/ro\/[a-z-]+$/',                      // /ro/contact, /ro/about
             '/\/ro\/$/'                              // /ro/
