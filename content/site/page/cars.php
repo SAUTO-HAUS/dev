@@ -931,10 +931,6 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                             </div>
                         </div>';
 
-                // Mobile accordions
-                $parsedHtml = parseEquipmentSection($rseo['params_html']);
-                $rtrn .= getMobileAccordions($parsedHtml, $_COOKIE['lang']);
-
                 // Desktop description
                 $rtrn .= '<div class="pht_bx d_left_b">';
                 $rtrn .= getDesktopDescriptionBlock($rseo['params_html'], $_COOKIE['lang'], 'stock');
@@ -1038,11 +1034,18 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                 </div>
                             </div> ';
 
+                $rtrn .= '<div style="clear:both"></div>';
+
+                // Mobile accordions (after calculator)
+                $parsedHtml = parseEquipmentSection($rseo['params_html']);
+                $rtrn .= getMobileAccordions($parsedHtml, $_COOKIE['lang']);
+
+                $rtrn .= '<div style="clear:both"></div>';
+
                 $rtrn .= '<script>
                             $(document).ready(function () {
                                 let updateRateTimeout;
                                 let userIsEditing = false;
-                                
                                 var $input_suma_creditului = $("#view_suma_creditului");
                                 // Credit amount slider
                                 // Get car price from PHP

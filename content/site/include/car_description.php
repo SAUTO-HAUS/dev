@@ -84,22 +84,18 @@ function getDesktopDescriptionBlock($params_html, $lang = 'ro', $pageType = 'ord
  * @return string - HTML accordions
  */
 function getMobileAccordions($parsedHtml, $lang) {
-    $html = '';
+    // Start wrapper
+    $html = '<div class="mobile-accordions-wrapper" style="display:none;">';
     
-    // Equipment accordion (only if section exists)
-    $equipmentTitle = $lang == 'ru' ? 'Комплектация' : ($lang == 'en' ? 'Equipment' : 'Dotări');
+    // Add display block only for mobile via inline style as backup
+    $html .= '<style>@media(max-width:768px){.mobile-accordions-wrapper{display:block!important;}}</style>';
     
+    // Equipment block - displayed directly (no accordion)
     if (!empty($parsedHtml['equipment'])) {
         $html .= '
-        <div class="car-accordion mobile">
-            <div class="accordion-header" onclick="toggleAccordion(this)">
-                <span>'.$equipmentTitle.'</span>
-                <span class="accordion-icon">▼</span>
-            </div>
-            <div class="accordion-content">
-                <div class="car-description-content">
-                    '.$parsedHtml['equipment'].'
-                </div>
+        <div class="car-equipment-block mobile">
+            <div class="car-description-content">
+                '.$parsedHtml['equipment'].'
             </div>
         </div>';
     }
@@ -119,6 +115,7 @@ function getMobileAccordions($parsedHtml, $lang) {
         </div>
     </div>';
     
+    $html .= '</div>';
     return $html;
 }
 

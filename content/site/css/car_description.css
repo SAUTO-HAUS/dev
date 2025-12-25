@@ -221,6 +221,31 @@
     padding: 0;
 }
 
+/* Mobile wrapper - hidden on desktop */
+.mobile-accordions-wrapper {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .mobile-accordions-wrapper {
+        display: block;
+        margin-top: 2rem;
+        position: relative;
+        z-index: 10;
+        clear: both;
+    }
+}
+
+/* Equipment block - displayed directly on mobile */
+.car-equipment-block.mobile {
+    margin: 0 0 1rem 0;
+    padding: 0.625rem 1.25rem;
+    background-color: #f8f9fa;
+    border-radius: 1rem;
+    border: 2px solid #e0e0e0;
+    border-left: 2px solid #ff0000;
+}
+
 /* Car Accordion - Mobile */
 .car-accordion {
     margin: 0.625rem 0;
