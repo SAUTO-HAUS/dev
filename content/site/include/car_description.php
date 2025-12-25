@@ -31,45 +31,14 @@ function parseEquipmentSection($html) {
 }
 
 /**
- * Split HTML after N emoji sections
- * @param string $html - Full HTML content
- * @param int $afterEmoji - Split after this many emojis (default 4)
- * @return array - ['visible' => first part, 'hidden' => rest]
- */
-function splitHtmlByEmoji($html, $afterEmoji = 4) {
-    // Common section emojis used in descriptions
-    $emojiPattern = '/[\x{1F300}-\x{1F9FF}]/u';
-    
-    preg_match_all($emojiPattern, $html, $matches, PREG_OFFSET_CAPTURE);
-    
-    if (count($matches[0]) <= $afterEmoji) {
-        // Less than or equal to N emojis - show all
-        return ['visible' => $html, 'hidden' => ''];
-    }
-    
-    // Find position of the (N+1)th emoji to split before it
-    $splitPos = $matches[0][$afterEmoji][1];
-    
-    $visible = substr($html, 0, $splitPos);
-    $hidden = substr($html, $splitPos);
-    
-    return ['visible' => trim($visible), 'hidden' => trim($hidden)];
-}
-
-/**
  * Generate desktop description block HTML
- * @param string $params_html - Full HTML content
- * @param string $lang - Current language code
- * @return string - HTML block
+ * Uses CSS max-height for limiting visible content
  */
 function getDesktopDescriptionBlock($params_html, $lang = 'ro') {
     if (trim($params_html) == '') {
         return '';
     }
     
-    $parts = splitHtmlByEmoji($params_html, 4);
-    
-    // Button text in 3 languages
     $btnText = [
         'ro' => 'Vezi toată descrierea',
         'ru' => 'Показать всё описание',
@@ -84,29 +53,17 @@ function getDesktopDescriptionBlock($params_html, $lang = 'ro') {
     $showText = isset($btnText[$lang]) ? $btnText[$lang] : $btnText['ro'];
     $hideText = isset($btnHideText[$lang]) ? $btnHideText[$lang] : $btnHideText['ro'];
     
-    $html = '
+    return '
     <div style="clear:both"></div>
     <div class="car-description-block desktop">
         <div class="car-description-content">
-            '.$parts['visible'].'
-        </div>';
-    
-    if (!empty($parts['hidden'])) {
-        $html .= '
-        <div class="car-description-hidden" style="display:none;">
-            <div class="car-description-content">
-                '.$parts['hidden'].'
-            </div>
+            '.$params_html.'
         </div>
+        <div class="desc-gradient"></div>
         <button class="btn-show-full-description" onclick="toggleFullDescription(this)" data-show="'.$showText.'" data-hide="'.$hideText.'">
             '.$showText.'
-        </button>';
-    }
-    
-    $html .= '
+        </button>
     </div>';
-    
-    return $html;
 }
 
 /**

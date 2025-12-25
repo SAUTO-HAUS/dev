@@ -20,14 +20,14 @@ function toggleAccordion(header) {
  * @param {HTMLElement} button - The button element
  */
 function toggleFullDescription(button) {
-    var hiddenContent = button.previousElementSibling;
-    var isVisible = hiddenContent.style.display !== 'none';
+    var block = button.closest('.car-description-block');
+    var isExpanded = block.classList.contains('expanded');
     
-    if (isVisible) {
-        hiddenContent.style.display = 'none';
+    if (isExpanded) {
+        block.classList.remove('expanded');
         button.textContent = button.getAttribute('data-show');
     } else {
-        hiddenContent.style.display = 'block';
+        block.classList.add('expanded');
         button.textContent = button.getAttribute('data-hide');
     }
 }

@@ -18,8 +18,8 @@
     display: none !important;
 }
 
-/* Mobile: reset float and width for calculator */
-@media (max-width: 768px) {
+/* Tablet/Mobile: reset float and width for calculator */
+@media (max-width: 999px) {
     .spc_bx.d_right_b {
         float: none;
         width: 100%;
@@ -34,8 +34,8 @@
 
 /* Desktop */
 .car-description-block {
-    margin: 20px 0;
-    padding: 20px;
+    margin: 10px 0;
+    padding: 10px 20px;
     background-color: #f8f9fa;
     border-radius: 8px;
     border-left: 4px solid #ff0000;
@@ -45,9 +45,32 @@
     display: block;
     width: 100%;
     margin-top: 15px;
+    position: relative;
 }
 
-/* Button to show full description */
+.car-description-block.desktop .car-description-content {
+    max-height: 550px;
+    overflow: hidden;
+}
+
+.car-description-block.desktop.expanded .car-description-content {
+    max-height: none;
+}
+
+.desc-gradient {
+    position: absolute;
+    bottom: 60px;
+    left: 20px;
+    right: 20px;
+    height: 60px;
+    background: linear-gradient(transparent, #f8f9fa);
+    pointer-events: none;
+}
+
+.car-description-block.desktop.expanded .desc-gradient {
+    display: none;
+}
+
 .btn-show-full-description {
     display: block;
     width: 100%;
