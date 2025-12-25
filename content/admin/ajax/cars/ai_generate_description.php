@@ -75,7 +75,7 @@ HTML STRUCTURE (MUST follow this EXACT order):
 4. <h3>🔧 Caracteristici tehnice</h3> then <ul> with detailed specs: engine type, cylinders, power with kW and rpm, torque Nm, fuel system, consumption l/100km, gearbox type, drivetrain
 5. <h3>🔍 Detalii motor</h3> then <p><strong>Caracteristici constructive:</strong></p><ul> engine block material, cylinder head, turbo type, timing chain/belt, emission standard, special features </ul> then <p><strong>Mentenanță:</strong></p><ul> engine lifespan, timing service interval, oil spec, injection system notes </ul>
 6. <h3>⚙️ Detalii cutie de viteze</h3> then <ul> gearbox type, clutch type, flywheel type with wear notes, reliability notes
-7. <h3>📋 Starea automobilului</h3> then <ul> with <li><strong>label:</strong> value</li> format for: import country, mileage assessment, body condition notes, price assessment, any warnings
+7. <h3>📋 Starea automobilului</h3> then <ul> with <li><strong>label:</strong> value</li> format for: import country, mileage assessment, body condition notes, price assessment (NO warnings or disclaimers here!)
 
 CRITICAL REQUIREMENTS:
 - Section 'Dotări' MUST be the SECOND section (after general info) - mobile layout depends on this!
@@ -85,7 +85,10 @@ CRITICAL REQUIREMENTS:
 - Include specific engine codes, gearbox codes, technical specifications you know about this model
 - Assess mileage realistically (high/low for this type of vehicle)
 - Do NOT use generic filler text - every sentence must add real information
-- Do NOT add generic warnings like 'check documents before buying' or 'verify vehicle history' - only specific technical warnings relevant to this model
+- NEVER add any <li> with 'Avertisment', 'Warning', 'Предупреждение' label - these are STRICTLY FORBIDDEN
+- NEVER mention: 'check documents', 'verify history', 'before buying', 'before making an offer', 'verificați', 'проверьте' - FORBIDDEN
+- Do NOT add any disclaimers or buyer advice - we are a professional dealership
+- The 'Starea automobilului' section should ONLY contain: import country, mileage info, body notes, price - NOTHING ELSE
 
 IMPORTANT: Return EXACTLY in this JSON format:
 {\"ro\": \"<HTML in Romanian>\", \"ru\": \"<HTML in Russian>\", \"en\": \"<HTML in English>\"}";
