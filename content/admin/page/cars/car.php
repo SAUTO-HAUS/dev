@@ -1948,6 +1948,7 @@ function generateWithGemini() {
             fn: 'ai_generate',
             lang: lang,
             from_form: '1',
+            car_type: 'in_stock',
             brand: carData.brand,
             model: carData.model,
             year: carData.year,

@@ -2217,6 +2217,7 @@ function generateWithGemini() {
             fn: 'ai_generate',
             lang: 'ro',
             from_form: '1',
+            car_type: 'order',
             brand: carData.brand,
             model: carData.model,
             year: carData.year,

@@ -1,8 +1,8 @@
 <?php
-// Called from ajax.php via fn=ai_generate
 
 $lang = __post('lang') ?: 'ro';
 $fromForm = __post('from_form') == '1';
+$carType = __post('car_type') ?: 'in_stock'; 
 
 $groqApiKey = defined('GROQ_API_KEY') ? GROQ_API_KEY : '';
 
@@ -45,7 +45,15 @@ if ($fromForm) {
     }
 }
 
-$prompt = "Generate professional HTML descriptions for this car in 3 languages: Romanian, Russian, and English.
+$carTypeText = ($carType === 'order') 
+    ? "This is a CAR TO ORDER (not in stock). The car will be imported from EU after the order is placed. Delivery time is typically 14-30 days. Focus on the model's features and what the buyer can expect."
+    : "This is a CAR IN STOCK (available immediately). The car is already imported and ready for viewing/purchase.";
+
+$prompt = "You are an expert automotive journalist and marketing copywriter. Generate DETAILED, ATTRACTIVE and PERSUASIVE HTML descriptions for this car in 3 languages: Romanian, Russian, and English.
+
+YOUR GOAL: Write compelling text that will ATTRACT BUYERS and make them want to purchase or order this car. The text must be clear, beautiful, professional and sales-oriented.
+
+IMPORTANT: {$carTypeText}
 
 Car data:
 - Brand: {$car['br_nm']}
@@ -60,14 +68,26 @@ Car data:
 - Color: {$car['clr']}
 - Price: {$car['prc']} {$car['cur']}
 
-HTML requirements:
-1. Use semantic HTML tags (h2, h3, p, ul, li)
-2. Create sections: 'Equipment' and 'Description' (translated to each language)
-3. Add relevant emojis
-4. Be descriptive and professional
-5. Do NOT include <html>, <head>, <body> tags
+HTML STRUCTURE (MUST follow this EXACT order):
+1. <h2>{Brand} {Model} {Engine} {Year}</h2>
+2. <h3>🔹 Informații generale</h3> then <p>detailed paragraph about car type, engine family, power variant, mileage assessment, color, import origin</p>
+3. <h3>✅ Dotări</h3> then <ul> with 8-12 <li> items listing typical equipment for this model/trim
+4. <h3>🔧 Caracteristici tehnice</h3> then <ul> with detailed specs: engine type, cylinders, power with kW and rpm, torque Nm, fuel system, consumption l/100km, gearbox type, drivetrain
+5. <h3>🔍 Detalii motor</h3> then <p><strong>Caracteristici constructive:</strong></p><ul> engine block material, cylinder head, turbo type, timing chain/belt, emission standard, special features </ul> then <p><strong>Mentenanță:</strong></p><ul> engine lifespan, timing service interval, oil spec, injection system notes </ul>
+6. <h3>⚙️ Detalii cutie de viteze</h3> then <ul> gearbox type, clutch type, flywheel type with wear notes, reliability notes
+7. <h3>📋 Starea automobilului</h3> then <ul> with <li><strong>label:</strong> value</li> format for: import country, mileage assessment, body condition notes, price assessment, any warnings
 
-IMPORTANT: Return the response EXACTLY in this JSON format (no other text):
+CRITICAL REQUIREMENTS:
+- Section 'Dotări' MUST be the SECOND section (after general info) - mobile layout depends on this!
+- Each section must have REAL technical details based on your knowledge of this specific {$car['br_nm']} {$car['mo_nm']} model
+- Use <strong> for labels in lists, <em> for notes/warnings
+- Be VERY detailed like a professional car review - minimum 1500 characters per language
+- Include specific engine codes, gearbox codes, technical specifications you know about this model
+- Assess mileage realistically (high/low for this type of vehicle)
+- Do NOT use generic filler text - every sentence must add real information
+- Do NOT add generic warnings like 'check documents before buying' or 'verify vehicle history' - only specific technical warnings relevant to this model
+
+IMPORTANT: Return EXACTLY in this JSON format:
 {\"ro\": \"<HTML in Romanian>\", \"ru\": \"<HTML in Russian>\", \"en\": \"<HTML in English>\"}";
 
 $apiUrl = "https://api.groq.com/openai/v1/chat/completions";
@@ -78,8 +98,8 @@ $requestData = [
         ['role' => 'system', 'content' => 'You are a JSON generator. Always respond with valid JSON only, no markdown, no explanations.'],
         ['role' => 'user', 'content' => $prompt]
     ],
-    'temperature' => 0.5,
-    'max_tokens' => 4096,
+    'temperature' => 0.7,
+    'max_tokens' => 8192,
     'response_format' => ['type' => 'json_object']
 ];
 
