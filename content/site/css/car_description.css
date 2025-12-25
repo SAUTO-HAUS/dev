@@ -1,14 +1,14 @@
 .pht_bx.d_left_b {
     height: auto;
     min-height: auto;
-    margin-top: 15px;
+    margin-top: 1rem;
 }
 
 /* Right column block - calculator under specifications */
 .spc_bx.d_right_b {
     float: right;
     width: 32%;
-    margin-top: 15px;
+    margin-top: 1rem;
     clear: right;
 }
 
@@ -34,22 +34,23 @@
 
 /* Desktop */
 .car-description-block {
-    margin: 10px 0;
-    padding: 10px 20px;
+    margin: 0.625rem 0;
+    padding: 0.625rem 1.25rem;
     background-color: #f8f9fa;
     border-radius: 1rem;
-    border-left: 4px solid #ff0000;
+    border: 1px solid #e0e0e0;
+    border-left: 1px solid #ff0000;
 }
 
 .car-description-block.desktop {
     display: block;
     width: 100%;
-    margin-top: 15px;
+    margin-top: 1rem;
     position: relative;
 }
 
 .car-description-block.desktop .car-description-content {
-    max-height: 550px;
+    max-height: 34.2rem;
     overflow: hidden;
 }
 
@@ -59,10 +60,10 @@
 
 .desc-gradient {
     position: absolute;
-    bottom: 60px;
-    left: 20px;
-    right: 20px;
-    height: 60px;
+    bottom: 3.75rem;
+    left: 1.25rem;
+    right: 1.25rem;
+    height: 3.75rem;
     background: linear-gradient(transparent, #f8f9fa);
     pointer-events: none;
 }
@@ -74,12 +75,12 @@
 .btn-show-full-description {
     display: block;
     width: 100%;
-    padding: 12px 20px;
-    margin-top: 15px;
+    padding: 0.75rem 1.25rem;
+    margin-top: 1rem;
     background-color: #e2001a;
     color: #fff;
     border: none;
-    border-radius: 8px;
+    border-radius: 0.5rem;
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
@@ -93,37 +94,37 @@
 .car-description-content h1 {
     font-size: 1.5rem;
     font-weight: 700;
-    margin: 0 0 12px 0;
+    margin: 0 0 0.75rem 0;
     color: #2c3e50;
     border-bottom: 2px solid #e2001a;
-    padding-bottom: 8px;
+    padding-bottom: 0.5rem;
 }
 
 .car-description-content h2 {
     font-size: 1.3rem;
     font-weight: 700;
-    margin: 15px 0 10px 0;
+    margin: 1rem 0 0.625rem 0;
     color: #2c3e50;
     border-bottom: 2px solid #e2001a;
-    padding-bottom: 6px;
+    padding-bottom: 0.375rem;
 }
 
 .car-description-content h3 {
     font-size: 1.15rem;
     font-weight: 600;
-    margin: 12px 0 8px 0;
+    margin: 0.75rem 0 0.5rem 0;
     color: #34495e;
 }
 
 .car-description-content h4 {
     font-size: 1rem;
     font-weight: 600;
-    margin: 10px 0 6px 0;
+    margin: 0.625rem 0 0.375rem 0;
     color: #555;
 }
 
 .car-description-content p {
-    margin: 0 0 10px 0;
+    margin: 0 0 0.625rem 0;
     line-height: 1.6;
     color: #333;
 }
@@ -134,17 +135,17 @@
 }
 
 .car-description-content ul {
-    margin: 8px 0 12px 0;
-    padding-left: 20px;
+    margin: 0.5rem 0 0.75rem 0;
+    padding-left: 1.25rem;
     list-style-type: none;
 }
 
 .car-description-content ul li {
-    margin: 4px 0;
+    margin: 0.25rem 0;
     line-height: 1.5;
     color: #444;
     position: relative;
-    padding-left: 15px;
+    padding-left: 1rem;
 }
 
 .car-description-content ul li::before {
@@ -157,16 +158,16 @@
 }
 
 .car-description-content ol {
-    margin: 8px 0 12px 0;
-    padding-left: 20px;
+    margin: 0.5rem 0 0.75rem 0;
+    padding-left: 1.25rem;
     list-style-type: decimal;
 }
 
 .car-description-content ol li {
-    margin: 4px 0;
+    margin: 0.25rem 0;
     line-height: 1.5;
     color: #444;
-    padding-left: 5px;
+    padding-left: 0.3rem;
 }
 
 .car-description-content a {
@@ -181,12 +182,12 @@
 .car-description-content table {
     width: 100%;
     border-collapse: collapse;
-    margin: 10px 0;
+    margin: 0.625rem 0;
 }
 
 .car-description-content th,
 .car-description-content td {
-    padding: 8px 12px;
+    padding: 0.5rem 0.75rem;
     border: 1px solid #ddd;
     text-align: left;
 }
@@ -198,8 +199,8 @@
 }
 
 .car-description-content blockquote {
-    margin: 10px 0;
-    padding: 10px 15px;
+    margin: 0.625rem 0;
+    padding: 0.625rem 1rem;
     border-left: 3px solid #e2001a;
     background-color: #f9f9f9;
     color: #555;
@@ -208,7 +209,7 @@
 .car-description-content hr {
     border: none;
     border-top: 1px solid #ddd;
-    margin: 15px 0;
+    margin: 1rem 0;
 }
 
 .car-description-content section {
@@ -218,9 +219,9 @@
 
 /* Car Accordion - Mobile */
 .car-accordion {
-    margin: 10px 0;
+    margin: 0.625rem 0;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 0.5rem;
     overflow: hidden;
     background-color: #fff;
 }
@@ -233,7 +234,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 15px 20px;
+    padding: 1rem 1.25rem;
     background-color: #f8f9fa;
     cursor: pointer;
     font-weight: 600;
@@ -273,7 +274,7 @@
 }
 
 .accordion-content .car-description-content {
-    padding: 15px 20px;
+    padding: 1rem 1.25rem;
 }
 
 /* Media queries for mobile/desktop visibility */
