@@ -264,26 +264,27 @@
     justify-content: space-between;
     align-items: center;
     padding: 1rem 1.25rem;
-    background-color: #f8f9fa;
+    background-color: #e2001a;
     cursor: pointer;
     font-weight: 600;
     font-size: 1rem;
-    color: #333;
+    color: #fff;
     transition: background-color 0.2s;
+    border-radius: 0.5rem;
 }
 
 .accordion-header:hover {
-    background-color: #e9ecef;
+    background-color: #c50017;
 }
 
 .accordion-header:active {
-    background-color: #dee2e6;
+    background-color: #a50014;
 }
 
 .accordion-icon {
     font-size: 1.2rem;
     transition: transform 0.3s ease;
-    color: #666;
+    color: #fff;
 }
 
 .accordion-header.active .accordion-icon {
