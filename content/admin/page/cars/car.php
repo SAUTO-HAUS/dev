@@ -1971,8 +1971,15 @@ function generateWithGemini() {
                     if (textarea && htmlContent) {
                         textarea.value = htmlContent;
                         textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                        textarea.dispatchEvent(new Event('change', { bubbles: true }));
                         const label = textarea.closest('label');
-                        if (label) label.setAttribute('data-changed', '1');
+                        if (label) {
+                            label.setAttribute('data-changed', '1');
+                            label.classList.add('changed');
+                        }
+                        // Also update the hidden change checker if exists
+                        const changeChecker = document.querySelector('input[name="params_html_changed_' + lng + '"]');
+                        if (changeChecker) changeChecker.value = '1';
                     }
                 });
                 alert('✅ HTML generat pentru RO, RU, EN!');

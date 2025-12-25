@@ -74,9 +74,13 @@ $apiUrl = "https://api.groq.com/openai/v1/chat/completions";
 
 $requestData = [
     'model' => 'llama-3.3-70b-versatile',
-    'messages' => [['role' => 'user', 'content' => $prompt]],
-    'temperature' => 0.7,
-    'max_tokens' => 4096
+    'messages' => [
+        ['role' => 'system', 'content' => 'You are a JSON generator. Always respond with valid JSON only, no markdown, no explanations.'],
+        ['role' => 'user', 'content' => $prompt]
+    ],
+    'temperature' => 0.5,
+    'max_tokens' => 4096,
+    'response_format' => ['type' => 'json_object']
 ];
 
 $ch = curl_init($apiUrl);
