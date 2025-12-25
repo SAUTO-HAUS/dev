@@ -3,6 +3,7 @@
 use App\Helper\PhoneHelper;
 
 $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$db, &$img_frmt, &$lng){
+	/** @var PDO $db */
 	$ar = [ 'ids'=>[], 'txt'=>'', 'qu'=>0 ];
 	$debug_enabled = false; // Disable debugging
 	
@@ -490,9 +491,9 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 					// First image: load immediately with lazy loading
 					// Other images: use data-src for deferred loading
 					if ($idx === 0) {
-						$image_html .= '<div class="mobile-card-slider__slide"><img src="'.$img_src.'" loading="lazy" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' photo '.($idx+1).'" /></div>';
+						$image_html .= '<div class="mobile-card-slider__slide"><img src="'.$img_src.'" loading="lazy" width="300" height="200" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' photo '.($idx+1).'" /></div>';
 					} else {
-						$image_html .= '<div class="mobile-card-slider__slide"><img src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'200\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23f0f0f0\'/%3E%3C/svg%3E" data-src="'.$img_src.'" loading="lazy" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' photo '.($idx+1).'" /></div>';
+						$image_html .= '<div class="mobile-card-slider__slide"><img src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'200\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23f0f0f0\'/%3E%3C/svg%3E" data-src="'.$img_src.'" loading="lazy" width="300" height="200" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' photo '.($idx+1).'" /></div>';
 					}
 				}
 				$image_html .= '</div>';
@@ -505,7 +506,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 				// For order cars (catalog_type = 'on_order'), use .jpg extension instead of $img_frmt
 				$image_extension = (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
 				$p_name = isset($p['name']) ? $p['name'].$image_extension : 'no_image.svg';
-				$image_html = '<img src="'.$p_src.$p_name.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' main photo" />';
+				$image_html = '<img src="'.$p_src.$p_name.'" loading="lazy" width="300" height="200" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' main photo" />';
 			}
 		} else {
 			// Desktop: Single image as before
@@ -517,7 +518,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 			// For order cars (catalog_type = 'on_order'), use .jpg extension instead of $img_frmt
 			$image_extension = (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
 			$p_name = isset($p['name']) ? $p['name'].$image_extension : 'no_image.svg';
-			$image_html = '<img src="'.$p_src.$p_name.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' main photo" />';
+			$image_html = '<img src="'.$p_src.$p_name.'" loading="lazy" width="300" height="200" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' main photo" />';
 		}
 		
 		$z_stat = '';

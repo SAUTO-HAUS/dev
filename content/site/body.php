@@ -601,34 +601,68 @@ if (isset($t_mp[2])) {
     var google_remarketing_only = true;
     /* ]]> */
 </script>
-<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js"></script>
+<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js" defer></script>
 <noscript>
     <div style="display:inline;">
         <img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/865017510/?value=0&amp;guid=ON&amp;script=0"/><?php //991949120 ?>
     </div>
 </noscript>
 <!-- End Google AdWords -->
-
+ 
 <?php if (empty($_COOKIE['lang']) || ($_COOKIE['lang'] == 'ru')):?>
     <script>
-        (function(w,d,u){
-            var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/60000|0);
-            var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-        })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/site_button/loader_2_ydxvti.js');
+        // Delay chat widget loading to improve mobile CWV
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(function() {
+                (function(w,d,u){
+                    var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/60000|0);
+                    var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
+                })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/site_button/loader_2_ydxvti.js');
+            });
+        } else {
+            setTimeout(function() {
+                (function(w,d,u){
+                    var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/60000|0);
+                    var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
+                })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/site_button/loader_2_ydxvti.js');
+            }, 3000);
+        }
     </script>
 <?php elseif($_COOKIE['lang'] == 'en'):?>
     <script>
-        (function(w,d,u){
-            var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/60000|0);
-            var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-        })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/site_button/loader_6_kv018j.js');
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(function() {
+                (function(w,d,u){
+                    var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/60000|0);
+                    var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
+                })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/site_button/loader_6_kv018j.js');
+            });
+        } else {
+            setTimeout(function() {
+                (function(w,d,u){
+                    var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/60000|0);
+                    var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
+                })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/site_button/loader_6_kv018j.js');
+            }, 3000);
+        }
     </script>
 <?php elseif($_COOKIE['lang'] == 'ro'):?>
     <script>
-        (function(w,d,u){
-            var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/60000|0);
-            var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-        })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/site_button/loader_8_l03bx1.js');
+        if ('requestIdleCallback' in window) {
+            requestIdleCallback(function() {
+                (function(w,d,u){
+                    var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/60000|0);
+                    var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
+                })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/site_button/loader_8_l03bx1.js');
+            });
+        } else {
+            setTimeout(function() {
+                (function(w,d,u){
+                    var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/60000|0);
+                    var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
+                })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/site_button/loader_8_l03bx1.js');
+            }, 3000);
+        }
     </script>
 <?php endif;?>
 </body>
@@ -636,11 +670,11 @@ if (isset($t_mp[2])) {
 <?php
 if(isset($t_mp[2]) && ($t_mp[2]=='cars' || ($t_mp[2]=='services' && isset($t_mp[3]) && $t_mp[3]=='credit')) ) {
     ?>
-    <!--Plugin CSS file with desired skin-->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css"/>
+    <!--Plugin CSS file with desired skin - load async -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css" media="print" onload="this.media='all'"/>
 
     <!--Plugin JavaScript file-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js" defer></script>
 
     <script>
         $(document).ready(function () {
