@@ -375,12 +375,10 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                 <? // webs25 ?>
                 <div class="txt">
-                    <div style="display: flex; gap: 10px; align-items: center;">
-                        <div class="button"> Характеристики </div>
-                        <button type="button" id="gemini-generate-btn" onclick="generateWithGemini()" style="background: #4285f4; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px;">
-                            🤖 Генерировать AI
-                        </button>
-                    </div>
+                    <div class="button"> Характеристики </div>
+                    <button type="button" id="gemini-generate-btn" onclick="generateWithGemini()" style="background: #4285f4; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px; margin-left: 10px; position: relative; top: -30px; float: right;">
+                        🤖 Генерировать AI
+                    </button>
                     <div class="content">
 
                         <?
@@ -1938,7 +1936,7 @@ function generateWithGemini() {
     };
     
     // Send request with form data
-    fetch('/content/admin/ajax/ai_generate_description.php', {
+    fetch('/content/admin/ajax/cars/ai_generate_description.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',

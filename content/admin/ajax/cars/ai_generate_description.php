@@ -1,9 +1,14 @@
 <?php
+ob_start();
+error_reporting(0);
+ini_set('display_errors', 0);
+
 defined('_DOIT') or define('_DOIT', true);
 
 require_once($_SERVER['DOCUMENT_ROOT'] . '/content/default/config.php');
 require_once($_SERVER['DOCUMENT_ROOT'] . '/content/default/db.php');
 
+ob_end_clean();
 header('Content-Type: application/json; charset=utf-8');
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
