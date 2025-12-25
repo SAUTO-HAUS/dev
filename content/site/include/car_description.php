@@ -11,20 +11,28 @@ function parseEquipmentSection($html) {
         'rest' => $html
     ];
     
-    $startMarker = '<!--SECTION:equipment-->';
-    $endMarker = '<!--/SECTION:equipment-->';
+    // Keywords to search for equipment section (RO, RU, EN)
+    $keywords = ['Dotări', 'Комплектация', 'Equipment', '🧭 Dotări', '🧭 Комплектация', '🧭 Equipment'];
     
-    $startPos = strpos($html, $startMarker);
-    $endPos = strpos($html, $endMarker);
+    // Find section by keyword in h2 or h3
+    $pattern = '/<h[23][^>]*>([^<]*(?:' . implode('|', array_map('preg_quote', $keywords)) . ')[^<]*)<\/h[23]>/iu';
     
-    if ($startPos !== false && $endPos !== false && $endPos > $startPos) {
-        $equipmentStart = $startPos + strlen($startMarker);
-        $equipmentContent = substr($html, $equipmentStart, $endPos - $equipmentStart);
-        $result['equipment'] = trim($equipmentContent);
+    if (preg_match($pattern, $html, $match, PREG_OFFSET_CAPTURE)) {
+        $sectionStart = $match[0][1];
         
-        $beforeEquipment = substr($html, 0, $startPos);
-        $afterEquipment = substr($html, $endPos + strlen($endMarker));
-        $result['rest'] = trim($beforeEquipment . $afterEquipment);
+        // Find next h2 or h3 after this section
+        $afterSection = substr($html, $sectionStart + strlen($match[0][0]));
+        if (preg_match('/<h[23][^>]*>/i', $afterSection, $nextMatch, PREG_OFFSET_CAPTURE)) {
+            $sectionEnd = $sectionStart + strlen($match[0][0]) + $nextMatch[0][1];
+            $equipmentContent = substr($html, $sectionStart, $sectionEnd - $sectionStart);
+        } else {
+            // No next section - take until end
+            $equipmentContent = substr($html, $sectionStart);
+            $sectionEnd = strlen($html);
+        }
+        
+        $result['equipment'] = trim($equipmentContent);
+        $result['rest'] = trim(substr($html, 0, $sectionStart) . substr($html, $sectionEnd));
     }
     
     return $result;
@@ -79,11 +87,13 @@ function getMobileAccordions($parsedHtml, $lang) {
     $html = '';
     
     // Equipment accordion (only if section exists)
+    $equipmentTitle = $lang == 'ru' ? 'Комплектация' : ($lang == 'en' ? 'Equipment' : 'Dotări');
+    
     if (!empty($parsedHtml['equipment'])) {
         $html .= '
         <div class="car-accordion mobile">
             <div class="accordion-header" onclick="toggleAccordion(this)">
-                <span>Комплектация</span>
+                <span>'.$equipmentTitle.'</span>
                 <span class="accordion-icon">▼</span>
             </div>
             <div class="accordion-content">
