@@ -612,6 +612,9 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                 <? // webs25 ?>
                 <div class="txt">
                     <div class="button"> Характеристики </div>
+                    <button type="button" id="gemini-generate-btn" onclick="generateWithGemini()" style="background: #4285f4; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 14px; margin-left: 10px; position: relative; top: -30px; float: right;">
+                        🤖 Генерировать AI
+                    </button>
                     <div class="content">
 
                         <?
@@ -2166,6 +2169,98 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 });
+
+// AI Generate Function - preia date din formular
+function generateWithGemini() {
+    const btn = document.getElementById('gemini-generate-btn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '⏳ Генерация...';
+    btn.disabled = true;
+    
+    const brand = document.querySelector('select[name="br"]');
+    const model = document.querySelector('select[name="mo"]');
+    const year = document.querySelector('input[name="yr"]');
+    const mileage = document.querySelector('input[name="mlg"]');
+    const volume = document.querySelector('input[name="vol"]');
+    const hp = document.querySelector('input[name="hp"]');
+    const fuel = document.querySelector('select[name="fl"]');
+    const transmission = document.querySelector('select[name="tra"]');
+    const wheelDrive = document.querySelector('select[name="wd"]');
+    const color = document.querySelector('select[name="clr"]');
+    const price = document.querySelector('input[name="prc"]');
+    const currency = document.querySelector('select[name="cur"]');
+    
+    const carData = {
+        brand: brand ? brand.options[brand.selectedIndex]?.text || '' : '',
+        model: model ? model.options[model.selectedIndex]?.text || '' : '',
+        year: year ? year.value : '',
+        mileage: mileage ? mileage.value : '',
+        volume: volume ? volume.value : '',
+        hp: hp ? hp.value : '',
+        fuel: fuel ? fuel.options[fuel.selectedIndex]?.text || '' : '',
+        transmission: transmission ? transmission.options[transmission.selectedIndex]?.text || '' : '',
+        wheelDrive: wheelDrive ? wheelDrive.options[wheelDrive.selectedIndex]?.text || '' : '',
+        color: color ? color.options[color.selectedIndex]?.text || '' : '',
+        price: price ? price.value : '',
+        currency: currency ? currency.options[currency.selectedIndex]?.text || '' : ''
+    };
+    
+    $.ajax({
+        url: '/ajax.php',
+        method: 'POST',
+        data: {
+            tp: 'adm',
+            pg: 'cars',
+            fn: 'ai_generate',
+            lang: 'ro',
+            from_form: '1',
+            brand: carData.brand,
+            model: carData.model,
+            year: carData.year,
+            mileage: carData.mileage,
+            volume: carData.volume,
+            hp: carData.hp,
+            fuel: carData.fuel,
+            transmission: carData.transmission,
+            wheelDrive: carData.wheelDrive,
+            color: carData.color,
+            price: carData.price,
+            currency: carData.currency
+        },
+        dataType: 'json',
+        success: function(data) {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            
+            if (data.success) {
+                const langs = ['ro', 'ru', 'en'];
+                langs.forEach(function(lng) {
+                    const textarea = document.getElementById('params_html_' + lng);
+                    const htmlContent = data['html_' + lng];
+                    if (textarea && htmlContent) {
+                        textarea.value = htmlContent;
+                        textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                        textarea.dispatchEvent(new Event('change', { bubbles: true }));
+                        const label = textarea.closest('label');
+                        if (label) {
+                            label.setAttribute('data-changed', '1');
+                            label.classList.add('changed');
+                        }
+                    }
+                });
+                alert('✅ HTML RO, RU, EN!');
+            } else {
+                alert('❌ Ошибка: ' + (data.error || 'Unknown error'));
+            }
+        },
+        error: function(xhr, status, error) {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            alert('❌ Ошибка сети: ' + error);
+        }
+    });
+}
+
 </script>
 
 <?php include(__DIR__ . '/order_country_flags_include.php'); ?>
