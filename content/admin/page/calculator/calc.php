@@ -170,13 +170,37 @@ $rtrn = '
         border-bottom: 1px solid #ddd;
     }
     
-    #calculator-container .hybrid-options label {
+    #calculator-container .hybrid-fuel-select label,
+    #calculator-container .hybrid-type-select label {
         display: flex;
         align-items: center;
         gap: 0.5rem;
-        margin-bottom: 0.5rem;
         cursor: pointer;
         font-weight: normal;
+    }
+    
+    #calculator-container .hybrid-type-select {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    #calculator-container .hybrid-type-select label {
+        padding: 0.5rem;
+        border-radius: 6px;
+        transition: background 0.2s;
+    }
+    
+    #calculator-container .hybrid-type-select label:hover {
+        background: #e9ecef;
+    }
+    
+    #calculator-container .hybrid-type-select input[type="radio"] {
+        accent-color: #e2001a;
+    }
+    
+    #calculator-container .hybrid-fuel-select input[type="radio"] {
+        accent-color: #e2001a;
     }
     
     #calculator-container .calc-btn {
@@ -360,9 +384,11 @@ $rtrn = '
                     <label><input type="radio" name="hybrid_fuel" value="benzina" checked> '.$t['gasoline'].'</label>
                     <label><input type="radio" name="hybrid_fuel" value="diesel"> '.$t['diesel'].'</label>
                 </div>
-                <label><input type="radio" name="hybrid_type" value="plugin" checked> '.$t['plugin_hybrid'].' (-'.$hybrid_discount_plugin.'%)</label>
-                <label><input type="radio" name="hybrid_type" value="full"> '.$t['full_hybrid'].' (-'.$hybrid_discount_full.'%)</label>
-                <label><input type="radio" name="hybrid_type" value="mild"> '.$t['mild_hybrid'].'</label>
+                <div class="hybrid-type-select">
+                    <label><input type="radio" name="hybrid_type" value="plugin" checked> '.$t['plugin_hybrid'].' (-'.$hybrid_discount_plugin.'%)</label>
+                    <label><input type="radio" name="hybrid_type" value="full"> '.$t['full_hybrid'].' (-'.$hybrid_discount_full.'%)</label>
+                    <label><input type="radio" name="hybrid_type" value="mild"> '.$t['mild_hybrid'].'</label>
+                </div>
             </div>
             
             <div class="electric-notice" id="electric-notice">
