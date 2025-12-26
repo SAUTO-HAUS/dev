@@ -36,13 +36,13 @@ $rtrn = '
     #calculator-container {
         max-width: 900px;
         margin: 0 auto;
-        padding: 2rem;
+        padding: 0 2rem 1rem;
         font-family: Arial, sans-serif;
     }
     
     #calculator-container .calc-header {
         text-align: center;
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
     }
     
     #calculator-container .calc-header h1 {
@@ -483,6 +483,10 @@ $rtrn = '
             <span class="label">'.$t['excise'].'</span>
             <span class="value" id="res-excise">-</span>
         </div>
+        <div class="result-row" id="res-luxury-row" style="display:none;">
+            <span class="label">'.$t['luxury_excise'].'</span>
+            <span class="value" id="res-luxury">-</span>
+        </div>
         <div class="result-row">
             <span class="label">'.$t['customs_duty'].'</span>
             <span class="value" id="res-customs">-</span>
@@ -642,6 +646,17 @@ $rtrn = '
             }
         }
         
+        // Luxury excise (for vehicles over 600,000 MDL)
+        let luxuryExcise = 0;
+        const luxuryRow = document.getElementById("res-luxury-row");
+        if (valueMdl > 1200000) {
+            luxuryExcise = valueMdl * 0.03; // 3%
+        } else if (valueMdl > 900000) {
+            luxuryExcise = valueMdl * 0.02; // 2%
+        } else if (valueMdl > 600000) {
+            luxuryExcise = valueMdl * 0.01; // 1%
+        }
+        
         // Customs procedures fee (0.4% of customs value, max 1800 EUR)
         const maxFeeEur = 1800;
         let customsFee = valueMdl * 0.004;
@@ -649,12 +664,21 @@ $rtrn = '
             customsFee = maxFeeEur * EUR_RATE;
         }
         
-        // Total (excise + customs fee, no TVA)
-        const total = excise + customsFee;
+        // Total (excise + luxury excise + customs fee)
+        const total = excise + luxuryExcise + customsFee;
         
         // Display results with EUR equivalent
         document.getElementById("res-value-mdl").innerHTML = formatNumber(valueMdl) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(valueMdl / EUR_RATE) + " EUR</span>";
         document.getElementById("res-excise").innerHTML = formatNumber(excise) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(excise / EUR_RATE) + " EUR</span>";
+        
+        // Show/hide luxury excise row
+        if (luxuryExcise > 0) {
+            luxuryRow.style.display = "flex";
+            document.getElementById("res-luxury").innerHTML = formatNumber(luxuryExcise) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(luxuryExcise / EUR_RATE) + " EUR</span>";
+        } else {
+            luxuryRow.style.display = "none";
+        }
+        
         document.getElementById("res-customs").innerHTML = formatNumber(customsFee) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(customsFee / EUR_RATE) + " EUR</span>";
         document.getElementById("res-total").innerHTML = formatNumber(total) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(total / EUR_RATE) + " EUR</span>";
         
