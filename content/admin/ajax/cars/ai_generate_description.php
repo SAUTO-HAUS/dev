@@ -93,7 +93,7 @@ IMPORTANT: Return EXACTLY in this JSON format:
 $apiUrl = "https://api.groq.com/openai/v1/chat/completions";
 
 $requestData = [
-    'model' => 'llama-3.3-70b-versatile',
+    'model' => 'llama-3.1-405b-reasoning',
     'messages' => [
         ['role' => 'system', 'content' => 'You are a JSON generator. Always respond with valid JSON only, no markdown, no explanations.'],
         ['role' => 'user', 'content' => $prompt]
