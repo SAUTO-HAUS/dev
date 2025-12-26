@@ -72,8 +72,8 @@ HTML STRUCTURE (MUST follow this EXACT order):
 1. <h2>{Brand} {Model} | {Engine} | {Year}</h2> - USE PIPE SEPARATOR between brand/model, engine and year!
 2. <h3>✅ Dotări</h3> then <ul> with 8-12 <li> items - MUST be ATTRACTIVE and APPEALING to buyers! List the most desirable features: comfort, safety, technology, luxury items. Use enticing language that makes buyers want this car. NO boring technical specs here - only features that excite customers!
 3. <h3>🔧 Caracteristici tehnice</h3> then <ul> with detailed specs: engine type, power with kW and rpm, torque Nm, fuel system, consumption l/100km, gearbox type, drivetrain
-4. <h3>🔍 Detalii motor</h3> then <p><strong>Caracteristici constructive:</strong></p><ul> engine block material, cylinder head, turbo type, timing drive type (use ONLY 'Tip transmisie motor: curea' OR 'Tip transmisie motor: lanț' depending on engine - NEVER say 'timing chain' or 'timing belt' in other words!), emission standard, special features </ul> then <p><strong>Mentenanță:</strong></p><ul> service interval ALWAYS 7000 km (standard for all cars), oil specification (format: 'Specificație ulei: 5W-30, ACEA C2' or 'Specificație ulei: 5W-30, ACEA C3' - always include viscosity AND ACEA class!), oil capacity (format: 'Cantitate ulei: X.X litri'), injection system notes </ul> - NEVER mention engine lifespan or km durability!
-5. <h3>⚙️ Detalii cutie de viteze</h3> then <ul> gearbox type, clutch type, flywheel type with wear notes, reliability notes, oil type (format: 'Tip ulei cutie: ATF/MTF'), oil specification (format: 'Specificație ulei cutie: Dexron VI' or similar), oil capacity as RANGE (format: 'Cantitate ulei cutie: X-X litri' e.g. '6-9 litri'), service interval (format: 'Interval schimb ulei cutie: XXXXX km')
+4. <h3>🔍 Detalii motor</h3> then <p><strong>Caracteristici constructive:</strong></p><ul> engine block material, cylinder head, turbo type, timing drive type (ONLY write 'curea' or 'lanț' - choose correct one for THIS engine!), emission standard, special features </ul> then <p><strong>Mentenanță:</strong></p><ul> service interval ALWAYS 7000 km, oil specification (viscosity + ACEA class - choose correct for THIS engine!), oil capacity in litri, injection system notes </ul> - NEVER mention engine lifespan or km durability!
+5. <h3>⚙️ Detalii cutie de viteze</h3> then <ul> gearbox type, clutch type, flywheel type with wear notes, reliability notes, oil type (ATF for automatic, MTF for manual), oil specification (choose correct spec for THIS gearbox - NOT always Dexron VI!), oil capacity as RANGE (X-X litri), service interval in km
 
 CRITICAL REQUIREMENTS:
 - Section 'Dotări' MUST be the FIRST section (right after h2 title) - mobile layout depends on this!
@@ -98,7 +98,7 @@ $requestData = [
         ['role' => 'system', 'content' => 'You are a JSON generator. Always respond with valid JSON only, no markdown, no explanations.'],
         ['role' => 'user', 'content' => $prompt]
     ],
-    'temperature' => 0.5,
+    'temperature' => 0.7,
     'max_tokens' => 8192,
     'response_format' => ['type' => 'json_object']
 ];
