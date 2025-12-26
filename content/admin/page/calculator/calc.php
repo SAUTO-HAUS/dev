@@ -505,7 +505,7 @@ $rtrn = '
             const ageMax = parseInt(rate.age_max);
             
             const capMatch = capacity >= capMin && (capMax === 0 || capacity <= capMax);
-            const ageMatch = age >= ageMin && (ageMax === 0 || age < ageMax);
+            const ageMatch = age >= ageMin && (ageMax === 0 || age <= ageMax);
             
             if (capMatch && ageMatch) {
                 return parseFloat(rate.rate);
