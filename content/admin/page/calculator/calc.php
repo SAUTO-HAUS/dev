@@ -2,17 +2,7 @@
 
 include_once _ADM_PAGE.'/calculator/calc_translate.php';
 
-$eur_rate = 19.50; 
-try {
-    $pdo = $db->prepare('SELECT `value` FROM '.$prefx.'_exchange WHERE `name`="EUR"');
-    $pdo->execute();
-    $result = $pdo->fetch(PDO::FETCH_ASSOC);
-    if ($result && !empty($result['value'])) {
-        $eur_rate = floatval($result['value']);
-    }
-} catch (Exception $e) {
-   
-}
+$eur_rate = 19.50;
 
 $settings = [];
 try {
@@ -25,6 +15,7 @@ try {
    
 }
 
+$eur_rate = isset($settings['eur_rate']) ? floatval($settings['eur_rate']) : 19.50;
 $tva_rate = isset($settings['tva_rate']) ? floatval($settings['tva_rate']) : 20;
 $hybrid_discount_full = isset($settings['hybrid_discount_full']) ? floatval($settings['hybrid_discount_full']) : 25;
 $hybrid_discount_plugin = isset($settings['hybrid_discount_plugin']) ? floatval($settings['hybrid_discount_plugin']) : 50;
@@ -60,14 +51,71 @@ $rtrn = '
         margin-bottom: 0.5rem;
     }
     
-    #calculator-container .calc-header .eur-rate {
-        color: #666;
-        font-size: 0.9rem;
+    #calculator-container .calc-header .eur-rate-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
     }
     
-    #calculator-container .calc-header .eur-rate span {
-        color: #e2001a;
+    #calculator-container .calc-header .eur-rate-row label {
+        color: #666;
+        font-size: 0.95rem;
+    }
+    
+    #calculator-container .calc-header .eur-rate-input {
+        width: 100px;
+        padding: 0.4rem 0.6rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 6px;
+        font-size: 1rem;
         font-weight: bold;
+        color: #e2001a;
+        text-align: center;
+    }
+    
+    #calculator-container .calc-header .eur-rate-input:focus {
+        outline: none;
+        border-color: #e2001a;
+    }
+    
+    #calculator-container .calc-header .eur-rate-row span {
+        color: #666;
+        font-size: 0.95rem;
+    }
+    
+    #calculator-container .calc-header .save-rate-btn {
+        padding: 0.4rem 1rem;
+        background: #e2001a;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    
+    #calculator-container .calc-header .save-rate-btn:hover {
+        background: #bf0016;
+    }
+    
+    #calculator-container .calc-header .save-rate-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+    }
+    
+    #calculator-container .calc-header .rate-feedback {
+        font-size: 0.85rem;
+        margin-left: 0.5rem;
+    }
+    
+    #calculator-container .calc-header .rate-feedback.success {
+        color: #28a745;
+    }
+    
+    #calculator-container .calc-header .rate-feedback.error {
+        color: #dc3545;
     }
     
     #calculator-container .calc-form {
@@ -344,7 +392,13 @@ $rtrn = '
 <div id="calculator-container">
     <div class="calc-header">
         <h1>'.$t['title'].'</h1>
-        <p class="eur-rate">'.$t['bnm_rate'].': <span>1 EUR = '.number_format($eur_rate, 4, '.', ' ').' MDL</span></p>
+        <div class="eur-rate-row">
+            <label>'.$t['eur_rate_label'].'</label>
+            <input type="number" step="0.0001" id="eur-rate-input" class="eur-rate-input" value="'.number_format($eur_rate, 4, '.', '').'">
+            <span>'.$t['eur_rate_mdl'].'</span>
+            <button type="button" id="save-rate-btn" class="save-rate-btn">'.$t['save'].'</button>
+            <span id="rate-feedback" class="rate-feedback"></span>
+        </div>
     </div>
     
     <div class="calc-form">
@@ -448,7 +502,51 @@ $rtrn = '
 
 <script>
 (function() {
-    const EUR_RATE = '.$eur_rate.';
+    let EUR_RATE = '.$eur_rate.';
+    const RATE_SAVED_MSG = "'.$t['rate_saved'].'";
+    const RATE_ERROR_MSG = "'.$t['rate_save_error'].'";
+    
+    // Save EUR rate button
+    document.getElementById("save-rate-btn").addEventListener("click", function() {
+        const btn = this;
+        const input = document.getElementById("eur-rate-input");
+        const feedback = document.getElementById("rate-feedback");
+        const newRate = parseFloat(input.value);
+        
+        if (isNaN(newRate) || newRate <= 0) {
+            feedback.textContent = RATE_ERROR_MSG;
+            feedback.className = "rate-feedback error";
+            return;
+        }
+        
+        btn.disabled = true;
+        feedback.textContent = "";
+        
+        fetch("/ajax.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: "tp=adm&pg=calculator&fn=save_eur_rate&rate=" + encodeURIComponent(newRate)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                EUR_RATE = newRate;
+                feedback.textContent = RATE_SAVED_MSG;
+                feedback.className = "rate-feedback success";
+            } else {
+                feedback.textContent = RATE_ERROR_MSG;
+                feedback.className = "rate-feedback error";
+            }
+        })
+        .catch(() => {
+            feedback.textContent = RATE_ERROR_MSG;
+            feedback.className = "rate-feedback error";
+        })
+        .finally(() => {
+            btn.disabled = false;
+            setTimeout(() => { feedback.textContent = ""; }, 3000);
+        });
+    });
     const TVA_RATE = '.$tva_rate.';
     const HYBRID_DISCOUNT_PLUGIN = '.$hybrid_discount_plugin.';
     const HYBRID_DISCOUNT_FULL = '.$hybrid_discount_full.';
@@ -487,6 +585,9 @@ $rtrn = '
         // Calculate vehicle age
         const currentYear = new Date().getFullYear();
         const age = currentYear - year;
+        
+        // Get current EUR rate from input
+        EUR_RATE = parseFloat(document.getElementById("eur-rate-input").value) || EUR_RATE;
         
         // Calculate value in MDL
         const valueMdl = priceEur * EUR_RATE;

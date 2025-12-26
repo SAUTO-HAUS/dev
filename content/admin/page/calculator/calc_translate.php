@@ -6,7 +6,11 @@ $calc_trans = [
     'ro' => [
         // Calculator page
         'title' => 'Calculator Vămuire Auto',
-        'bnm_rate' => 'Curs BNM',
+        'eur_rate_label' => 'Curs 1 EUR =',
+        'eur_rate_mdl' => 'MDL',
+        'save' => 'Salvează',
+        'rate_saved' => 'Cursul a fost salvat!',
+        'rate_save_error' => 'Eroare la salvare!',
         'vehicle_type' => 'Tipul vehiculului',
         'car' => 'Autoturism',
         'motorcycle' => 'Motocicletă',
@@ -84,7 +88,11 @@ $calc_trans = [
     'ru' => [
         // Calculator page
         'title' => 'Калькулятор Растаможки Авто',
-        'bnm_rate' => 'Курс НБМ',
+        'eur_rate_label' => 'Курс 1 EUR =',
+        'eur_rate_mdl' => 'MDL',
+        'save' => 'Сохранить',
+        'rate_saved' => 'Курс сохранён!',
+        'rate_save_error' => 'Ошибка сохранения!',
         'vehicle_type' => 'Тип транспорта',
         'car' => 'Легковой автомобиль',
         'motorcycle' => 'Мотоцикл',
@@ -162,7 +170,11 @@ $calc_trans = [
     'en' => [
         // Calculator page
         'title' => 'Auto Customs Calculator',
-        'bnm_rate' => 'NBM Rate',
+        'eur_rate_label' => 'Rate 1 EUR =',
+        'eur_rate_mdl' => 'MDL',
+        'save' => 'Save',
+        'rate_saved' => 'Rate saved!',
+        'rate_save_error' => 'Error saving rate!',
         'vehicle_type' => 'Vehicle Type',
         'car' => 'Car',
         'motorcycle' => 'Motorcycle',

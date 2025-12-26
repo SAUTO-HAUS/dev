@@ -2,7 +2,32 @@
 
 $fn = isset($_POST['fn']) ? $_POST['fn'] : '';
 
-if ($fn === 'log_usage') {
+if ($fn === 'save_eur_rate') {
+    $rate = isset($_POST['rate']) ? floatval($_POST['rate']) : 0;
+    
+    if ($rate <= 0) {
+        echo json_encode(['success' => false, 'error' => 'Invalid rate']);
+        exit;
+    }
+    
+    try {
+        // Check if setting exists
+        $pdo = $db->prepare('SELECT id FROM '.$prefx.'_calculator_settings WHERE setting_key = "eur_rate"');
+        $pdo->execute();
+        $exists = $pdo->fetch(PDO::FETCH_ASSOC);
+        
+        if ($exists) {
+            $pdo = $db->prepare('UPDATE '.$prefx.'_calculator_settings SET setting_value = :rate, updated_by = :user_id WHERE setting_key = "eur_rate"');
+        } else {
+            $pdo = $db->prepare('INSERT INTO '.$prefx.'_calculator_settings (setting_key, setting_value, description, updated_by) VALUES ("eur_rate", :rate, "EUR to MDL exchange rate", :user_id)');
+        }
+        $pdo->execute(['rate' => $rate, 'user_id' => $user_id]);
+        echo json_encode(['success' => true]);
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+    }
+    
+} elseif ($fn === 'log_usage') {
     try {
         $pdo = $db->prepare('INSERT INTO '.$prefx.'_calculator_usage_log (`user_id`, `created_at`) VALUES (:user_id, NOW())');
         $pdo->execute(['user_id' => $user_id]);
