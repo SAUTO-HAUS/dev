@@ -232,8 +232,14 @@ $rtrn = '
     #calculator-container .result-row.total {
         background: linear-gradient(135deg, #e2001a 0%, #bf0016 100%);
         color: #fff;
-        margin: 1rem -2rem -2rem;
+        margin: 1rem -2rem 0;
         padding: 1.5rem 2rem;
+        border-radius: 0;
+    }
+    
+    #calculator-container .result-row.total.vehicle-total {
+        background: linear-gradient(135deg, #555 0%, #333 100%);
+        margin: 0 -2rem -2rem;
         border-radius: 0 0 12px 12px;
     }
     
@@ -378,6 +384,10 @@ $rtrn = '
             <span class="label">'.$t['total'].'</span>
             <span class="value" id="res-total">-</span>
         </div>
+        <div class="result-row total vehicle-total">
+            <span class="label">'.$t['vehicle_total'].'</span>
+            <span class="value" id="res-vehicle-total">-</span>
+        </div>
     </div>
     
     '.($is_super_admin ? '
@@ -458,18 +468,26 @@ $rtrn = '
         const tvaBase = valueMdl + excise;
         const tva = tvaBase * (TVA_RATE / 100);
         
-        // Customs duty (usually 0 for EU cars)
-        const customsDuty = 0;
+        // Customs procedures fee (0.4% of customs value, max 1800 EUR)
+        const maxFeeEur = 1800;
+        let customsFee = valueMdl * 0.004;
+        if (customsFee > maxFeeEur * EUR_RATE) {
+            customsFee = maxFeeEur * EUR_RATE;
+        }
         
         // Total
-        const total = excise + tva + customsDuty;
+        const total = excise + tva + customsFee;
         
         // Display results with EUR equivalent
         document.getElementById("res-value-mdl").innerHTML = formatNumber(valueMdl) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(valueMdl / EUR_RATE) + " EUR</span>";
         document.getElementById("res-excise").innerHTML = formatNumber(excise) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(excise / EUR_RATE) + " EUR</span>";
         document.getElementById("res-tva").innerHTML = formatNumber(tva) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(tva / EUR_RATE) + " EUR</span>";
-        document.getElementById("res-customs").innerHTML = formatNumber(customsDuty) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(customsDuty / EUR_RATE) + " EUR</span>";
+        document.getElementById("res-customs").innerHTML = formatNumber(customsFee) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(customsFee / EUR_RATE) + " EUR</span>";
         document.getElementById("res-total").innerHTML = formatNumber(total) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(total / EUR_RATE) + " EUR</span>";
+        
+        // Vehicle total (price + customs costs)
+        const vehicleTotal = valueMdl + total;
+        document.getElementById("res-vehicle-total").innerHTML = formatNumber(vehicleTotal) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(vehicleTotal / EUR_RATE) + " EUR</span>";
         
         document.getElementById("results").classList.add("show");
         
