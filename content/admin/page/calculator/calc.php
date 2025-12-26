@@ -292,6 +292,7 @@ $rtrn = '
                 <label>Tipul vehiculului</label>
                 <select id="vehicle_type">
                     <option value="autoturism">Autoturism</option>
+                    <option value="motocicleta">Motocicletă</option>
                     <option value="camion">Camion</option>
                 </select>
             </div>
@@ -419,7 +420,12 @@ $rtrn = '
         } else {
             // Find matching rate
             let baseFuel = fuelType === "hybrid" ? "benzina" : fuelType;
-            if (baseFuel === "diesel" || baseFuel === "benzina") {
+            
+            // For motorcycles, use motorcycle rates
+            if (vehicleType === "motocicleta") {
+                const rate = findExciseRate("motocicleta", capacity, age);
+                excise = rate * capacity;
+            } else if (baseFuel === "diesel" || baseFuel === "benzina") {
                 const rate = findExciseRate(baseFuel, capacity, age);
                 excise = rate * capacity;
                 

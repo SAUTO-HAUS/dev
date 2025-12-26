@@ -92,7 +92,28 @@ INSERT INTO `sa_calculator_excise_rates` (`fuel_type`, `capacity_min`, `capacity
 ('diesel', 3001, 0, 0, 3, 2.30),
 ('diesel', 3001, 0, 3, 5, 3.20),
 ('diesel', 3001, 0, 5, 7, 4.60),
-('diesel', 3001, 0, 7, 0, 6.40);
+('diesel', 3001, 0, 7, 0, 6.40),
+
+-- Motociclete rates by capacity and age
+('motocicleta', 0, 250, 0, 3, 0.10),
+('motocicleta', 0, 250, 3, 5, 0.15),
+('motocicleta', 0, 250, 5, 7, 0.20),
+('motocicleta', 0, 250, 7, 0, 0.30),
+
+('motocicleta', 251, 500, 0, 3, 0.15),
+('motocicleta', 251, 500, 3, 5, 0.20),
+('motocicleta', 251, 500, 5, 7, 0.30),
+('motocicleta', 251, 500, 7, 0, 0.45),
+
+('motocicleta', 501, 800, 0, 3, 0.25),
+('motocicleta', 501, 800, 3, 5, 0.35),
+('motocicleta', 501, 800, 5, 7, 0.50),
+('motocicleta', 501, 800, 7, 0, 0.70),
+
+('motocicleta', 801, 0, 0, 3, 0.40),
+('motocicleta', 801, 0, 3, 5, 0.55),
+('motocicleta', 801, 0, 5, 7, 0.80),
+('motocicleta', 801, 0, 7, 0, 1.10);
 
 -- Insert default settings
 INSERT INTO `sa_calculator_settings` (`setting_key`, `setting_value`, `description`) VALUES
