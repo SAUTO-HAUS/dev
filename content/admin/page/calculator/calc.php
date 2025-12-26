@@ -243,6 +243,17 @@ $rtrn = '
         font-size: 1.2rem;
     }
     
+    #calculator-container .eur-equiv {
+        font-size: 0.75em;
+        color: #888;
+        font-weight: normal;
+        margin-left: 0.5rem;
+    }
+    
+    #calculator-container .result-row.total .eur-equiv {
+        color: rgba(255,255,255,0.7);
+    }
+    
     #calculator-container .admin-actions {
         margin-top: 2rem;
         padding-top: 1rem;
@@ -453,12 +464,12 @@ $rtrn = '
         // Total
         const total = excise + tva + customsDuty;
         
-        // Display results
-        document.getElementById("res-value-mdl").textContent = formatNumber(valueMdl) + " MDL";
-        document.getElementById("res-excise").textContent = formatNumber(excise) + " MDL";
-        document.getElementById("res-tva").textContent = formatNumber(tva) + " MDL";
-        document.getElementById("res-customs").textContent = formatNumber(customsDuty) + " MDL";
-        document.getElementById("res-total").textContent = formatNumber(total) + " MDL";
+        // Display results with EUR equivalent
+        document.getElementById("res-value-mdl").innerHTML = formatNumber(valueMdl) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(valueMdl / EUR_RATE) + " EUR</span>";
+        document.getElementById("res-excise").innerHTML = formatNumber(excise) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(excise / EUR_RATE) + " EUR</span>";
+        document.getElementById("res-tva").innerHTML = formatNumber(tva) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(tva / EUR_RATE) + " EUR</span>";
+        document.getElementById("res-customs").innerHTML = formatNumber(customsDuty) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(customsDuty / EUR_RATE) + " EUR</span>";
+        document.getElementById("res-total").innerHTML = formatNumber(total) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(total / EUR_RATE) + " EUR</span>";
         
         document.getElementById("results").classList.add("show");
         
