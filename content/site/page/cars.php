@@ -929,7 +929,7 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                         </div>';
 
                 $parsedHtml = parseEquipmentSection($rseo['params_html']);
-                $rtrn .= getMobileAccordions($parsedHtml, $_COOKIE['lang']);
+                $rtrn .= getMobileAccordions($parsedHtml, $_COOKIE['lang'], $rseo['params_html']);
 
                 // Desktop description
                 $rtrn .= '<div class="pht_bx d_left_b">';

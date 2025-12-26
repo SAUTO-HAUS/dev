@@ -83,46 +83,47 @@ function getDesktopDescriptionBlock($params_html, $lang = 'ro', $pageType = 'ord
  * @param string $lang - Current language code
  * @return string - HTML accordions
  */
-function getMobileAccordions($parsedHtml, $lang) {
+function getMobileAccordions($parsedHtml, $lang, $fullHtml = '') {
 
     $html = '<div class="mobile-accordions-wrapper">';
     
-    // Full description accordion title
+    // Full description button title
     $fullDescriptionTitle = $lang == 'ru' ? 'Полное описание' : ($lang == 'en' ? 'Full description' : 'Descriere completă');
+    $closeTitle = $lang == 'ru' ? 'Закрыть' : ($lang == 'en' ? 'Close' : 'Închide');
     
     // Equipment block with full description button inside
     if (!empty($parsedHtml['equipment'])) {
         $html .= '
-        <div class="car-equipment-block mobile">
+        <div class="car-equipment-block mobile" id="mobile-equipment-block">
             <div class="car-description-content">
                 '.$parsedHtml['equipment'].'
             </div>
             
-            <!-- Full description accordion inside equipment block -->
-            <div class="car-accordion mobile nested">
-                <div class="accordion-header" onclick="toggleAccordion(this)">
-                    <span>'.$fullDescriptionTitle.'</span>
-                    <span class="accordion-icon">▼</span>
-                </div>
-                <div class="accordion-content">
-                    <div class="car-description-content">
-                        '.$parsedHtml['rest'].'
-                    </div>
-                </div>
-            </div>
-        </div>';
-    } else {
-        // If no equipment, show full description as standalone accordion
-        $html .= '
-        <div class="car-accordion mobile">
-            <div class="accordion-header" onclick="toggleAccordion(this)">
+            <!-- Full description button (styled like accordion header) -->
+            <div class="accordion-header" onclick="showFullDescriptionMobile()">
                 <span>'.$fullDescriptionTitle.'</span>
                 <span class="accordion-icon">▼</span>
             </div>
-            <div class="accordion-content">
-                <div class="car-description-content">
-                    '.$parsedHtml['rest'].'
-                </div>
+        </div>
+        
+        <!-- Full description block (hidden by default) -->
+        <div class="car-full-description-block mobile" id="mobile-full-description" style="display: none;">
+            <div class="car-description-content">
+                '.$fullHtml.'
+            </div>
+            
+            <!-- Close button (styled like accordion header) -->
+            <div class="accordion-header close-btn" onclick="hideFullDescriptionMobile()">
+                <span>'.$closeTitle.'</span>
+                <span class="close-icon">✕</span>
+            </div>
+        </div>';
+    } else {
+        // If no equipment, show full description directly
+        $html .= '
+        <div class="car-full-description-block mobile" id="mobile-full-description">
+            <div class="car-description-content">
+                '.$fullHtml.'
             </div>
         </div>';
     }

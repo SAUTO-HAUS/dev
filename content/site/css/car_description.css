@@ -266,13 +266,52 @@
     display: none;
 }
 
-/* Nested accordion inside equipment block */
+/* Full description button inside equipment block */
+.btn-full-description-mobile {
+    display: none;
+}
+
 @media (max-width: 768px) {
-    .car-accordion.mobile.nested {
+    .btn-full-description-mobile {
         display: block;
-        margin: 1rem 0 0.5rem 0;
+        width: 100%;
+        padding: 0.75rem 1.25rem;
+        margin-top: 1rem;
+        background-color: #e2001a;
+        color: #fff;
         border: none;
         border-radius: 0.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    
+    .btn-full-description-mobile:hover {
+        background-color: #c50017;
+    }
+}
+
+/* Close icon style */
+.close-icon {
+    font-size: 1.2rem;
+    color: #fff;
+    font-weight: bold;
+}
+
+/* Full description block on mobile */
+.car-full-description-block.mobile {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .car-full-description-block.mobile {
+        margin: 0 0 1rem 0;
+        padding: 0.25rem 1.25rem;
+        background-color: #f8f9fa;
+        border-radius: 1rem;
+        border: 2px solid #e0e0e0;
+        border-left: 2px solid #ff0000;
     }
 }
 
