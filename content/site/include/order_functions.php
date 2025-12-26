@@ -740,8 +740,9 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 		$card_counter++;
 		
 		if ($card_counter % 15 == 0 && $card_counter > 0) {
+			// On /cars page show hint about ordercars, on /ordercars show hint about cars
 			$is_order_page = (strpos($_SERVER['REQUEST_URI'], '/ordercars') !== false);
-			$hint_text = $is_order_page ? $lng['w']['on_order_hint'] : $lng['w']['in_stock_hint'];
+			$hint_text = $is_order_page ? $lng['w']['in_stock_hint'] : $lng['w']['on_order_hint'];
 			$hint_link = $is_order_page ? '/'.$_COOKIE['lang'].'/cars' : '/'.$_COOKIE['lang'].'/ordercars';
 			$hint_link_text = $is_order_page ? $lng['w']['in_stock'] : $lng['w']['on_order'];
 			
