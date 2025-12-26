@@ -162,6 +162,14 @@ $rtrn = '
         display: block;
     }
     
+    #calculator-container .hybrid-fuel-select {
+        display: flex;
+        gap: 1.5rem;
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #ddd;
+    }
+    
     #calculator-container .hybrid-options label {
         display: flex;
         align-items: center;
@@ -348,6 +356,10 @@ $rtrn = '
             </div>
             
             <div class="hybrid-options" id="hybrid-options">
+                <div class="hybrid-fuel-select">
+                    <label><input type="radio" name="hybrid_fuel" value="benzina" checked> '.$t['gasoline'].'</label>
+                    <label><input type="radio" name="hybrid_fuel" value="diesel"> '.$t['diesel'].'</label>
+                </div>
                 <label><input type="radio" name="hybrid_type" value="plugin" checked> '.$t['plugin_hybrid'].' (-'.$hybrid_discount_plugin.'%)</label>
                 <label><input type="radio" name="hybrid_type" value="full"> '.$t['full_hybrid'].' (-'.$hybrid_discount_full.'%)</label>
                 <label><input type="radio" name="hybrid_type" value="mild"> '.$t['mild_hybrid'].'</label>
@@ -442,7 +454,10 @@ $rtrn = '
             excise = 0;
         } else {
             // Find matching rate
-            let baseFuel = fuelType === "hybrid" ? "benzina" : fuelType;
+            let baseFuel = fuelType;
+            if (fuelType === "hybrid") {
+                baseFuel = document.querySelector("input[name=\"hybrid_fuel\"]:checked").value;
+            }
             
             // For motorcycles, use motorcycle rates
             if (vehicleType === "motocicleta") {
