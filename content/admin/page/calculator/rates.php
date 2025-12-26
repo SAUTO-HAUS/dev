@@ -1,5 +1,7 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
+include_once _ADM_PAGE.'/calculator/calc_translate.php';
+
 if (!isset($user_role) || $user_role !== 'gordon') {
     echo '<span class="err">Access denied</span>';
     return;
@@ -189,16 +191,16 @@ $rtrn = '
 
 <div id="rates-container">
     <div class="rates-header">
-        <h1>⚙️ Editare Cote Accize</h1>
-        <a href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator/calc" class="back-btn">← Înapoi la Calculator</a>
+        <h1>⚙️ '.$t['rates_title'].'</h1>
+        <a href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator/calc" class="back-btn">'.$t['back_to_calc'].'</a>
     </div>
     
-    <div class="success-msg" id="success-msg">✓ Modificările au fost salvate cu succes!</div>
+    <div class="success-msg" id="success-msg">✓ '.$t['save_success'].'</div>
     
     <form id="rates-form">
         <!-- Settings Section -->
         <div class="section">
-            <div class="section-header settings">Setări Generale</div>
+            <div class="section-header settings">'.$t['general_settings'].'</div>
             <div class="section-content">
                 <div class="settings-grid">';
 
@@ -219,16 +221,16 @@ $rtrn .= '
         
         <!-- Benzina Rates -->
         <div class="section">
-            <div class="section-header">Cote Accize - Benzină (MDL/cm³)</div>
+            <div class="section-header">'.$t['gasoline_rates'].'</div>
             <div class="section-content">
                 <table>
                     <thead>
                         <tr>
-                            <th>Capacitate Min (cm³)</th>
-                            <th>Capacitate Max (cm³)</th>
-                            <th>Vârstă Min (ani)</th>
-                            <th>Vârstă Max (ani)</th>
-                            <th>Cotă (MDL/cm³)</th>
+                            <th>'.$t['capacity_min'].'</th>
+                            <th>'.$t['capacity_max'].'</th>
+                            <th>'.$t['age_min'].'</th>
+                            <th>'.$t['age_max'].'</th>
+                            <th>'.$t['rate'].'</th>
                         </tr>
                     </thead>
                     <tbody>';
@@ -252,16 +254,16 @@ $rtrn .= '
         
         <!-- Diesel Rates -->
         <div class="section">
-            <div class="section-header diesel">Cote Accize - Diesel (MDL/cm³)</div>
+            <div class="section-header diesel">'.$t['diesel_rates'].'</div>
             <div class="section-content">
                 <table>
                     <thead>
                         <tr>
-                            <th>Capacitate Min (cm³)</th>
-                            <th>Capacitate Max (cm³)</th>
-                            <th>Vârstă Min (ani)</th>
-                            <th>Vârstă Max (ani)</th>
-                            <th>Cotă (MDL/cm³)</th>
+                            <th>'.$t['capacity_min'].'</th>
+                            <th>'.$t['capacity_max'].'</th>
+                            <th>'.$t['age_min'].'</th>
+                            <th>'.$t['age_max'].'</th>
+                            <th>'.$t['rate'].'</th>
                         </tr>
                     </thead>
                     <tbody>';
@@ -283,7 +285,7 @@ $rtrn .= '
             </div>
         </div>
         
-        <button type="submit" class="save-btn">💾 Salvează modificările</button>
+        <button type="submit" class="save-btn">💾 '.$t['save_changes'].'</button>
     </form>
 </div>
 

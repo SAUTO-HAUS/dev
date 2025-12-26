@@ -1,5 +1,7 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
+include_once _ADM_PAGE.'/calculator/calc_translate.php';
+
 $eur_rate = 19.50; 
 try {
     $pdo = $db->prepare('SELECT `value` FROM '.$prefx.'_exchange WHERE `name`="EUR"');
@@ -282,22 +284,22 @@ $rtrn = '
 
 <div id="calculator-container">
     <div class="calc-header">
-        <h1>Calculator Vămuire Auto</h1>
-        <p class="eur-rate">Curs BNM: <span>1 EUR = '.number_format($eur_rate, 4, '.', ' ').' MDL</span></p>
+        <h1>'.$t['title'].'</h1>
+        <p class="eur-rate">'.$t['bnm_rate'].': <span>1 EUR = '.number_format($eur_rate, 4, '.', ' ').' MDL</span></p>
     </div>
     
     <div class="calc-form">
         <div class="form-row">
             <div class="form-group">
-                <label>Tipul vehiculului</label>
+                <label>'.$t['vehicle_type'].'</label>
                 <select id="vehicle_type">
-                    <option value="autoturism">Autoturism</option>
-                    <option value="motocicleta">Motocicletă</option>
-                    <option value="camion">Camion</option>
+                    <option value="autoturism">'.$t['car'].'</option>
+                    <option value="motocicleta">'.$t['motorcycle'].'</option>
+                    <option value="camion">'.$t['truck'].'</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Anul producerii</label>
+                <label>'.$t['year'].'</label>
                 <select id="year">';
                     $current_year = date('Y');
                     for ($y = $current_year; $y >= 1990; $y--) {
@@ -310,67 +312,67 @@ $rtrn = '
         
         <div class="form-row">
             <div class="form-group">
-                <label>Capacitatea cilindrică (cm³)</label>
-                <input type="number" id="capacity" placeholder="ex: 1998" min="0" max="10000">
+                <label>'.$t['capacity'].'</label>
+                <input type="number" id="capacity" placeholder="'.$t['capacity_placeholder'].'" min="0" max="10000">
             </div>
             <div class="form-group">
-                <label>Prețul vehiculului (EUR)</label>
-                <input type="number" id="price_eur" placeholder="ex: 15000" min="0">
+                <label>'.$t['price_eur'].'</label>
+                <input type="number" id="price_eur" placeholder="'.$t['price_placeholder'].'" min="0">
             </div>
         </div>
         
         <div class="form-group">
-            <label>Tipul combustibilului</label>
+            <label>'.$t['fuel_type'].'</label>
             <div class="fuel-types">
-                <div class="fuel-type-btn active" data-fuel="benzina">Benzină</div>
-                <div class="fuel-type-btn" data-fuel="diesel">Diesel</div>
-                <div class="fuel-type-btn" data-fuel="hybrid">Hybrid</div>
-                <div class="fuel-type-btn electric" data-fuel="electric">Electric</div>
+                <div class="fuel-type-btn active" data-fuel="benzina">'.$t['gasoline'].'</div>
+                <div class="fuel-type-btn" data-fuel="diesel">'.$t['diesel'].'</div>
+                <div class="fuel-type-btn" data-fuel="hybrid">'.$t['hybrid'].'</div>
+                <div class="fuel-type-btn electric" data-fuel="electric">'.$t['electric'].'</div>
             </div>
             
             <div class="hybrid-options" id="hybrid-options">
-                <label><input type="radio" name="hybrid_type" value="plugin" checked> Plug-in Hybrid (-'.$hybrid_discount_plugin.'%)</label>
-                <label><input type="radio" name="hybrid_type" value="full"> Full Hybrid (-'.$hybrid_discount_full.'%)</label>
-                <label><input type="radio" name="hybrid_type" value="mild"> Mild Hybrid (fără reducere)</label>
+                <label><input type="radio" name="hybrid_type" value="plugin" checked> '.$t['plugin_hybrid'].' (-'.$hybrid_discount_plugin.'%)</label>
+                <label><input type="radio" name="hybrid_type" value="full"> '.$t['full_hybrid'].' (-'.$hybrid_discount_full.'%)</label>
+                <label><input type="radio" name="hybrid_type" value="mild"> '.$t['mild_hybrid'].'</label>
             </div>
             
             <div class="electric-notice" id="electric-notice">
-                <strong>✓ Vehiculele electrice sunt scutite de accize!</strong><br>
-                Se achită doar TVA la valoarea în vamă.
+                <strong>✓ '.$t['electric_notice'].'</strong><br>
+                '.$t['electric_notice_sub'].'
             </div>
         </div>
         
-        <button class="calc-btn" id="calculate-btn">Calculează</button>
+        <button class="calc-btn" id="calculate-btn">'.$t['calculate'].'</button>
     </div>
     
     <div class="results" id="results">
-        <h2>Rezultatul calculului</h2>
+        <h2>'.$t['results'].'</h2>
         <div class="result-row">
-            <span class="label">Valoarea în vamă (MDL)</span>
+            <span class="label">'.$t['value_mdl'].'</span>
             <span class="value" id="res-value-mdl">-</span>
         </div>
         <div class="result-row">
-            <span class="label">Acciza</span>
+            <span class="label">'.$t['excise'].'</span>
             <span class="value" id="res-excise">-</span>
         </div>
         <div class="result-row">
-            <span class="label">TVA ('.$tva_rate.'%)</span>
+            <span class="label">'.$t['tva'].' ('.$tva_rate.'%)</span>
             <span class="value" id="res-tva">-</span>
         </div>
         <div class="result-row">
-            <span class="label">Taxă vamală</span>
+            <span class="label">'.$t['customs_duty'].'</span>
             <span class="value" id="res-customs">-</span>
         </div>
         <div class="result-row total">
-            <span class="label">TOTAL COSTURI VĂMUIRE</span>
+            <span class="label">'.$t['total'].'</span>
             <span class="value" id="res-total">-</span>
         </div>
     </div>
     
     '.($is_super_admin ? '
     <div class="admin-actions">
-        <a href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator/usage" class="admin-btn">📊 Statistici utilizare</a>
-        <a href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator/rates" class="admin-btn">⚙️ Editare cote accize</a>
+        <a href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator/usage" class="admin-btn">📊 '.$t['usage_stats'].'</a>
+        <a href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator/rates" class="admin-btn">⚙️ '.$t['edit_rates'].'</a>
     </div>
     ' : '').'
 </div>

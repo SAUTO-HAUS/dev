@@ -1188,7 +1188,9 @@ if ($_COOKIE['lang']=='ru'){
 		'sett'=>'Настройки',
 		'info'=>'Инфо',
 		'brands_seo'=>'SEO Брендов',
-		'calc'=>'Калькулятор'
+		'calc'=>'Калькулятор',
+		'usage'=>'Использование',
+		'rates'=>'Ставки'
 	);
 
 // ... rest of the code remains the same ...
@@ -2695,7 +2697,9 @@ $adm_lang = array(
 	'sett'=>'Setări',
 	'info'=>'Informații',
 	'brands_seo'=>'SEO Mărci',
-	'calc'=>'Calculator'
+	'calc'=>'Calculator',
+	'usage'=>'Statistici',
+	'rates'=>'Cote'
 );
 
 // ... rest of the code remains the same ...
@@ -4202,7 +4206,9 @@ $adm_lang = array(
 	'sett'=>'Settings',
 	'info'=>'Info',
 	'brands_seo'=>'Brands SEO',
-	'calc'=>'Calculator'
+	'calc'=>'Calculator',
+	'usage'=>'Statistics',
+	'rates'=>'Rates'
 );
 
 }

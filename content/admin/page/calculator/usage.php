@@ -1,5 +1,7 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
+include_once _ADM_PAGE.'/calculator/calc_translate.php';
+
 if (!isset($user_role) || $user_role !== 'gordon') {
     echo '<span class="err">Access denied</span>';
     return;
@@ -151,12 +153,12 @@ $rtrn = '
 
 <div id="usage-container">
     <div class="usage-header">
-        <h1>📊 Statistici utilizare Calculator</h1>
-        <a href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator/calc" class="back-btn">← Înapoi la Calculator</a>
+        <h1>📊 '.$t['usage_title'].'</h1>
+        <a href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator/calc" class="back-btn">'.$t['back_to_calc'].'</a>
     </div>';
 
 if (empty($usage_data)) {
-    $rtrn .= '<div class="no-data">Nu există date de utilizare încă.</div>';
+    $rtrn .= '<div class="no-data">'.$t['no_usage_data'].'</div>';
 } else {
     foreach ($usage_data as $user_id => $dates) {
         $user_name = isset($users[$user_id]) ? $users[$user_id] : 'User #'.$user_id;
