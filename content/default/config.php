@@ -153,6 +153,9 @@ if (file_exists($envFile)) {
     if (preg_match('/GROQ_API_KEY=(.+)/', $envContent, $matches)) {
         define('GROQ_API_KEY', trim($matches[1]));
     }
+    if (preg_match('/OPENAI_API_KEY=(.+)/', $envContent, $matches)) {
+        define('OPENAI_API_KEY', trim($matches[1]));
+    }
 }
 
 ?>

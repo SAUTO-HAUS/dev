@@ -5,6 +5,10 @@ $fromForm = __post('from_form') == '1';
 $carType = __post('car_type') ?: 'in_stock'; 
 
 $groqApiKey = defined('GROQ_API_KEY') ? GROQ_API_KEY : '';
+$openaiApiKey = defined('OPENAI_API_KEY') ? OPENAI_API_KEY : '';
+
+// Use OpenAI if available, otherwise fallback to Groq
+$useOpenAI = !empty($openaiApiKey);
 
 if ($fromForm) {
     $car = [
@@ -90,10 +94,19 @@ CRITICAL REQUIREMENTS:
 IMPORTANT: Return EXACTLY in this JSON format:
 {\"ro\": \"<HTML in Romanian>\", \"ru\": \"<HTML in Russian>\", \"en\": \"<HTML in English>\"}";
 
-$apiUrl = "https://api.groq.com/openai/v1/chat/completions";
+// Choose API based on available key
+if ($useOpenAI) {
+    $apiUrl = "https://api.openai.com/v1/chat/completions";
+    $apiKey = $openaiApiKey;
+    $model = 'gpt-4o';
+} else {
+    $apiUrl = "https://api.groq.com/openai/v1/chat/completions";
+    $apiKey = $groqApiKey;
+    $model = 'llama-3.3-70b-versatile';
+}
 
 $requestData = [
-    'model' => 'llama-3.1-405b-reasoning',
+    'model' => $model,
     'messages' => [
         ['role' => 'system', 'content' => 'You are a JSON generator. Always respond with valid JSON only, no markdown, no explanations.'],
         ['role' => 'user', 'content' => $prompt]
@@ -109,7 +122,7 @@ curl_setopt($ch, CURLOPT_POST, true);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($requestData));
 curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
-    'Authorization: Bearer ' . $groqApiKey
+    'Authorization: Bearer ' . $apiKey
 ]);
 curl_setopt($ch, CURLOPT_TIMEOUT, 60);
 
