@@ -341,6 +341,7 @@ if ($_COOKIE['lang']=='ru'){
 			'archive'=>'Архив',
 			'cars'=>'Автомобили',
 			'ordercars'=>'Авто под заказ',
+			'calculator'=>'Калькулятор',
 			'offers'=>'Предложения',
 			'video'=>'Видео',
 			'video_from'=>'Видео с play.md',
@@ -1186,12 +1187,11 @@ if ($_COOKIE['lang']=='ru'){
 		'br_lst'=>'Список Брендов',
 		'sett'=>'Настройки',
 		'info'=>'Инфо',
-		'brands_seo'=>'SEO Брендов'
+		'brands_seo'=>'SEO Брендов',
+		'calc'=>'Калькулятор'
 	);
 
-
-
-
+// ... rest of the code remains the same ...
 
 
 //TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----
@@ -1905,6 +1905,7 @@ elseif ($_COOKIE['lang']=='ro'){
 			'archive'=>'Arhiva',
 			'cars'=>'Automobile',
 			'ordercars'=>'Auto la comandă',
+			'calculator'=>'Calculator',
 			'offers'=>'Ofertele',
 			'video'=>'Video',
 			'video_from'=>'Video de la play.md',
@@ -2693,12 +2694,11 @@ $adm_lang = array(
 	'br_lst'=>'Lista mărcilor',
 	'sett'=>'Setări',
 	'info'=>'Informații',
-	'brands_seo'=>'SEO Mărci'
+	'brands_seo'=>'SEO Mărci',
+	'calc'=>'Calculator'
 );
 
-
-
-
+// ... rest of the code remains the same ...
 
 //TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----TEMPORAR-----
 $lang_offer_expires = 'Oferta expiră în';
@@ -3407,6 +3407,7 @@ elseif ($_COOKIE['lang']=='en'){
 			'archive'=>'Archive',
 			'cars'=>'Cars',
 			'ordercars'=>'Order Cars',
+			'calculator'=>'Calculator',
 			'offers'=>'Offers',
 			'video'=>'Video',
 			'video_from'=>'Video from play.md',
@@ -4200,7 +4201,8 @@ $adm_lang = array(
 	'br_lst'=>'Brand List',
 	'sett'=>'Settings',
 	'info'=>'Info',
-	'brands_seo'=>'Brands SEO'
+	'brands_seo'=>'Brands SEO',
+	'calc'=>'Calculator'
 );
 
 }

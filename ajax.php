@@ -83,7 +83,7 @@ if (__post('tp') == 'adm') {
     // Gordon (superadmin) always has access
     if ($user_role === 'gordon') {
         // Allow full access for gordon
-    } elseif (in_array($user_role, ['publisher', 'publisher_limited']) && in_array($pg, ['docs', 'cars', 'ordercars', 'tyres'])) {
+    } elseif (in_array($user_role, ['publisher', 'publisher_limited']) && in_array($pg, ['docs', 'cars', 'ordercars', 'tyres', 'calculator'])) {
         // Allow access for publisher roles to their permitted modules
     } elseif (!rbac_has_permission($user_role, $pg, 'read')) {
         die('Restricted access');
@@ -105,6 +105,6 @@ elseif ($_POST['tp']=='ste') {
     require_once (_SITE.'/ajax/ajax.php');
 }
 
-$db->connection = null;
+$db = null;
 
 echo json_encode($returnIt);
