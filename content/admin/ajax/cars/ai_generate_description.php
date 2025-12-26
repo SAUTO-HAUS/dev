@@ -69,16 +69,14 @@ Car data:
 - Price: {$car['prc']} {$car['cur']}
 
 HTML STRUCTURE (MUST follow this EXACT order):
-1. <h2>{Brand} {Model} {Engine} {Year}</h2>
-2. <h3>🔹 Informații generale</h3> then <p>detailed paragraph about car type, engine family, power variant, mileage assessment, color, import origin</p>
-3. <h3>✅ Dotări</h3> then <ul> with 8-12 <li> items listing typical equipment for this model/trim
-4. <h3>🔧 Caracteristici tehnice</h3> then <ul> with detailed specs: engine type, cylinders, power with kW and rpm, torque Nm, fuel system, consumption l/100km, gearbox type, drivetrain
-5. <h3>🔍 Detalii motor</h3> then <p><strong>Caracteristici constructive:</strong></p><ul> engine block material, cylinder head, turbo type, timing chain/belt, emission standard, special features </ul> then <p><strong>Mentenanță:</strong></p><ul> engine lifespan, timing service interval, oil spec, injection system notes </ul>
-6. <h3>⚙️ Detalii cutie de viteze</h3> then <ul> gearbox type, clutch type, flywheel type with wear notes, reliability notes
-7. <h3>📋 Starea automobilului</h3> then <ul> with <li><strong>label:</strong> value</li> format for: import country, mileage assessment, body condition notes, price assessment (NO warnings or disclaimers here!)
+1. <h2>{Brand} {Model} | {Engine} | {Year}</h2> - USE PIPE SEPARATOR between brand/model, engine and year!
+2. <h3>✅ Dotări</h3> then <ul> with 8-12 <li> items - MUST be ATTRACTIVE and APPEALING to buyers! List the most desirable features: comfort, safety, technology, luxury items. Use enticing language that makes buyers want this car. NO boring technical specs here - only features that excite customers!
+3. <h3>🔧 Caracteristici tehnice</h3> then <ul> with detailed specs: engine type, power with kW and rpm, torque Nm, fuel system, consumption l/100km, gearbox type, drivetrain
+4. <h3>🔍 Detalii motor</h3> then <p><strong>Caracteristici constructive:</strong></p><ul> engine block material, cylinder head, turbo type, timing drive type (use ONLY 'Tip transmisie motor: curea' OR 'Tip transmisie motor: lanț' depending on engine - NEVER say 'timing chain' or 'timing belt' in other words!), emission standard, special features </ul> then <p><strong>Mentenanță:</strong></p><ul> service interval ALWAYS 7000 km (standard for all cars), oil specification (format: 'Specificație ulei: 5W-30, ACEA C2' or 'Specificație ulei: 5W-30, ACEA C3' - always include viscosity AND ACEA class!), oil capacity (format: 'Cantitate ulei: X.X litri'), injection system notes </ul> - NEVER mention engine lifespan or km durability!
+5. <h3>⚙️ Detalii cutie de viteze</h3> then <ul> gearbox type, clutch type, flywheel type with wear notes, reliability notes, oil type (format: 'Tip ulei cutie: ATF/MTF'), oil specification (format: 'Specificație ulei cutie: Dexron VI' or similar), oil capacity as RANGE (format: 'Cantitate ulei cutie: X-X litri' e.g. '6-9 litri'), service interval (format: 'Interval schimb ulei cutie: XXXXX km')
 
 CRITICAL REQUIREMENTS:
-- Section 'Dotări' MUST be the SECOND section (after general info) - mobile layout depends on this!
+- Section 'Dotări' MUST be the FIRST section (right after h2 title) - mobile layout depends on this!
 - Each section must have REAL technical details based on your knowledge of this specific {$car['br_nm']} {$car['mo_nm']} model
 - Use <strong> for labels in lists, <em> for notes/warnings
 - Be VERY detailed like a professional car review - minimum 1500 characters per language
@@ -88,7 +86,6 @@ CRITICAL REQUIREMENTS:
 - NEVER add any <li> with 'Avertisment', 'Warning', 'Предупреждение' label - these are STRICTLY FORBIDDEN
 - NEVER mention: 'check documents', 'verify history', 'before buying', 'before making an offer', 'verificați', 'проверьте' - FORBIDDEN
 - Do NOT add any disclaimers or buyer advice - we are a professional dealership
-- The 'Starea automobilului' section should ONLY contain: import country, mileage info, body notes, price - NOTHING ELSE
 
 IMPORTANT: Return EXACTLY in this JSON format:
 {\"ro\": \"<HTML in Romanian>\", \"ru\": \"<HTML in Russian>\", \"en\": \"<HTML in English>\"}";
@@ -101,7 +98,7 @@ $requestData = [
         ['role' => 'system', 'content' => 'You are a JSON generator. Always respond with valid JSON only, no markdown, no explanations.'],
         ['role' => 'user', 'content' => $prompt]
     ],
-    'temperature' => 0.7,
+    'temperature' => 0.5,
     'max_tokens' => 8192,
     'response_format' => ['type' => 'json_object']
 ];
