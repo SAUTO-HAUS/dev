@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS `sa_calculator_usage_log` (
+CREATE TABLE IF NOT EXISTS `gh3sp_calculator_usage_log` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `user_id` INT(11) NOT NULL,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `sa_calculator_usage_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table for storing excise rates (editable by super admin)
-CREATE TABLE IF NOT EXISTS `sa_calculator_excise_rates` (
+CREATE TABLE IF NOT EXISTS `gh3sp_calculator_excise_rates` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `fuel_type` VARCHAR(50) NOT NULL COMMENT 'benzina, diesel',
     `capacity_min` INT(11) NOT NULL COMMENT 'Minimum cylinder capacity in cm3',
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `sa_calculator_excise_rates` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table for storing calculator settings
-CREATE TABLE IF NOT EXISTS `sa_calculator_settings` (
+CREATE TABLE IF NOT EXISTS `gh3sp_calculator_settings` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `setting_key` VARCHAR(100) NOT NULL,
     `setting_value` TEXT NOT NULL,
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `sa_calculator_settings` (
     UNIQUE KEY `idx_setting_key` (`setting_key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO `sa_calculator_excise_rates` (`fuel_type`, `capacity_min`, `capacity_max`, `age_min`, `age_max`, `rate`) VALUES
+INSERT INTO `gh3sp_calculator_excise_rates` (`fuel_type`, `capacity_min`, `capacity_max`, `age_min`, `age_max`, `rate`) VALUES
 -- Benzină rates by capacity and age
 ('benzina', 0, 1000, 0, 3, 0.30),
 ('benzina', 0, 1000, 3, 5, 0.35),
@@ -116,7 +116,7 @@ INSERT INTO `sa_calculator_excise_rates` (`fuel_type`, `capacity_min`, `capacity
 ('motocicleta', 801, 0, 7, 0, 1.10);
 
 -- Insert default settings
-INSERT INTO `sa_calculator_settings` (`setting_key`, `setting_value`, `description`) VALUES
+INSERT INTO `gh3sp_calculator_settings` (`setting_key`, `setting_value`, `description`) VALUES
 ('tva_rate', '20', 'TVA rate in percentage'),
 ('customs_duty_rate', '0', 'Customs duty rate in percentage (usually 0 for cars from EU)'),
 ('hybrid_discount_full', '25', 'Discount for Full Hybrid in percentage'),

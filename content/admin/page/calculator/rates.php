@@ -9,14 +9,17 @@ if (!isset($user_role) || $user_role !== 'gordon') {
 
 $benzina_rates = [];
 $diesel_rates = [];
+$motocicleta_rates = [];
 try {
     $pdo = $db->prepare('SELECT * FROM '.$prefx.'_calculator_excise_rates ORDER BY fuel_type, capacity_min, age_min');
     $pdo->execute();
     while ($row = $pdo->fetch(PDO::FETCH_ASSOC)) {
         if ($row['fuel_type'] === 'benzina') {
             $benzina_rates[] = $row;
-        } else {
+        } elseif ($row['fuel_type'] === 'diesel') {
             $diesel_rates[] = $row;
+        } elseif ($row['fuel_type'] === 'motocicleta') {
+            $motocicleta_rates[] = $row;
         }
     }
 } catch (Exception $e) {
@@ -90,6 +93,10 @@ $rtrn = '
     
     #rates-container .section-header.diesel {
         background: linear-gradient(135deg, #333 0%, #555 100%);
+    }
+    
+    #rates-container .section-header.motorcycle {
+        background: linear-gradient(135deg, #ff6b00 0%, #cc5500 100%);
     }
     
     #rates-container .section-header.settings {
@@ -269,6 +276,39 @@ $rtrn .= '
                     <tbody>';
 
 foreach ($diesel_rates as $rate) {
+    $rtrn .= '
+                        <tr>
+                            <td><input type="number" name="rate_'.$rate['id'].'_capacity_min" value="'.$rate['capacity_min'].'"></td>
+                            <td><input type="number" name="rate_'.$rate['id'].'_capacity_max" value="'.$rate['capacity_max'].'" placeholder="0 = nelimitat"></td>
+                            <td><input type="number" name="rate_'.$rate['id'].'_age_min" value="'.$rate['age_min'].'"></td>
+                            <td><input type="number" name="rate_'.$rate['id'].'_age_max" value="'.$rate['age_max'].'" placeholder="0 = nelimitat"></td>
+                            <td><input type="number" step="0.01" name="rate_'.$rate['id'].'_rate" value="'.$rate['rate'].'"></td>
+                        </tr>';
+}
+
+$rtrn .= '
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Motocicleta Rates -->
+        <div class="section">
+            <div class="section-header motorcycle">'.$t['motorcycle_rates'].'</div>
+            <div class="section-content">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>'.$t['capacity_min'].'</th>
+                            <th>'.$t['capacity_max'].'</th>
+                            <th>'.$t['age_min'].'</th>
+                            <th>'.$t['age_max'].'</th>
+                            <th>'.$t['rate'].'</th>
+                        </tr>
+                    </thead>
+                    <tbody>';
+
+foreach ($motocicleta_rates as $rate) {
     $rtrn .= '
                         <tr>
                             <td><input type="number" name="rate_'.$rate['id'].'_capacity_min" value="'.$rate['capacity_min'].'"></td>
