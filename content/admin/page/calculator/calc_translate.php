@@ -58,7 +58,25 @@ $calc_trans = [
         'rate' => 'Cotă (MDL/cm³)',
         'save_changes' => 'Salvează modificările',
         'save_success' => 'Modificările au fost salvate cu succes!',
-        'save_error' => 'Eroare la salvare!'
+        'save_error' => 'Eroare la salvare!',
+        
+        // Settings labels
+        'setting_tva_rate' => 'Cota TVA',
+        'setting_tva_rate_desc' => 'Cota TVA în procente',
+        'setting_customs_duty_rate' => 'Taxa vamală',
+        'setting_customs_duty_rate_desc' => 'Taxa vamală în procente (de obicei 0 pentru auto din UE)',
+        'setting_hybrid_discount_full' => 'Reducere Full Hybrid',
+        'setting_hybrid_discount_full_desc' => 'Reducere pentru Full Hybrid în procente',
+        'setting_hybrid_discount_plugin' => 'Reducere Plug-in Hybrid',
+        'setting_hybrid_discount_plugin_desc' => 'Reducere pentru Plug-in Hybrid în procente',
+        'setting_hybrid_discount_mild' => 'Reducere Mild Hybrid',
+        'setting_hybrid_discount_mild_desc' => 'Reducere pentru Mild Hybrid în procente',
+        'setting_vintage_30_39_rate' => 'Acciza retro 30-39 ani',
+        'setting_vintage_30_39_rate_desc' => 'Acciza fixă pentru auto retro 30-39 ani',
+        'setting_vintage_40_49_rate' => 'Acciza retro 40-49 ani',
+        'setting_vintage_40_49_rate_desc' => 'Acciza fixă pentru auto retro 40-49 ani',
+        'setting_vintage_50_plus_rate' => 'Acciza retro 50+ ani',
+        'setting_vintage_50_plus_rate_desc' => 'Acciza fixă pentru auto retro 50+ ani'
     ],
     'ru' => [
         // Calculator page
@@ -115,7 +133,25 @@ $calc_trans = [
         'rate' => 'Ставка (MDL/см³)',
         'save_changes' => 'Сохранить изменения',
         'save_success' => 'Изменения успешно сохранены!',
-        'save_error' => 'Ошибка при сохранении!'
+        'save_error' => 'Ошибка при сохранении!',
+        
+        // Settings labels
+        'setting_tva_rate' => 'Ставка НДС',
+        'setting_tva_rate_desc' => 'Ставка НДС в процентах',
+        'setting_customs_duty_rate' => 'Таможенная пошлина',
+        'setting_customs_duty_rate_desc' => 'Таможенная пошлина в процентах (обычно 0 для авто из ЕС)',
+        'setting_hybrid_discount_full' => 'Скидка Full Hybrid',
+        'setting_hybrid_discount_full_desc' => 'Скидка для Full Hybrid в процентах',
+        'setting_hybrid_discount_plugin' => 'Скидка Plug-in Hybrid',
+        'setting_hybrid_discount_plugin_desc' => 'Скидка для Plug-in Hybrid в процентах',
+        'setting_hybrid_discount_mild' => 'Скидка Mild Hybrid',
+        'setting_hybrid_discount_mild_desc' => 'Скидка для Mild Hybrid в процентах',
+        'setting_vintage_30_39_rate' => 'Акциз ретро 30-39 лет',
+        'setting_vintage_30_39_rate_desc' => 'Фиксированный акциз для ретро авто 30-39 лет',
+        'setting_vintage_40_49_rate' => 'Акциз ретро 40-49 лет',
+        'setting_vintage_40_49_rate_desc' => 'Фиксированный акциз для ретро авто 40-49 лет',
+        'setting_vintage_50_plus_rate' => 'Акциз ретро 50+ лет',
+        'setting_vintage_50_plus_rate_desc' => 'Фиксированный акциз для ретро авто 50+ лет'
     ],
     'en' => [
         // Calculator page
@@ -172,7 +208,25 @@ $calc_trans = [
         'rate' => 'Rate (MDL/cm³)',
         'save_changes' => 'Save Changes',
         'save_success' => 'Changes saved successfully!',
-        'save_error' => 'Error saving changes!'
+        'save_error' => 'Error saving changes!',
+        
+        // Settings labels
+        'setting_tva_rate' => 'VAT Rate',
+        'setting_tva_rate_desc' => 'VAT rate in percentage',
+        'setting_customs_duty_rate' => 'Customs Duty',
+        'setting_customs_duty_rate_desc' => 'Customs duty rate in percentage (usually 0 for EU cars)',
+        'setting_hybrid_discount_full' => 'Full Hybrid Discount',
+        'setting_hybrid_discount_full_desc' => 'Discount for Full Hybrid in percentage',
+        'setting_hybrid_discount_plugin' => 'Plug-in Hybrid Discount',
+        'setting_hybrid_discount_plugin_desc' => 'Discount for Plug-in Hybrid in percentage',
+        'setting_hybrid_discount_mild' => 'Mild Hybrid Discount',
+        'setting_hybrid_discount_mild_desc' => 'Discount for Mild Hybrid in percentage',
+        'setting_vintage_30_39_rate' => 'Vintage 30-39 years excise',
+        'setting_vintage_30_39_rate_desc' => 'Fixed excise for vintage cars 30-39 years old',
+        'setting_vintage_40_49_rate' => 'Vintage 40-49 years excise',
+        'setting_vintage_40_49_rate_desc' => 'Fixed excise for vintage cars 40-49 years old',
+        'setting_vintage_50_plus_rate' => 'Vintage 50+ years excise',
+        'setting_vintage_50_plus_rate_desc' => 'Fixed excise for vintage cars 50+ years old'
     ]
 ];
 

@@ -212,12 +212,13 @@ $rtrn = '
                 <div class="settings-grid">';
 
 foreach ($settings as $key => $setting) {
-    $label = str_replace('_', ' ', ucfirst($key));
+    $label = isset($t['setting_'.$key]) ? $t['setting_'.$key] : str_replace('_', ' ', ucfirst($key));
+    $desc = isset($t['setting_'.$key.'_desc']) ? $t['setting_'.$key.'_desc'] : $setting['description'];
     $rtrn .= '
                     <div class="setting-item">
                         <label>'.$label.'</label>
                         <input type="number" step="0.01" name="setting_'.$key.'" value="'.$setting['setting_value'].'">
-                        <div class="desc">'.$setting['description'].'</div>
+                        <div class="desc">'.$desc.'</div>
                     </div>';
 }
 
