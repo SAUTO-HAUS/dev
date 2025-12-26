@@ -266,6 +266,16 @@
     display: none;
 }
 
+/* Nested accordion inside equipment block */
+@media (max-width: 768px) {
+    .car-accordion.mobile.nested {
+        display: block;
+        margin: 1rem 0 0.5rem 0;
+        border: none;
+        border-radius: 0.5rem;
+    }
+}
+
 .accordion-header {
     display: flex;
     justify-content: space-between;

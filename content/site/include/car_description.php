@@ -87,30 +87,45 @@ function getMobileAccordions($parsedHtml, $lang) {
 
     $html = '<div class="mobile-accordions-wrapper">';
     
-    // Equipment block - displayed directly (no accordion)
+    // Full description accordion title
+    $fullDescriptionTitle = $lang == 'ru' ? 'Полное описание' : ($lang == 'en' ? 'Full description' : 'Descriere completă');
+    
+    // Equipment block with full description button inside
     if (!empty($parsedHtml['equipment'])) {
         $html .= '
         <div class="car-equipment-block mobile">
             <div class="car-description-content">
                 '.$parsedHtml['equipment'].'
             </div>
+            
+            <!-- Full description accordion inside equipment block -->
+            <div class="car-accordion mobile nested">
+                <div class="accordion-header" onclick="toggleAccordion(this)">
+                    <span>'.$fullDescriptionTitle.'</span>
+                    <span class="accordion-icon">▼</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="car-description-content">
+                        '.$parsedHtml['rest'].'
+                    </div>
+                </div>
+            </div>
+        </div>';
+    } else {
+        // If no equipment, show full description as standalone accordion
+        $html .= '
+        <div class="car-accordion mobile">
+            <div class="accordion-header" onclick="toggleAccordion(this)">
+                <span>'.$fullDescriptionTitle.'</span>
+                <span class="accordion-icon">▼</span>
+            </div>
+            <div class="accordion-content">
+                <div class="car-description-content">
+                    '.$parsedHtml['rest'].'
+                </div>
+            </div>
         </div>';
     }
-    
-    // Full description accordion
-    $fullDescriptionTitle = $lang == 'ru' ? 'Полное описание' : ($lang == 'en' ? 'Full description' : 'Descriere completă');
-    $html .= '
-    <div class="car-accordion mobile">
-        <div class="accordion-header" onclick="toggleAccordion(this)">
-            <span>'.$fullDescriptionTitle.'</span>
-            <span class="accordion-icon">▼</span>
-        </div>
-        <div class="accordion-content">
-            <div class="car-description-content">
-                '.$parsedHtml['rest'].'
-            </div>
-        </div>
-    </div>';
     
     $html .= '</div>';
     return $html;
