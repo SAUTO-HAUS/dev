@@ -9,7 +9,7 @@ if (!isset($user_role) || $user_role !== 'gordon') {
 
 $users = [];
 try {
-    $pdo = $db->prepare('SELECT `id`, `name` FROM '.$prefx.'_admins');
+    $pdo = $db->prepare('SELECT `id`, `name` FROM '.$prefx.'_adm_usr');
     $pdo->execute();
     while ($row = $pdo->fetch(PDO::FETCH_ASSOC)) {
         $users[$row['id']] = $row['name'];
