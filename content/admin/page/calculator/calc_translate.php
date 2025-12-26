@@ -47,13 +47,11 @@ $calc_trans = [
         // Usage page
         'usage_title' => 'Statistici Utilizare Calculator',
         'back_to_calc' => '← Înapoi la Calculator',
-        'no_usage_data' => 'Nu există date de utilizare încă.',
+        'select_date' => 'Selectează data',
+        'no_usage_data' => 'Nu există date de utilizare',
         'user' => 'Utilizator',
-        'date' => 'Data',
-        'times' => 'Orele utilizării',
         'total_uses' => 'Total utilizări',
-        'usage_singular' => 'utilizare',
-        'usage_plural' => 'utilizări',
+        'last_use' => 'Ultima utilizare',
         
         // Rates page
         'rates_title' => 'Editare Cote Accize',
@@ -132,13 +130,11 @@ $calc_trans = [
         // Usage page
         'usage_title' => 'Статистика Использования Калькулятора',
         'back_to_calc' => '← Назад к Калькулятору',
-        'no_usage_data' => 'Данных об использовании пока нет.',
+        'select_date' => 'Выберите дату',
+        'no_usage_data' => 'Нет данных',
         'user' => 'Пользователь',
-        'date' => 'Дата',
-        'times' => 'Время использования',
-        'total_uses' => 'Всего использований',
-        'usage_singular' => 'использование',
-        'usage_plural' => 'использований',
+        'total_uses' => 'Всего',
+        'last_use' => 'Последнее',
         
         // Rates page
         'rates_title' => 'Редактирование Ставок Акцизов',
@@ -217,13 +213,11 @@ $calc_trans = [
         // Usage page
         'usage_title' => 'Calculator Usage Statistics',
         'back_to_calc' => '← Back to Calculator',
-        'no_usage_data' => 'No usage data yet.',
+        'select_date' => 'Select date',
+        'no_usage_data' => 'No usage data',
         'user' => 'User',
-        'date' => 'Date',
-        'times' => 'Usage Times',
-        'total_uses' => 'Total Uses',
-        'usage_singular' => 'use',
-        'usage_plural' => 'uses',
+        'total_uses' => 'Total',
+        'last_use' => 'Last Use',
         
         // Rates page
         'rates_title' => 'Edit Excise Rates',

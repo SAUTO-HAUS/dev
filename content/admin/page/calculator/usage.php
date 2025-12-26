@@ -7,6 +7,9 @@ if (!isset($user_role) || $user_role !== 'gordon') {
     return;
 }
 
+// Get selected date (default: today)
+$selected_date = isset($_GET['date']) ? $_GET['date'] : date('Y-m-d');
+
 $users = [];
 try {
     $pdo = $db->prepare('SELECT `id`, `name` FROM '.$prefx.'_adm_usr');
@@ -18,38 +21,29 @@ try {
 
 }
 
-$usage_data = [];
+// Get stats per user for selected date
+$user_stats = [];
 try {
     $pdo = $db->prepare('
-        SELECT user_id, DATE(created_at) as usage_date, TIME(created_at) as usage_time 
+        SELECT user_id, COUNT(*) as total_uses, MAX(created_at) as last_use
         FROM '.$prefx.'_calculator_usage_log 
-        ORDER BY created_at DESC
+        WHERE DATE(created_at) = :selected_date
+        GROUP BY user_id
+        ORDER BY total_uses DESC
     ');
-    $pdo->execute();
-    
-    while ($row = $pdo->fetch(PDO::FETCH_ASSOC)) {
-        $user_id = $row['user_id'];
-        $date = $row['usage_date'];
-        $time = substr($row['usage_time'], 0, 5); 
-        
-        if (!isset($usage_data[$user_id])) {
-            $usage_data[$user_id] = [];
-        }
-        if (!isset($usage_data[$user_id][$date])) {
-            $usage_data[$user_id][$date] = [];
-        }
-        $usage_data[$user_id][$date][] = $time;
-    }
+    $pdo->execute(['selected_date' => $selected_date]);
+    $user_stats = $pdo->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
     
 }
+
 
 $rtrn = '
 <style>
     #usage-container {
         max-width: 900px;
         margin: 0 auto;
-        padding: 2rem;
+        padding: 0 2rem 2rem;
         font-family: Arial, sans-serif;
     }
     
@@ -57,7 +51,8 @@ $rtrn = '
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
+        padding-top: 2rem;
     }
     
     #usage-container .usage-header h1 {
@@ -67,87 +62,93 @@ $rtrn = '
     }
     
     #usage-container .back-btn {
-        padding: 0.75rem 1.5rem;
+        padding: 0.5rem 1rem;
         background: #333;
         color: #fff;
         border: none;
-        border-radius: 8px;
-        cursor: pointer;
+        border-radius: 6px;
         text-decoration: none;
-        font-size: 0.9rem;
-        transition: background 0.3s;
+        font-size: 0.85rem;
     }
     
     #usage-container .back-btn:hover {
         background: #555;
     }
     
-    #usage-container .user-block {
-        background: #fff;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        margin-bottom: 1.5rem;
-        overflow: hidden;
-    }
-    
-    #usage-container .user-header {
-        background: linear-gradient(135deg, #e2001a 0%, #bf0016 100%);
-        color: #fff;
-        padding: 1rem 1.5rem;
-        font-weight: 600;
-        font-size: 1.1rem;
-    }
-    
-    #usage-container .user-content {
-        padding: 1rem 1.5rem;
-    }
-    
-    #usage-container .date-block {
-        padding: 1rem 0;
-        border-bottom: 1px solid #f0f0f0;
-    }
-    
-    #usage-container .date-block:last-child {
-        border-bottom: none;
-    }
-    
-    #usage-container .date-header {
+    #usage-container .date-selector {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-        margin-bottom: 0.5rem;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
     }
     
-    #usage-container .date-header .date {
-        font-weight: 600;
-        color: #333;
+    #usage-container .date-selector input[type="date"] {
+        padding: 0.5rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 6px;
+        font-size: 0.9rem;
     }
     
-    #usage-container .date-header .count {
-        background: #e2001a;
-        color: #fff;
-        padding: 0.25rem 0.75rem;
-        border-radius: 20px;
-        font-size: 0.8rem;
+    #usage-container .date-selector input[type="date"]:focus {
+        outline: none;
+        border-color: #e2001a;
     }
     
-    #usage-container .times {
+    #usage-container .date-selector label {
         color: #666;
         font-size: 0.9rem;
     }
     
-    #usage-container .times span {
-        display: inline-block;
-        background: #f0f0f0;
-        padding: 0.25rem 0.5rem;
-        border-radius: 4px;
-        margin: 0.25rem 0.25rem 0.25rem 0;
+    #usage-container .users-table {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    
+    #usage-container .users-table table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    #usage-container .users-table th {
+        background: linear-gradient(135deg, #e2001a 0%, #bf0016 100%);
+        color: #fff;
+        padding: 0.75rem 1rem;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    
+    #usage-container .users-table td {
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid #f0f0f0;
+        font-size: 0.9rem;
+    }
+    
+    #usage-container .users-table tr:last-child td {
+        border-bottom: none;
+    }
+    
+    #usage-container .users-table tr:hover td {
+        background: #fafafa;
+    }
+    
+    #usage-container .users-table .count-badge {
+        background: #e2001a;
+        color: #fff;
+        padding: 0.25rem 0.6rem;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        font-weight: 600;
     }
     
     #usage-container .no-data {
         text-align: center;
         padding: 3rem;
         color: #666;
+        background: #fff;
+        border-radius: 8px;
     }
 </style>
 
@@ -155,45 +156,48 @@ $rtrn = '
     <div class="usage-header">
         <h1>📊 '.$t['usage_title'].'</h1>
         <a href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator/calc" class="back-btn">'.$t['back_to_calc'].'</a>
-    </div>';
+    </div>
+    
+    <div class="date-selector">
+        <label>'.$t['select_date'].':</label>
+        <input type="date" id="usage-date" value="'.$selected_date.'" max="'.date('Y-m-d').'">
+    </div>
+    
+    <script>
+    document.getElementById("usage-date").addEventListener("change", function() {
+        window.location.href = "/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator/usage?date=" + this.value;
+    });
+    </script>
+    ';
 
-if (empty($usage_data)) {
-    $rtrn .= '<div class="no-data">'.$t['no_usage_data'].'</div>';
+$formatted_date = date('d.m.Y', strtotime($selected_date));
+if (empty($user_stats)) {
+    $rtrn .= '<div class="no-data">'.$t['no_usage_data'].' ('.$formatted_date.')</div>';
 } else {
-    foreach ($usage_data as $user_id => $dates) {
-        $user_name = isset($users[$user_id]) ? $users[$user_id] : 'User #'.$user_id;
+    $rtrn .= '
+    <div class="users-table">
+        <table>
+            <tr>
+                <th>'.$t['user'].'</th>
+                <th>'.$t['total_uses'].'</th>
+                <th>'.$t['last_use'].'</th>
+            </tr>';
+    
+    foreach ($user_stats as $stat) {
+        $user_name = isset($users[$stat['user_id']]) ? $users[$stat['user_id']] : 'User #'.$stat['user_id'];
+        $last_use = date('d.m.Y H:i', strtotime($stat['last_use']));
         
         $rtrn .= '
-        <div class="user-block">
-            <div class="user-header">👤 '.$user_name.'</div>
-            <div class="user-content">';
-        
-        foreach ($dates as $date => $times) {
-            $formatted_date = date('d.m.Y', strtotime($date));
-            $count = count($times);
-            $usage_word = $count == 1 ? $t['usage_singular'] : $t['usage_plural'];
-            
-            $rtrn .= '
-                <div class="date-block">
-                    <div class="date-header">
-                        <span class="date">'.$formatted_date.'</span>
-                        <span class="count">'.$count.' '.$usage_word.'</span>
-                    </div>
-                    <div class="times">';
-            
-            foreach ($times as $time) {
-                $rtrn .= '<span>'.$time.'</span>';
-            }
-            
-            $rtrn .= '
-                    </div>
-                </div>';
-        }
-        
-        $rtrn .= '
-            </div>
-        </div>';
+            <tr>
+                <td>👤 '.$user_name.'</td>
+                <td><span class="count-badge">'.$stat['total_uses'].'</span></td>
+                <td>'.$last_use.'</td>
+            </tr>';
     }
+    
+    $rtrn .= '
+        </table>
+    </div>';
 }
 
 $rtrn .= '
