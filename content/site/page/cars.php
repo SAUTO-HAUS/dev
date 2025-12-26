@@ -325,13 +325,10 @@ elseif (!isset($t_mp[3])) {
     $rtrn .= '<div class="gr">';
     $rtrn .= '<h1>'.$sa['meta']['h1'].'</h1>';
     
-    // Add multilingual text and button for ordercars using language.php
-    $ordercars_text = $lng['w']['ordercars_promo_text'];
-    $ordercars_button_text = $lng['w']['ordercars_button_text'];
+    $intro_text = $lng['w']['in_stock_intro'];
     
     $rtrn .= '<div style="margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-left: 4px solid #ff0000; border-radius: 4px;">';
-    $rtrn .= '<p style="margin: 0 0 10px 0; color: #333; font-size: 16px;">'.$ordercars_text.'</p>';
-    $rtrn .= '<a href="/'.$_COOKIE['lang'].'/ordercars" style="display: inline-block; background-color: #ff0000; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor=\'#cc0000\'" onmouseout="this.style.backgroundColor=\'#ff0000\'">'.$ordercars_button_text.'</a>';
+    $rtrn .= '<p style="margin: 0; color: #333; font-size: 16px;">'.$intro_text.'</p>';
     $rtrn .= '</div>';
     
     $rtrn .= '<div class="cnt list">';

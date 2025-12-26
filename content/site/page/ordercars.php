@@ -333,13 +333,10 @@ elseif (!isset($t_mp[3])) {
     $rtrn .= '<div class="gr">';
     $rtrn .= '<h1>'.$sa['meta']['h1'].'</h1>';
     
-    // Add multilingual text and button for cars using language.php
-    $cars_text = $lng['w']['cars_promo_text'];
-    $cars_button_text = $lng['w']['cars_button_text'];
+    $intro_text = $lng['w']['on_order_intro'];
     
     $rtrn .= '<div style="margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-left: 4px solid #ff0000; border-radius: 4px;">';
-    $rtrn .= '<p style="margin: 0 0 10px 0; color: #333; font-size: 16px;">'.$cars_text.'</p>';
-    $rtrn .= '<a href="/'.$_COOKIE['lang'].'/cars" style="display: inline-block; background-color: #ff0000; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold; transition: background-color 0.3s;" onmouseover="this.style.backgroundColor=\'#cc0000\'" onmouseout="this.style.backgroundColor=\'#ff0000\'">'.$cars_button_text.'</a>';
+    $rtrn .= '<p style="margin: 0; color: #333; font-size: 16px;">'.$intro_text.'</p>';
     $rtrn .= '</div>';
     
     $rtrn .= '<div class="cnt list">';

@@ -466,6 +466,9 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 	if ($debug_enabled) {
 		$ar['txt'] .= "</pre>\n";
 	}
+	
+	$card_counter = 0;
+	
 	foreach ($results as $r) {
 		// Check if mobile - simple detection
 		$is_mobile = (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/Mobile|Android|iPhone|iPad/', $_SERVER['HTTP_USER_AGENT']));
@@ -734,6 +737,19 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 		</a>';
 		
 		$i++;
+		$card_counter++;
+		
+		if ($card_counter % 15 == 0 && $card_counter > 0) {
+			$is_order_page = (strpos($_SERVER['REQUEST_URI'], '/ordercars') !== false);
+			$hint_text = $is_order_page ? $lng['w']['on_order_hint'] : $lng['w']['in_stock_hint'];
+			$hint_link = $is_order_page ? '/'.$_COOKIE['lang'].'/cars' : '/'.$_COOKIE['lang'].'/ordercars';
+			$hint_link_text = $is_order_page ? $lng['w']['in_stock'] : $lng['w']['on_order'];
+			
+			$ar['txt'] .= '<div class="catalog-hint-block" style="width: 100%; padding: 20px; margin: 15px 0; background-color: #f8f9fa; border-left: 4px solid #ff0000; border-radius: 4px; box-sizing: border-box;">';
+			$ar['txt'] .= '<p style="margin: 0 0 10px 0; color: #333; font-size: 15px;">'.$hint_text.'</p>';
+			$ar['txt'] .= '<a href="'.$hint_link.'" style="display: inline-block; background-color: #ff0000; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px;">'.$hint_link_text.'</a>';
+			$ar['txt'] .= '</div>';
+		}
 	}
 	if ($i==0){$ar['txt'] .= '<div class="empty">'.$lng['t']['x']['no_offers'].'</div>';}
 	
