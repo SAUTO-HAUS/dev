@@ -181,22 +181,32 @@ $rtrn = '
     
     #calculator-container .hybrid-type-select {
         display: flex;
-        flex-direction: column;
         gap: 0.5rem;
+        flex-wrap: wrap;
     }
     
-    #calculator-container .hybrid-type-select label {
-        padding: 0.5rem;
-        border-radius: 6px;
-        transition: background 0.2s;
+    #calculator-container .hybrid-type-btn {
+        flex: 1;
+        min-width: 120px;
+        padding: 0.75rem 1rem;
+        border: 2px solid #28a745;
+        border-radius: 8px;
+        background: #fff;
+        color: #333;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-align: center;
     }
     
-    #calculator-container .hybrid-type-select label:hover {
-        background: #e9ecef;
+    #calculator-container .hybrid-type-btn:hover {
+        background: #e8f5e9;
     }
     
-    #calculator-container .hybrid-type-select input[type="radio"] {
-        accent-color: #e2001a;
+    #calculator-container .hybrid-type-btn.active {
+        background: #28a745;
+        color: #fff;
+        border-color: #28a745;
     }
     
     #calculator-container .hybrid-fuel-select input[type="radio"] {
@@ -385,9 +395,9 @@ $rtrn = '
                     <label><input type="radio" name="hybrid_fuel" value="diesel"> '.$t['diesel'].'</label>
                 </div>
                 <div class="hybrid-type-select">
-                    <label><input type="radio" name="hybrid_type" value="plugin" checked> '.$t['plugin_hybrid'].' (-'.$hybrid_discount_plugin.'%)</label>
-                    <label><input type="radio" name="hybrid_type" value="full"> '.$t['full_hybrid'].' (-'.$hybrid_discount_full.'%)</label>
-                    <label><input type="radio" name="hybrid_type" value="mild"> '.$t['mild_hybrid'].'</label>
+                    <div class="hybrid-type-btn active" data-hybrid="plugin">'.$t['plugin_hybrid'].' (-'.$hybrid_discount_plugin.'%)</div>
+                    <div class="hybrid-type-btn" data-hybrid="full">'.$t['full_hybrid'].' (-'.$hybrid_discount_full.'%)</div>
+                    <div class="hybrid-type-btn" data-hybrid="mild">'.$t['mild_hybrid'].'</div>
                 </div>
             </div>
             
@@ -456,6 +466,14 @@ $rtrn = '
         });
     });
     
+    // Hybrid type selection
+    document.querySelectorAll(".hybrid-type-btn").forEach(btn => {
+        btn.addEventListener("click", function() {
+            document.querySelectorAll(".hybrid-type-btn").forEach(b => b.classList.remove("active"));
+            this.classList.add("active");
+        });
+    });
+    
     // Calculate button
     document.getElementById("calculate-btn").addEventListener("click", function() {
         const vehicleType = document.getElementById("vehicle_type").value;
@@ -495,7 +513,8 @@ $rtrn = '
                 
                 // Apply hybrid discount
                 if (fuelType === "hybrid") {
-                    const hybridType = document.querySelector("input[name=\"hybrid_type\"]:checked").value;
+                    const activeHybridBtn = document.querySelector(".hybrid-type-btn.active");
+                    const hybridType = activeHybridBtn ? activeHybridBtn.dataset.hybrid : "plugin";
                     if (hybridType === "plugin") {
                         excise = excise * (1 - HYBRID_DISCOUNT_PLUGIN / 100);
                     } else if (hybridType === "full") {

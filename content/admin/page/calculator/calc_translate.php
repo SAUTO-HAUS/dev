@@ -45,6 +45,8 @@ $calc_trans = [
         'date' => 'Data',
         'times' => 'Orele utilizării',
         'total_uses' => 'Total utilizări',
+        'usage_singular' => 'utilizare',
+        'usage_plural' => 'utilizări',
         
         // Rates page
         'rates_title' => 'Editare Cote Accize',
@@ -121,6 +123,8 @@ $calc_trans = [
         'date' => 'Дата',
         'times' => 'Время использования',
         'total_uses' => 'Всего использований',
+        'usage_singular' => 'использование',
+        'usage_plural' => 'использований',
         
         // Rates page
         'rates_title' => 'Редактирование Ставок Акцизов',
@@ -197,6 +201,8 @@ $calc_trans = [
         'date' => 'Date',
         'times' => 'Usage Times',
         'total_uses' => 'Total Uses',
+        'usage_singular' => 'use',
+        'usage_plural' => 'uses',
         
         // Rates page
         'rates_title' => 'Edit Excise Rates',

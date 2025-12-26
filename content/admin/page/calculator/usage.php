@@ -171,7 +171,7 @@ if (empty($usage_data)) {
         foreach ($dates as $date => $times) {
             $formatted_date = date('d.m.Y', strtotime($date));
             $count = count($times);
-            $usage_word = $count == 1 ? 'utilizare' : 'utilizări';
+            $usage_word = $count == 1 ? $t['usage_singular'] : $t['usage_plural'];
             
             $rtrn .= '
                 <div class="date-block">
