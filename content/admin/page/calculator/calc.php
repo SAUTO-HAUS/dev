@@ -105,17 +105,12 @@ $rtrn = '
         cursor: not-allowed;
     }
     
-    #calculator-container .calc-header .rate-feedback {
-        font-size: 0.85rem;
-        margin-left: 0.5rem;
+    #calculator-container .calc-header .save-rate-btn.success {
+        background: #28a745;
     }
     
-    #calculator-container .calc-header .rate-feedback.success {
-        color: #28a745;
-    }
-    
-    #calculator-container .calc-header .rate-feedback.error {
-        color: #dc3545;
+    #calculator-container .calc-header .save-rate-btn.error {
+        background: #ff6b6b;
     }
     
     #calculator-container .calc-form {
@@ -396,8 +391,7 @@ $rtrn = '
             <label>'.$t['eur_rate_label'].'</label>
             <input type="number" step="0.0001" id="eur-rate-input" class="eur-rate-input" value="'.number_format($eur_rate, 4, '.', '').'">
             <span>'.$t['eur_rate_mdl'].'</span>
-            <button type="button" id="save-rate-btn" class="save-rate-btn">'.$t['save'].'</button>
-            <span id="rate-feedback" class="rate-feedback"></span>
+            <button type="button" id="save-rate-btn" class="save-rate-btn" data-original="'.$t['save'].'" data-success="'.$t['rate_saved_btn'].'" data-error="'.$t['rate_error_btn'].'">'.$t['save'].'</button>
         </div>
     </div>
     
@@ -503,24 +497,28 @@ $rtrn = '
 <script>
 (function() {
     let EUR_RATE = '.$eur_rate.';
-    const RATE_SAVED_MSG = "'.$t['rate_saved'].'";
-    const RATE_ERROR_MSG = "'.$t['rate_save_error'].'";
+    const RATE_ORIGINAL = "'.$t['save'].'";
+    const RATE_SAVED = "'.$t['rate_saved_btn'].'";
+    const RATE_ERROR = "'.$t['rate_error_btn'].'";
     
     // Save EUR rate button
     document.getElementById("save-rate-btn").addEventListener("click", function() {
         const btn = this;
         const input = document.getElementById("eur-rate-input");
-        const feedback = document.getElementById("rate-feedback");
         const newRate = parseFloat(input.value);
         
         if (isNaN(newRate) || newRate <= 0) {
-            feedback.textContent = RATE_ERROR_MSG;
-            feedback.className = "rate-feedback error";
+            btn.textContent = RATE_ERROR;
+            btn.classList.remove("success");
+            btn.classList.add("error");
+            setTimeout(() => {
+                btn.textContent = RATE_ORIGINAL;
+                btn.classList.remove("error");
+            }, 2000);
             return;
         }
         
         btn.disabled = true;
-        feedback.textContent = "";
         
         fetch("/ajax.php", {
             method: "POST",
@@ -531,20 +529,26 @@ $rtrn = '
         .then(data => {
             if (data.success) {
                 EUR_RATE = newRate;
-                feedback.textContent = RATE_SAVED_MSG;
-                feedback.className = "rate-feedback success";
+                btn.textContent = RATE_SAVED;
+                btn.classList.remove("error");
+                btn.classList.add("success");
             } else {
-                feedback.textContent = RATE_ERROR_MSG;
-                feedback.className = "rate-feedback error";
+                btn.textContent = RATE_ERROR;
+                btn.classList.remove("success");
+                btn.classList.add("error");
             }
         })
         .catch(() => {
-            feedback.textContent = RATE_ERROR_MSG;
-            feedback.className = "rate-feedback error";
+            btn.textContent = RATE_ERROR;
+            btn.classList.remove("success");
+            btn.classList.add("error");
         })
         .finally(() => {
             btn.disabled = false;
-            setTimeout(() => { feedback.textContent = ""; }, 3000);
+            setTimeout(() => {
+                btn.textContent = RATE_ORIGINAL;
+                btn.classList.remove("success", "error");
+            }, 2000);
         });
     });
     const TVA_RATE = '.$tva_rate.';

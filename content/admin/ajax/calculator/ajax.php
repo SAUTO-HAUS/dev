@@ -1,5 +1,7 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
+header('Content-Type: application/json');
+
 $fn = isset($_POST['fn']) ? $_POST['fn'] : '';
 
 if ($fn === 'save_eur_rate') {
@@ -23,8 +25,10 @@ if ($fn === 'save_eur_rate') {
         }
         $pdo->execute(['rate' => $rate, 'user_id' => $user_id]);
         echo json_encode(['success' => true]);
+        exit;
     } catch (Exception $e) {
         echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        exit;
     }
     
 } elseif ($fn === 'log_usage') {
