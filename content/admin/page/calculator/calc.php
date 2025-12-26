@@ -222,6 +222,11 @@ $rtrn = '
         font-weight: normal;
     }
     
+    #calculator-container .hybrid-fuel-select input[type="radio"] {
+        margin: 0;
+        vertical-align: middle;
+    }
+    
     #calculator-container .hybrid-type-select {
         display: flex;
         gap: 0.5rem;
@@ -428,6 +433,16 @@ $rtrn = '
             </div>
         </div>
         
+        <div class="form-row">
+            <div class="form-group">
+                <!-- empty for alignment -->
+            </div>
+            <div class="form-group">
+                <label>'.$t['transport_price'].'</label>
+                <input type="number" id="transport_eur" placeholder="'.$t['transport_placeholder'].'" min="0" value="0">
+            </div>
+        </div>
+        
         <div class="form-group">
             <label>'.$t['fuel_type'].'</label>
             <div class="fuel-types">
@@ -467,10 +482,6 @@ $rtrn = '
         <div class="result-row">
             <span class="label">'.$t['excise'].'</span>
             <span class="value" id="res-excise">-</span>
-        </div>
-        <div class="result-row">
-            <span class="label">'.$t['tva'].' ('.$tva_rate.'%)</span>
-            <span class="value" id="res-tva">-</span>
         </div>
         <div class="result-row">
             <span class="label">'.$t['customs_duty'].'</span>
@@ -582,6 +593,8 @@ $rtrn = '
         const year = parseInt(document.getElementById("year").value);
         const capacity = parseInt(document.getElementById("capacity").value) || 0;
         const priceEur = parseFloat(document.getElementById("price_eur").value) || 0;
+        const transportEur = parseFloat(document.getElementById("transport_eur").value) || 0;
+        const totalPriceEur = priceEur + transportEur;
         
         const activeFuel = document.querySelector(".fuel-type-btn.active");
         let fuelType = activeFuel ? activeFuel.dataset.fuel : "benzina";
@@ -593,8 +606,8 @@ $rtrn = '
         // Get current EUR rate from input
         EUR_RATE = parseFloat(document.getElementById("eur-rate-input").value) || EUR_RATE;
         
-        // Calculate value in MDL
-        const valueMdl = priceEur * EUR_RATE;
+        // Calculate value in MDL (vehicle + transport)
+        const valueMdl = totalPriceEur * EUR_RATE;
         
         // Calculate excise
         let excise = 0;
@@ -629,10 +642,6 @@ $rtrn = '
             }
         }
         
-        // Calculate TVA (on value + excise)
-        const tvaBase = valueMdl + excise;
-        const tva = tvaBase * (TVA_RATE / 100);
-        
         // Customs procedures fee (0.4% of customs value, max 1800 EUR)
         const maxFeeEur = 1800;
         let customsFee = valueMdl * 0.004;
@@ -640,13 +649,12 @@ $rtrn = '
             customsFee = maxFeeEur * EUR_RATE;
         }
         
-        // Total
-        const total = excise + tva + customsFee;
+        // Total (excise + customs fee, no TVA)
+        const total = excise + customsFee;
         
         // Display results with EUR equivalent
         document.getElementById("res-value-mdl").innerHTML = formatNumber(valueMdl) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(valueMdl / EUR_RATE) + " EUR</span>";
         document.getElementById("res-excise").innerHTML = formatNumber(excise) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(excise / EUR_RATE) + " EUR</span>";
-        document.getElementById("res-tva").innerHTML = formatNumber(tva) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(tva / EUR_RATE) + " EUR</span>";
         document.getElementById("res-customs").innerHTML = formatNumber(customsFee) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(customsFee / EUR_RATE) + " EUR</span>";
         document.getElementById("res-total").innerHTML = formatNumber(total) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(total / EUR_RATE) + " EUR</span>";
         
