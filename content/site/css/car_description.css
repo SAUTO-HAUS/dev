@@ -383,3 +383,39 @@
         display: none;
     }
 }
+
+/* SVG Icons for car description sections */
+.desc-icon {
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
+.desc-icon-features {
+    background-image: url('/media/svg_description/features.svg');
+}
+
+.desc-icon-spec {
+    background-image: url('/media/svg_description/spec.svg');
+}
+
+.desc-icon-engine {
+    background-image: url('/media/svg_description/engine.svg');
+}
+
+.desc-icon-oil {
+    background-image: url('/media/svg_description/oil.svg');
+}
+
+.desc-icon-belt {
+    background-image: url('/media/svg_description/belt.svg');
+}
+
+.desc-icon-gearbox {
+    background-image: url('/media/svg_description/gearbox.svg');
+}
