@@ -413,7 +413,7 @@
   #rent > .bx > .s > .it > .txt {font-family:"def_l";}
   #rent > .bx > .s > .it > .img {width:100%; height:3rem; background-repeat:no-repeat; background-position:left center; background-size:contain;}
   
-  main > .pht_bx {width:67%; height:25rem; float:left;}
+  main > .pht_bx {width:67%; height:28.5rem; float:left;}
   
   /*main > .pht_bx > .pht_list {width:15%; height:inherit; display:flex; flex-flow:row wrap; justify-content:space-between; overflow-y:scroll; float:left; -ms-overflow-style:none; scrollbar-width:none; background-color:#fff; border-radius:1rem;}
   main > .pht_bx > .pht_list::-webkit-scrollbar {display:none;}
