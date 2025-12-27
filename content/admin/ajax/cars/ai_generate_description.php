@@ -73,7 +73,7 @@ Car data:
 - Price: {$car['prc']} {$car['cur']}
 
 HTML STRUCTURE (MUST follow this EXACT order):
-1. <h2>{Brand} {Model} | {Engine} | {Year}</h2> - USE PIPE SEPARATOR between brand/model, engine and year!
+1. <h2>{Brand} {Model} | {Engine} | {Fuel} | {Year}</h2> - USE PIPE SEPARATOR between brand/model, engine, fuel type and year!
 2. <h3><span class=\"desc-icon desc-icon-features\"></span>Dotări</h3> then <ul> with 8-12 <li> items - MUST be ATTRACTIVE and APPEALING to buyers! List the most desirable features: comfort, safety, technology, luxury items. Use enticing language that makes buyers want this car. NO boring technical specs here - only features that excite customers!
 3. <h3><span class=\"desc-icon desc-icon-spec\"></span>Caracteristici tehnice</h3> then <ul> with detailed specs: engine type, power with kW and rpm, torque Nm, fuel system, consumption l/100km, gearbox type, drivetrain
 4. <h3><span class=\"desc-icon desc-icon-engine\"></span>Detalii motor</h3> then <p><strong>Caracteristici constructive:</strong></p><ul> engine block material, cylinder head, turbo type, timing drive type (ONLY write 'curea' or 'lanț' - choose correct one for THIS engine!), emission standard, special features </ul> then <p><strong><span class=\"desc-icon desc-icon-oil\"></span>Mentenanță:</strong></p><ul> service interval ALWAYS 7000 km, oil specification (viscosity + ACEA class - choose correct for THIS engine!), oil capacity in litri, injection system notes </ul> - NEVER mention engine lifespan or km durability!
