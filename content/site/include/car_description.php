@@ -12,10 +12,10 @@ function parseEquipmentSection($html) {
     ];
     
     // Keywords to search for equipment section (RO, RU, EN)
-    $keywords = ['Dotări', 'Комплектация', 'Equipment', '🧭 Dotări', '🧭 Комплектация', '🧭 Equipment'];
+    $keywords = ['Dotări', 'Комплектация', 'Equipment'];
     
-    // Find section by keyword in h2 or h3
-    $pattern = '/<h[23][^>]*>([^<]*(?:' . implode('|', array_map('preg_quote', $keywords)) . ')[^<]*)<\/h[23]>/iu';
+    // Find section by keyword in h2 or h3 (supports emoji, SVG icons with span, or plain text)
+    $pattern = '/<h[23][^>]*>(?:<span[^>]*><\/span>)?(?:[^<]*)?(?:' . implode('|', array_map('preg_quote', $keywords)) . ')(?:[^<]*)?<\/h[23]>/iu';
     
     if (preg_match($pattern, $html, $match, PREG_OFFSET_CAPTURE)) {
         $sectionStart = $match[0][1];
