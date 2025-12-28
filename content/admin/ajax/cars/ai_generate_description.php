@@ -7,7 +7,6 @@ $carType = __post('car_type') ?: 'in_stock';
 $groqApiKey = defined('GROQ_API_KEY') ? GROQ_API_KEY : '';
 $openaiApiKey = defined('OPENAI_API_KEY') ? OPENAI_API_KEY : '';
 
-// Use OpenAI if available, otherwise fallback to Groq
 $useOpenAI = !empty($openaiApiKey);
 
 if ($fromForm) {
