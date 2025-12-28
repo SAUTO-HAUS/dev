@@ -3,12 +3,12 @@
  * Facebook Scheduled Posts Cron Job
  * Runs every minute to check and publish scheduled Facebook posts
  */
-/*
+
 // Security check - only allow CLI execution or manual trigger
 if (php_sapi_name() !== 'cli' && !defined('MANUAL_CRON_TRIGGER')) {
     http_response_code(403);
     die('This script can only be run from command line or with proper access');
-}*/
+}
 
 // Set error reporting
 error_reporting(E_ALL);
