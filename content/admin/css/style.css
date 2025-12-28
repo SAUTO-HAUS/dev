@@ -103,7 +103,7 @@
 	  #menu > .bx {max-height:3rem; padding:.75rem 3% 1rem; display:flex; flex-flow:row wrap; justify-content:space-around; border-bottom:1px dashed #e1e1e1; overflow:hidden; transition:.3s ease-in-out; border-radius:8px; margin:5px;}
 	  #menu > .bx.ghost {color:#d7d7d7;}
 	  #menu > .radio_inp:checked + .bx {max-height:99rem;}
-	  #menu > .bx.single-item.active {background: linear-gradient(135deg, rgba(191, 64, 64, 0.08), rgba(191, 64, 64, 0.15)); border-left:4px solid var(--clr); box-shadow:0 4px 12px rgba(191, 64, 64, 0.2);}
+	  #menu > .bx.single-item.active {max-height:3rem; background: linear-gradient(135deg, rgba(191, 64, 64, 0.08), rgba(191, 64, 64, 0.15)); border-left:4px solid var(--clr); box-shadow:0 4px 12px rgba(191, 64, 64, 0.2);}
 	  #menu > .bx.single-item.active > .nm {color:var(--clr); font-weight:600;}
 	  #menu > .bx > .nm {width:100%; text-align:center; cursor:pointer; transition:.3s ease-in-out; font-weight:500;}
 	  #menu > .bx:hover {background: linear-gradient(135deg, rgba(191, 64, 64, 0.08), rgba(191, 64, 64, 0.15)); transform:translateX(8px); box-shadow:0 4px 12px rgba(191, 64, 64, 0.2); border-left:4px solid var(--clr);}
