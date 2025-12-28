@@ -347,7 +347,7 @@ $rtrn = '
     }
     
     #calculator-container .result-row.total .eur-equiv {
-        color: rgba(255,255,255,0.7);
+        color: #fff;
     }
     
     #calculator-container .admin-actions {
