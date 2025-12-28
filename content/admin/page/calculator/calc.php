@@ -724,7 +724,7 @@ $rtrn = '
     }
     
     function formatNumber(num) {
-        return num.toLocaleString("ro-MD", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        return Math.round(num).toLocaleString("ro-MD", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
     }
     
     function logUsage() {
