@@ -75,9 +75,9 @@ Car data:
 HTML STRUCTURE (MUST follow this EXACT order):
 1. <h2>{Brand} {Model} | {Engine} | {Fuel} | {Year}</h2> - USE PIPE SEPARATOR between brand/model, engine, fuel type and year!
 2. <h3><span class=\"desc-icon desc-icon-features\"></span>Dotări</h3> then <ul> with 8-12 <li> items - MUST be ATTRACTIVE and APPEALING to buyers! List the most desirable features: comfort, safety, technology, luxury items. Use enticing language that makes buyers want this car. NO boring technical specs here - only features that excite customers!
-3. <h3><span class=\"desc-icon desc-icon-spec\"></span>Caracteristici tehnice</h3> then <ul> with detailed specs: engine type, power with kW and rpm, torque Nm, fuel system, consumption l/100km, gearbox type, drivetrain
+3. <h3><span class=\"desc-icon desc-icon-spec\"></span>Caracteristici tehnice</h3> then <ul> with detailed specs: engine type, power with kW and rpm, torque Nm, fuel system, real consumption l/100km, drivetrain (DO NOT include gearbox type here - it goes in section 5!)
 4. <h3><span class=\"desc-icon desc-icon-engine\"></span>Detalii motor</h3> then <p><strong>Caracteristici constructive:</strong></p><ul> engine block material, cylinder head, turbo type, timing drive type (ONLY write 'curea' or 'lanț' - choose correct one for THIS engine!), emission standard, special features </ul> then <p><strong><span class=\"desc-icon desc-icon-oil\"></span>Mentenanță:</strong></p><ul> service interval ALWAYS 7000 km, oil specification (viscosity + ACEA class - choose correct for THIS engine!), oil capacity in litri, injection system notes </ul> - NEVER mention engine lifespan or km durability!
-5. <h3><span class=\"desc-icon desc-icon-gearbox\"></span>Detalii cutie de viteze</h3> then <ul> gearbox type, clutch type, flywheel type with wear notes, reliability notes, oil type (ATF for automatic, MTF for manual), oil specification (choose correct spec for THIS gearbox - NOT always Dexron VI!), oil capacity as RANGE (X-X litri), service interval in km
+5. <h3><span class=\"desc-icon desc-icon-gearbox\"></span>Detalii cutie de viteze</h3> then <ul> gearbox type, clutch type, flywheel type, oil type, oil specification, oil capacity as RANGE (X-X litri), service interval in km
 
 CRITICAL REQUIREMENTS:
 - Section 'Dotări' MUST be the FIRST section (right after h2 title) - mobile layout depends on this!
@@ -88,7 +88,7 @@ CRITICAL REQUIREMENTS:
 - Assess mileage realistically (high/low for this type of vehicle)
 - Do NOT use generic filler text - every sentence must add real information
 - NEVER add any <li> with 'Avertisment', 'Warning', 'Предупреждение' label - these are STRICTLY FORBIDDEN
-- NEVER mention: 'check documents', 'verify history', 'before buying', 'before making an offer', 'verificați', 'проверьте' - FORBIDDEN
+- NEVER mention: 'check documents', 'verify history', 'before buying', 'before making an offer', 'verificați', 'проверьте', 'износ', 'uzură', 'wear', 'обратите внимание', 'atenție la' - FORBIDDEN
 - Do NOT add any disclaimers or buyer advice - we are a professional dealership
 
 IMPORTANT: Return EXACTLY in this JSON format:
