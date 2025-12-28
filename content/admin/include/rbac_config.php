@@ -30,6 +30,7 @@ $rbac_permissions = [
         'seo' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'mail' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
+        'calculator' => ['read' => true],
         'sett' => ['read' => true, 'update' => false]
     ],
     // Publisher (Публикатор) - Can view and add cars for sales purposes, full docs access to ALL branches
@@ -44,6 +45,7 @@ $rbac_permissions = [
         'seo' => ['read' => false],
         'mail' => ['read' => false],
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
+        'calculator' => ['read' => true],
         'sett' => ['read' => true]
     ],
     // Publisher-Limited (Публикатор Филиал) - Can view and add cars for sales purposes, docs access limited to own branch
@@ -57,6 +59,7 @@ $rbac_permissions = [
         'seo' => ['read' => false],
         'mail' => ['read' => false],
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
+        'calculator' => ['read' => true],
         'sett' => ['read' => true]
     ]
 ];
