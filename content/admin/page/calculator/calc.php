@@ -646,15 +646,27 @@ $rtrn = '
             }
         }
         
-        // Luxury excise (for vehicles over 600,000 MDL)
+        // Luxury excise (for vehicles over 600,000 MDL) - Anexa nr.2 Codul Fiscal Moldova
         let luxuryExcise = 0;
         const luxuryRow = document.getElementById("res-luxury-row");
-        if (valueMdl > 1200000) {
-            luxuryExcise = valueMdl * 0.03; // 3%
-        } else if (valueMdl > 900000) {
+        if (valueMdl >= 600000 && valueMdl <= 700000) {
             luxuryExcise = valueMdl * 0.02; // 2%
-        } else if (valueMdl > 600000) {
-            luxuryExcise = valueMdl * 0.01; // 1%
+        } else if (valueMdl > 700000 && valueMdl <= 800000) {
+            luxuryExcise = valueMdl * 0.03; // 3%
+        } else if (valueMdl > 800000 && valueMdl <= 900000) {
+            luxuryExcise = valueMdl * 0.04; // 4%
+        } else if (valueMdl > 900000 && valueMdl <= 1000000) {
+            luxuryExcise = valueMdl * 0.05; // 5%
+        } else if (valueMdl > 1000000 && valueMdl <= 1200000) {
+            luxuryExcise = valueMdl * 0.06; // 6%
+        } else if (valueMdl > 1200000 && valueMdl <= 1400000) {
+            luxuryExcise = valueMdl * 0.07; // 7%
+        } else if (valueMdl > 1400000 && valueMdl <= 1600000) {
+            luxuryExcise = valueMdl * 0.08; // 8%
+        } else if (valueMdl > 1600000 && valueMdl <= 1800000) {
+            luxuryExcise = valueMdl * 0.09; // 9%
+        } else if (valueMdl > 1800000) {
+            luxuryExcise = valueMdl * 0.10; // 10%
         }
         
         // Customs procedures fee (0.4% of customs value, max 1800 EUR)
