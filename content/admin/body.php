@@ -46,26 +46,37 @@
 					foreach($current_menu as $k => $ar){
 						$menu_name = isset($adm_lang[$k]) ? $adm_lang[$k] : ucfirst($k);
 						
-						echo '
-						<input id="menu_bx_'.$k.'" type="radio" name="menu_bx" class="radio_inp none" '.( (isset($t_mp[3])&&$t_mp[3]==$k)||(!isset($t_mp[3])&&$k=='sett')?'checked="checked"':'' ).' />
-						<div class="bx '.(in_array( $k, $hided_admin_menu, true )?'ghost':'').'">
-							<label for="menu_bx_'.$k.'" class="nm">'.$menu_name.'</label>';
-							foreach ($ar as $v){
-								if ( isset($restrict_admin_menu[$user_id]['page'][$k][$v]) ){continue;}
-								
-								$menu_name = isset($adm_lang[$v]) ? $adm_lang[$v] : ucfirst($v);
-								echo '
-								<a href="/'.$_COOKIE['lang'].'/'.$admin_dir.($k=='sett'&&$v=='info'?'':'/'.$k.'/'.$v).'" class="'.$k.' '.$v.' btn '.((isset($t_mp[4])&&$t_mp[3]==$k&&$t_mp[4]==$v)||(!isset($t_mp[3])&&$v=='info')?'act':'').'">'; 
-									$qu = 0; $qu_x = 0;
-									if ($k=='mail'){ 
-										$qu = $db->query('SELECT COUNT(*) FROM '.$prefx.'_mail')->fetchColumn();
-										if ( in_array($v, ['message', 'order']) ){ $qu_x = $db->query('SELECT COUNT(*) FROM '.$prefx.'_mail WHERE `seen`=0 AND `folder`="'.$v.'"')->fetchColumn(); }
-									}
-									echo $menu_name.($k=='mail'&&$qu_x>0?' :'.$qu_x:'').($k=='docs'?'':'').'
-								</a>';
-							}
-						echo '
-						</div>';
+						// If module has only one option, make the label a direct link
+						if (count($ar) === 1) {
+							$single_action = $ar[0];
+							$is_active = (isset($t_mp[3]) && $t_mp[3] === $k);
+							echo '
+							<input id="menu_bx_'.$k.'" type="radio" name="menu_bx" class="radio_inp none" '.($is_active?'checked="checked"':'').' />
+							<div class="bx single-item '.($is_active?'active':'').' '.(in_array( $k, $hided_admin_menu, true )?'ghost':'').'">
+								<a href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/'.$k.'/'.$single_action.'" class="nm '.($is_active?'act':'').'">'.$menu_name.'</a>
+							</div>';
+						} else {
+							echo '
+							<input id="menu_bx_'.$k.'" type="radio" name="menu_bx" class="radio_inp none" '.( (isset($t_mp[3])&&$t_mp[3]==$k)||(!isset($t_mp[3])&&$k=='sett')?'checked="checked"':'' ).' />
+							<div class="bx '.(in_array( $k, $hided_admin_menu, true )?'ghost':'').'">
+								<label for="menu_bx_'.$k.'" class="nm">'.$menu_name.'</label>';
+								foreach ($ar as $v){
+									if ( isset($restrict_admin_menu[$user_id]['page'][$k][$v]) ){continue;}
+									
+									$menu_name = isset($adm_lang[$v]) ? $adm_lang[$v] : ucfirst($v);
+									echo '
+									<a href="/'.$_COOKIE['lang'].'/'.$admin_dir.($k=='sett'&&$v=='info'?'':'/'.$k.'/'.$v).'" class="'.$k.' '.$v.' btn '.((isset($t_mp[4])&&$t_mp[3]==$k&&$t_mp[4]==$v)||(!isset($t_mp[3])&&$v=='info')?'act':'').'">'; 
+										$qu = 0; $qu_x = 0;
+										if ($k=='mail'){ 
+											$qu = $db->query('SELECT COUNT(*) FROM '.$prefx.'_mail')->fetchColumn();
+											if ( in_array($v, ['message', 'order']) ){ $qu_x = $db->query('SELECT COUNT(*) FROM '.$prefx.'_mail WHERE `seen`=0 AND `folder`="'.$v.'"')->fetchColumn(); }
+										}
+										echo $menu_name.($k=='mail'&&$qu_x>0?' :'.$qu_x:'').($k=='docs'?'':'').'
+									</a>';
+								}
+							echo '
+							</div>';
+						}
 					}
 				}
 				
