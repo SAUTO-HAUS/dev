@@ -136,6 +136,28 @@ $rtrn = '
         border-color: rgba(255,255,255,0.5);
     }
     
+    #calculator-container .pdf-export-row {
+        padding: 1.5rem 0 0;
+        text-align: center;
+    }
+    
+    #calculator-container .pdf-btn {
+        padding: 0.75rem 2rem;
+        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    
+    #calculator-container .pdf-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+    }
+    
     #calculator-container .calc-header .eur-rate-row span {
         color: #666;
         font-size: 0.95rem;
@@ -597,6 +619,9 @@ $rtrn = '
             <span class="label">'.$t['vehicle_total'].'</span>
             <span class="value editable-value"><input type="number" class="editable-input" id="res-vehicle-total-mdl" readonly step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-vehicle-total-eur" readonly step="1"> EUR</span></span>
         </div>
+        <div class="pdf-export-row">
+            <button type="button" class="pdf-btn" id="export-pdf-btn">📄 '.$t['export_pdf'].'</button>
+        </div>
     </div>
     
     '.($is_super_admin ? '
@@ -607,6 +632,7 @@ $rtrn = '
     ' : '').'
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 (function() {
     let EUR_RATE = '.$eur_rate.';
@@ -926,6 +952,102 @@ $rtrn = '
             body: "tp=adm&pg=calculator&fn=log_usage"
         });
     }
+    
+    // Export PDF function
+    function removeDiacritics(str) {
+        return str
+            .replace(/ă/g, "a").replace(/Ă/g, "A")
+            .replace(/â/g, "a").replace(/Â/g, "A")
+            .replace(/î/g, "i").replace(/Î/g, "I")
+            .replace(/ș/g, "s").replace(/Ș/g, "S")
+            .replace(/ț/g, "t").replace(/Ț/g, "T")
+            .replace(/ş/g, "s").replace(/Ş/g, "S")
+            .replace(/ţ/g, "t").replace(/Ţ/g, "T");
+    }
+    
+    document.getElementById("export-pdf-btn").addEventListener("click", function() {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        
+        const pageWidth = doc.internal.pageSize.getWidth();
+        let y = 20;
+        
+        // Title
+        doc.setFontSize(18);
+        doc.setFont("helvetica", "bold");
+        doc.text(removeDiacritics("'.$t['results'].'"), pageWidth / 2, y, { align: "center" });
+        y += 15;
+        
+        // Date
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text(new Date().toLocaleDateString("ro-RO") + " " + new Date().toLocaleTimeString("ro-RO"), pageWidth / 2, y, { align: "center" });
+        y += 15;
+        
+        // Line
+        doc.setDrawColor(200);
+        doc.line(20, y, pageWidth - 20, y);
+        y += 10;
+        
+        // Results data
+        const results = [
+            { label: removeDiacritics("'.$t['value_mdl'].'"), mdl: "res-value-mdl", eur: "res-value-eur" },
+            { label: removeDiacritics("'.$t['excise'].'"), mdl: "res-excise-mdl", eur: "res-excise-eur" },
+            { label: removeDiacritics("'.$t['customs_duty'].'"), mdl: "res-customs-mdl", eur: "res-customs-eur" },
+            { label: removeDiacritics("'.$t['damage_protection'].'"), mdl: "res-damage-mdl", eur: "res-damage-eur" },
+            { label: removeDiacritics("'.$t['export_declaration'].'"), mdl: "res-export-mdl", eur: "res-export-eur" },
+            { label: removeDiacritics("'.$t['bank_commission'].'"), mdl: "res-bank-mdl", eur: "res-bank-eur" },
+            { label: removeDiacritics("'.$t['auction_commission'].'"), mdl: "res-auction-mdl", eur: "res-auction-eur" },
+            { label: removeDiacritics("'.$t['pollution_tax'].'"), mdl: "res-pollution-mdl", eur: "res-pollution-eur" },
+            { label: removeDiacritics("'.$t['accessories'].'"), mdl: "res-accessories-mdl", eur: "res-accessories-eur" },
+            { label: removeDiacritics("'.$t['transaction_commission'].'"), mdl: "res-transaction-mdl", eur: "res-transaction-eur" }
+        ];
+        
+        doc.setFontSize(11);
+        results.forEach(item => {
+            const mdlVal = document.getElementById(item.mdl).value || "0";
+            const eurVal = document.getElementById(item.eur).value || "0";
+            
+            doc.setFont("helvetica", "normal");
+            doc.text(item.label, 20, y);
+            doc.setFont("helvetica", "bold");
+            doc.text(formatNumber(parseFloat(mdlVal)) + " MDL  (" + formatNumber(parseFloat(eurVal)) + " EUR)", pageWidth - 20, y, { align: "right" });
+            y += 8;
+        });
+        
+        // Totals
+        y += 5;
+        doc.setDrawColor(200);
+        doc.line(20, y, pageWidth - 20, y);
+        y += 10;
+        
+        // Total customs
+        doc.setFillColor(226, 0, 26);
+        doc.rect(15, y - 5, pageWidth - 30, 12, "F");
+        doc.setTextColor(255, 255, 255);
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(12);
+        doc.text(removeDiacritics("'.$t['total'].'"), 20, y + 3);
+        const totalMdl = document.getElementById("res-total-mdl").value || "0";
+        const totalEur = document.getElementById("res-total-eur").value || "0";
+        doc.text(formatNumber(parseFloat(totalMdl)) + " MDL  (" + formatNumber(parseFloat(totalEur)) + " EUR)", pageWidth - 20, y + 3, { align: "right" });
+        y += 15;
+        
+        // Vehicle total
+        doc.setFillColor(85, 85, 85);
+        doc.rect(15, y - 5, pageWidth - 30, 12, "F");
+        doc.setTextColor(255, 255, 255);
+        doc.text(removeDiacritics("'.$t['vehicle_total'].'"), 20, y + 3);
+        const vehicleMdl = document.getElementById("res-vehicle-total-mdl").value || "0";
+        const vehicleEur = document.getElementById("res-vehicle-total-eur").value || "0";
+        doc.text(formatNumber(parseFloat(vehicleMdl)) + " MDL  (" + formatNumber(parseFloat(vehicleEur)) + " EUR)", pageWidth - 20, y + 3, { align: "right" });
+        
+        // Reset text color
+        doc.setTextColor(0, 0, 0);
+        
+        // Save PDF
+        doc.save("calculator-vamuire-" + new Date().toISOString().slice(0,10) + ".pdf");
+    });
 })();
 </script>';
 
