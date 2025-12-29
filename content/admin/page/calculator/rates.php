@@ -156,6 +156,20 @@ $rtrn = '
         box-shadow: 0 4px 15px rgba(226, 0, 26, 0.4);
     }
     
+    #rates-container .save-btn.success {
+        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    }
+    
+    #rates-container .save-btn.error {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    }
+    
+    #rates-container .section-save {
+        padding: 1rem 1.5rem;
+        border-top: 1px solid #eee;
+        text-align: right;
+    }
+    
     #rates-container .settings-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -224,6 +238,9 @@ foreach ($settings as $key => $setting) {
 
 $rtrn .= '
                 </div>
+                <div class="section-save">
+                    <button type="button" class="save-btn section-save-btn" data-section="settings" data-original="💾 '.$t['save_changes'].'" data-success="✓ '.$t['save_success'].'" data-error="✗ '.$t['save_error'].'">💾 '.$t['save_changes'].'</button>
+                </div>
             </div>
         </div>
         
@@ -257,6 +274,9 @@ foreach ($benzina_rates as $rate) {
 $rtrn .= '
                     </tbody>
                 </table>
+                <div class="section-save">
+                    <button type="button" class="save-btn section-save-btn" data-section="benzina" data-original="💾 '.$t['save_changes'].'" data-success="✓ '.$t['save_success'].'" data-error="✗ '.$t['save_error'].'">💾 '.$t['save_changes'].'</button>
+                </div>
             </div>
         </div>
         
@@ -290,6 +310,9 @@ foreach ($diesel_rates as $rate) {
 $rtrn .= '
                     </tbody>
                 </table>
+                <div class="section-save">
+                    <button type="button" class="save-btn section-save-btn" data-section="diesel" data-original="💾 '.$t['save_changes'].'" data-success="✓ '.$t['save_success'].'" data-error="✗ '.$t['save_error'].'">💾 '.$t['save_changes'].'</button>
+                </div>
             </div>
         </div>
         
@@ -323,34 +346,60 @@ foreach ($motocicleta_rates as $rate) {
 $rtrn .= '
                     </tbody>
                 </table>
+                <div class="section-save">
+                    <button type="button" class="save-btn section-save-btn" data-section="motocicleta" data-original="💾 '.$t['save_changes'].'" data-success="✓ '.$t['save_success'].'" data-error="✗ '.$t['save_error'].'">💾 '.$t['save_changes'].'</button>
+                </div>
             </div>
         </div>
         
-        <button type="submit" class="save-btn">💾 '.$t['save_changes'].'</button>
     </form>
 </div>
 
 <script>
-document.getElementById("rates-form").addEventListener("submit", function(e) {
-    e.preventDefault();
-    
-    const formData = new FormData(this);
-    formData.append("tp", "adm");
-    formData.append("pg", "calculator");
-    formData.append("fn", "save_rates");
-    
-    fetch("/ajax.php", {
-        method: "POST",
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            document.getElementById("success-msg").classList.add("show");
+document.querySelectorAll(".section-save-btn").forEach(btn => {
+    btn.addEventListener("click", function() {
+        const section = this.dataset.section;
+        const originalText = this.dataset.original;
+        const successText = this.dataset.success;
+        const errorText = this.dataset.error;
+        const button = this;
+        
+        button.disabled = true;
+        
+        const formData = new FormData(document.getElementById("rates-form"));
+        formData.append("tp", "adm");
+        formData.append("pg", "calculator");
+        formData.append("fn", "save_rates");
+        formData.append("section", section);
+        
+        fetch("/ajax.php", {
+            method: "POST",
+            body: new URLSearchParams(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                button.textContent = successText;
+                button.classList.add("success");
+            } else {
+                button.textContent = errorText;
+                button.classList.add("error");
+            }
+            button.disabled = false;
             setTimeout(() => {
-                document.getElementById("success-msg").classList.remove("show");
-            }, 3000);
-        }
+                button.textContent = originalText;
+                button.classList.remove("success", "error");
+            }, 2000);
+        })
+        .catch(() => {
+            button.textContent = errorText;
+            button.classList.add("error");
+            button.disabled = false;
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.classList.remove("success", "error");
+            }, 2000);
+        });
     });
 });
 </script>';

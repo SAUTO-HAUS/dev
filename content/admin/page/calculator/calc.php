@@ -19,6 +19,7 @@ $eur_rate = isset($settings['eur_rate']) ? floatval($settings['eur_rate']) : 19.
 $tva_rate = isset($settings['tva_rate']) ? floatval($settings['tva_rate']) : 20;
 $hybrid_discount_full = isset($settings['hybrid_discount_full']) ? floatval($settings['hybrid_discount_full']) : 25;
 $hybrid_discount_plugin = isset($settings['hybrid_discount_plugin']) ? floatval($settings['hybrid_discount_plugin']) : 50;
+$damage_protection_rate = isset($settings['damage_protection_rate']) ? floatval($settings['damage_protection_rate']) : 1.2;
 
 $excise_rates = [];
 try {
@@ -76,6 +77,20 @@ $rtrn = '
     }
     
     #calculator-container .calc-header .eur-rate-input:focus {
+        outline: none;
+        border-color: #e2001a;
+    }
+    
+    #calculator-container .inline-rate-input {
+        width: 50px;
+        padding: 0.2rem 0.4rem;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        text-align: center;
+    }
+    
+    #calculator-container .inline-rate-input:focus {
         outline: none;
         border-color: #e2001a;
     }
@@ -506,8 +521,32 @@ $rtrn = '
             <span class="value" id="res-customs">-</span>
         </div>
         <div class="result-row">
-            <span class="label">'.$t['damage_protection'].'</span>
+            <span class="label">'.$t['damage_protection'].' (<input type="number" step="0.1" min="0" max="10" id="damage-rate-input" class="inline-rate-input" value="'.$damage_protection_rate.'">%)</span>
             <span class="value" id="res-damage-protection">-</span>
+        </div>
+        <div class="result-row">
+            <span class="label">'.$t['export_declaration'].'</span>
+            <span class="value" id="res-export-declaration">-</span>
+        </div>
+        <div class="result-row">
+            <span class="label">'.$t['bank_commission'].'</span>
+            <span class="value" id="res-bank-commission">-</span>
+        </div>
+        <div class="result-row">
+            <span class="label">'.$t['auction_commission'].'</span>
+            <span class="value" id="res-auction-commission">-</span>
+        </div>
+        <div class="result-row">
+            <span class="label">'.$t['pollution_tax'].'</span>
+            <span class="value" id="res-pollution-tax">-</span>
+        </div>
+        <div class="result-row">
+            <span class="label">'.$t['accessories'].'</span>
+            <span class="value" id="res-accessories">-</span>
+        </div>
+        <div class="result-row">
+            <span class="label">'.$t['transaction_commission'].'</span>
+            <span class="value" id="res-transaction-commission">-</span>
         </div>
         <div class="result-row total">
             <span class="label">'.$t['total'].'</span>
@@ -587,6 +626,7 @@ $rtrn = '
     const TVA_RATE = '.$tva_rate.';
     const HYBRID_DISCOUNT_PLUGIN = '.$hybrid_discount_plugin.';
     const HYBRID_DISCOUNT_FULL = '.$hybrid_discount_full.';
+    const DAMAGE_PROTECTION_RATE = '.$damage_protection_rate.';
     const EXCISE_RATES = '.json_encode($excise_rates).';
     
     // Fuel type selection
@@ -607,6 +647,13 @@ $rtrn = '
             document.querySelectorAll(".hybrid-type-btn").forEach(b => b.classList.remove("active"));
             this.classList.add("active");
         });
+    });
+    
+    // Recalculate when damage rate changes
+    document.getElementById("damage-rate-input").addEventListener("input", function() {
+        if (document.getElementById("results").classList.contains("show")) {
+            document.getElementById("calculate-btn").click();
+        }
     });
     
     // Calculate button
@@ -694,11 +741,30 @@ $rtrn = '
             customsFee = maxFeeEur * EUR_RATE;
         }
         
-        // Damage protection (1.2% of vehicle price, not including transport)
-        const damageProtection = priceEur * EUR_RATE * 0.012;
+        // Damage protection (configurable % of vehicle price, not including transport)
+        const damageRate = parseFloat(document.getElementById("damage-rate-input").value) || DAMAGE_PROTECTION_RATE;
+        const damageProtection = priceEur * EUR_RATE * (damageRate / 100);
         
-        // Total (excise + luxury excise + customs fee + damage protection)
-        const total = excise + luxuryExcise + customsFee + damageProtection;
+        // Export declaration (MRN) - fixed 50 EUR
+        const exportDeclaration = 50 * EUR_RATE;
+        
+        // Bank commission SWIFT - fixed 25 EUR
+        const bankCommission = 25 * EUR_RATE;
+        
+        // Auction commission - fixed 350 EUR
+        const auctionCommission = 350 * EUR_RATE;
+        
+        // Pollution tax - fixed 85 EUR
+        const pollutionTax = 85 * EUR_RATE;
+        
+        // Accessories - 0 EUR (placeholder)
+        const accessories = 0;
+        
+        // Transaction commission - 0 EUR (placeholder)
+        const transactionCommission = 0;
+        
+        // Total
+        const total = excise + luxuryExcise + customsFee + damageProtection + exportDeclaration + bankCommission + auctionCommission + pollutionTax + accessories + transactionCommission;
         
         // Display results with EUR equivalent
         document.getElementById("res-value-mdl").innerHTML = formatNumber(valueMdl) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(valueMdl / EUR_RATE) + " EUR</span>";
@@ -714,6 +780,12 @@ $rtrn = '
         
         document.getElementById("res-customs").innerHTML = formatNumber(customsFee) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(customsFee / EUR_RATE) + " EUR</span>";
         document.getElementById("res-damage-protection").innerHTML = formatNumber(damageProtection) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(damageProtection / EUR_RATE) + " EUR</span>";
+        document.getElementById("res-export-declaration").innerHTML = formatNumber(exportDeclaration) + " MDL <span class=\"eur-equiv\">~ 50 EUR</span>";
+        document.getElementById("res-bank-commission").innerHTML = formatNumber(bankCommission) + " MDL <span class=\"eur-equiv\">~ 25 EUR</span>";
+        document.getElementById("res-auction-commission").innerHTML = formatNumber(auctionCommission) + " MDL <span class=\"eur-equiv\">~ 350 EUR</span>";
+        document.getElementById("res-pollution-tax").innerHTML = formatNumber(pollutionTax) + " MDL <span class=\"eur-equiv\">~ 85 EUR</span>";
+        document.getElementById("res-accessories").innerHTML = formatNumber(accessories) + " MDL <span class=\"eur-equiv\">~ 0 EUR</span>";
+        document.getElementById("res-transaction-commission").innerHTML = formatNumber(transactionCommission) + " MDL <span class=\"eur-equiv\">~ 0 EUR</span>";
         document.getElementById("res-total").innerHTML = formatNumber(total) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(total / EUR_RATE) + " EUR</span>";
         
         // Vehicle total (price + customs costs)

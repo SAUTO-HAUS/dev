@@ -213,4 +213,5 @@ INSERT INTO `gh3sp_calculator_settings` (`setting_key`, `setting_value`, `descri
 ('hybrid_discount_mild', '0', 'Discount for Mild Hybrid in percentage'),
 ('vintage_30_39_rate', '40000', 'Fixed excise for vintage cars 30-39 years old'),
 ('vintage_40_49_rate', '30000', 'Fixed excise for vintage cars 40-49 years old'),
-('vintage_50_plus_rate', '20000', 'Fixed excise for vintage cars 50+ years old');
+('vintage_50_plus_rate', '20000', 'Fixed excise for vintage cars 50+ years old'),
+('damage_protection_rate', '1.2', 'Damage protection rate in percentage');

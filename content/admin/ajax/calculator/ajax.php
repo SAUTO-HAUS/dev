@@ -50,12 +50,26 @@ if ($fn === 'save_eur_rate') {
         foreach ($_POST as $key => $value) {
             if (strpos($key, 'setting_') === 0) {
                 $setting_key = str_replace('setting_', '', $key);
-                $pdo = $db->prepare('UPDATE '.$prefx.'_calculator_settings SET `setting_value` = :value, `updated_by` = :user_id WHERE `setting_key` = :key');
-                $pdo->execute([
-                    'value' => $value,
-                    'user_id' => $user_id,
-                    'key' => $setting_key
-                ]);
+                
+                $check = $db->prepare('SELECT id FROM '.$prefx.'_calculator_settings WHERE setting_key = :key');
+                $check->execute(['key' => $setting_key]);
+                $exists = $check->fetch(PDO::FETCH_ASSOC);
+                
+                if ($exists) {
+                    $pdo = $db->prepare('UPDATE '.$prefx.'_calculator_settings SET `setting_value` = :value, `updated_by` = :user_id WHERE `setting_key` = :key');
+                    $pdo->execute([
+                        'value' => $value,
+                        'user_id' => $user_id,
+                        'key' => $setting_key
+                    ]);
+                } else {
+                    $pdo = $db->prepare('INSERT INTO '.$prefx.'_calculator_settings (`setting_key`, `setting_value`, `updated_by`) VALUES (:key, :value, :user_id)');
+                    $pdo->execute([
+                        'key' => $setting_key,
+                        'value' => $value,
+                        'user_id' => $user_id
+                    ]);
+                }
             }
         }
         
@@ -95,10 +109,13 @@ if ($fn === 'save_eur_rate') {
         }
         
         echo json_encode(['success' => true]);
+        exit;
     } catch (Exception $e) {
         echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        exit;
     }
     
 } else {
     echo json_encode(['success' => false, 'error' => 'Unknown function']);
+    exit;
 }

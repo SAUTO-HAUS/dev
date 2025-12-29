@@ -37,7 +37,13 @@ $calc_trans = [
         'luxury_excise' => 'Acciză lux',
         'tva' => 'TVA',
         'customs_duty' => 'Taxă proceduri vamale',
-        'damage_protection' => 'Protecție împotriva daunelor (1,2%)',
+        'damage_protection' => 'Protecție împotriva daunelor',
+        'export_declaration' => 'Declarația de export (MRN)',
+        'bank_commission' => 'Comision bancar SWIFT',
+        'auction_commission' => 'Comision licitație',
+        'pollution_tax' => 'Taxa de poluare',
+        'accessories' => 'Accesorii',
+        'transaction_commission' => 'Comision pentru tranzacție',
         'total' => 'TOTAL COSTURI VĂMUIRE',
         'vehicle_total' => 'SUMA TOTALĂ VEHICUL',
         'electric_notice' => 'Vehiculele electrice sunt scutite de accize!',
@@ -85,7 +91,9 @@ $calc_trans = [
         'setting_vintage_40_49_rate' => 'Acciza retro 40-49 ani',
         'setting_vintage_40_49_rate_desc' => 'Acciza fixă pentru auto retro 40-49 ani',
         'setting_vintage_50_plus_rate' => 'Acciza retro 50+ ani',
-        'setting_vintage_50_plus_rate_desc' => 'Acciza fixă pentru auto retro 50+ ani'
+        'setting_vintage_50_plus_rate_desc' => 'Acciza fixă pentru auto retro 50+ ani',
+        'setting_damage_protection_rate' => 'Protecție daune (%)',
+        'setting_damage_protection_rate_desc' => 'Procentul pentru protecție împotriva daunelor'
     ],
     'ru' => [
         // Calculator page
@@ -121,7 +129,13 @@ $calc_trans = [
         'luxury_excise' => 'Акциз люкс',
         'tva' => 'НДС',
         'customs_duty' => 'Сбор за таможенные процедуры',
-        'damage_protection' => 'Защита от повреждений (1,2%)',
+        'damage_protection' => 'Защита от повреждений',
+        'export_declaration' => 'Декларация экспорта (MRN)',
+        'bank_commission' => 'Банковская комиссия SWIFT',
+        'auction_commission' => 'Комиссия аукциона',
+        'pollution_tax' => 'Налог на загрязнение',
+        'accessories' => 'Аксессуары',
+        'transaction_commission' => 'Комиссия за транзакцию',
         'total' => 'ИТОГО РАСХОДЫ НА РАСТАМОЖКУ',
         'vehicle_total' => 'ОБЩАЯ СУММА ЗА АВТОМОБИЛЬ',
         'electric_notice' => 'Электромобили освобождены от акцизов!',
@@ -169,7 +183,9 @@ $calc_trans = [
         'setting_vintage_40_49_rate' => 'Акциз ретро 40-49 лет',
         'setting_vintage_40_49_rate_desc' => 'Фиксированный акциз для ретро авто 40-49 лет',
         'setting_vintage_50_plus_rate' => 'Акциз ретро 50+ лет',
-        'setting_vintage_50_plus_rate_desc' => 'Фиксированный акциз для ретро авто 50+ лет'
+        'setting_vintage_50_plus_rate_desc' => 'Фиксированный акциз для ретро авто 50+ лет',
+        'setting_damage_protection_rate' => 'Защита от повреждений (%)',
+        'setting_damage_protection_rate_desc' => 'Процент защиты от повреждений'
     ],
     'en' => [
         // Calculator page
@@ -205,7 +221,13 @@ $calc_trans = [
         'luxury_excise' => 'Luxury excise',
         'tva' => 'VAT',
         'customs_duty' => 'Customs Procedures Fee',
-        'damage_protection' => 'Damage Protection (1.2%)',
+        'damage_protection' => 'Damage Protection',
+        'export_declaration' => 'Export Declaration (MRN)',
+        'bank_commission' => 'Bank Commission SWIFT',
+        'auction_commission' => 'Auction Commission',
+        'pollution_tax' => 'Pollution Tax',
+        'accessories' => 'Accessories',
+        'transaction_commission' => 'Transaction Commission',
         'total' => 'TOTAL CUSTOMS COSTS',
         'vehicle_total' => 'TOTAL VEHICLE COST',
         'electric_notice' => 'Electric vehicles are exempt from excise!',
@@ -253,7 +275,9 @@ $calc_trans = [
         'setting_vintage_40_49_rate' => 'Vintage 40-49 years excise',
         'setting_vintage_40_49_rate_desc' => 'Fixed excise for vintage cars 40-49 years old',
         'setting_vintage_50_plus_rate' => 'Vintage 50+ years excise',
-        'setting_vintage_50_plus_rate_desc' => 'Fixed excise for vintage cars 50+ years old'
+        'setting_vintage_50_plus_rate_desc' => 'Fixed excise for vintage cars 50+ years old',
+        'setting_damage_protection_rate' => 'Damage Protection (%)',
+        'setting_damage_protection_rate_desc' => 'Damage protection rate in percentage'
     ]
 ];
 
