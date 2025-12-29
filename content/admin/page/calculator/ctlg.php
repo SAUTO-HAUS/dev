@@ -227,7 +227,7 @@ $rtrn = '
 <div id="catalog-container">
     <div class="catalog-header">
         <h1>📋 '.$t['catalog'].'</h1>
-        <a href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator" class="back-btn">'.$t['back_to_calc'].'</a>
+        <a href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator/calc" class="back-btn">'.$t['back_to_calc'].'</a>
     </div>
     
     <div class="search-box">
