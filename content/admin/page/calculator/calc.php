@@ -2,6 +2,15 @@
 
 include_once _ADM_PAGE.'/calculator/calc_translate.php';
 
+// Get all brands for select
+$brands = [];
+try {
+    $pdo = (new \App\Db\Brand())->getBrands();
+    foreach ($pdo as $r) {
+        $brands[$r['br']] = $r['br_nm'];
+    }
+} catch (Exception $e) {}
+
 $eur_rate = 19.50;
 
 $settings = [];
@@ -209,14 +218,18 @@ $rtrn = '
         margin-bottom: 0.3rem;
     }
     
-    #calculator-container .offer-field input {
+    #calculator-container .offer-field input,
+    #calculator-container .offer-field select {
         padding: 0.6rem 0.8rem;
         border: 1px solid #ddd;
         border-radius: 6px;
         font-size: 0.95rem;
+        width: 100%;
+        box-sizing: border-box;
     }
     
-    #calculator-container .offer-field input:focus {
+    #calculator-container .offer-field input:focus,
+    #calculator-container .offer-field select:focus {
         outline: none;
         border-color: #e2001a;
     }
@@ -731,11 +744,18 @@ $rtrn = '
                 </div>
                 <div class="offer-field">
                     <label for="offer-brand">'.$t['brand'].'</label>
-                    <input type="text" id="offer-brand" name="br" placeholder="'.$t['brand'].'">
+                    <select id="offer-brand" name="br">
+                        <option value="">'.$t['brand'].'</option>';
+                        foreach ($brands as $k => $v) {
+                            $rtrn .= '<option value="'.$k.'">'.htmlspecialchars($v).'</option>';
+                        }
+                        $rtrn .= '</select>
                 </div>
                 <div class="offer-field">
                     <label for="offer-model">'.$t['model'].'</label>
-                    <input type="text" id="offer-model" name="mo" placeholder="'.$t['model'].'">
+                    <select id="offer-model" name="mo">
+                        <option value="">'.$t['model'].'</option>
+                    </select>
                 </div>
                 <div class="offer-field">
                     <label for="offer-year">'.$t['year_vehicle'].'</label>
@@ -1308,8 +1328,12 @@ $rtrn = '
         
         // Get offer fields
         const clientName = document.getElementById("offer-client-name").value.trim();
-        const brand = document.getElementById("offer-brand").value.trim();
-        const model = document.getElementById("offer-model").value.trim();
+        const brandSelect = document.getElementById("offer-brand");
+        const modelSelect = document.getElementById("offer-model");
+        const brand = brandSelect.value;
+        const brandName = brandSelect.options[brandSelect.selectedIndex]?.text || brand;
+        const model = modelSelect.value;
+        const modelName = modelSelect.options[modelSelect.selectedIndex]?.text || model;
         const year = document.getElementById("offer-year").value;
         const vin = document.getElementById("offer-vin").value.trim().toUpperCase();
         
@@ -1346,8 +1370,8 @@ $rtrn = '
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: "tp=adm&pg=calculator&fn=save_offer" +
                     "&client_name=" + encodeURIComponent(clientName) +
-                    "&brand=" + encodeURIComponent(brand) +
-                    "&model=" + encodeURIComponent(model) +
+                    "&brand=" + encodeURIComponent(brandName) +
+                    "&model=" + encodeURIComponent(modelName) +
                     "&year=" + encodeURIComponent(year) +
                     "&vin=" + encodeURIComponent(vin) +
                     "&pdf_lang=" + encodeURIComponent(lang) +
@@ -1375,7 +1399,7 @@ $rtrn = '
             // Vehicle info
             doc.setFontSize(12);
             doc.setFont("helvetica", "normal");
-            const vehicleInfo = removeDiacritics(brand + " " + model + " " + year + (vin ? " | VIN: " + vin : ""));
+            const vehicleInfo = removeDiacritics(brandName + " " + modelName + " " + year + (vin ? " | VIN: " + vin : ""));
             doc.text(vehicleInfo, pageWidth / 2, y, { align: "center" });
             y += 8;
             
@@ -1477,6 +1501,36 @@ $rtrn = '
             btn.textContent = OFFER_SAVE_TEXT;
             btn.classList.remove("success", "error");
         }, 3000);
+    });
+    
+    // Load models when brand changes
+    document.getElementById("offer-brand").addEventListener("change", function() {
+        const brand = this.value;
+        const modelSelect = document.getElementById("offer-model");
+        const defaultText = "'.$t['model'].'";
+        
+        // Reset model select
+        modelSelect.innerHTML = "<option value=\"\">" + defaultText + "</option>";
+        
+        if (!brand) return;
+        
+        fetch("/ajax.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: "tp=adm&pg=calculator&fn=get_models&brand=" + encodeURIComponent(brand)
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success && data.models) {
+                data.models.forEach(m => {
+                    const opt = document.createElement("option");
+                    opt.value = m.mo;
+                    opt.textContent = m.mo_nm;
+                    modelSelect.appendChild(opt);
+                });
+            }
+        })
+        .catch(err => console.error("Error loading models:", err));
     });
 })();
 </script>';

@@ -204,6 +204,25 @@ INSERT INTO `gh3sp_calculator_excise_rates` (`fuel_type`, `capacity_min`, `capac
 ('motocicleta', 801, 0, 5, 6, 16.94),
 ('motocicleta', 801, 0, 7, 0, 22.59);
 
+-- Table for storing commercial offers (PDF catalog)
+CREATE TABLE IF NOT EXISTS `gh3sp_calculator_offers` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `client_name` VARCHAR(255) NOT NULL,
+    `brand` VARCHAR(100) NOT NULL,
+    `model` VARCHAR(100) NOT NULL,
+    `year` INT(11) NOT NULL,
+    `vin` VARCHAR(17) DEFAULT NULL,
+    `pdf_lang` VARCHAR(5) DEFAULT 'ro',
+    `calculation_data` JSON DEFAULT NULL,
+    `pdf_path` VARCHAR(255) DEFAULT NULL,
+    `created_by` INT(11) NOT NULL,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    INDEX `idx_created_at` (`created_at`),
+    INDEX `idx_client_name` (`client_name`),
+    INDEX `idx_vin` (`vin`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Default settings
 INSERT INTO `gh3sp_calculator_settings` (`setting_key`, `setting_value`, `description`) VALUES
 ('tva_rate', '20', 'TVA rate in percentage'),

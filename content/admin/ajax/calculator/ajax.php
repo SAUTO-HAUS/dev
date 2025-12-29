@@ -224,9 +224,8 @@ if ($fn === 'save_eur_rate') {
         $total = $count_stmt->fetch(PDO::FETCH_ASSOC)['total'];
         
         // Get offers
-        $pdo = $db->prepare('SELECT o.*, u.login as created_by_name 
+        $pdo = $db->prepare('SELECT o.* 
             FROM '.$prefx.'_calculator_offers o 
-            LEFT JOIN '.$prefx.'_users u ON o.created_by = u.id 
             ORDER BY o.created_at DESC 
             LIMIT :limit OFFSET :offset');
         $pdo->bindValue(':limit', $limit, PDO::PARAM_INT);
@@ -274,6 +273,27 @@ if ($fn === 'save_eur_rate') {
         $pdo->execute(['id' => $offer_id]);
         
         echo json_encode(['success' => true]);
+        exit;
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        exit;
+    }
+
+} elseif ($fn === 'get_models') {
+    // Get models for a brand
+    try {
+        $brand = isset($_POST['brand']) ? $_POST['brand'] : '';
+        
+        if (empty($brand)) {
+            echo json_encode(['success' => false, 'error' => 'Brand required']);
+            exit;
+        }
+        
+        $pdo = $db->prepare('SELECT `mo`, `mo_nm` FROM '.$prefx.'_car_list WHERE `br` = :br ORDER BY `mo` ASC');
+        $pdo->execute(['br' => $brand]);
+        $models = $pdo->fetchAll(PDO::FETCH_ASSOC);
+        
+        echo json_encode(['success' => true, 'models' => $models]);
         exit;
     } catch (Exception $e) {
         echo json_encode(['success' => false, 'error' => $e->getMessage()]);
