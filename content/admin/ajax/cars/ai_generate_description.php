@@ -146,6 +146,7 @@ if ($useOpenAI) {
     $apiUrl = "https://api.groq.com/openai/v1/chat/completions";
     $apiKey = $groqApiKey;
     $model = 'llama-3.3-70b-versatile';
+    $fallbackModel = 'llama-3.1-8b-instant'; 
 }
 
 $requestData = [
@@ -180,6 +181,27 @@ if ($curlError) {
 }
 
 if ($httpCode !== 200) {
+    if ($httpCode === 429 && isset($fallbackModel) && $model !== $fallbackModel) {
+        // Try with fallback model
+        $requestData['model'] = $fallbackModel;
+        $ch = curl_init($apiUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($requestData));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $apiKey
+        ]);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        
+        if ($httpCode === 200) {
+            $model = $fallbackModel; 
+        }
+    }
+    
     if ($httpCode === 429) {
         $errorData = json_decode($response, true);
         $waitTime = '';
@@ -192,8 +214,11 @@ if ($httpCode !== 200) {
         $returnIt = ['success' => false, 'error' => "Лимит запросов исчерпан.{$waitMsg}"];
         return;
     }
-    $returnIt = ['success' => false, 'error' => 'API error (HTTP ' . $httpCode . '): ' . $response];
-    return;
+    
+    if ($httpCode !== 200) {
+        $returnIt = ['success' => false, 'error' => 'API error (HTTP ' . $httpCode . '): ' . $response];
+        return;
+    }
 }
 
 $responseData = json_decode($response, true);
