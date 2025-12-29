@@ -173,6 +173,81 @@ $rtrn = '
         border-color: #1e7e34;
     }
     
+    #calculator-container .commercial-offer-section {
+        margin-top: 1.5rem;
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 12px;
+        border: 2px dashed #dee2e6;
+    }
+    
+    #calculator-container .offer-title {
+        margin: 0 0 1rem 0;
+        font-size: 1.1rem;
+        color: #333;
+        text-align: center;
+    }
+    
+    #calculator-container .offer-fields {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+    
+    #calculator-container .offer-field {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    #calculator-container .offer-field-full {
+        grid-column: 1 / -1;
+    }
+    
+    #calculator-container .offer-field label {
+        font-size: 0.85rem;
+        color: #666;
+        margin-bottom: 0.3rem;
+    }
+    
+    #calculator-container .offer-field input {
+        padding: 0.6rem 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 0.95rem;
+    }
+    
+    #calculator-container .offer-field input:focus {
+        outline: none;
+        border-color: #e2001a;
+    }
+    
+    #calculator-container .save-offer-btn {
+        width: 100%;
+        margin-top: 1rem;
+        padding: 0.85rem;
+        background: linear-gradient(135deg, #e2001a 0%, #bf0016 100%);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    #calculator-container .save-offer-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(226, 0, 26, 0.4);
+    }
+    
+    #calculator-container .save-offer-btn.success {
+        background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    }
+    
+    #calculator-container .save-offer-btn.error {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    }
+    
     #calculator-container .calc-header .eur-rate-row span {
         color: #666;
         font-size: 0.95rem;
@@ -646,14 +721,42 @@ $rtrn = '
             </select>
             <button type="button" class="pdf-btn" id="export-pdf-btn">📄 '.$t['export_pdf'].'</button>
         </div>
+        
+        <div class="commercial-offer-section">
+            <h3 class="offer-title">'.$t['commercial_offer'].'</h3>
+            <div class="offer-fields">
+                <div class="offer-field">
+                    <label for="offer-client-name">'.$t['client_name'].'</label>
+                    <input type="text" id="offer-client-name" name="u_nm" placeholder="'.$t['client_name'].'">
+                </div>
+                <div class="offer-field">
+                    <label for="offer-brand">'.$t['brand'].'</label>
+                    <input type="text" id="offer-brand" name="br" placeholder="'.$t['brand'].'">
+                </div>
+                <div class="offer-field">
+                    <label for="offer-model">'.$t['model'].'</label>
+                    <input type="text" id="offer-model" name="mo" placeholder="'.$t['model'].'">
+                </div>
+                <div class="offer-field">
+                    <label for="offer-year">'.$t['year_vehicle'].'</label>
+                    <input type="number" id="offer-year" name="yr" placeholder="'.$t['year_vehicle'].'" min="1900" max="2030">
+                </div>
+                <div class="offer-field offer-field-full">
+                    <label for="offer-vin">'.$t['vin_code'].'</label>
+                    <input type="text" id="offer-vin" name="vin" placeholder="'.$t['vin_code'].'" maxlength="17" style="text-transform:uppercase;">
+                </div>
+            </div>
+            <button type="button" class="save-offer-btn" id="save-offer-btn">💾 '.$t['save_offer'].'</button>
+        </div>
     </div>
     
-    '.($is_super_admin ? '
     <div class="admin-actions">
+        <a href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator/catalog" class="admin-btn"><span class="btn-icon">📋</span> '.$t['catalog'].'</a>
+        '.($is_super_admin ? '
         <a href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator/usage" class="admin-btn"><span class="btn-icon">📊</span> '.$t['usage_stats'].'</a>
         <a href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator/rates" class="admin-btn"><span class="btn-icon">⚙️</span> '.$t['edit_rates'].'</a>
+        ' : '').'
     </div>
-    ' : '').'
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -1192,6 +1295,189 @@ $rtrn = '
         
         // Save PDF
         doc.save("calculator-vamuire-" + new Date().toISOString().slice(0,10) + ".pdf");
+    });
+    
+    // Save offer button
+    const OFFER_SAVED_TEXT = "'.$t['offer_saved'].'";
+    const OFFER_ERROR_TEXT = "'.$t['offer_error'].'";
+    const OFFER_SAVE_TEXT = "💾 '.$t['save_offer'].'";
+    
+    document.getElementById("save-offer-btn").addEventListener("click", async function() {
+        const btn = this;
+        const lang = document.getElementById("pdf-lang-select").value;
+        const t = pdfTranslations[lang];
+        
+        // Get offer fields
+        const clientName = document.getElementById("offer-client-name").value.trim();
+        const brand = document.getElementById("offer-brand").value.trim();
+        const model = document.getElementById("offer-model").value.trim();
+        const year = document.getElementById("offer-year").value;
+        const vin = document.getElementById("offer-vin").value.trim().toUpperCase();
+        
+        // Validate required fields
+        if (!clientName || !brand || !model || !year) {
+            alert("Completați toate câmpurile obligatorii!");
+            return;
+        }
+        
+        btn.disabled = true;
+        btn.textContent = "⏳ Se salvează...";
+        
+        // Get calculation values
+        const values = {
+            value: { mdl: document.getElementById("res-value-mdl").value || "0", eur: document.getElementById("res-value-eur").value || "0" },
+            excise: { mdl: document.getElementById("res-excise-mdl").value || "0", eur: document.getElementById("res-excise-eur").value || "0" },
+            customs: { mdl: document.getElementById("res-customs-mdl").value || "0", eur: document.getElementById("res-customs-eur").value || "0" },
+            damage: { mdl: document.getElementById("res-damage-mdl").value || "0", eur: document.getElementById("res-damage-eur").value || "0" },
+            exportDecl: { mdl: document.getElementById("res-export-mdl").value || "0", eur: document.getElementById("res-export-eur").value || "0" },
+            bank: { mdl: document.getElementById("res-bank-mdl").value || "0", eur: document.getElementById("res-bank-eur").value || "0" },
+            auction: { mdl: document.getElementById("res-auction-mdl").value || "0", eur: document.getElementById("res-auction-eur").value || "0" },
+            pollution: { mdl: document.getElementById("res-pollution-mdl").value || "0", eur: document.getElementById("res-pollution-eur").value || "0" },
+            shipping: { mdl: document.getElementById("res-shipping-mdl").value || "0", eur: document.getElementById("res-shipping-eur").value || "0" },
+            accessories: { mdl: document.getElementById("res-accessories-mdl").value || "0", eur: document.getElementById("res-accessories-eur").value || "0" },
+            transaction: { mdl: document.getElementById("res-transaction-mdl").value || "0", eur: document.getElementById("res-transaction-eur").value || "0" },
+            total: { mdl: document.getElementById("res-total-mdl").value || "0", eur: document.getElementById("res-total-eur").value || "0" },
+            vehicle: { mdl: document.getElementById("res-vehicle-total-mdl").value || "0", eur: document.getElementById("res-vehicle-total-eur").value || "0" }
+        };
+        
+        try {
+            // First, save offer to database
+            const saveResponse = await fetch("/ajax.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: "tp=adm&pg=calculator&fn=save_offer" +
+                    "&client_name=" + encodeURIComponent(clientName) +
+                    "&brand=" + encodeURIComponent(brand) +
+                    "&model=" + encodeURIComponent(model) +
+                    "&year=" + encodeURIComponent(year) +
+                    "&vin=" + encodeURIComponent(vin) +
+                    "&pdf_lang=" + encodeURIComponent(lang) +
+                    "&calculation_data=" + encodeURIComponent(JSON.stringify(values))
+            });
+            
+            const saveData = await saveResponse.json();
+            
+            if (!saveData.success) {
+                throw new Error(saveData.error || "Failed to save offer");
+            }
+            
+            // Generate PDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const pageWidth = doc.internal.pageSize.getWidth();
+            let y = 20;
+            
+            // Title with vehicle info
+            doc.setFontSize(16);
+            doc.setFont("helvetica", "bold");
+            doc.text(t.results, pageWidth / 2, y, { align: "center" });
+            y += 10;
+            
+            // Vehicle info
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "normal");
+            const vehicleInfo = removeDiacritics(brand + " " + model + " " + year + (vin ? " | VIN: " + vin : ""));
+            doc.text(vehicleInfo, pageWidth / 2, y, { align: "center" });
+            y += 8;
+            
+            // Client name
+            doc.setFontSize(10);
+            doc.text(removeDiacritics("Client: " + clientName), pageWidth / 2, y, { align: "center" });
+            y += 5;
+            
+            // Date
+            doc.text(new Date().toLocaleDateString("ro-RO") + " " + new Date().toLocaleTimeString("ro-RO"), pageWidth / 2, y, { align: "center" });
+            y += 10;
+            
+            // Line
+            doc.setDrawColor(200);
+            doc.line(20, y, pageWidth - 20, y);
+            y += 10;
+            
+            // Results
+            const results = [
+                { label: t.value_mdl, mdl: values.value.mdl, eur: values.value.eur },
+                { label: t.excise, mdl: values.excise.mdl, eur: values.excise.eur },
+                { label: t.customs_duty, mdl: values.customs.mdl, eur: values.customs.eur },
+                { label: t.damage_protection, mdl: values.damage.mdl, eur: values.damage.eur },
+                { label: t.export_declaration, mdl: values.exportDecl.mdl, eur: values.exportDecl.eur },
+                { label: t.bank_commission, mdl: values.bank.mdl, eur: values.bank.eur },
+                { label: t.auction_commission, mdl: values.auction.mdl, eur: values.auction.eur },
+                { label: t.pollution_tax, mdl: values.pollution.mdl, eur: values.pollution.eur },
+                { label: t.shipping_docs, mdl: values.shipping.mdl, eur: values.shipping.eur },
+                { label: t.accessories, mdl: values.accessories.mdl, eur: values.accessories.eur },
+                { label: t.transaction_commission, mdl: values.transaction.mdl, eur: values.transaction.eur }
+            ];
+            
+            doc.setFontSize(11);
+            results.forEach(item => {
+                doc.setFont("helvetica", "normal");
+                doc.text(removeDiacritics(item.label), 20, y);
+                doc.setFont("helvetica", "bold");
+                doc.text(formatNumber(parseFloat(item.mdl)) + " MDL  (" + formatNumber(parseFloat(item.eur)) + " EUR)", pageWidth - 20, y, { align: "right" });
+                y += 8;
+            });
+            
+            y += 5;
+            doc.line(20, y, pageWidth - 20, y);
+            y += 10;
+            
+            // Total
+            doc.setFillColor(226, 0, 26);
+            doc.rect(15, y - 5, pageWidth - 30, 12, "F");
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(12);
+            doc.text(removeDiacritics(t.total), 20, y + 3);
+            doc.text(formatNumber(parseFloat(values.total.mdl)) + " MDL  (" + formatNumber(parseFloat(values.total.eur)) + " EUR)", pageWidth - 20, y + 3, { align: "right" });
+            y += 15;
+            
+            // Vehicle total
+            doc.setFillColor(85, 85, 85);
+            doc.rect(15, y - 5, pageWidth - 30, 12, "F");
+            doc.text(removeDiacritics(t.vehicle_total), 20, y + 3);
+            doc.text(formatNumber(parseFloat(values.vehicle.mdl)) + " MDL  (" + formatNumber(parseFloat(values.vehicle.eur)) + " EUR)", pageWidth - 20, y + 3, { align: "right" });
+            
+            doc.setTextColor(0, 0, 0);
+            
+            // Get PDF as base64
+            const pdfBase64 = doc.output("datauristring");
+            
+            // Save PDF to server
+            const pdfResponse = await fetch("/ajax.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: "tp=adm&pg=calculator&fn=save_offer_pdf" +
+                    "&pdf_path=" + encodeURIComponent(saveData.pdf_path) +
+                    "&pdf_data=" + encodeURIComponent(pdfBase64)
+            });
+            
+            const pdfData = await pdfResponse.json();
+            
+            if (!pdfData.success) {
+                throw new Error(pdfData.error || "Failed to save PDF");
+            }
+            
+            btn.textContent = "✓ " + OFFER_SAVED_TEXT;
+            btn.classList.add("success");
+            
+            // Clear form
+            document.getElementById("offer-client-name").value = "";
+            document.getElementById("offer-brand").value = "";
+            document.getElementById("offer-model").value = "";
+            document.getElementById("offer-year").value = "";
+            document.getElementById("offer-vin").value = "";
+            
+        } catch (error) {
+            console.error("Error saving offer:", error);
+            btn.textContent = "✗ " + OFFER_ERROR_TEXT;
+            btn.classList.add("error");
+        }
+        
+        setTimeout(() => {
+            btn.disabled = false;
+            btn.textContent = OFFER_SAVE_TEXT;
+            btn.classList.remove("success", "error");
+        }, 3000);
     });
 })();
 </script>';

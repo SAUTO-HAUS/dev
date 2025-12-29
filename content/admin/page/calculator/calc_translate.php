@@ -52,6 +52,18 @@ $calc_trans = [
         'electric_notice_sub' => 'Se achită doar TVA la valoarea în vamă.',
         'usage_stats' => 'Statistici utilizare',
         'edit_rates' => 'Editare cote accize',
+        'catalog' => 'Catalog oferte',
+        
+        // Commercial offer
+        'commercial_offer' => 'Ofertă comercială',
+        'client_name' => 'Nume client',
+        'brand' => 'Marca',
+        'model' => 'Model',
+        'year_vehicle' => 'An fabricație',
+        'vin_code' => 'Cod VIN',
+        'save_offer' => 'Salvează oferta',
+        'offer_saved' => 'Oferta a fost salvată!',
+        'offer_error' => 'Eroare la salvare!',
         
         // Usage page
         'usage_title' => 'Statistici Utilizare Calculator',
@@ -146,6 +158,18 @@ $calc_trans = [
         'electric_notice_sub' => 'Оплачивается только НДС от таможенной стоимости.',
         'usage_stats' => 'Статистика использования',
         'edit_rates' => 'Редактировать ставки',
+        'catalog' => 'Каталог предложений',
+        
+        // Commercial offer
+        'commercial_offer' => 'Коммерческое предложение',
+        'client_name' => 'Имя клиента',
+        'brand' => 'Марка',
+        'model' => 'Модель',
+        'year_vehicle' => 'Год выпуска',
+        'vin_code' => 'VIN код',
+        'save_offer' => 'Сохранить предложение',
+        'offer_saved' => 'Предложение сохранено!',
+        'offer_error' => 'Ошибка сохранения!',
         
         // Usage page
         'usage_title' => 'Статистика Использования Калькулятора',
@@ -240,6 +264,18 @@ $calc_trans = [
         'electric_notice_sub' => 'Only VAT on customs value is paid.',
         'usage_stats' => 'Usage Statistics',
         'edit_rates' => 'Edit Excise Rates',
+        'catalog' => 'Offers Catalog',
+        
+        // Commercial offer
+        'commercial_offer' => 'Commercial Offer',
+        'client_name' => 'Client Name',
+        'brand' => 'Brand',
+        'model' => 'Model',
+        'year_vehicle' => 'Year',
+        'vin_code' => 'VIN Code',
+        'save_offer' => 'Save Offer',
+        'offer_saved' => 'Offer saved!',
+        'offer_error' => 'Error saving!',
         
         // Usage page
         'usage_title' => 'Calculator Usage Statistics',
