@@ -190,29 +190,29 @@ if ($fn === 'save_eur_rate') {
         
         // Build search condition
         $where = '';
-        $params = [];
+        $searchParam = '';
         if (!empty($search)) {
-            $where = ' WHERE (client_name LIKE :search OR brand LIKE :search OR model LIKE :search OR year LIKE :search OR vin LIKE :search)';
-            $params['search'] = '%' . $search . '%';
+            $where = ' WHERE (client_name LIKE ? OR brand LIKE ? OR model LIKE ? OR year LIKE ? OR vin LIKE ?)';
+            $searchParam = '%' . $search . '%';
         }
         
         // Get total count
         $count_stmt = $db->prepare('SELECT COUNT(*) as total FROM '.$prefx.'_calculator_offers' . $where);
-        $count_stmt->execute($params);
+        if (!empty($search)) {
+            $count_stmt->execute([$searchParam, $searchParam, $searchParam, $searchParam, $searchParam]);
+        } else {
+            $count_stmt->execute();
+        }
         $total = $count_stmt->fetch(PDO::FETCH_ASSOC)['total'];
         
         // Get offers
-        $pdo = $db->prepare('SELECT o.* 
-            FROM '.$prefx.'_calculator_offers o 
-            ' . $where . '
-            ORDER BY o.created_at DESC 
-            LIMIT :limit OFFSET :offset');
+        $sql = 'SELECT * FROM '.$prefx.'_calculator_offers' . $where . ' ORDER BY created_at DESC LIMIT ' . $limit . ' OFFSET ' . $offset;
+        $pdo = $db->prepare($sql);
         if (!empty($search)) {
-            $pdo->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+            $pdo->execute([$searchParam, $searchParam, $searchParam, $searchParam, $searchParam]);
+        } else {
+            $pdo->execute();
         }
-        $pdo->bindValue(':limit', $limit, PDO::PARAM_INT);
-        $pdo->bindValue(':offset', $offset, PDO::PARAM_INT);
-        $pdo->execute();
         $offers = $pdo->fetchAll(PDO::FETCH_ASSOC);
         
         echo json_encode([

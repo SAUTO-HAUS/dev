@@ -231,7 +231,7 @@ $rtrn = '
     </div>
     
     <div class="search-box">
-        <input type="text" id="search-input" placeholder="🔍 Caută după nume, marcă, model, an sau VIN..." onkeyup="searchOffers()">
+        <input type="text" id="search-input" placeholder="🔍" onkeyup="searchOffers()" onfocus="this.placeholder=&quot;&quot;" onblur="this.placeholder=&quot;🔍&quot;">
     </div>
     
     <div class="total-info" id="total-info"></div>
