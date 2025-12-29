@@ -1231,7 +1231,7 @@ $rtrn = '
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
                 
                 doc.addImage(imgData, "JPEG", 10, 10, imgWidth, imgHeight);
-                doc.save("calculator-vamuire-" + new Date().toISOString().slice(0,10) + ".pdf");
+                doc.save("calculator_auto_" + new Date().toLocaleDateString("ro-RO").replace(/\./g, "-") + ".pdf");
                 
                 document.body.removeChild(pdfContent);
             });
@@ -1313,7 +1313,7 @@ $rtrn = '
         doc.setTextColor(0, 0, 0);
         
         // Save PDF
-        doc.save("calculator-vamuire-" + new Date().toISOString().slice(0,10) + ".pdf");
+        doc.save("calculator_auto_" + new Date().toLocaleDateString("ro-RO").replace(/\./g, "-") + ".pdf");
     });
     
     // Save offer button

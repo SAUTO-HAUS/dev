@@ -480,8 +480,12 @@ $rtrn = '
         
         doc.setTextColor(0, 0, 0);
         
-        // Save/download PDF
-        doc.save("oferta_" + offer.id + "_" + offer.brand + "_" + offer.model + ".pdf");
+        // Save/download PDF - format: nume_marca_model_an.pdf
+        const fileName = (offer.client_name + "_" + offer.brand + "_" + offer.model + "_" + offer.year)
+            .replace(/\s+/g, "_")
+            .replace(/[^a-zA-Z0-9_]/g, "")
+            + ".pdf";
+        doc.save(fileName);
     }
 })();
 </script>
