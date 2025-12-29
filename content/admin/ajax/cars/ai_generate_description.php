@@ -180,6 +180,18 @@ if ($curlError) {
 }
 
 if ($httpCode !== 200) {
+    if ($httpCode === 429) {
+        $errorData = json_decode($response, true);
+        $waitTime = '';
+        if (isset($errorData['error']['message'])) {
+            if (preg_match('/try again in (\d+m[\d.]+s|\d+[\d.]+s)/i', $errorData['error']['message'], $matches)) {
+                $waitTime = $matches[1];
+            }
+        }
+        $waitMsg = $waitTime ? " Попробуйте через {$waitTime}." : " Попробуйте позже.";
+        $returnIt = ['success' => false, 'error' => "Лимит запросов исчерпан.{$waitMsg}"];
+        return;
+    }
     $returnIt = ['success' => false, 'error' => 'API error (HTTP ' . $httpCode . '): ' . $response];
     return;
 }
