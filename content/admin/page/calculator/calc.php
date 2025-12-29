@@ -158,6 +158,21 @@ $rtrn = '
         box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
     }
     
+    #calculator-container .pdf-lang-select {
+        padding: 0.75rem 1rem;
+        border: 2px solid #28a745;
+        border-radius: 8px;
+        font-size: 1rem;
+        cursor: pointer;
+        background: #fff;
+        margin-right: 0.5rem;
+    }
+    
+    #calculator-container .pdf-lang-select:focus {
+        outline: none;
+        border-color: #1e7e34;
+    }
+    
     #calculator-container .calc-header .eur-rate-row span {
         color: #666;
         font-size: 0.95rem;
@@ -620,6 +635,11 @@ $rtrn = '
             <span class="value editable-value"><input type="number" class="editable-input" id="res-vehicle-total-mdl" readonly step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-vehicle-total-eur" readonly step="1"> EUR</span></span>
         </div>
         <div class="pdf-export-row">
+            <select id="pdf-lang-select" class="pdf-lang-select">
+                <option value="ro">Română</option>
+                <option value="ru">Русский</option>
+                <option value="en">English</option>
+            </select>
             <button type="button" class="pdf-btn" id="export-pdf-btn">📄 '.$t['export_pdf'].'</button>
         </div>
     </div>
@@ -633,6 +653,7 @@ $rtrn = '
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script>
 (function() {
     let EUR_RATE = '.$eur_rate.';
@@ -965,7 +986,124 @@ $rtrn = '
             .replace(/ţ/g, "t").replace(/Ţ/g, "T");
     }
     
+    // PDF translations
+    const pdfTranslations = {
+        ro: {
+            results: "Rezultatul calculului",
+            value_mdl: "Valoarea in vama (MDL)",
+            excise: "Acciza",
+            customs_duty: "Taxa proceduri vamale",
+            damage_protection: "Protectie impotriva daunelor",
+            export_declaration: "Declaratia de export (MRN)",
+            bank_commission: "Comision bancar SWIFT",
+            auction_commission: "Comision licitatie",
+            pollution_tax: "Taxa de poluare",
+            accessories: "Accesorii",
+            transaction_commission: "Comision pentru tranzactie",
+            total: "TOTAL COSTURI VAMUIRE",
+            vehicle_total: "SUMA TOTALA VEHICUL"
+        },
+        ru: {
+            results: "Результат расчёта",
+            value_mdl: "Таможенная стоимость (MDL)",
+            excise: "Акциз",
+            customs_duty: "Сбор за таможенные процедуры",
+            damage_protection: "Защита от повреждений",
+            export_declaration: "Декларация экспорта (MRN)",
+            bank_commission: "Банковская комиссия SWIFT",
+            auction_commission: "Комиссия аукциона",
+            pollution_tax: "Налог на загрязнение",
+            accessories: "Аксессуары",
+            transaction_commission: "Комиссия за транзакцию",
+            total: "ИТОГО РАСХОДЫ НА РАСТАМОЖКУ",
+            vehicle_total: "ОБЩАЯ СУММА ЗА АВТОМОБИЛЬ"
+        },
+        en: {
+            results: "Calculation Results",
+            value_mdl: "Customs Value (MDL)",
+            excise: "Excise",
+            customs_duty: "Customs Procedures Fee",
+            damage_protection: "Damage Protection",
+            export_declaration: "Export Declaration (MRN)",
+            bank_commission: "Bank Commission SWIFT",
+            auction_commission: "Auction Commission",
+            pollution_tax: "Pollution Tax",
+            accessories: "Accessories",
+            transaction_commission: "Transaction Commission",
+            total: "TOTAL CUSTOMS COSTS",
+            vehicle_total: "TOTAL VEHICLE COST"
+        }
+    };
+    
     document.getElementById("export-pdf-btn").addEventListener("click", function() {
+        const lang = document.getElementById("pdf-lang-select").value;
+        const t = pdfTranslations[lang];
+        
+        // Get all values
+        const values = {
+            value: { mdl: document.getElementById("res-value-mdl").value || "0", eur: document.getElementById("res-value-eur").value || "0" },
+            excise: { mdl: document.getElementById("res-excise-mdl").value || "0", eur: document.getElementById("res-excise-eur").value || "0" },
+            customs: { mdl: document.getElementById("res-customs-mdl").value || "0", eur: document.getElementById("res-customs-eur").value || "0" },
+            damage: { mdl: document.getElementById("res-damage-mdl").value || "0", eur: document.getElementById("res-damage-eur").value || "0" },
+            exportDecl: { mdl: document.getElementById("res-export-mdl").value || "0", eur: document.getElementById("res-export-eur").value || "0" },
+            bank: { mdl: document.getElementById("res-bank-mdl").value || "0", eur: document.getElementById("res-bank-eur").value || "0" },
+            auction: { mdl: document.getElementById("res-auction-mdl").value || "0", eur: document.getElementById("res-auction-eur").value || "0" },
+            pollution: { mdl: document.getElementById("res-pollution-mdl").value || "0", eur: document.getElementById("res-pollution-eur").value || "0" },
+            accessories: { mdl: document.getElementById("res-accessories-mdl").value || "0", eur: document.getElementById("res-accessories-eur").value || "0" },
+            transaction: { mdl: document.getElementById("res-transaction-mdl").value || "0", eur: document.getElementById("res-transaction-eur").value || "0" },
+            total: { mdl: document.getElementById("res-total-mdl").value || "0", eur: document.getElementById("res-total-eur").value || "0" },
+            vehicle: { mdl: document.getElementById("res-vehicle-total-mdl").value || "0", eur: document.getElementById("res-vehicle-total-eur").value || "0" }
+        };
+        
+        // For Russian - use html2canvas (supports Cyrillic)
+        if (lang === "ru") {
+            const pdfContent = document.createElement("div");
+            pdfContent.id = "pdf-temp-content";
+            pdfContent.style.cssText = "position:absolute;left:-9999px;width:700px;padding:40px;font-family:Arial,sans-serif;background:#fff;";
+            pdfContent.innerHTML = `
+                <h1 style="text-align:center;font-size:18px;margin-bottom:10px;font-weight:bold;">${t.results}</h1>
+                <p style="text-align:center;color:#666;margin-bottom:20px;font-size:10px;">${new Date().toLocaleDateString("ro-RO")} ${new Date().toLocaleTimeString("ro-RO")}</p>
+                <hr style="border:none;border-top:1px solid #ccc;margin-bottom:20px;">
+                <table style="width:100%;border-collapse:collapse;font-size:11px;">
+                    <tr><td style="padding:8px 0;">${t.value_mdl}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.value.mdl))} MDL  (${formatNumber(parseFloat(values.value.eur))} EUR)</td></tr>
+                    <tr><td style="padding:8px 0;">${t.excise}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.excise.mdl))} MDL  (${formatNumber(parseFloat(values.excise.eur))} EUR)</td></tr>
+                    <tr><td style="padding:8px 0;">${t.customs_duty}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.customs.mdl))} MDL  (${formatNumber(parseFloat(values.customs.eur))} EUR)</td></tr>
+                    <tr><td style="padding:8px 0;">${t.damage_protection}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.damage.mdl))} MDL  (${formatNumber(parseFloat(values.damage.eur))} EUR)</td></tr>
+                    <tr><td style="padding:8px 0;">${t.export_declaration}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.exportDecl.mdl))} MDL  (${formatNumber(parseFloat(values.exportDecl.eur))} EUR)</td></tr>
+                    <tr><td style="padding:8px 0;">${t.bank_commission}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.bank.mdl))} MDL  (${formatNumber(parseFloat(values.bank.eur))} EUR)</td></tr>
+                    <tr><td style="padding:8px 0;">${t.auction_commission}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.auction.mdl))} MDL  (${formatNumber(parseFloat(values.auction.eur))} EUR)</td></tr>
+                    <tr><td style="padding:8px 0;">${t.pollution_tax}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.pollution.mdl))} MDL  (${formatNumber(parseFloat(values.pollution.eur))} EUR)</td></tr>
+                    <tr><td style="padding:8px 0;">${t.accessories}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.accessories.mdl))} MDL  (${formatNumber(parseFloat(values.accessories.eur))} EUR)</td></tr>
+                    <tr><td style="padding:8px 0;">${t.transaction_commission}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.transaction.mdl))} MDL  (${formatNumber(parseFloat(values.transaction.eur))} EUR)</td></tr>
+                </table>
+                <div style="background:#e2001a;color:#fff;padding:12px 15px;margin-top:20px;display:flex;justify-content:space-between;font-weight:bold;font-size:12px;">
+                    <span>${t.total}</span>
+                    <span>${formatNumber(parseFloat(values.total.mdl))} MDL  (${formatNumber(parseFloat(values.total.eur))} EUR)</span>
+                </div>
+                <div style="background:#555;color:#fff;padding:12px 15px;display:flex;justify-content:space-between;font-weight:bold;font-size:12px;">
+                    <span>${t.vehicle_total}</span>
+                    <span>${formatNumber(parseFloat(values.vehicle.mdl))} MDL  (${formatNumber(parseFloat(values.vehicle.eur))} EUR)</span>
+                </div>
+            `;
+            document.body.appendChild(pdfContent);
+            
+            html2canvas(pdfContent, { scale: 2, useCORS: true, backgroundColor: "#ffffff" }).then(canvas => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF("p", "mm", "a4");
+                const imgData = canvas.toDataURL("image/jpeg", 0.92);
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const imgWidth = pageWidth - 20;
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                
+                doc.addImage(imgData, "JPEG", 10, 10, imgWidth, imgHeight);
+                doc.save("calculator-vamuire-" + new Date().toISOString().slice(0,10) + ".pdf");
+                
+                document.body.removeChild(pdfContent);
+            });
+            return;
+        }
+        
+        // For RO and EN - use jsPDF text (smaller file size)
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
@@ -975,7 +1113,7 @@ $rtrn = '
         // Title
         doc.setFontSize(18);
         doc.setFont("helvetica", "bold");
-        doc.text(removeDiacritics("'.$t['results'].'"), pageWidth / 2, y, { align: "center" });
+        doc.text(t.results, pageWidth / 2, y, { align: "center" });
         y += 15;
         
         // Date
@@ -991,27 +1129,24 @@ $rtrn = '
         
         // Results data
         const results = [
-            { label: removeDiacritics("'.$t['value_mdl'].'"), mdl: "res-value-mdl", eur: "res-value-eur" },
-            { label: removeDiacritics("'.$t['excise'].'"), mdl: "res-excise-mdl", eur: "res-excise-eur" },
-            { label: removeDiacritics("'.$t['customs_duty'].'"), mdl: "res-customs-mdl", eur: "res-customs-eur" },
-            { label: removeDiacritics("'.$t['damage_protection'].'"), mdl: "res-damage-mdl", eur: "res-damage-eur" },
-            { label: removeDiacritics("'.$t['export_declaration'].'"), mdl: "res-export-mdl", eur: "res-export-eur" },
-            { label: removeDiacritics("'.$t['bank_commission'].'"), mdl: "res-bank-mdl", eur: "res-bank-eur" },
-            { label: removeDiacritics("'.$t['auction_commission'].'"), mdl: "res-auction-mdl", eur: "res-auction-eur" },
-            { label: removeDiacritics("'.$t['pollution_tax'].'"), mdl: "res-pollution-mdl", eur: "res-pollution-eur" },
-            { label: removeDiacritics("'.$t['accessories'].'"), mdl: "res-accessories-mdl", eur: "res-accessories-eur" },
-            { label: removeDiacritics("'.$t['transaction_commission'].'"), mdl: "res-transaction-mdl", eur: "res-transaction-eur" }
+            { label: t.value_mdl, mdl: values.value.mdl, eur: values.value.eur },
+            { label: t.excise, mdl: values.excise.mdl, eur: values.excise.eur },
+            { label: t.customs_duty, mdl: values.customs.mdl, eur: values.customs.eur },
+            { label: t.damage_protection, mdl: values.damage.mdl, eur: values.damage.eur },
+            { label: t.export_declaration, mdl: values.exportDecl.mdl, eur: values.exportDecl.eur },
+            { label: t.bank_commission, mdl: values.bank.mdl, eur: values.bank.eur },
+            { label: t.auction_commission, mdl: values.auction.mdl, eur: values.auction.eur },
+            { label: t.pollution_tax, mdl: values.pollution.mdl, eur: values.pollution.eur },
+            { label: t.accessories, mdl: values.accessories.mdl, eur: values.accessories.eur },
+            { label: t.transaction_commission, mdl: values.transaction.mdl, eur: values.transaction.eur }
         ];
         
         doc.setFontSize(11);
         results.forEach(item => {
-            const mdlVal = document.getElementById(item.mdl).value || "0";
-            const eurVal = document.getElementById(item.eur).value || "0";
-            
             doc.setFont("helvetica", "normal");
             doc.text(item.label, 20, y);
             doc.setFont("helvetica", "bold");
-            doc.text(formatNumber(parseFloat(mdlVal)) + " MDL  (" + formatNumber(parseFloat(eurVal)) + " EUR)", pageWidth - 20, y, { align: "right" });
+            doc.text(formatNumber(parseFloat(item.mdl)) + " MDL  (" + formatNumber(parseFloat(item.eur)) + " EUR)", pageWidth - 20, y, { align: "right" });
             y += 8;
         });
         
@@ -1027,20 +1162,16 @@ $rtrn = '
         doc.setTextColor(255, 255, 255);
         doc.setFont("helvetica", "bold");
         doc.setFontSize(12);
-        doc.text(removeDiacritics("'.$t['total'].'"), 20, y + 3);
-        const totalMdl = document.getElementById("res-total-mdl").value || "0";
-        const totalEur = document.getElementById("res-total-eur").value || "0";
-        doc.text(formatNumber(parseFloat(totalMdl)) + " MDL  (" + formatNumber(parseFloat(totalEur)) + " EUR)", pageWidth - 20, y + 3, { align: "right" });
+        doc.text(t.total, 20, y + 3);
+        doc.text(formatNumber(parseFloat(values.total.mdl)) + " MDL  (" + formatNumber(parseFloat(values.total.eur)) + " EUR)", pageWidth - 20, y + 3, { align: "right" });
         y += 15;
         
         // Vehicle total
         doc.setFillColor(85, 85, 85);
         doc.rect(15, y - 5, pageWidth - 30, 12, "F");
         doc.setTextColor(255, 255, 255);
-        doc.text(removeDiacritics("'.$t['vehicle_total'].'"), 20, y + 3);
-        const vehicleMdl = document.getElementById("res-vehicle-total-mdl").value || "0";
-        const vehicleEur = document.getElementById("res-vehicle-total-eur").value || "0";
-        doc.text(formatNumber(parseFloat(vehicleMdl)) + " MDL  (" + formatNumber(parseFloat(vehicleEur)) + " EUR)", pageWidth - 20, y + 3, { align: "right" });
+        doc.text(t.vehicle_total, 20, y + 3);
+        doc.text(formatNumber(parseFloat(values.vehicle.mdl)) + " MDL  (" + formatNumber(parseFloat(values.vehicle.eur)) + " EUR)", pageWidth - 20, y + 3, { align: "right" });
         
         // Reset text color
         doc.setTextColor(0, 0, 0);
