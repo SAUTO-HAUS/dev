@@ -116,7 +116,7 @@ if ($fn === 'save_eur_rate') {
     }
     
 } elseif ($fn === 'save_offer') {
-    // Save commercial offer with PDF
+    // Save commercial offer (data only, no PDF)
     try {
         $client_name = isset($_POST['client_name']) ? trim($_POST['client_name']) : '';
         $brand = isset($_POST['brand']) ? trim($_POST['brand']) : '';
@@ -126,39 +126,10 @@ if ($fn === 'save_eur_rate') {
         $pdf_lang = isset($_POST['pdf_lang']) ? $_POST['pdf_lang'] : 'ro';
         $calculation_data = isset($_POST['calculation_data']) ? $_POST['calculation_data'] : '{}';
         
-        // Create table if not exists
-        $db->exec('CREATE TABLE IF NOT EXISTS '.$prefx.'_calculator_offers (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            client_name VARCHAR(255) NOT NULL,
-            brand VARCHAR(100) NOT NULL,
-            model VARCHAR(100) NOT NULL,
-            year INT NOT NULL,
-            vin VARCHAR(17),
-            pdf_lang VARCHAR(5) DEFAULT "ro",
-            calculation_data JSON,
-            pdf_path VARCHAR(255),
-            created_by INT NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-            INDEX idx_created_at (created_at),
-            INDEX idx_client_name (client_name),
-            INDEX idx_vin (vin)
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4');
-        
-        // Generate unique filename for PDF
-        $pdf_filename = 'offer_' . date('Ymd_His') . '_' . uniqid() . '.pdf';
-        $pdf_dir = $_SERVER['DOCUMENT_ROOT'] . '/media/calculator_offers/';
-        
-        // Create directory if not exists
-        if (!is_dir($pdf_dir)) {
-            mkdir($pdf_dir, 0755, true);
-        }
-        
-        $pdf_path = '/media/calculator_offers/' . $pdf_filename;
-        
         // Insert offer into database
         $pdo = $db->prepare('INSERT INTO '.$prefx.'_calculator_offers 
-            (client_name, brand, model, year, vin, pdf_lang, calculation_data, pdf_path, created_by) 
-            VALUES (:client_name, :brand, :model, :year, :vin, :pdf_lang, :calculation_data, :pdf_path, :created_by)');
+            (client_name, brand, model, year, vin, pdf_lang, calculation_data, created_by) 
+            VALUES (:client_name, :brand, :model, :year, :vin, :pdf_lang, :calculation_data, :created_by)');
         $pdo->execute([
             'client_name' => $client_name,
             'brand' => $brand,
@@ -167,7 +138,6 @@ if ($fn === 'save_eur_rate') {
             'vin' => $vin,
             'pdf_lang' => $pdf_lang,
             'calculation_data' => $calculation_data,
-            'pdf_path' => $pdf_path,
             'created_by' => $user_id
         ]);
         
@@ -175,9 +145,7 @@ if ($fn === 'save_eur_rate') {
         
         echo json_encode([
             'success' => true, 
-            'offer_id' => $offer_id,
-            'pdf_path' => $pdf_path,
-            'pdf_filename' => $pdf_filename
+            'offer_id' => $offer_id
         ]);
         exit;
     } catch (Exception $e) {
@@ -294,6 +262,31 @@ if ($fn === 'save_eur_rate') {
         $models = $pdo->fetchAll(PDO::FETCH_ASSOC);
         
         echo json_encode(['success' => true, 'models' => $models]);
+        exit;
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        exit;
+    }
+
+} elseif ($fn === 'get_offer') {
+    // Get single offer by ID
+    try {
+        $offer_id = isset($_POST['offer_id']) ? intval($_POST['offer_id']) : 0;
+        
+        if ($offer_id <= 0) {
+            echo json_encode(['success' => false, 'error' => 'Invalid offer ID']);
+            exit;
+        }
+        
+        $pdo = $db->prepare('SELECT * FROM '.$prefx.'_calculator_offers WHERE id = :id');
+        $pdo->execute(['id' => $offer_id]);
+        $offer = $pdo->fetch(PDO::FETCH_ASSOC);
+        
+        if ($offer) {
+            echo json_encode(['success' => true, 'offer' => $offer]);
+        } else {
+            echo json_encode(['success' => false, 'error' => 'Offer not found']);
+        }
         exit;
     } catch (Exception $e) {
         echo json_encode(['success' => false, 'error' => $e->getMessage()]);

@@ -1364,7 +1364,7 @@ $rtrn = '
         };
         
         try {
-            // First, save offer to database
+            // Save offer to database (only data, no PDF)
             const saveResponse = await fetch("/ajax.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -1382,102 +1382,6 @@ $rtrn = '
             
             if (!saveData.success) {
                 throw new Error(saveData.error || "Failed to save offer");
-            }
-            
-            // Generate PDF
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-            const pageWidth = doc.internal.pageSize.getWidth();
-            let y = 20;
-            
-            // Title with vehicle info
-            doc.setFontSize(16);
-            doc.setFont("helvetica", "bold");
-            doc.text(t.results, pageWidth / 2, y, { align: "center" });
-            y += 10;
-            
-            // Vehicle info
-            doc.setFontSize(12);
-            doc.setFont("helvetica", "normal");
-            const vehicleInfo = removeDiacritics(brandName + " " + modelName + " " + year + (vin ? " | VIN: " + vin : ""));
-            doc.text(vehicleInfo, pageWidth / 2, y, { align: "center" });
-            y += 8;
-            
-            // Client name
-            doc.setFontSize(10);
-            doc.text(removeDiacritics("Client: " + clientName), pageWidth / 2, y, { align: "center" });
-            y += 5;
-            
-            // Date
-            doc.text(new Date().toLocaleDateString("ro-RO") + " " + new Date().toLocaleTimeString("ro-RO"), pageWidth / 2, y, { align: "center" });
-            y += 10;
-            
-            // Line
-            doc.setDrawColor(200);
-            doc.line(20, y, pageWidth - 20, y);
-            y += 10;
-            
-            // Results
-            const results = [
-                { label: t.value_mdl, mdl: values.value.mdl, eur: values.value.eur },
-                { label: t.excise, mdl: values.excise.mdl, eur: values.excise.eur },
-                { label: t.customs_duty, mdl: values.customs.mdl, eur: values.customs.eur },
-                { label: t.damage_protection, mdl: values.damage.mdl, eur: values.damage.eur },
-                { label: t.export_declaration, mdl: values.exportDecl.mdl, eur: values.exportDecl.eur },
-                { label: t.bank_commission, mdl: values.bank.mdl, eur: values.bank.eur },
-                { label: t.auction_commission, mdl: values.auction.mdl, eur: values.auction.eur },
-                { label: t.pollution_tax, mdl: values.pollution.mdl, eur: values.pollution.eur },
-                { label: t.shipping_docs, mdl: values.shipping.mdl, eur: values.shipping.eur },
-                { label: t.accessories, mdl: values.accessories.mdl, eur: values.accessories.eur },
-                { label: t.transaction_commission, mdl: values.transaction.mdl, eur: values.transaction.eur }
-            ];
-            
-            doc.setFontSize(11);
-            results.forEach(item => {
-                doc.setFont("helvetica", "normal");
-                doc.text(removeDiacritics(item.label), 20, y);
-                doc.setFont("helvetica", "bold");
-                doc.text(formatNumber(parseFloat(item.mdl)) + " MDL  (" + formatNumber(parseFloat(item.eur)) + " EUR)", pageWidth - 20, y, { align: "right" });
-                y += 8;
-            });
-            
-            y += 5;
-            doc.line(20, y, pageWidth - 20, y);
-            y += 10;
-            
-            // Total
-            doc.setFillColor(226, 0, 26);
-            doc.rect(15, y - 5, pageWidth - 30, 12, "F");
-            doc.setTextColor(255, 255, 255);
-            doc.setFontSize(12);
-            doc.text(removeDiacritics(t.total), 20, y + 3);
-            doc.text(formatNumber(parseFloat(values.total.mdl)) + " MDL  (" + formatNumber(parseFloat(values.total.eur)) + " EUR)", pageWidth - 20, y + 3, { align: "right" });
-            y += 15;
-            
-            // Vehicle total
-            doc.setFillColor(85, 85, 85);
-            doc.rect(15, y - 5, pageWidth - 30, 12, "F");
-            doc.text(removeDiacritics(t.vehicle_total), 20, y + 3);
-            doc.text(formatNumber(parseFloat(values.vehicle.mdl)) + " MDL  (" + formatNumber(parseFloat(values.vehicle.eur)) + " EUR)", pageWidth - 20, y + 3, { align: "right" });
-            
-            doc.setTextColor(0, 0, 0);
-            
-            // Get PDF as base64
-            const pdfBase64 = doc.output("datauristring");
-            
-            // Save PDF to server
-            const pdfResponse = await fetch("/ajax.php", {
-                method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: "tp=adm&pg=calculator&fn=save_offer_pdf" +
-                    "&pdf_path=" + encodeURIComponent(saveData.pdf_path) +
-                    "&pdf_data=" + encodeURIComponent(pdfBase64)
-            });
-            
-            const pdfData = await pdfResponse.json();
-            
-            if (!pdfData.success) {
-                throw new Error(pdfData.error || "Failed to save PDF");
             }
             
             btn.textContent = "✓ " + OFFER_SAVED_TEXT;

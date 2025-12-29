@@ -308,7 +308,7 @@ $rtrn = '
                     <td><strong>${parseInt(totalMdl).toLocaleString("ro-MD")}</strong> MDL</td>
                     <td class="date-col">${date}</td>
                     <td class="actions">
-                        <a href="${offer.pdf_path}" target="_blank" class="btn-pdf">📄 PDF</a>
+                        <button class="btn-pdf" onclick="generatePDF(${offer.id})">📄 PDF</button>
                         <button class="btn-delete" onclick="deleteOffer(${offer.id})">🗑️</button>
                     </td>
                 </tr>
@@ -361,7 +361,130 @@ $rtrn = '
     
     // Load offers on page load
     loadOffers(1);
+    
+    // Store offers data for PDF generation
+    let offersData = {};
+    
+    window.generatePDF = function(offerId) {
+        // Get offer from server
+        fetch("/ajax.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: "tp=adm&pg=calculator&fn=get_offer&offer_id=" + offerId
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success && data.offer) {
+                createPDF(data.offer);
+            } else {
+                alert("Eroare la încărcare ofertă");
+            }
+        })
+        .catch(err => {
+            alert("Eroare la încărcare ofertă");
+        });
+    };
+    
+    function createPDF(offer) {
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF();
+        const pageWidth = doc.internal.pageSize.getWidth();
+        let y = 20;
+        
+        const calcData = JSON.parse(offer.calculation_data || "{}");
+        
+        // Remove diacritics function
+        function removeDiacritics(str) {
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        }
+        
+        function formatNumber(num) {
+            return Math.round(num).toLocaleString("ro-MD");
+        }
+        
+        // Title
+        doc.setFontSize(16);
+        doc.setFont("helvetica", "bold");
+        doc.text("OFERTA COMERCIALA", pageWidth / 2, y, { align: "center" });
+        y += 10;
+        
+        // Vehicle info
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "normal");
+        const vehicleInfo = removeDiacritics(offer.brand + " " + offer.model + " " + offer.year + (offer.vin ? " | VIN: " + offer.vin : ""));
+        doc.text(vehicleInfo, pageWidth / 2, y, { align: "center" });
+        y += 8;
+        
+        // Client name
+        doc.setFontSize(10);
+        doc.text(removeDiacritics("Client: " + offer.client_name), pageWidth / 2, y, { align: "center" });
+        y += 5;
+        
+        // Date
+        doc.text(new Date(offer.created_at).toLocaleDateString("ro-RO"), pageWidth / 2, y, { align: "center" });
+        y += 10;
+        
+        // Line
+        doc.setDrawColor(200);
+        doc.line(20, y, pageWidth - 20, y);
+        y += 10;
+        
+        // Results
+        const labels = {
+            value: "Valoare auto (MDL)",
+            excise: "Acciza",
+            customs: "Taxa vamala",
+            damage: "Protectie daune",
+            exportDecl: "Declaratie export",
+            bank: "Comision bancar",
+            auction: "Comision licitatie",
+            pollution: "Taxa poluare",
+            shipping: "Documente transport",
+            accessories: "Accesorii",
+            transaction: "Comision tranzactie"
+        };
+        
+        doc.setFontSize(11);
+        for (const [key, label] of Object.entries(labels)) {
+            if (calcData[key]) {
+                doc.setFont("helvetica", "normal");
+                doc.text(removeDiacritics(label), 20, y);
+                doc.setFont("helvetica", "bold");
+                doc.text(formatNumber(parseFloat(calcData[key].mdl || 0)) + " MDL  (" + formatNumber(parseFloat(calcData[key].eur || 0)) + " EUR)", pageWidth - 20, y, { align: "right" });
+                y += 8;
+            }
+        }
+        
+        y += 5;
+        doc.line(20, y, pageWidth - 20, y);
+        y += 10;
+        
+        // Total
+        if (calcData.total) {
+            doc.setFillColor(226, 0, 26);
+            doc.rect(15, y - 5, pageWidth - 30, 12, "F");
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(12);
+            doc.text("TOTAL", 20, y + 3);
+            doc.text(formatNumber(parseFloat(calcData.total.mdl || 0)) + " MDL  (" + formatNumber(parseFloat(calcData.total.eur || 0)) + " EUR)", pageWidth - 20, y + 3, { align: "right" });
+            y += 15;
+        }
+        
+        // Vehicle total
+        if (calcData.vehicle) {
+            doc.setFillColor(85, 85, 85);
+            doc.rect(15, y - 5, pageWidth - 30, 12, "F");
+            doc.text("TOTAL VEHICUL", 20, y + 3);
+            doc.text(formatNumber(parseFloat(calcData.vehicle.mdl || 0)) + " MDL  (" + formatNumber(parseFloat(calcData.vehicle.eur || 0)) + " EUR)", pageWidth - 20, y + 3, { align: "right" });
+        }
+        
+        doc.setTextColor(0, 0, 0);
+        
+        // Save/download PDF
+        doc.save("oferta_" + offer.id + "_" + offer.brand + "_" + offer.model + ".pdf");
+    }
 })();
-</script>';
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>';
 
 echo $rtrn;
