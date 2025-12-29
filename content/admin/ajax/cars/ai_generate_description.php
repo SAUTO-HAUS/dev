@@ -68,8 +68,6 @@ Car data:
 - Fuel: {$car['fl']}
 - Transmission: {$car['tra']}
 - Drive: {$car['wd']}
-- Color: {$car['clr']}
-- Price: {$car['prc']} {$car['cur']}
 
 HTML STRUCTURE (MUST follow this EXACT order):
 1. <h2>{Brand} {Model} | {Engine} | {Fuel} | {Year}</h2> - USE PIPE SEPARATOR between brand/model, engine, fuel type and year!
@@ -100,16 +98,36 @@ HTML STRUCTURE (MUST follow this EXACT order):
    
    GOLDEN RULE: When in doubt, DON'T write it. It's better to list 5 real features than 10 fake ones.
 3. <h3><span class=\"desc-icon desc-icon-spec\"></span>Caracteristici tehnice</h3> then <ul> with detailed specs: engine type, power with kW and rpm, torque Nm, fuel system, real consumption l/100km, drivetrain (DO NOT include gearbox type here - it goes in section 5!)
-4. <h3><span class=\"desc-icon desc-icon-engine\"></span>Detalii motor</h3> then <p><strong>Caracteristici constructive:</strong></p><ul> engine block material, cylinder head, turbo type, timing drive type (ONLY write 'curea' or 'lanț' - choose correct one for THIS engine!), emission standard, special features </ul> then <p><strong><span class=\"desc-icon desc-icon-oil\"></span>Mentenanță:</strong></p><ul> service interval ALWAYS 7000 km, oil specification (viscosity + ACEA class - choose correct for THIS engine!), oil capacity in litri, injection system notes </ul> - NEVER mention engine lifespan or km durability!
-5. <h3><span class=\"desc-icon desc-icon-gearbox\"></span>Detalii cutie de viteze</h3> then <ul> - USE EXACTLY the transmission type from Car data above (Manuală/Automată/Robotizată)! gearbox type, clutch type, flywheel type, oil type, oil specification, oil capacity as RANGE (X-X litri), service interval (60000-100000 km for gearbox, NOT 7000!)
+4. <h3><span class=\"desc-icon desc-icon-engine\"></span>Detalii motor</h3> then <p><strong>Caracteristici constructive:</strong></p><ul> engine block material, cylinder head, turbosuflantă (da/nu), timing drive type (ONLY write 'curea' or 'lanț' - choose correct one for THIS engine!), emission standard, special features </ul> then <p><strong><span class=\"desc-icon desc-icon-oil\"></span>Mentenanță:</strong></p><ul> service interval ALWAYS 7000 km, oil specification (viscosity + ACEA class - choose correct for THIS engine!), oil capacity in litri, injection system notes </ul> - NEVER mention engine lifespan or km durability!
+5. <h3><span class=\"desc-icon desc-icon-gearbox\"></span>Detalii cutie de viteze</h3> then <ul> - USE EXACTLY the transmission type from Car data above (Manuală/Automată/Robotizată)! gearbox type, clutch type, oil type and specification (IMPORTANT: for BMW write 'ZF Lifeguard 6', for Mercedes write 'MB 236.14', for VW/Audi/Skoda write 'G052182' - NEVER write 'Dexron' for these brands!), oil capacity as RANGE (X-X litri), gearbox service interval (70000-80000 km)
+
+TECHNICAL ACCURACY RULES (VERY IMPORTANT):
+
+TIMING DRIVE (lanț or curea):
+- CHAIN (lanț): BMW, Mercedes, Audi, Volkswagen, Skoda, Seat, Porsche, Volvo, Lexus, Infiniti, most Toyota/Honda/Mazda/Nissan after 2010, Hyundai/Kia GDI engines
+- BELT (curea): Dacia, Renault (most), Fiat, Peugeot, Citroen, Ford (older), Opel (older diesels), older Japanese cars before 2008
+- If unsure for premium brands, write 'lanț'
+
+GEARBOX OIL (NEVER write generic 'Dexron' for European cars!):
+- BMW automatic: ZF Lifeguard 6 or 8
+- Mercedes automatic: MB 236.14 or 236.15  
+- Audi/VW/Skoda/Seat DSG: G052182 or G055529
+- Audi/VW/Skoda/Seat automatic (tiptronic): ATF G055025
+- Porsche PDK: Pentosin FFL-4
+- Volvo automatic: Volvo Transmission Oil
+- Renault automatic: ELF Renaultmatic
+- Peugeot/Citroen automatic: Total Fluidmatic
+- Toyota automatic: Toyota WS or T-IV
+- Honda automatic: Honda ATF DW-1
+- Hyundai/Kia automatic: SP-IV or SP-IV-M
+- Mazda automatic: Mazda ATF FZ
+- Nissan automatic: Nissan Matic S or D
+- Manual gearboxes (all brands): 75W-80 or 75W-90 GL-4
 
 CRITICAL REQUIREMENTS:
 - Section 'Dotări' MUST be the FIRST section (right after h2 title) - mobile layout depends on this!
 - Each section must have REAL technical details based on your knowledge of this specific {$car['br_nm']} {$car['mo_nm']} model
-- Use <strong> for labels in lists, <em> for notes/warnings
-- Be VERY detailed like a professional car review - minimum 1500 characters per language
-- Include specific engine codes, gearbox codes, technical specifications you know about this model
-- Assess mileage realistically (high/low for this type of vehicle)
+- Use <strong> for labels in lists
 - Do NOT use generic filler text - every sentence must add real information
 - NEVER add any <li> with 'Avertisment', 'Warning', 'Предупреждение' label - these are STRICTLY FORBIDDEN
 - NEVER mention: 'check documents', 'verify history', 'before buying', 'before making an offer', 'verificați', 'проверьте', 'износ', 'uzură', 'wear', 'обратите внимание', 'atenție la' - FORBIDDEN
