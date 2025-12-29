@@ -2,6 +2,8 @@
 
 include_once _ADM_PAGE.'/calculator/calc_translate.php';
 
+$admin_dir = isset($_COOKIE['admin_dir']) ? $_COOKIE['admin_dir'] : 'adminsauto';
+
 // Get all brands for select
 $brands = [];
 try {

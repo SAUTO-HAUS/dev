@@ -3,7 +3,7 @@
 include(__DIR__.'/calc_translate.php');
 $t = $calc_trans[$lang_code] ?? $calc_trans['ro'];
 
-$admin_dir = isset($_COOKIE['admin_dir']) ? $_COOKIE['admin_dir'] : 'admin';
+$admin_dir = isset($_COOKIE['admin_dir']) ? $_COOKIE['admin_dir'] : 'adminsauto';
 
 $rtrn = '
 <style>
