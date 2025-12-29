@@ -95,6 +95,47 @@ $rtrn = '
         border-color: #e2001a;
     }
     
+    #calculator-container .editable-value {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+    }
+    
+    #calculator-container .editable-input {
+        width: 90px;
+        padding: 0.3rem 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        text-align: right;
+        background: #f9f9f9;
+    }
+    
+    #calculator-container .editable-input:focus {
+        outline: none;
+        border-color: #e2001a;
+        background: #fff;
+    }
+    
+    #calculator-container .editable-input.eur-input {
+        width: 70px;
+        color: #666;
+        font-weight: normal;
+    }
+    
+    #calculator-container .result-row.total .editable-input {
+        background: rgba(255,255,255,0.2);
+        border-color: rgba(255,255,255,0.3);
+        color: #fff;
+        font-weight: 600;
+    }
+    
+    #calculator-container .result-row.total .editable-input:focus {
+        background: rgba(255,255,255,0.3);
+        border-color: rgba(255,255,255,0.5);
+    }
+    
     #calculator-container .calc-header .eur-rate-row span {
         color: #666;
         font-size: 0.95rem;
@@ -506,55 +547,55 @@ $rtrn = '
         <h2>'.$t['results'].'</h2>
         <div class="result-row">
             <span class="label">'.$t['value_mdl'].'</span>
-            <span class="value" id="res-value-mdl">-</span>
+            <span class="value editable-value"><input type="number" class="editable-input" id="res-value-mdl" data-field="value" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-value-eur" data-field="value" step="1"> EUR</span></span>
         </div>
         <div class="result-row">
             <span class="label">'.$t['excise'].'</span>
-            <span class="value" id="res-excise">-</span>
+            <span class="value editable-value"><input type="number" class="editable-input" id="res-excise-mdl" data-field="excise" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-excise-eur" data-field="excise" step="1"> EUR</span></span>
         </div>
         <div class="result-row" id="res-luxury-row" style="display:none;">
             <span class="label">'.$t['luxury_excise'].'</span>
-            <span class="value" id="res-luxury">-</span>
+            <span class="value editable-value"><input type="number" class="editable-input" id="res-luxury-mdl" data-field="luxury" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-luxury-eur" data-field="luxury" step="1"> EUR</span></span>
         </div>
         <div class="result-row">
             <span class="label">'.$t['customs_duty'].'</span>
-            <span class="value" id="res-customs">-</span>
+            <span class="value editable-value"><input type="number" class="editable-input" id="res-customs-mdl" data-field="customs" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-customs-eur" data-field="customs" step="1"> EUR</span></span>
         </div>
         <div class="result-row">
             <span class="label">'.$t['damage_protection'].' (<input type="number" step="0.1" min="0" max="10" id="damage-rate-input" class="inline-rate-input" value="'.$damage_protection_rate.'">%)</span>
-            <span class="value" id="res-damage-protection">-</span>
+            <span class="value editable-value"><input type="number" class="editable-input" id="res-damage-mdl" data-field="damage" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-damage-eur" data-field="damage" step="1"> EUR</span></span>
         </div>
         <div class="result-row">
             <span class="label">'.$t['export_declaration'].'</span>
-            <span class="value" id="res-export-declaration">-</span>
+            <span class="value editable-value"><input type="number" class="editable-input" id="res-export-mdl" data-field="export" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-export-eur" data-field="export" step="1"> EUR</span></span>
         </div>
         <div class="result-row">
             <span class="label">'.$t['bank_commission'].'</span>
-            <span class="value" id="res-bank-commission">-</span>
+            <span class="value editable-value"><input type="number" class="editable-input" id="res-bank-mdl" data-field="bank" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-bank-eur" data-field="bank" step="1"> EUR</span></span>
         </div>
         <div class="result-row">
             <span class="label">'.$t['auction_commission'].'</span>
-            <span class="value" id="res-auction-commission">-</span>
+            <span class="value editable-value"><input type="number" class="editable-input" id="res-auction-mdl" data-field="auction" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-auction-eur" data-field="auction" step="1"> EUR</span></span>
         </div>
         <div class="result-row">
             <span class="label">'.$t['pollution_tax'].'</span>
-            <span class="value" id="res-pollution-tax">-</span>
+            <span class="value editable-value"><input type="number" class="editable-input" id="res-pollution-mdl" data-field="pollution" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-pollution-eur" data-field="pollution" step="1"> EUR</span></span>
         </div>
         <div class="result-row">
             <span class="label">'.$t['accessories'].'</span>
-            <span class="value" id="res-accessories">-</span>
+            <span class="value editable-value"><input type="number" class="editable-input" id="res-accessories-mdl" data-field="accessories" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-accessories-eur" data-field="accessories" step="1"> EUR</span></span>
         </div>
         <div class="result-row">
             <span class="label">'.$t['transaction_commission'].'</span>
-            <span class="value" id="res-transaction-commission">-</span>
+            <span class="value editable-value"><input type="number" class="editable-input" id="res-transaction-mdl" data-field="transaction" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-transaction-eur" data-field="transaction" step="1"> EUR</span></span>
         </div>
         <div class="result-row total">
             <span class="label">'.$t['total'].'</span>
-            <span class="value" id="res-total">-</span>
+            <span class="value editable-value"><input type="number" class="editable-input" id="res-total-mdl" readonly step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-total-eur" readonly step="1"> EUR</span></span>
         </div>
         <div class="result-row total vehicle-total">
             <span class="label">'.$t['vehicle_total'].'</span>
-            <span class="value" id="res-vehicle-total">-</span>
+            <span class="value editable-value"><input type="number" class="editable-input" id="res-vehicle-total-mdl" readonly step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-vehicle-total-eur" readonly step="1"> EUR</span></span>
         </div>
     </div>
     
@@ -766,31 +807,30 @@ $rtrn = '
         // Total
         const total = excise + luxuryExcise + customsFee + damageProtection + exportDeclaration + bankCommission + auctionCommission + pollutionTax + accessories + transactionCommission;
         
-        // Display results with EUR equivalent
-        document.getElementById("res-value-mdl").innerHTML = formatNumber(valueMdl) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(valueMdl / EUR_RATE) + " EUR</span>";
-        document.getElementById("res-excise").innerHTML = formatNumber(excise) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(excise / EUR_RATE) + " EUR</span>";
+        // Display results in editable inputs
+        setResultValue("value", valueMdl);
+        setResultValue("excise", excise);
         
         // Show/hide luxury excise row
         if (luxuryExcise > 0) {
             luxuryRow.style.display = "flex";
-            document.getElementById("res-luxury").innerHTML = formatNumber(luxuryExcise) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(luxuryExcise / EUR_RATE) + " EUR</span>";
+            setResultValue("luxury", luxuryExcise);
         } else {
             luxuryRow.style.display = "none";
+            setResultValue("luxury", 0);
         }
         
-        document.getElementById("res-customs").innerHTML = formatNumber(customsFee) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(customsFee / EUR_RATE) + " EUR</span>";
-        document.getElementById("res-damage-protection").innerHTML = formatNumber(damageProtection) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(damageProtection / EUR_RATE) + " EUR</span>";
-        document.getElementById("res-export-declaration").innerHTML = formatNumber(exportDeclaration) + " MDL <span class=\"eur-equiv\">~ 50 EUR</span>";
-        document.getElementById("res-bank-commission").innerHTML = formatNumber(bankCommission) + " MDL <span class=\"eur-equiv\">~ 25 EUR</span>";
-        document.getElementById("res-auction-commission").innerHTML = formatNumber(auctionCommission) + " MDL <span class=\"eur-equiv\">~ 350 EUR</span>";
-        document.getElementById("res-pollution-tax").innerHTML = formatNumber(pollutionTax) + " MDL <span class=\"eur-equiv\">~ 85 EUR</span>";
-        document.getElementById("res-accessories").innerHTML = formatNumber(accessories) + " MDL <span class=\"eur-equiv\">~ 0 EUR</span>";
-        document.getElementById("res-transaction-commission").innerHTML = formatNumber(transactionCommission) + " MDL <span class=\"eur-equiv\">~ 0 EUR</span>";
-        document.getElementById("res-total").innerHTML = formatNumber(total) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(total / EUR_RATE) + " EUR</span>";
+        setResultValue("customs", customsFee);
+        setResultValue("damage", damageProtection);
+        setResultValue("export", exportDeclaration);
+        setResultValue("bank", bankCommission);
+        setResultValue("auction", auctionCommission);
+        setResultValue("pollution", pollutionTax);
+        setResultValue("accessories", accessories);
+        setResultValue("transaction", transactionCommission);
         
-        // Vehicle total (price + customs costs)
-        const vehicleTotal = valueMdl + total;
-        document.getElementById("res-vehicle-total").innerHTML = formatNumber(vehicleTotal) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(vehicleTotal / EUR_RATE) + " EUR</span>";
+        // Calculate and display totals
+        recalculateTotals();
         
         document.getElementById("results").classList.add("show");
         
@@ -820,6 +860,64 @@ $rtrn = '
     function formatNumber(num) {
         return Math.round(num).toLocaleString("ro-MD", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
     }
+    
+    // Set value in both MDL and EUR inputs
+    function setResultValue(field, mdlValue) {
+        const mdlInput = document.getElementById("res-" + field + "-mdl");
+        const eurInput = document.getElementById("res-" + field + "-eur");
+        if (mdlInput) mdlInput.value = Math.round(mdlValue);
+        if (eurInput) eurInput.value = Math.round(mdlValue / EUR_RATE);
+    }
+    
+    // Recalculate totals based on current input values
+    function recalculateTotals() {
+        const fields = ["excise", "luxury", "customs", "damage", "export", "bank", "auction", "pollution", "accessories", "transaction"];
+        let totalMdl = 0;
+        
+        fields.forEach(field => {
+            const mdlInput = document.getElementById("res-" + field + "-mdl");
+            if (mdlInput) {
+                const val = parseFloat(mdlInput.value) || 0;
+                // Skip luxury if row is hidden
+                if (field === "luxury" && document.getElementById("res-luxury-row").style.display === "none") {
+                    return;
+                }
+                totalMdl += val;
+            }
+        });
+        
+        const valueMdl = parseFloat(document.getElementById("res-value-mdl").value) || 0;
+        const vehicleTotalMdl = valueMdl + totalMdl;
+        
+        // Update total inputs
+        document.getElementById("res-total-mdl").value = Math.round(totalMdl);
+        document.getElementById("res-total-eur").value = Math.round(totalMdl / EUR_RATE);
+        document.getElementById("res-vehicle-total-mdl").value = Math.round(vehicleTotalMdl);
+        document.getElementById("res-vehicle-total-eur").value = Math.round(vehicleTotalMdl / EUR_RATE);
+    }
+    
+    // Add event listeners for editable inputs
+    document.querySelectorAll(".editable-input:not([readonly])").forEach(input => {
+        input.addEventListener("input", function() {
+            const field = this.dataset.field;
+            const isEur = this.classList.contains("eur-input");
+            const mdlInput = document.getElementById("res-" + field + "-mdl");
+            const eurInput = document.getElementById("res-" + field + "-eur");
+            
+            if (isEur) {
+                // EUR changed, update MDL
+                const eurVal = parseFloat(this.value) || 0;
+                mdlInput.value = Math.round(eurVal * EUR_RATE);
+            } else {
+                // MDL changed, update EUR
+                const mdlVal = parseFloat(this.value) || 0;
+                eurInput.value = Math.round(mdlVal / EUR_RATE);
+            }
+            
+            // Recalculate totals
+            recalculateTotals();
+        });
+    });
     
     function logUsage() {
         fetch("/ajax.php", {
