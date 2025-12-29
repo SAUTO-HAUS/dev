@@ -73,10 +73,35 @@ Car data:
 
 HTML STRUCTURE (MUST follow this EXACT order):
 1. <h2>{Brand} {Model} | {Engine} | {Fuel} | {Year}</h2> - USE PIPE SEPARATOR between brand/model, engine, fuel type and year!
-2. <h3><span class=\"desc-icon desc-icon-features\"></span>Dotări</h3> then <ul> with 8-12 <li> items - MUST be ATTRACTIVE and APPEALING to buyers! List the most desirable features: comfort, safety, technology, luxury items. Use enticing language that makes buyers want this car. NO boring technical specs here - only features that excite customers!
+2. <h3><span class=\"desc-icon desc-icon-features\"></span>Dotări</h3> then <ul> with 5-8 <li> items.
+   
+   ⚠️ VERY IMPORTANT - READ CAREFULLY:
+   You are writing for a REAL car dealership. Customers will SEE the actual car. If you write features the car doesn't have, we look like LIARS and lose the sale!
+   
+   YOU DO NOT HAVE ACCESS TO:
+   - Photos of this specific car
+   - The actual equipment list
+   - What optional extras were ordered
+   - Interior material (cloth/leather)
+   
+   THEREFORE, write ONLY features that are 100% GUARANTEED on EVERY single unit of this model:
+   
+   BUDGET CARS (Dacia, Lada, Daewoo, Chevrolet Spark/Aveo, Renault Symbol, Fiat Punto):
+   - These cars are BASIC! Maximum you can write: manual AC (if available), power steering, front electric windows, radio, 2 front airbags, central locking
+   - FORBIDDEN for budget cars: touchscreen, navigation, leather, xenon/LED, parking sensors, camera, heated seats, electric seats, cruise control, climate control
+   
+   MID-RANGE (Ford, Opel, VW, Skoda, Hyundai, Kia, Toyota, Mazda, Peugeot, Citroen):
+   - Safe to write: AC, all electric windows, ABS, ESP, 4-6 airbags, audio system with AUX/USB, onboard computer
+   - FORBIDDEN: leather, navigation, parking sensors, camera, heated seats, electric seats (unless 2018+ premium trim)
+   
+   PREMIUM (BMW, Mercedes, Audi, Lexus, Volvo, Porsche, Jaguar, Land Rover):
+   - Safe to write: automatic climate control, all electric windows, ABS, ESP, 6+ airbags, cruise control, onboard computer, audio system with Bluetooth
+   - STILL FORBIDDEN even for premium: leather seats, navigation, parking sensors, cameras, sunroof, heated/ventilated seats, electric seats - these are ALWAYS optional!
+   
+   GOLDEN RULE: When in doubt, DON'T write it. It's better to list 5 real features than 10 fake ones.
 3. <h3><span class=\"desc-icon desc-icon-spec\"></span>Caracteristici tehnice</h3> then <ul> with detailed specs: engine type, power with kW and rpm, torque Nm, fuel system, real consumption l/100km, drivetrain (DO NOT include gearbox type here - it goes in section 5!)
 4. <h3><span class=\"desc-icon desc-icon-engine\"></span>Detalii motor</h3> then <p><strong>Caracteristici constructive:</strong></p><ul> engine block material, cylinder head, turbo type, timing drive type (ONLY write 'curea' or 'lanț' - choose correct one for THIS engine!), emission standard, special features </ul> then <p><strong><span class=\"desc-icon desc-icon-oil\"></span>Mentenanță:</strong></p><ul> service interval ALWAYS 7000 km, oil specification (viscosity + ACEA class - choose correct for THIS engine!), oil capacity in litri, injection system notes </ul> - NEVER mention engine lifespan or km durability!
-5. <h3><span class=\"desc-icon desc-icon-gearbox\"></span>Detalii cutie de viteze</h3> then <ul> gearbox type, clutch type, flywheel type, oil type, oil specification, oil capacity as RANGE (X-X litri), service interval in km
+5. <h3><span class=\"desc-icon desc-icon-gearbox\"></span>Detalii cutie de viteze</h3> then <ul> - USE EXACTLY the transmission type from Car data above (Manuală/Automată/Robotizată)! gearbox type, clutch type, flywheel type, oil type, oil specification, oil capacity as RANGE (X-X litri), service interval (60000-100000 km for gearbox, NOT 7000!)
 
 CRITICAL REQUIREMENTS:
 - Section 'Dotări' MUST be the FIRST section (right after h2 title) - mobile layout depends on this!
