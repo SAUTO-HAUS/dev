@@ -122,6 +122,7 @@ GEARBOX OIL (NEVER write generic 'Dexron' for European cars!):
 - Hyundai/Kia automatic: SP-IV or SP-IV-M
 - Mazda automatic: Mazda ATF FZ
 - Nissan automatic: Nissan Matic S or D
+- Mitsubishi automatic: Mitsubishi ATF SP-III or Diamond ATF SP-III
 - Manual gearboxes (all brands): 75W-80 or 75W-90 GL-4
 
 CRITICAL REQUIREMENTS:
