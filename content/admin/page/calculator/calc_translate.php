@@ -65,6 +65,11 @@ $calc_trans = [
         'offer_saved' => 'Oferta a fost salvată!',
         'offer_error' => 'Eroare la salvare!',
         
+        // Catalog columns
+        'total_col' => 'Total',
+        'date_col' => 'Data',
+        'actions_col' => 'Acțiuni',
+        
         // Usage page
         'usage_title' => 'Statistici Utilizare Calculator',
         'back_to_calc' => '← Înapoi la Calculator',
@@ -171,6 +176,11 @@ $calc_trans = [
         'offer_saved' => 'Предложение сохранено!',
         'offer_error' => 'Ошибка сохранения!',
         
+        // Catalog columns
+        'total_col' => 'Итого',
+        'date_col' => 'Дата',
+        'actions_col' => 'Действия',
+        
         // Usage page
         'usage_title' => 'Статистика Использования Калькулятора',
         'back_to_calc' => '← Назад к Калькулятору',
@@ -276,6 +286,11 @@ $calc_trans = [
         'save_offer' => 'Save Offer',
         'offer_saved' => 'Offer saved!',
         'offer_error' => 'Error saving!',
+        
+        // Catalog columns
+        'total_col' => 'Total',
+        'date_col' => 'Date',
+        'actions_col' => 'Actions',
         
         // Usage page
         'usage_title' => 'Calculator Usage Statistics',

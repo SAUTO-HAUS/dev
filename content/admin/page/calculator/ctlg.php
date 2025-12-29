@@ -214,9 +214,9 @@ $rtrn = '
                 <th>'.$t['brand'].' / '.$t['model'].'</th>
                 <th>'.$t['year_vehicle'].'</th>
                 <th>'.$t['vin_code'].'</th>
-                <th>Total</th>
-                <th>Data</th>
-                <th>Acțiuni</th>
+                <th>'.$t['total_col'].'</th>
+                <th>'.$t['date_col'].'</th>
+                <th>'.$t['actions_col'].'</th>
             </tr>
         </thead>
         <tbody id="offers-tbody">
