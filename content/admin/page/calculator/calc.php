@@ -619,6 +619,10 @@ $rtrn = '
             <span class="value editable-value"><input type="number" class="editable-input" id="res-pollution-mdl" data-field="pollution" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-pollution-eur" data-field="pollution" step="1"> EUR</span></span>
         </div>
         <div class="result-row">
+            <span class="label">'.$t['shipping_docs'].'</span>
+            <span class="value editable-value"><input type="number" class="editable-input" id="res-shipping-mdl" data-field="shipping" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-shipping-eur" data-field="shipping" step="1"> EUR</span></span>
+        </div>
+        <div class="result-row">
             <span class="label">'.$t['accessories'].'</span>
             <span class="value editable-value"><input type="number" class="editable-input" id="res-accessories-mdl" data-field="accessories" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-accessories-eur" data-field="accessories" step="1"> EUR</span></span>
         </div>
@@ -845,6 +849,9 @@ $rtrn = '
         // Pollution tax - fixed 85 EUR
         const pollutionTax = 85 * EUR_RATE;
         
+        // Shipping documents - fixed 20 EUR
+        const shippingDocs = 20 * EUR_RATE;
+        
         // Accessories - 0 EUR (placeholder)
         const accessories = 0;
         
@@ -852,7 +859,7 @@ $rtrn = '
         const transactionCommission = 0;
         
         // Total
-        const total = excise + luxuryExcise + customsFee + damageProtection + exportDeclaration + bankCommission + auctionCommission + pollutionTax + accessories + transactionCommission;
+        const total = excise + luxuryExcise + customsFee + damageProtection + exportDeclaration + bankCommission + auctionCommission + pollutionTax + shippingDocs + accessories + transactionCommission;
         
         // Display results in editable inputs
         setResultValue("value", valueMdl);
@@ -873,6 +880,7 @@ $rtrn = '
         setResultValue("bank", bankCommission);
         setResultValue("auction", auctionCommission);
         setResultValue("pollution", pollutionTax);
+        setResultValue("shipping", shippingDocs);
         setResultValue("accessories", accessories);
         setResultValue("transaction", transactionCommission);
         
@@ -918,7 +926,7 @@ $rtrn = '
     
     // Recalculate totals based on current input values
     function recalculateTotals() {
-        const fields = ["excise", "luxury", "customs", "damage", "export", "bank", "auction", "pollution", "accessories", "transaction"];
+        const fields = ["excise", "luxury", "customs", "damage", "export", "bank", "auction", "pollution", "shipping", "accessories", "transaction"];
         let totalMdl = 0;
         
         fields.forEach(field => {
@@ -998,6 +1006,7 @@ $rtrn = '
             bank_commission: "Comision bancar SWIFT",
             auction_commission: "Comision licitatie",
             pollution_tax: "Taxa de poluare",
+            shipping_docs: "Livrarea documentelor",
             accessories: "Accesorii",
             transaction_commission: "Comision pentru tranzactie",
             total: "TOTAL COSTURI VAMUIRE",
@@ -1013,6 +1022,7 @@ $rtrn = '
             bank_commission: "Банковская комиссия SWIFT",
             auction_commission: "Комиссия аукциона",
             pollution_tax: "Налог на загрязнение",
+            shipping_docs: "Доставка документов",
             accessories: "Аксессуары",
             transaction_commission: "Комиссия за транзакцию",
             total: "ИТОГО РАСХОДЫ НА РАСТАМОЖКУ",
@@ -1028,6 +1038,7 @@ $rtrn = '
             bank_commission: "Bank Commission SWIFT",
             auction_commission: "Auction Commission",
             pollution_tax: "Pollution Tax",
+            shipping_docs: "Document Shipping",
             accessories: "Accessories",
             transaction_commission: "Transaction Commission",
             total: "TOTAL CUSTOMS COSTS",
@@ -1049,6 +1060,7 @@ $rtrn = '
             bank: { mdl: document.getElementById("res-bank-mdl").value || "0", eur: document.getElementById("res-bank-eur").value || "0" },
             auction: { mdl: document.getElementById("res-auction-mdl").value || "0", eur: document.getElementById("res-auction-eur").value || "0" },
             pollution: { mdl: document.getElementById("res-pollution-mdl").value || "0", eur: document.getElementById("res-pollution-eur").value || "0" },
+            shipping: { mdl: document.getElementById("res-shipping-mdl").value || "0", eur: document.getElementById("res-shipping-eur").value || "0" },
             accessories: { mdl: document.getElementById("res-accessories-mdl").value || "0", eur: document.getElementById("res-accessories-eur").value || "0" },
             transaction: { mdl: document.getElementById("res-transaction-mdl").value || "0", eur: document.getElementById("res-transaction-eur").value || "0" },
             total: { mdl: document.getElementById("res-total-mdl").value || "0", eur: document.getElementById("res-total-eur").value || "0" },
@@ -1073,6 +1085,7 @@ $rtrn = '
                     <tr><td style="padding:8px 0;">${t.bank_commission}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.bank.mdl))} MDL  (${formatNumber(parseFloat(values.bank.eur))} EUR)</td></tr>
                     <tr><td style="padding:8px 0;">${t.auction_commission}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.auction.mdl))} MDL  (${formatNumber(parseFloat(values.auction.eur))} EUR)</td></tr>
                     <tr><td style="padding:8px 0;">${t.pollution_tax}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.pollution.mdl))} MDL  (${formatNumber(parseFloat(values.pollution.eur))} EUR)</td></tr>
+                    <tr><td style="padding:8px 0;">${t.shipping_docs}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.shipping.mdl))} MDL  (${formatNumber(parseFloat(values.shipping.eur))} EUR)</td></tr>
                     <tr><td style="padding:8px 0;">${t.accessories}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.accessories.mdl))} MDL  (${formatNumber(parseFloat(values.accessories.eur))} EUR)</td></tr>
                     <tr><td style="padding:8px 0;">${t.transaction_commission}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.transaction.mdl))} MDL  (${formatNumber(parseFloat(values.transaction.eur))} EUR)</td></tr>
                 </table>
@@ -1137,6 +1150,7 @@ $rtrn = '
             { label: t.bank_commission, mdl: values.bank.mdl, eur: values.bank.eur },
             { label: t.auction_commission, mdl: values.auction.mdl, eur: values.auction.eur },
             { label: t.pollution_tax, mdl: values.pollution.mdl, eur: values.pollution.eur },
+            { label: t.shipping_docs, mdl: values.shipping.mdl, eur: values.shipping.eur },
             { label: t.accessories, mdl: values.accessories.mdl, eur: values.accessories.eur },
             { label: t.transaction_commission, mdl: values.transaction.mdl, eur: values.transaction.eur }
         ];
