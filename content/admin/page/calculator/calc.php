@@ -759,7 +759,12 @@ $rtrn = '
                 </div>
                 <div class="offer-field">
                     <label for="offer-year">'.$t['year_vehicle'].'</label>
-                    <input type="number" id="offer-year" name="yr" placeholder="'.$t['year_vehicle'].'" min="1900" max="2030">
+                    <select id="offer-year" name="yr">
+                        <option value="">'.$t['year_vehicle'].'</option>';
+                        for ($y = date('Y'); $y >= 2010; $y--) {
+                            $rtrn .= '<option value="'.$y.'">'.$y.'</option>';
+                        }
+                        $rtrn .= '</select>
                 </div>
                 <div class="offer-field offer-field-full">
                     <label for="offer-vin">'.$t['vin_code'].'</label>

@@ -184,18 +184,32 @@ if ($fn === 'save_eur_rate') {
     // Get list of offers for catalog
     try {
         $page = isset($_POST['page']) ? intval($_POST['page']) : 1;
+        $search = isset($_POST['search']) ? trim($_POST['search']) : '';
         $limit = 20;
         $offset = ($page - 1) * $limit;
         
+        // Build search condition
+        $where = '';
+        $params = [];
+        if (!empty($search)) {
+            $where = ' WHERE (client_name LIKE :search OR brand LIKE :search OR model LIKE :search OR year LIKE :search OR vin LIKE :search)';
+            $params['search'] = '%' . $search . '%';
+        }
+        
         // Get total count
-        $count_stmt = $db->query('SELECT COUNT(*) as total FROM '.$prefx.'_calculator_offers');
+        $count_stmt = $db->prepare('SELECT COUNT(*) as total FROM '.$prefx.'_calculator_offers' . $where);
+        $count_stmt->execute($params);
         $total = $count_stmt->fetch(PDO::FETCH_ASSOC)['total'];
         
         // Get offers
         $pdo = $db->prepare('SELECT o.* 
             FROM '.$prefx.'_calculator_offers o 
+            ' . $where . '
             ORDER BY o.created_at DESC 
             LIMIT :limit OFFSET :offset');
+        if (!empty($search)) {
+            $pdo->bindValue(':search', '%' . $search . '%', PDO::PARAM_STR);
+        }
         $pdo->bindValue(':limit', $limit, PDO::PARAM_INT);
         $pdo->bindValue(':offset', $offset, PDO::PARAM_INT);
         $pdo->execute();
