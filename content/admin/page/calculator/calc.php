@@ -217,14 +217,18 @@ $rtrn = '
     #calculator-container .hybrid-type-select label {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
         cursor: pointer;
         font-weight: normal;
+        line-height: 1;
     }
     
     #calculator-container .hybrid-fuel-select input[type="radio"] {
-        margin: 0;
+        margin: 0 0.5rem 0 0;
         vertical-align: middle;
+        -webkit-appearance: radio;
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
     }
     
     #calculator-container .hybrid-type-select {
@@ -369,10 +373,20 @@ $rtrn = '
         text-decoration: none;
         font-size: 0.9rem;
         transition: background 0.3s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        line-height: 1;
     }
     
     #calculator-container .admin-btn:hover {
         background: #555;
+    }
+    
+    #calculator-container .admin-btn .btn-icon {
+        display: inline-block;
+        line-height: 1;
+        vertical-align: middle;
     }
     
     #calculator-container .electric-notice {
@@ -446,13 +460,13 @@ $rtrn = '
         <div class="form-group">
             <label>'.$t['fuel_type'].'</label>
             <div class="fuel-types">
-                <div class="fuel-type-btn active" data-fuel="benzina">'.$t['gasoline'].'</div>
+                <div class="fuel-type-btn" data-fuel="benzina">'.$t['gasoline'].'</div>
                 <div class="fuel-type-btn" data-fuel="diesel">'.$t['diesel'].'</div>
-                <div class="fuel-type-btn" data-fuel="hybrid">'.$t['hybrid'].'</div>
+                <div class="fuel-type-btn active" data-fuel="hybrid">'.$t['hybrid'].'</div>
                 <div class="fuel-type-btn electric" data-fuel="electric">'.$t['electric'].'</div>
             </div>
             
-            <div class="hybrid-options" id="hybrid-options">
+            <div class="hybrid-options show" id="hybrid-options">
                 <div class="hybrid-fuel-select">
                     <label><input type="radio" name="hybrid_fuel" value="benzina" checked> '.$t['gasoline'].'</label>
                     <label><input type="radio" name="hybrid_fuel" value="diesel"> '.$t['diesel'].'</label>
@@ -491,6 +505,10 @@ $rtrn = '
             <span class="label">'.$t['customs_duty'].'</span>
             <span class="value" id="res-customs">-</span>
         </div>
+        <div class="result-row">
+            <span class="label">'.$t['damage_protection'].'</span>
+            <span class="value" id="res-damage-protection">-</span>
+        </div>
         <div class="result-row total">
             <span class="label">'.$t['total'].'</span>
             <span class="value" id="res-total">-</span>
@@ -503,8 +521,8 @@ $rtrn = '
     
     '.($is_super_admin ? '
     <div class="admin-actions">
-        <a href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator/usage" class="admin-btn">📊 '.$t['usage_stats'].'</a>
-        <a href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator/rates" class="admin-btn">⚙️ '.$t['edit_rates'].'</a>
+        <a href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator/usage" class="admin-btn"><span class="btn-icon">📊</span> '.$t['usage_stats'].'</a>
+        <a href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator/rates" class="admin-btn"><span class="btn-icon">⚙️</span> '.$t['edit_rates'].'</a>
     </div>
     ' : '').'
 </div>
@@ -676,8 +694,11 @@ $rtrn = '
             customsFee = maxFeeEur * EUR_RATE;
         }
         
-        // Total (excise + luxury excise + customs fee)
-        const total = excise + luxuryExcise + customsFee;
+        // Damage protection (1.2% of vehicle price, not including transport)
+        const damageProtection = priceEur * EUR_RATE * 0.012;
+        
+        // Total (excise + luxury excise + customs fee + damage protection)
+        const total = excise + luxuryExcise + customsFee + damageProtection;
         
         // Display results with EUR equivalent
         document.getElementById("res-value-mdl").innerHTML = formatNumber(valueMdl) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(valueMdl / EUR_RATE) + " EUR</span>";
@@ -692,6 +713,7 @@ $rtrn = '
         }
         
         document.getElementById("res-customs").innerHTML = formatNumber(customsFee) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(customsFee / EUR_RATE) + " EUR</span>";
+        document.getElementById("res-damage-protection").innerHTML = formatNumber(damageProtection) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(damageProtection / EUR_RATE) + " EUR</span>";
         document.getElementById("res-total").innerHTML = formatNumber(total) + " MDL <span class=\"eur-equiv\">~ " + formatNumber(total / EUR_RATE) + " EUR</span>";
         
         // Vehicle total (price + customs costs)
