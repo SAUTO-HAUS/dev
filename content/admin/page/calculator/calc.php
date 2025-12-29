@@ -775,12 +775,13 @@ $rtrn = '
         </div>
     </div>
     
-    '.($is_super_admin ? '
     <div class="admin-actions">
+        <a href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator/ctlg" class="admin-btn"><span class="btn-icon">📋</span> '.$t['catalog'].'</a>
+        '.($is_super_admin ? '
         <a href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator/usage" class="admin-btn"><span class="btn-icon">📊</span> '.$t['usage_stats'].'</a>
         <a href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator/rates" class="admin-btn"><span class="btn-icon">⚙️</span> '.$t['edit_rates'].'</a>
+        ' : '').'
     </div>
-    ' : '').'
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
