@@ -415,12 +415,16 @@
   
   main > .pht_bx {width:67%; height:28.5rem; float:left;}
   
-  /*main > .pht_bx > .pht_list {width:15%; height:inherit; display:flex; flex-flow:row wrap; justify-content:space-between; overflow-y:scroll; float:left; -ms-overflow-style:none; scrollbar-width:none; background-color:#fff; border-radius:1rem;}
+   /*main > .pht_bx > .pht_list {width:15%; height:inherit; display:flex; flex-flow:row wrap; justify-content:space-between; overflow-y:scroll; float:left; -ms-overflow-style:none; scrollbar-width:none; background-color:#fff; border-radius:1rem;}
   main > .pht_bx > .pht_list::-webkit-scrollbar {display:none;}
   main > .pht_bx > .pht_list > .item {width:100%; height:92px; background-repeat:no-repeat; background-position:center; background-size:cover; border-radius:1rem; cursor:pointer; image-rendering:-webkit-optimize-contrast; transition:.2s; filter:contrast(.3); background-image:url(/media/images/site/v2/no_image.svg);}
   main > .pht_bx > .pht_list > .item:hover {transform:scale(.95);}
   main > .pht_bx > .pht_list > .item.act {filter:none;}
   main > .pht_bx > .pht_list > .item:not(:first-child) {margin:10px 0 0 0;}*/
+  @media (min-width: 1600px) { main > .pht_bx {height:35rem;} }
+  @media (min-width: 2200px) { main > .pht_bx {height:42rem;} }
+  @media (min-width: 3000px) { main > .pht_bx {height:50rem;} }
+
   
   main > .pht_bx > .list::-webkit-scrollbar {width:8px; background:#eee;}
   main > .pht_bx > .list::-webkit-scrollbar-thumb {background:#ccc;}
