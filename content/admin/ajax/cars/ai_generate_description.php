@@ -2,7 +2,8 @@
 
 $lang = __post('lang') ?: 'ro';
 $fromForm = __post('from_form') == '1';
-$carType = __post('car_type') ?: 'in_stock'; 
+$carType = __post('car_type') ?: 'in_stock';
+$selectedPhotos = __post('selected_photos') ?: ''; 
 
 $groqApiKey = defined('GROQ_API_KEY') ? GROQ_API_KEY : '';
 $openaiApiKey = defined('OPENAI_API_KEY') ? OPENAI_API_KEY : '';
@@ -44,15 +45,21 @@ if ($fromForm) {
         }
         
         $carImages = [];
-        $stmtPhotos = $db->prepare("SELECT * FROM {$prefx}_car_pht WHERE it_id = :it_id ORDER BY pos ASC LIMIT 6");
+        $stmtPhotos = $db->prepare("SELECT * FROM {$prefx}_car_pht WHERE it_id = :it_id ORDER BY pos ASC");
         $stmtPhotos->execute(['it_id' => $carId]);
         $photos = $stmtPhotos->fetchAll(PDO::FETCH_ASSOC);
         
         $imgFormat = (usr_agent()==='IOS'||usr_agent()==='MAC') ? '.jpg' : '.webp';
         $siteUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
         
+        $selectedPositions = [1, 2, 5, 6];
+        
+        $photoIndex = 0;
         foreach ($photos as $photo) {
-            $carImages[] = $siteUrl . '/' . _CAR_IMG . '/' . $car['p_path'] . '/' . $carId . '/high/' . $photo['name'] . $imgFormat;
+            $photoIndex++;
+            if (in_array($photoIndex, $selectedPositions)) {
+                $carImages[] = $siteUrl . '/' . _CAR_IMG . '/' . $car['p_path'] . '/' . $carId . '/high/' . $photo['name'] . $imgFormat;
+            }
         }
         
     } catch (PDOException $e) {
