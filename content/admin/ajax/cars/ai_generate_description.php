@@ -130,7 +130,7 @@ $prompt = $editablePrompt . "\n\n" . $fixedCarData . "\n\n" . $fixedHtmlStructur
 if ($useOpenAI) {
     $apiUrl = "https://api.openai.com/v1/chat/completions";
     $apiKey = $openaiApiKey;
-    $model = 'gpt-5.2';
+    $model = $aiSettings['openai_model'] ?? 'gpt-4o-mini';
 } else {
     $apiUrl = "https://api.groq.com/openai/v1/chat/completions";
     $apiKey = $groqApiKey;
@@ -158,7 +158,7 @@ $requestData = [
     'model' => $model,
     'messages' => [
         ['role' => 'system', 'content' => 'You are a JSON generator. Always respond with valid JSON only, no markdown, no explanations.'],
-        ['role' => 'user', 'content' => $useOpenAI && !empty($carImages) ? $userContent : $prompt]
+        ['role' => 'user', 'content' => $useOpenAI && !empty($carImages) && $analyzePhotos ? $userContent : $prompt]
     ],
     'temperature' => 0.7,
     'response_format' => ['type' => 'json_object']

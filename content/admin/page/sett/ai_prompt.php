@@ -36,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_ai_settings'])) 
     $carTypeStock = $_POST['car_type_stock'] ?? '';
     $imagePrompt = $_POST['image_prompt'] ?? '';
     $analyzePhotos = isset($_POST['analyze_photos']) ? '1' : '0';
+    $openaiModel = $_POST['openai_model'] ?? 'gpt-4o-mini';
     
     // Save settings
     $stmt = $db->prepare("INSERT INTO {$prefx}_ai_settings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = :value2");
@@ -45,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_ai_settings'])) 
     $stmt->execute(['key' => 'car_type_stock', 'value' => $carTypeStock, 'value2' => $carTypeStock]);
     $stmt->execute(['key' => 'image_prompt', 'value' => $imagePrompt, 'value2' => $imagePrompt]);
     $stmt->execute(['key' => 'analyze_photos', 'value' => $analyzePhotos, 'value2' => $analyzePhotos]);
+    $stmt->execute(['key' => 'openai_model', 'value' => $openaiModel, 'value2' => $openaiModel]);
     
     $saved = true;
 }
@@ -61,6 +63,7 @@ $currentCarTypeOrder = $settings['car_type_order'] ?? $defaultCarTypeOrder;
 $currentCarTypeStock = $settings['car_type_stock'] ?? $defaultCarTypeStock;
 $currentImagePrompt = $settings['image_prompt'] ?? $defaultImagePrompt;
 $currentAnalyzePhotos = $settings['analyze_photos'] ?? '0';
+$currentOpenaiModel = $settings['openai_model'] ?? 'gpt-4o-mini';
 
 $rtrn = '
 <style>
@@ -85,6 +88,10 @@ $rtrn = '
     .ai-settings .checkbox-group input[type="checkbox"] {width:1.2rem; height:1.2rem; cursor:pointer;}
     .ai-settings .checkbox-group label {font-weight:normal; margin:0; cursor:pointer;}
     .ai-settings .checkbox-group .cost-warning {color:#856404; font-size:.8rem; margin-left:auto; background:#fff3cd; padding:.3rem .6rem; border-radius:.3rem;}
+    .ai-settings select {padding:.5rem; border:1px solid #ccc; border-radius:.5rem; font-size:.9rem; min-width:200px;}
+    .ai-settings select:focus {border-color:var(--clr); outline:none;}
+    .ai-settings .model-select {display:flex; align-items:center; gap:1rem; margin-bottom:1.5rem; padding:1rem; background:#f8f9fa; border-radius:.5rem;}
+    .ai-settings .model-select label {margin:0; font-weight:bold;}
 </style>
 
 <div class="ai-settings">
@@ -93,6 +100,15 @@ $rtrn = '
     '.(!empty($saved) ? '<div class="success-msg">✅ Настройки сохранены успешно!</div>' : '').'
     
     <form method="POST">
+        <div class="model-select">
+            <label>OpenAI Model:</label>
+            <select name="openai_model">
+                <option value="gpt-4o-mini" '.($currentOpenaiModel === 'gpt-4o-mini' ? 'selected' : '').'>GPT-4o Mini (быстрый, дешёвый)</option>
+                <option value="gpt-4o" '.($currentOpenaiModel === 'gpt-4o' ? 'selected' : '').'>GPT-4o (качественный)</option>
+                <option value="gpt-5.2" '.($currentOpenaiModel === 'gpt-5.2' ? 'selected' : '').'>GPT-5.2 (самый мощный)</option>
+            </select>
+        </div>
+        
         <div class="form-group">
             <label>Текст для авто ПОД ЗАКАЗ:</label>
             <textarea name="car_type_order">'.htmlspecialchars($currentCarTypeOrder).'</textarea>
