@@ -173,13 +173,17 @@ $userContent[] = ['type' => 'text', 'text' => $prompt];
 
 // Log AI request info
 $startTime = microtime(true);
+$willSendImages = $useOpenAI && !empty($carImages) && $analyzePhotos;
 $logInfo = [
     'provider' => $aiProvider,
     'model' => $model,
-    'analyze_photos' => $analyzePhotos ? 'YES' : 'NO',
+    'analyze_photos_setting' => $aiSettings['analyze_photos'] ?? 'NOT SET',
+    'analyze_photos_bool' => $analyzePhotos ? 'YES' : 'NO',
+    'useOpenAI' => $useOpenAI ? 'YES' : 'NO',
     'images_count' => count($carImages),
-    'images_sent' => ($useOpenAI && !empty($carImages) && $analyzePhotos) ? count($carImages) : 0,
-    'prompt_length' => strlen($prompt)
+    'will_send_images' => $willSendImages ? 'YES' : 'NO',
+    'prompt_length' => strlen($prompt),
+    'content_type' => $willSendImages ? 'ARRAY_WITH_IMAGES' : 'TEXT_ONLY'
 ];
 error_log("AI Generate START: " . json_encode($logInfo));
 
