@@ -193,11 +193,20 @@ $requestData = [
         ['role' => 'system', 'content' => 'You are a JSON generator. Always respond with valid JSON only, no markdown, no explanations.'],
         ['role' => 'user', 'content' => $useOpenAI && !empty($carImages) && $analyzePhotos ? $userContent : $prompt]
     ],
-    'temperature' => 0.7,
-    'response_format' => ['type' => 'json_object']
+    'temperature' => 0.7
 ];
 
-$requestData['max_tokens'] = 8192;
+// Add response format for OpenAI models that support it
+if ($useOpenAI && strpos($model, 'gpt-4') !== false) {
+    $requestData['response_format'] = ['type' => 'json_object'];
+}
+
+// Set appropriate max tokens based on model
+if (strpos($model, 'gpt-5') !== false) {
+    $requestData['max_completion_tokens'] = 4096;
+} else {
+    $requestData['max_tokens'] = 4096;
+}
 
 $ch = curl_init($apiUrl);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -207,7 +216,8 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
     'Authorization: Bearer ' . $apiKey
 ]);
-curl_setopt($ch, CURLOPT_TIMEOUT, 60);
+curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
 
 $response = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
