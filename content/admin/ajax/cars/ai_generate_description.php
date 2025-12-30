@@ -1,4 +1,5 @@
 <?php
+$scriptStart = microtime(true);
 
 $lang = __post('lang') ?: 'ro';
 $fromForm = __post('from_form') == '1';
@@ -322,4 +323,17 @@ if (!$htmlData || !isset($htmlData['ro'])) {
     return;
 }
 
-$returnIt = ['success' => true, 'html_ro' => $htmlData['ro'] ?? '', 'html_ru' => $htmlData['ru'] ?? '', 'html_en' => $htmlData['en'] ?? '', 'duration' => $duration];
+$scriptEnd = microtime(true);
+$totalTime = round($scriptEnd - $scriptStart, 2);
+$processingTime = round($totalTime - $duration, 2);
+
+$returnIt = [
+    'success' => true, 
+    'html_ro' => $htmlData['ro'] ?? '', 
+    'html_ru' => $htmlData['ru'] ?? '', 
+    'html_en' => $htmlData['en'] ?? '', 
+    'duration' => $duration,
+    'api_time' => $duration,
+    'processing_time' => $processingTime,
+    'total_time' => $totalTime
+];

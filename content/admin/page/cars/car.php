@@ -1970,7 +1970,7 @@ function generateWithGemini() {
             btn.disabled = false;
             
             if (data.success) {
-                btn.innerHTML = successText + (data.duration ? ' (' + data.duration + 's)' : '');
+                btn.innerHTML = successText + (data.total_time ? ' (' + data.api_time + 's API + ' + data.processing_time + 's proc)' : '');
                 const langs = ['ro', 'ru', 'en'];
                 langs.forEach(function(lng) {
                     const textarea = document.getElementById('params_html_' + lng);
