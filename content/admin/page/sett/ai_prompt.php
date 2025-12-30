@@ -139,7 +139,7 @@ $rtrn = '
             <textarea name="car_type_stock">'.htmlspecialchars($currentCarTypeStock).'</textarea>
         </div>
         
-        <div class="form-group">
+        <div class="form-group" id="photo-analysis-section" style="'.($currentAiProvider !== 'openai' ? 'display:none;' : '').'">
             <div class="checkbox-group">
                 <input type="checkbox" name="analyze_photos" id="analyze_photos" value="1" '.($currentAnalyzePhotos === '1' ? 'checked' : '').'>
                 <label for="analyze_photos">Анализировать фотографии автомобиля (OpenAI Vision)</label>
@@ -179,6 +179,7 @@ function toggleProvider() {
     var provider = document.querySelector("select[name=ai_provider]").value;
     document.getElementById("openai-models").style.display = provider === "openai" ? "" : "none";
     document.getElementById("groq-models").style.display = provider === "groq" ? "" : "none";
+    document.getElementById("photo-analysis-section").style.display = provider === "openai" ? "" : "none";
 }
 
 function saveAiSettings() {
