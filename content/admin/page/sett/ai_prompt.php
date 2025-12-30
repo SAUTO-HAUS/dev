@@ -157,7 +157,7 @@ $rtrn = '
 <script>
 function saveAiSettings() {
     var formData = new FormData();
-    formData.append("ajax_save_ai_settings", "1");
+    formData.append("fn", "save_ai_settings");
     formData.append("openai_model", document.querySelector("select[name=openai_model]").value);
     formData.append("analyze_photos", document.querySelector("input[name=analyze_photos]").checked ? "1" : "0");
     formData.append("car_type_order", document.querySelector("textarea[name=car_type_order]").value);
@@ -165,7 +165,7 @@ function saveAiSettings() {
     formData.append("image_prompt", document.querySelector("textarea[name=image_prompt]").value);
     formData.append("ai_prompt", document.querySelector("textarea[name=ai_prompt]").value);
     
-    fetch("/content/admin/ajax/save_ai_settings.php", {
+    fetch("/content/admin/ajax/cars/ajax.php", {
         method: "POST",
         body: formData
     })

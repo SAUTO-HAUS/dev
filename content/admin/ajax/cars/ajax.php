@@ -702,3 +702,32 @@ elseif (__post('fn') == 'ai_generate') {
     echo json_encode($returnIt);
     exit;
 }
+elseif (__post('fn') == 'save_ai_settings') {
+    try {
+        $db->exec("CREATE TABLE IF NOT EXISTS {$prefx}_ai_settings (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            setting_key VARCHAR(100) UNIQUE NOT NULL,
+            setting_value LONGTEXT,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        )");
+        
+        $stmt = $db->prepare("INSERT INTO {$prefx}_ai_settings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = :value2");
+        
+        $settings = [
+            'openai_model' => __post('openai_model') ?: 'gpt-4o-mini',
+            'analyze_photos' => __post('analyze_photos') ?: '0',
+            'car_type_order' => __post('car_type_order') ?: '',
+            'car_type_stock' => __post('car_type_stock') ?: '',
+            'image_prompt' => __post('image_prompt') ?: '',
+            'ai_prompt' => __post('ai_prompt') ?: ''
+        ];
+        
+        foreach ($settings as $key => $value) {
+            $stmt->execute(['key' => $key, 'value' => $value, 'value2' => $value]);
+        }
+        
+        $returnIt = ['success' => true];
+    } catch (PDOException $e) {
+        $returnIt = ['success' => false, 'error' => $e->getMessage()];
+    }
+}
