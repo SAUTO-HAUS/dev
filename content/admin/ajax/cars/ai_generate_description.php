@@ -53,7 +53,19 @@ if ($fromForm) {
         $imgFormat = (usr_agent()==='IOS'||usr_agent()==='MAC') ? '.jpg' : '.webp';
         $siteUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
         
-        $selectedPositions = [1, 2, 5, 8];
+        $photoPositionsSetting = '1,2,5,8'; 
+        try {
+            $stmtPos = $db->query("SELECT setting_value FROM {$prefx}_ai_settings WHERE setting_key = 'photo_positions' LIMIT 1");
+            $posRow = $stmtPos->fetch(PDO::FETCH_ASSOC);
+            if ($posRow && !empty($posRow['setting_value'])) {
+                $photoPositionsSetting = $posRow['setting_value'];
+            }
+        } catch (PDOException $e) {}
+        
+        $selectedPositions = array_map('intval', array_filter(explode(',', $photoPositionsSetting)));
+        if (empty($selectedPositions)) {
+            $selectedPositions = [1, 2, 5, 8];
+        }
         
         $photoIndex = 0;
         foreach ($photos as $photo) {

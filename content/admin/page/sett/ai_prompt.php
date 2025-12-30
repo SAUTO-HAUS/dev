@@ -63,6 +63,7 @@ $currentCarTypeOrder = $settings['car_type_order'] ?? $defaultCarTypeOrder;
 $currentCarTypeStock = $settings['car_type_stock'] ?? $defaultCarTypeStock;
 $currentImagePrompt = $settings['image_prompt'] ?? $defaultImagePrompt;
 $currentAnalyzePhotos = $settings['analyze_photos'] ?? '0';
+$currentPhotoPositions = $settings['photo_positions'] ?? '1,2,5,8';
 $currentAiProvider = $settings['ai_provider'] ?? 'openai';
 $currentOpenaiModel = $settings['openai_model'] ?? 'gpt-4o-mini';
 $currentGroqModel = $settings['groq_model'] ?? 'llama-3.3-70b-versatile';
@@ -147,7 +148,10 @@ $rtrn = '
                 <label for="analyze_photos">Анализировать фотографии автомобиля (OpenAI Vision)</label>
                 <span class="cost-warning">⚠️ Увеличивает стоимость запроса</span>
             </div>
-            <label>Промпт для анализа фотографий:</label>
+            <label>Позиции фотографий для анализа:</label>
+            <input type="text" name="photo_positions" value="'.htmlspecialchars($currentPhotoPositions).'" placeholder="1,2,5,8" style="width:200px; padding:.5rem; border:1px solid #ccc; border-radius:.5rem; margin-bottom:.5rem;">
+            <div class="hint">Номера фотографий через запятую (например: 1,2,5,8). Пустое поле = все фото.</div>
+            <label style="margin-top:1rem;">Промпт для анализа фотографий:</label>
             <textarea name="image_prompt">'.htmlspecialchars($currentImagePrompt).'</textarea>
             <div class="hint">Этот промпт используется только если включен анализ фотографий выше.</div>
         </div>
@@ -193,6 +197,7 @@ function saveAiSettings() {
     formData.append("openai_model", document.querySelector("select[name=openai_model]").value);
     formData.append("groq_model", document.querySelector("select[name=groq_model]").value);
     formData.append("analyze_photos", document.querySelector("input[name=analyze_photos]").checked ? "1" : "0");
+    formData.append("photo_positions", document.querySelector("input[name=photo_positions]").value);
     formData.append("car_type_order", document.querySelector("textarea[name=car_type_order]").value);
     formData.append("car_type_stock", document.querySelector("textarea[name=car_type_stock]").value);
     formData.append("image_prompt", document.querySelector("textarea[name=image_prompt]").value);
