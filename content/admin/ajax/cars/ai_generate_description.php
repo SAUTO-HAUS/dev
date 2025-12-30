@@ -23,7 +23,8 @@ if ($fromForm) {
         'wd' => __post('wheelDrive') ?: '',
         'clr' => __post('color') ?: '',
         'prc' => __post('price') ?: '',
-        'cur' => __post('currency') ?: ''
+        'cur' => __post('currency') ?: '',
+        'import_country' => __post('import_country') ?: ''
     ];
 } else {
     $carId = intval(__post('car_id'));
@@ -101,7 +102,8 @@ $fixedCarData = "Car data:
 - Fuel: " . ($car['fl'] ?? '') . "
 - Transmission: " . ($car['tra'] ?? '') . "
 - Drive: " . ($car['wd'] ?? '') . "
-- Color: " . ($car['clr'] ?? '');
+- Color: " . ($car['clr'] ?? '') . "
+- Import country: " . ($car['import_country'] ?? '');
 
 $fixedHtmlStructure = "HTML STRUCTURE (MUST follow this EXACT order):
 1. <h2>{Brand} {Model} | {Engine} | {Fuel} | {Year}</h2> - USE PIPE SEPARATOR between brand/model, engine, fuel type and year!
@@ -130,9 +132,15 @@ $prompt = $editablePrompt . "\n\n" . $fixedCarData . "\n\n" . $fixedHtmlStructur
 $aiProvider = $aiSettings['ai_provider'] ?? 'openai';
 
 if ($aiProvider === 'openai' && !empty($openaiApiKey)) {
-    $apiUrl = "https://api.openai.com/v1/chat/completions";
+    $selectedModel = $aiSettings['openai_model'] ?? 'gpt-4o-mini';
+    // GPT-5.x uses new responses API endpoint
+    if (strpos($selectedModel, 'gpt-5') !== false) {
+        $apiUrl = "https://api.openai.com/v1/responses";
+    } else {
+        $apiUrl = "https://api.openai.com/v1/chat/completions";
+    }
     $apiKey = $openaiApiKey;
-    $model = $aiSettings['openai_model'] ?? 'gpt-4o-mini';
+    $model = $selectedModel;
     $useOpenAI = true;
 } elseif ($aiProvider === 'groq' && !empty($groqApiKey)) {
     $apiUrl = "https://api.groq.com/openai/v1/chat/completions";
@@ -187,25 +195,30 @@ $logInfo = [
 ];
 error_log("AI Generate START: " . json_encode($logInfo));
 
-$requestData = [
-    'model' => $model,
-    'messages' => [
-        ['role' => 'system', 'content' => 'You are a JSON generator. Always respond with valid JSON only, no markdown, no explanations.'],
-        ['role' => 'user', 'content' => $useOpenAI && !empty($carImages) && $analyzePhotos ? $userContent : $prompt]
-    ],
-    'temperature' => 0.7
-];
-
-// Add response format for OpenAI models that support it
-if ($useOpenAI && strpos($model, 'gpt-4') !== false) {
-    $requestData['response_format'] = ['type' => 'json_object'];
+$maxTokens = 4096; 
+if (strpos($model, 'gpt-4o') !== false) {
+    $maxTokens = 8192; 
 }
 
-// Set appropriate max tokens based on model
+// GPT-5.x uses different request format (responses API)
 if (strpos($model, 'gpt-5') !== false) {
-    $requestData['max_completion_tokens'] = 4096;
+    $systemPrompt = 'You are a JSON generator. Always respond with valid JSON only, no markdown, no explanations.';
+    $fullPrompt = $systemPrompt . "\n\n" . $prompt;
+    $requestData = [
+        'model' => $model,
+        'input' => $fullPrompt
+    ];
 } else {
-    $requestData['max_tokens'] = 4096;
+    $requestData = [
+        'model' => $model,
+        'messages' => [
+            ['role' => 'system', 'content' => 'You are a JSON generator. Always respond with valid JSON only, no markdown, no explanations.'],
+            ['role' => 'user', 'content' => $useOpenAI && !empty($carImages) && $analyzePhotos ? $userContent : $prompt]
+        ],
+        'temperature' => 0.7,
+        'max_tokens' => $maxTokens,
+        'response_format' => ['type' => 'json_object']
+    ];
 }
 
 $ch = curl_init($apiUrl);
@@ -276,12 +289,28 @@ if ($httpCode !== 200) {
 
 $responseData = json_decode($response, true);
 
-if (!isset($responseData['choices'][0]['message']['content'])) {
-    $returnIt = ['success' => false, 'error' => 'Invalid API response', 'raw' => $responseData];
-    return;
-}
+error_log("GPT-5 Response: " . json_encode($responseData));
 
-$generatedContent = $responseData['choices'][0]['message']['content'];
+// GPT-5.x returns output_text, older models return choices[0].message.content
+if (strpos($model, 'gpt-5') !== false) {
+    // Try different response formats
+    if (isset($responseData['output_text'])) {
+        $generatedContent = $responseData['output_text'];
+    } elseif (isset($responseData['output'][0]['content'][0]['text'])) {
+        $generatedContent = $responseData['output'][0]['content'][0]['text'];
+    } elseif (isset($responseData['choices'][0]['message']['content'])) {
+        $generatedContent = $responseData['choices'][0]['message']['content'];
+    } else {
+        $returnIt = ['success' => false, 'error' => 'Invalid API response', 'raw' => $responseData];
+        return;
+    }
+} else {
+    if (!isset($responseData['choices'][0]['message']['content'])) {
+        $returnIt = ['success' => false, 'error' => 'Invalid API response', 'raw' => $responseData];
+        return;
+    }
+    $generatedContent = $responseData['choices'][0]['message']['content'];
+}
 $generatedContent = preg_replace('/^```json?\s*/i', '', $generatedContent);
 $generatedContent = preg_replace('/\s*```$/i', '', $generatedContent);
 $generatedContent = trim($generatedContent);

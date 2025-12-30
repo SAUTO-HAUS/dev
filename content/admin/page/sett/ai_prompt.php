@@ -156,7 +156,7 @@ $rtrn = '
             <label>Основной промпт AI:</label>
             <div class="locked-label">🔒 ФИКСИРОВАННЫЕ ЧАСТИ (добавляются автоматически в код)</div>
             <div class="locked-section"><strong>1. Car data:</strong> (данные авто подставляются автоматически)
-- Brand, Model, Year, Body type, Mileage, Engine volume, Power, Fuel, Transmission, Drive, Color
+- Brand, Model, Year, Body type, Mileage, Engine volume, Power, Fuel, Transmission, Drive, Color, Import country
 
 <strong>2. HTML СТРУКТУРА:</strong>
 1. &lt;h2&gt;{Brand} {Model} | {Engine} | {Fuel} | {Year}&lt;/h2&gt;

@@ -2192,6 +2192,7 @@ function generateWithGemini() {
     const color = document.querySelector('select[name="clr"]');
     const price = document.querySelector('input[name="prc"]');
     const currency = document.querySelector('select[name="cur"]');
+    const importCountry = document.querySelector('select[name="import_country_id"]');
     
     const carData = {
         brand: brand ? brand.options[brand.selectedIndex]?.text || '' : '',
@@ -2205,7 +2206,8 @@ function generateWithGemini() {
         wheelDrive: wheelDrive ? wheelDrive.options[wheelDrive.selectedIndex]?.text || '' : '',
         color: color ? color.options[color.selectedIndex]?.text || '' : '',
         price: price ? price.value : '',
-        currency: currency ? currency.options[currency.selectedIndex]?.text || '' : ''
+        currency: currency ? currency.options[currency.selectedIndex]?.text || '' : '',
+        import_country: importCountry ? importCountry.options[importCountry.selectedIndex]?.text || '' : ''
     };
     
     $.ajax({
@@ -2229,7 +2231,8 @@ function generateWithGemini() {
             wheelDrive: carData.wheelDrive,
             color: carData.color,
             price: carData.price,
-            currency: carData.currency
+            currency: carData.currency,
+            import_country: carData.import_country
         },
         dataType: 'json',
         success: function(data) {
