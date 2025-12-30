@@ -421,8 +421,8 @@
   main > .pht_bx > .pht_list > .item:hover {transform:scale(.95);}
   main > .pht_bx > .pht_list > .item.act {filter:none;}
   main > .pht_bx > .pht_list > .item:not(:first-child) {margin:10px 0 0 0;}*/
-  @media (min-width: 1600px) { main > .pht_bx {height:35rem;} }
-  @media (min-width: 2200px) { main > .pht_bx {height:42rem;} }
+  @media (min-width: 1600px) { main > .pht_bx {height:37rem;} }
+  @media (min-width: 2200px) { main > .pht_bx {height:43rem;} }
   @media (min-width: 3000px) { main > .pht_bx {height:50rem;} }
 
   
