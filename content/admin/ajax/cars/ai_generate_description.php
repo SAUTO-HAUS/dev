@@ -52,7 +52,7 @@ if ($fromForm) {
         $imgFormat = (usr_agent()==='IOS'||usr_agent()==='MAC') ? '.jpg' : '.webp';
         $siteUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
         
-        $selectedPositions = [1, 2, 5, 6];
+        $selectedPositions = [1, 2, 5];
         
         $photoIndex = 0;
         foreach ($photos as $photo) {
