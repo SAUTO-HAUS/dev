@@ -203,7 +203,6 @@ function saveAiSettings() {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            alert("✅ Настройки сохранены!");
             location.reload();
         } else {
             alert("Ошибка: " + data.error);

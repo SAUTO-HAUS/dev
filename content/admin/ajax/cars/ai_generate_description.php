@@ -171,6 +171,18 @@ if ($useOpenAI && !empty($carImages) && $analyzePhotos) {
 
 $userContent[] = ['type' => 'text', 'text' => $prompt];
 
+// Log AI request info
+$startTime = microtime(true);
+$logInfo = [
+    'provider' => $aiProvider,
+    'model' => $model,
+    'analyze_photos' => $analyzePhotos ? 'YES' : 'NO',
+    'images_count' => count($carImages),
+    'images_sent' => ($useOpenAI && !empty($carImages) && $analyzePhotos) ? count($carImages) : 0,
+    'prompt_length' => strlen($prompt)
+];
+error_log("AI Generate START: " . json_encode($logInfo));
+
 $requestData = [
     'model' => $model,
     'messages' => [
@@ -201,6 +213,10 @@ $response = curl_exec($ch);
 $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 $curlError = curl_error($ch);
 curl_close($ch);
+
+$endTime = microtime(true);
+$duration = round($endTime - $startTime, 2);
+error_log("AI Generate END: duration={$duration}s, httpCode={$httpCode}, model={$model}");
 
 if ($curlError) {
     $returnIt = ['success' => false, 'error' => 'cURL error: ' . $curlError];
