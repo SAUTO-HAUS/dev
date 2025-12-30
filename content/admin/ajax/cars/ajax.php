@@ -711,7 +711,7 @@ elseif (__post('fn') == 'save_ai_settings') {
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         )");
         
-        $stmt = $db->prepare("INSERT INTO {$prefx}_ai_settings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = :value2");
+        $stmt = $db->prepare("INSERT INTO {$prefx}_ai_settings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)");
         
         $settings = [
             'openai_model' => __post('openai_model') ?: 'gpt-4o-mini',
@@ -723,10 +723,10 @@ elseif (__post('fn') == 'save_ai_settings') {
         ];
         
         foreach ($settings as $key => $value) {
-            $stmt->execute(['key' => $key, 'value' => $value, 'value2' => $value]);
+            $stmt->execute(['key' => $key, 'value' => $value]);
         }
         
-        $returnIt = ['success' => true];
+        $returnIt = ['success' => true, 'saved_model' => $settings['openai_model']];
     } catch (PDOException $e) {
         $returnIt = ['success' => false, 'error' => $e->getMessage()];
     }

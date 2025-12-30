@@ -156,27 +156,33 @@ $rtrn = '
 </div>
 <script>
 function saveAiSettings() {
+    var model = document.querySelector("select[name=openai_model]").value;
+    console.log("Saving model:", model);
+    
     var formData = new FormData();
+    formData.append("tp", "adm");
+    formData.append("pg", "cars");
     formData.append("fn", "save_ai_settings");
-    formData.append("openai_model", document.querySelector("select[name=openai_model]").value);
+    formData.append("openai_model", model);
     formData.append("analyze_photos", document.querySelector("input[name=analyze_photos]").checked ? "1" : "0");
     formData.append("car_type_order", document.querySelector("textarea[name=car_type_order]").value);
     formData.append("car_type_stock", document.querySelector("textarea[name=car_type_stock]").value);
     formData.append("image_prompt", document.querySelector("textarea[name=image_prompt]").value);
     formData.append("ai_prompt", document.querySelector("textarea[name=ai_prompt]").value);
     
-    fetch("/content/admin/ajax/cars/ajax.php", {
+    fetch("/ajax.php", {
         method: "POST",
         body: formData
     })
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            alert("✅ Настройки сохранены!");
+            alert("✅ Настройки сохранены! Model: " + data.saved_model);
+            location.reload();
         } else {
             alert("Ошибка: " + data.error);
         }
     })
-    .catch(e => alert("Ошибка сохранения"));
+    .catch(e => alert("Ошибка сохранения: " + e.message));
 }
 </script>';
