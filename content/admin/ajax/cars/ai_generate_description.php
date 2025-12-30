@@ -45,6 +45,16 @@ if ($fromForm) {
             return;
         }
         
+        // Get import country name from countries table
+        if (!empty($car['import_country_id'])) {
+            $stmtCountry = $db->prepare("SELECT name_ro FROM {$prefx}_countries WHERE id = :id LIMIT 1");
+            $stmtCountry->execute(['id' => $car['import_country_id']]);
+            $countryRow = $stmtCountry->fetch(PDO::FETCH_ASSOC);
+            $car['import_country'] = $countryRow['name_ro'] ?? '';
+        } else {
+            $car['import_country'] = '';
+        }
+        
         $carImages = [];
         $stmtPhotos = $db->prepare("SELECT * FROM {$prefx}_car_pht WHERE it_id = :it_id ORDER BY pos ASC");
         $stmtPhotos->execute(['it_id' => $carId]);
