@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Parse HTML and extract equipment section
+ * Parse HTML and extract equipment section (FIRST h3 section after h2)
  * @param string $html - Full HTML content
  * @return array - ['equipment' => extracted equipment HTML, 'rest' => remaining HTML]
  */
@@ -11,22 +11,16 @@ function parseEquipmentSection($html) {
         'rest' => $html
     ];
     
-    // Keywords to search for equipment section (RO, RU, EN)
-    $keywords = ['Dotări', 'Комплектация', 'Equipment'];
-    
-    // Find section by keyword in h2 or h3 (supports emoji, SVG icons with span, or plain text)
-    $pattern = '/<h[23][^>]*>(?:<span[^>]*><\/span>)?(?:[^<]*)?(?:' . implode('|', array_map('preg_quote', $keywords)) . ')(?:[^<]*)?<\/h[23]>/iu';
+    $pattern = '/<h3[^>]*>/i';
     
     if (preg_match($pattern, $html, $match, PREG_OFFSET_CAPTURE)) {
         $sectionStart = $match[0][1];
         
-        // Find next h2 or h3 after this section
         $afterSection = substr($html, $sectionStart + strlen($match[0][0]));
-        if (preg_match('/<h[23][^>]*>/i', $afterSection, $nextMatch, PREG_OFFSET_CAPTURE)) {
+        if (preg_match('/<h3[^>]*>/i', $afterSection, $nextMatch, PREG_OFFSET_CAPTURE)) {
             $sectionEnd = $sectionStart + strlen($match[0][0]) + $nextMatch[0][1];
             $equipmentContent = substr($html, $sectionStart, $sectionEnd - $sectionStart);
         } else {
-            // No next section - take until end
             $equipmentContent = substr($html, $sectionStart);
             $sectionEnd = strlen($html);
         }
