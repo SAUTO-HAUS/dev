@@ -61,65 +61,76 @@ if ($fromForm) {
     }
 }
 
-$carTypeText = ($carType === 'order') 
-    ? "This is a CAR TO ORDER (not in stock). The car will be imported from EU after the order is placed. Delivery time is typically 14-30 days. Focus on the model's features and what the buyer can expect."
-    : "This is a CAR IN STOCK (available immediately). The car is already imported and ready for viewing/purchase.";
+// Load AI settings from database (if available)
+$aiSettings = [];
+try {
+    $stmtSettings = $db->query("SELECT setting_key, setting_value FROM {$prefx}_ai_settings");
+    while ($row = $stmtSettings->fetch(PDO::FETCH_ASSOC)) {
+        $aiSettings[$row['setting_key']] = $row['setting_value'];
+    }
+} catch (PDOException $e) {
+    // Table doesn't exist yet, use defaults
+}
 
-$prompt = "You are an expert automotive journalist and marketing copywriter. Generate DETAILED, ATTRACTIVE and PERSUASIVE HTML descriptions for this car in 3 languages: Romanian, Russian, and English.
+// Default texts
+$defaultCarTypeOrder = "This is a CAR TO ORDER (not in stock). The car will be imported from EU after the order is placed. Delivery time is typically 14-30 days. Focus on the model's features and what the buyer can expect.";
+$defaultCarTypeStock = "This is a CAR IN STOCK (available immediately). The car is already imported and ready for viewing/purchase.";
+$defaultImagePrompt = "I'm showing you photos of this car. Analyze them to identify VISIBLE features like: wheel type (alloy/steel), headlight type (LED/xenon/halogen), interior material (leather/cloth), infotainment screen, sunroof, parking sensors, etc. Use ONLY what you can clearly see in the photos for the 'Dotări' section.";
+
+$carTypeOrderText = $aiSettings['car_type_order'] ?? $defaultCarTypeOrder;
+$carTypeStockText = $aiSettings['car_type_stock'] ?? $defaultCarTypeStock;
+$imagePromptText = $aiSettings['image_prompt'] ?? $defaultImagePrompt;
+
+$carTypeText = ($carType === 'order') ? $carTypeOrderText : $carTypeStockText;
+
+// Default prompt template
+$defaultPrompt = 'You are an expert automotive journalist and marketing copywriter. Generate DETAILED, ATTRACTIVE and PERSUASIVE HTML descriptions for this car in 3 languages: Romanian, Russian, and English.
 
 YOUR GOAL: Write compelling text that will ATTRACT BUYERS and make them want to purchase or order this car. The text must be clear, beautiful, professional and sales-oriented.
 
 IMPORTANT: {$carTypeText}
 
 Car data:
-- Brand: {$car['br_nm']}
-- Model: {$car['mo_nm']}
-- Year: {$car['yr']}
-- Mileage: {$car['mlg']} km
-- Engine volume: {$car['vol']} cm³
-- Power: {$car['hp']} HP
-- Fuel: {$car['fl']}
-- Transmission: {$car['tra']}
-- Drive: {$car['wd']}
+- Brand: {$car[\'br_nm\']}
+- Model: {$car[\'mo_nm\']}
+- Year: {$car[\'yr\']}
+- Body type: {$car[\'bt\']}
+- Mileage: {$car[\'mlg\']} km
+- Engine volume: {$car[\'vol\']} cm³
+- Power: {$car[\'hp\']} HP
+- Fuel: {$car[\'fl\']}
+- Transmission: {$car[\'tra\']}
+- Drive: {$car[\'wd\']}
+- Color: {$car[\'clr\']}
 
 HTML STRUCTURE (MUST follow this EXACT order):
 1. <h2>{Brand} {Model} | {Engine} | {Fuel} | {Year}</h2> - USE PIPE SEPARATOR between brand/model, engine, fuel type and year!
-2. <h3><span class=\"desc-icon desc-icon-features\"></span>Dotări</h3> then <ul> with 5-8 <li> items.
-   
-   ⚠️ VERY IMPORTANT - READ CAREFULLY:
-   You are writing for a REAL car dealership. Customers will SEE the actual car. If you write features the car doesn't have, we look like LIARS and lose the sale!
-   
-   YOU DO NOT HAVE ACCESS TO:
-   - Photos of this specific car
-   - The actual equipment list
-   - What optional extras were ordered
-   - Interior material (cloth/leather)
-   
-   THEREFORE, write ONLY features that are 100% GUARANTEED on EVERY single unit of this model:
-   
-   BUDGET CARS (Dacia, Lada, Daewoo, Chevrolet Spark/Aveo, Renault Symbol, Fiat Punto):
-   - These cars are BASIC! Maximum you can write: manual AC (if available), power steering, front electric windows, radio, 2 front airbags, central locking
-   - FORBIDDEN for budget cars: touchscreen, navigation, leather, xenon/LED, parking sensors, camera, heated seats, electric seats, cruise control, climate control
-   
-   MID-RANGE (Ford, Opel, VW, Skoda, Hyundai, Kia, Toyota, Mazda, Peugeot, Citroen):
-   - Safe to write: AC, all electric windows, ABS, ESP, 4-6 airbags, audio system with AUX/USB, onboard computer
-   - FORBIDDEN: leather, navigation, parking sensors, camera, heated seats, electric seats (unless 2018+ premium trim)
-   
-   PREMIUM (BMW, Mercedes, Audi, Lexus, Volvo, Porsche, Jaguar, Land Rover):
-   - Safe to write: automatic climate control, all electric windows, ABS, ESP, 6+ airbags, cruise control, onboard computer, audio system with Bluetooth
-   - STILL FORBIDDEN even for premium: leather seats, navigation, parking sensors, cameras, sunroof, heated/ventilated seats, electric seats - these are ALWAYS optional!
-   
-   GOLDEN RULE: When in doubt, DON'T write it. It's better to list 5 real features than 10 fake ones.
-3. <h3><span class=\"desc-icon desc-icon-spec\"></span>Caracteristici tehnice</h3> then <ul> with detailed specs: engine type, power with kW and rpm, torque Nm, fuel system, real consumption l/100km, drivetrain (DO NOT include gearbox type here - it goes in section 5!)
-4. <h3><span class=\"desc-icon desc-icon-engine\"></span>Detalii motor</h3> then <p><strong>Caracteristici constructive:</strong></p><ul> engine block material, cylinder head, turbosuflantă (da/nu), timing drive type (ONLY write 'curea' or 'lanț' - choose correct one for THIS engine!), emission standard, special features </ul> then <p><strong><span class=\"desc-icon desc-icon-oil\"></span>Mentenanță:</strong></p><ul> service interval ALWAYS 7000 km, oil specification (viscosity + ACEA class - choose correct for THIS engine!), oil capacity in litri, injection system notes </ul> - NEVER mention engine lifespan or km durability!
-5. <h3><span class=\"desc-icon desc-icon-gearbox\"></span>Detalii cutie de viteze</h3> then <ul> - USE EXACTLY the transmission type from Car data above (Manuală/Automată/Robotizată)! gearbox type, clutch type, oil type and specification (IMPORTANT: for BMW write 'ZF Lifeguard 6', for Mercedes write 'MB 236.14', for VW/Audi/Skoda write 'G052182' - NEVER write 'Dexron' for these brands!), oil capacity as RANGE (X-X litri), gearbox service interval (70000-80000 km)
-
-
-
-
+2. <h3><span class="desc-icon desc-icon-features"></span>Dotări</h3> then <ul> with 5-8 <li> items.
+3. <h3><span class="desc-icon desc-icon-spec"></span>Caracteristici tehnice</h3> then <ul> with detailed specs: engine type, power with kW and rpm, torque Nm, fuel system, real consumption l/100km, drivetrain (DO NOT include gearbox type here - it goes in section 5!)
+4. <h3><span class="desc-icon desc-icon-engine"></span>Detalii motor</h3> then <p><strong>Caracteristici constructive:</strong></p><ul> engine block material, cylinder head, turbosuflantă (da/nu), timing drive type (ONLY write \'curea\' or \'lanț\' - choose correct one for THIS engine!), emission standard, special features </ul> then <p><strong><span class="desc-icon desc-icon-oil"></span>Mentenanță:</strong></p><ul> service interval ALWAYS 7000 km, oil specification (viscosity + ACEA class - choose correct for THIS engine!), oil capacity in litri, injection system notes </ul> - NEVER mention engine lifespan or km durability!
+5. <h3><span class="desc-icon desc-icon-suspension"></span>Detalii suspensie</h3> then <ul> with: front suspension type (McPherson/double wishbone/multi-link), rear suspension type (torsion beam/multi-link/independent), stabilizer bars (front/rear), shock absorbers type, any special features (adaptive suspension, air suspension if applicable for this model)
+6. <h3><span class="desc-icon desc-icon-gearbox"></span>Detalii cutie de viteze</h3> then <ul> - USE EXACTLY the transmission type from Car data above (Manuală/Automată/Robotizată)! gearbox type, clutch type, oil type and specification (IMPORTANT: for BMW write \'ZF Lifeguard 6\', for Mercedes write \'MB 236.14\', for VW/Audi/Skoda write \'G052182\' - NEVER write \'Dexron\' for these brands!), oil capacity as RANGE (X-X litri), gearbox service interval (70000-80000 km)
 
 IMPORTANT: Return EXACTLY in this JSON format:
-{\"ro\": \"<HTML in Romanian>\", \"ru\": \"<HTML in Russian>\", \"en\": \"<HTML in English>\"}";
+{"ro": "<HTML in Romanian>", "ru": "<HTML in Russian>", "en": "<HTML in English>"}';
+
+// Use prompt from DB or default
+$promptTemplate = $aiSettings['ai_prompt'] ?? $defaultPrompt;
+
+// Replace variables in prompt
+$prompt = $promptTemplate;
+$prompt = str_replace('{$carTypeText}', $carTypeText, $prompt);
+$prompt = str_replace('{$car[\'br_nm\']}', $car['br_nm'] ?? '', $prompt);
+$prompt = str_replace('{$car[\'mo_nm\']}', $car['mo_nm'] ?? '', $prompt);
+$prompt = str_replace('{$car[\'yr\']}', $car['yr'] ?? '', $prompt);
+$prompt = str_replace('{$car[\'bt\']}', $car['bt'] ?? '', $prompt);
+$prompt = str_replace('{$car[\'mlg\']}', $car['mlg'] ?? '', $prompt);
+$prompt = str_replace('{$car[\'vol\']}', $car['vol'] ?? '', $prompt);
+$prompt = str_replace('{$car[\'hp\']}', $car['hp'] ?? '', $prompt);
+$prompt = str_replace('{$car[\'fl\']}', $car['fl'] ?? '', $prompt);
+$prompt = str_replace('{$car[\'tra\']}', $car['tra'] ?? '', $prompt);
+$prompt = str_replace('{$car[\'wd\']}', $car['wd'] ?? '', $prompt);
+$prompt = str_replace('{$car[\'clr\']}', $car['clr'] ?? '', $prompt);
 
 // Choose API based on available key
 if ($useOpenAI) {
@@ -142,7 +153,7 @@ if ($useOpenAI && !empty($carImages)) {
             'image_url' => ['url' => $imgUrl]
         ];
     }
-    $prompt = "I'm showing you photos of this car. Analyze them to identify VISIBLE features like: wheel type (alloy/steel), headlight type (LED/xenon/halogen), interior material (leather/cloth), infotainment screen, sunroof, parking sensors, etc. Use ONLY what you can clearly see in the photos for the 'Dotări' section.\n\n" . $prompt;
+    $prompt = $imagePromptText . "\n\n" . $prompt;
 }
 
 $userContent[] = ['type' => 'text', 'text' => $prompt];
