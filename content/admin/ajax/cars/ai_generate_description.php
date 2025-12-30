@@ -126,16 +126,33 @@ $editablePrompt = $aiSettings['ai_prompt'] ?? $defaultEditablePrompt;
 
 $prompt = $editablePrompt . "\n\n" . $fixedCarData . "\n\n" . $fixedHtmlStructure . "\n\n" . $fixedJsonFormat;
 
-// Choose API based on available key
-if ($useOpenAI) {
+// Choose API based on settings
+$aiProvider = $aiSettings['ai_provider'] ?? 'openai';
+
+if ($aiProvider === 'openai' && !empty($openaiApiKey)) {
     $apiUrl = "https://api.openai.com/v1/chat/completions";
     $apiKey = $openaiApiKey;
     $model = $aiSettings['openai_model'] ?? 'gpt-4o-mini';
-} else {
+    $useOpenAI = true;
+} elseif ($aiProvider === 'groq' && !empty($groqApiKey)) {
     $apiUrl = "https://api.groq.com/openai/v1/chat/completions";
     $apiKey = $groqApiKey;
-    $model = 'llama-3.3-70b-versatile';
-    $fallbackModel = 'llama-3.1-8b-instant'; 
+    $model = $aiSettings['groq_model'] ?? 'llama-3.3-70b-versatile';
+    $fallbackModel = 'llama-3.1-8b-instant';
+    $useOpenAI = false;
+} elseif (!empty($openaiApiKey)) {
+    // Fallback to OpenAI if selected provider key is missing
+    $apiUrl = "https://api.openai.com/v1/chat/completions";
+    $apiKey = $openaiApiKey;
+    $model = $aiSettings['openai_model'] ?? 'gpt-4o-mini';
+    $useOpenAI = true;
+} else {
+    // Fallback to Groq
+    $apiUrl = "https://api.groq.com/openai/v1/chat/completions";
+    $apiKey = $groqApiKey;
+    $model = $aiSettings['groq_model'] ?? 'llama-3.3-70b-versatile';
+    $fallbackModel = 'llama-3.1-8b-instant';
+    $useOpenAI = false;
 }
 
 $userContent = [];

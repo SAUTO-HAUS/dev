@@ -714,7 +714,9 @@ elseif (__post('fn') == 'save_ai_settings') {
         $stmt = $db->prepare("INSERT INTO {$prefx}_ai_settings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)");
         
         $settings = [
+            'ai_provider' => __post('ai_provider') ?: 'openai',
             'openai_model' => __post('openai_model') ?: 'gpt-4o-mini',
+            'groq_model' => __post('groq_model') ?: 'llama-3.3-70b-versatile',
             'analyze_photos' => __post('analyze_photos') ?: '0',
             'car_type_order' => __post('car_type_order') ?: '',
             'car_type_stock' => __post('car_type_stock') ?: '',

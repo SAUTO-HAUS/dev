@@ -63,7 +63,9 @@ $currentCarTypeOrder = $settings['car_type_order'] ?? $defaultCarTypeOrder;
 $currentCarTypeStock = $settings['car_type_stock'] ?? $defaultCarTypeStock;
 $currentImagePrompt = $settings['image_prompt'] ?? $defaultImagePrompt;
 $currentAnalyzePhotos = $settings['analyze_photos'] ?? '0';
+$currentAiProvider = $settings['ai_provider'] ?? 'openai';
 $currentOpenaiModel = $settings['openai_model'] ?? 'gpt-4o-mini';
+$currentGroqModel = $settings['groq_model'] ?? 'llama-3.3-70b-versatile';
 
 $rtrn = '
 <style>
@@ -96,16 +98,34 @@ $rtrn = '
 
 <div class="ai-settings">
     <h2>🤖 Настройки AI для описаний автомобилей</h2>
-    
+    <div style="background:#e8f5e9;padding:8px 12px;border-radius:5px;margin-bottom:1rem;font-size:13px;">
+        <strong>Текущий AI:</strong> '.($currentAiProvider === 'openai' ? 'OpenAI / '.$currentOpenaiModel : 'Groq / '.$currentGroqModel).'
+    </div>
     '.(!empty($saved) ? '<div class="success-msg">✅ Настройки сохранены успешно!</div>' : '').'
     
     <form method="POST">
         <div class="model-select">
+            <label>AI Provider:</label>
+            <select name="ai_provider" onchange="toggleProvider()">
+                <option value="openai" '.($currentAiProvider === 'openai' ? 'selected' : '').'>OpenAI (платный)</option>
+                <option value="groq" '.($currentAiProvider === 'groq' ? 'selected' : '').'>Groq (бесплатный)</option>
+            </select>
+        </div>
+        
+        <div class="model-select" id="openai-models" style="'.($currentAiProvider !== 'openai' ? 'display:none;' : '').'">
             <label>OpenAI Model:</label>
             <select name="openai_model">
                 <option value="gpt-4o-mini" '.($currentOpenaiModel === 'gpt-4o-mini' ? 'selected' : '').'>GPT-4o Mini (быстрый, дешёвый)</option>
                 <option value="gpt-4o" '.($currentOpenaiModel === 'gpt-4o' ? 'selected' : '').'>GPT-4o (качественный)</option>
                 <option value="gpt-5.2" '.($currentOpenaiModel === 'gpt-5.2' ? 'selected' : '').'>GPT-5.2 (самый мощный)</option>
+            </select>
+        </div>
+        
+        <div class="model-select" id="groq-models" style="'.($currentAiProvider !== 'groq' ? 'display:none;' : '').'">
+            <label>Groq Model:</label>
+            <select name="groq_model">
+                <option value="llama-3.3-70b-versatile" '.($currentGroqModel === 'llama-3.3-70b-versatile' ? 'selected' : '').'>Llama 3.3 70B (мощный)</option>
+                <option value="llama-3.1-8b-instant" '.($currentGroqModel === 'llama-3.1-8b-instant' ? 'selected' : '').'>Llama 3.1 8B (быстрый)</option>
             </select>
         </div>
         
@@ -155,15 +175,20 @@ $rtrn = '
     </form>
 </div>
 <script>
+function toggleProvider() {
+    var provider = document.querySelector("select[name=ai_provider]").value;
+    document.getElementById("openai-models").style.display = provider === "openai" ? "" : "none";
+    document.getElementById("groq-models").style.display = provider === "groq" ? "" : "none";
+}
+
 function saveAiSettings() {
-    var model = document.querySelector("select[name=openai_model]").value;
-    console.log("Saving model:", model);
-    
     var formData = new FormData();
     formData.append("tp", "adm");
     formData.append("pg", "cars");
     formData.append("fn", "save_ai_settings");
-    formData.append("openai_model", model);
+    formData.append("ai_provider", document.querySelector("select[name=ai_provider]").value);
+    formData.append("openai_model", document.querySelector("select[name=openai_model]").value);
+    formData.append("groq_model", document.querySelector("select[name=groq_model]").value);
     formData.append("analyze_photos", document.querySelector("input[name=analyze_photos]").checked ? "1" : "0");
     formData.append("car_type_order", document.querySelector("textarea[name=car_type_order]").value);
     formData.append("car_type_stock", document.querySelector("textarea[name=car_type_stock]").value);
@@ -177,7 +202,7 @@ function saveAiSettings() {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            alert("✅ Настройки сохранены! Model: " + data.saved_model);
+            alert("✅ Настройки сохранены!");
             location.reload();
         } else {
             alert("Ошибка: " + data.error);
