@@ -170,7 +170,7 @@ $rtrn = '
 <strong>3. JSON FORMAT:</strong>
 {"ro": "...", "ru": "...", "en": "..."}</div>
             <div class="hint" style="margin-top:.5rem;">⬇️ Редактируемая часть (инструкции для AI):</div>
-            <textarea name="ai_prompt" class="large">'.htmlspecialchars($currentPrompt).'</textarea>
+            <textarea name="ai_prompt" class="large">'.$currentPrompt.'</textarea>
         </div>
         
         <button type="button" onclick="saveAiSettings()" class="save-btn">💾 Сохранить настройки</button>

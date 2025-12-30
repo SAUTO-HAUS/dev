@@ -333,6 +333,10 @@ $last_car_id = 0;
 
             <div class="base_info">
                 <div class="id" title="id"><?= $r['id'] ?></div>
+                <?php 
+                $hasHtml = !empty($r['params_html']) && strlen(trim($r['params_html'])) > 10;
+                ?>
+                <div class="html-indicator" title="<?= $hasHtml ? 'HTML описание есть' : 'HTML описание отсутствует' ?>" style="display:inline-block;width:16px;height:16px;border-radius:3px;text-align:center;line-height:16px;font-size:10px;font-weight:bold;color:#fff;background:<?= $hasHtml ? '#28a745' : '#dc3545' ?>;"><?= $hasHtml ? '✓' : '✗' ?></div>
                 <div class="author" title="author"><?= $r['author'] ?></div>
                 <div class="views" title="views"> <?= $r['views'] ?> <div class="img"></div> </div>
                 <div class="date" title="<?= date('H:i:s', $r['date'])?>"><?= date('d.m.Y', $r['date'])?></div>
