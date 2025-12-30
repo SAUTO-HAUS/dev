@@ -333,19 +333,23 @@ $last_car_id = 0;
 
             <div class="base_info">
                 <div class="id" title="id"><?= $r['id'] ?></div>
-                <?php 
-                $hasHtml = !empty($r['params_html']) && strlen(trim($r['params_html'])) > 10;
-                ?>
-                <div class="html-indicator" title="<?= $hasHtml ? 'HTML описание есть' : 'HTML описание отсутствует' ?>" style="display:inline-block;width:16px;height:16px;border-radius:3px;text-align:center;line-height:16px;font-size:10px;font-weight:bold;color:#fff;background:<?= $hasHtml ? '#28a745' : '#dc3545' ?>;"><?= $hasHtml ? '✓' : '✗' ?></div>
                 <div class="author" title="author"><?= $r['author'] ?></div>
                 <div class="views" title="views"> <?= $r['views'] ?> <div class="img"></div> </div>
                 <div class="date" title="<?= date('H:i:s', $r['date'])?>"><?= date('d.m.Y', $r['date'])?></div>
             </div>
 
-            <div class="img" style="background-image:url(/<?=_CAR_IMG?>/<?=$r['p_path']?>/<?=$r['id']?>/med/<?=$p_nm?>.jpg), url(/media/images/site/no_image.png);">
+            <?php 
+            // Check if car has HTML description in seo2 table
+            $stmtHtml = $db->prepare("SELECT params_html FROM {$prefx}_seo2 WHERE it_id = ? AND tp = 'item' AND p1 = 'ordercars' AND lng = 'ro' LIMIT 1");
+            $stmtHtml->execute([$r['id']]);
+            $seoRow = $stmtHtml->fetch(PDO::FETCH_ASSOC);
+            $hasHtml = !empty($seoRow['params_html']) && strlen(trim($seoRow['params_html'])) > 10;
+            ?>
+            <div class="img" style="background-image:url(/<?=_CAR_IMG?>/<?=$r['p_path']?>/<?=$r['id']?>/med/<?=$p_nm?>.jpg), url(/media/images/site/no_image.png);position:relative;">
                 <?php if( $r['act'] == 0 ) : ?>
                     <div class="remove_after" timer="<?= ( $r['del_t']-time() ) ?>" ra="<?= $r['del_t'] ?>">**, **:**:**</div>
                 <?php endif; ?>
+                <div class="html-indicator" title="<?= $hasHtml ? 'HTML описание есть' : 'HTML описание отсутствует' ?>" style="position:absolute;top:10px;left:10px;width:16px;height:16px;border-radius:3px;text-align:center;line-height:16px;font-size:10px;font-weight:bold;color:#fff;background:<?= $hasHtml ? '#28a745' : '#dc3545' ?>;"><?= $hasHtml ? '✓' : '✗' ?></div>
                 <a class="url" href="<?= $site_url.'/'.$_COOKIE['lang'].'/ordercars/'.$r['id'] ?>" target="_blank" title="To the item page">
                     <div class="ico"></div>
                 </a>
