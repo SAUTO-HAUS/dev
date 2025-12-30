@@ -114,6 +114,7 @@ $rtrn = '
 4. &lt;h3&gt;Детали двигателя&lt;/h3&gt; - desc-icon-engine + desc-icon-oil
 5. &lt;h3&gt;Детали подвески&lt;/h3&gt; - desc-icon-suspension
 6. &lt;h3&gt;Детали КПП&lt;/h3&gt; - desc-icon-gearbox
+7. &lt;h3&gt;Состояние автомобиля&lt;/h3&gt; - desc-icon-condition
 
 <strong>3. JSON FORMAT:</strong>
 {"ro": "...", "ru": "...", "en": "..."}</div>
