@@ -141,7 +141,7 @@ IMPORTANT: Return EXACTLY in this JSON format:
 if ($useOpenAI) {
     $apiUrl = "https://api.openai.com/v1/chat/completions";
     $apiKey = $openaiApiKey;
-    $model = 'gpt-4o';
+    $model = 'gpt-5.2';
 } else {
     $apiUrl = "https://api.groq.com/openai/v1/chat/completions";
     $apiKey = $groqApiKey;
