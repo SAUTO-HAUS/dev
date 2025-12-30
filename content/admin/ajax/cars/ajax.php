@@ -712,6 +712,11 @@ elseif (__post('fn') == 'save_ai_settings') {
         )");
         
         $stmt = $db->prepare("INSERT INTO {$prefx}_ai_settings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)");
+
+        $aiPrompt = __post('ai_prompt') ?: '';
+        while (strpos($aiPrompt, '&amp;') !== false) {
+            $aiPrompt = html_entity_decode($aiPrompt, ENT_QUOTES, 'UTF-8');
+        }
         
         $settings = [
             'ai_provider' => __post('ai_provider') ?: 'openai',
@@ -721,7 +726,7 @@ elseif (__post('fn') == 'save_ai_settings') {
             'car_type_order' => __post('car_type_order') ?: '',
             'car_type_stock' => __post('car_type_stock') ?: '',
             'image_prompt' => __post('image_prompt') ?: '',
-            'ai_prompt' => __post('ai_prompt') ?: ''
+            'ai_prompt' => $aiPrompt
         ];
         
         foreach ($settings as $key => $value) {
