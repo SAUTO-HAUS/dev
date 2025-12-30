@@ -2239,7 +2239,7 @@ function generateWithGemini() {
             btn.disabled = false;
             
             if (data.success) {
-                btn.innerHTML = successText + (data.duration ? ' (' + data.duration + 's)' : '');
+                btn.innerHTML = successText;
                 const langs = ['ro', 'ru', 'en'];
                 langs.forEach(function(lng) {
                     const textarea = document.getElementById('params_html_' + lng);

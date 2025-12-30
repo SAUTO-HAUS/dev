@@ -1,5 +1,4 @@
 <?php
-$scriptStart = microtime(true);
 
 $lang = __post('lang') ?: 'ro';
 $fromForm = __post('from_form') == '1';
@@ -127,6 +126,11 @@ IMPORTANT: ' . $carTypeText;
 
 $editablePrompt = $aiSettings['ai_prompt'] ?? $defaultEditablePrompt;
 
+// Fix corrupted HTML encoding in prompt (multiple &amp; encoding)
+while (strpos($editablePrompt, '&amp;') !== false) {
+    $editablePrompt = html_entity_decode($editablePrompt, ENT_QUOTES, 'UTF-8');
+}
+
 $prompt = $editablePrompt . "\n\n" . $fixedCarData . "\n\n" . $fixedHtmlStructure . "\n\n" . $fixedJsonFormat;
 
 // Choose API based on settings
@@ -180,22 +184,6 @@ if ($useOpenAI && !empty($carImages) && $analyzePhotos) {
 
 $userContent[] = ['type' => 'text', 'text' => $prompt];
 
-// Log AI request info
-$startTime = microtime(true);
-$willSendImages = $useOpenAI && !empty($carImages) && $analyzePhotos;
-$logInfo = [
-    'provider' => $aiProvider,
-    'model' => $model,
-    'analyze_photos_setting' => $aiSettings['analyze_photos'] ?? 'NOT SET',
-    'analyze_photos_bool' => $analyzePhotos ? 'YES' : 'NO',
-    'useOpenAI' => $useOpenAI ? 'YES' : 'NO',
-    'images_count' => count($carImages),
-    'will_send_images' => $willSendImages ? 'YES' : 'NO',
-    'prompt_length' => strlen($prompt),
-    'content_type' => $willSendImages ? 'ARRAY_WITH_IMAGES' : 'TEXT_ONLY'
-];
-error_log("AI Generate START: " . json_encode($logInfo));
-
 $maxTokens = 4096; 
 if (strpos($model, 'gpt-4o') !== false) {
     $maxTokens = 8192; 
@@ -238,9 +226,6 @@ $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 $curlError = curl_error($ch);
 curl_close($ch);
 
-$endTime = microtime(true);
-$duration = round($endTime - $startTime, 2);
-error_log("AI Generate END: duration={$duration}s, httpCode={$httpCode}, model={$model}");
 
 if ($curlError) {
     $returnIt = ['success' => false, 'error' => 'cURL error: ' . $curlError];
@@ -290,7 +275,6 @@ if ($httpCode !== 200) {
 
 $responseData = json_decode($response, true);
 
-error_log("GPT-5 Response: " . json_encode($responseData));
 
 // GPT-5.x returns output_text, older models return choices[0].message.content
 if (strpos($model, 'gpt-5') !== false) {
@@ -323,17 +307,9 @@ if (!$htmlData || !isset($htmlData['ro'])) {
     return;
 }
 
-$scriptEnd = microtime(true);
-$totalTime = round($scriptEnd - $scriptStart, 2);
-$processingTime = round($totalTime - $duration, 2);
-
 $returnIt = [
     'success' => true, 
     'html_ro' => $htmlData['ro'] ?? '', 
     'html_ru' => $htmlData['ru'] ?? '', 
-    'html_en' => $htmlData['en'] ?? '', 
-    'duration' => $duration,
-    'api_time' => $duration,
-    'processing_time' => $processingTime,
-    'total_time' => $totalTime
+    'html_en' => $htmlData['en'] ?? ''
 ];
