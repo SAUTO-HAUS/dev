@@ -53,8 +53,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_ai_settings'])) 
 
 // Load current settings
 $settings = [];
-$stmt = $db->query("SELECT setting_key, setting_value FROM {$prefx}_ai_settings");
-while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+$stmtLoad = $db->query("SELECT setting_key, setting_value FROM {$prefx}_ai_settings");
+while ($row = $stmtLoad->fetch(PDO::FETCH_ASSOC)) {
     $settings[$row['setting_key']] = $row['setting_value'];
 }
 
@@ -151,6 +151,32 @@ $rtrn = '
             <textarea name="ai_prompt" class="large">'.htmlspecialchars($currentPrompt).'</textarea>
         </div>
         
-        <button type="submit" name="save_ai_settings" class="save-btn">💾 Сохранить настройки</button>
+        <button type="button" onclick="saveAiSettings()" class="save-btn">💾 Сохранить настройки</button>
     </form>
-</div>';
+</div>
+<script>
+function saveAiSettings() {
+    var formData = new FormData();
+    formData.append("ajax_save_ai_settings", "1");
+    formData.append("openai_model", document.querySelector("select[name=openai_model]").value);
+    formData.append("analyze_photos", document.querySelector("input[name=analyze_photos]").checked ? "1" : "0");
+    formData.append("car_type_order", document.querySelector("textarea[name=car_type_order]").value);
+    formData.append("car_type_stock", document.querySelector("textarea[name=car_type_stock]").value);
+    formData.append("image_prompt", document.querySelector("textarea[name=image_prompt]").value);
+    formData.append("ai_prompt", document.querySelector("textarea[name=ai_prompt]").value);
+    
+    fetch("/content/admin/ajax/save_ai_settings.php", {
+        method: "POST",
+        body: formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            alert("✅ Настройки сохранены!");
+        } else {
+            alert("Ошибка: " + data.error);
+        }
+    })
+    .catch(e => alert("Ошибка сохранения"));
+}
+</script>';
