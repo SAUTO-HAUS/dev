@@ -197,11 +197,7 @@ $requestData = [
     'response_format' => ['type' => 'json_object']
 ];
 
-if (strpos($model, 'gpt-5') !== false) {
-    $requestData['max_completion_tokens'] = 8192;
-} else {
-    $requestData['max_tokens'] = 8192;
-}
+$requestData['max_tokens'] = 8192;
 
 $ch = curl_init($apiUrl);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);

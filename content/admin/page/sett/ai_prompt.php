@@ -118,7 +118,7 @@ $rtrn = '
             <select name="openai_model">
                 <option value="gpt-4o-mini" '.($currentOpenaiModel === 'gpt-4o-mini' ? 'selected' : '').'>GPT-4o Mini (быстрый, дешёвый)</option>
                 <option value="gpt-4o" '.($currentOpenaiModel === 'gpt-4o' ? 'selected' : '').'>GPT-4o (качественный)</option>
-                <option value="gpt-5.2" '.($currentOpenaiModel === 'gpt-5.2' ? 'selected' : '').'>GPT-5.2 (самый мощный)</option>
+                <option value="gpt-4-turbo" '.($currentOpenaiModel === 'gpt-4-turbo' ? 'selected' : '').'>GPT-4 Turbo (мощный)</option>
             </select>
         </div>
         
