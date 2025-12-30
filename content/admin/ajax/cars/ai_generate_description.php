@@ -42,6 +42,19 @@ if ($fromForm) {
             $returnIt = ['success' => false, 'error' => 'Car not found'];
             return;
         }
+        
+        $carImages = [];
+        $stmtPhotos = $db->prepare("SELECT * FROM {$prefx}_car_pht WHERE it_id = :it_id ORDER BY pos ASC LIMIT 5");
+        $stmtPhotos->execute(['it_id' => $carId]);
+        $photos = $stmtPhotos->fetchAll(PDO::FETCH_ASSOC);
+        
+        $imgFormat = (usr_agent()==='IOS'||usr_agent()==='MAC') ? '.jpg' : '.webp';
+        $siteUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
+        
+        foreach ($photos as $photo) {
+            $carImages[] = $siteUrl . '/' . _CAR_IMG . '/' . $car['p_path'] . '/' . $carId . '/high/' . $photo['name'] . $imgFormat;
+        }
+        
     } catch (PDOException $e) {
         $returnIt = ['success' => false, 'error' => 'Database error: ' . $e->getMessage()];
         return;
@@ -101,38 +114,9 @@ HTML STRUCTURE (MUST follow this EXACT order):
 4. <h3><span class=\"desc-icon desc-icon-engine\"></span>Detalii motor</h3> then <p><strong>Caracteristici constructive:</strong></p><ul> engine block material, cylinder head, turbosuflantă (da/nu), timing drive type (ONLY write 'curea' or 'lanț' - choose correct one for THIS engine!), emission standard, special features </ul> then <p><strong><span class=\"desc-icon desc-icon-oil\"></span>Mentenanță:</strong></p><ul> service interval ALWAYS 7000 km, oil specification (viscosity + ACEA class - choose correct for THIS engine!), oil capacity in litri, injection system notes </ul> - NEVER mention engine lifespan or km durability!
 5. <h3><span class=\"desc-icon desc-icon-gearbox\"></span>Detalii cutie de viteze</h3> then <ul> - USE EXACTLY the transmission type from Car data above (Manuală/Automată/Robotizată)! gearbox type, clutch type, oil type and specification (IMPORTANT: for BMW write 'ZF Lifeguard 6', for Mercedes write 'MB 236.14', for VW/Audi/Skoda write 'G052182' - NEVER write 'Dexron' for these brands!), oil capacity as RANGE (X-X litri), gearbox service interval (70000-80000 km)
 
-TECHNICAL ACCURACY RULES (VERY IMPORTANT):
 
-TIMING DRIVE (lanț or curea):
-- CHAIN (lanț): BMW, Mercedes, Audi, Volkswagen, Skoda, Seat, Porsche, Volvo, Lexus, Infiniti, most Toyota/Honda/Mazda/Nissan after 2010, Hyundai/Kia GDI engines
-- BELT (curea): Dacia, Renault (most), Fiat, Peugeot, Citroen, Ford (older), Opel (older diesels), older Japanese cars before 2008
-- If unsure for premium brands, write 'lanț'
 
-GEARBOX OIL (NEVER write generic 'Dexron' for European cars!):
-- BMW automatic: ZF Lifeguard 6 or 8
-- Mercedes automatic: MB 236.14 or 236.15  
-- Audi/VW/Skoda/Seat DSG: G052182 or G055529
-- Audi/VW/Skoda/Seat automatic (tiptronic): ATF G055025
-- Porsche PDK: Pentosin FFL-4
-- Volvo automatic: Volvo Transmission Oil
-- Renault automatic: ELF Renaultmatic
-- Peugeot/Citroen automatic: Total Fluidmatic
-- Toyota automatic: Toyota WS or T-IV
-- Honda automatic: Honda ATF DW-1
-- Hyundai/Kia automatic: SP-IV or SP-IV-M
-- Mazda automatic: Mazda ATF FZ
-- Nissan automatic: Nissan Matic S or D
-- Mitsubishi automatic: Mitsubishi ATF SP-III or Diamond ATF SP-III
-- Manual gearboxes (all brands): 75W-80 or 75W-90 GL-4
 
-CRITICAL REQUIREMENTS:
-- Section 'Dotări' MUST be the FIRST section (right after h2 title) - mobile layout depends on this!
-- Each section must have REAL technical details based on your knowledge of this specific {$car['br_nm']} {$car['mo_nm']} model
-- Use <strong> for labels in lists
-- Do NOT use generic filler text - every sentence must add real information
-- NEVER add any <li> with 'Avertisment', 'Warning', 'Предупреждение' label - these are STRICTLY FORBIDDEN
-- NEVER mention: 'check documents', 'verify history', 'before buying', 'before making an offer', 'verificați', 'проверьте', 'износ', 'uzură', 'wear', 'обратите внимание', 'atenție la' - FORBIDDEN
-- Do NOT add any disclaimers or buyer advice - we are a professional dealership
 
 IMPORTANT: Return EXACTLY in this JSON format:
 {\"ro\": \"<HTML in Romanian>\", \"ru\": \"<HTML in Russian>\", \"en\": \"<HTML in English>\"}";
@@ -149,16 +133,35 @@ if ($useOpenAI) {
     $fallbackModel = 'llama-3.1-8b-instant'; 
 }
 
+$userContent = [];
+
+if ($useOpenAI && !empty($carImages)) {
+    foreach ($carImages as $imgUrl) {
+        $userContent[] = [
+            'type' => 'image_url',
+            'image_url' => ['url' => $imgUrl]
+        ];
+    }
+    $prompt = "I'm showing you photos of this car. Analyze them to identify VISIBLE features like: wheel type (alloy/steel), headlight type (LED/xenon/halogen), interior material (leather/cloth), infotainment screen, sunroof, parking sensors, etc. Use ONLY what you can clearly see in the photos for the 'Dotări' section.\n\n" . $prompt;
+}
+
+$userContent[] = ['type' => 'text', 'text' => $prompt];
+
 $requestData = [
     'model' => $model,
     'messages' => [
         ['role' => 'system', 'content' => 'You are a JSON generator. Always respond with valid JSON only, no markdown, no explanations.'],
-        ['role' => 'user', 'content' => $prompt]
+        ['role' => 'user', 'content' => $useOpenAI && !empty($carImages) ? $userContent : $prompt]
     ],
     'temperature' => 0.7,
-    'max_tokens' => 8192,
     'response_format' => ['type' => 'json_object']
 ];
+
+if (strpos($model, 'gpt-5') !== false) {
+    $requestData['max_completion_tokens'] = 8192;
+} else {
+    $requestData['max_tokens'] = 8192;
+}
 
 $ch = curl_init($apiUrl);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
