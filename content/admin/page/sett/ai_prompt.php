@@ -107,13 +107,13 @@ $rtrn = '
             <div class="locked-section"><strong>1. Car data:</strong> (данные авто подставляются автоматически)
 - Brand, Model, Year, Body type, Mileage, Engine volume, Power, Fuel, Transmission, Drive, Color
 
-<strong>2. HTML STRUCTURE:</strong>
+<strong>2. HTML СТРУКТУРА:</strong>
 1. &lt;h2&gt;{Brand} {Model} | {Engine} | {Fuel} | {Year}&lt;/h2&gt;
-2. &lt;h3&gt;Dotări&lt;/h3&gt; - desc-icon-features
-3. &lt;h3&gt;Caracteristici tehnice&lt;/h3&gt; - desc-icon-spec  
-4. &lt;h3&gt;Detalii motor&lt;/h3&gt; - desc-icon-engine + desc-icon-oil
-5. &lt;h3&gt;Detalii suspensie&lt;/h3&gt; - desc-icon-suspension
-6. &lt;h3&gt;Detalii cutie de viteze&lt;/h3&gt; - desc-icon-gearbox
+2. &lt;h3&gt;Оснащение&lt;/h3&gt; - desc-icon-features
+3. &lt;h3&gt;Технические характеристики&lt;/h3&gt; - desc-icon-spec  
+4. &lt;h3&gt;Детали двигателя&lt;/h3&gt; - desc-icon-engine + desc-icon-oil
+5. &lt;h3&gt;Детали подвески&lt;/h3&gt; - desc-icon-suspension
+6. &lt;h3&gt;Детали КПП&lt;/h3&gt; - desc-icon-gearbox
 
 <strong>3. JSON FORMAT:</strong>
 {"ro": "...", "ru": "...", "en": "..."}</div>
