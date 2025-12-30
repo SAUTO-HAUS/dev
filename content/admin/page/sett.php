@@ -417,6 +417,9 @@ if ( isset($t_mp[4]) ){
 			include dirname(__FILE__) . '/sett/monitoring.php';
 		}
 	}
+	elseif ( $t_mp[4]=='ai_prompt' ){
+		include dirname(__FILE__) . '/sett/ai_prompt.php';
+	}
 	elseif ( $t_mp[4]=='annc' ){
 		if ( isset($t_mp[5]) ){
 			$link_back = ''; $count = count($t_mp);
