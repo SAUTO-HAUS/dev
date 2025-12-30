@@ -44,7 +44,7 @@ if ($fromForm) {
         }
         
         $carImages = [];
-        $stmtPhotos = $db->prepare("SELECT * FROM {$prefx}_car_pht WHERE it_id = :it_id ORDER BY pos ASC LIMIT 5");
+        $stmtPhotos = $db->prepare("SELECT * FROM {$prefx}_car_pht WHERE it_id = :it_id ORDER BY pos ASC LIMIT 6");
         $stmtPhotos->execute(['it_id' => $carId]);
         $photos = $stmtPhotos->fetchAll(PDO::FETCH_ASSOC);
         
