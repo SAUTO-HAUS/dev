@@ -918,7 +918,7 @@ SVG
                                 case 'published':
                                     $telegramStatusIcon = '✅';
                                     $telegramStatusText = __('cars.status_published');
-                                    $facebookStatusColor = '#28a745';
+                                    $telegramStatusColor = '#28a745';
                                     break;
                                 case 'failed':
                                     $telegramStatusIcon = '❌';
