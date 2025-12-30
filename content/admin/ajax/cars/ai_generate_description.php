@@ -83,54 +83,40 @@ $imagePromptText = $aiSettings['image_prompt'] ?? $defaultImagePrompt;
 
 $carTypeText = ($carType === 'order') ? $carTypeOrderText : $carTypeStockText;
 
-// Default prompt template
-$defaultPrompt = 'You are an expert automotive journalist and marketing copywriter. Generate DETAILED, ATTRACTIVE and PERSUASIVE HTML descriptions for this car in 3 languages: Romanian, Russian, and English.
+$fixedCarData = "Car data:
+- Brand: " . ($car['br_nm'] ?? '') . "
+- Model: " . ($car['mo_nm'] ?? '') . "
+- Year: " . ($car['yr'] ?? '') . "
+- Body type: " . ($car['bt'] ?? '') . "
+- Mileage: " . ($car['mlg'] ?? '') . " km
+- Engine volume: " . ($car['vol'] ?? '') . " cm³
+- Power: " . ($car['hp'] ?? '') . " HP
+- Fuel: " . ($car['fl'] ?? '') . "
+- Transmission: " . ($car['tra'] ?? '') . "
+- Drive: " . ($car['wd'] ?? '') . "
+- Color: " . ($car['clr'] ?? '');
+
+$fixedHtmlStructure = "HTML STRUCTURE (MUST follow this EXACT order):
+1. <h2>{Brand} {Model} | {Engine} | {Fuel} | {Year}</h2> - USE PIPE SEPARATOR between brand/model, engine, fuel type and year!
+2. <h3><span class=\"desc-icon desc-icon-features\"></span>Dotări</h3> then <ul> with 5-8 <li> items.
+3. <h3><span class=\"desc-icon desc-icon-spec\"></span>Caracteristici tehnice</h3> then <ul> with detailed specs: engine type, power with kW and rpm, torque Nm, fuel system, real consumption l/100km, drivetrain (DO NOT include gearbox type here - it goes in section 6!)
+4. <h3><span class=\"desc-icon desc-icon-engine\"></span>Detalii motor</h3> then <p><strong>Caracteristici constructive:</strong></p><ul> engine block material, cylinder head, turbosuflantă (da/nu), timing drive type (ONLY write 'curea' or 'lanț' - choose correct one for THIS engine!), emission standard, special features </ul> then <p><strong><span class=\"desc-icon desc-icon-oil\"></span>Mentenanță:</strong></p><ul> service interval ALWAYS 7000 km, oil specification (viscosity + ACEA class - choose correct for THIS engine!), oil capacity in litri, injection system notes </ul> - NEVER mention engine lifespan or km durability!
+5. <h3><span class=\"desc-icon desc-icon-suspension\"></span>Detalii suspensie</h3> then <ul> with: front suspension type (McPherson/double wishbone/multi-link), rear suspension type (torsion beam/multi-link/independent), stabilizer bars (front/rear), shock absorbers type, any special features (adaptive suspension, air suspension if applicable for this model)
+6. <h3><span class=\"desc-icon desc-icon-gearbox\"></span>Detalii cutie de viteze</h3> then <ul> - USE EXACTLY the transmission type from Car data above (Manuală/Automată/Robotizată)! gearbox type, clutch type, oil type and specification (IMPORTANT: for BMW write 'ZF Lifeguard 6', for Mercedes write 'MB 236.14', for VW/Audi/Skoda write 'G052182' - NEVER write 'Dexron' for these brands!), oil capacity as RANGE (X-X litri), gearbox service interval (70000-80000 km)";
+
+// FIXED PART 3 - JSON format (always at the end)
+$fixedJsonFormat = 'IMPORTANT: Return EXACTLY in this JSON format:
+{"ro": "<HTML in Romanian>", "ru": "<HTML in Russian>", "en": "<HTML in English>"}';
+
+$defaultEditablePrompt = 'You are an expert automotive journalist and marketing copywriter. Generate DETAILED, ATTRACTIVE and PERSUASIVE HTML descriptions for this car in 3 languages: Romanian, Russian, and English.
 
 YOUR GOAL: Write compelling text that will ATTRACT BUYERS and make them want to purchase or order this car. The text must be clear, beautiful, professional and sales-oriented.
 
-IMPORTANT: {$carTypeText}
+IMPORTANT: ' . $carTypeText;
 
-Car data:
-- Brand: {$car[\'br_nm\']}
-- Model: {$car[\'mo_nm\']}
-- Year: {$car[\'yr\']}
-- Body type: {$car[\'bt\']}
-- Mileage: {$car[\'mlg\']} km
-- Engine volume: {$car[\'vol\']} cm³
-- Power: {$car[\'hp\']} HP
-- Fuel: {$car[\'fl\']}
-- Transmission: {$car[\'tra\']}
-- Drive: {$car[\'wd\']}
-- Color: {$car[\'clr\']}
+$editablePrompt = $aiSettings['ai_prompt'] ?? $defaultEditablePrompt;
 
-HTML STRUCTURE (MUST follow this EXACT order):
-1. <h2>{Brand} {Model} | {Engine} | {Fuel} | {Year}</h2> - USE PIPE SEPARATOR between brand/model, engine, fuel type and year!
-2. <h3><span class="desc-icon desc-icon-features"></span>Dotări</h3> then <ul> with 5-8 <li> items.
-3. <h3><span class="desc-icon desc-icon-spec"></span>Caracteristici tehnice</h3> then <ul> with detailed specs: engine type, power with kW and rpm, torque Nm, fuel system, real consumption l/100km, drivetrain (DO NOT include gearbox type here - it goes in section 5!)
-4. <h3><span class="desc-icon desc-icon-engine"></span>Detalii motor</h3> then <p><strong>Caracteristici constructive:</strong></p><ul> engine block material, cylinder head, turbosuflantă (da/nu), timing drive type (ONLY write \'curea\' or \'lanț\' - choose correct one for THIS engine!), emission standard, special features </ul> then <p><strong><span class="desc-icon desc-icon-oil"></span>Mentenanță:</strong></p><ul> service interval ALWAYS 7000 km, oil specification (viscosity + ACEA class - choose correct for THIS engine!), oil capacity in litri, injection system notes </ul> - NEVER mention engine lifespan or km durability!
-5. <h3><span class="desc-icon desc-icon-suspension"></span>Detalii suspensie</h3> then <ul> with: front suspension type (McPherson/double wishbone/multi-link), rear suspension type (torsion beam/multi-link/independent), stabilizer bars (front/rear), shock absorbers type, any special features (adaptive suspension, air suspension if applicable for this model)
-6. <h3><span class="desc-icon desc-icon-gearbox"></span>Detalii cutie de viteze</h3> then <ul> - USE EXACTLY the transmission type from Car data above (Manuală/Automată/Robotizată)! gearbox type, clutch type, oil type and specification (IMPORTANT: for BMW write \'ZF Lifeguard 6\', for Mercedes write \'MB 236.14\', for VW/Audi/Skoda write \'G052182\' - NEVER write \'Dexron\' for these brands!), oil capacity as RANGE (X-X litri), gearbox service interval (70000-80000 km)
-
-IMPORTANT: Return EXACTLY in this JSON format:
-{"ro": "<HTML in Romanian>", "ru": "<HTML in Russian>", "en": "<HTML in English>"}';
-
-// Use prompt from DB or default
-$promptTemplate = $aiSettings['ai_prompt'] ?? $defaultPrompt;
-
-// Replace variables in prompt
-$prompt = $promptTemplate;
-$prompt = str_replace('{$carTypeText}', $carTypeText, $prompt);
-$prompt = str_replace('{$car[\'br_nm\']}', $car['br_nm'] ?? '', $prompt);
-$prompt = str_replace('{$car[\'mo_nm\']}', $car['mo_nm'] ?? '', $prompt);
-$prompt = str_replace('{$car[\'yr\']}', $car['yr'] ?? '', $prompt);
-$prompt = str_replace('{$car[\'bt\']}', $car['bt'] ?? '', $prompt);
-$prompt = str_replace('{$car[\'mlg\']}', $car['mlg'] ?? '', $prompt);
-$prompt = str_replace('{$car[\'vol\']}', $car['vol'] ?? '', $prompt);
-$prompt = str_replace('{$car[\'hp\']}', $car['hp'] ?? '', $prompt);
-$prompt = str_replace('{$car[\'fl\']}', $car['fl'] ?? '', $prompt);
-$prompt = str_replace('{$car[\'tra\']}', $car['tra'] ?? '', $prompt);
-$prompt = str_replace('{$car[\'wd\']}', $car['wd'] ?? '', $prompt);
-$prompt = str_replace('{$car[\'clr\']}', $car['clr'] ?? '', $prompt);
+$prompt = $editablePrompt . "\n\n" . $fixedCarData . "\n\n" . $fixedHtmlStructure . "\n\n" . $fixedJsonFormat;
 
 // Choose API based on available key
 if ($useOpenAI) {
