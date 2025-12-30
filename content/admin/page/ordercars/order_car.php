@@ -2233,10 +2233,10 @@ function generateWithGemini() {
         },
         dataType: 'json',
         success: function(data) {
-            btn.innerHTML = originalText;
             btn.disabled = false;
             
             if (data.success) {
+                btn.innerHTML = successText + (data.duration ? ' (' + data.duration + 's)' : '');
                 const langs = ['ro', 'ru', 'en'];
                 langs.forEach(function(lng) {
                     const textarea = document.getElementById('params_html_' + lng);
@@ -2252,21 +2252,21 @@ function generateWithGemini() {
                         }
                     }
                 });
-                // Show success in button
-                btn.innerHTML = successText;
+                // Reset button after 3 seconds
                 btn.style.background = '#28a745';
                 setTimeout(function() {
                     btn.innerHTML = originalText;
                     btn.style.background = '#4285f4';
-                }, 2000);
+                }, 3000);
             } else {
+                btn.innerHTML = originalText;
                 alert(' Ошибка: ' + (data.error || 'Unknown error'));
             }
         },
         error: function(xhr, status, error) {
             btn.innerHTML = originalText;
             btn.disabled = false;
-            alert('❌ Ошибка сети: ' + error);
+            alert(' Ошибка сети: ' + error);
         }
     });
 }

@@ -918,7 +918,7 @@ SVG
                                 case 'published':
                                     $telegramStatusIcon = '✅';
                                     $telegramStatusText = __('cars.status_published');
-                                    $telegramStatusColor = '#28a745';
+                                    $facebookStatusColor = '#28a745';
                                     break;
                                 case 'failed':
                                     $telegramStatusIcon = '❌';
@@ -1964,10 +1964,10 @@ function generateWithGemini() {
         },
         dataType: 'json',
         success: function(data) {
-            btn.innerHTML = originalText;
             btn.disabled = false;
             
             if (data.success) {
+                btn.innerHTML = successText + (data.duration ? ' (' + data.duration + 's)' : '');
                 const langs = ['ro', 'ru', 'en'];
                 langs.forEach(function(lng) {
                     const textarea = document.getElementById('params_html_' + lng);
@@ -1986,14 +1986,14 @@ function generateWithGemini() {
                         if (changeChecker) changeChecker.value = '1';
                     }
                 });
-                // Show success in button
-                btn.innerHTML = successText;
+                // Reset button after 3 seconds
                 btn.style.background = '#28a745';
                 setTimeout(function() {
                     btn.innerHTML = originalText;
                     btn.style.background = '#4285f4';
-                }, 2000);
+                }, 3000);
             } else {
+                btn.innerHTML = originalText;
                 alert(' Error: ' + (data.error || 'Unknown error'));
             }
         },
