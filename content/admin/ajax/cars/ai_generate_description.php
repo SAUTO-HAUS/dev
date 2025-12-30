@@ -140,7 +140,9 @@ if ($useOpenAI) {
 
 $userContent = [];
 
-if ($useOpenAI && !empty($carImages)) {
+$analyzePhotos = ($aiSettings['analyze_photos'] ?? '0') === '1';
+
+if ($useOpenAI && !empty($carImages) && $analyzePhotos) {
     foreach ($carImages as $imgUrl) {
         $userContent[] = [
             'type' => 'image_url',

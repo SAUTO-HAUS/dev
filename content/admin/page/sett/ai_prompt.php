@@ -35,6 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_ai_settings'])) 
     $carTypeOrder = $_POST['car_type_order'] ?? '';
     $carTypeStock = $_POST['car_type_stock'] ?? '';
     $imagePrompt = $_POST['image_prompt'] ?? '';
+    $analyzePhotos = isset($_POST['analyze_photos']) ? '1' : '0';
     
     // Save settings
     $stmt = $db->prepare("INSERT INTO {$prefx}_ai_settings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = :value2");
@@ -43,6 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_ai_settings'])) 
     $stmt->execute(['key' => 'car_type_order', 'value' => $carTypeOrder, 'value2' => $carTypeOrder]);
     $stmt->execute(['key' => 'car_type_stock', 'value' => $carTypeStock, 'value2' => $carTypeStock]);
     $stmt->execute(['key' => 'image_prompt', 'value' => $imagePrompt, 'value2' => $imagePrompt]);
+    $stmt->execute(['key' => 'analyze_photos', 'value' => $analyzePhotos, 'value2' => $analyzePhotos]);
     
     $saved = true;
 }
@@ -58,6 +60,7 @@ $currentPrompt = $settings['ai_prompt'] ?? $defaultPrompt;
 $currentCarTypeOrder = $settings['car_type_order'] ?? $defaultCarTypeOrder;
 $currentCarTypeStock = $settings['car_type_stock'] ?? $defaultCarTypeStock;
 $currentImagePrompt = $settings['image_prompt'] ?? $defaultImagePrompt;
+$currentAnalyzePhotos = $settings['analyze_photos'] ?? '0';
 
 $rtrn = '
 <style>
@@ -78,6 +81,10 @@ $rtrn = '
     .ai-settings .variables code {background:#e9ecef; padding:.1rem .3rem; border-radius:.2rem;}
     .ai-settings .locked-section {background:#fff3cd; border:2px dashed #ffc107; padding:1rem; border-radius:.5rem; margin-bottom:.5rem; font-family:monospace; font-size:.8rem; white-space:pre-wrap; color:#856404;}
     .ai-settings .locked-label {background:#ffc107; color:#000; padding:.2rem .5rem; border-radius:.3rem; font-size:.75rem; font-weight:bold; display:inline-block; margin-bottom:.5rem;}
+    .ai-settings .checkbox-group {display:flex; align-items:center; gap:.5rem; margin-bottom:1rem; padding:1rem; background:#f0f7ff; border-radius:.5rem; border:1px solid #cce5ff;}
+    .ai-settings .checkbox-group input[type="checkbox"] {width:1.2rem; height:1.2rem; cursor:pointer;}
+    .ai-settings .checkbox-group label {font-weight:normal; margin:0; cursor:pointer;}
+    .ai-settings .checkbox-group .cost-warning {color:#856404; font-size:.8rem; margin-left:auto; background:#fff3cd; padding:.3rem .6rem; border-radius:.3rem;}
 </style>
 
 <div class="ai-settings">
@@ -97,8 +104,14 @@ $rtrn = '
         </div>
         
         <div class="form-group">
+            <div class="checkbox-group">
+                <input type="checkbox" name="analyze_photos" id="analyze_photos" value="1" '.($currentAnalyzePhotos === '1' ? 'checked' : '').'>
+                <label for="analyze_photos">Анализировать фотографии автомобиля (OpenAI Vision)</label>
+                <span class="cost-warning">⚠️ Увеличивает стоимость запроса</span>
+            </div>
             <label>Промпт для анализа фотографий:</label>
             <textarea name="image_prompt">'.htmlspecialchars($currentImagePrompt).'</textarea>
+            <div class="hint">Этот промпт используется только если включен анализ фотографий выше.</div>
         </div>
         
         <div class="form-group">
