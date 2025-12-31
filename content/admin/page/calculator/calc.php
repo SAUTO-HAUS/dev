@@ -1140,11 +1140,13 @@ $rtrn = '
             accessories: "Accesorii",
             transaction_commission: "Comision pentru tranzactie",
             total: "TOTAL COSTURI VAMUIRE",
-            vehicle_total: "SUMA TOTALA VEHICUL"
+            vehicle_total: "SUMA TOTALA VEHICUL",
+            sales_manager: "Manager vanzari",
+            address: "Chisinau str Calea Mosilor 11"
         },
         ru: {
             results: "Результат расчёта",
-            value_mdl: "Таможенная стоимость (MDL)",
+            value_mdl: "Таможенная стоимость",
             excise: "Акциз",
             customs_duty: "Сбор за таможенные процедуры",
             damage_protection: "Защита от повреждений",
@@ -1156,11 +1158,13 @@ $rtrn = '
             accessories: "Аксессуары",
             transaction_commission: "Комиссия за транзакцию",
             total: "ИТОГО РАСХОДЫ НА РАСТАМОЖКУ",
-            vehicle_total: "ОБЩАЯ СУММА ЗА АВТОМОБИЛЬ"
+            vehicle_total: "ОБЩАЯ СУММА ЗА АВТОМОБИЛЬ",
+            sales_manager: "Менеджер по продажам",
+            address: "Кишинев ул. Каля Мошилор 11"
         },
         en: {
             results: "Calculation Results",
-            value_mdl: "Customs Value (MDL)",
+            value_mdl: "Customs Value",
             excise: "Excise",
             customs_duty: "Customs Procedures Fee",
             damage_protection: "Damage Protection",
@@ -1172,7 +1176,9 @@ $rtrn = '
             accessories: "Accessories",
             transaction_commission: "Transaction Commission",
             total: "TOTAL CUSTOMS COSTS",
-            vehicle_total: "TOTAL VEHICLE COST"
+            vehicle_total: "TOTAL VEHICLE COST",
+            sales_manager: "Sales Manager",
+            address: "Chisinau str Calea Mosilor 11"
         }
     };
     
@@ -1391,7 +1397,7 @@ $rtrn = '
         doc.setFont("helvetica", "normal");
         doc.text("+373 68 68 99 95", 20, footerY + 6);
         doc.text("info@sauto.md", 20, footerY + 12);
-        doc.text("Chisinau str Calea Mosilor 11", 20, footerY + 18);
+        doc.text(removeDiacritics(t.address), 20, footerY + 18);
         
         // Footer info - right side (manager info)
         doc.setFontSize(12);
@@ -1399,7 +1405,7 @@ $rtrn = '
         doc.text("CARP DUMITRU", 90, footerY);
         doc.setFontSize(10);
         doc.setFont("helvetica", "normal");
-        doc.text("Manager vanzari", 90, footerY + 6);
+        doc.text(removeDiacritics(t.sales_manager), 90, footerY + 6);
         doc.text("+373 62166880", 90, footerY + 12);
         doc.text("carp@sauto.md", 90, footerY + 18);
         
