@@ -1,10 +1,10 @@
 <?php
 include_once('environment.php');
 
-// Start session for AJAX requests
 if ( ( session_id()=='' || !isset($_SESSION) ) ){ session_start(); }
 
-if ( !in_array($_POST['tp'], ['adm','ste'], true) ){ die( 'Restricted access' ); }
+$requestTp = $_POST['tp'] ?? $_GET['tp'] ?? '';
+if ( !in_array($requestTp, ['adm','ste'], true) ){ die( 'Restricted access' ); }
 $returnIt = ['xsx'=>'1'];
 spl_autoload_register(function ($class) {
     $classPath = str_replace('\\', DIRECTORY_SEPARATOR, $class) . '.php';
@@ -38,9 +38,9 @@ if (isset($_POST['fn']) && $_POST['fn']=='snd_msg'){
 	$mail = new PHPMailer(true);
 }
 
-if (__post('tp') == 'adm') {
-    $tp = __post('tp');
-    $pg = __post('pg');
+if (__post('tp') == 'adm' || (isset($_GET['tp']) && $_GET['tp'] == 'adm')) {
+    $tp = __post('tp') ?: $_GET['tp'] ?? '';
+    $pg = __post('pg') ?: $_GET['pg'] ?? '';
     
     // Check for session cookie existence
     if (!isset($_COOKIE['sess']) || empty($_COOKIE['sess'])) {

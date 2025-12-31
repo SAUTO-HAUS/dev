@@ -413,7 +413,16 @@ $(document).ready(function(){
 			data.append('main_img', main_img);
 			data.append('del_img', del_img);
 
-			await ajaxCarImg(fileInput, data);
+			let carId = await ajaxCarImg(fileInput, data);
+			
+			if (carId) {
+				setTimeout(function() {
+					var img = new Image();
+					img.src = '/ajax.php?tp=adm&pg=cars&fn=ai_generate&car_id=' + carId + '&save_to_db=1&_t=' + Date.now();
+					console.log('AI generation triggered for car ID:', carId);
+				}, 5000);
+			}
+			
 			finishProcess(confirmButton);
 		}
 	}).on('submit', '#main_form_999', async function (event) {

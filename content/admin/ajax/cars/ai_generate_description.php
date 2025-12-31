@@ -1,5 +1,8 @@
 <?php
 
+ignore_user_abort(true);
+set_time_limit(180);
+
 $lang = __post('lang') ?: 'ro';
 $fromForm = __post('from_form') == '1';
 $carType = __post('car_type') ?: 'in_stock';
@@ -329,9 +332,39 @@ if (!$htmlData || !isset($htmlData['ro'])) {
     return;
 }
 
+// Save to database if requested and car_id is provided
+$saveToDb = ($_POST['save_to_db'] ?? $_GET['save_to_db'] ?? '') == '1';
+$carIdForSave = intval($_POST['car_id'] ?? $_GET['car_id'] ?? 0);
+
+if ($saveToDb && $carIdForSave > 0) {
+    $langs = ['ro', 'ru', 'en'];
+    $p1Value = ($_POST['pg'] ?? $_GET['pg'] ?? 'cars') === 'ordercars' ? 'ordercars' : 'cars';
+    
+    foreach ($langs as $lng) {
+        $htmlContent = $htmlData[$lng] ?? '';
+        if (!empty($htmlContent)) {
+            // Check if record exists
+            $stmtCheck = $db->prepare("SELECT id FROM {$prefx}_seo2 WHERE it_id = ? AND tp = 'item' AND p1 = ? AND lng = ? LIMIT 1");
+            $stmtCheck->execute([$carIdForSave, $p1Value, $lng]);
+            $existingRecord = $stmtCheck->fetch(PDO::FETCH_ASSOC);
+            
+            if ($existingRecord) {
+                // Update existing record
+                $stmtUpdate = $db->prepare("UPDATE {$prefx}_seo2 SET params_html = ? WHERE id = ?");
+                $stmtUpdate->execute([$htmlContent, $existingRecord['id']]);
+            } else {
+                // Insert new record
+                $stmtInsert = $db->prepare("INSERT INTO {$prefx}_seo2 (it_id, tp, p1, lng, params_html) VALUES (?, 'item', ?, ?, ?)");
+                $stmtInsert->execute([$carIdForSave, $p1Value, $lng, $htmlContent]);
+            }
+        }
+    }
+}
+
 $returnIt = [
     'success' => true, 
     'html_ro' => $htmlData['ro'] ?? '', 
     'html_ru' => $htmlData['ru'] ?? '', 
-    'html_en' => $htmlData['en'] ?? ''
+    'html_en' => $htmlData['en'] ?? '',
+    'saved_to_db' => $saveToDb && $carIdForSave > 0
 ];

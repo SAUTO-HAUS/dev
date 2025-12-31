@@ -678,4 +678,10 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
     
     echo json_encode($returnIt);
 }
+elseif (__post('fn') == 'ai_generate' || (isset($_GET['fn']) && $_GET['fn'] == 'ai_generate')) {
+    $ajax_folder = _ADM_AJAX.'/cars';
+    require_once($ajax_folder . '/ai_generate_description.php');
+    echo json_encode($returnIt);
+    exit;
+}
 
