@@ -1233,6 +1233,20 @@ $rtrn = '
                     <span>${t.vehicle_total}</span>
                     <span>${formatNumber(parseFloat(values.vehicle.mdl))} MDL  (${formatNumber(parseFloat(values.vehicle.eur))} EUR)</span>
                 </div>
+                <div style="display:flex;justify-content:flex-start;gap:60px;margin-top:40px;font-size:11px;color:#333;">
+                    <div>
+                        <div style="font-weight:bold;font-size:12px;margin-bottom:5px;">SAUTO SRL</div>
+                        <div>+373 68 68 99 95</div>
+                        <div>info@sauto.md</div>
+                        <div>${t.address}</div>
+                    </div>
+                    <div>
+                        <div style="font-weight:bold;font-size:12px;margin-bottom:5px;">CARP DUMITRU</div>
+                        <div>${t.sales_manager}</div>
+                        <div>+373 62166880</div>
+                        <div>carp@sauto.md</div>
+                    </div>
+                </div>
             `;
             document.body.appendChild(pdfContent);
             
