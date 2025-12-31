@@ -1251,6 +1251,24 @@ $rtrn = '
         const doc = new jsPDF();
         
         const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        
+        // Add background image
+        const bgImg = new Image();
+        bgImg.src = "/content/admin/page/calculator/img/pdf-bg.jpg";
+        bgImg.onload = function() {
+            // Position: 5% from top, 75% height, 20% space at bottom
+            const imgY = pageHeight * 0.05;
+            const imgHeight = pageHeight * 0.75;
+            doc.addImage(bgImg, "JPEG", 0, imgY, pageWidth, imgHeight);
+            generatePDFContent();
+        };
+        bgImg.onerror = function() {
+            // If image fails to load, generate PDF without background
+            generatePDFContent();
+        };
+        
+        function generatePDFContent() {
         let y = 20;
         
         // Title
@@ -1322,6 +1340,7 @@ $rtrn = '
         
         // Save PDF
         doc.save("calculator_auto_" + new Date().toLocaleDateString("ro-RO").replace(/\./g, "-") + ".pdf");
+        }
     });
     
     // Save offer button
