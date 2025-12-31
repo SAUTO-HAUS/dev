@@ -1163,7 +1163,7 @@ $rtrn = '
             address: "Кишинев ул. Каля Мошилор 11"
         },
         en: {
-            results: "Calculation Results",
+            results: "Commercial Offer",
             value_mdl: "Customs Value",
             excise: "Excise",
             customs_duty: "Customs Procedures Fee",
@@ -1404,7 +1404,7 @@ $rtrn = '
         doc.setGState(new doc.GState({opacity: 1}));
         
         // Title (inside the semi-transparent background)
-        y += 12;
+        y += 18;
         doc.setFontSize(32);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(255, 255, 255);
