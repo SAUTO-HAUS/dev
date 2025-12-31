@@ -1268,15 +1268,19 @@ $rtrn = '
                 const imgHeight = pageHeight * 0.75;
                 doc.addImage(bgImg, "JPEG", 0, imgY, pageWidth, imgHeight);
                 
-                // Logo: top 0%, left 3%, size ~40x20mm
-                const logoX = pageWidth * 0.03;
-                const logoY = 0;
-                const logoWidth = 40;
+                // Logo with black background: 3% margin on left (same as background image has on top)
+                const bgPadding = 8;
+                const bgX = imgY;  // same 3% margin as background image top
+                const bgY = 0;  // starts at very top of page
+                const logoWidth = 50;
                 const logoHeight = 20;
-                // Black background behind logo
+                const bgWidth = logoWidth + bgPadding * 2;
+                const bgHeight = logoHeight + bgPadding + imgY;  // extend down to overlap with background image
+                // Black background
                 doc.setFillColor(0, 0, 0);
-                doc.rect(logoX, logoY, logoWidth, logoHeight, "F");
-                doc.addImage(logoImg, "PNG", logoX, logoY, logoWidth, logoHeight);
+                doc.rect(bgX, bgY, bgWidth, bgHeight, "F");
+                // Logo centered inside black background (equal padding left/right/top)
+                doc.addImage(logoImg, "PNG", bgX + bgPadding, bgPadding, logoWidth, logoHeight);
                 
                 generatePDFContent();
             }
