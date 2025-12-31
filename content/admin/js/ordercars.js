@@ -10,6 +10,26 @@ function getReqPage() {
 }
 var reqPage = getReqPage();
 
+$(document).ready(function() {
+	var pending = localStorage.getItem('pending_ai_generation');
+	if (pending && window.location.href.indexOf('/ctlg') !== -1) {
+		try {
+			var data = JSON.parse(pending);
+			if (data.timestamp && (Date.now() - data.timestamp) < 300000 && data.pg === 'ordercars') {
+				localStorage.removeItem('pending_ai_generation');
+				console.log('Triggering AI generation for ordercar ID:', data.car_id);
+				var iframe = document.createElement('iframe');
+				iframe.style.display = 'none';
+				iframe.src = '/ajax.php?tp=adm&pg=ordercars&fn=ai_generate&car_id=' + data.car_id + '&save_to_db=1&_t=' + Date.now();
+				document.body.appendChild(iframe);
+				setTimeout(function() { iframe.remove(); }, 120000);
+			}
+		} catch (e) {
+			localStorage.removeItem('pending_ai_generation');
+		}
+	}
+});
+
 function sendToFacebookCars() {
 	// Get selected time
 	const selectedTime = document.getElementById('facebook_schedule_time').value;
@@ -425,11 +445,12 @@ $(document).ready(function(){
 			let carId = await ajaxCarImg(fileInput, data);
 			
 			if (carId) {
-				setTimeout(function() {
-					var img = new Image();
-					img.src = '/ajax.php?tp=adm&pg=ordercars&fn=ai_generate&car_id=' + carId + '&save_to_db=1&_t=' + Date.now();
-					console.log('AI generation triggered for ordercar ID:', carId);
-				}, 5000);
+				localStorage.setItem('pending_ai_generation', JSON.stringify({
+					car_id: carId,
+					pg: 'ordercars',
+					timestamp: Date.now()
+				}));
+				console.log('AI generation scheduled for ordercar ID:', carId);
 			}
 			
 			finishProcess(confirmButton);

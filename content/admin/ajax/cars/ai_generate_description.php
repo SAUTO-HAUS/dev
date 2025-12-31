@@ -3,6 +3,24 @@
 ignore_user_abort(true);
 set_time_limit(180);
 
+$isBackgroundRequest = ($_POST['save_to_db'] ?? $_GET['save_to_db'] ?? '') == '1';
+
+if ($isBackgroundRequest) {
+    if (session_status() === PHP_SESSION_ACTIVE) {
+        session_write_close();
+    }
+    
+    if (ob_get_level()) ob_end_clean();
+    header('Connection: close');
+    header('Content-Length: 2');
+    header('Content-Type: application/json');
+    echo '{}';
+    flush();
+    if (function_exists('fastcgi_finish_request')) {
+        fastcgi_finish_request();
+    }
+}
+
 $lang = __post('lang') ?: 'ro';
 $fromForm = __post('from_form') == '1';
 $carType = __post('car_type') ?: 'in_stock';
@@ -30,7 +48,7 @@ if ($fromForm) {
         'import_country' => __post('import_country') ?: ''
     ];
 } else {
-    $carId = intval(__post('car_id'));
+    $carId = intval($_POST['car_id'] ?? $_GET['car_id'] ?? 0);
     if ($carId <= 0) {
         $returnIt = ['success' => false, 'error' => 'Invalid car ID'];
         return;
@@ -50,7 +68,7 @@ if ($fromForm) {
         
         // Get import country name from countries table
         if (!empty($car['import_country_id'])) {
-            $stmtCountry = $db->prepare("SELECT name_ro FROM {$prefx}_countries WHERE id = :id LIMIT 1");
+            $stmtCountry = $db->prepare("SELECT name_ro FROM countries WHERE id = :id LIMIT 1");
             $stmtCountry->execute(['id' => $car['import_country_id']]);
             $countryRow = $stmtCountry->fetch(PDO::FETCH_ASSOC);
             $car['import_country'] = $countryRow['name_ro'] ?? '';
