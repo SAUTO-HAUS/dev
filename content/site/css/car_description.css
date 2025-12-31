@@ -19,7 +19,7 @@
 }
 
 /* Tablet/Mobile: reset float and width for calculator */
-@media (max-width: 999px) {
+@media (max-width: 1400px) {
     .spc_bx.d_right_b {
         float: none;
         width: 100%;
