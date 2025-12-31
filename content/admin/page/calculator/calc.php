@@ -1380,19 +1380,6 @@ $rtrn = '
         const imgY = pageHeight * 0.03;
         let y = logoHeight + bgPadding + imgY + 10;
         
-        // Title
-        y += 10;
-        doc.setFontSize(32);
-        doc.setFont("helvetica", "bold");
-        doc.setTextColor(255, 255, 255);
-        doc.text(removeDiacritics(t.results), pageWidth / 2, y, { align: "center" });
-        y += 20;
-        
-        // Line
-        doc.setDrawColor(200);
-        doc.line(20, y, pageWidth - 20, y);
-        y += 10;
-        
         // Results data
         const results = [
             { label: t.value_mdl, mdl: values.value.mdl, eur: values.value.eur },
@@ -1408,13 +1395,23 @@ $rtrn = '
             { label: t.transaction_commission, mdl: values.transaction.mdl, eur: values.transaction.eur }
         ];
         
-        doc.setFontSize(13);
-        
-        // Semi-transparent dark background for text area
+        // Semi-transparent dark background for title AND text area
+        const titleHeight = 35;  // space for title
+        const totalBgHeight = titleHeight + results.length * 8 + 5;
         doc.setFillColor(0, 0, 0);
         doc.setGState(new doc.GState({opacity: 0.5}));
-        doc.rect(15, y - 5, pageWidth - 30, results.length * 8, "F");
+        doc.rect(15, y, pageWidth - 30, totalBgHeight, "F");
         doc.setGState(new doc.GState({opacity: 1}));
+        
+        // Title (inside the semi-transparent background)
+        y += 12;
+        doc.setFontSize(32);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(255, 255, 255);
+        doc.text(removeDiacritics(t.results), pageWidth / 2, y, { align: "center" });
+        y += 25;
+        
+        doc.setFontSize(13);
         
         doc.setTextColor(255, 255, 255);
         results.forEach(item => {
