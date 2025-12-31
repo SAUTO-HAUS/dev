@@ -1127,8 +1127,8 @@ $rtrn = '
     // PDF translations
     const pdfTranslations = {
         ro: {
-            results: "Oferta comerciala",
-            value_mdl: "Valoarea in vama (MDL)",
+            results: "Ofertă comercială",
+            value_mdl: "Valoarea in vama",
             excise: "Acciza",
             customs_duty: "Taxa proceduri vamale",
             damage_protection: "Protectie impotriva daunelor",
@@ -1292,20 +1292,19 @@ $rtrn = '
         logoImg.onerror = function() { logoLoaded = true; checkAndGenerate(); };
         
         function generatePDFContent() {
-        let y = 20;
+        // Start Y position below logo with black background
+        const logoHeight = 20;
+        const bgPadding = 8;
+        const imgY = pageHeight * 0.03;
+        let y = logoHeight + bgPadding + imgY + 10;
         
         // Title
-        doc.setFontSize(24);
+        y += 10;
+        doc.setFontSize(32);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(255, 255, 255);
-        doc.text(t.results, pageWidth / 2, y, { align: "center" });
-        y += 15;
-        
-        // Date
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "normal");
-        doc.text(new Date().toLocaleDateString("ro-RO") + " " + new Date().toLocaleTimeString("ro-RO"), pageWidth / 2, y, { align: "center" });
-        y += 15;
+        doc.text(removeDiacritics(t.results), pageWidth / 2, y, { align: "center" });
+        y += 20;
         
         // Line
         doc.setDrawColor(200);
@@ -1327,13 +1326,28 @@ $rtrn = '
             { label: t.transaction_commission, mdl: values.transaction.mdl, eur: values.transaction.eur }
         ];
         
-        doc.setFontSize(14);
+        doc.setFontSize(13);
+        
+        // Semi-transparent dark background for text area
+        doc.setFillColor(0, 0, 0);
+        doc.setGState(new doc.GState({opacity: 0.5}));
+        doc.rect(15, y - 5, pageWidth - 30, results.length * 8, "F");
+        doc.setGState(new doc.GState({opacity: 1}));
+        
         doc.setTextColor(255, 255, 255);
         results.forEach(item => {
+            const valueText = formatNumber(parseFloat(item.mdl)) + " MDL  (" + formatNumber(parseFloat(item.eur)) + " EUR)";
             doc.setFont("helvetica", "normal");
             doc.text(item.label, 20, y);
             doc.setFont("helvetica", "bold");
-            doc.text(formatNumber(parseFloat(item.mdl)) + " MDL  (" + formatNumber(parseFloat(item.eur)) + " EUR)", pageWidth - 20, y, { align: "right" });
+            doc.text(valueText, pageWidth - 20, y, { align: "right" });
+            // Subtle solid line under each row
+            doc.setDrawColor(255, 255, 255);
+            doc.setLineWidth(0.1);
+            doc.setGState(new doc.GState({opacity: 0.2}));
+            doc.line(20, y + 2, pageWidth - 20, y + 2);
+            doc.setGState(new doc.GState({opacity: 1}));
+            doc.setLineWidth(0.5);  // reset line width
             y += 8;
         });
         
@@ -1345,23 +1359,56 @@ $rtrn = '
         
         // Total customs
         doc.setFillColor(226, 0, 26);
-        doc.rect(15, y - 5, pageWidth - 30, 12, "F");
+        doc.rect(15, y - 5, pageWidth - 30, 14, "F");
         doc.setTextColor(255, 255, 255);
         doc.setFont("helvetica", "bold");
-        doc.setFontSize(12);
-        doc.text(t.total, 20, y + 3);
-        doc.text(formatNumber(parseFloat(values.total.mdl)) + " MDL  (" + formatNumber(parseFloat(values.total.eur)) + " EUR)", pageWidth - 20, y + 3, { align: "right" });
-        y += 15;
+        doc.setFontSize(14);
+        doc.text(t.total, 20, y + 4);
+        doc.text(formatNumber(parseFloat(values.total.mdl)) + " MDL  (" + formatNumber(parseFloat(values.total.eur)) + " EUR)", pageWidth - 20, y + 4, { align: "right" });
+        y += 17;
         
         // Vehicle total
         doc.setFillColor(85, 85, 85);
-        doc.rect(15, y - 5, pageWidth - 30, 12, "F");
+        doc.rect(15, y - 5, pageWidth - 30, 14, "F");
         doc.setTextColor(255, 255, 255);
-        doc.text(t.vehicle_total, 20, y + 3);
-        doc.text(formatNumber(parseFloat(values.vehicle.mdl)) + " MDL  (" + formatNumber(parseFloat(values.vehicle.eur)) + " EUR)", pageWidth - 20, y + 3, { align: "right" });
+        doc.text(t.vehicle_total, 20, y + 4);
+        doc.text(formatNumber(parseFloat(values.vehicle.mdl)) + " MDL  (" + formatNumber(parseFloat(values.vehicle.eur)) + " EUR)", pageWidth - 20, y + 4, { align: "right" });
         
         // Reset text color
         doc.setTextColor(0, 0, 0);
+        
+        // Footer info - left side (company info)
+        // Center vertically in the 22% bottom space
+        const bottomSpaceStart = pageHeight * 0.78;  // where background image ends
+        const bottomSpaceHeight = pageHeight * 0.22;  // 22% of page
+        const footerTextHeight = 18;  // height of footer text block (4 lines * ~4.5mm)
+        const footerY = bottomSpaceStart + (bottomSpaceHeight - footerTextHeight) / 2 + 4;
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.setTextColor(50, 50, 50);
+        doc.text("SAUTO SRL", 20, footerY);
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text("+373 68 68 99 95", 20, footerY + 6);
+        doc.text("info@sauto.md", 20, footerY + 12);
+        doc.text("Chisinau str Calea Mosilor 11", 20, footerY + 18);
+        
+        // Footer info - right side (manager info)
+        doc.setFontSize(12);
+        doc.setFont("helvetica", "bold");
+        doc.text("CARP DUMITRU", 90, footerY);
+        doc.setFontSize(10);
+        doc.setFont("helvetica", "normal");
+        doc.text("Manager vanzari", 90, footerY + 6);
+        doc.text("+373 62166880", 90, footerY + 12);
+        doc.text("carp@sauto.md", 90, footerY + 18);
+        
+        const rectWidth = 50;
+        const rectHeight = 60;
+        const rectX = pageWidth - rectWidth - (pageHeight * 0.03);  // 3% margin from right
+        const rectY = pageHeight - rectHeight;  // at bottom
+        doc.setFillColor(226, 0, 26); 
+        doc.rect(rectX, rectY, rectWidth, rectHeight, "F");
         
         // Save PDF
         doc.save("calculator_auto_" + new Date().toLocaleDateString("ro-RO").replace(/\./g, "-") + ".pdf");
