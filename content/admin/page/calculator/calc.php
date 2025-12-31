@@ -1127,7 +1127,7 @@ $rtrn = '
     // PDF translations
     const pdfTranslations = {
         ro: {
-            results: "Rezultatul calculului",
+            results: "Oferta comerciala",
             value_mdl: "Valoarea in vama (MDL)",
             excise: "Acciza",
             customs_duty: "Taxa proceduri vamale",
@@ -1253,27 +1253,47 @@ $rtrn = '
         const pageWidth = doc.internal.pageSize.getWidth();
         const pageHeight = doc.internal.pageSize.getHeight();
         
-        // Add background image
+        // Add background image and logo
         const bgImg = new Image();
+        const logoImg = new Image();
+        let bgLoaded = false, logoLoaded = false;
+        
         bgImg.src = "/content/admin/page/calculator/img/pdf-bg.jpg";
-        bgImg.onload = function() {
-            // Position: 5% from top, 75% height, 20% space at bottom
-            const imgY = pageHeight * 0.05;
-            const imgHeight = pageHeight * 0.75;
-            doc.addImage(bgImg, "JPEG", 0, imgY, pageWidth, imgHeight);
-            generatePDFContent();
-        };
-        bgImg.onerror = function() {
-            // If image fails to load, generate PDF without background
-            generatePDFContent();
-        };
+        logoImg.src = "/content/admin/page/calculator/img/logo.png";
+        
+        function checkAndGenerate() {
+            if (bgLoaded && logoLoaded) {
+                // Background: 3% from top, 75% height, 22% space at bottom
+                const imgY = pageHeight * 0.03;
+                const imgHeight = pageHeight * 0.75;
+                doc.addImage(bgImg, "JPEG", 0, imgY, pageWidth, imgHeight);
+                
+                // Logo: top 0%, left 3%, size ~40x20mm
+                const logoX = pageWidth * 0.03;
+                const logoY = 0;
+                const logoWidth = 40;
+                const logoHeight = 20;
+                // Black background behind logo
+                doc.setFillColor(0, 0, 0);
+                doc.rect(logoX, logoY, logoWidth, logoHeight, "F");
+                doc.addImage(logoImg, "PNG", logoX, logoY, logoWidth, logoHeight);
+                
+                generatePDFContent();
+            }
+        }
+        
+        bgImg.onload = function() { bgLoaded = true; checkAndGenerate(); };
+        logoImg.onload = function() { logoLoaded = true; checkAndGenerate(); };
+        bgImg.onerror = function() { bgLoaded = true; checkAndGenerate(); };
+        logoImg.onerror = function() { logoLoaded = true; checkAndGenerate(); };
         
         function generatePDFContent() {
         let y = 20;
         
         // Title
-        doc.setFontSize(18);
+        doc.setFontSize(24);
         doc.setFont("helvetica", "bold");
+        doc.setTextColor(255, 255, 255);
         doc.text(t.results, pageWidth / 2, y, { align: "center" });
         y += 15;
         
@@ -1303,7 +1323,8 @@ $rtrn = '
             { label: t.transaction_commission, mdl: values.transaction.mdl, eur: values.transaction.eur }
         ];
         
-        doc.setFontSize(11);
+        doc.setFontSize(14);
+        doc.setTextColor(255, 255, 255);
         results.forEach(item => {
             doc.setFont("helvetica", "normal");
             doc.text(item.label, 20, y);
