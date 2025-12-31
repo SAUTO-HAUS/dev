@@ -356,7 +356,7 @@ $carIdForSave = intval($_POST['car_id'] ?? $_GET['car_id'] ?? 0);
 
 if ($saveToDb && $carIdForSave > 0) {
     $langs = ['ro', 'ru', 'en'];
-    $p1Value = ($_POST['pg'] ?? $_GET['pg'] ?? 'cars') === 'ordercars' ? 'ordercars' : 'cars';
+    $p1Value = 'cars';
     
     foreach ($langs as $lng) {
         $htmlContent = $htmlData[$lng] ?? '';

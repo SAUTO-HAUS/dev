@@ -340,7 +340,7 @@ $last_car_id = 0;
 
             <?php 
             // Check if car has HTML description in seo2 table
-            $stmtHtml = $db->prepare("SELECT params_html FROM {$prefx}_seo2 WHERE it_id = ? AND tp = 'item' AND p1 = 'ordercars' AND lng = 'ro' LIMIT 1");
+            $stmtHtml = $db->prepare("SELECT params_html FROM {$prefx}_seo2 WHERE it_id = ? AND tp = 'item' AND p1 = 'cars' AND lng = 'ro' LIMIT 1");
             $stmtHtml->execute([$r['id']]);
             $seoRow = $stmtHtml->fetch(PDO::FETCH_ASSOC);
             $hasHtml = !empty($seoRow['params_html']) && strlen(trim($seoRow['params_html'])) > 10;
