@@ -66,24 +66,24 @@ if ($fromForm) {
                 $imgFormat = (usr_agent()==='IOS'||usr_agent()==='MAC') ? '.jpg' : '.webp';
                 $siteUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
                 
-                $photoPositionsSetting = '1,2,5,8';
+                $photoPositionsSetting = '';
                 try {
                     $stmtPos = $db->query("SELECT setting_value FROM {$prefx}_ai_settings WHERE setting_key = 'photo_positions' LIMIT 1");
                     $posRow = $stmtPos->fetch(PDO::FETCH_ASSOC);
-                    if ($posRow && !empty($posRow['setting_value'])) {
+                    if ($posRow && isset($posRow['setting_value'])) {
                         $photoPositionsSetting = $posRow['setting_value'];
                     }
                 } catch (PDOException $e) {}
                 
-                $selectedPositions = array_map('intval', array_filter(explode(',', $photoPositionsSetting)));
-                if (empty($selectedPositions)) {
-                    $selectedPositions = [1, 2, 5, 8];
+                $selectedPositions = [];
+                if (!empty($photoPositionsSetting)) {
+                    $selectedPositions = array_map('intval', array_filter(explode(',', $photoPositionsSetting)));
                 }
                 
                 $photoIndex = 0;
                 foreach ($photos as $photo) {
                     $photoIndex++;
-                    if (in_array($photoIndex, $selectedPositions)) {
+                    if (empty($selectedPositions) || in_array($photoIndex, $selectedPositions)) {
                         $carImages[] = $siteUrl . '/' . _CAR_IMG . '/' . $carRow['p_path'] . '/' . $carId . '/high/' . $photo['name'] . $imgFormat;
                     }
                 }
@@ -126,24 +126,24 @@ if ($fromForm) {
         $imgFormat = (usr_agent()==='IOS'||usr_agent()==='MAC') ? '.jpg' : '.webp';
         $siteUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
         
-        $photoPositionsSetting = '1,2,5,8'; 
+        $photoPositionsSetting = ''; 
         try {
             $stmtPos = $db->query("SELECT setting_value FROM {$prefx}_ai_settings WHERE setting_key = 'photo_positions' LIMIT 1");
             $posRow = $stmtPos->fetch(PDO::FETCH_ASSOC);
-            if ($posRow && !empty($posRow['setting_value'])) {
+            if ($posRow && isset($posRow['setting_value'])) {
                 $photoPositionsSetting = $posRow['setting_value'];
             }
         } catch (PDOException $e) {}
         
-        $selectedPositions = array_map('intval', array_filter(explode(',', $photoPositionsSetting)));
-        if (empty($selectedPositions)) {
-            $selectedPositions = [1, 2, 5, 8];
+        $selectedPositions = [];
+        if (!empty($photoPositionsSetting)) {
+            $selectedPositions = array_map('intval', array_filter(explode(',', $photoPositionsSetting)));
         }
         
         $photoIndex = 0;
         foreach ($photos as $photo) {
             $photoIndex++;
-            if (in_array($photoIndex, $selectedPositions)) {
+            if (empty($selectedPositions) || in_array($photoIndex, $selectedPositions)) {
                 $carImages[] = $siteUrl . '/' . _CAR_IMG . '/' . $car['p_path'] . '/' . $carId . '/high/' . $photo['name'] . $imgFormat;
             }
         }
