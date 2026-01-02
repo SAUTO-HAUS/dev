@@ -150,14 +150,6 @@ $rtrn = '
         background: #c82333;
     }
     
-    #catalog-container .offers-table .pdf-lang-select {
-        padding: 0.4rem;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        font-size: 0.85rem;
-        cursor: pointer;
-    }
-    
     #catalog-container .empty-state {
         text-align: center;
         padding: 4rem 2rem;
@@ -347,11 +339,6 @@ $rtrn = '
                     <td><strong>${parseInt(totalMdl).toLocaleString("ro-MD")}</strong> MDL</td>
                     <td class="date-col">${date}</td>
                     <td class="actions">
-                        <select class="pdf-lang-select" id="lang-${offer.id}">
-                            <option value="ro">RO</option>
-                            <option value="ru">RU</option>
-                            <option value="en">EN</option>
-                        </select>
                         <button class="btn-pdf" onclick="generatePDF(${offer.id})">📄 PDF</button>
                         <button class="btn-delete" onclick="deleteOffer(${offer.id})">🗑️</button>
                     </td>
@@ -409,65 +396,26 @@ $rtrn = '
     // Store offers data for PDF generation
     let offersData = {};
     
-    // PDF translations - same as calc.php
-    const pdfTranslations = {
-        ro: {
-            results: "Ofertă comercială",
-            client: "Client",
-            value_mdl: "Valoarea in vama (MDL)",
-            excise: "Acciza",
-            customs_duty: "Taxa proceduri vamale",
-            damage_protection: "Protectie impotriva daunelor",
-            export_declaration: "Declaratia de export (MRN)",
-            bank_commission: "Comision bancar SWIFT",
-            auction_commission: "Comision licitatie",
-            pollution_tax: "Taxa de poluare",
-            shipping_docs: "Livrarea documentelor",
-            accessories: "Accesorii",
-            transaction_commission: "Comision pentru tranzactie",
-            total: "TOTAL COSTURI VAMUIRE",
-            vehicle_total: "SUMA TOTALA VEHICUL"
-        },
-        ru: {
-            results: "Коммерческое предложение",
-            client: "Клиент",
-            value_mdl: "Таможенная стоимость (MDL)",
-            excise: "Акциз",
-            customs_duty: "Сбор за таможенные процедуры",
-            damage_protection: "Защита от повреждений",
-            export_declaration: "Декларация экспорта (MRN)",
-            bank_commission: "Банковская комиссия SWIFT",
-            auction_commission: "Комиссия аукциона",
-            pollution_tax: "Налог на загрязнение",
-            shipping_docs: "Доставка документов",
-            accessories: "Аксессуары",
-            transaction_commission: "Комиссия за транзакцию",
-            total: "ИТОГО РАСХОДЫ НА РАСТАМОЖКУ",
-            vehicle_total: "ОБЩАЯ СУММА ЗА АВТОМОБИЛЬ"
-        },
-        en: {
-            results: "Commercial Offer",
-            client: "Client",
-            value_mdl: "Customs Value (MDL)",
-            excise: "Excise Tax",
-            customs_duty: "Customs Duty",
-            damage_protection: "Damage Protection",
-            export_declaration: "Export Declaration (MRN)",
-            bank_commission: "SWIFT Bank Commission",
-            auction_commission: "Auction Commission",
-            pollution_tax: "Pollution Tax",
-            shipping_docs: "Document Delivery",
-            accessories: "Accessories",
-            transaction_commission: "Transaction Commission",
-            total: "TOTAL CUSTOMS COSTS",
-            vehicle_total: "TOTAL VEHICLE COST"
-        }
+    // PDF translations - Romanian only
+    const t = {
+        results: "Ofertă comercială",
+        client: "Client",
+        value_mdl: "Valoarea in vama (MDL)",
+        excise: "Acciza",
+        customs_duty: "Taxa proceduri vamale",
+        damage_protection: "Protectie impotriva daunelor",
+        export_declaration: "Declaratia de export (MRN)",
+        bank_commission: "Comision bancar SWIFT",
+        auction_commission: "Comision licitatie",
+        pollution_tax: "Taxa de poluare",
+        shipping_docs: "Livrarea documentelor",
+        accessories: "Accesorii",
+        transaction_commission: "Comision pentru tranzactie",
+        total: "TOTAL COSTURI VAMUIRE",
+        vehicle_total: "SUMA TOTALA VEHICUL"
     };
     
     window.generatePDF = function(offerId) {
-        // Get selected language from dropdown
-        const lang = document.getElementById("lang-" + offerId).value;
-        
         // Get offer from server
         fetch("/ajax.php", {
             method: "POST",
@@ -477,7 +425,7 @@ $rtrn = '
         .then(res => res.json())
         .then(data => {
             if (data.success && data.offer) {
-                createPDF(data.offer, lang);
+                createPDF(data.offer);
             } else {
                 alert("Eroare la încărcare ofertă");
             }
@@ -487,8 +435,7 @@ $rtrn = '
         });
     };
     
-    function createPDF(offer, lang) {
-        const t = pdfTranslations[lang] || pdfTranslations.ro;
+    function createPDF(offer) {
         const calcData = JSON.parse(offer.calculation_data || "{}");
         
         function formatNumber(num) {
@@ -516,58 +463,7 @@ $rtrn = '
             .replace(/[^a-zA-Z0-9_]/g, "")
             + ".pdf";
         
-        // For Russian - use html2canvas (supports Cyrillic)
-        if (lang === "ru") {
-            const pdfContent = document.createElement("div");
-            pdfContent.id = "pdf-temp-content";
-            pdfContent.style.cssText = "position:absolute;left:-9999px;width:700px;padding:40px;font-family:Arial,sans-serif;background:#fff;";
-            pdfContent.innerHTML = `
-                <h1 style="text-align:center;font-size:18px;margin-bottom:10px;font-weight:bold;">${t.results}</h1>
-                <p style="text-align:center;font-size:14px;margin-bottom:5px;">${offer.brand} ${offer.model} ${offer.year}</p>
-                <p style="text-align:center;color:#666;margin-bottom:5px;">${t.client}: ${offer.client_name}</p>
-                <p style="text-align:center;color:#666;margin-bottom:20px;font-size:10px;">${new Date(offer.created_at).toLocaleDateString("ro-RO")}</p>
-                <hr style="border:none;border-top:1px solid #ccc;margin-bottom:20px;">
-                <table style="width:100%;border-collapse:collapse;font-size:11px;">
-                    <tr><td style="padding:8px 0;">${t.value_mdl}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.value.mdl))} MDL  (${formatNumber(parseFloat(values.value.eur))} EUR)</td></tr>
-                    <tr><td style="padding:8px 0;">${t.excise}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.excise.mdl))} MDL  (${formatNumber(parseFloat(values.excise.eur))} EUR)</td></tr>
-                    <tr><td style="padding:8px 0;">${t.customs_duty}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.customs.mdl))} MDL  (${formatNumber(parseFloat(values.customs.eur))} EUR)</td></tr>
-                    <tr><td style="padding:8px 0;">${t.damage_protection}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.damage.mdl))} MDL  (${formatNumber(parseFloat(values.damage.eur))} EUR)</td></tr>
-                    <tr><td style="padding:8px 0;">${t.export_declaration}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.exportDecl.mdl))} MDL  (${formatNumber(parseFloat(values.exportDecl.eur))} EUR)</td></tr>
-                    <tr><td style="padding:8px 0;">${t.bank_commission}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.bank.mdl))} MDL  (${formatNumber(parseFloat(values.bank.eur))} EUR)</td></tr>
-                    <tr><td style="padding:8px 0;">${t.auction_commission}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.auction.mdl))} MDL  (${formatNumber(parseFloat(values.auction.eur))} EUR)</td></tr>
-                    <tr><td style="padding:8px 0;">${t.pollution_tax}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.pollution.mdl))} MDL  (${formatNumber(parseFloat(values.pollution.eur))} EUR)</td></tr>
-                    <tr><td style="padding:8px 0;">${t.shipping_docs}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.shipping.mdl))} MDL  (${formatNumber(parseFloat(values.shipping.eur))} EUR)</td></tr>
-                    <tr><td style="padding:8px 0;">${t.accessories}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.accessories.mdl))} MDL  (${formatNumber(parseFloat(values.accessories.eur))} EUR)</td></tr>
-                    <tr><td style="padding:8px 0;">${t.transaction_commission}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.transaction.mdl))} MDL  (${formatNumber(parseFloat(values.transaction.eur))} EUR)</td></tr>
-                </table>
-                <div style="background:#e2001a;color:#fff;padding:12px 15px;margin-top:20px;display:flex;justify-content:space-between;font-weight:bold;font-size:12px;">
-                    <span>${t.total}</span>
-                    <span>${formatNumber(parseFloat(values.total.mdl))} MDL  (${formatNumber(parseFloat(values.total.eur))} EUR)</span>
-                </div>
-                <div style="background:#555;color:#fff;padding:12px 15px;display:flex;justify-content:space-between;font-weight:bold;font-size:12px;">
-                    <span>${t.vehicle_total}</span>
-                    <span>${formatNumber(parseFloat(values.vehicle.mdl))} MDL  (${formatNumber(parseFloat(values.vehicle.eur))} EUR)</span>
-                </div>
-            `;
-            document.body.appendChild(pdfContent);
-            
-            html2canvas(pdfContent, { scale: 2, useCORS: true, backgroundColor: "#ffffff" }).then(canvas => {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF("p", "mm", "a4");
-                const imgData = canvas.toDataURL("image/jpeg", 0.92);
-                const pageWidth = doc.internal.pageSize.getWidth();
-                const imgWidth = pageWidth - 20;
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-                
-                doc.addImage(imgData, "JPEG", 10, 10, imgWidth, imgHeight);
-                doc.save(fileName);
-                
-                document.body.removeChild(pdfContent);
-            });
-            return;
-        }
-        
-        // For RO and EN - use jsPDF text
+        // Romanian PDF - use jsPDF text
         function removeDiacritics(str) {
             return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         }
@@ -659,7 +555,6 @@ $rtrn = '
     }
 })();
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>';
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>';
 
 echo $rtrn;
