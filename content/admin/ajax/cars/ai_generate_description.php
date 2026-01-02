@@ -123,16 +123,7 @@ try {
     // Table doesn't exist yet, use defaults
 }
 
-// Default texts
-$defaultCarTypeOrder = "This is a CAR TO ORDER (not in stock). The car will be imported from EU after the order is placed. Delivery time is typically 14-30 days. Focus on the model's features and what the buyer can expect.";
-$defaultCarTypeStock = "This is a CAR IN STOCK (available immediately). The car is already imported and ready for viewing/purchase.";
-$defaultImagePrompt = "I'm showing you photos of this car. Analyze them to identify VISIBLE features like: wheel type (alloy/steel), headlight type (LED/xenon/halogen), interior material (leather/cloth), infotainment screen, sunroof, parking sensors, etc. Use ONLY what you can clearly see in the photos for the 'Dotări' section.";
-
-$carTypeOrderText = $aiSettings['car_type_order'] ?? $defaultCarTypeOrder;
-$carTypeStockText = $aiSettings['car_type_stock'] ?? $defaultCarTypeStock;
-$imagePromptText = $aiSettings['image_prompt'] ?? $defaultImagePrompt;
-
-$carTypeText = ($carType === 'order') ? $carTypeOrderText : $carTypeStockText;
+$imagePromptText = $aiSettings['image_prompt'] ?? '';
 
 $fixedCarData = "Car data:
 - Brand: " . ($car['br_nm'] ?? '') . "
@@ -148,33 +139,15 @@ $fixedCarData = "Car data:
 - Color: " . ($car['clr'] ?? '') . "
 - Import country: " . ($car['import_country'] ?? '');
 
-$fixedHtmlStructure = "HTML STRUCTURE (MUST follow this EXACT order):
-1. <h2>{Brand} {Model} | {Engine} | {Fuel} | {Year}</h2> - USE PIPE SEPARATOR between brand/model, engine, fuel type and year!
-2. <h3><span class=\"desc-icon desc-icon-features\"></span>Dotări</h3> then <ul> with 5-8 <li> items.
-3. <h3><span class=\"desc-icon desc-icon-spec\"></span>Caracteristici tehnice</h3> then <ul> with detailed specs: engine type, power with kW and rpm, torque Nm, fuel system, real consumption l/100km, drivetrain (DO NOT include gearbox type here - it goes in section 6!)
-4. <h3><span class=\"desc-icon desc-icon-engine\"></span>Detalii motor</h3> then <p><strong>Caracteristici constructive:</strong></p><ul> engine block material, cylinder head, turbosuflantă (da/nu), timing drive type (ONLY write 'curea' or 'lanț' - choose correct one for THIS engine!), emission standard, special features </ul> then <p><strong><span class=\"desc-icon desc-icon-oil\"></span>Mentenanță:</strong></p><ul> service interval ALWAYS 7000 km, oil specification (viscosity + ACEA class - choose correct for THIS engine!), oil capacity in litri, injection system notes </ul> - NEVER mention engine lifespan or km durability!
-5. <h3><span class=\"desc-icon desc-icon-suspension\"></span>Detalii suspensie</h3> then <ul> with: front suspension type (McPherson/double wishbone/multi-link), rear suspension type (torsion beam/multi-link/independent), stabilizer bars (front/rear), shock absorbers type, any special features (adaptive suspension, air suspension if applicable for this model)
-6. <h3><span class=\"desc-icon desc-icon-gearbox\"></span>Detalii cutie de viteze</h3> then <ul> - USE EXACTLY the transmission type from Car data above (Manuală/Automată/Robotizată)! gearbox type, clutch type, oil type and specification (IMPORTANT: for BMW write 'ZF Lifeguard 6', for Mercedes write 'MB 236.14', for VW/Audi/Skoda write 'G052182' - NEVER write 'Dexron' for these brands!), oil capacity as RANGE (X-X litri), gearbox service interval (70000-80000 km)
-7. <h3><span class=\"desc-icon desc-icon-condition\"></span>Starea mașinii</h3> then <ul> with 4-5 items: country of import, interior condition (clean/needs cleaning), body condition (scratches/dents/good), suspension condition (noises/good), service status (serviced/needs attention)";
 
-// FIXED PART 3 - JSON format (always at the end)
-$fixedJsonFormat = 'IMPORTANT: Return EXACTLY in this JSON format:
-{"ro": "<HTML in Romanian>", "ru": "<HTML in Russian>", "en": "<HTML in English>"}';
-
-$defaultEditablePrompt = 'You are an expert automotive journalist and marketing copywriter. Generate DETAILED, ATTRACTIVE and PERSUASIVE HTML descriptions for this car in 3 languages: Romanian, Russian, and English.
-
-YOUR GOAL: Write compelling text that will ATTRACT BUYERS and make them want to purchase or order this car. The text must be clear, beautiful, professional and sales-oriented.
-
-IMPORTANT: ' . $carTypeText;
-
-$editablePrompt = $aiSettings['ai_prompt'] ?? $defaultEditablePrompt;
+$editablePrompt = $aiSettings['ai_prompt'] ?? '';
 
 // Fix corrupted HTML encoding in prompt (multiple &amp; encoding)
 while (strpos($editablePrompt, '&amp;') !== false) {
     $editablePrompt = html_entity_decode($editablePrompt, ENT_QUOTES, 'UTF-8');
 }
 
-$prompt = $editablePrompt . "\n\n" . $fixedCarData . "\n\n" . $fixedHtmlStructure . "\n\n" . $fixedJsonFormat;
+$prompt = $editablePrompt . "\n\n" . $fixedCarData;
 
 // Choose API based on settings
 $aiProvider = $aiSettings['ai_provider'] ?? 'openai';

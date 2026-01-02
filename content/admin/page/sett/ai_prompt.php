@@ -158,22 +158,6 @@ $rtrn = '
         
         <div class="form-group">
             <label>Основной промпт AI:</label>
-            <div class="locked-label">🔒 ФИКСИРОВАННЫЕ ЧАСТИ (добавляются автоматически в код)</div>
-            <div class="locked-section"><strong>1. Car data:</strong> (данные авто подставляются автоматически)
-- Brand, Model, Year, Body type, Mileage, Engine volume, Power, Fuel, Transmission, Drive, Color, Import country
-
-<strong>2. HTML СТРУКТУРА:</strong>
-1. &lt;h2&gt;{Brand} {Model} | {Engine} | {Fuel} | {Year}&lt;/h2&gt;
-2. &lt;h3&gt;Оснащение&lt;/h3&gt; - desc-icon-features
-3. &lt;h3&gt;Технические характеристики&lt;/h3&gt; - desc-icon-spec  
-4. &lt;h3&gt;Детали двигателя&lt;/h3&gt; - desc-icon-engine + desc-icon-oil
-5. &lt;h3&gt;Детали подвески&lt;/h3&gt; - desc-icon-suspension
-6. &lt;h3&gt;Детали КПП&lt;/h3&gt; - desc-icon-gearbox
-7. &lt;h3&gt;Состояние автомобиля&lt;/h3&gt; - desc-icon-condition
-
-<strong>3. JSON FORMAT:</strong>
-{"ro": "...", "ru": "...", "en": "..."}</div>
-            <div class="hint" style="margin-top:.5rem;">⬇️ Редактируемая часть (инструкции для AI):</div>
             <textarea name="ai_prompt" class="large">'.$currentPrompt.'</textarea>
         </div>
         
