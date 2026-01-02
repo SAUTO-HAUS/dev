@@ -124,6 +124,8 @@ if ($fn === 'save_eur_rate') {
         $year = isset($_POST['year']) ? intval($_POST['year']) : 0;
         $bodywork = isset($_POST['bodywork']) ? trim($_POST['bodywork']) : '';
         $seats = isset($_POST['seats']) ? intval($_POST['seats']) : 0;
+        $cylinder_capacity = isset($_POST['cylinder_capacity']) ? intval($_POST['cylinder_capacity']) : 0;
+        $fuel_type = isset($_POST['fuel_type']) ? trim($_POST['fuel_type']) : '';
         $mileage = isset($_POST['mileage']) ? intval($_POST['mileage']) : 0;
         $engine_power = isset($_POST['engine_power']) ? intval($_POST['engine_power']) : 0;
         $transmission = isset($_POST['transmission']) ? trim($_POST['transmission']) : '';
@@ -140,8 +142,8 @@ if ($fn === 'save_eur_rate') {
         
         // Insert offer into database first to get the ID
         $pdo = $db->prepare('INSERT INTO '.$prefx.'_calculator_offers 
-            (client_name, brand, model, year, bodywork, seats, mileage, engine_power, transmission, drive_type, color, pdf_lang, calculation_data, created_by) 
-            VALUES (:client_name, :brand, :model, :year, :bodywork, :seats, :mileage, :engine_power, :transmission, :drive_type, :color, :pdf_lang, :calculation_data, :created_by)');
+            (client_name, brand, model, year, bodywork, seats, cylinder_capacity, fuel_type, mileage, engine_power, transmission, drive_type, color, pdf_lang, calculation_data, created_by) 
+            VALUES (:client_name, :brand, :model, :year, :bodywork, :seats, :cylinder_capacity, :fuel_type, :mileage, :engine_power, :transmission, :drive_type, :color, :pdf_lang, :calculation_data, :created_by)');
         $pdo->execute([
             'client_name' => $client_name,
             'brand' => $brand,
@@ -149,6 +151,8 @@ if ($fn === 'save_eur_rate') {
             'year' => $year,
             'bodywork' => $bodywork,
             'seats' => $seats,
+            'cylinder_capacity' => $cylinder_capacity,
+            'fuel_type' => $fuel_type,
             'mileage' => $mileage,
             'engine_power' => $engine_power,
             'transmission' => $transmission,

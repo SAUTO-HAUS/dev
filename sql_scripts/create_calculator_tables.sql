@@ -213,6 +213,8 @@ CREATE TABLE IF NOT EXISTS `gh3sp_calculator_offers` (
     `year` INT(11) NOT NULL,
     `bodywork` VARCHAR(50) DEFAULT NULL,
     `seats` INT(11) DEFAULT NULL,
+    `cylinder_capacity` INT(11) DEFAULT NULL COMMENT 'Engine capacity in cm³',
+    `fuel_type` VARCHAR(50) DEFAULT NULL COMMENT 'Fuel type: benzina, diesel, hybrid, electric',
     `mileage` INT(11) DEFAULT NULL,
     `engine_power` INT(11) DEFAULT NULL,
     `transmission` VARCHAR(50) DEFAULT NULL,

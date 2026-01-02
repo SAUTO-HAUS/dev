@@ -484,6 +484,29 @@ $rtrn = '
             return Math.round(num).toLocaleString("ro-MD");
         }
         
+        function removeDiacritics(str) {
+            return str
+                .replace(/ă/g, "a").replace(/Ă/g, "A")
+                .replace(/â/g, "a").replace(/Â/g, "A")
+                .replace(/î/g, "i").replace(/Î/g, "I")
+                .replace(/ș/g, "s").replace(/Ș/g, "S")
+                .replace(/ț/g, "t").replace(/Ț/g, "T")
+                .replace(/ş/g, "s").replace(/Ş/g, "S")
+                .replace(/ţ/g, "t").replace(/Ţ/g, "T");
+        }
+        
+        function capitalizeWords(str) {
+            var words = str.split(" ");
+            var result = [];
+            for (var i = 0; i < words.length; i++) {
+                var word = words[i];
+                if (word.length > 0) {
+                    result.push(word.charAt(0).toUpperCase() + word.slice(1).toLowerCase());
+                }
+            }
+            return result.join(" ");
+        }
+        
         const values = {
             value: calcData.value || {mdl: 0, eur: 0},
             excise: calcData.excise || {mdl: 0, eur: 0},
@@ -496,6 +519,8 @@ $rtrn = '
             shipping: calcData.shipping || {mdl: 0, eur: 0},
             accessories: calcData.accessories || {mdl: 0, eur: 0},
             transaction: calcData.transaction || {mdl: 0, eur: 0},
+            polishing: calcData.polishing || {mdl: 0, eur: 0},
+            painting: calcData.painting || {mdl: 0, eur: 0},
             total: calcData.total || {mdl: 0, eur: 0},
             vehicle: calcData.vehicle || {mdl: 0, eur: 0}
         };
@@ -505,95 +530,183 @@ $rtrn = '
             .replace(/[^a-zA-Z0-9_]/g, "")
             + ".pdf";
         
-        // Romanian PDF - use jsPDF text
-        function removeDiacritics(str) {
-            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        }
-        
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const pageWidth = doc.internal.pageSize.getWidth();
-        let y = 20;
+        const pageHeight = doc.internal.pageSize.getHeight();
         
-        // Title
-        doc.setFontSize(16);
-        doc.setFont("helvetica", "bold");
-        doc.text(removeDiacritics(t.results), pageWidth / 2, y, { align: "center" });
-        y += 10;
+        // Load images
+        const bgImg = new Image();
+        const logoImg = new Image();
+        let bgLoaded = false, logoLoaded = false;
         
-        // Vehicle info
-        doc.setFontSize(12);
-        doc.setFont("helvetica", "normal");
-        const vehicleInfo = removeDiacritics(offer.brand + " " + offer.model + " " + offer.year);
-        doc.text(vehicleInfo, pageWidth / 2, y, { align: "center" });
-        y += 8;
+        bgImg.src = "/content/admin/page/calculator/img/pdf-bg.jpg";
+        logoImg.src = "/content/admin/page/calculator/img/logo.png";
         
-        // Client name
-        doc.setFontSize(10);
-        doc.text(removeDiacritics("Client: " + offer.client_name), pageWidth / 2, y, { align: "center" });
-        y += 5;
-        
-        // Date
-        doc.text(new Date(offer.created_at).toLocaleDateString("ro-RO"), pageWidth / 2, y, { align: "center" });
-        y += 10;
-        
-        // Line
-        doc.setDrawColor(200);
-        doc.line(20, y, pageWidth - 20, y);
-        y += 10;
-        
-        // Results - using translations
-        const results = [
-            { key: "value", label: t.value_mdl },
-            { key: "excise", label: t.excise },
-            { key: "customs", label: t.customs_duty },
-            { key: "damage", label: t.damage_protection },
-            { key: "exportDecl", label: t.export_declaration },
-            { key: "bank", label: t.bank_commission },
-            { key: "auction", label: t.auction_commission },
-            { key: "pollution", label: t.pollution_tax },
-            { key: "shipping", label: t.shipping_docs },
-            { key: "accessories", label: t.accessories },
-            { key: "transaction", label: t.transaction_commission }
-        ];
-        
-        doc.setFontSize(11);
-        results.forEach(item => {
-            if (calcData[item.key]) {
-                doc.setFont("helvetica", "normal");
-                doc.text(removeDiacritics(item.label), 20, y);
-                doc.setFont("helvetica", "bold");
-                doc.text(formatNumber(parseFloat(calcData[item.key].mdl || 0)) + " MDL  (" + formatNumber(parseFloat(calcData[item.key].eur || 0)) + " EUR)", pageWidth - 20, y, { align: "right" });
-                y += 8;
-            }
-        });
-        
-        y += 5;
-        doc.line(20, y, pageWidth - 20, y);
-        y += 10;
-        
-        // Total
-        if (calcData.total) {
-            doc.setFillColor(226, 0, 26);
-            doc.rect(15, y - 5, pageWidth - 30, 12, "F");
+        function generatePDFWithImages() {
+            if (!bgLoaded || !logoLoaded) return;
+            
+            // === PAGE 1: Background image with logo ===
+            // Background: 3% from top, 75% height
+            const imgY = pageHeight * 0.03;
+            const imgHeight = pageHeight * 0.75;
+            doc.addImage(bgImg, "JPEG", 0, imgY, pageWidth, imgHeight);
+            
+            // Logo with black background
+            const bgPadding = 8;
+            const bgX = imgY;
+            const logoWidth = 50;
+            const logoHeight = 20;
+            const bgWidth = logoWidth + bgPadding * 2;
+            const bgHeight = logoHeight + bgPadding + imgY;
+            doc.setFillColor(0, 0, 0);
+            doc.rect(bgX, 0, bgWidth, bgHeight, "F");
+            doc.addImage(logoImg, "PNG", bgX + bgPadding, bgPadding, logoWidth, logoHeight);
+            
+            // Vehicle info on first page (over background)
             doc.setTextColor(255, 255, 255);
+            
+            // Title "Oferta comerciala" above brand/model
+            doc.setFontSize(16);
+            doc.setFont("helvetica", "italic");
+            doc.text(removeDiacritics("Oferta comerciala"), pageWidth / 2, pageHeight * 0.38, { align: "center" });
+            
+            // MARCA Model, An, Motor (brand uppercase, model capitalized)
+            doc.setFontSize(28);
+            doc.setFont("helvetica", "bold");
+            const brandClean = offer.brand.replace(/_/g, " ").toUpperCase();
+            const modelClean = capitalizeWords(offer.model.replace(/_/g, " "));
+            var vehicleTitle = brandClean + " " + modelClean + ", " + offer.year;
+            if (offer.cylinder_capacity) {
+                vehicleTitle += ", " + offer.cylinder_capacity;
+            }
+            doc.text(removeDiacritics(vehicleTitle), pageWidth / 2, pageHeight * 0.45, { align: "center" });
+            
+            // Red rectangle bottom right
+            const rectWidth = 50;
+            const rectHeight = 60;
+            const rectX = pageWidth - rectWidth - (pageHeight * 0.03);
+            const rectY = pageHeight - rectHeight;
+            doc.setFillColor(226, 0, 26);
+            doc.rect(rectX, rectY, rectWidth, rectHeight, "F");
+            
+            // Footer info on page 1
+            doc.setTextColor(51, 51, 51);
+            doc.setFontSize(10);
+            const footerY = pageHeight * 0.85;
+            doc.setFont("helvetica", "bold");
+            doc.text("SAUTO SRL", 20, footerY);
+            doc.setFont("helvetica", "normal");
+            doc.text("+373 68 68 99 95", 20, footerY + 5);
+            doc.text("info@sauto.md", 20, footerY + 10);
+            doc.text("Chisinau str Calea Mosilor 11", 20, footerY + 15);
+            
+            doc.setFont("helvetica", "bold");
+            doc.text("CARP DUMITRU", 100, footerY);
+            doc.setFont("helvetica", "normal");
+            doc.text("Manager vanzari", 100, footerY + 5);
+            doc.text("+373 62166880", 100, footerY + 10);
+            doc.text("carp@sauto.md", 100, footerY + 15);
+            
+            // === PAGE 2: Calculation details ===
+            doc.addPage();
+            doc.setTextColor(0, 0, 0);
+            let y = 25;
+            
+            // Title
+            doc.setFontSize(18);
+            doc.setFont("helvetica", "bold");
+            doc.text(removeDiacritics(t.results), pageWidth / 2, y, { align: "center" });
+            y += 12;
+            
+            // Vehicle info (replace underscores with spaces and capitalize each word)
             doc.setFontSize(12);
-            doc.text(removeDiacritics(t.total), 20, y + 3);
-            doc.text(formatNumber(parseFloat(calcData.total.mdl || 0)) + " MDL  (" + formatNumber(parseFloat(calcData.total.eur || 0)) + " EUR)", pageWidth - 20, y + 3, { align: "right" });
-            y += 15;
+            doc.setFont("helvetica", "normal");
+            const brandClean2 = capitalizeWords(offer.brand.replace(/_/g, " "));
+            const modelClean2 = capitalizeWords(offer.model.replace(/_/g, " "));
+            doc.text(removeDiacritics(brandClean2 + " " + modelClean2 + " " + offer.year), pageWidth / 2, y, { align: "center" });
+            y += 6;
+            
+            // Client
+            doc.setFontSize(10);
+            doc.text(removeDiacritics("Client: " + offer.client_name), pageWidth / 2, y, { align: "center" });
+            y += 5;
+            
+            // Date
+            doc.text(new Date(offer.created_at).toLocaleDateString("ro-RO"), pageWidth / 2, y, { align: "center" });
+            y += 12;
+            
+            // Line
+            doc.setDrawColor(200);
+            doc.line(20, y, pageWidth - 20, y);
+            y += 10;
+            
+            // Results
+            const results = [
+                { key: "value", label: t.value_mdl },
+                { key: "excise", label: t.excise },
+                { key: "customs", label: t.customs_duty },
+                { key: "damage", label: t.damage_protection },
+                { key: "exportDecl", label: t.export_declaration },
+                { key: "bank", label: t.bank_commission },
+                { key: "auction", label: t.auction_commission },
+                { key: "pollution", label: t.pollution_tax },
+                { key: "shipping", label: t.shipping_docs },
+                { key: "accessories", label: t.accessories },
+                { key: "transaction", label: t.transaction_commission }
+            ];
+            
+            // Add polishing and painting if they have values
+            if (calcData.polishing && (parseFloat(calcData.polishing.mdl) > 0 || parseFloat(calcData.polishing.eur) > 0)) {
+                results.push({ key: "polishing", label: "Polizare si curatire chimica" });
+            }
+            if (calcData.painting && (parseFloat(calcData.painting.mdl) > 0 || parseFloat(calcData.painting.eur) > 0)) {
+                results.push({ key: "painting", label: "Vopsire" });
+            }
+            
+            doc.setFontSize(11);
+            results.forEach(item => {
+                const data = calcData[item.key];
+                if (data && (parseFloat(data.mdl) > 0 || parseFloat(data.eur) > 0)) {
+                    doc.setFont("helvetica", "normal");
+                    doc.text(removeDiacritics(item.label), 20, y);
+                    doc.setFont("helvetica", "bold");
+                    doc.text(formatNumber(parseFloat(data.mdl || 0)) + " MDL  (" + formatNumber(parseFloat(data.eur || 0)) + " EUR)", pageWidth - 20, y, { align: "right" });
+                    y += 8;
+                }
+            });
+            
+            y += 5;
+            doc.line(20, y, pageWidth - 20, y);
+            y += 10;
+            
+            // Total
+            if (calcData.total) {
+                doc.setFillColor(226, 0, 26);
+                doc.rect(15, y - 5, pageWidth - 30, 12, "F");
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(12);
+                doc.text(removeDiacritics(t.total), 20, y + 3);
+                doc.text(formatNumber(parseFloat(calcData.total.mdl || 0)) + " MDL  (" + formatNumber(parseFloat(calcData.total.eur || 0)) + " EUR)", pageWidth - 20, y + 3, { align: "right" });
+                y += 15;
+            }
+            
+            // Vehicle total
+            if (calcData.vehicle) {
+                doc.setFillColor(85, 85, 85);
+                doc.rect(15, y - 5, pageWidth - 30, 12, "F");
+                doc.text(removeDiacritics(t.vehicle_total), 20, y + 3);
+                doc.text(formatNumber(parseFloat(calcData.vehicle.mdl || 0)) + " MDL  (" + formatNumber(parseFloat(calcData.vehicle.eur || 0)) + " EUR)", pageWidth - 20, y + 3, { align: "right" });
+            }
+            
+            doc.setTextColor(0, 0, 0);
+            doc.save(fileName);
         }
         
-        // Vehicle total
-        if (calcData.vehicle) {
-            doc.setFillColor(85, 85, 85);
-            doc.rect(15, y - 5, pageWidth - 30, 12, "F");
-            doc.text(removeDiacritics(t.vehicle_total), 20, y + 3);
-            doc.text(formatNumber(parseFloat(calcData.vehicle.mdl || 0)) + " MDL  (" + formatNumber(parseFloat(calcData.vehicle.eur || 0)) + " EUR)", pageWidth - 20, y + 3, { align: "right" });
-        }
-        
-        doc.setTextColor(0, 0, 0);
-        
-        doc.save(fileName);
+        bgImg.onload = function() { bgLoaded = true; generatePDFWithImages(); };
+        logoImg.onload = function() { logoLoaded = true; generatePDFWithImages(); };
+        bgImg.onerror = function() { bgLoaded = true; generatePDFWithImages(); };
+        logoImg.onerror = function() { logoLoaded = true; generatePDFWithImages(); };
     }
 })();
 </script>

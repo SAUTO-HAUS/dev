@@ -1039,6 +1039,20 @@ $rtrn = '
                         $rtrn .= '</select>
                 </div>
                 <div class="offer-field">
+                    <label for="offer-cylinder-capacity">'.$t['cylinder_capacity'].'</label>
+                    <input type="number" id="offer-cylinder-capacity" name="cylinder_capacity" placeholder="'.$t['cylinder_capacity'].'" min="0">
+                </div>
+                <div class="offer-field">
+                    <label for="offer-fuel-type">'.$t['offer_fuel_type'].'</label>
+                    <select id="offer-fuel-type" name="fuel_type">
+                        <option value="">'.$t['offer_fuel_type'].'</option>
+                        <option value="benzina">'.$t['gasoline'].'</option>
+                        <option value="diesel">'.$t['diesel'].'</option>
+                        <option value="hybrid">'.$t['hybrid'].'</option>
+                        <option value="electric">'.$t['electric'].'</option>
+                    </select>
+                </div>
+                <div class="offer-field">
                     <label for="offer-mileage">'.$t['mileage'].'</label>
                     <input type="number" id="offer-mileage" name="mileage" placeholder="'.$t['mileage'].'" min="0">
                 </div>
@@ -2057,6 +2071,8 @@ $rtrn = '
         const year = document.getElementById("offer-year").value;
         const bodywork = document.getElementById("offer-bodywork").value.trim();
         const seats = document.getElementById("offer-seats").value;
+        const cylinderCapacity = document.getElementById("offer-cylinder-capacity").value;
+        const fuelType = document.getElementById("offer-fuel-type").value;
         const mileage = document.getElementById("offer-mileage").value;
         const enginePower = document.getElementById("offer-engine-power").value;
         const transmission = document.getElementById("offer-transmission").value.trim();
@@ -2073,6 +2089,8 @@ $rtrn = '
             year: { el: document.getElementById("offer-year"), val: year },
             bodywork: { el: document.getElementById("offer-bodywork"), val: bodywork },
             seats: { el: document.getElementById("offer-seats"), val: seats },
+            cylinderCapacity: { el: document.getElementById("offer-cylinder-capacity"), val: cylinderCapacity },
+            fuelType: { el: document.getElementById("offer-fuel-type"), val: fuelType },
             mileage: { el: document.getElementById("offer-mileage"), val: mileage },
             enginePower: { el: document.getElementById("offer-engine-power"), val: enginePower },
             transmission: { el: document.getElementById("offer-transmission"), val: transmission },
@@ -2150,6 +2168,8 @@ $rtrn = '
             formData.append("year", year);
             formData.append("bodywork", bodywork);
             formData.append("seats", seats);
+            formData.append("cylinder_capacity", cylinderCapacity);
+            formData.append("fuel_type", fuelType);
             formData.append("mileage", mileage);
             formData.append("engine_power", enginePower);
             formData.append("transmission", transmission);
