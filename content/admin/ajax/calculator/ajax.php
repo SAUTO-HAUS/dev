@@ -204,14 +204,14 @@ if ($fn === 'save_eur_rate') {
         $where = '';
         $searchParam = '';
         if (!empty($search)) {
-            $where = ' WHERE (client_name LIKE ? OR brand LIKE ? OR model LIKE ? OR year LIKE ? OR vin LIKE ?)';
+            $where = ' WHERE (client_name LIKE ? OR brand LIKE ? OR model LIKE ? OR year LIKE ? OR bodywork LIKE ? OR mileage LIKE ? OR transmission LIKE ? OR drive_type LIKE ? OR color LIKE ?)';
             $searchParam = '%' . $search . '%';
         }
         
         // Get total count
         $count_stmt = $db->prepare('SELECT COUNT(*) as total FROM '.$prefx.'_calculator_offers' . $where);
         if (!empty($search)) {
-            $count_stmt->execute([$searchParam, $searchParam, $searchParam, $searchParam, $searchParam]);
+            $count_stmt->execute([$searchParam, $searchParam, $searchParam, $searchParam, $searchParam, $searchParam, $searchParam, $searchParam, $searchParam]);
         } else {
             $count_stmt->execute();
         }
@@ -221,7 +221,7 @@ if ($fn === 'save_eur_rate') {
         $sql = 'SELECT * FROM '.$prefx.'_calculator_offers' . $where . ' ORDER BY created_at DESC LIMIT ' . $limit . ' OFFSET ' . $offset;
         $pdo = $db->prepare($sql);
         if (!empty($search)) {
-            $pdo->execute([$searchParam, $searchParam, $searchParam, $searchParam, $searchParam]);
+            $pdo->execute([$searchParam, $searchParam, $searchParam, $searchParam, $searchParam, $searchParam, $searchParam, $searchParam, $searchParam]);
         } else {
             $pdo->execute();
         }
