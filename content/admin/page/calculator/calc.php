@@ -572,6 +572,54 @@ $rtrn = '
         vertical-align: middle;
     }
     
+    /* Toggle Switch Styles */
+    .toggle-switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+        margin-right: 10px;
+        vertical-align: middle;
+    }
+    
+    .toggle-switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+    
+    .toggle-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: .4s;
+        border-radius: 24px;
+    }
+    
+    .toggle-slider:before {
+        position: absolute;
+        content: "";
+        height: 18px;
+        width: 18px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: .4s;
+        border-radius: 50%;
+    }
+    
+    .toggle-switch input:checked + .toggle-slider {
+        background-color: #e2001a;
+    }
+    
+    .toggle-switch input:checked + .toggle-slider:before {
+        transform: translateX(26px);
+    }
+    
     #calculator-container .electric-notice {
         background: #d4edda;
         color: #155724;
@@ -721,11 +769,23 @@ $rtrn = '
             <span class="value editable-value"><input type="number" class="editable-input" id="res-transaction-mdl" data-field="transaction" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-transaction-eur" data-field="transaction" step="1"> EUR</span></span>
         </div>
         <div class="result-row">
-            <span class="label"><input type="checkbox" id="enable-polishing" style="margin-right:8px;cursor:pointer;"> '.$t['polishing'].'</span>
+            <span class="label">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enable-polishing">
+                    <span class="toggle-slider"></span>
+                </label>
+                '.$t['polishing'].'
+            </span>
             <span class="value editable-value"><input type="number" class="editable-input" id="res-polishing-mdl" data-field="polishing" step="1" disabled> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-polishing-eur" data-field="polishing" step="1" disabled> EUR</span></span>
         </div>
         <div class="result-row">
-            <span class="label"><input type="checkbox" id="enable-painting" style="margin-right:8px;cursor:pointer;"> '.$t['painting'].'</span>
+            <span class="label">
+                <label class="toggle-switch">
+                    <input type="checkbox" id="enable-painting">
+                    <span class="toggle-slider"></span>
+                </label>
+                '.$t['painting'].'
+            </span>
             <span class="value editable-value"><input type="number" class="editable-input" id="res-painting-mdl" data-field="painting" step="1" disabled> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-painting-eur" data-field="painting" step="1" disabled> EUR</span></span>
         </div>
         <div class="result-row total">
@@ -1476,12 +1536,12 @@ $rtrn = '
         doc.setGState(new doc.GState({opacity: 1}));
         
         // Title (inside the semi-transparent background)
-        y += 10;
+        y += 15;
         doc.setFontSize(32);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(255, 255, 255);
         doc.text(removeDiacritics(t.results), pageWidth / 2, y, { align: "center" });
-        y += 25;
+        y += 20;
         
         doc.setFontSize(13);
         
