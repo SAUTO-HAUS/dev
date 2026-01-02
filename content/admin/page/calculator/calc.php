@@ -397,22 +397,29 @@ $rtrn = '
     
     #calculator-container .image-item .remove-image {
         position: absolute;
-        top: 0.25rem;
-        right: 0.25rem;
+        top: 0.35rem;
+        right: 0.35rem;
         background: #dc3545;
         color: #fff;
-        width: 1.5rem;
-        height: 1.5rem;
+        width: 2rem;
+        height: 2rem;
         border-radius: 50%;
         border: none;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.9rem;
-        opacity: 0;
-        transition: opacity 0.2s;
+        font-size: 1.2rem;
+        font-weight: bold;
+        opacity: 0.9;
+        transition: all 0.2s;
         z-index: 2;
+    }
+    
+    #calculator-container .image-item .remove-image:hover {
+        opacity: 1;
+        transform: scale(1.1);
+        background: #c82333;
     }
     
     #calculator-container .image-item:hover .remove-image {
