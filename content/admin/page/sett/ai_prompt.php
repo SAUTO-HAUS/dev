@@ -101,7 +101,7 @@ $rtrn = '
     <h2>🤖 Настройки AI для описаний автомобилей</h2>
     <div style="background:#e8f5e9;padding:8px 12px;border-radius:5px;margin-bottom:1rem;font-size:13px;">
         <strong>Текущий AI:</strong> '.($currentAiProvider === 'openai' ? 'OpenAI / '.$currentOpenaiModel : 'Groq / '.$currentGroqModel).' | 
-        <strong>Фото:</strong> '.($currentAnalyzePhotos === '1' ? '✅ ВКЛ' : '❌ ВЫКЛ').'
+        <strong>Фото:</strong> '.($currentAiProvider === 'openai' ? ($currentAnalyzePhotos === '1' ? '✅ ВКЛ' : '❌ ВЫКЛ') : '⛔ не поддерживается').'
     </div>
     '.(!empty($saved) ? '<div class="success-msg">✅ Настройки сохранены успешно!</div>' : '').'
     

@@ -187,8 +187,8 @@ function sendToTelegramCars() {
 }
 
 window.addEventListener('load', function() {
-	if (!$('#content_box').attr('data-car-id')) {
-		const selects = document.querySelectorAll('select');
+	if (!$('#content_box').attr('data-car-id') && $('#content_box').length) {
+		const selects = document.querySelectorAll('#content_box select');
 		selects.forEach(select => {
 			select.selectedIndex = 0;
 		});
