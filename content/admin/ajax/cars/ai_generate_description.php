@@ -263,7 +263,7 @@ if (strpos($model, 'gpt-5') !== false) {
     $requestData = [
         'model' => $model,
         'messages' => [
-            ['role' => 'system', 'content' => 'You are a JSON generator. Always respond with valid JSON only, no markdown, no explanations.'],
+            ['role' => 'system', 'content' => 'Respond with valid JSON only. Follow the user instructions exactly.'],
             ['role' => 'user', 'content' => $useOpenAI && !empty($carImages) && $analyzePhotos ? $userContent : $prompt]
         ],
         'temperature' => 0.7,
