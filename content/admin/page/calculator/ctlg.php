@@ -242,7 +242,8 @@ $rtrn = '
                 <th>'.$t['client_name'].'</th>
                 <th>'.$t['brand'].' / '.$t['model'].'</th>
                 <th>'.$t['year_vehicle'].'</th>
-                <th>'.$t['vin_code'].'</th>
+                <th>'.$t['bodywork'].'</th>
+                <th>'.$t['mileage'].'</th>
                 <th>'.$t['total_col'].'</th>
                 <th>'.$t['date_col'].'</th>
                 <th>'.$t['actions_col'].'</th>
@@ -250,7 +251,7 @@ $rtrn = '
         </thead>
         <tbody id="offers-tbody">
             <tr>
-                <td colspan="7" class="empty-state">
+                <td colspan="8" class="empty-state">
                     <div class="icon">⏳</div>
                     <p>Se încarcă...</p>
                 </td>
@@ -289,7 +290,7 @@ $rtrn = '
             } else {
                 document.getElementById("offers-tbody").innerHTML = `
                     <tr>
-                        <td colspan="7" class="empty-state">
+                        <td colspan="8" class="empty-state">
                             <div class="icon">❌</div>
                             <p>Eroare la încărcare: ${data.error || "Unknown error"}</p>
                         </td>
@@ -300,7 +301,7 @@ $rtrn = '
         .catch(err => {
             document.getElementById("offers-tbody").innerHTML = `
                 <tr>
-                    <td colspan="7" class="empty-state">
+                    <td colspan="8" class="empty-state">
                         <div class="icon">❌</div>
                         <p>Eroare la încărcare</p>
                     </td>
@@ -319,7 +320,7 @@ $rtrn = '
         if (offers.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="7" class="empty-state">
+                    <td colspan="8" class="empty-state">
                         <div class="icon">📭</div>
                         <p>'.$t['no_usage_data'].'</p>
                     </td>
@@ -341,7 +342,8 @@ $rtrn = '
                     <td class="client-name">${offer.client_name}</td>
                     <td class="vehicle-info">${offer.brand} ${offer.model}</td>
                     <td>${offer.year}</td>
-                    <td class="vin-code">${offer.vin || "-"}</td>
+                    <td>${offer.bodywork || "-"}</td>
+                    <td>${offer.mileage ? parseInt(offer.mileage).toLocaleString("ro-MD") + " km" : "-"}</td>
                     <td><strong>${parseInt(totalMdl).toLocaleString("ro-MD")}</strong> MDL</td>
                     <td class="date-col">${date}</td>
                     <td class="actions">
@@ -521,7 +523,7 @@ $rtrn = '
             pdfContent.style.cssText = "position:absolute;left:-9999px;width:700px;padding:40px;font-family:Arial,sans-serif;background:#fff;";
             pdfContent.innerHTML = `
                 <h1 style="text-align:center;font-size:18px;margin-bottom:10px;font-weight:bold;">${t.results}</h1>
-                <p style="text-align:center;font-size:14px;margin-bottom:5px;">${offer.brand} ${offer.model} ${offer.year}${offer.vin ? " | VIN: " + offer.vin : ""}</p>
+                <p style="text-align:center;font-size:14px;margin-bottom:5px;">${offer.brand} ${offer.model} ${offer.year}</p>
                 <p style="text-align:center;color:#666;margin-bottom:5px;">${t.client}: ${offer.client_name}</p>
                 <p style="text-align:center;color:#666;margin-bottom:20px;font-size:10px;">${new Date(offer.created_at).toLocaleDateString("ro-RO")}</p>
                 <hr style="border:none;border-top:1px solid #ccc;margin-bottom:20px;">
@@ -584,7 +586,7 @@ $rtrn = '
         // Vehicle info
         doc.setFontSize(12);
         doc.setFont("helvetica", "normal");
-        const vehicleInfo = removeDiacritics(offer.brand + " " + offer.model + " " + offer.year + (offer.vin ? " | VIN: " + offer.vin : ""));
+        const vehicleInfo = removeDiacritics(offer.brand + " " + offer.model + " " + offer.year);
         doc.text(vehicleInfo, pageWidth / 2, y, { align: "center" });
         y += 8;
         

@@ -211,7 +211,13 @@ CREATE TABLE IF NOT EXISTS `gh3sp_calculator_offers` (
     `brand` VARCHAR(100) NOT NULL,
     `model` VARCHAR(100) NOT NULL,
     `year` INT(11) NOT NULL,
-    `vin` VARCHAR(17) DEFAULT NULL,
+    `bodywork` VARCHAR(50) DEFAULT NULL,
+    `seats` INT(11) DEFAULT NULL,
+    `mileage` INT(11) DEFAULT NULL,
+    `engine_power` INT(11) DEFAULT NULL,
+    `transmission` VARCHAR(50) DEFAULT NULL,
+    `drive_type` VARCHAR(50) DEFAULT NULL,
+    `color` VARCHAR(50) DEFAULT NULL,
     `pdf_lang` VARCHAR(5) DEFAULT 'ro',
     `calculation_data` JSON DEFAULT NULL,
     `pdf_path` VARCHAR(255) DEFAULT NULL,
@@ -220,7 +226,8 @@ CREATE TABLE IF NOT EXISTS `gh3sp_calculator_offers` (
     PRIMARY KEY (`id`),
     INDEX `idx_created_at` (`created_at`),
     INDEX `idx_client_name` (`client_name`),
-    INDEX `idx_vin` (`vin`)
+    INDEX `idx_bodywork` (`bodywork`),
+    INDEX `idx_brand_model` (`brand`, `model`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Default settings

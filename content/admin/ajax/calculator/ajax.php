@@ -122,20 +122,32 @@ if ($fn === 'save_eur_rate') {
         $brand = isset($_POST['brand']) ? trim($_POST['brand']) : '';
         $model = isset($_POST['model']) ? trim($_POST['model']) : '';
         $year = isset($_POST['year']) ? intval($_POST['year']) : 0;
-        $vin = isset($_POST['vin']) ? strtoupper(trim($_POST['vin'])) : '';
+        $bodywork = isset($_POST['bodywork']) ? trim($_POST['bodywork']) : '';
+        $seats = isset($_POST['seats']) ? intval($_POST['seats']) : 0;
+        $mileage = isset($_POST['mileage']) ? intval($_POST['mileage']) : 0;
+        $engine_power = isset($_POST['engine_power']) ? intval($_POST['engine_power']) : 0;
+        $transmission = isset($_POST['transmission']) ? trim($_POST['transmission']) : '';
+        $drive_type = isset($_POST['drive_type']) ? trim($_POST['drive_type']) : '';
+        $color = isset($_POST['color']) ? trim($_POST['color']) : '';
         $pdf_lang = isset($_POST['pdf_lang']) ? $_POST['pdf_lang'] : 'ro';
         $calculation_data = isset($_POST['calculation_data']) ? $_POST['calculation_data'] : '{}';
         
         // Insert offer into database
         $pdo = $db->prepare('INSERT INTO '.$prefx.'_calculator_offers 
-            (client_name, brand, model, year, vin, pdf_lang, calculation_data, created_by) 
-            VALUES (:client_name, :brand, :model, :year, :vin, :pdf_lang, :calculation_data, :created_by)');
+            (client_name, brand, model, year, bodywork, seats, mileage, engine_power, transmission, drive_type, color, pdf_lang, calculation_data, created_by) 
+            VALUES (:client_name, :brand, :model, :year, :bodywork, :seats, :mileage, :engine_power, :transmission, :drive_type, :color, :pdf_lang, :calculation_data, :created_by)');
         $pdo->execute([
             'client_name' => $client_name,
             'brand' => $brand,
             'model' => $model,
             'year' => $year,
-            'vin' => $vin,
+            'bodywork' => $bodywork,
+            'seats' => $seats,
+            'mileage' => $mileage,
+            'engine_power' => $engine_power,
+            'transmission' => $transmission,
+            'drive_type' => $drive_type,
+            'color' => $color,
             'pdf_lang' => $pdf_lang,
             'calculation_data' => $calculation_data,
             'created_by' => $user_id
