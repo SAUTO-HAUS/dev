@@ -1940,6 +1940,10 @@ function generateWithGemini() {
         import_country: importCountry ? importCountry.options[importCountry.selectedIndex]?.text || '' : ''
     };
     
+    // Get car_id if editing existing car
+    const carIdInput = document.querySelector('input[name="id"]');
+    const carId = carIdInput ? carIdInput.value : '';
+    
     // Send request with form data
     $.ajax({
         url: '/ajax.php',
@@ -1950,6 +1954,7 @@ function generateWithGemini() {
             fn: 'ai_generate',
             lang: lang,
             from_form: '1',
+            car_id: carId,
             car_type: 'in_stock',
             brand: carData.brand,
             model: carData.model,
@@ -1997,13 +2002,12 @@ function generateWithGemini() {
                 }, 3000);
             } else {
                 btn.innerHTML = originalText;
-                alert(' Error: ' + (data.error || 'Unknown error'));
+                alert('Error: ' + (data.error || 'Unknown error'));
             }
         },
         error: function(xhr, status, error) {
             btn.innerHTML = originalText;
             btn.disabled = false;
-            alert(' Ошибка сети: ' + error);
         }
     });
 }

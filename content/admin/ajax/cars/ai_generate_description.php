@@ -31,6 +31,9 @@ $openaiApiKey = defined('OPENAI_API_KEY') ? OPENAI_API_KEY : '';
 
 $useOpenAI = !empty($openaiApiKey);
 
+$carImages = [];
+$carId = intval($_POST['car_id'] ?? $_GET['car_id'] ?? 0);
+
 if ($fromForm) {
     $car = [
         'br_nm' => __post('brand') ?: '',
@@ -47,8 +50,47 @@ if ($fromForm) {
         'cur' => __post('currency') ?: '',
         'import_country' => __post('import_country') ?: ''
     ];
+    
+    // Load photos if car_id is provided (existing car)
+    if ($carId > 0) {
+        try {
+            $stmtCar = $db->prepare("SELECT p_path FROM {$prefx}_car_ctlg WHERE id = :id LIMIT 1");
+            $stmtCar->execute(['id' => $carId]);
+            $carRow = $stmtCar->fetch(PDO::FETCH_ASSOC);
+            
+            if ($carRow) {
+                $stmtPhotos = $db->prepare("SELECT * FROM {$prefx}_car_pht WHERE it_id = :it_id ORDER BY pos ASC");
+                $stmtPhotos->execute(['it_id' => $carId]);
+                $photos = $stmtPhotos->fetchAll(PDO::FETCH_ASSOC);
+                
+                $imgFormat = (usr_agent()==='IOS'||usr_agent()==='MAC') ? '.jpg' : '.webp';
+                $siteUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
+                
+                $photoPositionsSetting = '1,2,5,8';
+                try {
+                    $stmtPos = $db->query("SELECT setting_value FROM {$prefx}_ai_settings WHERE setting_key = 'photo_positions' LIMIT 1");
+                    $posRow = $stmtPos->fetch(PDO::FETCH_ASSOC);
+                    if ($posRow && !empty($posRow['setting_value'])) {
+                        $photoPositionsSetting = $posRow['setting_value'];
+                    }
+                } catch (PDOException $e) {}
+                
+                $selectedPositions = array_map('intval', array_filter(explode(',', $photoPositionsSetting)));
+                if (empty($selectedPositions)) {
+                    $selectedPositions = [1, 2, 5, 8];
+                }
+                
+                $photoIndex = 0;
+                foreach ($photos as $photo) {
+                    $photoIndex++;
+                    if (in_array($photoIndex, $selectedPositions)) {
+                        $carImages[] = $siteUrl . '/' . _CAR_IMG . '/' . $carRow['p_path'] . '/' . $carId . '/high/' . $photo['name'] . $imgFormat;
+                    }
+                }
+            }
+        } catch (PDOException $e) {}
+    }
 } else {
-    $carId = intval($_POST['car_id'] ?? $_GET['car_id'] ?? 0);
     if ($carId <= 0) {
         $returnIt = ['success' => false, 'error' => 'Invalid car ID'];
         return;
@@ -147,7 +189,11 @@ while (strpos($editablePrompt, '&amp;') !== false) {
     $editablePrompt = html_entity_decode($editablePrompt, ENT_QUOTES, 'UTF-8');
 }
 
-$prompt = $editablePrompt . "\n\n" . $fixedCarData;
+// JSON format is required for parsing the response
+$jsonFormat = 'IMPORTANT: Return EXACTLY in this JSON format:
+{"ro": "<HTML in Romanian>", "ru": "<HTML in Russian>", "en": "<HTML in English>"}';
+
+$prompt = $editablePrompt . "\n\n" . $fixedCarData . "\n\n" . $jsonFormat;
 
 // Choose API based on settings
 $aiProvider = $aiSettings['ai_provider'] ?? 'openai';
