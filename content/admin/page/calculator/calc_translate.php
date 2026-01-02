@@ -99,6 +99,11 @@ $calc_trans = [
         'offer_saved' => 'Oferta a fost salvată!',
         'offer_error' => 'Eroare la salvare!',
         'new_offer' => 'Creează ofertă nouă',
+        'offer_images' => 'Fotografii vehicul (6 obligatorii)',
+        'upload_image' => 'Încarcă imagine',
+        'images_required' => 'Trebuie să încărcați exact 6 imagini!',
+        'image_too_large' => 'Imaginea este prea mare (max 5MB)',
+        'invalid_image_type' => 'Tip de fișier invalid (doar JPG, PNG, WebP)',
         
         // Catalog columns
         'total_col' => 'Total',
@@ -245,6 +250,11 @@ $calc_trans = [
         'offer_saved' => 'Предложение сохранено!',
         'offer_error' => 'Ошибка сохранения!',
         'new_offer' => 'Создать новое предложение',
+        'offer_images' => 'Фотографии автомобиля (6 обязательных)',
+        'upload_image' => 'Загрузить изображение',
+        'images_required' => 'Необходимо загрузить ровно 6 изображений!',
+        'image_too_large' => 'Изображение слишком большое (макс. 5MB)',
+        'invalid_image_type' => 'Неверный тип файла (только JPG, PNG, WebP)',
         
         // Catalog columns
         'total_col' => 'Итого',
@@ -391,6 +401,11 @@ $calc_trans = [
         'offer_saved' => 'Offer saved!',
         'offer_error' => 'Error saving!',
         'new_offer' => 'Create New Offer',
+        'offer_images' => 'Vehicle photos (6 required)',
+        'upload_image' => 'Upload image',
+        'images_required' => 'You must upload exactly 6 images!',
+        'image_too_large' => 'Image is too large (max 5MB)',
+        'invalid_image_type' => 'Invalid file type (only JPG, PNG, WebP)',
         
         // Catalog columns
         'total_col' => 'Total',

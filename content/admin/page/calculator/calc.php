@@ -288,6 +288,145 @@ $rtrn = '
         box-shadow: 0 0 5px rgba(220, 53, 69, 0.5) !important;
     }
     
+    #calculator-container .offer-images-section {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: #fff;
+        border-radius: 8px;
+        border: 2px dashed #dee2e6;
+    }
+    
+    #calculator-container .offer-images-title {
+        margin: 0 0 1rem 0;
+        font-size: 0.95rem;
+        color: #333;
+        font-weight: 600;
+    }
+    
+    #calculator-container .offer-images-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+    }
+    
+    @media (max-width: 600px) {
+        #calculator-container .offer-images-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    #calculator-container .image-upload-box {
+        position: relative;
+        aspect-ratio: 4/3;
+        border: 2px dashed #ccc;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+        overflow: hidden;
+    }
+    
+    #calculator-container .image-upload-box:hover {
+        border-color: #e2001a;
+        background: #fff5f5;
+    }
+    
+    #calculator-container .image-upload-box.has-image {
+        border-style: solid;
+        border-color: #28a745;
+    }
+    
+    #calculator-container .image-upload-box.field-error {
+        border-color: #dc3545 !important;
+        border-style: dashed !important;
+    }
+    
+    #calculator-container .image-upload-box input[type="file"] {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        cursor: pointer;
+    }
+    
+    #calculator-container .image-upload-box .upload-icon {
+        font-size: 2rem;
+        color: #adb5bd;
+        margin-bottom: 0.25rem;
+    }
+    
+    #calculator-container .image-upload-box .upload-text {
+        font-size: 0.75rem;
+        color: #6c757d;
+        text-align: center;
+    }
+    
+    #calculator-container .image-upload-box .upload-number {
+        position: absolute;
+        top: 0.25rem;
+        left: 0.25rem;
+        background: #e2001a;
+        color: #fff;
+        width: 1.25rem;
+        height: 1.25rem;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        font-weight: 600;
+    }
+    
+    #calculator-container .image-upload-box .preview-image {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    #calculator-container .image-upload-box .remove-image {
+        position: absolute;
+        top: 0.25rem;
+        right: 0.25rem;
+        background: #dc3545;
+        color: #fff;
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: 50%;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.9rem;
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+    
+    #calculator-container .image-upload-box:hover .remove-image {
+        opacity: 1;
+    }
+    
+    #calculator-container .images-counter {
+        margin-top: 0.75rem;
+        text-align: center;
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+    
+    #calculator-container .images-counter.complete {
+        color: #28a745;
+        font-weight: 600;
+    }
+    
+    #calculator-container .images-counter.incomplete {
+        color: #dc3545;
+    }
+    
     #calculator-container .calc-header .eur-rate-row span {
         color: #666;
         font-size: 0.95rem;
@@ -916,6 +1055,24 @@ $rtrn = '
                         $rtrn .= '</select>
                 </div>
             </div>
+            
+            <div class="offer-images-section" id="offer-images-section">
+                <h4 class="offer-images-title">📷 '.$t['offer_images'].'</h4>
+                <div class="offer-images-grid" id="offer-images-grid">';
+                for ($i = 1; $i <= 6; $i++) {
+                    $rtrn .= '
+                    <div class="image-upload-box" id="image-box-'.$i.'">
+                        <span class="upload-number">'.$i.'</span>
+                        <span class="upload-icon">📷</span>
+                        <span class="upload-text">'.$t['upload_image'].'</span>
+                        <input type="file" id="offer-image-'.$i.'" accept="image/jpeg,image/png,image/webp" data-index="'.$i.'">
+                    </div>';
+                }
+                $rtrn .= '
+                </div>
+                <div class="images-counter" id="images-counter">0 / 6</div>
+            </div>
+            
             <button type="button" class="save-offer-btn" id="save-offer-btn">💾 '.$t['save_offer'].'</button>
             <button type="button" class="new-offer-btn" id="new-offer-btn" onclick="location.reload();">🔄 '.$t['new_offer'].'</button>
         </div>
@@ -1702,6 +1859,117 @@ $rtrn = '
         }
     });
     
+    // Image upload handling
+    const offerImages = new Array(6).fill(null); // Store File objects
+    const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+    const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
+    const IMAGES_REQUIRED_TEXT = "'.$t['images_required'].'";
+    const IMAGE_TOO_LARGE_TEXT = "'.$t['image_too_large'].'";
+    const INVALID_IMAGE_TYPE_TEXT = "'.$t['invalid_image_type'].'";
+    
+    function updateImagesCounter() {
+        const count = offerImages.filter(img => img !== null).length;
+        const counter = document.getElementById("images-counter");
+        counter.textContent = count + " / 6";
+        counter.classList.remove("complete", "incomplete");
+        if (count === 6) {
+            counter.classList.add("complete");
+        } else if (count > 0) {
+            counter.classList.add("incomplete");
+        }
+    }
+    
+    function handleImageUpload(input) {
+        const index = parseInt(input.dataset.index) - 1;
+        const file = input.files[0];
+        const box = document.getElementById("image-box-" + (index + 1));
+        
+        if (!file) return;
+        
+        // Validate file type
+        if (!ALLOWED_TYPES.includes(file.type)) {
+            alert(INVALID_IMAGE_TYPE_TEXT);
+            input.value = "";
+            return;
+        }
+        
+        // Validate file size
+        if (file.size > MAX_IMAGE_SIZE) {
+            alert(IMAGE_TOO_LARGE_TEXT);
+            input.value = "";
+            return;
+        }
+        
+        // Store file
+        offerImages[index] = file;
+        
+        // Show preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            // Remove existing preview if any
+            const existingPreview = box.querySelector(".preview-image");
+            const existingRemove = box.querySelector(".remove-image");
+            if (existingPreview) existingPreview.remove();
+            if (existingRemove) existingRemove.remove();
+            
+            // Hide upload elements
+            box.querySelector(".upload-icon").style.display = "none";
+            box.querySelector(".upload-text").style.display = "none";
+            
+            // Add preview image
+            const img = document.createElement("img");
+            img.className = "preview-image";
+            img.src = e.target.result;
+            box.appendChild(img);
+            
+            // Add remove button
+            const removeBtn = document.createElement("button");
+            removeBtn.type = "button";
+            removeBtn.className = "remove-image";
+            removeBtn.innerHTML = "×";
+            removeBtn.onclick = function(ev) {
+                ev.stopPropagation();
+                removeImage(index + 1);
+            };
+            box.appendChild(removeBtn);
+            
+            box.classList.add("has-image");
+            box.classList.remove("field-error");
+            updateImagesCounter();
+        };
+        reader.readAsDataURL(file);
+    }
+    
+    function removeImage(num) {
+        const index = num - 1;
+        const box = document.getElementById("image-box-" + num);
+        const input = document.getElementById("offer-image-" + num);
+        
+        // Clear file
+        offerImages[index] = null;
+        input.value = "";
+        
+        // Remove preview
+        const preview = box.querySelector(".preview-image");
+        const removeBtn = box.querySelector(".remove-image");
+        if (preview) preview.remove();
+        if (removeBtn) removeBtn.remove();
+        
+        // Show upload elements
+        box.querySelector(".upload-icon").style.display = "";
+        box.querySelector(".upload-text").style.display = "";
+        
+        box.classList.remove("has-image");
+        updateImagesCounter();
+    }
+    
+    // Attach event listeners to all image inputs
+    for (let i = 1; i <= 6; i++) {
+        document.getElementById("offer-image-" + i).addEventListener("change", function() {
+            handleImageUpload(this);
+        });
+    }
+    
     // Save offer button
     const OFFER_SAVED_TEXT = "'.$t['offer_saved'].'";
     const OFFER_ERROR_TEXT = "'.$t['offer_error'].'";
@@ -1759,6 +2027,22 @@ $rtrn = '
             }
         }
         
+        // Validate images - exactly 6 required
+        const imageCount = offerImages.filter(img => img !== null).length;
+        const imageBoxes = document.querySelectorAll(".image-upload-box");
+        imageBoxes.forEach(box => box.classList.remove("field-error"));
+        
+        if (imageCount !== 6) {
+            hasError = true;
+            // Mark empty image boxes as error
+            for (let i = 0; i < 6; i++) {
+                if (offerImages[i] === null) {
+                    document.getElementById("image-box-" + (i + 1)).classList.add("field-error");
+                }
+            }
+            alert(IMAGES_REQUIRED_TEXT);
+        }
+        
         if (hasError) {
             // Scroll to first error field
             document.querySelector(".field-error")?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -1799,24 +2083,36 @@ $rtrn = '
         };
         
         try {
-            // Save offer to database (only data, no PDF)
+            // Build FormData for file upload
+            const formData = new FormData();
+            formData.append("tp", "adm");
+            formData.append("pg", "calculator");
+            formData.append("fn", "save_offer");
+            formData.append("client_name", clientName);
+            formData.append("brand", brand);
+            formData.append("model", model);
+            formData.append("year", year);
+            formData.append("bodywork", bodywork);
+            formData.append("seats", seats);
+            formData.append("mileage", mileage);
+            formData.append("engine_power", enginePower);
+            formData.append("transmission", transmission);
+            formData.append("drive_type", driveType);
+            formData.append("color", color);
+            formData.append("pdf_lang", lang);
+            formData.append("calculation_data", JSON.stringify(values));
+            
+            // Append images
+            for (let i = 0; i < 6; i++) {
+                if (offerImages[i]) {
+                    formData.append("images[]", offerImages[i], "image_" + (i + 1) + ".jpg");
+                }
+            }
+            
+            // Save offer to database with images
             const saveResponse = await fetch("/ajax.php", {
                 method: "POST",
-                headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                body: "tp=adm&pg=calculator&fn=save_offer" +
-                    "&client_name=" + encodeURIComponent(clientName) +
-                    "&brand=" + encodeURIComponent(brand) +
-                    "&model=" + encodeURIComponent(model) +
-                    "&year=" + encodeURIComponent(year) +
-                    "&bodywork=" + encodeURIComponent(bodywork) +
-                    "&seats=" + encodeURIComponent(seats) +
-                    "&mileage=" + encodeURIComponent(mileage) +
-                    "&engine_power=" + encodeURIComponent(enginePower) +
-                    "&transmission=" + encodeURIComponent(transmission) +
-                    "&drive_type=" + encodeURIComponent(driveType) +
-                    "&color=" + encodeURIComponent(color) +
-                    "&pdf_lang=" + encodeURIComponent(lang) +
-                    "&calculation_data=" + encodeURIComponent(JSON.stringify(values))
+                body: formData
             });
             
             const saveData = await saveResponse.json();

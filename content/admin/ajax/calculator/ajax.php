@@ -116,7 +116,7 @@ if ($fn === 'save_eur_rate') {
     }
     
 } elseif ($fn === 'save_offer') {
-    // Save commercial offer (data only, no PDF)
+    // Save commercial offer with images
     try {
         $client_name = isset($_POST['client_name']) ? trim($_POST['client_name']) : '';
         $brand = isset($_POST['brand']) ? trim($_POST['brand']) : '';
@@ -132,7 +132,13 @@ if ($fn === 'save_eur_rate') {
         $pdf_lang = isset($_POST['pdf_lang']) ? $_POST['pdf_lang'] : 'ro';
         $calculation_data = isset($_POST['calculation_data']) ? $_POST['calculation_data'] : '{}';
         
-        // Insert offer into database
+        // Validate exactly 6 images
+        if (!isset($_FILES['images']) || count($_FILES['images']['name']) !== 6) {
+            echo json_encode(['success' => false, 'error' => 'Exactly 6 images are required']);
+            exit;
+        }
+        
+        // Insert offer into database first to get the ID
         $pdo = $db->prepare('INSERT INTO '.$prefx.'_calculator_offers 
             (client_name, brand, model, year, bodywork, seats, mileage, engine_power, transmission, drive_type, color, pdf_lang, calculation_data, created_by) 
             VALUES (:client_name, :brand, :model, :year, :bodywork, :seats, :mileage, :engine_power, :transmission, :drive_type, :color, :pdf_lang, :calculation_data, :created_by)');
@@ -155,9 +161,68 @@ if ($fn === 'save_eur_rate') {
         
         $offer_id = $db->lastInsertId();
         
+        // Create directory for offer images
+        $upload_base = $_SERVER['DOCUMENT_ROOT'] . '/uploads/calculator_offers';
+        $offer_dir = $upload_base . '/' . $offer_id;
+        
+        if (!file_exists($upload_base)) {
+            mkdir($upload_base, 0755, true);
+        }
+        if (!file_exists($offer_dir)) {
+            mkdir($offer_dir, 0755, true);
+        }
+        
+        // Process and save images
+        $image_paths = [];
+        $allowed_types = ['image/jpeg', 'image/png', 'image/webp'];
+        $max_size = 5 * 1024 * 1024; // 5MB
+        
+        for ($i = 0; $i < 6; $i++) {
+            $tmp_name = $_FILES['images']['tmp_name'][$i];
+            $file_type = $_FILES['images']['type'][$i];
+            $file_size = $_FILES['images']['size'][$i];
+            $error = $_FILES['images']['error'][$i];
+            
+            if ($error !== UPLOAD_ERR_OK) {
+                throw new Exception('Upload error for image ' . ($i + 1));
+            }
+            
+            if (!in_array($file_type, $allowed_types)) {
+                throw new Exception('Invalid file type for image ' . ($i + 1));
+            }
+            
+            if ($file_size > $max_size) {
+                throw new Exception('File too large for image ' . ($i + 1));
+            }
+            
+            // Generate filename
+            $extension = 'jpg';
+            if ($file_type === 'image/png') $extension = 'png';
+            if ($file_type === 'image/webp') $extension = 'webp';
+            
+            $filename = 'img_' . ($i + 1) . '.' . $extension;
+            $full_path = $offer_dir . '/' . $filename;
+            $relative_path = '/uploads/calculator_offers/' . $offer_id . '/' . $filename;
+            
+            // Move uploaded file
+            if (!move_uploaded_file($tmp_name, $full_path)) {
+                throw new Exception('Failed to save image ' . ($i + 1));
+            }
+            
+            $image_paths[] = $relative_path;
+        }
+        
+        // Update offer with image paths
+        $pdo = $db->prepare('UPDATE '.$prefx.'_calculator_offers SET images = :images WHERE id = :id');
+        $pdo->execute([
+            'images' => json_encode($image_paths),
+            'id' => $offer_id
+        ]);
+        
         echo json_encode([
             'success' => true, 
-            'offer_id' => $offer_id
+            'offer_id' => $offer_id,
+            'images' => $image_paths
         ]);
         exit;
     } catch (Exception $e) {

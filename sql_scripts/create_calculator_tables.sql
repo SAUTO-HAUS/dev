@@ -220,6 +220,7 @@ CREATE TABLE IF NOT EXISTS `gh3sp_calculator_offers` (
     `color` VARCHAR(50) DEFAULT NULL,
     `pdf_lang` VARCHAR(5) DEFAULT 'ro',
     `calculation_data` JSON DEFAULT NULL,
+    `images` JSON DEFAULT NULL COMMENT 'JSON array of 6 image paths',
     `pdf_path` VARCHAR(255) DEFAULT NULL,
     `created_by` INT(11) NOT NULL,
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
