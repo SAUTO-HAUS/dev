@@ -720,6 +720,14 @@ $rtrn = '
             <span class="label">'.$t['transaction_commission'].'</span>
             <span class="value editable-value"><input type="number" class="editable-input" id="res-transaction-mdl" data-field="transaction" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-transaction-eur" data-field="transaction" step="1"> EUR</span></span>
         </div>
+        <div class="result-row">
+            <span class="label"><input type="checkbox" id="enable-polishing" style="margin-right:8px;cursor:pointer;"> '.$t['polishing'].'</span>
+            <span class="value editable-value"><input type="number" class="editable-input" id="res-polishing-mdl" data-field="polishing" step="1" disabled> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-polishing-eur" data-field="polishing" step="1" disabled> EUR</span></span>
+        </div>
+        <div class="result-row">
+            <span class="label"><input type="checkbox" id="enable-painting" style="margin-right:8px;cursor:pointer;"> '.$t['painting'].'</span>
+            <span class="value editable-value"><input type="number" class="editable-input" id="res-painting-mdl" data-field="painting" step="1" disabled> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-painting-eur" data-field="painting" step="1" disabled> EUR</span></span>
+        </div>
         <div class="result-row total">
             <span class="label">'.$t['total'].'</span>
             <span class="value editable-value"><input type="number" class="editable-input" id="res-total-mdl" readonly step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-total-eur" readonly step="1"> EUR</span></span>
@@ -1056,7 +1064,7 @@ $rtrn = '
     
     // Recalculate totals based on current input values
     function recalculateTotals() {
-        const fields = ["excise", "luxury", "customs", "damage", "export", "bank", "auction", "pollution", "shipping", "accessories", "transaction"];
+        const fields = ["excise", "luxury", "customs", "damage", "export", "bank", "auction", "pollution", "shipping", "accessories", "transaction", "polishing", "painting"];
         let totalMdl = 0;
         
         fields.forEach(field => {
@@ -1104,6 +1112,41 @@ $rtrn = '
         });
     });
     
+    // Checkbox event listeners for Polizare and Vopsire
+    document.getElementById("enable-polishing").addEventListener("change", function() {
+        const mdlInput = document.getElementById("res-polishing-mdl");
+        const eurInput = document.getElementById("res-polishing-eur");
+        if (this.checked) {
+            mdlInput.disabled = false;
+            eurInput.disabled = false;
+            mdlInput.value = 4500;
+            eurInput.value = Math.round(4500 / EUR_RATE);
+        } else {
+            mdlInput.disabled = true;
+            eurInput.disabled = true;
+            mdlInput.value = 0;
+            eurInput.value = 0;
+        }
+        recalculateTotals();
+    });
+    
+    document.getElementById("enable-painting").addEventListener("change", function() {
+        const mdlInput = document.getElementById("res-painting-mdl");
+        const eurInput = document.getElementById("res-painting-eur");
+        if (this.checked) {
+            mdlInput.disabled = false;
+            eurInput.disabled = false;
+            mdlInput.value = 3000;
+            eurInput.value = Math.round(3000 / EUR_RATE);
+        } else {
+            mdlInput.disabled = true;
+            eurInput.disabled = true;
+            mdlInput.value = 0;
+            eurInput.value = 0;
+        }
+        recalculateTotals();
+    });
+    
     function logUsage() {
         fetch("/ajax.php", {
             method: "POST",
@@ -1139,6 +1182,8 @@ $rtrn = '
             shipping_docs: "Livrarea documentelor",
             accessories: "Accesorii",
             transaction_commission: "Comision pentru tranzactie",
+            polishing: "Polizare si curatire chimica",
+            painting: "Vopsire",
             total: "TOTAL COSTURI VAMUIRE",
             vehicle_total: "SUMA TOTALA VEHICUL",
             sales_manager: "Manager vanzari",
@@ -1157,6 +1202,8 @@ $rtrn = '
             shipping_docs: "Доставка документов",
             accessories: "Аксессуары",
             transaction_commission: "Комиссия за транзакцию",
+            polishing: "Полировка и химчистка",
+            painting: "Покраска",
             total: "ИТОГО РАСХОДЫ НА РАСТАМОЖКУ",
             vehicle_total: "ОБЩАЯ СУММА ЗА АВТОМОБИЛЬ",
             sales_manager: "Менеджер по продажам",
@@ -1175,6 +1222,8 @@ $rtrn = '
             shipping_docs: "Document Shipping",
             accessories: "Accessories",
             transaction_commission: "Transaction Commission",
+            polishing: "Polishing and Chemical Cleaning",
+            painting: "Painting",
             total: "TOTAL CUSTOMS COSTS",
             vehicle_total: "TOTAL VEHICLE COST",
             sales_manager: "Sales Manager",
@@ -1199,6 +1248,8 @@ $rtrn = '
             shipping: { mdl: document.getElementById("res-shipping-mdl").value || "0", eur: document.getElementById("res-shipping-eur").value || "0" },
             accessories: { mdl: document.getElementById("res-accessories-mdl").value || "0", eur: document.getElementById("res-accessories-eur").value || "0" },
             transaction: { mdl: document.getElementById("res-transaction-mdl").value || "0", eur: document.getElementById("res-transaction-eur").value || "0" },
+            polishing: { mdl: document.getElementById("res-polishing-mdl").value || "0", eur: document.getElementById("res-polishing-eur").value || "0" },
+            painting: { mdl: document.getElementById("res-painting-mdl").value || "0", eur: document.getElementById("res-painting-eur").value || "0" },
             total: { mdl: document.getElementById("res-total-mdl").value || "0", eur: document.getElementById("res-total-eur").value || "0" },
             vehicle: { mdl: document.getElementById("res-vehicle-total-mdl").value || "0", eur: document.getElementById("res-vehicle-total-eur").value || "0" }
         };
@@ -1241,20 +1292,33 @@ $rtrn = '
                 const pdfContent = document.createElement("div");
                 pdfContent.id = "pdf-temp-content";
                 pdfContent.style.cssText = "position:absolute;left:-9999px;width:500px;padding:20px;font-family:Arial,sans-serif;background:rgba(0,0,0,0.5);border-radius:5px;";
+                
+                // Build table rows dynamically
+                let tableRows = `
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.value_mdl}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.value.mdl))} MDL  (${formatNumber(parseFloat(values.value.eur))} EUR)</td></tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.excise}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.excise.mdl))} MDL  (${formatNumber(parseFloat(values.excise.eur))} EUR)</td></tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.customs_duty}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.customs.mdl))} MDL  (${formatNumber(parseFloat(values.customs.eur))} EUR)</td></tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.damage_protection}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.damage.mdl))} MDL  (${formatNumber(parseFloat(values.damage.eur))} EUR)</td></tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.export_declaration}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.exportDecl.mdl))} MDL  (${formatNumber(parseFloat(values.exportDecl.eur))} EUR)</td></tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.bank_commission}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.bank.mdl))} MDL  (${formatNumber(parseFloat(values.bank.eur))} EUR)</td></tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.auction_commission}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.auction.mdl))} MDL  (${formatNumber(parseFloat(values.auction.eur))} EUR)</td></tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.pollution_tax}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.pollution.mdl))} MDL  (${formatNumber(parseFloat(values.pollution.eur))} EUR)</td></tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.shipping_docs}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.shipping.mdl))} MDL  (${formatNumber(parseFloat(values.shipping.eur))} EUR)</td></tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.accessories}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.accessories.mdl))} MDL  (${formatNumber(parseFloat(values.accessories.eur))} EUR)</td></tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.transaction_commission}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.transaction.mdl))} MDL  (${formatNumber(parseFloat(values.transaction.eur))} EUR)</td></tr>`;
+                
+                // Add polishing and painting only if enabled
+                if (document.getElementById("enable-polishing").checked) {
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.polishing}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.polishing.mdl))} MDL  (${formatNumber(parseFloat(values.polishing.eur))} EUR)</td></tr>`;
+                }
+                if (document.getElementById("enable-painting").checked) {
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.painting}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.painting.mdl))} MDL  (${formatNumber(parseFloat(values.painting.eur))} EUR)</td></tr>`;
+                }
+                
                 pdfContent.innerHTML = `
                     <h1 style="text-align:center;font-size:24px;margin-bottom:15px;font-weight:bold;color:#fff;">${t.results}</h1>
                     <table style="width:100%;border-collapse:collapse;font-size:12px;color:#fff;">
-                        <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.value_mdl}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.value.mdl))} MDL  (${formatNumber(parseFloat(values.value.eur))} EUR)</td></tr>
-                        <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.excise}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.excise.mdl))} MDL  (${formatNumber(parseFloat(values.excise.eur))} EUR)</td></tr>
-                        <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.customs_duty}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.customs.mdl))} MDL  (${formatNumber(parseFloat(values.customs.eur))} EUR)</td></tr>
-                        <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.damage_protection}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.damage.mdl))} MDL  (${formatNumber(parseFloat(values.damage.eur))} EUR)</td></tr>
-                        <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.export_declaration}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.exportDecl.mdl))} MDL  (${formatNumber(parseFloat(values.exportDecl.eur))} EUR)</td></tr>
-                        <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.bank_commission}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.bank.mdl))} MDL  (${formatNumber(parseFloat(values.bank.eur))} EUR)</td></tr>
-                        <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.auction_commission}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.auction.mdl))} MDL  (${formatNumber(parseFloat(values.auction.eur))} EUR)</td></tr>
-                        <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.pollution_tax}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.pollution.mdl))} MDL  (${formatNumber(parseFloat(values.pollution.eur))} EUR)</td></tr>
-                        <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.shipping_docs}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.shipping.mdl))} MDL  (${formatNumber(parseFloat(values.shipping.eur))} EUR)</td></tr>
-                        <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.accessories}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.accessories.mdl))} MDL  (${formatNumber(parseFloat(values.accessories.eur))} EUR)</td></tr>
-                        <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.transaction_commission}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.transaction.mdl))} MDL  (${formatNumber(parseFloat(values.transaction.eur))} EUR)</td></tr>
+                        ${tableRows}
                     </table>
                     <div style="background:#e2001a;color:#fff;padding:10px 12px;margin-top:15px;display:flex;justify-content:space-between;font-weight:bold;font-size:13px;">
                         <span>${t.total}</span>
@@ -1271,7 +1335,7 @@ $rtrn = '
                     const imgData = canvas.toDataURL("image/png");
                     const contentWidth = pageWidth - 30;
                     const contentHeight = (canvas.height * contentWidth) / canvas.width;
-                    const contentY = logoHeight + bgPadding + imgY + 10;
+                    const contentY = logoHeight + bgPadding + imgY + 3;
                     
                     doc.addImage(imgData, "PNG", 15, contentY, contentWidth, contentHeight);
                     document.body.removeChild(pdfContent);
@@ -1395,16 +1459,24 @@ $rtrn = '
             { label: t.transaction_commission, mdl: values.transaction.mdl, eur: values.transaction.eur }
         ];
         
+        // Add polishing and painting only if enabled
+        if (document.getElementById("enable-polishing").checked) {
+            results.push({ label: t.polishing, mdl: values.polishing.mdl, eur: values.polishing.eur });
+        }
+        if (document.getElementById("enable-painting").checked) {
+            results.push({ label: t.painting, mdl: values.painting.mdl, eur: values.painting.eur });
+        }
+        
         // Semi-transparent dark background for title AND text area
         const titleHeight = 35;  // space for title
-        const totalBgHeight = titleHeight + results.length * 8 + 5;
+        const totalBgHeight = titleHeight + results.length * 8;
         doc.setFillColor(0, 0, 0);
         doc.setGState(new doc.GState({opacity: 0.5}));
         doc.rect(15, y, pageWidth - 30, totalBgHeight, "F");
         doc.setGState(new doc.GState({opacity: 1}));
         
         // Title (inside the semi-transparent background)
-        y += 18;
+        y += 10;
         doc.setFontSize(32);
         doc.setFont("helvetica", "bold");
         doc.setTextColor(255, 255, 255);
@@ -1414,7 +1486,7 @@ $rtrn = '
         doc.setFontSize(13);
         
         doc.setTextColor(255, 255, 255);
-        results.forEach(item => {
+        results.forEach((item, index) => {
             const valueText = formatNumber(parseFloat(item.mdl)) + " MDL  (" + formatNumber(parseFloat(item.eur)) + " EUR)";
             doc.setFont("helvetica", "normal");
             doc.text(item.label, 20, y);
@@ -1537,6 +1609,8 @@ $rtrn = '
             shipping: { mdl: document.getElementById("res-shipping-mdl").value || "0", eur: document.getElementById("res-shipping-eur").value || "0" },
             accessories: { mdl: document.getElementById("res-accessories-mdl").value || "0", eur: document.getElementById("res-accessories-eur").value || "0" },
             transaction: { mdl: document.getElementById("res-transaction-mdl").value || "0", eur: document.getElementById("res-transaction-eur").value || "0" },
+            polishing: { mdl: document.getElementById("res-polishing-mdl").value || "0", eur: document.getElementById("res-polishing-eur").value || "0" },
+            painting: { mdl: document.getElementById("res-painting-mdl").value || "0", eur: document.getElementById("res-painting-eur").value || "0" },
             total: { mdl: document.getElementById("res-total-mdl").value || "0", eur: document.getElementById("res-total-eur").value || "0" },
             vehicle: { mdl: document.getElementById("res-vehicle-total-mdl").value || "0", eur: document.getElementById("res-vehicle-total-eur").value || "0" }
         };
