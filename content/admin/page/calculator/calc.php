@@ -1828,19 +1828,6 @@ $rtrn = '
             btn.textContent = "✓ " + OFFER_SAVED_TEXT;
             btn.classList.add("success");
             
-            // Clear form
-            document.getElementById("offer-client-name").value = "";
-            document.getElementById("offer-brand").value = "";
-            document.getElementById("offer-model").value = "";
-            document.getElementById("offer-year").value = "";
-            document.getElementById("offer-bodywork").value = "";
-            document.getElementById("offer-seats").value = "";
-            document.getElementById("offer-mileage").value = "";
-            document.getElementById("offer-engine-power").value = "";
-            document.getElementById("offer-transmission").value = "";
-            document.getElementById("offer-drive-type").value = "";
-            document.getElementById("offer-color").value = "";
-            
         } catch (error) {
             console.error("Error saving offer:", error);
             btn.textContent = "✗ " + OFFER_ERROR_TEXT;
