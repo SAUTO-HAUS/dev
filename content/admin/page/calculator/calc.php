@@ -836,9 +836,59 @@ $rtrn = '
                         }
                         $rtrn .= '</select>
                 </div>
-                <div class="offer-field offer-field-full">
-                    <label for="offer-vin">'.$t['vin_code'].'</label>
-                    <input type="text" id="offer-vin" name="vin" placeholder="'.$t['vin_code'].'" maxlength="17" style="text-transform:uppercase;">
+                <div class="offer-field">
+                    <label for="offer-bodywork">'.$t['bodywork'].'</label>
+                    <select id="offer-bodywork" name="bodywork">
+                        <option value="">'.$t['bodywork'].'</option>';
+                        foreach ($lng['l']['car']['bt'] as $k => $v) {
+                            $rtrn .= '<option value="'.$k.'">'.$v.'</option>';
+                        }
+                        $rtrn .= '</select>
+                </div>
+                <div class="offer-field">
+                    <label for="offer-seats">'.$t['seats'].'</label>
+                    <select id="offer-seats" name="seats">
+                        <option value="">'.$t['seats'].'</option>';
+                        for ($s = 2; $s <= 15; $s++) {
+                            $selected = ($s == 5) ? ' selected' : '';
+                            $rtrn .= '<option value="'.$s.'"'.$selected.'>'.$s.'</option>';
+                        }
+                        $rtrn .= '</select>
+                </div>
+                <div class="offer-field">
+                    <label for="offer-mileage">'.$t['mileage'].'</label>
+                    <input type="number" id="offer-mileage" name="mileage" placeholder="'.$t['mileage'].'" min="0">
+                </div>
+                <div class="offer-field">
+                    <label for="offer-engine-power">'.$t['engine_power'].'</label>
+                    <input type="number" id="offer-engine-power" name="engine_power" placeholder="'.$t['engine_power'].'" min="0">
+                </div>
+                <div class="offer-field">
+                    <label for="offer-transmission">'.$t['transmission'].'</label>
+                    <select id="offer-transmission" name="transmission">
+                        <option value="">'.$t['transmission'].'</option>';
+                        foreach ($lng['l']['car']['tra'] as $k => $v) {
+                            $rtrn .= '<option value="'.$k.'">'.$v.'</option>';
+                        }
+                        $rtrn .= '</select>
+                </div>
+                <div class="offer-field">
+                    <label for="offer-drive-type">'.$t['drive_type'].'</label>
+                    <select id="offer-drive-type" name="drive_type">
+                        <option value="">'.$t['drive_type'].'</option>';
+                        foreach ($lng['l']['car']['wd'] as $k => $v) {
+                            $rtrn .= '<option value="'.$k.'">'.$v.'</option>';
+                        }
+                        $rtrn .= '</select>
+                </div>
+                <div class="offer-field">
+                    <label for="offer-color">'.$t['color'].'</label>
+                    <select id="offer-color" name="color">
+                        <option value="">'.$t['color'].'</option>';
+                        foreach ($lng['l']['car']['clr'] as $k => $v) {
+                            $rtrn .= '<option value="'.$k.'">'.$v.'</option>';
+                        }
+                        $rtrn .= '</select>
                 </div>
             </div>
             <button type="button" class="save-offer-btn" id="save-offer-btn">💾 '.$t['save_offer'].'</button>
@@ -1645,7 +1695,13 @@ $rtrn = '
         const model = modelSelect.value;
         const modelName = modelSelect.options[modelSelect.selectedIndex]?.text || model;
         const year = document.getElementById("offer-year").value;
-        const vin = document.getElementById("offer-vin").value.trim().toUpperCase();
+        const bodywork = document.getElementById("offer-bodywork").value.trim();
+        const seats = document.getElementById("offer-seats").value;
+        const mileage = document.getElementById("offer-mileage").value;
+        const enginePower = document.getElementById("offer-engine-power").value;
+        const transmission = document.getElementById("offer-transmission").value.trim();
+        const driveType = document.getElementById("offer-drive-type").value.trim();
+        const color = document.getElementById("offer-color").value.trim();
         
         // Validate required fields
         if (!clientName || !brand || !model || !year) {
@@ -1685,7 +1741,13 @@ $rtrn = '
                     "&brand=" + encodeURIComponent(brandName) +
                     "&model=" + encodeURIComponent(modelName) +
                     "&year=" + encodeURIComponent(year) +
-                    "&vin=" + encodeURIComponent(vin) +
+                    "&bodywork=" + encodeURIComponent(bodywork) +
+                    "&seats=" + encodeURIComponent(seats) +
+                    "&mileage=" + encodeURIComponent(mileage) +
+                    "&engine_power=" + encodeURIComponent(enginePower) +
+                    "&transmission=" + encodeURIComponent(transmission) +
+                    "&drive_type=" + encodeURIComponent(driveType) +
+                    "&color=" + encodeURIComponent(color) +
                     "&pdf_lang=" + encodeURIComponent(lang) +
                     "&calculation_data=" + encodeURIComponent(JSON.stringify(values))
             });
@@ -1704,7 +1766,13 @@ $rtrn = '
             document.getElementById("offer-brand").value = "";
             document.getElementById("offer-model").value = "";
             document.getElementById("offer-year").value = "";
-            document.getElementById("offer-vin").value = "";
+            document.getElementById("offer-bodywork").value = "";
+            document.getElementById("offer-seats").value = "";
+            document.getElementById("offer-mileage").value = "";
+            document.getElementById("offer-engine-power").value = "";
+            document.getElementById("offer-transmission").value = "";
+            document.getElementById("offer-drive-type").value = "";
+            document.getElementById("offer-color").value = "";
             
         } catch (error) {
             console.error("Error saving offer:", error);

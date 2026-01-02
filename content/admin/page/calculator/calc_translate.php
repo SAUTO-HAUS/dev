@@ -57,12 +57,44 @@ $calc_trans = [
         'catalog' => 'Catalog oferte',
         
         // Commercial offer
-        'commercial_offer' => 'Ofertă comercială',
-        'client_name' => 'Nume client',
+        'commercial_offer' => 'Ofertă comercială finală',
+        'client_name' => 'Nume, prenume',
         'brand' => 'Marca',
         'model' => 'Model',
         'year_vehicle' => 'An fabricație',
         'vin_code' => 'Cod VIN',
+        'bodywork' => 'Caroserie',
+        'seats' => 'Numărul de locuri',
+        'mileage' => 'Parcus',
+        'engine_power' => 'Puterea motorului',
+        'transmission' => 'Cutia de viteze',
+        'drive_type' => 'Tracțiunea',
+        'color' => 'Culoarea',
+        
+        // Bodywork types
+        'sedan' => 'Sedan',
+        'hatchback' => 'Hatchback',
+        'suv' => 'SUV',
+        'crossover' => 'Crossover',
+        'coupe' => 'Coupe',
+        'cabriolet' => 'Cabriolet',
+        'wagon' => 'Wagon',
+        'minivan' => 'Minivan',
+        'pickup' => 'Pickup',
+        
+        // Transmission types
+        'manual' => 'Manual',
+        'automatic' => 'Automat',
+        'cvt' => 'CVT',
+        'semi_automatic' => 'Semi-automat',
+        'robotic' => 'Robotic',
+        
+        // Drive types
+        'fwd' => 'Față',
+        'rwd' => 'Spate',
+        'awd' => 'Integrală',
+        '4wd' => '4x4',
+        
         'save_offer' => 'Salvează oferta',
         'offer_saved' => 'Oferta a fost salvată!',
         'offer_error' => 'Eroare la salvare!',
@@ -170,12 +202,44 @@ $calc_trans = [
         'catalog' => 'Каталог предложений',
         
         // Commercial offer
-        'commercial_offer' => 'Коммерческое предложение',
-        'client_name' => 'Имя клиента',
+        'commercial_offer' => 'Окончательное коммерческое предложение',
+        'client_name' => 'Имя, фамилия',
         'brand' => 'Марка',
         'model' => 'Модель',
         'year_vehicle' => 'Год выпуска',
         'vin_code' => 'VIN код',
+        'bodywork' => 'Кузов',
+        'seats' => 'Количество мест',
+        'mileage' => 'Пробег',
+        'engine_power' => 'Мощность двигателя',
+        'transmission' => 'Коробка передач',
+        'drive_type' => 'Привод',
+        'color' => 'Цвет',
+        
+        // Bodywork types
+        'sedan' => 'Седан',
+        'hatchback' => 'Хэтчбек',
+        'suv' => 'Внедорожник',
+        'crossover' => 'Кроссовер',
+        'coupe' => 'Купе',
+        'cabriolet' => 'Кабриолет',
+        'wagon' => 'Универсал',
+        'minivan' => 'Минивэн',
+        'pickup' => 'Пикап',
+        
+        // Transmission types
+        'manual' => 'Механика',
+        'automatic' => 'Автомат',
+        'cvt' => 'Вариатор',
+        'semi_automatic' => 'Полуавтомат',
+        'robotic' => 'Робот',
+        
+        // Drive types
+        'fwd' => 'Передний',
+        'rwd' => 'Задний',
+        'awd' => 'Полный',
+        '4wd' => '4x4',
+        
         'save_offer' => 'Сохранить предложение',
         'offer_saved' => 'Предложение сохранено!',
         'offer_error' => 'Ошибка сохранения!',
@@ -283,12 +347,44 @@ $calc_trans = [
         'catalog' => 'Offers Catalog',
         
         // Commercial offer
-        'commercial_offer' => 'Commercial Offer',
-        'client_name' => 'Client Name',
+        'commercial_offer' => 'Final Commercial Offer',
+        'client_name' => 'First name, Last name',
         'brand' => 'Brand',
         'model' => 'Model',
         'year_vehicle' => 'Year',
         'vin_code' => 'VIN Code',
+        'bodywork' => 'Bodywork',
+        'seats' => 'Number of seats',
+        'mileage' => 'Mileage',
+        'engine_power' => 'Engine power',
+        'transmission' => 'Transmission',
+        'drive_type' => 'Drive type',
+        'color' => 'Color',
+        
+        // Bodywork types
+        'sedan' => 'Sedan',
+        'hatchback' => 'Hatchback',
+        'suv' => 'SUV',
+        'crossover' => 'Crossover',
+        'coupe' => 'Coupe',
+        'cabriolet' => 'Cabriolet',
+        'wagon' => 'Wagon',
+        'minivan' => 'Minivan',
+        'pickup' => 'Pickup',
+        
+        // Transmission types
+        'manual' => 'Manual',
+        'automatic' => 'Automatic',
+        'cvt' => 'CVT',
+        'semi_automatic' => 'Semi-automatic',
+        'robotic' => 'Robotic',
+        
+        // Drive types
+        'fwd' => 'Front-wheel',
+        'rwd' => 'Rear-wheel',
+        'awd' => 'All-wheel',
+        '4wd' => '4WD',
+        
         'save_offer' => 'Save Offer',
         'offer_saved' => 'Offer saved!',
         'offer_error' => 'Error saving!',
