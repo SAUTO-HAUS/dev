@@ -1694,6 +1694,10 @@ $rtrn = '
         const brandName = brandSelect.options[brandSelect.selectedIndex]?.text || brand;
         const model = modelSelect.value;
         const modelName = modelSelect.options[modelSelect.selectedIndex]?.text || model;
+        
+        console.log(\'Saving offer - brand value:\', brand, \'brand text:\', brandName);
+        console.log(\'Saving offer - model value:\', model, \'model text:\', modelName);
+        
         const year = document.getElementById("offer-year").value;
         const bodywork = document.getElementById("offer-bodywork").value.trim();
         const seats = document.getElementById("offer-seats").value;
@@ -1712,8 +1716,19 @@ $rtrn = '
         btn.disabled = true;
         btn.textContent = "⏳ Se salvează...";
         
-        // Get calculation values
+        // Get calculator input values
+        const calculatorInputs = {
+            vehicleType: document.querySelector(\'input[name="vehicle-type"]:checked\')?.value || "",
+            productionYear: document.getElementById("year")?.value || "",
+            cylinderCapacity: document.getElementById("capacity")?.value || "",
+            vehiclePrice: document.getElementById("price_eur")?.value || "",
+            transportPrice: document.getElementById("transport_eur")?.value || "",
+            fuelType: document.querySelector(\'input[name="fuel-type"]:checked\')?.value || ""
+        };
+        
+        // Get calculation result values
         const values = {
+            inputs: calculatorInputs,
             value: { mdl: document.getElementById("res-value-mdl").value || "0", eur: document.getElementById("res-value-eur").value || "0" },
             excise: { mdl: document.getElementById("res-excise-mdl").value || "0", eur: document.getElementById("res-excise-eur").value || "0" },
             customs: { mdl: document.getElementById("res-customs-mdl").value || "0", eur: document.getElementById("res-customs-eur").value || "0" },
@@ -1738,8 +1753,8 @@ $rtrn = '
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: "tp=adm&pg=calculator&fn=save_offer" +
                     "&client_name=" + encodeURIComponent(clientName) +
-                    "&brand=" + encodeURIComponent(brandName) +
-                    "&model=" + encodeURIComponent(modelName) +
+                    "&brand=" + encodeURIComponent(brand) +
+                    "&model=" + encodeURIComponent(model) +
                     "&year=" + encodeURIComponent(year) +
                     "&bodywork=" + encodeURIComponent(bodywork) +
                     "&seats=" + encodeURIComponent(seats) +
@@ -1787,8 +1802,17 @@ $rtrn = '
         }, 3000);
     });
     
+    // Flag to prevent brand change event when loading from Edit
+    let isLoadingFromEdit = false;
+    
     // Load models when brand changes
     document.getElementById("offer-brand").addEventListener("change", function() {
+        // Skip if we\'re loading from Edit
+        if (isLoadingFromEdit) {
+            console.log(\'Skipping brand change event - loading from Edit\');
+            return;
+        }
+        
         const brand = this.value;
         const modelSelect = document.getElementById("offer-model");
         const defaultText = "'.$t['model'].'";
@@ -1816,6 +1840,268 @@ $rtrn = '
         })
         .catch(err => console.error("Error loading models:", err));
     });
+    
+    // Load offer data from sessionStorage if editing
+    const editOfferData = sessionStorage.getItem("editOffer");
+    if (editOfferData) {
+        try {
+            const offer = JSON.parse(editOfferData);
+            
+            console.log("Loading offer data:", offer);
+            
+            // Set flag to prevent brand change event
+            isLoadingFromEdit = true;
+            
+            // Pre-populate commercial offer fields
+            if (offer.client_name) {
+                document.getElementById("offer-client-name").value = offer.client_name;
+            }
+            
+            // Handle brand and model with proper async loading
+            if (offer.brand) {
+                const brandSelect = document.getElementById("offer-brand");
+                const modelSelect = document.getElementById("offer-model");
+                
+                // Debug: log available brands
+                console.log(\'Available brands in select:\', Array.from(brandSelect.options).map(o => o.value + \' = \' + o.text));
+                console.log(\'Trying to set brand:\', offer.brand);
+                
+                // Set brand first - try by value, then by text
+                brandSelect.value = offer.brand;
+                
+                // If brand not found by value, try to find by text
+                if (!brandSelect.value && offer.brand) {
+                    for (let i = 0; i < brandSelect.options.length; i++) {
+                        if (brandSelect.options[i].text === offer.brand || brandSelect.options[i].value === offer.brand.toLowerCase().replace(/\s+/g, \'_\')) {
+                            brandSelect.selectedIndex = i;
+                            console.log(\'Brand found by text search:\', brandSelect.options[i].value, \'=\', brandSelect.options[i].text);
+                            break;
+                        }
+                    }
+                }
+                
+                console.log(\'Set brand:\', offer.brand, \'Selected text:\', brandSelect.options[brandSelect.selectedIndex]?.text);
+                console.log(\'Brand select value after setting:\', brandSelect.value);
+                
+                // Trigger brand change to load models (cars.js will handle this)
+                if (offer.model && brandSelect.value) {
+                    console.log(\'Triggering brand change to load models for:\', brandSelect.value);
+                    
+                    // Temporarily enable brand change event
+                    isLoadingFromEdit = false;
+                    
+                    // Trigger change event to load models via cars.js
+                    brandSelect.dispatchEvent(new Event(\'change\', { bubbles: true }));
+                    
+                    // Wait for models to load, then set the model
+                    const checkModelsLoaded = setInterval(() => {
+                        if (modelSelect.options.length > 1) {
+                            clearInterval(checkModelsLoaded);
+                            
+                            console.log(\'Models loaded, setting model:\', offer.model);
+                            console.log(\'Available models:\', Array.from(modelSelect.options).map(o => o.value + \' = \' + o.text));
+                            
+                            // Try to set model by value first
+                            modelSelect.value = offer.model;
+                            
+                            // If not found, try by text
+                            if (!modelSelect.value && offer.model) {
+                                console.log(\'Model not found by value, searching by text...\');
+                                for (let i = 0; i < modelSelect.options.length; i++) {
+                                    const optValue = modelSelect.options[i].value;
+                                    const optText = modelSelect.options[i].text;
+                                    
+                                    if (optText === offer.model || 
+                                        optValue === offer.model.toLowerCase() ||
+                                        optText.toLowerCase() === offer.model.toLowerCase()) {
+                                        modelSelect.selectedIndex = i;
+                                        console.log(\'Model found by search:\', optValue, \'=\', optText);
+                                        break;
+                                    }
+                                }
+                            }
+                            
+                            console.log(\'Final model value:\', modelSelect.value, \'text:\', modelSelect.options[modelSelect.selectedIndex]?.text);
+                            
+                            // Re-disable brand change event
+                            isLoadingFromEdit = true;
+                        }
+                    }, 100);
+                    
+                    // Timeout after 3 seconds
+                    setTimeout(() => {
+                        clearInterval(checkModelsLoaded);
+                        isLoadingFromEdit = true;
+                    }, 3000);
+                }
+            }
+            
+            if (offer.year) document.getElementById("offer-year").value = offer.year;
+            if (offer.bodywork) document.getElementById("offer-bodywork").value = offer.bodywork;
+            if (offer.seats) document.getElementById("offer-seats").value = offer.seats;
+            if (offer.mileage) document.getElementById("offer-mileage").value = offer.mileage;
+            if (offer.engine_power) document.getElementById("offer-engine-power").value = offer.engine_power;
+            if (offer.transmission) document.getElementById("offer-transmission").value = offer.transmission;
+            if (offer.drive_type) document.getElementById("offer-drive-type").value = offer.drive_type;
+            if (offer.color) document.getElementById("offer-color").value = offer.color;
+            
+            // Pre-populate calculator results if calculation_data exists
+            if (offer.calculation_data) {
+                // calculation_data is already parsed as object from JSON column
+                const calcData = offer.calculation_data;
+                
+                console.log(\'Loading calculation data:\', calcData);
+                
+                // Load calculator input fields if they exist
+                if (calcData.inputs) {
+                    console.log(\'Loading calculator inputs:\', calcData.inputs);
+                    
+                    // Set vehicle type radio button
+                    if (calcData.inputs.vehicleType) {
+                        const vehicleTypeRadio = document.querySelector(\'input[name="vehicle-type"][value="\' + calcData.inputs.vehicleType + \'"]\');
+                        if (vehicleTypeRadio) {
+                            vehicleTypeRadio.checked = true;
+                            console.log(\'Set vehicle type:\', calcData.inputs.vehicleType);
+                        }
+                    }
+                    
+                    // Set other input fields
+                    if (calcData.inputs.productionYear && document.getElementById("year")) {
+                        document.getElementById("year").value = calcData.inputs.productionYear;
+                        console.log(\'Set year:\', calcData.inputs.productionYear);
+                    }
+                    if (calcData.inputs.cylinderCapacity && document.getElementById("capacity")) {
+                        document.getElementById("capacity").value = calcData.inputs.cylinderCapacity;
+                        console.log(\'Set capacity:\', calcData.inputs.cylinderCapacity);
+                    }
+                    if (calcData.inputs.vehiclePrice && document.getElementById("price_eur")) {
+                        document.getElementById("price_eur").value = calcData.inputs.vehiclePrice;
+                        console.log(\'Set price:\', calcData.inputs.vehiclePrice);
+                    }
+                    if (calcData.inputs.transportPrice && document.getElementById("transport_eur")) {
+                        document.getElementById("transport_eur").value = calcData.inputs.transportPrice;
+                        console.log(\'Set transport:\', calcData.inputs.transportPrice);
+                    }
+                    
+                    // Set fuel type radio button
+                    if (calcData.inputs.fuelType) {
+                        const fuelTypeRadio = document.querySelector(\'input[name="fuel-type"][value="\' + calcData.inputs.fuelType + \'"]\');
+                        if (fuelTypeRadio) {
+                            fuelTypeRadio.checked = true;
+                            console.log(\'Set fuel type:\', calcData.inputs.fuelType);
+                        }
+                    }
+                }
+                
+                // Set all result values
+                if (calcData.value) {
+                    document.getElementById("res-value-mdl").value = calcData.value.mdl || 0;
+                    document.getElementById("res-value-eur").value = calcData.value.eur || 0;
+                }
+                if (calcData.excise) {
+                    document.getElementById("res-excise-mdl").value = calcData.excise.mdl || 0;
+                    document.getElementById("res-excise-eur").value = calcData.excise.eur || 0;
+                }
+                if (calcData.luxury) {
+                    document.getElementById("res-luxury-mdl").value = calcData.luxury.mdl || 0;
+                    document.getElementById("res-luxury-eur").value = calcData.luxury.eur || 0;
+                }
+                if (calcData.customs) {
+                    document.getElementById("res-customs-mdl").value = calcData.customs.mdl || 0;
+                    document.getElementById("res-customs-eur").value = calcData.customs.eur || 0;
+                }
+                if (calcData.damage) {
+                    document.getElementById("res-damage-mdl").value = calcData.damage.mdl || 0;
+                    document.getElementById("res-damage-eur").value = calcData.damage.eur || 0;
+                }
+                if (calcData.exportDecl) {
+                    document.getElementById("res-export-mdl").value = calcData.exportDecl.mdl || 0;
+                    document.getElementById("res-export-eur").value = calcData.exportDecl.eur || 0;
+                }
+                if (calcData.bank) {
+                    document.getElementById("res-bank-mdl").value = calcData.bank.mdl || 0;
+                    document.getElementById("res-bank-eur").value = calcData.bank.eur || 0;
+                }
+                if (calcData.auction) {
+                    document.getElementById("res-auction-mdl").value = calcData.auction.mdl || 0;
+                    document.getElementById("res-auction-eur").value = calcData.auction.eur || 0;
+                }
+                if (calcData.pollution) {
+                    document.getElementById("res-pollution-mdl").value = calcData.pollution.mdl || 0;
+                    document.getElementById("res-pollution-eur").value = calcData.pollution.eur || 0;
+                }
+                if (calcData.shipping) {
+                    document.getElementById("res-shipping-mdl").value = calcData.shipping.mdl || 0;
+                    document.getElementById("res-shipping-eur").value = calcData.shipping.eur || 0;
+                }
+                if (calcData.accessories) {
+                    document.getElementById("res-accessories-mdl").value = calcData.accessories.mdl || 0;
+                    document.getElementById("res-accessories-eur").value = calcData.accessories.eur || 0;
+                }
+                if (calcData.transaction) {
+                    document.getElementById("res-transaction-mdl").value = calcData.transaction.mdl || 0;
+                    document.getElementById("res-transaction-eur").value = calcData.transaction.eur || 0;
+                }
+                if (calcData.polishing) {
+                    const polishingCheckbox = document.getElementById("enable-polishing");
+                    if (calcData.polishing.mdl > 0) {
+                        polishingCheckbox.checked = true;
+                        document.getElementById("res-polishing-mdl").disabled = false;
+                        document.getElementById("res-polishing-eur").disabled = false;
+                        document.getElementById("res-polishing-mdl").value = calcData.polishing.mdl || 0;
+                        document.getElementById("res-polishing-eur").value = calcData.polishing.eur || 0;
+                    }
+                }
+                if (calcData.painting) {
+                    const paintingCheckbox = document.getElementById("enable-painting");
+                    if (calcData.painting.mdl > 0) {
+                        paintingCheckbox.checked = true;
+                        document.getElementById("res-painting-mdl").disabled = false;
+                        document.getElementById("res-painting-eur").disabled = false;
+                        document.getElementById("res-painting-mdl").value = calcData.painting.mdl || 0;
+                        document.getElementById("res-painting-eur").value = calcData.painting.eur || 0;
+                    }
+                }
+                if (calcData.total) {
+                    document.getElementById("res-total-mdl").value = calcData.total.mdl || 0;
+                    document.getElementById("res-total-eur").value = calcData.total.eur || 0;
+                }
+                if (calcData.vehicle) {
+                    document.getElementById("res-vehicle-total-mdl").value = calcData.vehicle.mdl || 0;
+                    document.getElementById("res-vehicle-total-eur").value = calcData.vehicle.eur || 0;
+                }
+            }
+            
+            // Clear sessionStorage after loading
+            sessionStorage.removeItem("editOffer");
+            
+            // Show results section and scroll to calculator
+            setTimeout(() => {
+                const resultsSection = document.getElementById("results");
+                if (resultsSection) {
+                    resultsSection.style.display = "block";
+                }
+                
+                // Scroll to calculator section
+                const calculator = document.querySelector(".calculator");
+                if (calculator) {
+                    calculator.scrollIntoView({ behavior: "smooth", block: "start" });
+                } else {
+                    // Fallback to results section
+                    resultsSection?.scrollIntoView({ behavior: "smooth", block: "start" });
+                }
+                
+                // Reset flag after everything is loaded
+                isLoadingFromEdit = false;
+                console.log(\'Finished loading from Edit - brand change event re-enabled\');
+            }, 500);
+            
+        } catch (e) {
+            console.error("Error loading offer data:", e);
+            sessionStorage.removeItem("editOffer");
+            isLoadingFromEdit = false;
+        }
+    }
 })();
 </script>';
 

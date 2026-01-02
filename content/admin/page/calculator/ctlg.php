@@ -115,6 +115,24 @@ $rtrn = '
         gap: 0.5rem;
     }
     
+    #catalog-container .offers-table .btn-edit {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.4rem 0.8rem;
+        background: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    
+    #catalog-container .offers-table .btn-edit:hover {
+        background: #0056b3;
+    }
+    
     #catalog-container .offers-table .btn-pdf {
         display: inline-flex;
         align-items: center;
@@ -339,6 +357,7 @@ $rtrn = '
                     <td><strong>${parseInt(totalMdl).toLocaleString("ro-MD")}</strong> MDL</td>
                     <td class="date-col">${date}</td>
                     <td class="actions">
+                        <button class="btn-edit" onclick="editOffer(${offer.id})">✏️ Edit</button>
                         <button class="btn-pdf" onclick="generatePDF(${offer.id})">📄 PDF</button>
                         <button class="btn-delete" onclick="deleteOffer(${offer.id})">🗑️</button>
                     </td>
@@ -366,6 +385,29 @@ $rtrn = '
     }
     
     window.loadOffers = loadOffers;
+    
+    window.editOffer = function(offerId) {
+        // Get offer data from server
+        fetch("/ajax.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: "tp=adm&pg=calculator&fn=get_offer&offer_id=" + offerId
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success && data.offer) {
+                // Store offer data in sessionStorage
+                sessionStorage.setItem("editOffer", JSON.stringify(data.offer));
+                // Redirect to calculator
+                window.location.href = "/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator/calc";
+            } else {
+                alert("Eroare la încărcare ofertă");
+            }
+        })
+        .catch(err => {
+            alert("Eroare la încărcare ofertă");
+        });
+    };
     
     window.deleteOffer = function(offerId) {
         if (!confirm("Sigur doriți să ștergeți această ofertă?")) {
