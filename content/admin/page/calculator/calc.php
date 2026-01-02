@@ -303,10 +303,41 @@ $rtrn = '
         font-weight: 600;
     }
     
+    #calculator-container .images-upload-area {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    #calculator-container .upload-images-btn {
+        padding: 0.6rem 1.2rem;
+        background: linear-gradient(135deg, #e2001a 0%, #bf0016 100%);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    #calculator-container .upload-images-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(226, 0, 26, 0.4);
+    }
+    
+    #calculator-container .upload-hint {
+        font-size: 0.8rem;
+        color: #6c757d;
+        font-style: italic;
+    }
+    
     #calculator-container .offer-images-grid {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 0.75rem;
+        min-height: 50px;
     }
     
     @media (max-width: 600px) {
@@ -315,80 +346,56 @@ $rtrn = '
         }
     }
     
-    #calculator-container .image-upload-box {
+    #calculator-container .image-item {
         position: relative;
         aspect-ratio: 4/3;
-        border: 2px dashed #ccc;
+        border: 2px solid #28a745;
         border-radius: 8px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        background: #f8f9fa;
         overflow: hidden;
+        cursor: grab;
+        transition: all 0.2s ease;
+        background: #f8f9fa;
     }
     
-    #calculator-container .image-upload-box:hover {
+    #calculator-container .image-item:hover {
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        transform: scale(1.02);
+    }
+    
+    #calculator-container .image-item.dragging {
+        opacity: 0.5;
+        cursor: grabbing;
+    }
+    
+    #calculator-container .image-item.drag-over {
         border-color: #e2001a;
-        background: #fff5f5;
+        border-width: 3px;
     }
     
-    #calculator-container .image-upload-box.has-image {
-        border-style: solid;
-        border-color: #28a745;
-    }
-    
-    #calculator-container .image-upload-box.field-error {
-        border-color: #dc3545 !important;
-        border-style: dashed !important;
-    }
-    
-    #calculator-container .image-upload-box input[type="file"] {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        opacity: 0;
-        cursor: pointer;
-    }
-    
-    #calculator-container .image-upload-box .upload-icon {
-        font-size: 2rem;
-        color: #adb5bd;
-        margin-bottom: 0.25rem;
-    }
-    
-    #calculator-container .image-upload-box .upload-text {
-        font-size: 0.75rem;
-        color: #6c757d;
-        text-align: center;
-    }
-    
-    #calculator-container .image-upload-box .upload-number {
+    #calculator-container .image-item .image-number {
         position: absolute;
         top: 0.25rem;
         left: 0.25rem;
         background: #e2001a;
         color: #fff;
-        width: 1.25rem;
-        height: 1.25rem;
+        width: 1.5rem;
+        height: 1.5rem;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.7rem;
+        font-size: 0.8rem;
         font-weight: 600;
+        z-index: 2;
     }
     
-    #calculator-container .image-upload-box .preview-image {
-        position: absolute;
+    #calculator-container .image-item .preview-image {
         width: 100%;
         height: 100%;
         object-fit: cover;
     }
     
-    #calculator-container .image-upload-box .remove-image {
+    #calculator-container .image-item .remove-image {
         position: absolute;
         top: 0.25rem;
         right: 0.25rem;
@@ -405,9 +412,10 @@ $rtrn = '
         font-size: 0.9rem;
         opacity: 0;
         transition: opacity 0.2s;
+        z-index: 2;
     }
     
-    #calculator-container .image-upload-box:hover .remove-image {
+    #calculator-container .image-item:hover .remove-image {
         opacity: 1;
     }
     
@@ -425,6 +433,10 @@ $rtrn = '
     
     #calculator-container .images-counter.incomplete {
         color: #dc3545;
+    }
+    
+    #calculator-container .offer-images-section.field-error {
+        border-color: #dc3545;
     }
     
     #calculator-container .calc-header .eur-rate-row span {
@@ -1058,18 +1070,12 @@ $rtrn = '
             
             <div class="offer-images-section" id="offer-images-section">
                 <h4 class="offer-images-title">📷 '.$t['offer_images'].'</h4>
-                <div class="offer-images-grid" id="offer-images-grid">';
-                for ($i = 1; $i <= 6; $i++) {
-                    $rtrn .= '
-                    <div class="image-upload-box" id="image-box-'.$i.'">
-                        <span class="upload-number">'.$i.'</span>
-                        <span class="upload-icon">📷</span>
-                        <span class="upload-text">'.$t['upload_image'].'</span>
-                        <input type="file" id="offer-image-'.$i.'" accept="image/jpeg,image/png,image/webp" data-index="'.$i.'">
-                    </div>';
-                }
-                $rtrn .= '
+                <div class="images-upload-area" id="images-upload-area">
+                    <input type="file" id="offer-images-input" accept="image/jpeg,image/png,image/webp" multiple style="display:none;">
+                    <button type="button" class="upload-images-btn" id="upload-images-btn">📷 '.$t['select_images'].'</button>
+                    <span class="upload-hint">'.$t['drag_to_reorder'].'</span>
                 </div>
+                <div class="offer-images-grid" id="offer-images-grid"></div>
                 <div class="images-counter" id="images-counter">0 / 6</div>
             </div>
             
@@ -1859,16 +1865,20 @@ $rtrn = '
         }
     });
     
-    // Image upload handling
-    const offerImages = new Array(6).fill(null); // Store File objects
+    // Image upload handling - multi-select with drag & drop reordering
+    let offerImages = []; // Array of {file: File, dataUrl: string}
     const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
     const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
     const IMAGES_REQUIRED_TEXT = "'.$t['images_required'].'";
     const IMAGE_TOO_LARGE_TEXT = "'.$t['image_too_large'].'";
     const INVALID_IMAGE_TYPE_TEXT = "'.$t['invalid_image_type'].'";
     
+    const imagesInput = document.getElementById("offer-images-input");
+    const uploadBtn = document.getElementById("upload-images-btn");
+    const imagesGrid = document.getElementById("offer-images-grid");
+    
     function updateImagesCounter() {
-        const count = offerImages.filter(img => img !== null).length;
+        const count = offerImages.length;
         const counter = document.getElementById("images-counter");
         counter.textContent = count + " / 6";
         counter.classList.remove("complete", "incomplete");
@@ -1879,96 +1889,141 @@ $rtrn = '
         }
     }
     
-    function handleImageUpload(input) {
-        const index = parseInt(input.dataset.index) - 1;
-        const file = input.files[0];
-        const box = document.getElementById("image-box-" + (index + 1));
-        
-        if (!file) return;
-        
-        // Validate file type
-        if (!ALLOWED_TYPES.includes(file.type)) {
-            alert(INVALID_IMAGE_TYPE_TEXT);
-            input.value = "";
-            return;
-        }
-        
-        // Validate file size
-        if (file.size > MAX_IMAGE_SIZE) {
-            alert(IMAGE_TOO_LARGE_TEXT);
-            input.value = "";
-            return;
-        }
-        
-        // Store file
-        offerImages[index] = file;
-        
-        // Show preview
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            // Remove existing preview if any
-            const existingPreview = box.querySelector(".preview-image");
-            const existingRemove = box.querySelector(".remove-image");
-            if (existingPreview) existingPreview.remove();
-            if (existingRemove) existingRemove.remove();
+    function renderImages() {
+        imagesGrid.innerHTML = "";
+        offerImages.forEach((imgData, index) => {
+            const item = document.createElement("div");
+            item.className = "image-item";
+            item.draggable = true;
+            item.dataset.index = index;
             
-            // Hide upload elements
-            box.querySelector(".upload-icon").style.display = "none";
-            box.querySelector(".upload-text").style.display = "none";
+            // Number badge
+            const numBadge = document.createElement("span");
+            numBadge.className = "image-number";
+            numBadge.textContent = index + 1;
+            item.appendChild(numBadge);
             
-            // Add preview image
+            // Preview image
             const img = document.createElement("img");
             img.className = "preview-image";
-            img.src = e.target.result;
-            box.appendChild(img);
+            img.src = imgData.dataUrl;
+            item.appendChild(img);
             
-            // Add remove button
+            // Remove button
             const removeBtn = document.createElement("button");
             removeBtn.type = "button";
             removeBtn.className = "remove-image";
             removeBtn.innerHTML = "×";
             removeBtn.onclick = function(ev) {
                 ev.stopPropagation();
-                removeImage(index + 1);
+                removeImage(index);
             };
-            box.appendChild(removeBtn);
+            item.appendChild(removeBtn);
             
-            box.classList.add("has-image");
-            box.classList.remove("field-error");
-            updateImagesCounter();
-        };
-        reader.readAsDataURL(file);
-    }
-    
-    function removeImage(num) {
-        const index = num - 1;
-        const box = document.getElementById("image-box-" + num);
-        const input = document.getElementById("offer-image-" + num);
-        
-        // Clear file
-        offerImages[index] = null;
-        input.value = "";
-        
-        // Remove preview
-        const preview = box.querySelector(".preview-image");
-        const removeBtn = box.querySelector(".remove-image");
-        if (preview) preview.remove();
-        if (removeBtn) removeBtn.remove();
-        
-        // Show upload elements
-        box.querySelector(".upload-icon").style.display = "";
-        box.querySelector(".upload-text").style.display = "";
-        
-        box.classList.remove("has-image");
+            // Drag events
+            item.addEventListener("dragstart", handleDragStart);
+            item.addEventListener("dragend", handleDragEnd);
+            item.addEventListener("dragover", handleDragOver);
+            item.addEventListener("drop", handleDrop);
+            item.addEventListener("dragleave", handleDragLeave);
+            
+            imagesGrid.appendChild(item);
+        });
         updateImagesCounter();
     }
     
-    // Attach event listeners to all image inputs
-    for (let i = 1; i <= 6; i++) {
-        document.getElementById("offer-image-" + i).addEventListener("change", function() {
-            handleImageUpload(this);
+    let draggedIndex = null;
+    
+    function handleDragStart(e) {
+        draggedIndex = parseInt(this.dataset.index);
+        this.classList.add("dragging");
+        e.dataTransfer.effectAllowed = "move";
+    }
+    
+    function handleDragEnd(e) {
+        this.classList.remove("dragging");
+        document.querySelectorAll(".image-item").forEach(item => {
+            item.classList.remove("drag-over");
         });
     }
+    
+    function handleDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "move";
+        this.classList.add("drag-over");
+    }
+    
+    function handleDragLeave(e) {
+        this.classList.remove("drag-over");
+    }
+    
+    function handleDrop(e) {
+        e.preventDefault();
+        this.classList.remove("drag-over");
+        const targetIndex = parseInt(this.dataset.index);
+        
+        if (draggedIndex !== null && draggedIndex !== targetIndex) {
+            // Swap images
+            const temp = offerImages[draggedIndex];
+            offerImages[draggedIndex] = offerImages[targetIndex];
+            offerImages[targetIndex] = temp;
+            renderImages();
+        }
+        draggedIndex = null;
+    }
+    
+    function removeImage(index) {
+        offerImages.splice(index, 1);
+        renderImages();
+    }
+    
+    uploadBtn.addEventListener("click", function() {
+        imagesInput.click();
+    });
+    
+    imagesInput.addEventListener("change", function() {
+        const files = Array.from(this.files);
+        
+        // Validate and add files
+        let validFiles = [];
+        for (const file of files) {
+            if (!ALLOWED_TYPES.includes(file.type)) {
+                alert(INVALID_IMAGE_TYPE_TEXT + ": " + file.name);
+                continue;
+            }
+            if (file.size > MAX_IMAGE_SIZE) {
+                alert(IMAGE_TOO_LARGE_TEXT + ": " + file.name);
+                continue;
+            }
+            validFiles.push(file);
+        }
+        
+        // Limit to 6 total
+        const slotsAvailable = 6 - offerImages.length;
+        if (validFiles.length > slotsAvailable) {
+            validFiles = validFiles.slice(0, slotsAvailable);
+        }
+        
+        // Read files and add to array
+        let loadedCount = 0;
+        validFiles.forEach(file => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                offerImages.push({
+                    file: file,
+                    dataUrl: e.target.result
+                });
+                loadedCount++;
+                if (loadedCount === validFiles.length) {
+                    renderImages();
+                }
+            };
+            reader.readAsDataURL(file);
+        });
+        
+        // Reset input
+        this.value = "";
+    });
     
     // Save offer button
     const OFFER_SAVED_TEXT = "'.$t['offer_saved'].'";
@@ -2028,18 +2083,12 @@ $rtrn = '
         }
         
         // Validate images - exactly 6 required
-        const imageCount = offerImages.filter(img => img !== null).length;
-        const imageBoxes = document.querySelectorAll(".image-upload-box");
-        imageBoxes.forEach(box => box.classList.remove("field-error"));
+        const imagesSection = document.getElementById("offer-images-section");
+        imagesSection.classList.remove("field-error");
         
-        if (imageCount !== 6) {
+        if (offerImages.length !== 6) {
             hasError = true;
-            // Mark empty image boxes as error
-            for (let i = 0; i < 6; i++) {
-                if (offerImages[i] === null) {
-                    document.getElementById("image-box-" + (i + 1)).classList.add("field-error");
-                }
-            }
+            imagesSection.classList.add("field-error");
             alert(IMAGES_REQUIRED_TEXT);
         }
         
@@ -2102,12 +2151,10 @@ $rtrn = '
             formData.append("pdf_lang", lang);
             formData.append("calculation_data", JSON.stringify(values));
             
-            // Append images
-            for (let i = 0; i < 6; i++) {
-                if (offerImages[i]) {
-                    formData.append("images[]", offerImages[i], "image_" + (i + 1) + ".jpg");
-                }
-            }
+            // Append images (in order)
+            offerImages.forEach((imgData, i) => {
+                formData.append("images[]", imgData.file, "image_" + (i + 1) + ".jpg");
+            });
             
             // Save offer to database with images
             const saveResponse = await fetch("/ajax.php", {
