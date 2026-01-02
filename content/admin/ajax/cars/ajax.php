@@ -723,7 +723,7 @@ elseif (__post('fn') == 'save_ai_settings') {
             'openai_model' => __post('openai_model') ?: 'gpt-4o-mini',
             'groq_model' => __post('groq_model') ?: 'llama-3.3-70b-versatile',
             'analyze_photos' => __post('analyze_photos') ?: '0',
-            'photo_positions' => __post('photo_positions') ?: '1,2,5,8',
+            'photo_positions' => __post('photo_positions') ?? '',
             'car_type_order' => __post('car_type_order') ?: '',
             'car_type_stock' => __post('car_type_stock') ?: '',
             'image_prompt' => __post('image_prompt') ?: '',
