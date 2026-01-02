@@ -507,6 +507,91 @@ $rtrn = '
             return result.join(" ");
         }
         
+        // Translations for short codes to full text
+        var translations = {
+            // Transmission / Cutia de viteze
+            "atm": "Automat",
+            "aut": "Automat",
+            "auto": "Automat",
+            "automat": "Automat",
+            "man": "Manuala",
+            "manual": "Manuala",
+            "manuala": "Manuala",
+            // Drive type / Tractiunea
+            "fr": "Fata",
+            "fata": "Fata",
+            "front": "Fata",
+            "fwd": "Fata",
+            "rr": "Spate",
+            "rear": "Spate",
+            "spate": "Spate",
+            "rwd": "Spate",
+            "4x4": "4x4",
+            "awd": "4x4",
+            "4wd": "4x4",
+            "integral": "Integral",
+            // Colors / Culoarea
+            "slv": "Argintiu",
+            "silver": "Argintiu",
+            "argintiu": "Argintiu",
+            "blk": "Negru",
+            "black": "Negru",
+            "negru": "Negru",
+            "wht": "Alb",
+            "white": "Alb",
+            "alb": "Alb",
+            "blu": "Albastru",
+            "blue": "Albastru",
+            "albastru": "Albastru",
+            "red": "Rosu",
+            "rosu": "Rosu",
+            "gry": "Gri",
+            "gray": "Gri",
+            "grey": "Gri",
+            "gri": "Gri",
+            "grn": "Verde",
+            "green": "Verde",
+            "verde": "Verde",
+            "brn": "Maro",
+            "brown": "Maro",
+            "maro": "Maro",
+            "ylw": "Galben",
+            "yellow": "Galben",
+            "galben": "Galben",
+            "org": "Portocaliu",
+            "orange": "Portocaliu",
+            "portocaliu": "Portocaliu",
+            "bej": "Bej",
+            "beige": "Bej",
+            // Bodywork / Caroserie
+            "unv": "Universal",
+            "universal": "Universal",
+            "sed": "Sedan",
+            "sedan": "Sedan",
+            "htb": "Hatchback",
+            "hatchback": "Hatchback",
+            "suv": "SUV",
+            "crv": "Crossover",
+            "crossover": "Crossover",
+            "cpv": "Coupe",
+            "coupe": "Coupe",
+            "cab": "Cabriolet",
+            "cabriolet": "Cabriolet",
+            "wgn": "Combi",
+            "wagon": "Combi",
+            "combi": "Combi",
+            "van": "Monovolum",
+            "monovolum": "Monovolum",
+            "pick": "Pickup",
+            "pickup": "Pickup"
+        };
+        
+        function translateValue(val) {
+            if (!val) return "";
+            var key = String(val).toLowerCase().trim();
+            return translations[key] || capitalizeWords(String(val).replace(/_/g, " "));
+        }
+        
         const values = {
             value: calcData.value || {mdl: 0, eur: 0},
             excise: calcData.excise || {mdl: 0, eur: 0},
@@ -596,13 +681,16 @@ $rtrn = '
                 doc.text(removeDiacritics(engineInfo), 20, pageHeight * 0.36);
             }
             
-            // Red rectangle bottom right
+            // Red rectangle bottom right with page number
             const rectWidth = 50;
             const rectHeight = 75;
             const rectX = pageWidth - rectWidth - marginP1;
             const rectY = pageHeight - rectHeight;
             doc.setFillColor(226, 0, 26);
             doc.rect(rectX, rectY, rectWidth, rectHeight, "F");
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.text("01", rectX + rectWidth / 2, rectY + rectHeight / 2 + 5, { align: "center" });
             
             // Footer info on page 1
             doc.setTextColor(51, 51, 51);
@@ -629,6 +717,13 @@ $rtrn = '
             const margin = pageWidth * 0.03;
             doc.setFillColor(226, 0, 26);
             doc.rect(margin, margin, pageWidth - margin * 2, pageHeight - margin * 2, "F");
+            
+            // Black rectangle bottom right with page number (for page 2)
+            doc.setFillColor(0, 0, 0);
+            doc.rect(pageWidth - rectWidth - margin, pageHeight - rectHeight, rectWidth, rectHeight, "F");
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.text("02", pageWidth - rectWidth / 2 - margin, pageHeight - rectHeight / 2 + 5, { align: "center" });
             
             // Logo with black background (same as page 1)
             doc.setFillColor(0, 0, 0);
@@ -774,11 +869,128 @@ $rtrn = '
             var perfLines = doc.splitTextToSize(removeDiacritics(perfText), textMaxWidth);
             doc.text(perfLines, col1X, p3Y + 5);
             
-            // Red rectangle bottom right
+            // Red rectangle bottom right with page number
             doc.setFillColor(226, 0, 26);
             doc.rect(pageWidth - rectWidth - p3Margin, pageHeight - rectHeight, rectWidth, rectHeight, "F");
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.text("03", pageWidth - rectWidth / 2 - p3Margin, pageHeight - rectHeight / 2 + 5, { align: "center" });
             
-            // === PAGE 4: Calculation details ===
+            // === PAGE 4: Specificatia automobilului ===
+            doc.addPage();
+            
+            // Logo with black background
+            doc.setFillColor(0, 0, 0);
+            doc.rect(p3Margin, 0, bgWidth, bgHeight, "F");
+            doc.addImage(logoImg, "PNG", p3Margin + bgPadding, bgPadding, logoWidth, logoHeight);
+            
+            var p4Y = 50;
+            var p4Margin = pageWidth * 0.03;
+            var p4TextMaxWidth = pageWidth - p4Margin * 2 - rectWidth - 10;
+            
+            // Small title "Specificatia automobilului"
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "normal");
+            doc.text(removeDiacritics("Specificatia automobilului"), p4Margin + 8, p4Y);
+            p4Y += 12;
+            
+            // Big title: MARCA Model, An on first line
+            doc.setFontSize(32);
+            doc.setFont("helvetica", "bold");
+            const brandClean2 = offer.brand.replace(/_/g, " ").toUpperCase();
+            const modelClean2 = capitalizeWords(offer.model.replace(/_/g, " "));
+            var specLine1 = brandClean2 + " " + modelClean2 + ", " + offer.year + ",";
+            doc.text(removeDiacritics(specLine1), p4Margin + 8, p4Y);
+            p4Y += 12;
+            
+            // Second line: Capacitate, Tip with red vertical line
+            var specLine2 = "";
+            if (offer.cylinder_capacity) {
+                specLine2 = offer.cylinder_capacity + ", " + capitalizeWords((offer.fuel_type || "").replace(/_/g, " "));
+            }
+            
+            // Red vertical line - full height of both title lines
+            doc.setFillColor(226, 0, 26);
+            doc.rect(p4Margin - 5, p4Y - 22, 3, 28, "F");
+            
+            doc.setTextColor(0, 0, 0);
+            doc.text(removeDiacritics(specLine2), p4Margin + 8, p4Y);
+            p4Y += 25;
+            
+            // Specifications table - 3 columns with gray background
+            doc.setFontSize(13);
+            var colWidth = (pageWidth - p4Margin * 2) / 3;
+            var col1X = p4Margin;
+            var col2X = p4Margin + colWidth;
+            var col3X = p4Margin + colWidth * 2;
+            var specRowHeight = 25;
+            var tableY = p4Y;
+            
+            // Draw table background (light gray)
+            doc.setFillColor(245, 245, 245);
+            doc.rect(p4Margin, tableY - 5, pageWidth - p4Margin * 2, specRowHeight * 4, "F");
+            
+            // Row 1: Marca, Model, Anul
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(128, 128, 128);
+            doc.text("Marca", col1X + 5, p4Y);
+            doc.text("Model", col2X + 5, p4Y);
+            doc.text("Anul", col3X + 5, p4Y);
+            doc.setTextColor(0, 0, 0);
+            doc.setFont("helvetica", "bold");
+            doc.text(removeDiacritics(capitalizeWords(offer.brand.replace(/_/g, " "))), col1X + 5, p4Y + 6);
+            doc.text(removeDiacritics(capitalizeWords(offer.model.replace(/_/g, " "))), col2X + 5, p4Y + 6);
+            doc.text(String(offer.year), col3X + 5, p4Y + 6);
+            p4Y += specRowHeight;
+            
+            // Row 2: Caroserie, Numar locuri, Parcurs
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(128, 128, 128);
+            doc.text("Caroserie", col1X + 5, p4Y);
+            doc.text(removeDiacritics("Numarul de locuri"), col2X + 5, p4Y);
+            doc.text("Parcurs", col3X + 5, p4Y);
+            doc.setTextColor(0, 0, 0);
+            doc.setFont("helvetica", "bold");
+            doc.text(removeDiacritics(translateValue(offer.bodywork)), col1X + 5, p4Y + 6);
+            doc.text(String(offer.seats || ""), col2X + 5, p4Y + 6);
+            doc.text(formatNumber(offer.mileage || 0), col3X + 5, p4Y + 6);
+            p4Y += specRowHeight;
+            
+            // Row 3: Capacitate cilindrica, Puterea motorului, Tip combustibil
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(128, 128, 128);
+            doc.text("Capacitatea cilindrica", col1X + 5, p4Y);
+            doc.text("Puterea motorului", col2X + 5, p4Y);
+            doc.text("Tip combustibil", col3X + 5, p4Y);
+            doc.setTextColor(0, 0, 0);
+            doc.setFont("helvetica", "bold");
+            doc.text(String(offer.cylinder_capacity || ""), col1X + 5, p4Y + 6);
+            doc.text(String(offer.engine_power || ""), col2X + 5, p4Y + 6);
+            doc.text(removeDiacritics(translateValue(offer.fuel_type)), col3X + 5, p4Y + 6);
+            p4Y += specRowHeight;
+            
+            // Row 4: Cutie viteze, Tractiunea, Culoarea
+            doc.setFont("helvetica", "normal");
+            doc.setTextColor(128, 128, 128);
+            doc.text("Cutia de viteze", col1X + 5, p4Y);
+            doc.text("Tractiunea", col2X + 5, p4Y);
+            doc.text("Culoarea", col3X + 5, p4Y);
+            doc.setTextColor(0, 0, 0);
+            doc.setFont("helvetica", "bold");
+            doc.text(removeDiacritics(translateValue(offer.transmission)), col1X + 5, p4Y + 6);
+            doc.text(removeDiacritics(translateValue(offer.drive_type)), col2X + 5, p4Y + 6);
+            doc.text(removeDiacritics(translateValue(offer.color)), col3X + 5, p4Y + 6);
+            p4Y += specRowHeight + 10;
+            
+            // Red rectangle bottom right with page number
+            doc.setFillColor(226, 0, 26);
+            doc.rect(pageWidth - rectWidth - p4Margin, pageHeight - rectHeight, rectWidth, rectHeight, "F");
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.text("04", pageWidth - rectWidth / 2 - p4Margin, pageHeight - rectHeight / 2 + 5, { align: "center" });
+            
+            // === PAGE 5: Calculation details ===
             doc.addPage();
             doc.setTextColor(0, 0, 0);
             let y = 25;
@@ -792,9 +1004,9 @@ $rtrn = '
             // Vehicle info (replace underscores with spaces and capitalize each word)
             doc.setFontSize(12);
             doc.setFont("helvetica", "normal");
-            const brandClean2 = capitalizeWords(offer.brand.replace(/_/g, " "));
-            const modelClean2 = capitalizeWords(offer.model.replace(/_/g, " "));
-            doc.text(removeDiacritics(brandClean2 + " " + modelClean2 + " " + offer.year), pageWidth / 2, y, { align: "center" });
+            const brandClean3 = capitalizeWords(offer.brand.replace(/_/g, " "));
+            const modelClean3 = capitalizeWords(offer.model.replace(/_/g, " "));
+            doc.text(removeDiacritics(brandClean3 + " " + modelClean3 + " " + offer.year), pageWidth / 2, y, { align: "center" });
             y += 6;
             
             // Client
