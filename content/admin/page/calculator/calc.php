@@ -770,21 +770,21 @@ $rtrn = '
         </div>
         <div class="result-row">
             <span class="label">
-                <label class="toggle-switch">
+                <label class="toggle-switch" for="enable-polishing">
                     <input type="checkbox" id="enable-polishing">
                     <span class="toggle-slider"></span>
                 </label>
-                '.$t['polishing'].'
+                <label for="enable-polishing" style="cursor:pointer;">'.$t['polishing'].'</label>
             </span>
             <span class="value editable-value"><input type="number" class="editable-input" id="res-polishing-mdl" data-field="polishing" step="1" disabled> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-polishing-eur" data-field="polishing" step="1" disabled> EUR</span></span>
         </div>
         <div class="result-row">
             <span class="label">
-                <label class="toggle-switch">
+                <label class="toggle-switch" for="enable-painting">
                     <input type="checkbox" id="enable-painting">
                     <span class="toggle-slider"></span>
                 </label>
-                '.$t['painting'].'
+                <label for="enable-painting" style="cursor:pointer;">'.$t['painting'].'</label>
             </span>
             <span class="value editable-value"><input type="number" class="editable-input" id="res-painting-mdl" data-field="painting" step="1" disabled> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-painting-eur" data-field="painting" step="1" disabled> EUR</span></span>
         </div>
