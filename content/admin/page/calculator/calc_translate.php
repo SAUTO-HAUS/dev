@@ -98,6 +98,7 @@ $calc_trans = [
         'save_offer' => 'Salvează oferta',
         'offer_saved' => 'Oferta a fost salvată!',
         'offer_error' => 'Eroare la salvare!',
+        'new_offer' => 'Creează ofertă nouă',
         
         // Catalog columns
         'total_col' => 'Total',
@@ -243,6 +244,7 @@ $calc_trans = [
         'save_offer' => 'Сохранить предложение',
         'offer_saved' => 'Предложение сохранено!',
         'offer_error' => 'Ошибка сохранения!',
+        'new_offer' => 'Создать новое предложение',
         
         // Catalog columns
         'total_col' => 'Итого',
@@ -388,6 +390,7 @@ $calc_trans = [
         'save_offer' => 'Save Offer',
         'offer_saved' => 'Offer saved!',
         'offer_error' => 'Error saving!',
+        'new_offer' => 'Create New Offer',
         
         // Catalog columns
         'total_col' => 'Total',

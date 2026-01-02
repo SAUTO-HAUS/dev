@@ -263,6 +263,26 @@ $rtrn = '
         background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
     }
     
+    #calculator-container .new-offer-btn {
+        width: 100%;
+        margin-top: 0.5rem;
+        padding: 0.85rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #333;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border: 2px solid #6c757d;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    #calculator-container .new-offer-btn:hover {
+        background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    }
+    
     #calculator-container .calc-header .eur-rate-row span {
         color: #666;
         font-size: 0.95rem;
@@ -892,6 +912,7 @@ $rtrn = '
                 </div>
             </div>
             <button type="button" class="save-offer-btn" id="save-offer-btn">💾 '.$t['save_offer'].'</button>
+            <button type="button" class="new-offer-btn" id="new-offer-btn" onclick="location.reload();">🔄 '.$t['new_offer'].'</button>
         </div>
     </div>
     
