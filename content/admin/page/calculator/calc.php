@@ -1947,10 +1947,13 @@ $rtrn = '
             
             // Pre-populate calculator results if calculation_data exists
             if (offer.calculation_data) {
-                // calculation_data is already parsed as object from JSON column
-                const calcData = offer.calculation_data;
+                // Parse calculation_data if it is a string
+                let calcData = offer.calculation_data;
+                if (typeof calcData === "string") {
+                    calcData = JSON.parse(calcData);
+                }
                 
-                console.log(\'Loading calculation data:\', calcData);
+                console.log("Loading calculation data (parsed):", calcData);
                 
                 // Load calculator input fields if they exist
                 if (calcData.inputs) {
