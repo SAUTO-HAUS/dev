@@ -538,13 +538,15 @@ $rtrn = '
         // Load images
         const bgImg = new Image();
         const logoImg = new Image();
-        let bgLoaded = false, logoLoaded = false;
+        const pag03Img = new Image();
+        let bgLoaded = false, logoLoaded = false, pag03Loaded = false;
         
         bgImg.src = "/content/admin/page/calculator/img/pdf-bg.jpg";
         logoImg.src = "/content/admin/page/calculator/img/logo.png";
+        pag03Img.src = "/content/admin/page/calculator/img/pag_03.jpg";
         
         function generatePDFWithImages() {
-            if (!bgLoaded || !logoLoaded) return;
+            if (!bgLoaded || !logoLoaded || !pag03Loaded) return;
             
             // === PAGE 1: Background image with logo ===
             // Background: full width, 3% margin top only
@@ -557,10 +559,10 @@ $rtrn = '
             // Logo with black background
             const bgPadding = 8;
             const bgX = marginP1;
-            const logoWidth = 50;
-            const logoHeight = 20;
+            const logoWidth = 40;
+            const logoHeight = 15;
             const bgWidth = logoWidth + bgPadding * 2;
-            const bgHeight = logoHeight + bgPadding + marginP1;
+            const bgHeight = logoHeight + bgPadding * 2;
             doc.setFillColor(0, 0, 0);
             doc.rect(bgX, 0, bgWidth, bgHeight, "F");
             doc.addImage(logoImg, "PNG", bgX + bgPadding, bgPadding, logoWidth, logoHeight);
@@ -689,7 +691,94 @@ $rtrn = '
                 contentY += 22;
             });
             
-            // === PAGE 3: Calculation details ===
+            // === PAGE 3: Despre noi ===
+            doc.addPage();
+            
+            // Image pag_03 with 3% margin top/left/right, 30% height (drawn first)
+            const p3Margin = pageWidth * 0.03;
+            const p3ImgY = p3Margin;
+            const p3ImgWidth = pageWidth - p3Margin * 2;
+            const p3ImgHeight = pageHeight * 0.30;
+            doc.addImage(pag03Img, "JPEG", p3Margin, p3ImgY, p3ImgWidth, p3ImgHeight);
+            
+            // Logo with black background (on top of image)
+            doc.setFillColor(0, 0, 0);
+            doc.rect(p3Margin, 0, bgWidth, bgHeight, "F");
+            doc.addImage(logoImg, "PNG", p3Margin + bgPadding, bgPadding, logoWidth, logoHeight);
+            
+            // Title "Despre noi"
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(48);
+            doc.setFont("helvetica", "bold");
+            var p3Y = p3ImgY + p3ImgHeight + 18;
+            doc.text(removeDiacritics("Despre noi"), p3Margin, p3Y);
+            p3Y += 14;
+            
+            // Text content - limit width to not overlap with red rectangle
+            var textMaxWidth = pageWidth - p3Margin * 2 - rectWidth - 10;
+            
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "bold");
+            var firstLine = doc.splitTextToSize(removeDiacritics("SAUTO S.R.L. este o companie specializata in import si vinzarea automobilelor rulate din Europa in Republica Moldova."), textMaxWidth);
+            doc.text(firstLine, p3Margin, p3Y);
+            p3Y += firstLine.length * 4 + 3;
+            
+            doc.setFont("helvetica", "normal");
+            var aboutTexts = [
+                "Avind la baza ca obiectiv oferirea unui larg asortiment de automobile accesibile pentru toti, am devenit unul din cei mai importanti importatori auto din Moldova.",
+                "SAUTO S.R.L. inseamna echipa. O echipa unita, bine pregatita si pasionata de domeniul auto, ai carei membri impartasesc, indiferent de nivelul ierarhic, aceleasi valori si principii.",
+                "Astazi, reprezentam cu succes branduri auto renumite, lucram in fiecare zi pentru a descoperi solutii noi, pentru a consolida si creste calitatea serviciilor noastre, pentru a fi autentici, profesionisti, moderni si inspirati.",
+                "Echipa noastra este pregatita pentru a va consilia sa alegeti model care vi se potriveste cel mai bine.",
+                "Va asteptam la noi pentru a cunoaste oameni pasionati si instruiti, gata sa va prezinte o marca auto cu adevarat impresionanta, intr-o parcare moderna si rafinata, la fel cum sunt si masinile insesi.",
+                "Printre valorile si principiile impartasite se enumera:"
+            ];
+            
+            aboutTexts.forEach(function(txt) {
+                var lines = doc.splitTextToSize(removeDiacritics(txt), textMaxWidth);
+                doc.text(lines, p3Margin, p3Y);
+                p3Y += lines.length * 4 + 3;
+            });
+            
+            p3Y += 3;
+            
+            // Two columns: Stabilitate and Profesionalism
+            var colWidth = (textMaxWidth - p3Margin) / 2;
+            var col1X = p3Margin;
+            var col2X = p3Margin + colWidth + p3Margin;
+            var colY = p3Y;
+            
+            // Stabilitate
+            doc.setFont("helvetica", "bold");
+            doc.text(removeDiacritics("• Stabilitate"), col1X, colY);
+            doc.setFont("helvetica", "normal");
+            var stabText = "Pentru noi inseamna o viziune clara, neschimbatoare in timp care stau la baza ideologiei companiei noastre. Cultivarea acestei valori da dovada de responsabilitate si inspira incredere clientilor nostri.";
+            var stabLines = doc.splitTextToSize(removeDiacritics(stabText), colWidth);
+            doc.text(stabLines, col1X, colY + 5);
+            
+            // Profesionalism
+            doc.setFont("helvetica", "bold");
+            doc.text(removeDiacritics("• Profesionalism"), col2X, colY);
+            doc.setFont("helvetica", "normal");
+            var profText = "In vizunea noastra reprezinta oferirea automobilelor care corespund nevoielor si cerintelor clientilor nostri. Noi ne straduim sa furnizam informati complete, clare si precise despre modelele pe care le avem in stoc sau daca sint in asteptare.";
+            var profLines = doc.splitTextToSize(removeDiacritics(profText), colWidth);
+            doc.text(profLines, col2X, colY + 5);
+            
+            var maxColHeight = Math.max(stabLines.length, profLines.length) * 4 + 15;
+            p3Y = colY + maxColHeight;
+            
+            // Perfectionizm si flexibilitate
+            doc.setFont("helvetica", "bold");
+            doc.text(removeDiacritics("• Perfectionizm si flexibilitate"), col1X, p3Y);
+            doc.setFont("helvetica", "normal");
+            var perfText = "Pentru ca sintem in cautarea unor noi cerinte de piata studiem tendintele si aplicam noi strategii, tindem de a perfectiona si diversifica activitatea pe care o avem.";
+            var perfLines = doc.splitTextToSize(removeDiacritics(perfText), textMaxWidth);
+            doc.text(perfLines, col1X, p3Y + 5);
+            
+            // Red rectangle bottom right
+            doc.setFillColor(226, 0, 26);
+            doc.rect(pageWidth - rectWidth - p3Margin, pageHeight - rectHeight, rectWidth, rectHeight, "F");
+            
+            // === PAGE 4: Calculation details ===
             doc.addPage();
             doc.setTextColor(0, 0, 0);
             let y = 25;
@@ -786,8 +875,10 @@ $rtrn = '
         
         bgImg.onload = function() { bgLoaded = true; generatePDFWithImages(); };
         logoImg.onload = function() { logoLoaded = true; generatePDFWithImages(); };
+        pag03Img.onload = function() { pag03Loaded = true; generatePDFWithImages(); };
         bgImg.onerror = function() { bgLoaded = true; generatePDFWithImages(); };
         logoImg.onerror = function() { logoLoaded = true; generatePDFWithImages(); };
+        pag03Img.onerror = function() { pag03Loaded = true; generatePDFWithImages(); };
     }
 })();
 </script>
