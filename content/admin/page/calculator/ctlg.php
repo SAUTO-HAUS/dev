@@ -710,16 +710,16 @@ $rtrn = '
             doc.text("+373 62166880", 100, footerY + 10);
             doc.text("carp@sauto.md", 100, footerY + 15);
             
-            // === PAGE 2: Contents (red background) ===
+            // === PAGE 2: Contents (gray background) ===
             doc.addPage();
             
-            // Red background with 3% margin
+            // Gray background #e8e8e8 with 3% margin
             const margin = pageWidth * 0.03;
-            doc.setFillColor(226, 0, 26);
+            doc.setFillColor(232, 232, 232);
             doc.rect(margin, margin, pageWidth - margin * 2, pageHeight - margin * 2, "F");
             
-            // Black rectangle bottom right with page number (for page 2)
-            doc.setFillColor(0, 0, 0);
+            // Red rectangle bottom right with page number (for page 2)
+            doc.setFillColor(226, 0, 26);
             doc.rect(pageWidth - rectWidth - margin, pageHeight - rectHeight, rectWidth, rectHeight, "F");
             doc.setTextColor(255, 255, 255);
             doc.setFontSize(14);
@@ -731,7 +731,7 @@ $rtrn = '
             doc.addImage(logoImg, "PNG", margin + bgPadding, bgPadding, logoWidth, logoHeight);
             
             // Title "Continut" (bold, centered)
-            doc.setTextColor(255, 255, 255);
+            doc.setTextColor(0, 0, 0);
             doc.setFontSize(28);
             doc.setFont("helvetica", "bold");
             doc.text(removeDiacritics("Continut"), pageWidth / 2, pageHeight * 0.16, { align: "center" });
