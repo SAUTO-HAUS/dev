@@ -547,18 +547,20 @@ $rtrn = '
             if (!bgLoaded || !logoLoaded) return;
             
             // === PAGE 1: Background image with logo ===
-            // Background: 3% from top, 75% height
-            const imgY = pageHeight * 0.03;
+            // Background: full width, 3% margin top only
+            const marginP1 = pageWidth * 0.03;
+            const imgY = marginP1;
+            const imgWidth = pageWidth;
             const imgHeight = pageHeight * 0.75;
-            doc.addImage(bgImg, "JPEG", 0, imgY, pageWidth, imgHeight);
+            doc.addImage(bgImg, "JPEG", 0, imgY, imgWidth, imgHeight);
             
             // Logo with black background
             const bgPadding = 8;
-            const bgX = imgY;
+            const bgX = marginP1;
             const logoWidth = 50;
             const logoHeight = 20;
             const bgWidth = logoWidth + bgPadding * 2;
-            const bgHeight = logoHeight + bgPadding + imgY;
+            const bgHeight = logoHeight + bgPadding + marginP1;
             doc.setFillColor(0, 0, 0);
             doc.rect(bgX, 0, bgWidth, bgHeight, "F");
             doc.addImage(logoImg, "PNG", bgX + bgPadding, bgPadding, logoWidth, logoHeight);
@@ -567,25 +569,35 @@ $rtrn = '
             doc.setTextColor(255, 255, 255);
             
             // Title "Oferta comerciala" above brand/model
-            doc.setFontSize(16);
-            doc.setFont("helvetica", "italic");
-            doc.text(removeDiacritics("Oferta comerciala"), pageWidth / 2, pageHeight * 0.38, { align: "center" });
+            doc.setFontSize(24);
+            doc.setFont("helvetica", "normal");
+            doc.text(removeDiacritics("Oferta comerciala"), 20, pageHeight * 0.25);
             
-            // MARCA Model, An, Motor (brand uppercase, model capitalized)
-            doc.setFontSize(28);
+            // MARCA Model, An (brand uppercase, model capitalized)
+            doc.setFontSize(38);
             doc.setFont("helvetica", "bold");
             const brandClean = offer.brand.replace(/_/g, " ").toUpperCase();
             const modelClean = capitalizeWords(offer.model.replace(/_/g, " "));
             var vehicleTitle = brandClean + " " + modelClean + ", " + offer.year;
+            doc.text(removeDiacritics(vehicleTitle), 20, pageHeight * 0.30);
+            
+            // Capacitate motor și tip combustibil pe rând nou (aceeași mărime font)
+            var engineInfo = "";
             if (offer.cylinder_capacity) {
-                vehicleTitle += ", " + offer.cylinder_capacity;
+                engineInfo += offer.cylinder_capacity + " cm³";
             }
-            doc.text(removeDiacritics(vehicleTitle), pageWidth / 2, pageHeight * 0.45, { align: "center" });
+            if (offer.fuel_type) {
+                if (engineInfo) engineInfo += ", ";
+                engineInfo += capitalizeWords(offer.fuel_type.replace(/_/g, " "));
+            }
+            if (engineInfo) {
+                doc.text(removeDiacritics(engineInfo), 20, pageHeight * 0.36);
+            }
             
             // Red rectangle bottom right
             const rectWidth = 50;
-            const rectHeight = 60;
-            const rectX = pageWidth - rectWidth - (pageHeight * 0.03);
+            const rectHeight = 75;
+            const rectX = pageWidth - rectWidth - marginP1;
             const rectY = pageHeight - rectHeight;
             doc.setFillColor(226, 0, 26);
             doc.rect(rectX, rectY, rectWidth, rectHeight, "F");
@@ -608,7 +620,76 @@ $rtrn = '
             doc.text("+373 62166880", 100, footerY + 10);
             doc.text("carp@sauto.md", 100, footerY + 15);
             
-            // === PAGE 2: Calculation details ===
+            // === PAGE 2: Contents (red background) ===
+            doc.addPage();
+            
+            // Red background with 3% margin
+            const margin = pageWidth * 0.03;
+            doc.setFillColor(226, 0, 26);
+            doc.rect(margin, margin, pageWidth - margin * 2, pageHeight - margin * 2, "F");
+            
+            // Logo with black background (same as page 1)
+            doc.setFillColor(0, 0, 0);
+            doc.rect(margin, 0, bgWidth, bgHeight, "F");
+            doc.addImage(logoImg, "PNG", margin + bgPadding, bgPadding, logoWidth, logoHeight);
+            
+            // Title "Continut" (bold, centered)
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(28);
+            doc.setFont("helvetica", "bold");
+            doc.text(removeDiacritics("Continut"), pageWidth / 2, pageHeight * 0.16, { align: "center" });
+            
+            // Contents list (centered vertically)
+            doc.setFontSize(14);
+            doc.setFont("helvetica", "normal");
+            var totalItems = 6;
+            var itemHeight = 22;
+            var totalContentHeight = totalItems * itemHeight;
+            var contentY = (pageHeight - totalContentHeight) / 2;
+            var contentItems = [
+                { title: "Despre noi", page: "03" },
+                { title: "Specificatia tehnica", page: "04" },
+                { title: "Imagini de produs", page: "05" },
+                { title: "Pret", page: "06" },
+                { title: "Rapoarte si informatii aditionale", page: "07" },
+                { title: "Termeni si conditii", page: "08" }
+            ];
+            
+            // Center horizontally - calculate content width and center it
+            var maxTitleWidth = 0;
+            contentItems.forEach(function(item) {
+                var w = doc.getTextWidth(removeDiacritics(item.title));
+                if (w > maxTitleWidth) maxTitleWidth = w;
+            });
+            var dotsWidth = 60;
+            var pageNumWidth = 20;
+            var totalWidth = maxTitleWidth + dotsWidth + pageNumWidth;
+            var leftX = (pageWidth - totalWidth) / 2;
+            var rightX = leftX + totalWidth;
+            
+            contentItems.forEach(function(item) {
+                // Title on left
+                doc.text(removeDiacritics(item.title), leftX, contentY);
+                
+                // Calculate dots width
+                var titleWidth = doc.getTextWidth(removeDiacritics(item.title));
+                var pageNumWidth = doc.getTextWidth(item.page);
+                var dotsStartX = leftX + titleWidth + 5;
+                var dotsEndX = rightX - pageNumWidth - 5;
+                
+                // Draw dots
+                var dots = "";
+                var dotWidth = doc.getTextWidth(". ");
+                var numDots = Math.floor((dotsEndX - dotsStartX) / dotWidth);
+                for (var d = 0; d < numDots; d++) dots += ". ";
+                doc.text(dots, dotsStartX, contentY);
+                
+                // Page number
+                doc.text(item.page, rightX, contentY, { align: "right" });
+                contentY += 22;
+            });
+            
+            // === PAGE 3: Calculation details ===
             doc.addPage();
             doc.setTextColor(0, 0, 0);
             let y = 25;

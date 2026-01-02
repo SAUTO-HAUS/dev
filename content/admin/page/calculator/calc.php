@@ -1049,6 +1049,7 @@ $rtrn = '
                         <option value="benzina">'.$t['gasoline'].'</option>
                         <option value="diesel">'.$t['diesel'].'</option>
                         <option value="hybrid">'.$t['hybrid'].'</option>
+                        <option value="plugin_hybrid">'.$t['plugin_hybrid'].'</option>
                         <option value="electric">'.$t['electric'].'</option>
                     </select>
                 </div>
