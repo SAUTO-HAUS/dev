@@ -283,6 +283,11 @@ $rtrn = '
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     }
     
+    #calculator-container .field-error {
+        border: 2px solid #dc3545 !important;
+        box-shadow: 0 0 5px rgba(220, 53, 69, 0.5) !important;
+    }
+    
     #calculator-container .calc-header .eur-rate-row span {
         color: #666;
         font-size: 0.95rem;
@@ -1728,9 +1733,35 @@ $rtrn = '
         const driveType = document.getElementById("offer-drive-type").value.trim();
         const color = document.getElementById("offer-color").value.trim();
         
-        // Validate required fields
-        if (!clientName || !brand || !model || !year) {
-            alert("Completați toate câmpurile obligatorii!");
+        // Validate ALL fields with visual feedback
+        let hasError = false;
+        
+        const fields = {
+            clientName: { el: document.getElementById("offer-client-name"), val: clientName },
+            brand: { el: document.getElementById("offer-brand"), val: brand },
+            model: { el: document.getElementById("offer-model"), val: model },
+            year: { el: document.getElementById("offer-year"), val: year },
+            bodywork: { el: document.getElementById("offer-bodywork"), val: bodywork },
+            seats: { el: document.getElementById("offer-seats"), val: seats },
+            mileage: { el: document.getElementById("offer-mileage"), val: mileage },
+            enginePower: { el: document.getElementById("offer-engine-power"), val: enginePower },
+            transmission: { el: document.getElementById("offer-transmission"), val: transmission },
+            driveType: { el: document.getElementById("offer-drive-type"), val: driveType },
+            color: { el: document.getElementById("offer-color"), val: color }
+        };
+        
+        // Remove previous error classes and check each field
+        for (const key in fields) {
+            fields[key].el.classList.remove("field-error");
+            if (!fields[key].val) {
+                fields[key].el.classList.add("field-error");
+                hasError = true;
+            }
+        }
+        
+        if (hasError) {
+            // Scroll to first error field
+            document.querySelector(".field-error")?.scrollIntoView({ behavior: "smooth", block: "center" });
             return;
         }
         
