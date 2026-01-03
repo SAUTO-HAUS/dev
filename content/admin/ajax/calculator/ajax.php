@@ -388,6 +388,41 @@ if ($fn === 'save_eur_rate') {
         exit;
     }
 
+} elseif ($fn === 'ai_generate_features') {
+    require_once(__DIR__ . '/ai_generate_features.php');
+    echo json_encode($returnIt);
+    exit;
+
+} elseif ($fn === 'update_offer_features') {
+    try {
+        $offer_id = intval(__post('offer_id'));
+        $features = __post('features');
+        
+        if ($offer_id <= 0) {
+            echo json_encode(['success' => false, 'error' => 'Invalid offer ID']);
+            exit;
+        }
+        
+        // Check if ai_features column exists, if not add it
+        try {
+            $db->query("SELECT ai_features FROM {$prefx}_calculator_offers LIMIT 1");
+        } catch (PDOException $e) {
+            $db->exec("ALTER TABLE {$prefx}_calculator_offers ADD COLUMN ai_features TEXT NULL");
+        }
+        
+        $pdo = $db->prepare('UPDATE '.$prefx.'_calculator_offers SET ai_features = :features WHERE id = :id');
+        $pdo->execute([
+            'features' => $features,
+            'id' => $offer_id
+        ]);
+        
+        echo json_encode(['success' => true]);
+        exit;
+    } catch (Exception $e) {
+        echo json_encode(['success' => false, 'error' => $e->getMessage()]);
+        exit;
+    }
+
 } else {
     echo json_encode(['success' => false, 'error' => 'Unknown function']);
     exit;

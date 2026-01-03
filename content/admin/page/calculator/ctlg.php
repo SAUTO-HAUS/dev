@@ -170,6 +170,29 @@ $rtrn = '
         background: #c82333;
     }
     
+    #catalog-container .offers-table .btn-ai {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        padding: 0.4rem 0.8rem;
+        background: #6f42c1;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    
+    #catalog-container .offers-table .btn-ai:hover {
+        background: #5a32a3;
+    }
+    
+    #catalog-container .offers-table .btn-ai:disabled {
+        opacity: 0.6;
+        cursor: wait;
+    }
+    
     #catalog-container .empty-state {
         text-align: center;
         padding: 4rem 2rem;
@@ -360,6 +383,7 @@ $rtrn = '
                     <td class="date-col">${date}</td>
                     <td class="actions">
                         <button class="btn-edit" onclick="editOffer(${offer.id})">✏️ Edit</button>
+                        <button class="btn-ai" onclick="generateAIFeatures(this, ${offer.id})" data-text="🤖 AI" data-loading="⏳..." data-success="✅ Succes" title="Generează Siguranță și Confort cu AI">🤖 AI</button>
                         <button class="btn-pdf" onclick="generatePDF(${offer.id})">📄 PDF</button>
                         <button class="btn-delete" onclick="deleteOffer(${offer.id})">🗑️</button>
                     </td>
@@ -431,6 +455,104 @@ $rtrn = '
         })
         .catch(err => {
             alert("Eroare la ștergere");
+        });
+    };
+    
+    window.generateAIFeatures = function(btn, offerId) {
+        // Get offer data first
+        fetch("/ajax.php", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: "tp=adm&pg=calculator&fn=get_offer&offer_id=" + offerId
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success && data.offer) {
+                const offer = data.offer;
+                btn.disabled = true;
+                btn.textContent = btn.dataset.loading;
+                
+                // Call AI to generate features
+                fetch("/ajax.php", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: "tp=adm&pg=calculator&fn=ai_generate_features" +
+                          "&brand=" + encodeURIComponent(offer.brand) +
+                          "&model=" + encodeURIComponent(offer.model) +
+                          "&year=" + encodeURIComponent(offer.year) +
+                          "&fuel_type=" + encodeURIComponent(offer.fuel_type || "") +
+                          "&bodywork=" + encodeURIComponent(offer.bodywork || "")
+                })
+                .then(res => res.json())
+                .then(aiData => {
+                    if (aiData.success) {
+                        // Save features to offer
+                        const features = {
+                            safety: aiData.safety,
+                            comfort: aiData.comfort
+                        };
+                        
+                        // Update offer with features
+                        fetch("/ajax.php", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                            body: "tp=adm&pg=calculator&fn=update_offer_features&offer_id=" + offerId +
+                                  "&features=" + encodeURIComponent(JSON.stringify(features))
+                        })
+                        .then(res => res.json())
+                        .then(updateData => {
+                            btn.disabled = false;
+                            if (updateData.success) {
+                                btn.textContent = btn.dataset.success;
+                                btn.style.background = "#28a745";
+                                setTimeout(() => {
+                                    btn.textContent = btn.dataset.text;
+                                    btn.style.background = "";
+                                }, 2000);
+                            } else {
+                                btn.textContent = "❌ Eroare";
+                                btn.style.background = "#dc3545";
+                                setTimeout(() => {
+                                    btn.textContent = btn.dataset.text;
+                                    btn.style.background = "";
+                                }, 2000);
+                            }
+                        });
+                    } else {
+                        btn.disabled = false;
+                        btn.textContent = "❌ Eroare";
+                        btn.style.background = "#dc3545";
+                        setTimeout(() => {
+                            btn.textContent = btn.dataset.text;
+                            btn.style.background = "";
+                        }, 2000);
+                    }
+                })
+                .catch(err => {
+                    btn.disabled = false;
+                    btn.textContent = "❌ Eroare";
+                    btn.style.background = "#dc3545";
+                    setTimeout(() => {
+                        btn.textContent = btn.dataset.text;
+                        btn.style.background = "";
+                    }, 2000);
+                });
+            } else {
+                btn.textContent = "❌ Eroare";
+                btn.style.background = "#dc3545";
+                setTimeout(() => {
+                    btn.textContent = btn.dataset.text;
+                    btn.style.background = "";
+                }, 2000);
+            }
+        })
+        .catch(err => {
+            btn.textContent = "❌ Eroare";
+            btn.style.background = "#dc3545";
+            setTimeout(() => {
+                btn.textContent = btn.dataset.text;
+                btn.style.background = "";
+            }, 2000);
         });
     };
     
@@ -987,7 +1109,54 @@ $rtrn = '
             doc.text(removeDiacritics(translateValue(offer.transmission)), col1X + 5, p4Y + 6);
             doc.text(removeDiacritics(translateValue(offer.drive_type)), col2X + 5, p4Y + 6);
             doc.text(removeDiacritics(translateValue(offer.color)), col3X + 5, p4Y + 6);
-            p4Y += specRowHeight + 10;
+            p4Y += specRowHeight + 15;
+            
+            // AI Features: Siguranta si Confort
+            var aiFeatures = null;
+            try {
+                aiFeatures = JSON.parse(offer.ai_features || "null");
+            } catch(e) {}
+            
+            if (aiFeatures && (aiFeatures.safety || aiFeatures.comfort)) {
+                // Siguranta section
+                if (aiFeatures.safety && aiFeatures.safety.length > 0) {
+                    doc.setTextColor(0, 0, 0);
+                    doc.setFontSize(14);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Siguranta", p4Margin, p4Y);
+                    p4Y += 7;
+                    
+                    doc.setFontSize(10);
+                    doc.setFont("helvetica", "normal");
+                    aiFeatures.safety.forEach(function(item) {
+                        doc.setTextColor(226, 0, 26);
+                        doc.text("✓", p4Margin, p4Y);
+                        doc.setTextColor(0, 0, 0);
+                        doc.text(removeDiacritics(item), p4Margin + 8, p4Y);
+                        p4Y += 5;
+                    });
+                    p4Y += 8;
+                }
+                
+                // Confort section
+                if (aiFeatures.comfort && aiFeatures.comfort.length > 0) {
+                    doc.setTextColor(0, 0, 0);
+                    doc.setFontSize(14);
+                    doc.setFont("helvetica", "bold");
+                    doc.text("Confort", p4Margin, p4Y);
+                    p4Y += 7;
+                    
+                    doc.setFontSize(10);
+                    doc.setFont("helvetica", "normal");
+                    aiFeatures.comfort.forEach(function(item) {
+                        doc.setTextColor(226, 0, 26);
+                        doc.text("✓", p4Margin, p4Y);
+                        doc.setTextColor(0, 0, 0);
+                        doc.text(removeDiacritics(item), p4Margin + 8, p4Y);
+                        p4Y += 5;
+                    });
+                }
+            }
             
             // Red rectangle bottom right with page number
             doc.setFillColor(226, 0, 26);
