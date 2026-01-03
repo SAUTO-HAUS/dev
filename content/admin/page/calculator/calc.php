@@ -1616,24 +1616,24 @@ $rtrn = '
                 
                 // Build table rows dynamically
                 let tableRows = `
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.value_mdl}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.value.mdl))} MDL  (${formatNumber(parseFloat(values.value.eur))} EUR)</td></tr>
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.excise}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.excise.mdl))} MDL  (${formatNumber(parseFloat(values.excise.eur))} EUR)</td></tr>
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.customs_duty}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.customs.mdl))} MDL  (${formatNumber(parseFloat(values.customs.eur))} EUR)</td></tr>
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.damage_protection}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.damage.mdl))} MDL  (${formatNumber(parseFloat(values.damage.eur))} EUR)</td></tr>
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.export_declaration}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.exportDecl.mdl))} MDL  (${formatNumber(parseFloat(values.exportDecl.eur))} EUR)</td></tr>
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.bank_commission}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.bank.mdl))} MDL  (${formatNumber(parseFloat(values.bank.eur))} EUR)</td></tr>
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.auction_commission}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.auction.mdl))} MDL  (${formatNumber(parseFloat(values.auction.eur))} EUR)</td></tr>
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.pollution_tax}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.pollution.mdl))} MDL  (${formatNumber(parseFloat(values.pollution.eur))} EUR)</td></tr>
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.shipping_docs}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.shipping.mdl))} MDL  (${formatNumber(parseFloat(values.shipping.eur))} EUR)</td></tr>
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.accessories}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.accessories.mdl))} MDL  (${formatNumber(parseFloat(values.accessories.eur))} EUR)</td></tr>
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.transaction_commission}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.transaction.mdl))} MDL  (${formatNumber(parseFloat(values.transaction.eur))} EUR)</td></tr>`;
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;width:55%;">${t.value_mdl}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.value.mdl))} MDL  (${formatNumber(parseFloat(values.value.eur))} EUR)</td></tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.excise}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.excise.mdl))} MDL  (${formatNumber(parseFloat(values.excise.eur))} EUR)</td></tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.customs_duty}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.customs.mdl))} MDL  (${formatNumber(parseFloat(values.customs.eur))} EUR)</td></tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.damage_protection}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.damage.mdl))} MDL  (${formatNumber(parseFloat(values.damage.eur))} EUR)</td></tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.export_declaration}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.exportDecl.mdl))} MDL  (${formatNumber(parseFloat(values.exportDecl.eur))} EUR)</td></tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.bank_commission}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.bank.mdl))} MDL  (${formatNumber(parseFloat(values.bank.eur))} EUR)</td></tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.auction_commission}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.auction.mdl))} MDL  (${formatNumber(parseFloat(values.auction.eur))} EUR)</td></tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.pollution_tax}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.pollution.mdl))} MDL  (${formatNumber(parseFloat(values.pollution.eur))} EUR)</td></tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.shipping_docs}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.shipping.mdl))} MDL  (${formatNumber(parseFloat(values.shipping.eur))} EUR)</td></tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.accessories}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.accessories.mdl))} MDL  (${formatNumber(parseFloat(values.accessories.eur))} EUR)</td></tr>
+                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.transaction_commission}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.transaction.mdl))} MDL  (${formatNumber(parseFloat(values.transaction.eur))} EUR)</td></tr>`;
                 
                 // Add polishing and painting only if enabled
                 if (document.getElementById("enable-polishing").checked) {
-                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.polishing}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.polishing.mdl))} MDL  (${formatNumber(parseFloat(values.polishing.eur))} EUR)</td></tr>`;
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.polishing}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.polishing.mdl))} MDL  (${formatNumber(parseFloat(values.polishing.eur))} EUR)</td></tr>`;
                 }
                 if (document.getElementById("enable-painting").checked) {
-                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.painting}</td><td style="text-align:right;font-weight:bold;">${formatNumber(parseFloat(values.painting.mdl))} MDL  (${formatNumber(parseFloat(values.painting.eur))} EUR)</td></tr>`;
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.painting}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.painting.mdl))} MDL  (${formatNumber(parseFloat(values.painting.eur))} EUR)</td></tr>`;
                 }
                 
                 pdfContent.innerHTML = `
@@ -1806,13 +1806,14 @@ $rtrn = '
         
         doc.setFontSize(13);
         
+        var valueX = pageWidth - 90; // fixed X position for values column (left-aligned)
         doc.setTextColor(255, 255, 255);
         results.forEach((item, index) => {
             const valueText = formatNumber(parseFloat(item.mdl)) + " MDL  (" + formatNumber(parseFloat(item.eur)) + " EUR)";
             doc.setFont("helvetica", "normal");
             doc.text(item.label, 20, y);
             doc.setFont("helvetica", "bold");
-            doc.text(valueText, pageWidth - 20, y, { align: "right" });
+            doc.text(valueText, valueX, y);
             // Subtle solid line under each row
             doc.setDrawColor(255, 255, 255);
             doc.setLineWidth(0.1);
@@ -1836,7 +1837,7 @@ $rtrn = '
         doc.setFont("helvetica", "bold");
         doc.setFontSize(14);
         doc.text(t.total, 20, y + 4);
-        doc.text(formatNumber(parseFloat(values.total.mdl)) + " MDL  (" + formatNumber(parseFloat(values.total.eur)) + " EUR)", pageWidth - 20, y + 4, { align: "right" });
+        doc.text(formatNumber(parseFloat(values.total.mdl)) + " MDL  (" + formatNumber(parseFloat(values.total.eur)) + " EUR)", valueX, y + 4);
         y += 17;
         
         // Vehicle total
@@ -1844,7 +1845,7 @@ $rtrn = '
         doc.rect(15, y - 5, pageWidth - 30, 14, "F");
         doc.setTextColor(255, 255, 255);
         doc.text(t.vehicle_total, 20, y + 4);
-        doc.text(formatNumber(parseFloat(values.vehicle.mdl)) + " MDL  (" + formatNumber(parseFloat(values.vehicle.eur)) + " EUR)", pageWidth - 20, y + 4, { align: "right" });
+        doc.text(formatNumber(parseFloat(values.vehicle.mdl)) + " MDL  (" + formatNumber(parseFloat(values.vehicle.eur)) + " EUR)", valueX, y + 4);
         
         // Reset text color
         doc.setTextColor(0, 0, 0);
