@@ -5,6 +5,8 @@ $t = $calc_trans[$lang_code] ?? $calc_trans['ro'];
 
 $admin_dir = isset($_COOKIE['admin_dir']) ? $_COOKIE['admin_dir'] : 'adminsauto';
 
+$logged_user_name = isset($user_name) ? $user_name : (isset($_SESSION['user_name']) ? $_SESSION['user_name'] : 'Manager');
+
 $rtrn = '
 <style>
     #catalog-container {
@@ -479,6 +481,7 @@ $rtrn = '
     
     function createPDF(offer) {
         const calcData = JSON.parse(offer.calculation_data || "{}");
+        const loggedUserName = "'.addslashes($logged_user_name).'";
         
         function formatNumber(num) {
             return Math.round(num).toLocaleString("ro-MD");
@@ -660,13 +663,18 @@ $rtrn = '
             doc.setFont("helvetica", "normal");
             doc.text(removeDiacritics("Oferta comerciala"), 20, pageHeight * 0.25);
             
-            // MARCA Model, An (brand uppercase, model capitalized)
+            // MARCA Model, An (brand uppercase, model capitalized) - with text wrapping
             doc.setFontSize(38);
             doc.setFont("helvetica", "bold");
             const brandClean = offer.brand.replace(/_/g, " ").toUpperCase();
             const modelClean = capitalizeWords(offer.model.replace(/_/g, " "));
             var vehicleTitle = brandClean + " " + modelClean + ", " + offer.year;
-            doc.text(removeDiacritics(vehicleTitle), 20, pageHeight * 0.30);
+            var maxTitleWidth = pageWidth - 40 - 50;
+            var titleLines = doc.splitTextToSize(removeDiacritics(vehicleTitle), maxTitleWidth);
+            doc.text(titleLines, 20, pageHeight * 0.30);
+            
+            // Calculate Y position after title lines
+            var titleEndY = pageHeight * 0.30 + (titleLines.length - 1) * 14;
             
             // Capacitate motor și tip combustibil pe rând nou (aceeași mărime font)
             var engineInfo = "";
@@ -678,7 +686,7 @@ $rtrn = '
                 engineInfo += capitalizeWords(offer.fuel_type.replace(/_/g, " "));
             }
             if (engineInfo) {
-                doc.text(removeDiacritics(engineInfo), 20, pageHeight * 0.36);
+                doc.text(removeDiacritics(engineInfo), 20, titleEndY + 18);
             }
             
             // Red rectangle bottom right with page number
@@ -704,11 +712,9 @@ $rtrn = '
             doc.text("Chisinau str Calea Mosilor 11", 20, footerY + 15);
             
             doc.setFont("helvetica", "bold");
-            doc.text("CARP DUMITRU", 100, footerY);
+            doc.text(removeDiacritics(loggedUserName.toUpperCase()), 100, footerY);
             doc.setFont("helvetica", "normal");
             doc.text("Manager vanzari", 100, footerY + 5);
-            doc.text("+373 62166880", 100, footerY + 10);
-            doc.text("carp@sauto.md", 100, footerY + 15);
             
             // === PAGE 2: Contents (gray background) ===
             doc.addPage();
