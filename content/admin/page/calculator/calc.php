@@ -2066,8 +2066,6 @@ $rtrn = '
         const model = modelSelect.value;
         const modelName = modelSelect.options[modelSelect.selectedIndex]?.text || model;
         
-        console.log(\'Saving offer - brand value:\', brand, \'brand text:\', brandName);
-        console.log(\'Saving offer - model value:\', model, \'model text:\', modelName);
         
         const year = document.getElementById("offer-year").value;
         const bodywork = document.getElementById("offer-bodywork").value.trim();
@@ -2200,7 +2198,6 @@ $rtrn = '
             btn.classList.add("success");
             
         } catch (error) {
-            console.error("Error saving offer:", error);
             btn.textContent = "✗ " + OFFER_ERROR_TEXT;
             btn.classList.add("error");
         }
@@ -2218,10 +2215,7 @@ $rtrn = '
     // Load models when brand changes
     document.getElementById("offer-brand").addEventListener("change", function() {
         // Skip if we\'re loading from Edit
-        if (isLoadingFromEdit) {
-            console.log(\'Skipping brand change event - loading from Edit\');
-            return;
-        }
+        if (isLoadingFromEdit) return;
         
         const brand = this.value;
         const modelSelect = document.getElementById("offer-model");
@@ -2248,7 +2242,7 @@ $rtrn = '
                 });
             }
         })
-        .catch(err => console.error("Error loading models:", err));
+        .catch(() => {});
     });
     
     // Load offer data from sessionStorage if editing
@@ -2257,95 +2251,11 @@ $rtrn = '
         try {
             const offer = JSON.parse(editOfferData);
             
-            console.log("Loading offer data:", offer);
-            
             // Set flag to prevent brand change event
             isLoadingFromEdit = true;
             
-            // Pre-populate commercial offer fields
-            if (offer.client_name) {
-                document.getElementById("offer-client-name").value = offer.client_name;
-            }
-            
-            // Handle brand and model with proper async loading
-            if (offer.brand) {
-                const brandSelect = document.getElementById("offer-brand");
-                const modelSelect = document.getElementById("offer-model");
-                
-                // Debug: log available brands
-                console.log(\'Available brands in select:\', Array.from(brandSelect.options).map(o => o.value + \' = \' + o.text));
-                console.log(\'Trying to set brand:\', offer.brand);
-                
-                // Set brand first - try by value, then by text
-                brandSelect.value = offer.brand;
-                
-                // If brand not found by value, try to find by text
-                if (!brandSelect.value && offer.brand) {
-                    for (let i = 0; i < brandSelect.options.length; i++) {
-                        if (brandSelect.options[i].text === offer.brand || brandSelect.options[i].value === offer.brand.toLowerCase().replace(/\s+/g, \'_\')) {
-                            brandSelect.selectedIndex = i;
-                            console.log(\'Brand found by text search:\', brandSelect.options[i].value, \'=\', brandSelect.options[i].text);
-                            break;
-                        }
-                    }
-                }
-                
-                console.log(\'Set brand:\', offer.brand, \'Selected text:\', brandSelect.options[brandSelect.selectedIndex]?.text);
-                console.log(\'Brand select value after setting:\', brandSelect.value);
-                
-                // Trigger brand change to load models (cars.js will handle this)
-                if (offer.model && brandSelect.value) {
-                    console.log(\'Triggering brand change to load models for:\', brandSelect.value);
-                    
-                    // Temporarily enable brand change event
-                    isLoadingFromEdit = false;
-                    
-                    // Trigger change event to load models via cars.js
-                    brandSelect.dispatchEvent(new Event(\'change\', { bubbles: true }));
-                    
-                    // Wait for models to load, then set the model
-                    const checkModelsLoaded = setInterval(() => {
-                        if (modelSelect.options.length > 1) {
-                            clearInterval(checkModelsLoaded);
-                            
-                            console.log(\'Models loaded, setting model:\', offer.model);
-                            console.log(\'Available models:\', Array.from(modelSelect.options).map(o => o.value + \' = \' + o.text));
-                            
-                            // Try to set model by value first
-                            modelSelect.value = offer.model;
-                            
-                            // If not found, try by text
-                            if (!modelSelect.value && offer.model) {
-                                console.log(\'Model not found by value, searching by text...\');
-                                for (let i = 0; i < modelSelect.options.length; i++) {
-                                    const optValue = modelSelect.options[i].value;
-                                    const optText = modelSelect.options[i].text;
-                                    
-                                    if (optText === offer.model || 
-                                        optValue === offer.model.toLowerCase() ||
-                                        optText.toLowerCase() === offer.model.toLowerCase()) {
-                                        modelSelect.selectedIndex = i;
-                                        console.log(\'Model found by search:\', optValue, \'=\', optText);
-                                        break;
-                                    }
-                                }
-                            }
-                            
-                            console.log(\'Final model value:\', modelSelect.value, \'text:\', modelSelect.options[modelSelect.selectedIndex]?.text);
-                            
-                            // Re-disable brand change event
-                            isLoadingFromEdit = true;
-                        }
-                    }, 100);
-                    
-                    // Timeout after 3 seconds
-                    setTimeout(() => {
-                        clearInterval(checkModelsLoaded);
-                        isLoadingFromEdit = true;
-                    }, 3000);
-                }
-            }
-            
+            // Pre-populate all simple fields immediately (no async)
+            if (offer.client_name) document.getElementById("offer-client-name").value = offer.client_name;
             if (offer.year) document.getElementById("offer-year").value = offer.year;
             if (offer.bodywork) document.getElementById("offer-bodywork").value = offer.bodywork;
             if (offer.seats) document.getElementById("offer-seats").value = offer.seats;
@@ -2357,54 +2267,68 @@ $rtrn = '
             if (offer.drive_type) document.getElementById("offer-drive-type").value = offer.drive_type;
             if (offer.color) document.getElementById("offer-color").value = offer.color;
             
-            // Pre-populate calculator results if calculation_data exists
-            if (offer.calculation_data) {
-                // Parse calculation_data if it is a string
-                let calcData = offer.calculation_data;
-                if (typeof calcData === "string") {
-                    calcData = JSON.parse(calcData);
+            // Handle brand and model with async loading
+            if (offer.brand) {
+                const brandSelect = document.getElementById("offer-brand");
+                const modelSelect = document.getElementById("offer-model");
+                
+                // Set brand - try by value, then by text
+                brandSelect.value = offer.brand;
+                if (!brandSelect.value && offer.brand) {
+                    for (let i = 0; i < brandSelect.options.length; i++) {
+                        if (brandSelect.options[i].text === offer.brand || brandSelect.options[i].value === offer.brand.toLowerCase().replace(/\s+/g, \'_\')) {
+                            brandSelect.selectedIndex = i;
+                            break;
+                        }
+                    }
                 }
                 
-                console.log("Loading calculation data (parsed):", calcData);
+                // Trigger brand change to load models
+                if (offer.model && brandSelect.value) {
+                    isLoadingFromEdit = false;
+                    brandSelect.dispatchEvent(new Event(\'change\', { bubbles: true }));
+                    
+                    // Wait for models to load, then set the model
+                    const checkModelsLoaded = setInterval(() => {
+                        if (modelSelect.options.length > 1) {
+                            clearInterval(checkModelsLoaded);
+                            
+                            modelSelect.value = offer.model;
+                            if (!modelSelect.value && offer.model) {
+                                for (let i = 0; i < modelSelect.options.length; i++) {
+                                    if (modelSelect.options[i].text === offer.model || 
+                                        modelSelect.options[i].value === offer.model.toLowerCase() ||
+                                        modelSelect.options[i].text.toLowerCase() === offer.model.toLowerCase()) {
+                                        modelSelect.selectedIndex = i;
+                                        break;
+                                    }
+                                }
+                            }
+                            isLoadingFromEdit = true;
+                        }
+                    }, 50);
+                    
+                    setTimeout(() => { clearInterval(checkModelsLoaded); isLoadingFromEdit = true; }, 2000);
+                }
+            }
+            
+            // Pre-populate calculator results if calculation_data exists
+            if (offer.calculation_data) {
+                let calcData = typeof offer.calculation_data === "string" ? JSON.parse(offer.calculation_data) : offer.calculation_data;
                 
-                // Load calculator input fields if they exist
+                // Load calculator input fields
                 if (calcData.inputs) {
-                    console.log(\'Loading calculator inputs:\', calcData.inputs);
-                    
-                    // Set vehicle type radio button
                     if (calcData.inputs.vehicleType) {
-                        const vehicleTypeRadio = document.querySelector(\'input[name="vehicle-type"][value="\' + calcData.inputs.vehicleType + \'"]\');
-                        if (vehicleTypeRadio) {
-                            vehicleTypeRadio.checked = true;
-                            console.log(\'Set vehicle type:\', calcData.inputs.vehicleType);
-                        }
+                        const vt = document.querySelector(\'input[name="vehicle-type"][value="\' + calcData.inputs.vehicleType + \'"]\');
+                        if (vt) vt.checked = true;
                     }
-                    
-                    // Set other input fields
-                    if (calcData.inputs.productionYear && document.getElementById("year")) {
-                        document.getElementById("year").value = calcData.inputs.productionYear;
-                        console.log(\'Set year:\', calcData.inputs.productionYear);
-                    }
-                    if (calcData.inputs.cylinderCapacity && document.getElementById("capacity")) {
-                        document.getElementById("capacity").value = calcData.inputs.cylinderCapacity;
-                        console.log(\'Set capacity:\', calcData.inputs.cylinderCapacity);
-                    }
-                    if (calcData.inputs.vehiclePrice && document.getElementById("price_eur")) {
-                        document.getElementById("price_eur").value = calcData.inputs.vehiclePrice;
-                        console.log(\'Set price:\', calcData.inputs.vehiclePrice);
-                    }
-                    if (calcData.inputs.transportPrice && document.getElementById("transport_eur")) {
-                        document.getElementById("transport_eur").value = calcData.inputs.transportPrice;
-                        console.log(\'Set transport:\', calcData.inputs.transportPrice);
-                    }
-                    
-                    // Set fuel type radio button
+                    if (calcData.inputs.productionYear) document.getElementById("year").value = calcData.inputs.productionYear;
+                    if (calcData.inputs.cylinderCapacity) document.getElementById("capacity").value = calcData.inputs.cylinderCapacity;
+                    if (calcData.inputs.vehiclePrice) document.getElementById("price_eur").value = calcData.inputs.vehiclePrice;
+                    if (calcData.inputs.transportPrice) document.getElementById("transport_eur").value = calcData.inputs.transportPrice;
                     if (calcData.inputs.fuelType) {
-                        const fuelTypeRadio = document.querySelector(\'input[name="fuel-type"][value="\' + calcData.inputs.fuelType + \'"]\');
-                        if (fuelTypeRadio) {
-                            fuelTypeRadio.checked = true;
-                            console.log(\'Set fuel type:\', calcData.inputs.fuelType);
-                        }
+                        const ft = document.querySelector(\'input[name="fuel-type"][value="\' + calcData.inputs.fuelType + \'"]\');
+                        if (ft) ft.checked = true;
                     }
                 }
                 
@@ -2487,62 +2411,38 @@ $rtrn = '
                 }
             }
             
-            // Load existing images if available
+            // Load existing images if available (parallel loading for speed)
             if (offer.images) {
                 try {
                     const imagePaths = typeof offer.images === "string" ? JSON.parse(offer.images) : offer.images;
                     if (Array.isArray(imagePaths) && imagePaths.length > 0) {
-                        console.log("Loading existing images:", imagePaths);
-                        
-                        // Clear current images
                         offerImages = [];
                         
-                        // Load each image
-                        let loadedCount = 0;
-                        imagePaths.forEach((path, index) => {
-                            const img = new Image();
-                            img.crossOrigin = "anonymous";
-                            img.onload = function() {
-                                // Create canvas to get dataUrl
-                                const canvas = document.createElement("canvas");
-                                canvas.width = img.width;
-                                canvas.height = img.height;
-                                const ctx = canvas.getContext("2d");
-                                ctx.drawImage(img, 0, 0);
-                                const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
-                                
-                                // Store with original index to maintain order
-                                offerImages[index] = {
-                                    dataUrl: dataUrl,
-                                    file: null, // No file object for existing images
-                                    existingPath: path
+                        // Load all images in parallel using Promise.all
+                        const loadPromises = imagePaths.map((path, index) => {
+                            return new Promise((resolve) => {
+                                const img = new Image();
+                                img.crossOrigin = "anonymous";
+                                img.onload = function() {
+                                    const canvas = document.createElement("canvas");
+                                    canvas.width = img.width;
+                                    canvas.height = img.height;
+                                    canvas.getContext("2d").drawImage(img, 0, 0);
+                                    resolve({ index, dataUrl: canvas.toDataURL("image/jpeg", 0.9), existingPath: path });
                                 };
-                                
-                                loadedCount++;
-                                console.log("Loaded image " + (index + 1) + "/" + imagePaths.length);
-                                
-                                // When all images are loaded, render them
-                                if (loadedCount === imagePaths.length) {
-                                    // Remove undefined entries and render
-                                    offerImages = offerImages.filter(img => img !== undefined);
-                                    renderImages();
-                                    console.log("All images loaded and rendered");
-                                }
-                            };
-                            img.onerror = function() {
-                                console.error("Failed to load image:", path);
-                                loadedCount++;
-                                if (loadedCount === imagePaths.length) {
-                                    offerImages = offerImages.filter(img => img !== undefined);
-                                    renderImages();
-                                }
-                            };
-                            img.src = path;
+                                img.onerror = () => resolve(null);
+                                img.src = path;
+                            });
+                        });
+                        
+                        Promise.all(loadPromises).then(results => {
+                            results.filter(r => r).sort((a, b) => a.index - b.index).forEach(r => {
+                                offerImages.push({ dataUrl: r.dataUrl, file: null, existingPath: r.existingPath });
+                            });
+                            renderImages();
                         });
                     }
-                } catch (e) {
-                    console.error("Error loading images:", e);
-                }
+                } catch (e) {}
             }
             
             // Clear sessionStorage after loading
@@ -2564,13 +2464,10 @@ $rtrn = '
                     resultsSection?.scrollIntoView({ behavior: "smooth", block: "start" });
                 }
                 
-                // Reset flag after everything is loaded
                 isLoadingFromEdit = false;
-                console.log(\'Finished loading from Edit - brand change event re-enabled\');
-            }, 500);
+            }, 300);
             
         } catch (e) {
-            console.error("Error loading offer data:", e);
             sessionStorage.removeItem("editOffer");
             isLoadingFromEdit = false;
         }

@@ -106,15 +106,6 @@ if (empty($apiKey)) {
 $analyzePhotos = ($aiSettings['analyze_photos'] ?? '0') === '1';
 $useOpenAIVision = $aiProvider === 'openai' && !empty($offerImages) && $analyzePhotos;
 
-// Debug info - will be included in response
-$debugInfo = [
-    'ai_provider' => $aiProvider,
-    'analyze_photos_setting' => $analyzePhotos ? 'ON' : 'OFF',
-    'images_count' => count($offerImages),
-    'using_vision' => $useOpenAIVision ? 'YES' : 'NO',
-    'model' => $aiModel
-];
-
 // Build user content - with or without images
 $userContent = [];
 
@@ -198,12 +189,11 @@ if ($jsonStart !== false && $jsonEnd !== false) {
         $returnIt = [
             'success' => true,
             'safety' => $features['safety'],
-            'comfort' => $features['comfort'],
-            'debug' => $debugInfo
+            'comfort' => $features['comfort']
         ];
     } else {
-        $returnIt = ['success' => false, 'error' => 'Invalid JSON structure: ' . $jsonStr, 'debug' => $debugInfo];
+        $returnIt = ['success' => false, 'error' => 'Invalid JSON structure'];
     }
 } else {
-    $returnIt = ['success' => false, 'error' => 'No JSON found in response: ' . substr($content, 0, 200), 'debug' => $debugInfo];
+    $returnIt = ['success' => false, 'error' => 'No JSON found in response'];
 }
