@@ -1008,13 +1008,14 @@ $rtrn = '
             // === PAGE 4: Specificatia automobilului ===
             doc.addPage();
             
-            // Logo with black background
+            var p4Margin = pageWidth * 0.03;
+            
+            // Logo with black background (standard for all pages)
             doc.setFillColor(0, 0, 0);
-            doc.rect(p3Margin, 0, bgWidth, bgHeight, "F");
-            doc.addImage(logoImg, "PNG", p3Margin + bgPadding, bgPadding, logoWidth, logoHeight);
+            doc.rect(p4Margin, 0, bgWidth, bgHeight, "F");
+            doc.addImage(logoImg, "PNG", p4Margin + bgPadding, bgPadding, logoWidth, logoHeight);
             
             var p4Y = 50;
-            var p4Margin = pageWidth * 0.03;
             var p4TextMaxWidth = pageWidth - p4Margin * 2 - rectWidth - 10;
             
             // Small title "Specificatia automobilului"
@@ -1176,10 +1177,123 @@ $rtrn = '
             doc.setFontSize(14);
             doc.text("04", pageWidth - rectWidth / 2 - p4Margin, pageHeight - rectHeight / 2 + 5, { align: "center" });
             
-            // === PAGE 5: Calculation details ===
+            // === PAGE 5: Product Images ===
             doc.addPage();
+            const p5Margin = pageWidth * 0.03;
+            const p5Gap = pageWidth * 0.015; // smaller gap between images
+            
+            // Parse images from offer
+            var offerImagesArr = [];
+            try {
+                offerImagesArr = JSON.parse(offer.images || "[]");
+            } catch(e) {}
+            
+            if (offerImagesArr.length > 0) {
+                // Load all images first
+                var imgPromises = offerImagesArr.map(function(imgPath, idx) {
+                    return new Promise(function(resolve) {
+                        var img = new Image();
+                        img.crossOrigin = "anonymous";
+                        img.onload = function() { resolve({ idx: idx, img: img }); };
+                        img.onerror = function() { resolve(null); };
+                        img.src = imgPath;
+                    });
+                });
+                
+                Promise.all(imgPromises).then(function(results) {
+                    var imgs = results.filter(function(r) { return r; }).sort(function(a, b) { return a.idx - b.idx; });
+                    
+                    // Row 1: Big image (full width) - 40% height with logo and title overlay
+                    var row1Height = pageHeight * 0.40;
+                    var row1Y = p5Margin;
+                    var fullWidth = pageWidth - p5Margin * 2;
+                    
+                    if (imgs[0]) {
+                        doc.addImage(imgs[0].img, "JPEG", p5Margin, row1Y, fullWidth, row1Height);
+                    }
+                    
+                    // Logo with black background on top of image
+                    doc.setFillColor(0, 0, 0);
+                    doc.rect(p5Margin, 0, bgWidth, bgHeight, "F");
+                    doc.addImage(logoImg, "PNG", p5Margin + bgPadding, bgPadding, logoWidth, logoHeight);
+                    
+                    // Title "Imagini de produs" with red vertical line
+                    doc.setFillColor(226, 0, 26);
+                    doc.rect(p5Margin + 15, row1Y + row1Height * 0.35, 4, 30, "F");
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(28);
+                    doc.setFont("helvetica", "bold");
+                    doc.text(removeDiacritics("Imagini de produs"), p5Margin + 25, row1Y + row1Height * 0.35 + 20);
+                    
+                    // Use same gap everywhere
+                    var gap = p5Gap;
+                    
+                    // Row 3 position (aligned with top of red rectangle)
+                    var rectTopY = pageHeight - rectHeight;
+                    var row3ImgHeight = rectHeight * 0.75;
+                    
+                    // Row 2: calculate to fill remaining space from row1 to row3
+                    var row2Y = row1Y + row1Height + gap;
+                    var row2Height = rectTopY - row2Y - gap; // fills all remaining height
+                    var leftWidth = fullWidth * 0.60 - gap / 2;
+                    var rightWidth = fullWidth * 0.40 - gap / 2;
+                    var rightImgHeight = (row2Height - gap) / 2;
+                    
+                    if (imgs[1]) {
+                        doc.addImage(imgs[1].img, "JPEG", p5Margin, row2Y, leftWidth, row2Height);
+                    }
+                    if (imgs[2]) {
+                        doc.addImage(imgs[2].img, "JPEG", p5Margin + leftWidth + gap, row2Y, rightWidth, rightImgHeight);
+                    }
+                    if (imgs[3]) {
+                        doc.addImage(imgs[3].img, "JPEG", p5Margin + leftWidth + gap, row2Y + rightImgHeight + gap, rightWidth, rightImgHeight);
+                    }
+                    
+                    // Row 3: 2 images + red rectangle (aligned with top of red rectangle, smaller height)
+                    var availableWidth = fullWidth - rectWidth - gap * 2;
+                    var col3Width = availableWidth / 2;
+                    
+                    if (imgs[4]) {
+                        doc.addImage(imgs[4].img, "JPEG", p5Margin, rectTopY, col3Width, row3ImgHeight);
+                    }
+                    if (imgs[5]) {
+                        doc.addImage(imgs[5].img, "JPEG", p5Margin + col3Width + gap, rectTopY, col3Width, row3ImgHeight);
+                    }
+                    
+                    // Red rectangle bottom right with page number 05 (standard size like other pages)
+                    doc.setFillColor(226, 0, 26);
+                    doc.rect(pageWidth - rectWidth - p5Margin, rectTopY, rectWidth, rectHeight, "F");
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFontSize(14);
+                    doc.text("05", pageWidth - rectWidth / 2 - p5Margin, pageHeight - rectHeight / 2 + 5, { align: "center" });
+                    
+                    continuePDF();
+                });
+                
+                return;
+            }
+            
+            // If no images - just show red rectangle
+            doc.setFillColor(226, 0, 26);
+            doc.rect(pageWidth - rectWidth - p5Margin, pageHeight - rectHeight, rectWidth, rectHeight, "F");
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.text("05", pageWidth - rectWidth / 2 - p5Margin, pageHeight - rectHeight / 2 + 5, { align: "center" });
+            
+            continuePDF();
+            
+            function continuePDF() {
+            // === PAGE 6: Calculation details ===
+            doc.addPage();
+            const p6Margin = pageWidth * 0.03;
+            
+            // Logo with black background (standard for all pages)
+            doc.setFillColor(0, 0, 0);
+            doc.rect(p6Margin, 0, bgWidth, bgHeight, "F");
+            doc.addImage(logoImg, "PNG", p6Margin + bgPadding, bgPadding, logoWidth, logoHeight);
+            
             doc.setTextColor(0, 0, 0);
-            let y = 25;
+            let y = 45;
             
             // Title
             doc.setFontSize(18);
@@ -1268,7 +1382,16 @@ $rtrn = '
             }
             
             doc.setTextColor(0, 0, 0);
+            
+            // Red rectangle bottom right with page number 06 (standard position)
+            doc.setFillColor(226, 0, 26);
+            doc.rect(pageWidth - rectWidth - p6Margin, pageHeight - rectHeight, rectWidth, rectHeight, "F");
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.text("06", pageWidth - rectWidth / 2 - p6Margin, pageHeight - rectHeight / 2 + 5, { align: "center" });
+            
             doc.save(fileName);
+            } // end continuePDF
         }
         
         bgImg.onload = function() { bgLoaded = true; generatePDFWithImages(); };

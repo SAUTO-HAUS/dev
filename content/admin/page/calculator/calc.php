@@ -2177,10 +2177,25 @@ $rtrn = '
             formData.append("pdf_lang", lang);
             formData.append("calculation_data", JSON.stringify(values));
             
-            // Append images (in order)
-            offerImages.forEach((imgData, i) => {
-                formData.append("images[]", imgData.file, "image_" + (i + 1) + ".jpg");
-            });
+            // Append images (in order) - handle both new files and existing images from Edit
+            for (let i = 0; i < offerImages.length; i++) {
+                const imgData = offerImages[i];
+                if (imgData.file) {
+                    // New image with file object
+                    formData.append("images[]", imgData.file, "image_" + (i + 1) + ".jpg");
+                } else if (imgData.dataUrl) {
+                    // Existing image from Edit - convert dataUrl to Blob
+                    const byteString = atob(imgData.dataUrl.split(",")[1]);
+                    const mimeType = imgData.dataUrl.split(",")[0].split(":")[1].split(";")[0];
+                    const ab = new ArrayBuffer(byteString.length);
+                    const ia = new Uint8Array(ab);
+                    for (let j = 0; j < byteString.length; j++) {
+                        ia[j] = byteString.charCodeAt(j);
+                    }
+                    const blob = new Blob([ab], { type: mimeType });
+                    formData.append("images[]", blob, "image_" + (i + 1) + ".jpg");
+                }
+            }
             
             // Save offer to database with images
             const saveResponse = await fetch("/ajax.php", {
