@@ -2349,6 +2349,8 @@ $rtrn = '
             if (offer.year) document.getElementById("offer-year").value = offer.year;
             if (offer.bodywork) document.getElementById("offer-bodywork").value = offer.bodywork;
             if (offer.seats) document.getElementById("offer-seats").value = offer.seats;
+            if (offer.cylinder_capacity) document.getElementById("offer-cylinder-capacity").value = offer.cylinder_capacity;
+            if (offer.fuel_type) document.getElementById("offer-fuel-type").value = offer.fuel_type;
             if (offer.mileage) document.getElementById("offer-mileage").value = offer.mileage;
             if (offer.engine_power) document.getElementById("offer-engine-power").value = offer.engine_power;
             if (offer.transmission) document.getElementById("offer-transmission").value = offer.transmission;
@@ -2482,6 +2484,64 @@ $rtrn = '
                 if (calcData.vehicle) {
                     document.getElementById("res-vehicle-total-mdl").value = calcData.vehicle.mdl || 0;
                     document.getElementById("res-vehicle-total-eur").value = calcData.vehicle.eur || 0;
+                }
+            }
+            
+            // Load existing images if available
+            if (offer.images) {
+                try {
+                    const imagePaths = typeof offer.images === "string" ? JSON.parse(offer.images) : offer.images;
+                    if (Array.isArray(imagePaths) && imagePaths.length > 0) {
+                        console.log("Loading existing images:", imagePaths);
+                        
+                        // Clear current images
+                        offerImages = [];
+                        
+                        // Load each image
+                        let loadedCount = 0;
+                        imagePaths.forEach((path, index) => {
+                            const img = new Image();
+                            img.crossOrigin = "anonymous";
+                            img.onload = function() {
+                                // Create canvas to get dataUrl
+                                const canvas = document.createElement("canvas");
+                                canvas.width = img.width;
+                                canvas.height = img.height;
+                                const ctx = canvas.getContext("2d");
+                                ctx.drawImage(img, 0, 0);
+                                const dataUrl = canvas.toDataURL("image/jpeg", 0.9);
+                                
+                                // Store with original index to maintain order
+                                offerImages[index] = {
+                                    dataUrl: dataUrl,
+                                    file: null, // No file object for existing images
+                                    existingPath: path
+                                };
+                                
+                                loadedCount++;
+                                console.log("Loaded image " + (index + 1) + "/" + imagePaths.length);
+                                
+                                // When all images are loaded, render them
+                                if (loadedCount === imagePaths.length) {
+                                    // Remove undefined entries and render
+                                    offerImages = offerImages.filter(img => img !== undefined);
+                                    renderImages();
+                                    console.log("All images loaded and rendered");
+                                }
+                            };
+                            img.onerror = function() {
+                                console.error("Failed to load image:", path);
+                                loadedCount++;
+                                if (loadedCount === imagePaths.length) {
+                                    offerImages = offerImages.filter(img => img !== undefined);
+                                    renderImages();
+                                }
+                            };
+                            img.src = path;
+                        });
+                    }
+                } catch (e) {
+                    console.error("Error loading images:", e);
                 }
             }
             

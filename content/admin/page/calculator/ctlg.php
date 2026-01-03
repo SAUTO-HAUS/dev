@@ -486,7 +486,6 @@ $rtrn = '
                 })
                 .then(res => res.json())
                 .then(aiData => {
-                    alert("DEBUG:\\nProvider: " + (aiData.debug?.ai_provider || "N/A") + "\\nPhotos Setting: " + (aiData.debug?.analyze_photos_setting || "N/A") + "\\nImages Count: " + (aiData.debug?.images_count || 0) + "\\nUsing Vision: " + (aiData.debug?.using_vision || "N/A") + "\\nModel: " + (aiData.debug?.model || "N/A"));
                     if (aiData.success) {
                         // Save features to offer
                         const features = {
