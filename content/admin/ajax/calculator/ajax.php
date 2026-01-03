@@ -395,8 +395,8 @@ if ($fn === 'save_eur_rate') {
 
 } elseif ($fn === 'update_offer_features') {
     try {
-        $offer_id = intval(__post('offer_id'));
-        $features = __post('features');
+        $offer_id = intval(isset($_POST['offer_id']) ? $_POST['offer_id'] : 0);
+        $features = isset($_POST['features']) ? $_POST['features'] : '';
         
         if ($offer_id <= 0) {
             echo json_encode(['success' => false, 'error' => 'Invalid offer ID']);

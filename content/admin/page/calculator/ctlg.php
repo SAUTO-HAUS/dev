@@ -1129,11 +1129,15 @@ $rtrn = '
                     doc.setFontSize(10);
                     doc.setFont("helvetica", "normal");
                     aiFeatures.safety.forEach(function(item) {
-                        doc.setTextColor(226, 0, 26);
-                        doc.text("✓", p4Margin, p4Y);
+                        // Draw red checkbox
+                        doc.setDrawColor(226, 0, 26);
+                        doc.setFillColor(226, 0, 26);
+                        doc.rect(p4Margin, p4Y - 3, 4, 4, "S");
+                        doc.line(p4Margin + 0.5, p4Y - 1, p4Margin + 1.5, p4Y);
+                        doc.line(p4Margin + 1.5, p4Y, p4Margin + 3.5, p4Y - 2.5);
                         doc.setTextColor(0, 0, 0);
                         doc.text(removeDiacritics(item), p4Margin + 8, p4Y);
-                        p4Y += 5;
+                        p4Y += 6;
                     });
                     p4Y += 8;
                 }
@@ -1149,11 +1153,15 @@ $rtrn = '
                     doc.setFontSize(10);
                     doc.setFont("helvetica", "normal");
                     aiFeatures.comfort.forEach(function(item) {
-                        doc.setTextColor(226, 0, 26);
-                        doc.text("✓", p4Margin, p4Y);
+                        // Draw red checkbox
+                        doc.setDrawColor(226, 0, 26);
+                        doc.setFillColor(226, 0, 26);
+                        doc.rect(p4Margin, p4Y - 3, 4, 4, "S");
+                        doc.line(p4Margin + 0.5, p4Y - 1, p4Margin + 1.5, p4Y);
+                        doc.line(p4Margin + 1.5, p4Y, p4Margin + 3.5, p4Y - 2.5);
                         doc.setTextColor(0, 0, 0);
                         doc.text(removeDiacritics(item), p4Margin + 8, p4Y);
-                        p4Y += 5;
+                        p4Y += 6;
                     });
                 }
             }
