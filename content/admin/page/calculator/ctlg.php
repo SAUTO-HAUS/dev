@@ -609,9 +609,8 @@ $rtrn = '
         // Allowed users with their contact info
         const allowedUsers = {
             "CARP DUMITRU": { phone: "+373 62166880", email: "carp@sauto.md" },
-            "BOTNARENCO GRIGORE": { phone: "+373 79975967", email: "grigore@mail.com" },
-            "MALITOV DANIEL": { phone: "+373 69535167", email: "danielmalitov@sauto.md" },
-            "PORTARESCU ADRIAN": { phone: "+373 62125995", email: "allcars@sauto.md" }
+            "MALITOV DANIEL": { phone: "+373 62166881", email: "danielmalitov@sauto.md" },
+            "PORTARESCU ADRIAN": { phone: "+373 62166882", email: "allcars@sauto.md" }
         };
         const userKey = loggedUserName.toUpperCase().trim();
         const userInfo = allowedUsers[userKey] || null;
