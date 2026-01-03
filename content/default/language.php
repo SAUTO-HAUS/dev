@@ -1191,7 +1191,8 @@ if ($_COOKIE['lang']=='ru'){
 		'brands_seo'=>'SEO Брендов',
 		'calc'=>'Калькулятор',
 		'usage'=>'Использование',
-		'rates'=>'Ставки'
+		'rates'=>'Ставки',
+		'calculator'=>'Калькулятор'
 	);
 
 // ... rest of the code remains the same ...
@@ -2699,6 +2700,7 @@ $adm_lang = array(
 	'sett'=>'Setări',
 	'info'=>'Informații',
 	'brands_seo'=>'SEO Mărci',
+	'calculator'=>'Calculator',
 	'calc'=>'Calculator',
 	'usage'=>'Statistici',
 	'rates'=>'Cote'
