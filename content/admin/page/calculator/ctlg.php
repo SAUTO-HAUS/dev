@@ -769,10 +769,8 @@ $rtrn = '
             vehicle: calcData.vehicle || {mdl: 0, eur: 0}
         };
         
-        const fileName = (offer.client_name + "_" + offer.brand + "_" + offer.model + "_" + offer.year)
-            .replace(/\s+/g, "_")
-            .replace(/[^a-zA-Z0-9_]/g, "")
-            + ".pdf";
+        const clientNameClean = (offer.client_name || "").replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_]/g, "");
+        const fileName = "offer_" + clientNameClean + "_" + offer.id + ".pdf";
         
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();

@@ -1718,7 +1718,7 @@ $rtrn = '
                         doc.setFillColor(226, 0, 26);
                         doc.rect(rectX, rectY, rectWidth, rectHeight, "F");
                         
-                        doc.save("calculator_auto_" + new Date().toLocaleDateString("ro-RO").replace(/\./g, "-") + ".pdf");
+                        doc.save("commercial_offer_" + new Date().toLocaleDateString("ro-RO").replace(/\./g, "-") + ".pdf");
                     });
                 });
             }
@@ -1903,7 +1903,7 @@ $rtrn = '
         doc.rect(rectX, rectY, rectWidth, rectHeight, "F");
         
         // Save PDF
-        doc.save("calculator_auto_" + new Date().toLocaleDateString("ro-RO").replace(/\./g, "-") + ".pdf");
+        doc.save("commercial_offer_" + new Date().toLocaleDateString("ro-RO").replace(/\./g, "-") + ".pdf");
         }
     });
     
