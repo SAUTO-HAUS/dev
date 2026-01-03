@@ -1173,17 +1173,19 @@ $rtrn = '
                     doc.setFontSize(10);
                     doc.setFont("helvetica", "normal");
                     aiFeatures.safety.forEach(function(item) {
-                        // Draw red checkbox with checkmark - aligned with text baseline
-                        var checkY = p4Y - 2.5;
-                        doc.setDrawColor(226, 0, 26);
-                        doc.setLineWidth(0.3);
-                        doc.rect(p4Margin, checkY, 3, 3, "S");
-                        doc.setLineWidth(0.4);
-                        doc.line(p4Margin + 0.5, checkY + 2, p4Margin + 1.2, checkY + 2.7);
-                        doc.line(p4Margin + 1.2, checkY + 2.7, p4Margin + 2.5, checkY + 0.5);
+                        // Draw red rounded square with white checkmark
+                        var checkY = p4Y - 3;
+                        var boxSize = 3.5;
+                        doc.setFillColor(226, 0, 26);
+                        doc.roundedRect(p4Margin, checkY, boxSize, boxSize, 0.8, 0.8, "F");
+                        // White checkmark inside
+                        doc.setDrawColor(255, 255, 255);
+                        doc.setLineWidth(0.6);
+                        doc.line(p4Margin + 0.7, checkY + 1.8, p4Margin + 1.4, checkY + 2.6);
+                        doc.line(p4Margin + 1.4, checkY + 2.6, p4Margin + 2.8, checkY + 1);
                         doc.setTextColor(0, 0, 0);
-                        doc.text(removeDiacritics(item), p4Margin + 5, p4Y);
-                        p4Y += 4;
+                        doc.text(removeDiacritics(item), p4Margin + 5.5, p4Y);
+                        p4Y += 4.5;
                     });
                     p4Y += 8;
                 }
@@ -1199,17 +1201,19 @@ $rtrn = '
                     doc.setFontSize(10);
                     doc.setFont("helvetica", "normal");
                     aiFeatures.comfort.forEach(function(item) {
-                        // Draw red checkbox with checkmark - aligned with text baseline
-                        var checkY = p4Y - 2.5;
-                        doc.setDrawColor(226, 0, 26);
-                        doc.setLineWidth(0.3);
-                        doc.rect(p4Margin, checkY, 3, 3, "S");
-                        doc.setLineWidth(0.4);
-                        doc.line(p4Margin + 0.5, checkY + 2, p4Margin + 1.2, checkY + 2.7);
-                        doc.line(p4Margin + 1.2, checkY + 2.7, p4Margin + 2.5, checkY + 0.5);
+                        // Draw red rounded square with white checkmark
+                        var checkY = p4Y - 3;
+                        var boxSize = 3.5;
+                        doc.setFillColor(226, 0, 26);
+                        doc.roundedRect(p4Margin, checkY, boxSize, boxSize, 0.8, 0.8, "F");
+                        // White checkmark inside
+                        doc.setDrawColor(255, 255, 255);
+                        doc.setLineWidth(0.6);
+                        doc.line(p4Margin + 0.7, checkY + 1.8, p4Margin + 1.4, checkY + 2.6);
+                        doc.line(p4Margin + 1.4, checkY + 2.6, p4Margin + 2.8, checkY + 1);
                         doc.setTextColor(0, 0, 0);
-                        doc.text(removeDiacritics(item), p4Margin + 5, p4Y);
-                        p4Y += 4;
+                        doc.text(removeDiacritics(item), p4Margin + 5.5, p4Y);
+                        p4Y += 4.5;
                     });
                 }
             }
