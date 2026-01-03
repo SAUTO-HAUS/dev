@@ -1064,27 +1064,29 @@ $rtrn = '
             doc.text(removeDiacritics("Specificatia automobilului"), p4Margin + 8, p4Y);
             p4Y += 12;
             
-            // Big title: MARCA Model, An on first line
+            // Big title with red vertical line (like page 06)
+            var titleStartY = p4Y;
+            
+            // Red vertical line - draw first, aligned with text
+            doc.setFillColor(226, 0, 26);
+            doc.rect(p4Margin, titleStartY - 8, 4, 32, "F");
+            
             doc.setFontSize(32);
             doc.setFont("helvetica", "bold");
             const brandClean2 = offer.brand.replace(/_/g, " ").toUpperCase();
             const modelClean2 = capitalizeWords(offer.model.replace(/_/g, " "));
             var specLine1 = brandClean2 + " " + modelClean2 + ", " + offer.year + ",";
-            doc.text(removeDiacritics(specLine1), p4Margin + 8, p4Y);
+            doc.text(removeDiacritics(specLine1), p4Margin + 10, p4Y);
             p4Y += 12;
             
-            // Second line: Capacitate, Tip with red vertical line
+            // Second line: Capacitate, Tip
             var specLine2 = "";
             if (offer.cylinder_capacity) {
                 specLine2 = offer.cylinder_capacity + ", " + capitalizeWords((offer.fuel_type || "").replace(/_/g, " "));
             }
             
-            // Red vertical line - full height of both title lines
-            doc.setFillColor(226, 0, 26);
-            doc.rect(p4Margin - 5, p4Y - 22, 3, 28, "F");
-            
             doc.setTextColor(0, 0, 0);
-            doc.text(removeDiacritics(specLine2), p4Margin + 8, p4Y);
+            doc.text(removeDiacritics(specLine2), p4Margin + 10, p4Y);
             p4Y += 25;
             
             // Specifications table - 3 columns with gray background
