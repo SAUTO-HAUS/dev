@@ -1427,14 +1427,15 @@ $rtrn = '
                 { title: "Taxa de lux", text: "se aplica suplimentar si se percepe de Biroul Vamal la automobile a caror valuare in momentul vamuirei depaseste valuarea de 600.000,00 lei." }
             ];
             
-            doc.setFontSize(8);
-            var p7ColWidth = (p7TextMaxWidth - p7Margin) / 2;
+            doc.setFontSize(10);
+            var p7Col1Width = (p7TextMaxWidth - p7Margin) / 2;
+            var p7Col2Width = pageWidth - p7Margin * 3 - p7Col1Width - rectWidth - 5;
             var p7Col1X = p7Margin;
-            var p7Col2X = p7Margin + p7ColWidth + p7Margin;
+            var p7Col2X = p7Margin + p7Col1Width + p7Margin;
             var p7Col1Y = p7Y;
             var p7Col2Y = p7Y;
-            var p7MaxY1 = pageHeight - p7Margin; // Column 1 can go to bottom (no red rectangle)
-            var p7MaxY2 = pageHeight - rectHeight - 5; // Column 2 limited by red rectangle
+            var p7MaxY1 = pageHeight - p7Margin;
+            var p7MaxY2 = pageHeight - p7Margin;
             var lineHeight = 3.5;
             var paragraphGap = 3;
             
@@ -1447,13 +1448,13 @@ $rtrn = '
                     var titleWidth = doc.getTextWidth(titleText);
                     doc.setFont("helvetica", "normal");
                     var fullText = removeDiacritics(term.text);
-                    var availableWidth = p7ColWidth - titleWidth;
+                    var availableWidth = p7Col1Width - titleWidth;
                     var firstLineSplit = doc.splitTextToSize(fullText, availableWidth);
                     doc.text(firstLineSplit[0] || "", p7Col1X + titleWidth, p7Col1Y);
                     p7Col1Y += lineHeight;
                     var remainingText = fullText.substring((firstLineSplit[0] || "").length).trim();
                     if (remainingText) {
-                        var remainingLines = doc.splitTextToSize(remainingText, p7ColWidth);
+                        var remainingLines = doc.splitTextToSize(remainingText, p7Col1Width);
                         remainingLines.forEach(function(line) {
                             if (p7Col1Y < p7MaxY1) {
                                 doc.text(line, p7Col1X, p7Col1Y);
@@ -1474,13 +1475,13 @@ $rtrn = '
                     var titleWidth = doc.getTextWidth(titleText);
                     doc.setFont("helvetica", "normal");
                     var fullText = removeDiacritics(term.text);
-                    var availableWidth = p7ColWidth - titleWidth;
+                    var availableWidth = p7Col2Width - titleWidth;
                     var firstLineSplit = doc.splitTextToSize(fullText, availableWidth);
                     doc.text(firstLineSplit[0] || "", p7Col2X + titleWidth, p7Col2Y);
                     p7Col2Y += lineHeight;
                     var remainingText = fullText.substring((firstLineSplit[0] || "").length).trim();
                     if (remainingText) {
-                        var remainingLines = doc.splitTextToSize(remainingText, p7ColWidth);
+                        var remainingLines = doc.splitTextToSize(remainingText, p7Col2Width);
                         remainingLines.forEach(function(line) {
                             if (p7Col2Y < p7MaxY2) {
                                 doc.text(line, p7Col2X, p7Col2Y);
