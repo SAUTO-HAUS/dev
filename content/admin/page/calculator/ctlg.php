@@ -606,6 +606,16 @@ $rtrn = '
         const calcData = JSON.parse(offer.calculation_data || "{}");
         const loggedUserName = "'.addslashes($logged_user_name).'";
         
+        // Allowed users with their contact info
+        const allowedUsers = {
+            "CARP DUMITRU": { phone: "+373 62166880", email: "carp@sauto.md" },
+            "BOTNARENCO GRIGORE": { phone: "+373 79975967", email: "grigore@mail.com" },
+            "MALITOV DANIEL": { phone: "+373 69535167", email: "danielmalitov@sauto.md" },
+            "PORTARESCU ADRIAN": { phone: "+373 62125995", email: "allcars@sauto.md" }
+        };
+        const userKey = loggedUserName.toUpperCase().trim();
+        const userInfo = allowedUsers[userKey] || null;
+        
         function formatNumber(num) {
             return Math.round(num).toLocaleString("ro-MD");
         }
@@ -862,10 +872,15 @@ $rtrn = '
             doc.text("info@sauto.md", 20, footerY + 10);
             doc.text("Chisinau str. Calea Mosilor 11", 20, footerY + 15);
             
-            doc.setFont("helvetica", "bold");
-            doc.text(removeDiacritics(loggedUserName.toUpperCase()), 100, footerY);
-            doc.setFont("helvetica", "normal");
-            doc.text("Manager vanzari", 100, footerY + 5);
+            // Show user info only for allowed users
+            if (userInfo) {
+                doc.setFont("helvetica", "bold");
+                doc.text(removeDiacritics(loggedUserName.toUpperCase()), 100, footerY);
+                doc.setFont("helvetica", "normal");
+                doc.text("Manager vanzari", 100, footerY + 5);
+                doc.text(userInfo.phone, 100, footerY + 10);
+                doc.text(userInfo.email, 100, footerY + 15);
+            }
             
             // === PAGE 2: Contents (gray background) ===
             doc.addPage();

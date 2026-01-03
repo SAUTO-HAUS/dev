@@ -4,6 +4,8 @@ include_once _ADM_PAGE.'/calculator/calc_translate.php';
 
 $admin_dir = isset($_COOKIE['admin_dir']) ? $_COOKIE['admin_dir'] : 'adminsauto';
 
+$logged_user_name = isset($user_name) ? $user_name : (isset($_SESSION['user_name']) ? $_SESSION['user_name'] : '');
+
 // Get all brands for select
 $brands = [];
 try {
@@ -1556,6 +1558,17 @@ $rtrn = '
         const lang = document.getElementById("pdf-lang-select").value;
         const t = pdfTranslations[lang];
         
+        // Allowed users with their contact info
+        const loggedUserName = "'.addslashes($logged_user_name).'";
+        const allowedUsers = {
+            "CARP DUMITRU": { phone: "+373 62166880", email: "carp@sauto.md" },
+            "BOTNARENCO GRIGORE": { phone: "+373 79975967", email: "grigore@mail.com" },
+            "MALITOV DANIEL": { phone: "+373 69535167", email: "danielmalitov@sauto.md" },
+            "PORTARESCU ADRIAN": { phone: "+373 62125995", email: "allcars@sauto.md" }
+        };
+        const userKey = loggedUserName.toUpperCase().trim();
+        const userInfo = allowedUsers[userKey] || null;
+        
         // Get all values
         const values = {
             value: { mdl: document.getElementById("res-value-mdl").value || "0", eur: document.getElementById("res-value-eur").value || "0" },
@@ -1664,6 +1677,16 @@ $rtrn = '
                     // Create footer with Cyrillic support
                     const footerContent = document.createElement("div");
                     footerContent.style.cssText = "position:absolute;left:-9999px;width:400px;padding:10px;font-family:Arial,sans-serif;background:#fff;display:flex;gap:40px;";
+                    let managerHtml = "";
+                    if (userInfo) {
+                        managerHtml = `
+                        <div style="font-size:11px;color:#333;">
+                            <div style="font-weight:bold;font-size:12px;margin-bottom:4px;">${userKey}</div>
+                            <div>${t.sales_manager}</div>
+                            <div>${userInfo.phone}</div>
+                            <div>${userInfo.email}</div>
+                        </div>`;
+                    }
                     footerContent.innerHTML = `
                         <div style="font-size:11px;color:#333;">
                             <div style="font-weight:bold;font-size:12px;margin-bottom:4px;">SAUTO SRL</div>
@@ -1671,12 +1694,7 @@ $rtrn = '
                             <div>info@sauto.md</div>
                             <div>${t.address}</div>
                         </div>
-                        <div style="font-size:11px;color:#333;">
-                            <div style="font-weight:bold;font-size:12px;margin-bottom:4px;">CARP DUMITRU</div>
-                            <div>${t.sales_manager}</div>
-                            <div>+373 62166880</div>
-                            <div>carp@sauto.md</div>
-                        </div>
+                        ${managerHtml}
                     `;
                     document.body.appendChild(footerContent);
                     
@@ -1866,15 +1884,17 @@ $rtrn = '
         doc.text("info@sauto.md", 20, footerY + 12);
         doc.text(removeDiacritics(t.address), 20, footerY + 18);
         
-        // Footer info - right side (manager info)
-        doc.setFontSize(12);
-        doc.setFont("helvetica", "bold");
-        doc.text("CARP DUMITRU", 90, footerY);
-        doc.setFontSize(10);
-        doc.setFont("helvetica", "normal");
-        doc.text(removeDiacritics(t.sales_manager), 90, footerY + 6);
-        doc.text("+373 62166880", 90, footerY + 12);
-        doc.text("carp@sauto.md", 90, footerY + 18);
+        // Footer info - right side (manager info) - only for allowed users
+        if (userInfo) {
+            doc.setFontSize(12);
+            doc.setFont("helvetica", "bold");
+            doc.text(userKey, 90, footerY);
+            doc.setFontSize(10);
+            doc.setFont("helvetica", "normal");
+            doc.text(removeDiacritics(t.sales_manager), 90, footerY + 6);
+            doc.text(userInfo.phone, 90, footerY + 12);
+            doc.text(userInfo.email, 90, footerY + 18);
+        }
         
         const rectWidth = 50;
         const rectHeight = 60;
