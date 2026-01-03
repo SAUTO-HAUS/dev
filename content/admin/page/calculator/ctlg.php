@@ -1173,13 +1173,14 @@ $rtrn = '
                     doc.setFontSize(10);
                     doc.setFont("helvetica", "normal");
                     aiFeatures.safety.forEach(function(item) {
-                        // Draw red checkbox with checkmark
+                        // Draw red checkbox with checkmark - aligned with text baseline
+                        var checkY = p4Y - 2.5;
                         doc.setDrawColor(226, 0, 26);
                         doc.setLineWidth(0.3);
-                        doc.rect(p4Margin, p4Y - 2, 3, 3, "S");
+                        doc.rect(p4Margin, checkY, 3, 3, "S");
                         doc.setLineWidth(0.4);
-                        doc.line(p4Margin + 0.5, p4Y - 0.5, p4Margin + 1.2, p4Y + 0.1);
-                        doc.line(p4Margin + 1.2, p4Y + 0.1, p4Margin + 2.5, p4Y - 1.5);
+                        doc.line(p4Margin + 0.5, checkY + 2, p4Margin + 1.2, checkY + 2.7);
+                        doc.line(p4Margin + 1.2, checkY + 2.7, p4Margin + 2.5, checkY + 0.5);
                         doc.setTextColor(0, 0, 0);
                         doc.text(removeDiacritics(item), p4Margin + 5, p4Y);
                         p4Y += 4;
@@ -1198,13 +1199,14 @@ $rtrn = '
                     doc.setFontSize(10);
                     doc.setFont("helvetica", "normal");
                     aiFeatures.comfort.forEach(function(item) {
-                        // Draw red checkbox with checkmark
+                        // Draw red checkbox with checkmark - aligned with text baseline
+                        var checkY = p4Y - 2.5;
                         doc.setDrawColor(226, 0, 26);
                         doc.setLineWidth(0.3);
-                        doc.rect(p4Margin, p4Y - 2, 3, 3, "S");
+                        doc.rect(p4Margin, checkY, 3, 3, "S");
                         doc.setLineWidth(0.4);
-                        doc.line(p4Margin + 0.5, p4Y - 0.5, p4Margin + 1.2, p4Y + 0.1);
-                        doc.line(p4Margin + 1.2, p4Y + 0.1, p4Margin + 2.5, p4Y - 1.5);
+                        doc.line(p4Margin + 0.5, checkY + 2, p4Margin + 1.2, checkY + 2.7);
+                        doc.line(p4Margin + 1.2, checkY + 2.7, p4Margin + 2.5, checkY + 0.5);
                         doc.setTextColor(0, 0, 0);
                         doc.text(removeDiacritics(item), p4Margin + 5, p4Y);
                         p4Y += 4;
