@@ -10,182 +10,179 @@ $logged_user_name = isset($user_name) ? $user_name : (isset($_SESSION['user_name
 $rtrn = '
 <style>
     #catalog-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem;
+        max-width: 100%;
+        margin: 0;
+        padding: 1rem 1.5rem;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        background: #f5f5f5;
+        min-height: 100vh;
     }
     
     #catalog-container .catalog-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 2rem;
+        margin-bottom: 1rem;
     }
     
     #catalog-container .catalog-header h1 {
         margin: 0;
-        font-size: 1.8rem;
+        font-size: 1.4rem;
         color: #333;
+        font-weight: 600;
     }
     
     #catalog-container .back-btn {
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
-        padding: 0.6rem 1.2rem;
-        background: #6c757d;
+        gap: 0.4rem;
+        padding: 0.5rem 1rem;
+        background: #e2001a;
         color: #fff;
         text-decoration: none;
-        border-radius: 8px;
-        font-size: 0.95rem;
-        transition: background 0.3s;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: all 0.2s;
     }
     
     #catalog-container .back-btn:hover {
-        background: #5a6268;
+        background: #c00017;
+        transform: translateY(-1px);
     }
     
     #catalog-container .search-box {
-        margin-bottom: 1.5rem;
+        margin-bottom: 1rem;
     }
     
     #catalog-container .search-box input {
-        width: 100%;
-        padding: 0.8rem 1rem;
-        border: 2px solid #ddd;
-        border-radius: 8px;
-        font-size: 1rem;
-        transition: border-color 0.3s;
+        width: 300px;
+        padding: 0.5rem 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        background: #fff;
+        transition: all 0.2s;
     }
     
     #catalog-container .search-box input:focus {
         outline: none;
         border-color: #e2001a;
+        box-shadow: 0 0 0 3px rgba(226,0,26,0.1);
     }
     
     #catalog-container .offers-table {
         width: 100%;
-        border-collapse: collapse;
+        border-collapse: separate;
+        border-spacing: 0;
         background: #fff;
-        border-radius: 12px;
+        border-radius: 8px;
         overflow: hidden;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        font-size: 0.85rem;
     }
     
     #catalog-container .offers-table th,
     #catalog-container .offers-table td {
-        padding: 1rem;
+        padding: 0.6rem 0.8rem;
         text-align: left;
-        border-bottom: 1px solid #eee;
+        border-bottom: 1px solid #f0f0f0;
+        white-space: nowrap;
     }
     
     #catalog-container .offers-table th {
-        background: #f8f9fa;
+        background: #fafafa;
         font-weight: 600;
-        color: #333;
-        font-size: 0.9rem;
+        color: #666;
+        font-size: 0.75rem;
         text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
     
-    #catalog-container .offers-table tr:hover {
-        background: #f8f9fa;
+    #catalog-container .offers-table tbody tr {
+        transition: background 0.15s;
+    }
+    
+    #catalog-container .offers-table tbody tr:hover {
+        background: #fafafa;
     }
     
     #catalog-container .offers-table .vehicle-info {
         font-weight: 600;
-        color: #333;
+        color: #222;
     }
     
     #catalog-container .offers-table .client-name {
-        color: #666;
-    }
-    
-    #catalog-container .offers-table .vin-code {
-        font-family: monospace;
-        font-size: 0.85rem;
-        color: #888;
+        color: #555;
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
     #catalog-container .offers-table .date-col {
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         color: #888;
     }
     
     #catalog-container .offers-table .actions {
         display: flex;
-        gap: 0.5rem;
+        gap: 0.3rem;
+    }
+    
+    #catalog-container .offers-table button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.35rem 0.6rem;
+        border: none;
+        border-radius: 4px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.15s;
+        min-width: 32px;
     }
     
     #catalog-container .offers-table .btn-edit {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.3rem;
-        padding: 0.4rem 0.8rem;
-        background: #007bff;
-        color: #fff;
-        border: none;
-        border-radius: 6px;
-        font-size: 0.85rem;
-        cursor: pointer;
-        transition: background 0.3s;
+        background: #f0f0f0;
+        color: #333;
     }
     
     #catalog-container .offers-table .btn-edit:hover {
-        background: #0056b3;
+        background: #007bff;
+        color: #fff;
     }
     
     #catalog-container .offers-table .btn-pdf {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.3rem;
-        padding: 0.4rem 0.8rem;
-        background: #28a745;
-        color: #fff;
+        background: #f0f0f0;
+        color: #333;
         text-decoration: none;
-        border-radius: 6px;
-        font-size: 0.85rem;
-        transition: background 0.3s;
     }
     
     #catalog-container .offers-table .btn-pdf:hover {
-        background: #1e7e34;
+        background: #28a745;
+        color: #fff;
     }
     
     #catalog-container .offers-table .btn-delete {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.3rem;
-        padding: 0.4rem 0.8rem;
-        background: #dc3545;
-        color: #fff;
-        border: none;
-        border-radius: 6px;
-        font-size: 0.85rem;
-        cursor: pointer;
-        transition: background 0.3s;
+        background: #f0f0f0;
+        color: #333;
     }
     
     #catalog-container .offers-table .btn-delete:hover {
-        background: #c82333;
+        background: #dc3545;
+        color: #fff;
     }
     
     #catalog-container .offers-table .btn-ai {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.3rem;
-        padding: 0.4rem 0.8rem;
-        background: #6f42c1;
-        color: #fff;
-        border: none;
-        border-radius: 6px;
-        font-size: 0.85rem;
-        cursor: pointer;
-        transition: background 0.3s;
+        background: #f0f0f0;
+        color: #333;
+        min-width: 40px;
+        padding: 0.35rem 0.8rem;
     }
     
     #catalog-container .offers-table .btn-ai:hover {
-        background: #5a32a3;
+        background: #6f42c1;
+        color: #fff;
     }
     
     #catalog-container .offers-table .btn-ai:disabled {
@@ -195,33 +192,35 @@ $rtrn = '
     
     #catalog-container .empty-state {
         text-align: center;
-        padding: 4rem 2rem;
-        color: #888;
+        padding: 3rem 2rem;
+        color: #999;
     }
     
     #catalog-container .empty-state .icon {
-        font-size: 4rem;
-        margin-bottom: 1rem;
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
     }
     
     #catalog-container .pagination {
         display: flex;
         justify-content: center;
-        gap: 0.5rem;
-        margin-top: 2rem;
+        gap: 0.3rem;
+        margin-top: 1rem;
     }
     
     #catalog-container .pagination button {
-        padding: 0.5rem 1rem;
+        padding: 0.4rem 0.8rem;
         border: 1px solid #ddd;
         background: #fff;
-        border-radius: 6px;
+        border-radius: 4px;
         cursor: pointer;
-        transition: all 0.3s;
+        font-size: 0.85rem;
+        transition: all 0.15s;
     }
     
     #catalog-container .pagination button:hover {
-        background: #f8f9fa;
+        background: #f5f5f5;
+        border-color: #ccc;
     }
     
     #catalog-container .pagination button.active {
@@ -231,25 +230,29 @@ $rtrn = '
     }
     
     #catalog-container .pagination button:disabled {
-        opacity: 0.5;
+        opacity: 0.4;
         cursor: not-allowed;
     }
     
     #catalog-container .total-info {
-        color: #666;
-        font-size: 0.9rem;
-        margin-bottom: 1rem;
+        color: #888;
+        font-size: 0.8rem;
+        margin-bottom: 0.5rem;
     }
     
     @media (max-width: 768px) {
         #catalog-container {
-            padding: 1rem;
+            padding: 0.8rem;
         }
         
         #catalog-container .catalog-header {
             flex-direction: column;
-            gap: 1rem;
+            gap: 0.8rem;
             text-align: center;
+        }
+        
+        #catalog-container .search-box input {
+            width: 100%;
         }
         
         #catalog-container .offers-table {
@@ -372,7 +375,7 @@ $rtrn = '
             const totalEur = calcData.total ? calcData.total.eur : "0";
             const date = new Date(offer.created_at).toLocaleDateString("ro-RO");
             const hasAI = offer.ai_features && offer.ai_features !== "null" && offer.ai_features !== "";
-            const aiButtonText = hasAI ? "✅" : "🤖 AI";
+            const aiButtonText = hasAI ? "✅" : "🤖";
             
             html += `
                 <tr data-id="${offer.id}">
