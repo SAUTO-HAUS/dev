@@ -1283,7 +1283,7 @@ $rtrn = '
             continuePDF();
             
             function continuePDF() {
-            // === PAGE 6: Calculation details ===
+            // === PAGE 6: Calcul de pret ===
             doc.addPage();
             const p6Margin = pageWidth * 0.03;
             
@@ -1292,36 +1292,17 @@ $rtrn = '
             doc.rect(p6Margin, 0, bgWidth, bgHeight, "F");
             doc.addImage(logoImg, "PNG", p6Margin + bgPadding, bgPadding, logoWidth, logoHeight);
             
+            let y = 50;
+            
+            // Title "Calcul de pret" with red vertical line
+            doc.setFillColor(226, 0, 26);
+            doc.rect(p6Margin, y, 4, 28, "F");
             doc.setTextColor(0, 0, 0);
-            let y = 45;
-            
-            // Title
-            doc.setFontSize(18);
+            doc.setFontSize(32);
             doc.setFont("helvetica", "bold");
-            doc.text(removeDiacritics(t.results), pageWidth / 2, y, { align: "center" });
-            y += 12;
-            
-            // Vehicle info (replace underscores with spaces and capitalize each word)
-            doc.setFontSize(12);
-            doc.setFont("helvetica", "normal");
-            const brandClean3 = capitalizeWords(offer.brand.replace(/_/g, " "));
-            const modelClean3 = capitalizeWords(offer.model.replace(/_/g, " "));
-            doc.text(removeDiacritics(brandClean3 + " " + modelClean3 + " " + offer.year), pageWidth / 2, y, { align: "center" });
-            y += 6;
-            
-            // Client
-            doc.setFontSize(10);
-            doc.text(removeDiacritics("Client: " + offer.client_name), pageWidth / 2, y, { align: "center" });
-            y += 5;
-            
-            // Date
-            doc.text(new Date(offer.created_at).toLocaleDateString("ro-RO"), pageWidth / 2, y, { align: "center" });
-            y += 12;
-            
-            // Line
-            doc.setDrawColor(200);
-            doc.line(20, y, pageWidth - 20, y);
-            y += 10;
+            doc.text(removeDiacritics("Calcul de"), p6Margin + 10, y + 12);
+            doc.text(removeDiacritics("pret"), p6Margin + 10, y + 26);
+            y += 45;
             
             // Results
             const results = [
