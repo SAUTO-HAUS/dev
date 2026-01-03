@@ -750,14 +750,16 @@ $rtrn = '
         const bgImg = new Image();
         const logoImg = new Image();
         const pag03Img = new Image();
-        let bgLoaded = false, logoLoaded = false, pag03Loaded = false;
+        const pag07Img = new Image();
+        let bgLoaded = false, logoLoaded = false, pag03Loaded = false, pag07Loaded = false;
         
         bgImg.src = "/content/admin/page/calculator/img/pdf-bg.jpg";
         logoImg.src = "/content/admin/page/calculator/img/logo.png";
         pag03Img.src = "/content/admin/page/calculator/img/pag_03.jpg";
+        pag07Img.src = "/content/admin/page/calculator/img/pag_07.jpg";
         
         function generatePDFWithImages() {
-            if (!bgLoaded || !logoLoaded || !pag03Loaded) return;
+            if (!bgLoaded || !logoLoaded || !pag03Loaded || !pag07Loaded) return;
             
             // === PAGE 1: Background image with logo ===
             // Background: full width, 3% margin top only
@@ -1292,17 +1294,17 @@ $rtrn = '
             doc.rect(p6Margin, 0, bgWidth, bgHeight, "F");
             doc.addImage(logoImg, "PNG", p6Margin + bgPadding, bgPadding, logoWidth, logoHeight);
             
-            let y = 50;
+            let y = 38;
             
             // Title "Calcul de pret" with red vertical line
             doc.setFillColor(226, 0, 26);
-            doc.rect(p6Margin, y, 4, 28, "F");
+            doc.rect(p6Margin, y, 4, 20, "F");
             doc.setTextColor(0, 0, 0);
-            doc.setFontSize(32);
+            doc.setFontSize(22);
             doc.setFont("helvetica", "bold");
-            doc.text(removeDiacritics("Calcul de"), p6Margin + 10, y + 12);
-            doc.text(removeDiacritics("pret"), p6Margin + 10, y + 26);
-            y += 45;
+            doc.text(removeDiacritics("Calcul de"), p6Margin + 10, y + 8);
+            doc.text(removeDiacritics("pret"), p6Margin + 10, y + 17);
+            y += 28;
             
             // Results
             const results = [
@@ -1328,13 +1330,20 @@ $rtrn = '
             }
             
             doc.setFontSize(11);
+            var valueX = pageWidth - 90; // fixed X position for values column (left-aligned)
             results.forEach(item => {
                 const data = calcData[item.key];
                 if (data && (parseFloat(data.mdl) > 0 || parseFloat(data.eur) > 0)) {
                     doc.setFont("helvetica", "normal");
-                    doc.text(removeDiacritics(item.label), 20, y);
+                    var labelText = removeDiacritics(item.label);
+                    doc.text(labelText, 20, y);
+                    // Draw dotted line under the row
+                    doc.setDrawColor(220);
+                    doc.setLineDashPattern([1, 1], 0);
+                    doc.line(20, y + 2, pageWidth - 20, y + 2);
+                    doc.setLineDashPattern([], 0);
                     doc.setFont("helvetica", "bold");
-                    doc.text(formatNumber(parseFloat(data.mdl || 0)) + " MDL  (" + formatNumber(parseFloat(data.eur || 0)) + " EUR)", pageWidth - 20, y, { align: "right" });
+                    doc.text(formatNumber(parseFloat(data.mdl || 0)) + " MDL  (" + formatNumber(parseFloat(data.eur || 0)) + " EUR)", valueX, y);
                     y += 8;
                 }
             });
@@ -1350,7 +1359,7 @@ $rtrn = '
                 doc.setTextColor(255, 255, 255);
                 doc.setFontSize(12);
                 doc.text(removeDiacritics(t.total), 20, y + 3);
-                doc.text(formatNumber(parseFloat(calcData.total.mdl || 0)) + " MDL  (" + formatNumber(parseFloat(calcData.total.eur || 0)) + " EUR)", pageWidth - 20, y + 3, { align: "right" });
+                doc.text(formatNumber(parseFloat(calcData.total.mdl || 0)) + " MDL  (" + formatNumber(parseFloat(calcData.total.eur || 0)) + " EUR)", valueX, y + 3);
                 y += 15;
             }
             
@@ -1359,7 +1368,7 @@ $rtrn = '
                 doc.setFillColor(85, 85, 85);
                 doc.rect(15, y - 5, pageWidth - 30, 12, "F");
                 doc.text(removeDiacritics(t.vehicle_total), 20, y + 3);
-                doc.text(formatNumber(parseFloat(calcData.vehicle.mdl || 0)) + " MDL  (" + formatNumber(parseFloat(calcData.vehicle.eur || 0)) + " EUR)", pageWidth - 20, y + 3, { align: "right" });
+                doc.text(formatNumber(parseFloat(calcData.vehicle.mdl || 0)) + " MDL  (" + formatNumber(parseFloat(calcData.vehicle.eur || 0)) + " EUR)", valueX, y + 3);
             }
             
             doc.setTextColor(0, 0, 0);
@@ -1371,6 +1380,125 @@ $rtrn = '
             doc.setFontSize(14);
             doc.text("06", pageWidth - rectWidth / 2 - p6Margin, pageHeight - rectHeight / 2 + 5, { align: "center" });
             
+            // === PAGE 7: Termeni si conditii ===
+            doc.addPage();
+            const p7Margin = pageWidth * 0.03;
+            
+            // Image pag_07 with 3% margin top/left/right, 30% height (same as page 3)
+            const p7ImgY = p7Margin;
+            const p7ImgWidth = pageWidth - p7Margin * 2;
+            const p7ImgHeight = pageHeight * 0.30;
+            doc.addImage(pag07Img, "JPEG", p7Margin, p7ImgY, p7ImgWidth, p7ImgHeight);
+            
+            // Logo with black background (on top of image)
+            doc.setFillColor(0, 0, 0);
+            doc.rect(p7Margin, 0, bgWidth, bgHeight, "F");
+            doc.addImage(logoImg, "PNG", p7Margin + bgPadding, bgPadding, logoWidth, logoHeight);
+            
+            // Title "Termeni si conditii" (same style as page 3)
+            doc.setTextColor(0, 0, 0);
+            doc.setFontSize(48);
+            doc.setFont("helvetica", "bold");
+            var p7Y = p7ImgY + p7ImgHeight + 18;
+            doc.text(removeDiacritics("Termeni si conditii"), p7Margin, p7Y);
+            p7Y += 14;
+            
+            // Text content - limit width to not overlap with red rectangle (same as page 3)
+            var p7TextMaxWidth = pageWidth - p7Margin * 2 - rectWidth - 10;
+            
+            // Terms content - two columns
+            var termsCol1 = [
+                { title: "Pret net", text: "Reprezinta pretul final a produsului cistigat la licitatie care include: costul propriu zis a automobilului si taxele aditionale percepute de platforma." },
+                { title: "Costul transportului", text: "Sunt cheluieli totale suportate de Vinzator in momentul transportarii automobilului pina la locul preluarii acestuia de catre Cuparator (locul preluarii - Chisinau str Calea Mosilor 11)" },
+                { title: "Declaratia MRN", text: "MRN (Movement Reference Number), permite identificarea rapida si eficienta a operatiunii de transport. De asemenea ea reprezinta, o confirmare a trecerii tuturor procedurilor de export si de vamuire. Documentul contine, de asemenea, informatii privind transbordarile, avizele autoritatilor competente, detalii privind controalele efectuate de biroul de plecare si de destinatie si numarul de identificare al containerului. MRN este intotdeauna atasat la marfurile transportate." },
+                { title: "Comision bancar SWIFT", text: "SWIFT reprezinta un sistem de comunicare care interconecteaza bancile din intreaga lume pentru tranzactii financiare si plati internationale rapide si sigure. Cu alte cuvinte, este o retea de mesagerie, parte a sistemului global de plati. Acesta serveste la executarea platilor in afara unui sistem intern. SWIFT transmite instructiuni de plata, care sunt schimbate de institutiile financiare care participa la o tranzactie. Prin urmare, se spune ca SWIFT este mecanismul fundamental care asigura finantarea comertului international." },
+                { title: "Pierderi valutare", text: "Reprezinta pierederile cauzate in urma schimbului valutar efectuat de Vinzator in favoarea Cumparatorului in momentul procurarii valuteit pentru achizitia automobiluluiu." }
+            ];
+            
+            var termsCol2 = [
+                { title: "Taxa retur VAT", text: "Reprezinta costuri suplimentare pentru recuperarea TVA-ului la automobilele achizitionate dupa caz acolo unde este nevoie." },
+                { title: "Pierderi valutare", text: "Sunt servicii oferite de brocheri pentru depunerea actelor catre sistemul vamal a Republicii Molodva pentru vamuirea marfurilor importate." },
+                { title: "Taxa de devamare", text: "Reprezinta costuri care se achita pentru vamuirea automobilului imortat." },
+                { title: "Servicii de intrare si stationare in terminalul vamal", text: "Sunt cheltuieli care pot aparea in procesul vamuirii in caz daca timpul destinat pentru acesta procedura se extinde mai mult de 24 ore." },
+                { title: "Comision pentru tranzactie", text: "Este venitul obtinut de companie in urma vinzarii automobilului licitat de Cumparator." },
+                { title: "Taxa de devamare pentru accesorii", text: "Reprezinta costuri care se achita pentru vamuirea accesoriilor (anvelope, diverse suporturi suplinetare ect) cu automobilul imortat." },
+                { title: "Asigurarea CMR", text: "Polita CMR este asigurarea de raspundere a transportatorului pentru marfa transportata in calitate de caraus." },
+                { title: "Servicii suplimentare", text: "Sunt servicii suplimentare oferite de Vinzator cu acordul Cumparatorului pentru mentenata vehiculului: vopsire, spalre, reparare, mentenanta etc." },
+                { title: "Taxa de lux", text: "se aplica suplimentar si se percepe de Biroul Vamal la automobile a caror valuare in momentul vamuirei depaseste valuarea de 600.000,00 lei." }
+            ];
+            
+            doc.setFontSize(8);
+            var p7ColWidth = (p7TextMaxWidth - p7Margin) / 2;
+            var p7Col1X = p7Margin;
+            var p7Col2X = p7Margin + p7ColWidth + p7Margin;
+            var p7Col1Y = p7Y;
+            var p7Col2Y = p7Y;
+            var p7MaxY1 = pageHeight - p7Margin; // Column 1 can go to bottom (no red rectangle)
+            var p7MaxY2 = pageHeight - rectHeight - 5; // Column 2 limited by red rectangle
+            var lineHeight = 3.5;
+            var paragraphGap = 3;
+            
+            // Column 1 - can go to bottom of page
+            termsCol1.forEach(function(term) {
+                if (p7Col1Y < p7MaxY1) {
+                    doc.setFont("helvetica", "bold");
+                    var titleText = removeDiacritics(term.title + " - ");
+                    doc.text(titleText, p7Col1X, p7Col1Y);
+                    var titleWidth = doc.getTextWidth(titleText);
+                    doc.setFont("helvetica", "normal");
+                    var fullText = removeDiacritics(term.text);
+                    var availableWidth = p7ColWidth - titleWidth;
+                    var firstLineSplit = doc.splitTextToSize(fullText, availableWidth);
+                    doc.text(firstLineSplit[0] || "", p7Col1X + titleWidth, p7Col1Y);
+                    p7Col1Y += lineHeight;
+                    var remainingText = fullText.substring((firstLineSplit[0] || "").length).trim();
+                    if (remainingText) {
+                        var remainingLines = doc.splitTextToSize(remainingText, p7ColWidth);
+                        remainingLines.forEach(function(line) {
+                            if (p7Col1Y < p7MaxY1) {
+                                doc.text(line, p7Col1X, p7Col1Y);
+                                p7Col1Y += lineHeight;
+                            }
+                        });
+                    }
+                    p7Col1Y += paragraphGap;
+                }
+            });
+            
+            // Column 2 - limited by red rectangle
+            termsCol2.forEach(function(term) {
+                if (p7Col2Y < p7MaxY2) {
+                    doc.setFont("helvetica", "bold");
+                    var titleText = removeDiacritics(term.title + " - ");
+                    doc.text(titleText, p7Col2X, p7Col2Y);
+                    var titleWidth = doc.getTextWidth(titleText);
+                    doc.setFont("helvetica", "normal");
+                    var fullText = removeDiacritics(term.text);
+                    var availableWidth = p7ColWidth - titleWidth;
+                    var firstLineSplit = doc.splitTextToSize(fullText, availableWidth);
+                    doc.text(firstLineSplit[0] || "", p7Col2X + titleWidth, p7Col2Y);
+                    p7Col2Y += lineHeight;
+                    var remainingText = fullText.substring((firstLineSplit[0] || "").length).trim();
+                    if (remainingText) {
+                        var remainingLines = doc.splitTextToSize(remainingText, p7ColWidth);
+                        remainingLines.forEach(function(line) {
+                            if (p7Col2Y < p7MaxY2) {
+                                doc.text(line, p7Col2X, p7Col2Y);
+                                p7Col2Y += lineHeight;
+                            }
+                        });
+                    }
+                    p7Col2Y += paragraphGap;
+                }
+            });
+            
+            // Red rectangle bottom right with page number 07
+            doc.setFillColor(226, 0, 26);
+            doc.rect(pageWidth - rectWidth - p7Margin, pageHeight - rectHeight, rectWidth, rectHeight, "F");
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.text("07", pageWidth - rectWidth / 2 - p7Margin, pageHeight - rectHeight / 2 + 5, { align: "center" });
+            
             doc.save(fileName);
             } // end continuePDF
         }
@@ -1378,9 +1506,11 @@ $rtrn = '
         bgImg.onload = function() { bgLoaded = true; generatePDFWithImages(); };
         logoImg.onload = function() { logoLoaded = true; generatePDFWithImages(); };
         pag03Img.onload = function() { pag03Loaded = true; generatePDFWithImages(); };
+        pag07Img.onload = function() { pag07Loaded = true; generatePDFWithImages(); };
         bgImg.onerror = function() { bgLoaded = true; generatePDFWithImages(); };
         logoImg.onerror = function() { logoLoaded = true; generatePDFWithImages(); };
         pag03Img.onerror = function() { pag03Loaded = true; generatePDFWithImages(); };
+        pag07Img.onerror = function() { pag07Loaded = true; generatePDFWithImages(); };
     }
 })();
 </script>
