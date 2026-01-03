@@ -1081,64 +1081,67 @@ $rtrn = '
             var col1X = p4Margin;
             var col2X = p4Margin + colWidth;
             var col3X = p4Margin + colWidth * 2;
-            var specRowHeight = 25;
+            var specRowHeight = 22;
+            var tablePadding = 8;
             var tableY = p4Y;
             
             // Draw table background (light gray)
             doc.setFillColor(245, 245, 245);
-            doc.rect(p4Margin, tableY - 5, pageWidth - p4Margin * 2, specRowHeight * 4, "F");
+            doc.rect(p4Margin, tableY, pageWidth - p4Margin * 2, specRowHeight * 4 + tablePadding * 2, "F");
+            
+            p4Y = tableY + tablePadding + 4;
             
             // Row 1: Marca, Model, Anul
             doc.setFont("helvetica", "normal");
             doc.setTextColor(128, 128, 128);
-            doc.text("Marca", col1X + 5, p4Y);
-            doc.text("Model", col2X + 5, p4Y);
-            doc.text("Anul", col3X + 5, p4Y);
+            doc.text("Marca", col1X + 10, p4Y);
+            doc.text("Model", col2X + 10, p4Y);
+            doc.text("Anul", col3X + 10, p4Y);
             doc.setTextColor(0, 0, 0);
             doc.setFont("helvetica", "bold");
-            doc.text(removeDiacritics(capitalizeWords(offer.brand.replace(/_/g, " "))), col1X + 5, p4Y + 6);
-            doc.text(removeDiacritics(capitalizeWords(offer.model.replace(/_/g, " "))), col2X + 5, p4Y + 6);
-            doc.text(String(offer.year), col3X + 5, p4Y + 6);
+            doc.text(removeDiacritics(capitalizeWords(offer.brand.replace(/_/g, " "))), col1X + 10, p4Y + 7);
+            doc.text(removeDiacritics(capitalizeWords(offer.model.replace(/_/g, " "))), col2X + 10, p4Y + 7);
+            doc.text(String(offer.year), col3X + 10, p4Y + 7);
             p4Y += specRowHeight;
             
             // Row 2: Caroserie, Numar locuri, Parcurs
             doc.setFont("helvetica", "normal");
             doc.setTextColor(128, 128, 128);
-            doc.text("Caroserie", col1X + 5, p4Y);
-            doc.text(removeDiacritics("Numarul de locuri"), col2X + 5, p4Y);
-            doc.text("Parcurs", col3X + 5, p4Y);
+            doc.text("Caroserie", col1X + 10, p4Y);
+            doc.text(removeDiacritics("Numarul de locuri"), col2X + 10, p4Y);
+            doc.text("Parcurs", col3X + 10, p4Y);
             doc.setTextColor(0, 0, 0);
             doc.setFont("helvetica", "bold");
-            doc.text(removeDiacritics(translateValue(offer.bodywork)), col1X + 5, p4Y + 6);
-            doc.text(String(offer.seats || ""), col2X + 5, p4Y + 6);
-            doc.text(formatNumber(offer.mileage || 0), col3X + 5, p4Y + 6);
+            doc.text(removeDiacritics(translateValue(offer.bodywork)), col1X + 10, p4Y + 7);
+            doc.text(String(offer.seats || ""), col2X + 10, p4Y + 7);
+            doc.text(formatNumber(offer.mileage || 0), col3X + 10, p4Y + 7);
             p4Y += specRowHeight;
             
             // Row 3: Capacitate cilindrica, Puterea motorului, Tip combustibil
             doc.setFont("helvetica", "normal");
             doc.setTextColor(128, 128, 128);
-            doc.text("Capacitatea cilindrica", col1X + 5, p4Y);
-            doc.text("Puterea motorului", col2X + 5, p4Y);
-            doc.text("Tip combustibil", col3X + 5, p4Y);
+            doc.text("Capacitatea cilindrica", col1X + 10, p4Y);
+            doc.text("Puterea motorului", col2X + 10, p4Y);
+            doc.text("Tip combustibil", col3X + 10, p4Y);
             doc.setTextColor(0, 0, 0);
             doc.setFont("helvetica", "bold");
-            doc.text(String(offer.cylinder_capacity || ""), col1X + 5, p4Y + 6);
-            doc.text(String(offer.engine_power || ""), col2X + 5, p4Y + 6);
-            doc.text(removeDiacritics(translateValue(offer.fuel_type)), col3X + 5, p4Y + 6);
+            doc.text(String(offer.cylinder_capacity || ""), col1X + 10, p4Y + 7);
+            doc.text(String(offer.engine_power || ""), col2X + 10, p4Y + 7);
+            doc.text(removeDiacritics(translateValue(offer.fuel_type)), col3X + 10, p4Y + 7);
             p4Y += specRowHeight;
             
             // Row 4: Cutie viteze, Tractiunea, Culoarea
             doc.setFont("helvetica", "normal");
             doc.setTextColor(128, 128, 128);
-            doc.text("Cutia de viteze", col1X + 5, p4Y);
-            doc.text("Tractiunea", col2X + 5, p4Y);
-            doc.text("Culoarea", col3X + 5, p4Y);
+            doc.text("Cutia de viteze", col1X + 10, p4Y);
+            doc.text("Tractiunea", col2X + 10, p4Y);
+            doc.text("Culoarea", col3X + 10, p4Y);
             doc.setTextColor(0, 0, 0);
             doc.setFont("helvetica", "bold");
-            doc.text(removeDiacritics(translateValue(offer.transmission)), col1X + 5, p4Y + 6);
-            doc.text(removeDiacritics(translateValue(offer.drive_type)), col2X + 5, p4Y + 6);
-            doc.text(removeDiacritics(translateValue(offer.color)), col3X + 5, p4Y + 6);
-            p4Y += specRowHeight + 5;
+            doc.text(removeDiacritics(translateValue(offer.transmission)), col1X + 10, p4Y + 7);
+            doc.text(removeDiacritics(translateValue(offer.drive_type)), col2X + 10, p4Y + 7);
+            doc.text(removeDiacritics(translateValue(offer.color)), col3X + 10, p4Y + 7);
+            p4Y += specRowHeight + tablePadding + 5;
             
             // AI Features: Siguranta si Confort
             var aiFeatures = null;
