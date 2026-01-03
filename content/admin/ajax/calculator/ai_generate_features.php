@@ -60,11 +60,16 @@ $carData = "Car data:
 - Fuel type: {$fuel_type}
 - Body type: {$bodywork}";
 
-$prompt = "Based on the car data below, generate a list of typical SAFETY features (Siguranță/Безопасность) and COMFORT features (Confort/Комфорт) that this car model typically has.
+$prompt = "Based on the car data below, generate a list of SAFETY features (Siguranță) and COMFORT features (Confort) that this specific car HAS.
 
 {$carData}
 
-Generate realistic features based on the car's year and model. Include 5-8 items for each category.
+IMPORTANT RULES:
+1. List ONLY features that are STANDARD equipment for this specific model and year - do NOT guess or add optional features
+2. Do NOT use words like 'optional', 'in functie de', 'pe unele echipari', 'disponibil' - these are FORBIDDEN
+3. Each feature must be stated as a FACT, not a possibility
+4. Include 5-8 items for each category
+5. Use simple, clear Romanian language without qualifiers
 
 IMPORTANT: Return EXACTLY in this JSON format:
 {
@@ -72,9 +77,9 @@ IMPORTANT: Return EXACTLY in this JSON format:
   \"comfort\": [\"Feature 1\", \"Feature 2\", ...]
 }
 
-Use Romanian language for the features. Examples:
-Safety: Sistem ABS, Airbag-uri frontale, Control stabilitate ESP, Senzori parcare, etc.
-Comfort: Aer conditionat, Servodirectie, Geamuri electrice, Incalzire scaune, etc.";
+Examples of CORRECT features:
+Safety: Sistem ABS, Airbag-uri frontale, Control stabilitate ESP, Senzori parcare spate
+Comfort: Aer conditionat, Servodirectie, Geamuri electrice fata si spate, Volan multifunctional";
 
 // Choose API based on settings
 $aiProvider = $aiSettings['ai_provider'] ?? 'openai';
