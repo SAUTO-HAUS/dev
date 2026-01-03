@@ -271,16 +271,29 @@ if ($fn === 'save_eur_rate') {
         
         // Build search condition
         $where = '';
-        $searchParam = '';
+        $searchParams = [];
         if (!empty($search)) {
-            $where = ' WHERE (client_name LIKE ? OR brand LIKE ? OR model LIKE ? OR year LIKE ? OR bodywork LIKE ? OR mileage LIKE ? OR transmission LIKE ? OR drive_type LIKE ? OR color LIKE ?)';
-            $searchParam = '%' . $search . '%';
+            // Split search into words for AND logic (e.g., "bmw 2011" finds BMW from 2011)
+            $words = preg_split('/\s+/', $search);
+            $conditions = [];
+            foreach ($words as $word) {
+                $word = trim($word);
+                if (empty($word)) continue;
+                $wordParam = '%' . $word . '%';
+                $conditions[] = '(client_name LIKE ? OR brand LIKE ? OR model LIKE ? OR year LIKE ? OR bodywork LIKE ? OR mileage LIKE ? OR transmission LIKE ? OR drive_type LIKE ? OR color LIKE ?)';
+                for ($i = 0; $i < 9; $i++) {
+                    $searchParams[] = $wordParam;
+                }
+            }
+            if (!empty($conditions)) {
+                $where = ' WHERE ' . implode(' AND ', $conditions);
+            }
         }
         
         // Get total count
         $count_stmt = $db->prepare('SELECT COUNT(*) as total FROM '.$prefx.'_calculator_offers' . $where);
-        if (!empty($search)) {
-            $count_stmt->execute([$searchParam, $searchParam, $searchParam, $searchParam, $searchParam, $searchParam, $searchParam, $searchParam, $searchParam]);
+        if (!empty($searchParams)) {
+            $count_stmt->execute($searchParams);
         } else {
             $count_stmt->execute();
         }
@@ -289,8 +302,8 @@ if ($fn === 'save_eur_rate') {
         // Get offers
         $sql = 'SELECT * FROM '.$prefx.'_calculator_offers' . $where . ' ORDER BY created_at DESC LIMIT ' . $limit . ' OFFSET ' . $offset;
         $pdo = $db->prepare($sql);
-        if (!empty($search)) {
-            $pdo->execute([$searchParam, $searchParam, $searchParam, $searchParam, $searchParam, $searchParam, $searchParam, $searchParam, $searchParam]);
+        if (!empty($searchParams)) {
+            $pdo->execute($searchParams);
         } else {
             $pdo->execute();
         }
