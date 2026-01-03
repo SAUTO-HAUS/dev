@@ -371,6 +371,8 @@ $rtrn = '
             const totalMdl = calcData.total ? calcData.total.mdl : "0";
             const totalEur = calcData.total ? calcData.total.eur : "0";
             const date = new Date(offer.created_at).toLocaleDateString("ro-RO");
+            const hasAI = offer.ai_features && offer.ai_features !== "null" && offer.ai_features !== "";
+            const aiButtonText = hasAI ? "✅" : "🤖 AI";
             
             html += `
                 <tr data-id="${offer.id}">
@@ -383,7 +385,7 @@ $rtrn = '
                     <td class="date-col">${date}</td>
                     <td class="actions">
                         <button class="btn-edit" onclick="editOffer(${offer.id})">✏️ Edit</button>
-                        <button class="btn-ai" onclick="generateAIFeatures(this, ${offer.id})" data-text="🤖 AI" data-loading="⏳..." data-success="✅ Succes" title="Generează Siguranță și Confort cu AI">🤖 AI</button>
+                        <button class="btn-ai" onclick="generateAIFeatures(this, ${offer.id})" data-text="${aiButtonText}" data-loading="⏳" data-success="✅" title="Generează Siguranță și Confort cu AI">${aiButtonText}</button>
                         <button class="btn-pdf" onclick="generatePDF(${offer.id})">📄 PDF</button>
                         <button class="btn-delete" onclick="deleteOffer(${offer.id})">🗑️</button>
                     </td>
