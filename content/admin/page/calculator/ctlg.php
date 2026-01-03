@@ -636,80 +636,104 @@ $rtrn = '
         // Translations for short codes to full text
         var translations = {
             // Transmission / Cutia de viteze
-            "atm": "Automat",
-            "aut": "Automat",
-            "auto": "Automat",
-            "automat": "Automat",
-            "man": "Manuala",
-            "manual": "Manuala",
+            "tpt": "Tiptronic",
+            "atm": "Automata",
+            "mnl": "Mecanica",
+            "rbt": "Robotizata",
+            "vrr": "Variator",
+            // Additional transmission aliases
+            "aut": "Automata",
+            "auto": "Automata",
+            "automat": "Automata",
+            "man": "Mecanica",
+            "manual": "Mecanica",
             "manuala": "Manuala",
             // Drive type / Tractiunea
-            "fr": "Fata",
-            "fata": "Fata",
-            "front": "Fata",
-            "fwd": "Fata",
-            "rr": "Spate",
-            "rear": "Spate",
-            "spate": "Spate",
-            "rwd": "Spate",
+            "44": "4x4",
+            "re": "Din spate",
+            "fr": "Din fata",
+            // Additional drive type aliases
+            "fata": "Din fata",
+            "front": "Din fata",
+            "fwd": "Din fata",
+            "spate": "Din spate",
+            "rear": "Din spate",
+            "rwd": "Din spate",
             "4x4": "4x4",
             "awd": "4x4",
             "4wd": "4x4",
             "integral": "Integral",
             // Colors / Culoarea
-            "slv": "Argintiu",
-            "silver": "Argintiu",
-            "argintiu": "Argintiu",
-            "blk": "Negru",
-            "black": "Negru",
-            "negru": "Negru",
-            "wht": "Alb",
-            "white": "Alb",
-            "alb": "Alb",
+            "l_grn": "Verde deschis",
             "blu": "Albastru",
-            "blue": "Albastru",
-            "albastru": "Albastru",
+            "brn": "Brun",
+            "cmn": "Purpuriu",
+            "cml": "Cameleon",
+            "bge": "Bej",
+            "wht": "Alb",
+            "vns": "Rosu visiniu",
+            "azr": "Albastru",
+            "ylw": "Galben",
+            "grn": "Verde",
+            "gld": "Aur",
             "red": "Rosu",
-            "rosu": "Rosu",
-            "gry": "Gri",
+            "orn": "Portocalie",
+            "pnk": "Roz",
+            "slv": "Argint",
+            "gra": "Gri",
+            "d_grn": "Verde inchis",
+            "prp": "Violet",
+            "blk": "Negru",
+            "wap": "Asfalt umed",
+            "snd": "Nisip",
+            // Additional color aliases
+            "white": "Alb",
+            "black": "Negru",
+            "blue": "Albastru",
+            "green": "Verde",
+            "yellow": "Galben",
+            "orange": "Portocalie",
+            "silver": "Argint",
             "gray": "Gri",
             "grey": "Gri",
-            "gri": "Gri",
-            "grn": "Verde",
-            "green": "Verde",
-            "verde": "Verde",
-            "brn": "Maro",
-            "brown": "Maro",
-            "maro": "Maro",
-            "ylw": "Galben",
-            "yellow": "Galben",
-            "galben": "Galben",
-            "org": "Portocaliu",
-            "orange": "Portocaliu",
-            "portocaliu": "Portocaliu",
-            "bej": "Bej",
+            "brown": "Brun",
             "beige": "Bej",
             // Bodywork / Caroserie
-            "unv": "Universal",
-            "universal": "Universal",
-            "sed": "Sedan",
-            "sedan": "Sedan",
-            "htb": "Hatchback",
-            "hatchback": "Hatchback",
+            "sdn": "Sedan",
             "suv": "SUV",
+            "hbk": "Hatchback",
+            "unv": "Universal",
+            "cup": "Coupe",
             "crv": "Crossover",
-            "crossover": "Crossover",
-            "cpv": "Coupe",
+            "mnv": "Minivan",
+            "pkp": "Pickup",
+            "van": "Furgon",
+            "mbs": "Microbus",
+            "cbr": "Cabriolet",
+            "cmb": "Combi",
+            "rod": "Roadster",
+            "frg": "Frigider",
+            "crr": "Purtator",
+            // Additional bodywork aliases
+            "sedan": "Sedan",
+            "hatchback": "Hatchback",
+            "universal": "Universal",
             "coupe": "Coupe",
-            "cab": "Cabriolet",
+            "crossover": "Crossover",
+            "pickup": "Pickup",
             "cabriolet": "Cabriolet",
-            "wgn": "Combi",
-            "wagon": "Combi",
             "combi": "Combi",
-            "van": "Monovolum",
-            "monovolum": "Monovolum",
-            "pick": "Pickup",
-            "pickup": "Pickup"
+            "roadster": "Roadster",
+            // Additional transmission
+            "tiptronic": "Tiptronic",
+            "cvt": "CVT",
+            "dsg": "DSG",
+            // Fuel type / Tip combustibil
+            "benzina": "Benzina",
+            "diesel": "Diesel",
+            "hybrid": "Hybrid",
+            "plugin_hybrid": "Plug-in Hybrid",
+            "electric": "Electric"
         };
         
         function translateValue(val) {
@@ -1126,12 +1150,12 @@ $rtrn = '
                 // Siguranta section
                 if (aiFeatures.safety && aiFeatures.safety.length > 0) {
                     doc.setTextColor(0, 0, 0);
-                    doc.setFontSize(11);
+                    doc.setFontSize(16);
                     doc.setFont("helvetica", "bold");
                     doc.text("Siguranta", p4Margin, p4Y);
-                    p4Y += 5;
+                    p4Y += 6;
                     
-                    doc.setFontSize(8);
+                    doc.setFontSize(10);
                     doc.setFont("helvetica", "normal");
                     aiFeatures.safety.forEach(function(item) {
                         // Draw red checkbox with checkmark
@@ -1145,18 +1169,18 @@ $rtrn = '
                         doc.text(removeDiacritics(item), p4Margin + 5, p4Y);
                         p4Y += 4;
                     });
-                    p4Y += 3;
+                    p4Y += 8;
                 }
                 
                 // Confort section
                 if (aiFeatures.comfort && aiFeatures.comfort.length > 0) {
                     doc.setTextColor(0, 0, 0);
-                    doc.setFontSize(11);
+                    doc.setFontSize(16);
                     doc.setFont("helvetica", "bold");
                     doc.text("Confort", p4Margin, p4Y);
-                    p4Y += 5;
+                    p4Y += 6;
                     
-                    doc.setFontSize(8);
+                    doc.setFontSize(10);
                     doc.setFont("helvetica", "normal");
                     aiFeatures.comfort.forEach(function(item) {
                         // Draw red checkbox with checkmark
