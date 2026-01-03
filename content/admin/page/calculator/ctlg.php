@@ -427,16 +427,16 @@ $rtrn = '
                 // Redirect to calculator
                 window.location.href = "/'.$_COOKIE['lang'].'/'.$admin_dir.'/calculator/calc";
             } else {
-                alert("Eroare la încărcare ofertă");
+                alert("Error loading offer");
             }
         })
         .catch(err => {
-            alert("Eroare la încărcare ofertă");
+            alert("Error loading offer");
         });
     };
     
     window.deleteOffer = function(offerId) {
-        if (!confirm("Sigur doriți să ștergeți această ofertă?")) {
+        if (!confirm("Are you sure you want to delete this offer?")) {
             return;
         }
         
@@ -450,11 +450,11 @@ $rtrn = '
             if (data.success) {
                 loadOffers(currentPage);
             } else {
-                alert("Eroare la ștergere: " + (data.error || "Unknown error"));
+                alert("Error deleting: " + (data.error || "Unknown error"));
             }
         })
         .catch(err => {
-            alert("Eroare la ștergere");
+            alert("Error deleting offer");
         });
     };
     
@@ -594,11 +594,11 @@ $rtrn = '
             if (data.success && data.offer) {
                 createPDF(data.offer);
             } else {
-                alert("Eroare la încărcare ofertă");
+                alert("Error loading offer");
             }
         })
         .catch(err => {
-            alert("Eroare la încărcare ofertă");
+            alert("Error loading offer");
         });
     };
     
@@ -803,7 +803,7 @@ $rtrn = '
             // Calculate Y position after title lines
             var titleEndY = pageHeight * 0.30 + (titleLines.length - 1) * 14;
             
-            // Capacitate motor și tip combustibil pe rând nou (aceeași mărime font)
+            // Engine capacity and fuel type on new line
             var engineInfo = "";
             if (offer.cylinder_capacity) {
                 engineInfo += offer.cylinder_capacity + " cm³";
