@@ -1230,8 +1230,8 @@ $rtrn = '
                 Promise.all(imgPromises).then(function(results) {
                     var imgs = results.filter(function(r) { return r; }).sort(function(a, b) { return a.idx - b.idx; });
                     
-                    // Row 1: Big image (full width) - 40% height with logo and title overlay
-                    var row1Height = pageHeight * 0.40;
+                    // Row 1: Big image (full width) - 37% height with logo and title overlay
+                    var row1Height = pageHeight * 0.37;
                     var row1Y = p5Margin;
                     var fullWidth = pageWidth - p5Margin * 2;
                     
