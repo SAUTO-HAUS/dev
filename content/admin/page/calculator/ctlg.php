@@ -133,56 +133,29 @@ $rtrn = '
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: 0.35rem 0.6rem;
-        border: none;
-        border-radius: 4px;
-        font-size: 0.8rem;
+        padding: 0.5rem 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 0.9rem;
         cursor: pointer;
-        transition: all 0.15s;
-        min-width: 32px;
-    }
-    
-    #catalog-container .offers-table .btn-edit {
-        background: #f0f0f0;
+        transition: all 0.2s;
+        min-width: 38px;
+        background: #fff;
         color: #333;
     }
     
-    #catalog-container .offers-table .btn-edit:hover {
-        background: #007bff;
+    #catalog-container .offers-table button:hover {
+        background: #e2001a;
         color: #fff;
+        border-color: #e2001a;
     }
     
     #catalog-container .offers-table .btn-pdf {
-        background: #f0f0f0;
-        color: #333;
         text-decoration: none;
     }
     
-    #catalog-container .offers-table .btn-pdf:hover {
-        background: #28a745;
-        color: #fff;
-    }
-    
-    #catalog-container .offers-table .btn-delete {
-        background: #f0f0f0;
-        color: #333;
-    }
-    
-    #catalog-container .offers-table .btn-delete:hover {
-        background: #dc3545;
-        color: #fff;
-    }
-    
     #catalog-container .offers-table .btn-ai {
-        background: #f0f0f0;
-        color: #333;
-        min-width: 40px;
-        padding: 0.35rem 0.8rem;
-    }
-    
-    #catalog-container .offers-table .btn-ai:hover {
-        background: #6f42c1;
-        color: #fff;
+        min-width: 44px;
     }
     
     #catalog-container .offers-table .btn-ai:disabled {
@@ -277,13 +250,13 @@ $rtrn = '
     <table class="offers-table">
         <thead>
             <tr>
+                <th>'.$t['date_col'].'</th>
                 <th>'.$t['client_name'].'</th>
                 <th>'.$t['brand'].' / '.$t['model'].'</th>
                 <th>'.$t['year_vehicle'].'</th>
                 <th>'.$t['bodywork'].'</th>
                 <th>'.$t['mileage'].'</th>
                 <th>'.$t['total_col'].'</th>
-                <th>'.$t['date_col'].'</th>
                 <th>'.$t['actions_col'].'</th>
             </tr>
         </thead>
@@ -304,6 +277,24 @@ $rtrn = '
 (function() {
     let currentPage = 1;
     let searchTimeout = null;
+    
+    // Translations for bodywork codes
+    const bodyworkTranslations = {
+        "sdn": "Sedan", "suv": "SUV", "hbk": "Hatchback", "unv": "Universal",
+        "cup": "Coupe", "crv": "Crossover", "mnv": "Minivan", "pkp": "Pickup",
+        "van": "Furgon", "mbs": "Microbus", "cbr": "Cabriolet", "cmb": "Combi",
+        "rod": "Roadster", "frg": "Frigider", "crr": "Purtator"
+    };
+    
+    function translateValue(val) {
+        if (!val) return "";
+        var key = String(val).toLowerCase().trim();
+        return bodyworkTranslations[key] || val.replace(/_/g, " ");
+    }
+    
+    function capitalizeWords(str) {
+        return str.split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(" ");
+    }
     
     window.searchOffers = function() {
         clearTimeout(searchTimeout);
@@ -377,15 +368,19 @@ $rtrn = '
             const hasAI = offer.ai_features && offer.ai_features !== "null" && offer.ai_features !== "";
             const aiButtonText = hasAI ? "✅" : "🤖";
             
+            const brandDisplay = capitalizeWords((offer.brand || "").replace(/_/g, " "));
+            const modelDisplay = capitalizeWords((offer.model || "").replace(/_/g, " "));
+            const bodyworkDisplay = translateValue(offer.bodywork) || "-";
+            
             html += `
                 <tr data-id="${offer.id}">
+                    <td class="date-col">${date}</td>
                     <td class="client-name">${offer.client_name}</td>
-                    <td class="vehicle-info">${offer.brand} ${offer.model}</td>
+                    <td class="vehicle-info">${brandDisplay} ${modelDisplay}</td>
                     <td>${offer.year}</td>
-                    <td>${offer.bodywork || "-"}</td>
+                    <td>${bodyworkDisplay}</td>
                     <td>${offer.mileage ? parseInt(offer.mileage).toLocaleString("ro-MD") + " km" : "-"}</td>
                     <td><strong>${parseInt(totalMdl).toLocaleString("ro-MD")}</strong> MDL</td>
-                    <td class="date-col">${date}</td>
                     <td class="actions">
                         <button class="btn-edit" onclick="editOffer(${offer.id})">✏️ Edit</button>
                         <button class="btn-ai" onclick="generateAIFeatures(this, ${offer.id})" data-text="${aiButtonText}" data-loading="⏳" data-success="✅" title="Generează Siguranță și Confort cu AI">${aiButtonText}</button>
@@ -865,7 +860,7 @@ $rtrn = '
             doc.setFont("helvetica", "normal");
             doc.text("+373 68 68 99 95", 20, footerY + 5);
             doc.text("info@sauto.md", 20, footerY + 10);
-            doc.text("Chisinau str Calea Mosilor 11", 20, footerY + 15);
+            doc.text("Chisinau str. Calea Mosilor 11", 20, footerY + 15);
             
             doc.setFont("helvetica", "bold");
             doc.text(removeDiacritics(loggedUserName.toUpperCase()), 100, footerY);
@@ -1328,13 +1323,13 @@ $rtrn = '
             
             // Title "Calcul de pret" with red vertical line
             doc.setFillColor(226, 0, 26);
-            doc.rect(p6Margin, y, 4, 20, "F");
+            doc.rect(p6Margin, y, 4, 26, "F");
             doc.setTextColor(0, 0, 0);
-            doc.setFontSize(22);
+            doc.setFontSize(28);
             doc.setFont("helvetica", "bold");
-            doc.text(removeDiacritics("Calcul de"), p6Margin + 10, y + 8);
-            doc.text(removeDiacritics("pret"), p6Margin + 10, y + 17);
-            y += 28;
+            doc.text(removeDiacritics("Calcul de"), p6Margin + 10, y + 10);
+            doc.text(removeDiacritics("pret"), p6Margin + 10, y + 22);
+            y += 34;
             
             // Results
             const results = [
@@ -1439,7 +1434,7 @@ $rtrn = '
             // Terms content - two columns
             var termsCol1 = [
                 { title: "Pret net", text: "Reprezinta pretul final a produsului cistigat la licitatie care include: costul propriu zis a automobilului si taxele aditionale percepute de platforma." },
-                { title: "Costul transportului", text: "Sunt cheluieli totale suportate de Vinzator in momentul transportarii automobilului pina la locul preluarii acestuia de catre Cuparator (locul preluarii - Chisinau str Calea Mosilor 11)" },
+                { title: "Costul transportului", text: "Sunt cheluieli totale suportate de Vinzator in momentul transportarii automobilului pina la locul preluarii acestuia de catre Cuparator (locul preluarii - Chisinau str. Calea Mosilor 11)" },
                 { title: "Declaratia MRN", text: "MRN (Movement Reference Number), permite identificarea rapida si eficienta a operatiunii de transport. De asemenea ea reprezinta, o confirmare a trecerii tuturor procedurilor de export si de vamuire. Documentul contine, de asemenea, informatii privind transbordarile, avizele autoritatilor competente, detalii privind controalele efectuate de biroul de plecare si de destinatie si numarul de identificare al containerului. MRN este intotdeauna atasat la marfurile transportate." },
                 { title: "Comision bancar SWIFT", text: "SWIFT reprezinta un sistem de comunicare care interconecteaza bancile din intreaga lume pentru tranzactii financiare si plati internationale rapide si sigure. Cu alte cuvinte, este o retea de mesagerie, parte a sistemului global de plati. Acesta serveste la executarea platilor in afara unui sistem intern. SWIFT transmite instructiuni de plata, care sunt schimbate de institutiile financiare care participa la o tranzactie. Prin urmare, se spune ca SWIFT este mecanismul fundamental care asigura finantarea comertului international." },
                 { title: "Pierderi valutare", text: "Reprezinta pierederile cauzate in urma schimbului valutar efectuat de Vinzator in favoarea Cumparatorului in momentul procurarii valuteit pentru achizitia automobiluluiu." }
@@ -1555,7 +1550,7 @@ $rtrn = '
             doc.setFont("helvetica", "normal");
             doc.text("+373 68 68 99 95", p8FooterX, p8FooterY + 5, { align: "right" });
             doc.text("info@sauto.md", p8FooterX, p8FooterY + 10, { align: "right" });
-            doc.text("Chisinau str Calea Mosilor 11", p8FooterX, p8FooterY + 15, { align: "right" });
+            doc.text("Chisinau str. Calea Mosilor 11", p8FooterX, p8FooterY + 15, { align: "right" });
             
             // Red rectangle bottom right with page number 08
             doc.setFillColor(226, 0, 26);
