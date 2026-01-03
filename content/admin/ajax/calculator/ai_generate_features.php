@@ -11,10 +11,32 @@ $carModel = isset($_POST['model']) ? $_POST['model'] : '';
 $year = isset($_POST['year']) ? $_POST['year'] : '';
 $fuel_type = isset($_POST['fuel_type']) ? $_POST['fuel_type'] : '';
 $bodywork = isset($_POST['bodywork']) ? $_POST['bodywork'] : '';
+$offer_id = isset($_POST['offer_id']) ? intval($_POST['offer_id']) : 0;
 
 if (empty($brand) || empty($carModel)) {
     $returnIt = ['success' => false, 'error' => 'Missing brand or model'];
     return;
+}
+
+// Get offer images if offer_id is provided
+$offerImages = [];
+if ($offer_id > 0) {
+    try {
+        $stmtOffer = $db->prepare("SELECT images FROM {$prefx}_calculator_offers WHERE id = :id LIMIT 1");
+        $stmtOffer->execute(['id' => $offer_id]);
+        $offerRow = $stmtOffer->fetch(PDO::FETCH_ASSOC);
+        if ($offerRow && !empty($offerRow['images'])) {
+            $imagePaths = json_decode($offerRow['images'], true);
+            if (is_array($imagePaths)) {
+                $siteUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
+                foreach ($imagePaths as $path) {
+                    $offerImages[] = $siteUrl . $path;
+                }
+            }
+        }
+    } catch (PDOException $e) {
+        // Ignore errors, just don't use images
+    }
 }
 
 $groqApiKey = defined('GROQ_API_KEY') ? GROQ_API_KEY : '';
@@ -80,11 +102,42 @@ if (empty($apiKey)) {
     return;
 }
 
+// Check if we should analyze photos (setting from ai_prompt page)
+$analyzePhotos = ($aiSettings['analyze_photos'] ?? '0') === '1';
+$useOpenAIVision = $aiProvider === 'openai' && !empty($offerImages) && $analyzePhotos;
+
+// Debug info - will be included in response
+$debugInfo = [
+    'ai_provider' => $aiProvider,
+    'analyze_photos_setting' => $analyzePhotos ? 'ON' : 'OFF',
+    'images_count' => count($offerImages),
+    'using_vision' => $useOpenAIVision ? 'YES' : 'NO',
+    'model' => $aiModel
+];
+
+// Build user content - with or without images
+$userContent = [];
+
+if ($useOpenAIVision) {
+    // Add images first for vision analysis
+    foreach ($offerImages as $imgUrl) {
+        $userContent[] = [
+            'type' => 'image_url',
+            'image_url' => ['url' => $imgUrl]
+        ];
+    }
+    // Add prompt with instruction to analyze images
+    $imagePrompt = "Analyze the car images above and the car data below to generate accurate SAFETY and COMFORT features. Look at the images to identify visible features like: LED lights, sunroof, parking sensors, alloy wheels, leather seats, navigation screen, etc.\n\n" . $prompt;
+    $userContent[] = ['type' => 'text', 'text' => $imagePrompt];
+} else {
+    $userContent[] = ['type' => 'text', 'text' => $prompt];
+}
+
 $requestData = [
     'model' => $aiModel,
     'messages' => [
-        ['role' => 'system', 'content' => 'You are a car expert assistant. Generate accurate car features based on the model and year.'],
-        ['role' => 'user', 'content' => $prompt]
+        ['role' => 'system', 'content' => 'You are a car expert assistant. Generate accurate car features based on the model, year, and images if provided.'],
+        ['role' => 'user', 'content' => $useOpenAIVision ? $userContent : $prompt]
     ],
     'temperature' => 0.7
 ];
@@ -145,11 +198,12 @@ if ($jsonStart !== false && $jsonEnd !== false) {
         $returnIt = [
             'success' => true,
             'safety' => $features['safety'],
-            'comfort' => $features['comfort']
+            'comfort' => $features['comfort'],
+            'debug' => $debugInfo
         ];
     } else {
-        $returnIt = ['success' => false, 'error' => 'Invalid JSON structure: ' . $jsonStr];
+        $returnIt = ['success' => false, 'error' => 'Invalid JSON structure: ' . $jsonStr, 'debug' => $debugInfo];
     }
 } else {
-    $returnIt = ['success' => false, 'error' => 'No JSON found in response: ' . substr($content, 0, 200)];
+    $returnIt = ['success' => false, 'error' => 'No JSON found in response: ' . substr($content, 0, 200), 'debug' => $debugInfo];
 }

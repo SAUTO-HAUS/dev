@@ -477,6 +477,7 @@ $rtrn = '
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
                     body: "tp=adm&pg=calculator&fn=ai_generate_features" +
+                          "&offer_id=" + offerId +
                           "&brand=" + encodeURIComponent(offer.brand) +
                           "&model=" + encodeURIComponent(offer.model) +
                           "&year=" + encodeURIComponent(offer.year) +
@@ -485,6 +486,7 @@ $rtrn = '
                 })
                 .then(res => res.json())
                 .then(aiData => {
+                    alert("DEBUG:\\nProvider: " + (aiData.debug?.ai_provider || "N/A") + "\\nPhotos Setting: " + (aiData.debug?.analyze_photos_setting || "N/A") + "\\nImages Count: " + (aiData.debug?.images_count || 0) + "\\nUsing Vision: " + (aiData.debug?.using_vision || "N/A") + "\\nModel: " + (aiData.debug?.model || "N/A"));
                     if (aiData.success) {
                         // Save features to offer
                         const features = {
@@ -1109,7 +1111,7 @@ $rtrn = '
             doc.text(removeDiacritics(translateValue(offer.transmission)), col1X + 5, p4Y + 6);
             doc.text(removeDiacritics(translateValue(offer.drive_type)), col2X + 5, p4Y + 6);
             doc.text(removeDiacritics(translateValue(offer.color)), col3X + 5, p4Y + 6);
-            p4Y += specRowHeight + 15;
+            p4Y += specRowHeight + 5;
             
             // AI Features: Siguranta si Confort
             var aiFeatures = null;
@@ -1121,47 +1123,49 @@ $rtrn = '
                 // Siguranta section
                 if (aiFeatures.safety && aiFeatures.safety.length > 0) {
                     doc.setTextColor(0, 0, 0);
-                    doc.setFontSize(14);
+                    doc.setFontSize(11);
                     doc.setFont("helvetica", "bold");
                     doc.text("Siguranta", p4Margin, p4Y);
-                    p4Y += 7;
+                    p4Y += 5;
                     
-                    doc.setFontSize(10);
+                    doc.setFontSize(8);
                     doc.setFont("helvetica", "normal");
                     aiFeatures.safety.forEach(function(item) {
-                        // Draw red checkbox
+                        // Draw red checkbox with checkmark
                         doc.setDrawColor(226, 0, 26);
-                        doc.setFillColor(226, 0, 26);
-                        doc.rect(p4Margin, p4Y - 3, 4, 4, "S");
-                        doc.line(p4Margin + 0.5, p4Y - 1, p4Margin + 1.5, p4Y);
-                        doc.line(p4Margin + 1.5, p4Y, p4Margin + 3.5, p4Y - 2.5);
+                        doc.setLineWidth(0.3);
+                        doc.rect(p4Margin, p4Y - 2, 3, 3, "S");
+                        doc.setLineWidth(0.4);
+                        doc.line(p4Margin + 0.5, p4Y - 0.5, p4Margin + 1.2, p4Y + 0.1);
+                        doc.line(p4Margin + 1.2, p4Y + 0.1, p4Margin + 2.5, p4Y - 1.5);
                         doc.setTextColor(0, 0, 0);
-                        doc.text(removeDiacritics(item), p4Margin + 8, p4Y);
-                        p4Y += 6;
+                        doc.text(removeDiacritics(item), p4Margin + 5, p4Y);
+                        p4Y += 4;
                     });
-                    p4Y += 8;
+                    p4Y += 3;
                 }
                 
                 // Confort section
                 if (aiFeatures.comfort && aiFeatures.comfort.length > 0) {
                     doc.setTextColor(0, 0, 0);
-                    doc.setFontSize(14);
+                    doc.setFontSize(11);
                     doc.setFont("helvetica", "bold");
                     doc.text("Confort", p4Margin, p4Y);
-                    p4Y += 7;
+                    p4Y += 5;
                     
-                    doc.setFontSize(10);
+                    doc.setFontSize(8);
                     doc.setFont("helvetica", "normal");
                     aiFeatures.comfort.forEach(function(item) {
-                        // Draw red checkbox
+                        // Draw red checkbox with checkmark
                         doc.setDrawColor(226, 0, 26);
-                        doc.setFillColor(226, 0, 26);
-                        doc.rect(p4Margin, p4Y - 3, 4, 4, "S");
-                        doc.line(p4Margin + 0.5, p4Y - 1, p4Margin + 1.5, p4Y);
-                        doc.line(p4Margin + 1.5, p4Y, p4Margin + 3.5, p4Y - 2.5);
+                        doc.setLineWidth(0.3);
+                        doc.rect(p4Margin, p4Y - 2, 3, 3, "S");
+                        doc.setLineWidth(0.4);
+                        doc.line(p4Margin + 0.5, p4Y - 0.5, p4Margin + 1.2, p4Y + 0.1);
+                        doc.line(p4Margin + 1.2, p4Y + 0.1, p4Margin + 2.5, p4Y - 1.5);
                         doc.setTextColor(0, 0, 0);
-                        doc.text(removeDiacritics(item), p4Margin + 8, p4Y);
-                        p4Y += 6;
+                        doc.text(removeDiacritics(item), p4Margin + 5, p4Y);
+                        p4Y += 4;
                     });
                 }
             }
