@@ -751,15 +751,17 @@ $rtrn = '
         const logoImg = new Image();
         const pag03Img = new Image();
         const pag07Img = new Image();
-        let bgLoaded = false, logoLoaded = false, pag03Loaded = false, pag07Loaded = false;
+        const pag08Img = new Image();
+        let bgLoaded = false, logoLoaded = false, pag03Loaded = false, pag07Loaded = false, pag08Loaded = false;
         
         bgImg.src = "/content/admin/page/calculator/img/pdf-bg.jpg";
         logoImg.src = "/content/admin/page/calculator/img/logo.png";
         pag03Img.src = "/content/admin/page/calculator/img/pag_03.jpg";
         pag07Img.src = "/content/admin/page/calculator/img/pag_07.jpg";
+        pag08Img.src = "/content/admin/page/calculator/img/pag_08.jpg";
         
         function generatePDFWithImages() {
-            if (!bgLoaded || !logoLoaded || !pag03Loaded || !pag07Loaded) return;
+            if (!bgLoaded || !logoLoaded || !pag03Loaded || !pag07Loaded || !pag08Loaded) return;
             
             // === PAGE 1: Background image with logo ===
             // Background: full width, 3% margin top only
@@ -870,7 +872,7 @@ $rtrn = '
             // Contents list (centered vertically)
             doc.setFontSize(14);
             doc.setFont("helvetica", "normal");
-            var totalItems = 6;
+            var totalItems = 5;
             var itemHeight = 22;
             var totalContentHeight = totalItems * itemHeight;
             var contentY = (pageHeight - totalContentHeight) / 2;
@@ -879,8 +881,7 @@ $rtrn = '
                 { title: "Specificatia tehnica", page: "04" },
                 { title: "Imagini de produs", page: "05" },
                 { title: "Pret", page: "06" },
-                { title: "Rapoarte si informatii aditionale", page: "07" },
-                { title: "Termeni si conditii", page: "08" }
+                { title: "Termeni si conditii", page: "07" }
             ];
             
             // Center horizontally - calculate content width and center it
@@ -1500,6 +1501,40 @@ $rtrn = '
             doc.setFontSize(14);
             doc.text("07", pageWidth - rectWidth / 2 - p7Margin, pageHeight - rectHeight / 2 + 5, { align: "center" });
             
+            // === PAGE 8: Contact page ===
+            doc.addPage();
+            const p8Margin = pageWidth * 0.03;
+            
+            // Background image pag_08 (same layout as page 1)
+            const p8ImgY = p8Margin;
+            const p8ImgWidth = pageWidth;
+            const p8ImgHeight = pageHeight * 0.75;
+            doc.addImage(pag08Img, "JPEG", 0, p8ImgY, p8ImgWidth, p8ImgHeight);
+            
+            // Logo with black background
+            doc.setFillColor(0, 0, 0);
+            doc.rect(p8Margin, 0, bgWidth, bgHeight, "F");
+            doc.addImage(logoImg, "PNG", p8Margin + bgPadding, bgPadding, logoWidth, logoHeight);
+            
+            // Footer info on page 8 (on the RIGHT side, unlike page 1)
+            doc.setTextColor(51, 51, 51);
+            doc.setFontSize(10);
+            const p8FooterY = pageHeight * 0.85;
+            const p8FooterX = pageWidth - p8Margin - 60;
+            doc.setFont("helvetica", "bold");
+            doc.text("SAUTO SRL", p8FooterX, p8FooterY, { align: "right" });
+            doc.setFont("helvetica", "normal");
+            doc.text("+373 68 68 99 95", p8FooterX, p8FooterY + 5, { align: "right" });
+            doc.text("info@sauto.md", p8FooterX, p8FooterY + 10, { align: "right" });
+            doc.text("Chisinau str Calea Mosilor 11", p8FooterX, p8FooterY + 15, { align: "right" });
+            
+            // Red rectangle bottom right with page number 08
+            doc.setFillColor(226, 0, 26);
+            doc.rect(pageWidth - rectWidth - p8Margin, pageHeight - rectHeight, rectWidth, rectHeight, "F");
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(14);
+            doc.text("08", pageWidth - rectWidth / 2 - p8Margin, pageHeight - rectHeight / 2 + 5, { align: "center" });
+            
             doc.save(fileName);
             } // end continuePDF
         }
@@ -1508,10 +1543,12 @@ $rtrn = '
         logoImg.onload = function() { logoLoaded = true; generatePDFWithImages(); };
         pag03Img.onload = function() { pag03Loaded = true; generatePDFWithImages(); };
         pag07Img.onload = function() { pag07Loaded = true; generatePDFWithImages(); };
+        pag08Img.onload = function() { pag08Loaded = true; generatePDFWithImages(); };
         bgImg.onerror = function() { bgLoaded = true; generatePDFWithImages(); };
         logoImg.onerror = function() { logoLoaded = true; generatePDFWithImages(); };
         pag03Img.onerror = function() { pag03Loaded = true; generatePDFWithImages(); };
         pag07Img.onerror = function() { pag07Loaded = true; generatePDFWithImages(); };
+        pag08Img.onerror = function() { pag08Loaded = true; generatePDFWithImages(); };
     }
 })();
 </script>
