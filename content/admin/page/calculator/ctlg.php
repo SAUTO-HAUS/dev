@@ -592,6 +592,17 @@ $rtrn = '
         .then(res => res.json())
         .then(data => {
             if (data.success && data.offer) {
+                // Check if AI features (safety & comfort) have been generated
+                var aiFeatures = null;
+                try {
+                    aiFeatures = JSON.parse(data.offer.ai_features || "null");
+                } catch(e) {}
+                
+                if (!aiFeatures || !aiFeatures.safety || !aiFeatures.comfort || aiFeatures.safety.length === 0 || aiFeatures.comfort.length === 0) {
+                    alert("Для экспорта PDF сначала необходимо сгенерировать Безопасность и Комфорт с помощью AI 🤖!");
+                    return;
+                }
+                
                 createPDF(data.offer);
             } else {
                 alert("Error loading offer");

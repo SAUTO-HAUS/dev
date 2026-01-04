@@ -65,11 +65,13 @@ $prompt = "Based on the car data below, generate a list of SAFETY features (Sigu
 {$carData}
 
 IMPORTANT RULES:
-1. List ONLY features that are STANDARD equipment for this specific model and year - do NOT guess or add optional features
-2. Do NOT use words like 'optional', 'in functie de', 'pe unele echipari', 'disponibil' - these are FORBIDDEN
-3. Each feature must be stated as a FACT, not a possibility
-4. Include 5-8 items for each category
-5. Use simple, clear Romanian language without qualifiers
+1. Generate REAL and ACCURATE features that THIS SPECIFIC car model and year ACTUALLY HAS - based on real manufacturer specifications
+2. Do NOT generate generic or standard features - each feature must be VERIFIED for this exact model
+3. Do NOT use words like 'optional', 'in functie de', 'pe unele echipari', 'disponibil' - these are FORBIDDEN
+4. Each feature must be stated as a FACT, not a possibility
+5. Include 5-8 items for each category
+6. Use simple, clear Romanian language without qualifiers
+7. If you are not 100% sure a feature exists on this model - DO NOT include it
 
 IMPORTANT: Return EXACTLY in this JSON format:
 {
@@ -78,8 +80,8 @@ IMPORTANT: Return EXACTLY in this JSON format:
 }
 
 Examples of CORRECT features:
-Safety: Sistem ABS, Airbag-uri frontale, Control stabilitate ESP, Senzori parcare spate
-Comfort: Aer conditionat, Servodirectie, Geamuri electrice fata si spate, Volan multifunctional";
+Safety: Anti-lock braking system (ABS), Traction control system (TCS/ASR/TRC), Side airbags, Parking sensors, Surround view camera, Anti-theft device, Summer tires
+Comfort: Air conditioning, Power steering, Height-adjustable steering column, Sunroof, Heated side mirrors, Central locking";
 
 // Choose API based on settings
 $aiProvider = $aiSettings['ai_provider'] ?? 'openai';
