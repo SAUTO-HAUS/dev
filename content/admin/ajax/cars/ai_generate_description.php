@@ -189,11 +189,28 @@ while (strpos($editablePrompt, '&amp;') !== false) {
     $editablePrompt = html_entity_decode($editablePrompt, ENT_QUOTES, 'UTF-8');
 }
 
+// HTML structure with required sections and icons (fixed in code)
+$htmlStructure = '
+HTML STRUCTURE (MANDATORY - use span with icons exactly as shown):
+1. <h2>{Brand} {Model} | {Engine} | {Fuel} | {Year}</h2>
+2. <h3><span class="desc-icon desc-icon-features"></span>Equipment</h3>
+3. <h3><span class="desc-icon desc-icon-spec"></span>Technical specifications</h3>
+4. <h3><span class="desc-icon desc-icon-engine"></span>Engine details</h3>
+   - oil subsection: <h4><span class="desc-icon desc-icon-oil"></span>Oil / Consumables</h4>
+5. <h3><span class="desc-icon desc-icon-suspension"></span>Suspension details</h3>
+6. <h3><span class="desc-icon desc-icon-gearbox"></span>Gearbox details</h3>
+7. <h3><span class="desc-icon desc-icon-condition"></span>Vehicle condition</h3>
+
+IMPORTANT: 
+- Every h3 heading MUST start with <span class="desc-icon desc-icon-XXX"></span> to display the icon!
+- Translate section titles to the OUTPUT language (RO: Echipare, Caracteristici tehnice, etc. / RU: Оснащение, Технические характеристики, etc. / EN: Equipment, Technical specifications, etc.)
+- Use your knowledge database to provide REAL technical data for this specific car model (engine specs, transmission type, suspension type, oil capacity, timing belt/chain info, etc.) - do NOT write generic text!';
+
 // JSON format is required for parsing the response
 $jsonFormat = 'IMPORTANT: Return EXACTLY in this JSON format:
 {"ro": "<HTML in Romanian>", "ru": "<HTML in Russian>", "en": "<HTML in English>"}';
 
-$prompt = $editablePrompt . "\n\n" . $fixedCarData . "\n\n" . $jsonFormat;
+$prompt = $editablePrompt . "\n\n" . $fixedCarData . "\n\n" . $htmlStructure . "\n\n" . $jsonFormat;
 
 // Choose API based on settings
 $aiProvider = $aiSettings['ai_provider'] ?? 'openai';
