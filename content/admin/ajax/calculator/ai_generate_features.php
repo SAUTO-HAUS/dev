@@ -69,7 +69,7 @@ IMPORTANT RULES:
 2. Do NOT generate generic or standard features - each feature must be VERIFIED for this exact model
 3. Do NOT use words like 'optional', 'in functie de', 'pe unele echipari', 'disponibil' - these are FORBIDDEN
 4. Each feature must be stated as a FACT, not a possibility
-5. Include 5-8 items for each category
+5. Include EXACTLY 7 items for Safety and EXACTLY 7 items for Comfort
 6. Use simple, clear Romanian language without qualifiers
 7. If you are not 100% sure a feature exists on this model - DO NOT include it
 
