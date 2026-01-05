@@ -567,7 +567,7 @@ $rtrn = '
     const t = {
         results: "Ofertă comercială",
         client: "Client",
-        value_mdl: "Valoarea in vama (MDL)",
+        value_mdl: "Valoarea in vama",
         excise: "Acciza",
         customs_duty: "Taxa proceduri vamale",
         damage_protection: "Protectie impotriva daunelor",
