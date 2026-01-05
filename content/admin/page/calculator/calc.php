@@ -342,9 +342,17 @@ $rtrn = '
         min-height: 50px;
     }
     
+    /* Position image 7 under image 5 (middle column, row 3) */
+    #calculator-container .offer-images-grid .image-item:nth-child(7) {
+        grid-column: 2;
+    }
+    
     @media (max-width: 600px) {
         #calculator-container .offer-images-grid {
             grid-template-columns: repeat(2, 1fr);
+        }
+        #calculator-container .offer-images-grid .image-item:nth-child(7) {
+            grid-column: auto;
         }
     }
     
@@ -2051,9 +2059,9 @@ $rtrn = '
     function updateImagesCounter() {
         const count = offerImages.length;
         const counter = document.getElementById("images-counter");
-        counter.textContent = count + " / 6";
+        counter.textContent = count + " / 7";
         counter.classList.remove("complete", "incomplete");
-        if (count === 6) {
+        if (count === 7) {
             counter.classList.add("complete");
         } else if (count > 0) {
             counter.classList.add("incomplete");
@@ -2169,8 +2177,8 @@ $rtrn = '
             validFiles.push(file);
         }
         
-        // Limit to 6 total
-        const slotsAvailable = 6 - offerImages.length;
+        // Limit to 7 total
+        const slotsAvailable = 7 - offerImages.length;
         if (validFiles.length > slotsAvailable) {
             validFiles = validFiles.slice(0, slotsAvailable);
         }

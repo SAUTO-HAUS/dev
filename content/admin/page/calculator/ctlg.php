@@ -1307,44 +1307,48 @@ $rtrn = '
                     // Use same gap everywhere
                     var gap = p5Gap;
                     
-                    // Row 3 position (aligned with top of red rectangle)
-                    var rectTopY = pageHeight - rectHeight;
-                    var row3ImgHeight = rectHeight * 0.75;
+                    // Calculate uniform height for images 2-7 (all same height)
+                    // 3 rows of images with 2 gaps between them, ending at bottom of page (minus margin)
+                    var bottomMargin = p5Margin;
+                    var availableHeightForSmallImages = pageHeight - bottomMargin - (row1Y + row1Height + gap) - gap * 2;
+                    var uniformImgHeight = availableHeightForSmallImages / 3;
                     
-                    // Row 2: calculate to fill remaining space from row1 to row3
+                    // Images 2-5: equal width (50% each)
+                    var halfWidth = (fullWidth - gap) / 2;
+                    
+                    // Row 2 starts after image 1
                     var row2Y = row1Y + row1Height + gap;
-                    var row2Height = rectTopY - row2Y - gap; // fills all remaining height
-                    var leftWidth = fullWidth * 0.60 - gap / 2;
-                    var rightWidth = fullWidth * 0.40 - gap / 2;
-                    var leftImgHeight = (row2Height - gap) / 2; // 2 images stacked on left
-                    var rightImgHeight = (row2Height - gap) / 2; // 2 images stacked on right
                     
-                    // Left column: 2 images stacked (imgs 1 and 2)
+                    // Left column: 2 images stacked (imgs 2 and 3)
                     if (imgs[1]) {
-                        doc.addImage(imgs[1].img, "JPEG", p5Margin, row2Y, leftWidth, leftImgHeight);
+                        doc.addImage(imgs[1].img, "JPEG", p5Margin, row2Y, halfWidth, uniformImgHeight);
                     }
                     if (imgs[2]) {
-                        doc.addImage(imgs[2].img, "JPEG", p5Margin, row2Y + leftImgHeight + gap, leftWidth, leftImgHeight);
+                        doc.addImage(imgs[2].img, "JPEG", p5Margin, row2Y + uniformImgHeight + gap, halfWidth, uniformImgHeight);
                     }
                     
-                    // Right column: 2 images stacked (imgs 3 and 4)
+                    // Right column: 2 images stacked (imgs 4 and 5)
                     if (imgs[3]) {
-                        doc.addImage(imgs[3].img, "JPEG", p5Margin + leftWidth + gap, row2Y, rightWidth, rightImgHeight);
+                        doc.addImage(imgs[3].img, "JPEG", p5Margin + halfWidth + gap, row2Y, halfWidth, uniformImgHeight);
                     }
                     if (imgs[4]) {
-                        doc.addImage(imgs[4].img, "JPEG", p5Margin + leftWidth + gap, row2Y + rightImgHeight + gap, rightWidth, rightImgHeight);
+                        doc.addImage(imgs[4].img, "JPEG", p5Margin + halfWidth + gap, row2Y + uniformImgHeight + gap, halfWidth, uniformImgHeight);
                     }
                     
-                    // Row 3: 2 images + red rectangle (aligned with top of red rectangle, smaller height)
+                    // Row 3: 2 images + red rectangle (same height as images 2-5)
+                    var row3Y = row2Y + uniformImgHeight * 2 + gap * 2;
                     var availableWidth = fullWidth - rectWidth - gap * 2;
                     var col3Width = availableWidth / 2;
                     
                     if (imgs[5]) {
-                        doc.addImage(imgs[5].img, "JPEG", p5Margin, rectTopY, col3Width, row3ImgHeight);
+                        doc.addImage(imgs[5].img, "JPEG", p5Margin, row3Y, col3Width, uniformImgHeight);
                     }
                     if (imgs[6]) {
-                        doc.addImage(imgs[6].img, "JPEG", p5Margin + col3Width + gap, rectTopY, col3Width, row3ImgHeight);
+                        doc.addImage(imgs[6].img, "JPEG", p5Margin + col3Width + gap, row3Y, col3Width, uniformImgHeight);
                     }
+                    
+                    // Red rectangle bottom right with page number 05
+                    var rectTopY = row3Y;
                     
                     // Red rectangle bottom right with page number 05 (standard size like other pages)
                     doc.setFillColor(226, 0, 26);
