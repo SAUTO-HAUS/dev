@@ -133,6 +133,7 @@ if ($fn === 'save_eur_rate') {
         $color = isset($_POST['color']) ? trim($_POST['color']) : '';
         $pdf_lang = isset($_POST['pdf_lang']) ? $_POST['pdf_lang'] : 'ro';
         $calculation_data = isset($_POST['calculation_data']) ? $_POST['calculation_data'] : '{}';
+        $existing_offer_id = isset($_POST['offer_id']) ? intval($_POST['offer_id']) : 0;
         
         // Validate exactly 6 images
         if (!isset($_FILES['images']) || count($_FILES['images']['name']) !== 6) {
@@ -140,30 +141,60 @@ if ($fn === 'save_eur_rate') {
             exit;
         }
         
-        // Insert offer into database first to get the ID
-        $pdo = $db->prepare('INSERT INTO '.$prefx.'_calculator_offers 
-            (client_name, brand, model, year, bodywork, seats, cylinder_capacity, fuel_type, mileage, engine_power, transmission, drive_type, color, pdf_lang, calculation_data, created_by) 
-            VALUES (:client_name, :brand, :model, :year, :bodywork, :seats, :cylinder_capacity, :fuel_type, :mileage, :engine_power, :transmission, :drive_type, :color, :pdf_lang, :calculation_data, :created_by)');
-        $pdo->execute([
-            'client_name' => $client_name,
-            'brand' => $brand,
-            'model' => $model,
-            'year' => $year,
-            'bodywork' => $bodywork,
-            'seats' => $seats,
-            'cylinder_capacity' => $cylinder_capacity,
-            'fuel_type' => $fuel_type,
-            'mileage' => $mileage,
-            'engine_power' => $engine_power,
-            'transmission' => $transmission,
-            'drive_type' => $drive_type,
-            'color' => $color,
-            'pdf_lang' => $pdf_lang,
-            'calculation_data' => $calculation_data,
-            'created_by' => $user_id
-        ]);
-        
-        $offer_id = $db->lastInsertId();
+        // Check if updating existing offer or creating new one
+        if ($existing_offer_id > 0) {
+            // UPDATE existing offer
+            $pdo = $db->prepare('UPDATE '.$prefx.'_calculator_offers SET
+                client_name = :client_name, brand = :brand, model = :model, year = :year, 
+                bodywork = :bodywork, seats = :seats, cylinder_capacity = :cylinder_capacity, 
+                fuel_type = :fuel_type, mileage = :mileage, engine_power = :engine_power, 
+                transmission = :transmission, drive_type = :drive_type, color = :color, 
+                pdf_lang = :pdf_lang, calculation_data = :calculation_data
+                WHERE id = :id');
+            $pdo->execute([
+                'client_name' => $client_name,
+                'brand' => $brand,
+                'model' => $model,
+                'year' => $year,
+                'bodywork' => $bodywork,
+                'seats' => $seats,
+                'cylinder_capacity' => $cylinder_capacity,
+                'fuel_type' => $fuel_type,
+                'mileage' => $mileage,
+                'engine_power' => $engine_power,
+                'transmission' => $transmission,
+                'drive_type' => $drive_type,
+                'color' => $color,
+                'pdf_lang' => $pdf_lang,
+                'calculation_data' => $calculation_data,
+                'id' => $existing_offer_id
+            ]);
+            $offer_id = $existing_offer_id;
+        } else {
+            // INSERT new offer
+            $pdo = $db->prepare('INSERT INTO '.$prefx.'_calculator_offers 
+                (client_name, brand, model, year, bodywork, seats, cylinder_capacity, fuel_type, mileage, engine_power, transmission, drive_type, color, pdf_lang, calculation_data, created_by) 
+                VALUES (:client_name, :brand, :model, :year, :bodywork, :seats, :cylinder_capacity, :fuel_type, :mileage, :engine_power, :transmission, :drive_type, :color, :pdf_lang, :calculation_data, :created_by)');
+            $pdo->execute([
+                'client_name' => $client_name,
+                'brand' => $brand,
+                'model' => $model,
+                'year' => $year,
+                'bodywork' => $bodywork,
+                'seats' => $seats,
+                'cylinder_capacity' => $cylinder_capacity,
+                'fuel_type' => $fuel_type,
+                'mileage' => $mileage,
+                'engine_power' => $engine_power,
+                'transmission' => $transmission,
+                'drive_type' => $drive_type,
+                'color' => $color,
+                'pdf_lang' => $pdf_lang,
+                'calculation_data' => $calculation_data,
+                'created_by' => $user_id
+            ]);
+            $offer_id = $db->lastInsertId();
+        }
         
         // Create directory for offer images
         $upload_base = $_SERVER['DOCUMENT_ROOT'] . '/uploads/calculator_offers';

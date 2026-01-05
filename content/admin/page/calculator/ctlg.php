@@ -1365,28 +1365,29 @@ $rtrn = '
             doc.text(removeDiacritics("pret"), p6Margin + 10, y + 22);
             y += 34;
             
-            // Results
-            const results = [
-                { key: "value", label: t.value_mdl },
-                { key: "excise", label: t.excise },
-                { key: "customs", label: t.customs_duty },
-                { key: "damage", label: t.damage_protection },
-                { key: "exportDecl", label: t.export_declaration },
-                { key: "bank", label: t.bank_commission },
-                { key: "auction", label: t.auction_commission },
-                { key: "pollution", label: t.pollution_tax },
-                { key: "shipping", label: t.shipping_docs },
-                { key: "accessories", label: t.accessories },
-                { key: "transaction", label: t.transaction_commission }
+            // Get toggle states from saved data (default to true for backwards compatibility)
+            const toggles = calcData.toggles || {};
+            const isToggleEnabled = (key) => toggles[key] !== undefined ? toggles[key] : true;
+            
+            // Results - only include items with enabled toggles
+            const allResults = [
+                { key: "value", toggleKey: "value", label: t.value_mdl },
+                { key: "excise", toggleKey: "excise", label: t.excise },
+                { key: "customs", toggleKey: "customs", label: t.customs_duty },
+                { key: "damage", toggleKey: "damage", label: t.damage_protection },
+                { key: "exportDecl", toggleKey: "export", label: t.export_declaration },
+                { key: "bank", toggleKey: "bank", label: t.bank_commission },
+                { key: "auction", toggleKey: "auction", label: t.auction_commission },
+                { key: "pollution", toggleKey: "pollution", label: t.pollution_tax },
+                { key: "shipping", toggleKey: "shipping", label: t.shipping_docs },
+                { key: "accessories", toggleKey: "accessories", label: t.accessories },
+                { key: "transaction", toggleKey: "transaction", label: t.transaction_commission },
+                { key: "polishing", toggleKey: "polishing", label: "Polizare si curatire chimica" },
+                { key: "painting", toggleKey: "painting", label: "Vopsire" }
             ];
             
-            // Add polishing and painting if they have values
-            if (calcData.polishing && (parseFloat(calcData.polishing.mdl) > 0 || parseFloat(calcData.polishing.eur) > 0)) {
-                results.push({ key: "polishing", label: "Polizare si curatire chimica" });
-            }
-            if (calcData.painting && (parseFloat(calcData.painting.mdl) > 0 || parseFloat(calcData.painting.eur) > 0)) {
-                results.push({ key: "painting", label: "Vopsire" });
-            }
+            // Filter results based on toggle state
+            const results = allResults.filter(item => isToggleEnabled(item.toggleKey));
             
             doc.setFontSize(11);
             var valueX = pageWidth - 90; // fixed X position for values column (left-aligned)

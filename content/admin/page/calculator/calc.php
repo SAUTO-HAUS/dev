@@ -869,7 +869,7 @@ $rtrn = '
             </div>
             <div class="form-group">
                 <label>'.$t['transport_price'].'</label>
-                <input type="number" id="transport_eur" placeholder="'.$t['transport_placeholder'].'" min="0" value="0">
+                <input type="number" id="transport_eur" placeholder="'.$t['transport_placeholder'].'" min="0">
             </div>
         </div>
         
@@ -906,51 +906,123 @@ $rtrn = '
     <div class="results" id="results">
         <h2>'.$t['results'].'</h2>
         <div class="result-row">
-            <span class="label">'.$t['value_mdl'].'</span>
+            <span class="label">
+                <label class="toggle-switch" for="enable-value">
+                    <input type="checkbox" id="enable-value" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <label for="enable-value" style="cursor:pointer;">'.$t['value_mdl'].'</label>
+            </span>
             <span class="value editable-value"><input type="number" class="editable-input" id="res-value-mdl" data-field="value" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-value-eur" data-field="value" step="1"> EUR</span></span>
         </div>
         <div class="result-row">
-            <span class="label">'.$t['excise'].'</span>
+            <span class="label">
+                <label class="toggle-switch" for="enable-excise">
+                    <input type="checkbox" id="enable-excise" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <label for="enable-excise" style="cursor:pointer;">'.$t['excise'].'</label>
+            </span>
             <span class="value editable-value"><input type="number" class="editable-input" id="res-excise-mdl" data-field="excise" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-excise-eur" data-field="excise" step="1"> EUR</span></span>
         </div>
         <div class="result-row" id="res-luxury-row" style="display:none;">
-            <span class="label">'.$t['luxury_excise'].'</span>
+            <span class="label">
+                <label class="toggle-switch" for="enable-luxury">
+                    <input type="checkbox" id="enable-luxury" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <label for="enable-luxury" style="cursor:pointer;">'.$t['luxury_excise'].'</label>
+            </span>
             <span class="value editable-value"><input type="number" class="editable-input" id="res-luxury-mdl" data-field="luxury" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-luxury-eur" data-field="luxury" step="1"> EUR</span></span>
         </div>
         <div class="result-row">
-            <span class="label">'.$t['customs_duty'].'</span>
+            <span class="label">
+                <label class="toggle-switch" for="enable-customs">
+                    <input type="checkbox" id="enable-customs" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <label for="enable-customs" style="cursor:pointer;">'.$t['customs_duty'].'</label>
+            </span>
             <span class="value editable-value"><input type="number" class="editable-input" id="res-customs-mdl" data-field="customs" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-customs-eur" data-field="customs" step="1"> EUR</span></span>
         </div>
         <div class="result-row">
-            <span class="label">'.$t['damage_protection'].' (<input type="number" step="0.1" min="0" max="10" id="damage-rate-input" class="inline-rate-input" value="'.$damage_protection_rate.'">%)</span>
+            <span class="label">
+                <label class="toggle-switch" for="enable-damage">
+                    <input type="checkbox" id="enable-damage" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <label for="enable-damage" style="cursor:pointer;">'.$t['damage_protection'].' (<input type="number" step="0.1" min="0" max="10" id="damage-rate-input" class="inline-rate-input" value="'.$damage_protection_rate.'">%)</label>
+            </span>
             <span class="value editable-value"><input type="number" class="editable-input" id="res-damage-mdl" data-field="damage" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-damage-eur" data-field="damage" step="1"> EUR</span></span>
         </div>
         <div class="result-row">
-            <span class="label">'.$t['export_declaration'].'</span>
+            <span class="label">
+                <label class="toggle-switch" for="enable-export">
+                    <input type="checkbox" id="enable-export" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <label for="enable-export" style="cursor:pointer;">'.$t['export_declaration'].'</label>
+            </span>
             <span class="value editable-value"><input type="number" class="editable-input" id="res-export-mdl" data-field="export" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-export-eur" data-field="export" step="1"> EUR</span></span>
         </div>
         <div class="result-row">
-            <span class="label">'.$t['bank_commission'].'</span>
+            <span class="label">
+                <label class="toggle-switch" for="enable-bank">
+                    <input type="checkbox" id="enable-bank" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <label for="enable-bank" style="cursor:pointer;">'.$t['bank_commission'].'</label>
+            </span>
             <span class="value editable-value"><input type="number" class="editable-input" id="res-bank-mdl" data-field="bank" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-bank-eur" data-field="bank" step="1"> EUR</span></span>
         </div>
         <div class="result-row">
-            <span class="label">'.$t['auction_commission'].'</span>
+            <span class="label">
+                <label class="toggle-switch" for="enable-auction">
+                    <input type="checkbox" id="enable-auction" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <label for="enable-auction" style="cursor:pointer;">'.$t['auction_commission'].'</label>
+            </span>
             <span class="value editable-value"><input type="number" class="editable-input" id="res-auction-mdl" data-field="auction" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-auction-eur" data-field="auction" step="1"> EUR</span></span>
         </div>
         <div class="result-row">
-            <span class="label">'.$t['pollution_tax'].'</span>
+            <span class="label">
+                <label class="toggle-switch" for="enable-pollution">
+                    <input type="checkbox" id="enable-pollution" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <label for="enable-pollution" style="cursor:pointer;">'.$t['pollution_tax'].'</label>
+            </span>
             <span class="value editable-value"><input type="number" class="editable-input" id="res-pollution-mdl" data-field="pollution" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-pollution-eur" data-field="pollution" step="1"> EUR</span></span>
         </div>
         <div class="result-row">
-            <span class="label">'.$t['shipping_docs'].'</span>
+            <span class="label">
+                <label class="toggle-switch" for="enable-shipping">
+                    <input type="checkbox" id="enable-shipping" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <label for="enable-shipping" style="cursor:pointer;">'.$t['shipping_docs'].'</label>
+            </span>
             <span class="value editable-value"><input type="number" class="editable-input" id="res-shipping-mdl" data-field="shipping" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-shipping-eur" data-field="shipping" step="1"> EUR</span></span>
         </div>
         <div class="result-row">
-            <span class="label">'.$t['accessories'].'</span>
+            <span class="label">
+                <label class="toggle-switch" for="enable-accessories">
+                    <input type="checkbox" id="enable-accessories" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <label for="enable-accessories" style="cursor:pointer;">'.$t['accessories'].'</label>
+            </span>
             <span class="value editable-value"><input type="number" class="editable-input" id="res-accessories-mdl" data-field="accessories" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-accessories-eur" data-field="accessories" step="1"> EUR</span></span>
         </div>
         <div class="result-row">
-            <span class="label">'.$t['transaction_commission'].'</span>
+            <span class="label">
+                <label class="toggle-switch" for="enable-transaction">
+                    <input type="checkbox" id="enable-transaction" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <label for="enable-transaction" style="cursor:pointer;">'.$t['transaction_commission'].'</label>
+            </span>
             <span class="value editable-value"><input type="number" class="editable-input" id="res-transaction-mdl" data-field="transaction" step="1"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-transaction-eur" data-field="transaction" step="1"> EUR</span></span>
         </div>
         <div class="result-row">
@@ -1392,7 +1464,12 @@ $rtrn = '
         
         fields.forEach(field => {
             const mdlInput = document.getElementById("res-" + field + "-mdl");
+            const toggleCheckbox = document.getElementById("enable-" + field);
             if (mdlInput) {
+                // Skip if toggle exists and is unchecked
+                if (toggleCheckbox && !toggleCheckbox.checked) {
+                    return;
+                }
                 const val = parseFloat(mdlInput.value) || 0;
                 // Skip luxury if row is hidden
                 if (field === "luxury" && document.getElementById("res-luxury-row").style.display === "none") {
@@ -1403,7 +1480,9 @@ $rtrn = '
         });
         
         const valueMdl = parseFloat(document.getElementById("res-value-mdl").value) || 0;
-        const vehicleTotalMdl = valueMdl + totalMdl;
+        const valueToggle = document.getElementById("enable-value");
+        const effectiveValueMdl = (valueToggle && !valueToggle.checked) ? 0 : valueMdl;
+        const vehicleTotalMdl = effectiveValueMdl + totalMdl;
         
         // Update total inputs
         document.getElementById("res-total-mdl").value = Math.round(totalMdl);
@@ -1468,6 +1547,16 @@ $rtrn = '
             eurInput.value = 0;
         }
         recalculateTotals();
+    });
+    
+    // Event listeners for all other toggles (default ON)
+    ["value", "excise", "luxury", "customs", "damage", "export", "bank", "auction", "pollution", "shipping", "accessories", "transaction"].forEach(field => {
+        const checkbox = document.getElementById("enable-" + field);
+        if (checkbox) {
+            checkbox.addEventListener("change", function() {
+                recalculateTotals();
+            });
+        }
     });
     
     function logUsage() {
@@ -1626,21 +1715,41 @@ $rtrn = '
                 pdfContent.id = "pdf-temp-content";
                 pdfContent.style.cssText = "position:absolute;left:-9999px;width:500px;padding:20px;font-family:Arial,sans-serif;background:rgba(0,0,0,0.5);border-radius:5px;";
                 
-                // Build table rows dynamically
-                let tableRows = `
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;width:55%;">${t.value_mdl}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.value.mdl))} MDL  (${formatNumber(parseFloat(values.value.eur))} EUR)</td></tr>
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.excise}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.excise.mdl))} MDL  (${formatNumber(parseFloat(values.excise.eur))} EUR)</td></tr>
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.customs_duty}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.customs.mdl))} MDL  (${formatNumber(parseFloat(values.customs.eur))} EUR)</td></tr>
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.damage_protection}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.damage.mdl))} MDL  (${formatNumber(parseFloat(values.damage.eur))} EUR)</td></tr>
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.export_declaration}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.exportDecl.mdl))} MDL  (${formatNumber(parseFloat(values.exportDecl.eur))} EUR)</td></tr>
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.bank_commission}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.bank.mdl))} MDL  (${formatNumber(parseFloat(values.bank.eur))} EUR)</td></tr>
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.auction_commission}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.auction.mdl))} MDL  (${formatNumber(parseFloat(values.auction.eur))} EUR)</td></tr>
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.pollution_tax}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.pollution.mdl))} MDL  (${formatNumber(parseFloat(values.pollution.eur))} EUR)</td></tr>
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.shipping_docs}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.shipping.mdl))} MDL  (${formatNumber(parseFloat(values.shipping.eur))} EUR)</td></tr>
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.accessories}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.accessories.mdl))} MDL  (${formatNumber(parseFloat(values.accessories.eur))} EUR)</td></tr>
-                    <tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.transaction_commission}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.transaction.mdl))} MDL  (${formatNumber(parseFloat(values.transaction.eur))} EUR)</td></tr>`;
-                
-                // Add polishing and painting only if enabled
+                // Build table rows dynamically - only include enabled items
+                let tableRows = "";
+                if (document.getElementById("enable-value").checked) {
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;width:55%;">${t.value_mdl}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.value.mdl))} MDL  (${formatNumber(parseFloat(values.value.eur))} EUR)</td></tr>`;
+                }
+                if (document.getElementById("enable-excise").checked) {
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.excise}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.excise.mdl))} MDL  (${formatNumber(parseFloat(values.excise.eur))} EUR)</td></tr>`;
+                }
+                if (document.getElementById("enable-customs").checked) {
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.customs_duty}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.customs.mdl))} MDL  (${formatNumber(parseFloat(values.customs.eur))} EUR)</td></tr>`;
+                }
+                if (document.getElementById("enable-damage").checked) {
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.damage_protection}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.damage.mdl))} MDL  (${formatNumber(parseFloat(values.damage.eur))} EUR)</td></tr>`;
+                }
+                if (document.getElementById("enable-export").checked) {
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.export_declaration}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.exportDecl.mdl))} MDL  (${formatNumber(parseFloat(values.exportDecl.eur))} EUR)</td></tr>`;
+                }
+                if (document.getElementById("enable-bank").checked) {
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.bank_commission}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.bank.mdl))} MDL  (${formatNumber(parseFloat(values.bank.eur))} EUR)</td></tr>`;
+                }
+                if (document.getElementById("enable-auction").checked) {
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.auction_commission}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.auction.mdl))} MDL  (${formatNumber(parseFloat(values.auction.eur))} EUR)</td></tr>`;
+                }
+                if (document.getElementById("enable-pollution").checked) {
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.pollution_tax}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.pollution.mdl))} MDL  (${formatNumber(parseFloat(values.pollution.eur))} EUR)</td></tr>`;
+                }
+                if (document.getElementById("enable-shipping").checked) {
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.shipping_docs}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.shipping.mdl))} MDL  (${formatNumber(parseFloat(values.shipping.eur))} EUR)</td></tr>`;
+                }
+                if (document.getElementById("enable-accessories").checked) {
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.accessories}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.accessories.mdl))} MDL  (${formatNumber(parseFloat(values.accessories.eur))} EUR)</td></tr>`;
+                }
+                if (document.getElementById("enable-transaction").checked) {
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.transaction_commission}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.transaction.mdl))} MDL  (${formatNumber(parseFloat(values.transaction.eur))} EUR)</td></tr>`;
+                }
                 if (document.getElementById("enable-polishing").checked) {
                     tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.polishing}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.polishing.mdl))} MDL  (${formatNumber(parseFloat(values.polishing.eur))} EUR)</td></tr>`;
                 }
@@ -1782,22 +1891,41 @@ $rtrn = '
         const imgY = pageHeight * 0.03;
         let y = logoHeight + bgPadding + imgY + 10;
         
-        // Results data
-        const results = [
-            { label: t.value_mdl, mdl: values.value.mdl, eur: values.value.eur },
-            { label: t.excise, mdl: values.excise.mdl, eur: values.excise.eur },
-            { label: t.customs_duty, mdl: values.customs.mdl, eur: values.customs.eur },
-            { label: t.damage_protection, mdl: values.damage.mdl, eur: values.damage.eur },
-            { label: t.export_declaration, mdl: values.exportDecl.mdl, eur: values.exportDecl.eur },
-            { label: t.bank_commission, mdl: values.bank.mdl, eur: values.bank.eur },
-            { label: t.auction_commission, mdl: values.auction.mdl, eur: values.auction.eur },
-            { label: t.pollution_tax, mdl: values.pollution.mdl, eur: values.pollution.eur },
-            { label: t.shipping_docs, mdl: values.shipping.mdl, eur: values.shipping.eur },
-            { label: t.accessories, mdl: values.accessories.mdl, eur: values.accessories.eur },
-            { label: t.transaction_commission, mdl: values.transaction.mdl, eur: values.transaction.eur }
-        ];
-        
-        // Add polishing and painting only if enabled
+        // Results data - only include enabled items
+        const results = [];
+        if (document.getElementById("enable-value").checked) {
+            results.push({ label: t.value_mdl, mdl: values.value.mdl, eur: values.value.eur });
+        }
+        if (document.getElementById("enable-excise").checked) {
+            results.push({ label: t.excise, mdl: values.excise.mdl, eur: values.excise.eur });
+        }
+        if (document.getElementById("enable-customs").checked) {
+            results.push({ label: t.customs_duty, mdl: values.customs.mdl, eur: values.customs.eur });
+        }
+        if (document.getElementById("enable-damage").checked) {
+            results.push({ label: t.damage_protection, mdl: values.damage.mdl, eur: values.damage.eur });
+        }
+        if (document.getElementById("enable-export").checked) {
+            results.push({ label: t.export_declaration, mdl: values.exportDecl.mdl, eur: values.exportDecl.eur });
+        }
+        if (document.getElementById("enable-bank").checked) {
+            results.push({ label: t.bank_commission, mdl: values.bank.mdl, eur: values.bank.eur });
+        }
+        if (document.getElementById("enable-auction").checked) {
+            results.push({ label: t.auction_commission, mdl: values.auction.mdl, eur: values.auction.eur });
+        }
+        if (document.getElementById("enable-pollution").checked) {
+            results.push({ label: t.pollution_tax, mdl: values.pollution.mdl, eur: values.pollution.eur });
+        }
+        if (document.getElementById("enable-shipping").checked) {
+            results.push({ label: t.shipping_docs, mdl: values.shipping.mdl, eur: values.shipping.eur });
+        }
+        if (document.getElementById("enable-accessories").checked) {
+            results.push({ label: t.accessories, mdl: values.accessories.mdl, eur: values.accessories.eur });
+        }
+        if (document.getElementById("enable-transaction").checked) {
+            results.push({ label: t.transaction_commission, mdl: values.transaction.mdl, eur: values.transaction.eur });
+        }
         if (document.getElementById("enable-polishing").checked) {
             results.push({ label: t.polishing, mdl: values.polishing.mdl, eur: values.polishing.eur });
         }
@@ -1909,6 +2037,7 @@ $rtrn = '
     
     // Image upload handling - multi-select with drag & drop reordering
     let offerImages = []; // Array of {file: File, dataUrl: string}
+    let editingOfferId = null; // ID of offer being edited (null for new offers)
     const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
     const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
     const IMAGES_REQUIRED_TEXT = "'.$t['images_required'].'";
@@ -2155,11 +2284,31 @@ $rtrn = '
             fuelType: document.querySelector(\'input[name="fuel-type"]:checked\')?.value || ""
         };
         
+        // Get toggle states
+        const toggles = {
+            value: document.getElementById("enable-value").checked,
+            excise: document.getElementById("enable-excise").checked,
+            luxury: document.getElementById("enable-luxury").checked,
+            customs: document.getElementById("enable-customs").checked,
+            damage: document.getElementById("enable-damage").checked,
+            export: document.getElementById("enable-export").checked,
+            bank: document.getElementById("enable-bank").checked,
+            auction: document.getElementById("enable-auction").checked,
+            pollution: document.getElementById("enable-pollution").checked,
+            shipping: document.getElementById("enable-shipping").checked,
+            accessories: document.getElementById("enable-accessories").checked,
+            transaction: document.getElementById("enable-transaction").checked,
+            polishing: document.getElementById("enable-polishing").checked,
+            painting: document.getElementById("enable-painting").checked
+        };
+        
         // Get calculation result values
         const values = {
             inputs: calculatorInputs,
+            toggles: toggles,
             value: { mdl: document.getElementById("res-value-mdl").value || "0", eur: document.getElementById("res-value-eur").value || "0" },
             excise: { mdl: document.getElementById("res-excise-mdl").value || "0", eur: document.getElementById("res-excise-eur").value || "0" },
+            luxury: { mdl: document.getElementById("res-luxury-mdl").value || "0", eur: document.getElementById("res-luxury-eur").value || "0" },
             customs: { mdl: document.getElementById("res-customs-mdl").value || "0", eur: document.getElementById("res-customs-eur").value || "0" },
             damage: { mdl: document.getElementById("res-damage-mdl").value || "0", eur: document.getElementById("res-damage-eur").value || "0" },
             exportDecl: { mdl: document.getElementById("res-export-mdl").value || "0", eur: document.getElementById("res-export-eur").value || "0" },
@@ -2196,6 +2345,11 @@ $rtrn = '
             formData.append("color", color);
             formData.append("pdf_lang", lang);
             formData.append("calculation_data", JSON.stringify(values));
+            
+            // If editing existing offer, send the ID for update
+            if (editingOfferId) {
+                formData.append("offer_id", editingOfferId);
+            }
             
             // Append images (in order) - handle both new files and existing images from Edit
             for (let i = 0; i < offerImages.length; i++) {
@@ -2286,6 +2440,11 @@ $rtrn = '
         try {
             const offer = JSON.parse(editOfferData);
             
+            // Store offer ID for update instead of insert
+            if (offer.id) {
+                editingOfferId = offer.id;
+            }
+            
             // Set flag to prevent brand change event
             isLoadingFromEdit = true;
             
@@ -2325,15 +2484,35 @@ $rtrn = '
                     
                     // Wait for models to load, then set the model
                     const checkModelsLoaded = setInterval(() => {
-                        if (modelSelect.options.length > 1) {
+                        // Check if real models are loaded (not just "Loading..." placeholder)
+                        const hasRealModels = modelSelect.options.length > 1 && 
+                            modelSelect.options[1].value !== "Loading..." && 
+                            modelSelect.options[1].text.indexOf("Loading") === -1;
+                        
+                        if (hasRealModels) {
                             clearInterval(checkModelsLoaded);
                             
+                            // Try exact match first
                             modelSelect.value = offer.model;
+                            
+                            // If no match, try case-insensitive and normalized comparisons
                             if (!modelSelect.value && offer.model) {
+                                const offerModelLower = offer.model.toLowerCase().trim();
+                                const offerModelNormalized = offerModelLower.replace(/[\s_-]+/g, "");
+                                
                                 for (let i = 0; i < modelSelect.options.length; i++) {
-                                    if (modelSelect.options[i].text === offer.model || 
-                                        modelSelect.options[i].value === offer.model.toLowerCase() ||
-                                        modelSelect.options[i].text.toLowerCase() === offer.model.toLowerCase()) {
+                                    const optValue = modelSelect.options[i].value;
+                                    const optText = modelSelect.options[i].text;
+                                    const optValueLower = optValue.toLowerCase().trim();
+                                    const optTextLower = optText.toLowerCase().trim();
+                                    const optValueNormalized = optValueLower.replace(/[\s_-]+/g, "");
+                                    const optTextNormalized = optTextLower.replace(/[\s_-]+/g, "");
+                                    
+                                    if (optValue === offer.model ||
+                                        optValueLower === offerModelLower ||
+                                        optTextLower === offerModelLower ||
+                                        optValueNormalized === offerModelNormalized ||
+                                        optTextNormalized === offerModelNormalized) {
                                         modelSelect.selectedIndex = i;
                                         break;
                                     }
@@ -2436,6 +2615,37 @@ $rtrn = '
                         document.getElementById("res-painting-eur").value = calcData.painting.eur || 0;
                     }
                 }
+                
+                // Restore toggle states from saved data
+                if (calcData.toggles) {
+                    const toggleMapping = {
+                        value: "enable-value",
+                        excise: "enable-excise",
+                        luxury: "enable-luxury",
+                        customs: "enable-customs",
+                        damage: "enable-damage",
+                        export: "enable-export",
+                        bank: "enable-bank",
+                        auction: "enable-auction",
+                        pollution: "enable-pollution",
+                        shipping: "enable-shipping",
+                        accessories: "enable-accessories",
+                        transaction: "enable-transaction",
+                        polishing: "enable-polishing",
+                        painting: "enable-painting"
+                    };
+                    
+                    for (const [key, elementId] of Object.entries(toggleMapping)) {
+                        const checkbox = document.getElementById(elementId);
+                        if (checkbox && calcData.toggles[key] !== undefined) {
+                            checkbox.checked = calcData.toggles[key];
+                        }
+                    }
+                    
+                    // Recalculate totals after restoring toggles
+                    recalculateTotals();
+                }
+                
                 if (calcData.total) {
                     document.getElementById("res-total-mdl").value = calcData.total.mdl || 0;
                     document.getElementById("res-total-eur").value = calcData.total.eur || 0;
