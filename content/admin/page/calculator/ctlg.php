@@ -1264,13 +1264,31 @@ $rtrn = '
                 Promise.all(imgPromises).then(function(results) {
                     var imgs = results.filter(function(r) { return r; }).sort(function(a, b) { return a.idx - b.idx; });
                     
-                    // Row 1: Big image (full width) - 37% height with logo and title overlay
-                    var row1Height = pageHeight * 0.37;
+                    // Row 1: Big image - fixed height, width calculated to preserve aspect ratio
                     var row1Y = p5Margin;
                     var fullWidth = pageWidth - p5Margin * 2;
+                    var row1Height = pageHeight * 0.37;
                     
                     if (imgs[0]) {
-                        doc.addImage(imgs[0].img, "JPEG", p5Margin, row1Y, fullWidth, row1Height);
+                        // Calculate dimensions to fit image in container (contain mode)
+                        var imgRatio = imgs[0].img.width / imgs[0].img.height;
+                        var containerRatio = fullWidth / row1Height;
+                        var drawW, drawH, drawX, drawY;
+                        
+                        if (imgRatio > containerRatio) {
+                            // Image is wider - fit to width, center vertically
+                            drawW = fullWidth;
+                            drawH = fullWidth / imgRatio;
+                            drawX = p5Margin;
+                            drawY = row1Y + (row1Height - drawH) / 2;
+                        } else {
+                            // Image is taller - fit to height, center horizontally
+                            drawH = row1Height;
+                            drawW = row1Height * imgRatio;
+                            drawX = p5Margin + (fullWidth - drawW) / 2;
+                            drawY = row1Y;
+                        }
+                        doc.addImage(imgs[0].img, "JPEG", drawX, drawY, drawW, drawH);
                     }
                     
                     // Logo with black background on top of image
@@ -1298,27 +1316,34 @@ $rtrn = '
                     var row2Height = rectTopY - row2Y - gap; // fills all remaining height
                     var leftWidth = fullWidth * 0.60 - gap / 2;
                     var rightWidth = fullWidth * 0.40 - gap / 2;
-                    var rightImgHeight = (row2Height - gap) / 2;
+                    var leftImgHeight = (row2Height - gap) / 2; // 2 images stacked on left
+                    var rightImgHeight = (row2Height - gap) / 2; // 2 images stacked on right
                     
+                    // Left column: 2 images stacked (imgs 1 and 2)
                     if (imgs[1]) {
-                        doc.addImage(imgs[1].img, "JPEG", p5Margin, row2Y, leftWidth, row2Height);
+                        doc.addImage(imgs[1].img, "JPEG", p5Margin, row2Y, leftWidth, leftImgHeight);
                     }
                     if (imgs[2]) {
-                        doc.addImage(imgs[2].img, "JPEG", p5Margin + leftWidth + gap, row2Y, rightWidth, rightImgHeight);
+                        doc.addImage(imgs[2].img, "JPEG", p5Margin, row2Y + leftImgHeight + gap, leftWidth, leftImgHeight);
                     }
+                    
+                    // Right column: 2 images stacked (imgs 3 and 4)
                     if (imgs[3]) {
-                        doc.addImage(imgs[3].img, "JPEG", p5Margin + leftWidth + gap, row2Y + rightImgHeight + gap, rightWidth, rightImgHeight);
+                        doc.addImage(imgs[3].img, "JPEG", p5Margin + leftWidth + gap, row2Y, rightWidth, rightImgHeight);
+                    }
+                    if (imgs[4]) {
+                        doc.addImage(imgs[4].img, "JPEG", p5Margin + leftWidth + gap, row2Y + rightImgHeight + gap, rightWidth, rightImgHeight);
                     }
                     
                     // Row 3: 2 images + red rectangle (aligned with top of red rectangle, smaller height)
                     var availableWidth = fullWidth - rectWidth - gap * 2;
                     var col3Width = availableWidth / 2;
                     
-                    if (imgs[4]) {
-                        doc.addImage(imgs[4].img, "JPEG", p5Margin, rectTopY, col3Width, row3ImgHeight);
-                    }
                     if (imgs[5]) {
-                        doc.addImage(imgs[5].img, "JPEG", p5Margin + col3Width + gap, rectTopY, col3Width, row3ImgHeight);
+                        doc.addImage(imgs[5].img, "JPEG", p5Margin, rectTopY, col3Width, row3ImgHeight);
+                    }
+                    if (imgs[6]) {
+                        doc.addImage(imgs[6].img, "JPEG", p5Margin + col3Width + gap, rectTopY, col3Width, row3ImgHeight);
                     }
                     
                     // Red rectangle bottom right with page number 05 (standard size like other pages)

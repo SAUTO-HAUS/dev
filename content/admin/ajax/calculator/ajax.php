@@ -135,9 +135,9 @@ if ($fn === 'save_eur_rate') {
         $calculation_data = isset($_POST['calculation_data']) ? $_POST['calculation_data'] : '{}';
         $existing_offer_id = isset($_POST['offer_id']) ? intval($_POST['offer_id']) : 0;
         
-        // Validate exactly 6 images
-        if (!isset($_FILES['images']) || count($_FILES['images']['name']) !== 6) {
-            echo json_encode(['success' => false, 'error' => 'Exactly 6 images are required']);
+        // Validate exactly 7 images
+        if (!isset($_FILES['images']) || count($_FILES['images']['name']) !== 7) {
+            echo json_encode(['success' => false, 'error' => 'Exactly 7 images are required']);
             exit;
         }
         
@@ -212,7 +212,7 @@ if ($fn === 'save_eur_rate') {
         $allowed_types = ['image/jpeg', 'image/png', 'image/webp'];
         $max_size = 5 * 1024 * 1024; // 5MB
         
-        for ($i = 0; $i < 6; $i++) {
+        for ($i = 0; $i < 7; $i++) {
             $tmp_name = $_FILES['images']['tmp_name'][$i];
             $file_type = $_FILES['images']['type'][$i];
             $file_size = $_FILES['images']['size'][$i];

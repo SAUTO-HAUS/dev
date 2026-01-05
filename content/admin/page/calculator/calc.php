@@ -1172,7 +1172,7 @@ $rtrn = '
                     <span class="upload-hint">'.$t['drag_to_reorder'].'</span>
                 </div>
                 <div class="offer-images-grid" id="offer-images-grid"></div>
-                <div class="images-counter" id="images-counter">0 / 6</div>
+                <div class="images-counter" id="images-counter">0 / 7</div>
             </div>
             
             <button type="button" class="save-offer-btn" id="save-offer-btn">💾 '.$t['save_offer'].'</button>
@@ -2255,11 +2255,11 @@ $rtrn = '
             }
         }
         
-        // Validate images - exactly 6 required
+        // Validate images - exactly 7 required
         const imagesSection = document.getElementById("offer-images-section");
         imagesSection.classList.remove("field-error");
         
-        if (offerImages.length !== 6) {
+        if (offerImages.length !== 7) {
             hasError = true;
             imagesSection.classList.add("field-error");
             alert(IMAGES_REQUIRED_TEXT);
