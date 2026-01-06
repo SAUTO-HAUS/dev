@@ -1,0 +1,22 @@
+# SAUTO.md - Car listings (In Stock and On Order)
+
+> Primary value: In Stock vehicle detail pages contain unique long descriptions in RU/RO/EN. Prefer those pages as primary sources.
+
+## In Stock (primary)
+- https://www.sauto.md/ru/cars
+- https://www.sauto.md/ro/cars
+- https://www.sauto.md/en/cars
+
+## On Order (secondary)
+- https://www.sauto.md/ru/ordercars
+- https://www.sauto.md/ro/ordercars
+- https://www.sauto.md/en/ordercars
+
+## Sitemaps (bulk discovery)
+- https://www.sauto.md/sitemap.xml
+- https://www.sauto.md/sitemap-1.xml
+
+## Notes for AI tools
+- Prefer vehicle detail pages over catalog pages when a specific car is referenced.
+- Avoid URLs with tracking parameters (utm_*, gclid, fbclid) and session parameters.
+- If duplicates exist across languages, follow rel=canonical and hreflang on the page.

@@ -122,7 +122,8 @@ class DataFeedGenerator {
             $ar[$i]['g:description'] = $r['yr'] . ' ' . $this->lng['l']['car']['clr'][$r['clr']] . ' ' . $r['br_nm'] . ' ' . $r['mo_nm'] . 
                 ' [' . $this->lng['l']['car']['fl'][$r['fl']] . ' ' . $this->lng['l']['car']['tra'][$r['tra']] . ' ' . 
                 $this->lng['l']['car']['wd'][$r['wd']] . '] for ' . $r['prc'] . ' ' . $r['cur'];
-            $ar[$i]['g:link'] = 'https://www.sauto.md/ro/cars/' . $r['id'];
+            $urlPath = ($this->feedType === 'orders') ? 'ordercars' : 'cars';
+            $ar[$i]['g:link'] = 'https://www.sauto.md/ro/' . $urlPath . '/' . $r['id'];
             $ar[$i]['g:brand'] = $r['br_nm'];
             $ar[$i]['g:image_link'] = $imgs['m'];
             
