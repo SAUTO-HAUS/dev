@@ -1267,7 +1267,7 @@ $rtrn = '
                     // Row 1: Big image - fixed height, width calculated to preserve aspect ratio
                     var row1Y = p5Margin;
                     var fullWidth = pageWidth - p5Margin * 2;
-                    var row1Height = pageHeight * 0.37;
+                    var row1Height = pageHeight * 0.35;
                     
                     if (imgs[0]) {
                         // Calculate dimensions to fit image in container (contain mode)
@@ -1298,20 +1298,21 @@ $rtrn = '
                     
                     // Title "Imagini de produs" with red vertical line
                     doc.setFillColor(226, 0, 26);
-                    doc.rect(p5Margin + 15, row1Y + row1Height * 0.35, 4, 30, "F");
+                    doc.rect(p5Margin + 35, row1Y + row1Height * 0.25, 4, 30, "F");
                     doc.setTextColor(255, 255, 255);
                     doc.setFontSize(28);
                     doc.setFont("helvetica", "bold");
-                    doc.text(removeDiacritics("Imagini de produs"), p5Margin + 25, row1Y + row1Height * 0.35 + 20);
+                    doc.text(removeDiacritics("Imagini de produs"), p5Margin + 40, row1Y + row1Height * 0.25 + 20);
                     
                     // Use same gap everywhere
                     var gap = p5Gap;
                     
-                    // Calculate uniform height for images 2-7 (all same height)
-                    // 3 rows of images with 2 gaps between them, ending at bottom of page (minus margin)
+                    // Calculate heights: images 2-5 larger, images 6-7 smaller
                     var bottomMargin = p5Margin;
                     var availableHeightForSmallImages = pageHeight - bottomMargin - (row1Y + row1Height + gap) - gap * 2;
-                    var uniformImgHeight = availableHeightForSmallImages / 3;
+                    // Images 2-5: 38% each row (76% total), images 6-7: 24%
+                    var uniformImgHeight = availableHeightForSmallImages * 0.38;
+                    var row3ImgHeight = availableHeightForSmallImages * 0.24;
                     
                     // Images 2-5: equal width (50% each)
                     var halfWidth = (fullWidth - gap) / 2;
@@ -1341,10 +1342,10 @@ $rtrn = '
                     var col3Width = availableWidth / 2;
                     
                     if (imgs[5]) {
-                        doc.addImage(imgs[5].img, "JPEG", p5Margin, row3Y, col3Width, uniformImgHeight);
+                        doc.addImage(imgs[5].img, "JPEG", p5Margin, row3Y, col3Width, row3ImgHeight);
                     }
                     if (imgs[6]) {
-                        doc.addImage(imgs[6].img, "JPEG", p5Margin + col3Width + gap, row3Y, col3Width, uniformImgHeight);
+                        doc.addImage(imgs[6].img, "JPEG", p5Margin + col3Width + gap, row3Y, col3Width, row3ImgHeight);
                     }
                     
                     // Red rectangle bottom right with page number 05
