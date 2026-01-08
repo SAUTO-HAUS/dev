@@ -1454,15 +1454,15 @@ $rtrn = '
     }
     
     function formatNumber(num) {
-        return Math.round(num).toLocaleString("ro-MD", { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+        return num.toLocaleString("ro-MD", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
     
     // Set value in both MDL and EUR inputs
     function setResultValue(field, mdlValue) {
         const mdlInput = document.getElementById("res-" + field + "-mdl");
         const eurInput = document.getElementById("res-" + field + "-eur");
-        if (mdlInput) mdlInput.value = Math.round(mdlValue);
-        if (eurInput) eurInput.value = Math.round(mdlValue / EUR_RATE);
+        if (mdlInput) mdlInput.value = mdlValue.toFixed(2);
+        if (eurInput) eurInput.value = (mdlValue / EUR_RATE).toFixed(2);
     }
     
     // Recalculate totals based on current input values
@@ -1493,10 +1493,10 @@ $rtrn = '
         const vehicleTotalMdl = effectiveValueMdl + totalMdl;
         
         // Update total inputs
-        document.getElementById("res-total-mdl").value = Math.round(totalMdl);
-        document.getElementById("res-total-eur").value = Math.round(totalMdl / EUR_RATE);
-        document.getElementById("res-vehicle-total-mdl").value = Math.round(vehicleTotalMdl);
-        document.getElementById("res-vehicle-total-eur").value = Math.round(vehicleTotalMdl / EUR_RATE);
+        document.getElementById("res-total-mdl").value = totalMdl.toFixed(2);
+        document.getElementById("res-total-eur").value = (totalMdl / EUR_RATE).toFixed(2);
+        document.getElementById("res-vehicle-total-mdl").value = vehicleTotalMdl.toFixed(2);
+        document.getElementById("res-vehicle-total-eur").value = (vehicleTotalMdl / EUR_RATE).toFixed(2);
     }
     
     // Add event listeners for editable inputs
@@ -1510,11 +1510,11 @@ $rtrn = '
             if (isEur) {
                 // EUR changed, update MDL
                 const eurVal = parseFloat(this.value) || 0;
-                mdlInput.value = Math.round(eurVal * EUR_RATE);
+                mdlInput.value = (eurVal * EUR_RATE).toFixed(2);
             } else {
                 // MDL changed, update EUR
                 const mdlVal = parseFloat(this.value) || 0;
-                eurInput.value = Math.round(mdlVal / EUR_RATE);
+                eurInput.value = (mdlVal / EUR_RATE).toFixed(2);
             }
             
             // Recalculate totals
@@ -1529,8 +1529,8 @@ $rtrn = '
         if (this.checked) {
             mdlInput.disabled = false;
             eurInput.disabled = false;
-            mdlInput.value = 4500;
-            eurInput.value = Math.round(4500 / EUR_RATE);
+            mdlInput.value = "4500.00";
+            eurInput.value = (4500 / EUR_RATE).toFixed(2);
         } else {
             mdlInput.disabled = true;
             eurInput.disabled = true;
@@ -1546,8 +1546,8 @@ $rtrn = '
         if (this.checked) {
             mdlInput.disabled = false;
             eurInput.disabled = false;
-            mdlInput.value = 3000;
-            eurInput.value = Math.round(3000 / EUR_RATE);
+            mdlInput.value = "3000.00";
+            eurInput.value = (3000 / EUR_RATE).toFixed(2);
         } else {
             mdlInput.disabled = true;
             eurInput.disabled = true;
