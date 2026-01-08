@@ -132,7 +132,7 @@ $rtrn = '
     }
     
     #calculator-container .editable-input.eur-input {
-        width: 70px;
+        width: 80px;
         color: #666;
         font-weight: normal;
     }
