@@ -60,28 +60,21 @@ $carData = "Car data:
 - Fuel type: {$fuel_type}
 - Body type: {$bodywork}";
 
-$prompt = "Based on the car data below, generate a list of SAFETY features (Siguranță) and COMFORT features (Confort) that this specific car HAS.
+$prompt = "You are a car expert. Based on the car data below, generate REAL and SPECIFIC safety and comfort features that THIS EXACT car model has according to manufacturer specifications.
 
 {$carData}
 
-IMPORTANT RULES:
-1. Generate REAL and ACCURATE features that THIS SPECIFIC car model and year ACTUALLY HAS - based on real manufacturer specifications
-2. Do NOT generate generic or standard features - each feature must be VERIFIED for this exact model
-3. Do NOT use words like 'optional', 'in functie de', 'pe unele echipari', 'disponibil' - these are FORBIDDEN
-4. Each feature must be stated as a FACT, not a possibility
-5. Include EXACTLY 7 items for Safety and EXACTLY 7 items for Comfort
-6. Use simple, clear Romanian language without qualifiers
-7. If you are not 100% sure a feature exists on this model - DO NOT include it
+RULES:
+1. Use your knowledge of this SPECIFIC car model to list REAL features from the manufacturer's specification sheet
+2. Include features that are ACTUALLY present on this model and year - not generic features
+3. Be specific: instead of 'airbags' say exactly how many and where (e.g., '6 airbag-uri: 2 frontale, 2 laterale, 2 cortina')
+4. Include EXACTLY 7 items for Safety and EXACTLY 7 items for Comfort
+5. Use Romanian language
+6. Do NOT use words like 'optional', 'disponibil', 'in functie de echipare'
+7. YOU MUST return exactly 7 safety and 7 comfort features - never empty arrays
 
-IMPORTANT: Return EXACTLY in this JSON format:
-{
-  \"safety\": [\"Feature 1\", \"Feature 2\", ...],
-  \"comfort\": [\"Feature 1\", \"Feature 2\", ...]
-}
-
-Examples of CORRECT features:
-Safety: Anti-lock braking system (ABS), Traction control system (TCS/ASR/TRC), Side airbags, Parking sensors, Surround view camera, Anti-theft device, Summer tires
-Comfort: Air conditioning, Power steering, Height-adjustable steering column, Sunroof, Heated side mirrors, Central locking";
+Return ONLY valid JSON (no markdown, no explanation):
+{\"safety\": [\"...\", \"...\", \"...\", \"...\", \"...\", \"...\", \"...\"], \"comfort\": [\"...\", \"...\", \"...\", \"...\", \"...\", \"...\", \"...\"]}";
 
 // Choose API based on settings
 $aiProvider = $aiSettings['ai_provider'] ?? 'openai';
@@ -181,7 +174,7 @@ if (!$responseData) {
 $content = $responseData['choices'][0]['message']['content'] ?? '';
 
 if (empty($content)) {
-    $returnIt = ['success' => false, 'error' => 'Empty content from API'];
+    $returnIt = ['success' => false, 'error' => 'Empty content from API', 'debug' => $response];
     return;
 }
 
@@ -193,14 +186,19 @@ if ($jsonStart !== false && $jsonEnd !== false) {
     $features = json_decode($jsonStr, true);
     
     if ($features && isset($features['safety']) && isset($features['comfort'])) {
-        $returnIt = [
-            'success' => true,
-            'safety' => $features['safety'],
-            'comfort' => $features['comfort']
-        ];
+        // Check if arrays are not empty
+        if (empty($features['safety']) || empty($features['comfort'])) {
+            $returnIt = ['success' => false, 'error' => 'AI returned empty arrays', 'raw_content' => $content];
+        } else {
+            $returnIt = [
+                'success' => true,
+                'safety' => $features['safety'],
+                'comfort' => $features['comfort']
+            ];
+        }
     } else {
-        $returnIt = ['success' => false, 'error' => 'Invalid JSON structure'];
+        $returnIt = ['success' => false, 'error' => 'Invalid JSON structure', 'raw_content' => $content];
     }
 } else {
-    $returnIt = ['success' => false, 'error' => 'No JSON found in response'];
+    $returnIt = ['success' => false, 'error' => 'No JSON found in response', 'raw_content' => $content];
 }
