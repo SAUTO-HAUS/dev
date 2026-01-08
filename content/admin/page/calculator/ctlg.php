@@ -627,7 +627,7 @@ $rtrn = '
         const userInfo = allowedUsers[userKey] || null;
         
         function formatNumber(num) {
-            return Math.round(num).toLocaleString("ro-MD");
+            return num.toLocaleString("ro-MD", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
         
         function removeDiacritics(str) {
