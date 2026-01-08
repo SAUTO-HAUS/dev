@@ -1726,43 +1726,43 @@ $rtrn = '
                 // Build table rows dynamically - only include enabled items
                 let tableRows = "";
                 if (document.getElementById("enable-value").checked) {
-                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;width:55%;">${t.value_mdl}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.value.mdl))} MDL  (${formatNumber(parseFloat(values.value.eur))} EUR)</td></tr>`;
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;width:55%;">${t.value_mdl}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.value.mdl))} MDL  <span style="font-size:10px;">(${formatNumber(parseFloat(values.value.eur))} EUR)</span></td></tr>`;
                 }
                 if (document.getElementById("enable-excise").checked) {
-                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.excise}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.excise.mdl))} MDL  (${formatNumber(parseFloat(values.excise.eur))} EUR)</td></tr>`;
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.excise}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.excise.mdl))} MDL  <span style="font-size:10px;">(${formatNumber(parseFloat(values.excise.eur))} EUR)</span></td></tr>`;
                 }
                 if (document.getElementById("enable-customs").checked) {
-                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.customs_duty}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.customs.mdl))} MDL  (${formatNumber(parseFloat(values.customs.eur))} EUR)</td></tr>`;
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.customs_duty}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.customs.mdl))} MDL  <span style="font-size:10px;">(${formatNumber(parseFloat(values.customs.eur))} EUR)</span></td></tr>`;
                 }
                 if (document.getElementById("enable-damage").checked) {
-                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.damage_protection}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.damage.mdl))} MDL  (${formatNumber(parseFloat(values.damage.eur))} EUR)</td></tr>`;
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.damage_protection}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.damage.mdl))} MDL  <span style="font-size:10px;">(${formatNumber(parseFloat(values.damage.eur))} EUR)</span></td></tr>`;
                 }
                 if (document.getElementById("enable-export").checked) {
-                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.export_declaration}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.exportDecl.mdl))} MDL  (${formatNumber(parseFloat(values.exportDecl.eur))} EUR)</td></tr>`;
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.export_declaration}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.exportDecl.mdl))} MDL  <span style="font-size:10px;">(${formatNumber(parseFloat(values.exportDecl.eur))} EUR)</span></td></tr>`;
                 }
                 if (document.getElementById("enable-bank").checked) {
-                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.bank_commission}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.bank.mdl))} MDL  (${formatNumber(parseFloat(values.bank.eur))} EUR)</td></tr>`;
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.bank_commission}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.bank.mdl))} MDL  <span style="font-size:10px;">(${formatNumber(parseFloat(values.bank.eur))} EUR)</span></td></tr>`;
                 }
                 if (document.getElementById("enable-auction").checked) {
-                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.auction_commission}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.auction.mdl))} MDL  (${formatNumber(parseFloat(values.auction.eur))} EUR)</td></tr>`;
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.auction_commission}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.auction.mdl))} MDL  <span style="font-size:10px;">(${formatNumber(parseFloat(values.auction.eur))} EUR)</span></td></tr>`;
                 }
                 if (document.getElementById("enable-pollution").checked) {
-                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.pollution_tax}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.pollution.mdl))} MDL  (${formatNumber(parseFloat(values.pollution.eur))} EUR)</td></tr>`;
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.pollution_tax}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.pollution.mdl))} MDL  <span style="font-size:10px;">(${formatNumber(parseFloat(values.pollution.eur))} EUR)</span></td></tr>`;
                 }
                 if (document.getElementById("enable-shipping").checked) {
-                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.shipping_docs}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.shipping.mdl))} MDL  (${formatNumber(parseFloat(values.shipping.eur))} EUR)</td></tr>`;
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.shipping_docs}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.shipping.mdl))} MDL  <span style="font-size:10px;">(${formatNumber(parseFloat(values.shipping.eur))} EUR)</span></td></tr>`;
                 }
                 if (document.getElementById("enable-accessories").checked) {
-                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.accessories}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.accessories.mdl))} MDL  (${formatNumber(parseFloat(values.accessories.eur))} EUR)</td></tr>`;
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.accessories}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.accessories.mdl))} MDL  <span style="font-size:10px;">(${formatNumber(parseFloat(values.accessories.eur))} EUR)</span></td></tr>`;
                 }
                 if (document.getElementById("enable-transaction").checked) {
-                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.transaction_commission}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.transaction.mdl))} MDL  (${formatNumber(parseFloat(values.transaction.eur))} EUR)</td></tr>`;
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.transaction_commission}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.transaction.mdl))} MDL  <span style="font-size:10px;">(${formatNumber(parseFloat(values.transaction.eur))} EUR)</span></td></tr>`;
                 }
                 if (document.getElementById("enable-polishing").checked) {
-                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.polishing}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.polishing.mdl))} MDL  (${formatNumber(parseFloat(values.polishing.eur))} EUR)</td></tr>`;
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.polishing}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.polishing.mdl))} MDL  <span style="font-size:10px;">(${formatNumber(parseFloat(values.polishing.eur))} EUR)</span></td></tr>`;
                 }
                 if (document.getElementById("enable-painting").checked) {
-                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.painting}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.painting.mdl))} MDL  (${formatNumber(parseFloat(values.painting.eur))} EUR)</td></tr>`;
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.painting}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.painting.mdl))} MDL  <span style="font-size:10px;">(${formatNumber(parseFloat(values.painting.eur))} EUR)</span></td></tr>`;
                 }
                 
                 pdfContent.innerHTML = `
@@ -1772,11 +1772,11 @@ $rtrn = '
                     </table>
                     <div style="background:#e2001a;color:#fff;padding:10px 12px;margin-top:15px;display:flex;justify-content:space-between;font-weight:bold;font-size:13px;">
                         <span>${t.total}</span>
-                        <span>${formatNumber(parseFloat(values.total.mdl))} MDL  (${formatNumber(parseFloat(values.total.eur))} EUR)</span>
+                        <span>${formatNumber(parseFloat(values.total.mdl))} MDL  <span style="font-size:11px;">(${formatNumber(parseFloat(values.total.eur))} EUR)</span></span>
                     </div>
                     <div style="background:#555;color:#fff;padding:10px 12px;display:flex;justify-content:space-between;font-weight:bold;font-size:13px;">
                         <span>${t.vehicle_total}</span>
-                        <span>${formatNumber(parseFloat(values.vehicle.mdl))} MDL  (${formatNumber(parseFloat(values.vehicle.eur))} EUR)</span>
+                        <span>${formatNumber(parseFloat(values.vehicle.mdl))} MDL  <span style="font-size:11px;">(${formatNumber(parseFloat(values.vehicle.eur))} EUR)</span></span>
                     </div>
                 `;
                 document.body.appendChild(pdfContent);
@@ -1962,11 +1962,16 @@ $rtrn = '
         var valueX = pageWidth - 90; // fixed X position for values column (left-aligned)
         doc.setTextColor(255, 255, 255);
         results.forEach((item, index) => {
-            const valueText = formatNumber(parseFloat(item.mdl)) + " MDL  (" + formatNumber(parseFloat(item.eur)) + " EUR)";
+            const mdlText = formatNumber(parseFloat(item.mdl)) + " MDL  ";
+            const eurText = "(" + formatNumber(parseFloat(item.eur)) + " EUR)";
             doc.setFont("helvetica", "normal");
             doc.text(item.label, 20, y);
             doc.setFont("helvetica", "bold");
-            doc.text(valueText, valueX, y);
+            doc.setFontSize(13);
+            doc.text(mdlText, valueX, y);
+            const mdlWidth = doc.getTextWidth(mdlText);
+            doc.setFontSize(11);
+            doc.text(eurText, valueX + mdlWidth, y);
             // Subtle solid line under each row
             doc.setDrawColor(255, 255, 255);
             doc.setLineWidth(0.1);
@@ -1990,15 +1995,26 @@ $rtrn = '
         doc.setFont("helvetica", "bold");
         doc.setFontSize(14);
         doc.text(t.total, 20, y + 4);
-        doc.text(formatNumber(parseFloat(values.total.mdl)) + " MDL  (" + formatNumber(parseFloat(values.total.eur)) + " EUR)", valueX, y + 4);
+        const totalMdlText = formatNumber(parseFloat(values.total.mdl)) + " MDL  ";
+        const totalEurText = "(" + formatNumber(parseFloat(values.total.eur)) + " EUR)";
+        doc.text(totalMdlText, valueX, y + 4);
+        const totalMdlWidth = doc.getTextWidth(totalMdlText);
+        doc.setFontSize(12);
+        doc.text(totalEurText, valueX + totalMdlWidth, y + 4);
         y += 17;
         
         // Vehicle total
         doc.setFillColor(85, 85, 85);
         doc.rect(15, y - 5, pageWidth - 30, 14, "F");
         doc.setTextColor(255, 255, 255);
+        doc.setFontSize(14);
         doc.text(t.vehicle_total, 20, y + 4);
-        doc.text(formatNumber(parseFloat(values.vehicle.mdl)) + " MDL  (" + formatNumber(parseFloat(values.vehicle.eur)) + " EUR)", valueX, y + 4);
+        const vehicleMdlText = formatNumber(parseFloat(values.vehicle.mdl)) + " MDL  ";
+        const vehicleEurText = "(" + formatNumber(parseFloat(values.vehicle.eur)) + " EUR)";
+        doc.text(vehicleMdlText, valueX, y + 4);
+        const vehicleMdlWidth = doc.getTextWidth(vehicleMdlText);
+        doc.setFontSize(12);
+        doc.text(vehicleEurText, valueX + vehicleMdlWidth, y + 4);
         
         // Reset text color
         doc.setTextColor(0, 0, 0);
