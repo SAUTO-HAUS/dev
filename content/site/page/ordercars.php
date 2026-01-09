@@ -15,6 +15,9 @@ include_once( _SITE_INCL.'/order_functions.php' );
 // Include car description functions
 include_once( _SITE_INCL.'/car_description.php' );
 
+// Include similar price cars function
+include_once( _SITE_INCL.'/similar_price_cars.php' );
+
 /**
  * Get country name by ID in the specified language
  * @param int $countryId - ID of the country
@@ -1587,12 +1590,19 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                     </div>
                 </div>-->';
                 */
+               // Similar Price Cars Block - new algorithm
+                $similarPriceResult = getSimilarPriceCars($r, 8, $db, $prefx, $lng, $img_frmt);
+                
                 $rtrn .= '
-                <div class="smlr gr">
-                    <h3>'.$lng['t']['seo']['car_inf_h3'].'</h3>
-                    <div class="cnt">';
-                $card = $car_card('smlr', 4, $r); 
-                $rtrn .= $card['txt'];
+                <div class="smlr gr similar-price-block">
+                    <h3>' . ($lng['w']['similar_price_title'] ?? 'Автомобили по схожей цене') . '</h3>';
+                
+                if (!empty($similarPriceResult['message'])) {
+                    $rtrn .= '<p class="cross-section-notice">' . $similarPriceResult['message'] . '</p>';
+                }
+                
+                $rtrn .= '<div class="cnt">';
+                $rtrn .= $similarPriceResult['txt'];
                 $rtrn .= '
                     </div>
                 </div>';

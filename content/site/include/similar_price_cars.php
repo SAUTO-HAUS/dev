@@ -1,0 +1,214 @@
+<?php
+
+defined('_DOIT') or die('Restricted access');
+function getSimilarPriceCars($currentCar, $limit = 8, $db, $prefx, $lng, $img_frmt) {
+    $result = ['cars' => [], 'txt' => '', 'message' => '', 'has_cross_section' => false];
+    
+    if (empty($currentCar['prc']) || $currentCar['prc'] < 100) {
+        return getSimilarByBrandModel($currentCar, $limit, $db, $prefx, $lng, $img_frmt);
+    }
+    
+    $basePrice = (float)$currentCar['prc'];
+    $currentSection = isset($currentCar['catalog_type']) ? $currentCar['catalog_type'] : 'in_stock';
+    $otherSection = ($currentSection === 'in_stock') ? 'on_order' : 'in_stock';
+    $priceRanges = [0.20, 0.30, 0.40];
+    $sameSectionCars = [];
+    $otherSectionCars = [];
+    $modelCounts = [];
+    
+    // Step 1: Get cars from same section
+    foreach ($priceRanges as $range) {
+        $priceLow = $basePrice * (1 - $range);
+        $priceHigh = $basePrice * (1 + $range);
+        
+        if (count($sameSectionCars) < $limit) {
+            $needed = $limit - count($sameSectionCars);
+            $excludeIds = array_merge([$currentCar['id']], array_column($sameSectionCars, 'id'));
+            $newCars = fetchSimilarCars($db, $prefx, $currentCar, $priceLow, $priceHigh, $currentSection, $excludeIds, $needed, $modelCounts);
+            
+            foreach ($newCars as $car) {
+                if (count($sameSectionCars) >= $limit) break;
+                $modelKey = $car['br'] . '_' . $car['mo'];
+                if (!isset($modelCounts[$modelKey])) $modelCounts[$modelKey] = 0;
+                if ($modelCounts[$modelKey] >= 2) continue;
+                $modelCounts[$modelKey]++;
+                $car['from_other_section'] = false;
+                $sameSectionCars[] = $car;
+            }
+        }
+        if (count($sameSectionCars) >= $limit) break;
+    }
+    
+    // Step 2: Get from other section if needed
+    $totalFound = count($sameSectionCars);
+    if ($totalFound < $limit) {
+        foreach ($priceRanges as $range) {
+            $priceLow = $basePrice * (1 - $range);
+            $priceHigh = $basePrice * (1 + $range);
+            $needed = $limit - $totalFound - count($otherSectionCars);
+            if ($needed <= 0) break;
+            
+            $excludeIds = array_merge([$currentCar['id']], array_column($sameSectionCars, 'id'), array_column($otherSectionCars, 'id'));
+            $newCars = fetchSimilarCars($db, $prefx, $currentCar, $priceLow, $priceHigh, $otherSection, $excludeIds, $needed, $modelCounts);
+            
+            foreach ($newCars as $car) {
+                if (count($sameSectionCars) + count($otherSectionCars) >= $limit) break;
+                $modelKey = $car['br'] . '_' . $car['mo'];
+                if (!isset($modelCounts[$modelKey])) $modelCounts[$modelKey] = 0;
+                if ($modelCounts[$modelKey] >= 2) continue;
+                $modelCounts[$modelKey]++;
+                $car['from_other_section'] = true;
+                $otherSectionCars[] = $car;
+            }
+            if (count($sameSectionCars) + count($otherSectionCars) >= $limit) break;
+        }
+    }
+    
+    // Step 3: Fallback to fresh arrivals
+    $allCars = array_merge($sameSectionCars, $otherSectionCars);
+    if (count($allCars) < $limit) {
+        $needed = $limit - count($allCars);
+        $excludeIds = array_merge([$currentCar['id']], array_column($allCars, 'id'));
+        $freshCars = fetchFreshArrivals($db, $prefx, $currentCar, $basePrice * 1.6, $currentSection, $excludeIds, $needed);
+        foreach ($freshCars as $car) {
+            $car['from_other_section'] = ($car['catalog_type'] !== $currentSection);
+            $allCars[] = $car;
+        }
+    }
+    
+    // Sort: same section first, then by price proximity
+    usort($allCars, function($a, $b) use ($basePrice) {
+        if ($a['from_other_section'] !== $b['from_other_section']) return $a['from_other_section'] ? 1 : -1;
+        return abs($a['prc'] - $basePrice) - abs($b['prc'] - $basePrice);
+    });
+    
+    $result['cars'] = array_slice($allCars, 0, $limit);
+    $result['has_cross_section'] = count($otherSectionCars) > 0;
+    if ($result['has_cross_section']) {
+        $result['message'] = ($currentSection === 'in_stock') 
+            ? ($lng['w']['similar_few_in_stock'] ?? '') 
+            : ($lng['w']['similar_few_on_order'] ?? '');
+    }
+    $result['txt'] = generateSimilarCarsHTML($result['cars'], $currentSection, $db, $prefx, $lng, $img_frmt);
+    return $result;
+}
+
+function fetchSimilarCars($db, $prefx, $currentCar, $priceLow, $priceHigh, $section, $excludeIds, $limit, &$modelCounts) {
+    $excludeList = implode(',', array_map('intval', $excludeIds));
+    $sql = "SELECT *, 
+            CASE WHEN br = :br AND mo = :mo THEN 1 WHEN br = :br2 THEN 2 WHEN bt = :bt THEN 3 ELSE 9 END AS priority,
+            ABS(prc - :base_price) AS price_diff
+            FROM {$prefx}_car_ctlg 
+            WHERE vis = '1' AND act = '1' AND n_a = '0'
+            AND prc BETWEEN :price_low AND :price_high
+            AND id NOT IN ({$excludeList})
+            AND (catalog_type = :section OR (catalog_type IS NULL AND :section2 = 'in_stock'))
+            ORDER BY priority ASC, price_diff ASC, id DESC LIMIT :limit";
+    try {
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':br', $currentCar['br'], PDO::PARAM_STR);
+        $stmt->bindValue(':br2', $currentCar['br'], PDO::PARAM_STR);
+        $stmt->bindValue(':mo', $currentCar['mo'], PDO::PARAM_STR);
+        $stmt->bindValue(':bt', $currentCar['bt'] ?? '', PDO::PARAM_STR);
+        $stmt->bindValue(':base_price', $currentCar['prc'], PDO::PARAM_INT);
+        $stmt->bindValue(':price_low', $priceLow, PDO::PARAM_INT);
+        $stmt->bindValue(':price_high', $priceHigh, PDO::PARAM_INT);
+        $stmt->bindValue(':section', $section, PDO::PARAM_STR);
+        $stmt->bindValue(':section2', $section, PDO::PARAM_STR);
+        $stmt->bindValue(':limit', $limit * 3, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log('Similar cars query error: ' . $e->getMessage());
+        return [];
+    }
+}
+function fetchFreshArrivals($db, $prefx, $currentCar, $maxPrice, $preferSection, $excludeIds, $limit) {
+    $excludeList = implode(',', array_map('intval', $excludeIds));
+    $sql = "SELECT * FROM {$prefx}_car_ctlg 
+            WHERE vis = '1' AND act = '1' AND n_a = '0' AND prc <= :max_price AND prc > 100
+            AND id NOT IN ({$excludeList})
+            ORDER BY CASE WHEN catalog_type = :section THEN 0 ELSE 1 END, id DESC LIMIT :limit";
+    try {
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':max_price', $maxPrice, PDO::PARAM_INT);
+        $stmt->bindValue(':section', $preferSection, PDO::PARAM_STR);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        error_log('Fresh arrivals query error: ' . $e->getMessage());
+        return [];
+    }
+}
+function getSimilarByBrandModel($currentCar, $limit, $db, $prefx, $lng, $img_frmt) {
+    $result = ['cars' => [], 'txt' => '', 'message' => '', 'has_cross_section' => false];
+    $currentSection = isset($currentCar['catalog_type']) ? $currentCar['catalog_type'] : 'in_stock';
+    $sql = "SELECT *, CASE WHEN br = :br AND mo = :mo THEN 1 WHEN br = :br2 THEN 2 ELSE 3 END AS priority
+            FROM {$prefx}_car_ctlg WHERE vis = '1' AND act = '1' AND n_a = '0' AND id <> :id
+            ORDER BY CASE WHEN catalog_type = :section THEN 0 ELSE 1 END, priority ASC, id DESC LIMIT :limit";
+    try {
+        $stmt = $db->prepare($sql);
+        $stmt->bindValue(':br', $currentCar['br'], PDO::PARAM_STR);
+        $stmt->bindValue(':br2', $currentCar['br'], PDO::PARAM_STR);
+        $stmt->bindValue(':mo', $currentCar['mo'], PDO::PARAM_STR);
+        $stmt->bindValue(':id', $currentCar['id'], PDO::PARAM_INT);
+        $stmt->bindValue(':section', $currentSection, PDO::PARAM_STR);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        $cars = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($cars as &$car) {
+            $car['from_other_section'] = ($car['catalog_type'] !== $currentSection);
+        }
+        $result['cars'] = $cars;
+        $result['has_cross_section'] = count(array_filter($cars, fn($c) => $c['from_other_section'])) > 0;
+        $result['txt'] = generateSimilarCarsHTML($cars, $currentSection, $db, $prefx, $lng, $img_frmt);
+    } catch (PDOException $e) {
+        error_log('Similar by brand query error: ' . $e->getMessage());
+    }
+    return $result;
+}
+function generateSimilarCarsHTML($cars, $currentSection, $db, $prefx, $lng, $img_frmt) {
+    if (empty($cars)) return '';
+    $html = '';
+    
+    foreach ($cars as $car) {
+        $pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id AND `main`="1" LIMIT 1');
+        $pdo2->execute(['it_id' => $car['id']]);
+        $photo = $pdo2->fetch();
+        
+        $image_extension = (isset($car['catalog_type']) && $car['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
+        $img_src = $photo 
+            ? '/' . _CAR_IMG . '/' . $car['p_path'] . '/' . $car['id'] . '/med/' . $photo['name'] . $image_extension
+            : '/' . _SITE_IMG . '/v2/no_image.svg';
+        
+        $page_type = (isset($car['catalog_type']) && $car['catalog_type'] === 'on_order') ? 'ordercars' : 'cars';
+        $price_display = ($car['prc'] > 100) ? number_format($car['prc'], 0, ',', ' ') . ' €' : ($lng['w']['negociabil'] ?? 'Negociabil');
+        
+        $section_label = '';
+        if (!empty($car['from_other_section'])) {
+            $section_label = ($car['catalog_type'] === 'on_order')
+                ? '<span class="section-label on-order">' . ($lng['w']['on_order'] ?? 'Под заказ') . '</span>'
+                : '<span class="section-label in-stock">' . ($lng['w']['in_stock'] ?? 'На стоянке') . '</span>';
+        }
+        
+        $year = $car['yr'];
+        $fuel = $lng['l']['car']['fl'][$car['fl']] ?? $car['fl'];
+        $transmission = $lng['l']['car']['tra'][$car['tra']] ?? $car['tra'];
+        $mileage = number_format($car['mlg']) . ' ' . ($lng['l']['unit']['km'] ?? 'km');
+        
+        $html .= '
+        <a class="it car similar-price-card' . ($car['from_other_section'] ? ' cross-section' : '') . '" 
+           href="/' . $_COOKIE['lang'] . '/' . $page_type . '/' . $car['id'] . '">
+            ' . $section_label . '
+            <div class="name">' . htmlspecialchars($car['br_nm'] . ' ' . $car['mo_nm']) . '</div>
+            <div class="compact-info">
+                <div class="line1">' . $year . ' | ' . $fuel . '</div>
+                <div class="line2">' . $transmission . ' | ' . $mileage . '</div>
+            </div>
+            <img src="' . $img_src . '" loading="lazy" width="300" height="200" alt="' . htmlspecialchars($car['br_nm'] . ' ' . $car['mo_nm']) . '" />
+            <div class="prc"><strong class="val">' . $price_display . '</strong></div>
+        </a>';
+    }
+    return $html;
+}
