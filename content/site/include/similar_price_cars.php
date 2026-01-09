@@ -164,16 +164,45 @@ function generateSimilarCarsHTML($cars, $currentSection, $db, $prefx, $lng, $img
     if (empty($cars)) return '';
     $html = '';
     
+    $is_mobile = (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/Mobile|Android|iPhone|iPad/', $_SERVER['HTTP_USER_AGENT']));
+    
     foreach ($cars as $car) {
-        $pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id AND `main`="1" LIMIT 1');
-        $pdo2->execute(['it_id' => $car['id']]);
-        $photo = $pdo2->fetch();
-        
         $image_extension = (isset($car['catalog_type']) && $car['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
-        $p_src = $photo ? '/'._CAR_IMG.'/'.$car['p_path'].'/'.$car['id'].'/med/' : '/'._SITE_IMG.'/v2/';
-        $p_name = $photo ? $photo['name'].$image_extension : 'no_image.svg';
-        
         $page_type = (isset($car['catalog_type']) && $car['catalog_type'] === 'on_order') ? 'ordercars' : 'cars';
+        
+        if ($is_mobile) {
+            $pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `main` DESC, `pos` ASC LIMIT 10');
+            $pdo2->execute(['it_id' => $car['id']]);
+            $all_images = $pdo2->fetchAll(PDO::FETCH_ASSOC);
+            
+            if (count($all_images) > 1) {
+                $image_html = '<div class="mobile-card-slider" data-lazy-load="pending"><div class="mobile-card-slider__container"><div class="mobile-card-slider__track">';
+                foreach ($all_images as $idx => $img) {
+                    $img_src = '/'._CAR_IMG.'/'.$car['p_path'].'/'.$car['id'].'/med/'.$img['name'].$image_extension;
+                    if ($idx === 0) {
+                        $image_html .= '<div class="mobile-card-slider__slide"><img src="'.$img_src.'" loading="lazy" width="300" height="200" alt="car '.$car['br_nm'].' '.$car['mo_nm'].' photo '.($idx+1).'" /></div>';
+                    } else {
+                        $image_html .= '<div class="mobile-card-slider__slide"><img src="data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'200\'%3E%3Crect width=\'100%25\' height=\'100%25\' fill=\'%23f0f0f0\'/%3E%3C/svg%3E" data-src="'.$img_src.'" loading="lazy" width="300" height="200" alt="car '.$car['br_nm'].' '.$car['mo_nm'].' photo '.($idx+1).'" /></div>';
+                    }
+                }
+                $image_html .= '</div>';
+                $image_html .= '<div class="mobile-card-slider__line-indicator"></div>';
+                $image_html .= '</div></div>';
+            } else {
+                $p = $all_images[0] ?? null;
+                $p_src = isset($p['name']) ? '/'._CAR_IMG.'/'.$car['p_path'].'/'.$car['id'].'/med/' : '/'._SITE_IMG.'/v2/';
+                $p_name = isset($p['name']) ? $p['name'].$image_extension : 'no_image.svg';
+                $image_html = '<img src="'.$p_src.$p_name.'" loading="lazy" width="300" height="200" alt="car '.$car['br_nm'].' '.$car['mo_nm'].' id'.$car['id'].' main photo" />';
+            }
+        } else {
+            $pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id AND `main`="1" LIMIT 1');
+            $pdo2->execute(['it_id' => $car['id']]);
+            $photo = $pdo2->fetch();
+            
+            $p_src = $photo ? '/'._CAR_IMG.'/'.$car['p_path'].'/'.$car['id'].'/med/' : '/'._SITE_IMG.'/v2/';
+            $p_name = $photo ? $photo['name'].$image_extension : 'no_image.svg';
+            $image_html = '<img src="'.$p_src.$p_name.'" loading="lazy" width="300" height="200" alt="car '.$car['br_nm'].' '.$car['mo_nm'].' id'.$car['id'].' main photo" />';
+        }
         
         $year = $car['yr'];
         $fuel = $lng['l']['car']['fl'][$car['fl']] ?? $car['fl'];
@@ -192,7 +221,7 @@ function generateSimilarCarsHTML($cars, $currentSection, $db, $prefx, $lng, $img
                 <div class="line1">'.$year.' | '.$fuel.' | '.$volume.'</div>
                 <div class="line2">'.$transmission.' | '.$mileage.'</div>
             </div>
-            <img src="'.$p_src.$p_name.'" loading="lazy" width="300" height="200" alt="car '.$car['br_nm'].' '.$car['mo_nm'].' id'.$car['id'].' main photo" />
+            '.$image_html.'
             <div class="prc">
                 <strong class="val">'.($car['prc'] > 100 ? $prc.' &#8364;' : ($lng['w']['negociabil'] ?? 'Negociabil')).'</strong>
                 <span class="stock-status'.$stock_status_class.'">'.$stock_status_text.'</span>
