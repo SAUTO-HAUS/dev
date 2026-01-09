@@ -28,7 +28,7 @@ function getSimilarPriceCars($currentCar, $limit = 8, $db, $prefx, $lng, $img_fr
                 if (count($allFoundCars) >= $limit) break;
                 $modelKey = $car['br'] . '_' . $car['mo'];
                 if (!isset($modelCounts[$modelKey])) $modelCounts[$modelKey] = 0;
-                if ($modelCounts[$modelKey] >= 1) continue;
+                if ($modelCounts[$modelKey] >= 2) continue;
                 $modelCounts[$modelKey]++;
                 $car['from_other_section'] = false;
                 $allFoundCars[] = $car;
@@ -43,7 +43,7 @@ function getSimilarPriceCars($currentCar, $limit = 8, $db, $prefx, $lng, $img_fr
                 if (count($allFoundCars) >= $limit) break;
                 $modelKey = $car['br'] . '_' . $car['mo'];
                 if (!isset($modelCounts[$modelKey])) $modelCounts[$modelKey] = 0;
-                if ($modelCounts[$modelKey] >= 1) continue;
+                if ($modelCounts[$modelKey] >= 2) continue;
                 $modelCounts[$modelKey]++;
                 $car['from_other_section'] = true;
                 $allFoundCars[] = $car;
