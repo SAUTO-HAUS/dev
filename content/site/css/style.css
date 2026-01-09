@@ -179,7 +179,7 @@
   
   main .gr > h1 {font-size:2rem; font-weight:bold; text-transform:uppercase; margin:-1vw 0 1.5vw 0;}
   main .gr > h2 {font-size:2rem; font-weight:bold; text-transform:uppercase; margin:0 0 1.5vw 0;}
-  main .gr > .cnt {width:100%; display:flex; flex-flow:row wrap; justify-content:space-between; align-items:center;}
+  main .gr > .cnt {width:100%; display:flex; flex-flow:row wrap; justify-content:space-between; align-items:center; row-gap:1rem;}
   main .gr > .cnt > .lnk {width:23.5%; height:17rem; padding:1rem 2rem; background-color:#fff; border-radius:12px; transition:.3s; text-align:center; display: flex; flex-direction: column; align-items: center;}
   main .gr > .cnt > .lnk:hover {transform:scale(1.025); box-shadow:0 5px 10px 0 rgba(0,0,0,.3);}
   main .gr > .cnt > .lnk > img {max-width: 100%;}

@@ -30,7 +30,7 @@ function getSimilarPriceCars($currentCar, $limit = 8, $db, $prefx, $lng, $img_fr
                 if (count($sameSectionCars) >= $limit) break;
                 $modelKey = $car['br'] . '_' . $car['mo'];
                 if (!isset($modelCounts[$modelKey])) $modelCounts[$modelKey] = 0;
-                if ($modelCounts[$modelKey] >= 2) continue;
+                if ($modelCounts[$modelKey] >= 1) continue;
                 $modelCounts[$modelKey]++;
                 $car['from_other_section'] = false;
                 $sameSectionCars[] = $car;
@@ -55,7 +55,7 @@ function getSimilarPriceCars($currentCar, $limit = 8, $db, $prefx, $lng, $img_fr
                 if (count($sameSectionCars) + count($otherSectionCars) >= $limit) break;
                 $modelKey = $car['br'] . '_' . $car['mo'];
                 if (!isset($modelCounts[$modelKey])) $modelCounts[$modelKey] = 0;
-                if ($modelCounts[$modelKey] >= 2) continue;
+                if ($modelCounts[$modelKey] >= 1) continue;
                 $modelCounts[$modelKey]++;
                 $car['from_other_section'] = true;
                 $otherSectionCars[] = $car;
@@ -178,36 +178,49 @@ function generateSimilarCarsHTML($cars, $currentSection, $db, $prefx, $lng, $img
         $photo = $pdo2->fetch();
         
         $image_extension = (isset($car['catalog_type']) && $car['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
-        $img_src = $photo 
-            ? '/' . _CAR_IMG . '/' . $car['p_path'] . '/' . $car['id'] . '/med/' . $photo['name'] . $image_extension
-            : '/' . _SITE_IMG . '/v2/no_image.svg';
+        $p_src = $photo ? '/'._CAR_IMG.'/'.$car['p_path'].'/'.$car['id'].'/med/' : '/'._SITE_IMG.'/v2/';
+        $p_name = $photo ? $photo['name'].$image_extension : 'no_image.svg';
         
         $page_type = (isset($car['catalog_type']) && $car['catalog_type'] === 'on_order') ? 'ordercars' : 'cars';
-        $price_display = ($car['prc'] > 100) ? number_format($car['prc'], 0, ',', ' ') . ' €' : ($lng['w']['negociabil'] ?? 'Negociabil');
-        
-        $section_label = '';
-        if (!empty($car['from_other_section'])) {
-            $section_label = ($car['catalog_type'] === 'on_order')
-                ? '<span class="section-label on-order">' . ($lng['w']['on_order'] ?? 'Под заказ') . '</span>'
-                : '<span class="section-label in-stock">' . ($lng['w']['in_stock'] ?? 'На стоянке') . '</span>';
-        }
         
         $year = $car['yr'];
         $fuel = $lng['l']['car']['fl'][$car['fl']] ?? $car['fl'];
         $transmission = $lng['l']['car']['tra'][$car['tra']] ?? $car['tra'];
-        $mileage = number_format($car['mlg']) . ' ' . ($lng['l']['unit']['km'] ?? 'km');
+        $volume = $car['vol'].' '.$lng['l']['unit']['cm3'];
+        $mileage = number_format($car['mlg']).' '.($lng['l']['unit'][$car['unit']] ?? $car['unit']);
+        
+        $prc = number_format($car['prc'], 0, ',', ' ');
+        $stock_status_class = ($car['catalog_type'] == 'on_order') ? ' on-order' : '';
+        $stock_status_text = ($car['catalog_type'] == 'on_order') ? ($lng['w']['on_order'] ?? 'La comandă') : ($lng['w']['in_stock'] ?? 'În stoc');
         
         $html .= '
-        <a class="it car similar-price-card' . ($car['from_other_section'] ? ' cross-section' : '') . '" 
-           href="/' . $_COOKIE['lang'] . '/' . $page_type . '/' . $car['id'] . '">
-            ' . $section_label . '
-            <div class="name">' . htmlspecialchars($car['br_nm'] . ' ' . $car['mo_nm']) . '</div>
+        <a class="it car" href="/'.$_COOKIE['lang'].'/'.$page_type.'/'.$car['id'].'">
+            <div class="name">'.$car['br_nm'].' '.$car['mo_nm'].'</div>
             <div class="compact-info">
-                <div class="line1">' . $year . ' | ' . $fuel . '</div>
-                <div class="line2">' . $transmission . ' | ' . $mileage . '</div>
+                <div class="line1">'.$year.' | '.$fuel.' | '.$volume.'</div>
+                <div class="line2">'.$transmission.' | '.$mileage.'</div>
             </div>
-            <img src="' . $img_src . '" loading="lazy" width="300" height="200" alt="' . htmlspecialchars($car['br_nm'] . ' ' . $car['mo_nm']) . '" />
-            <div class="prc"><strong class="val">' . $price_display . '</strong></div>
+            <img src="'.$p_src.$p_name.'" loading="lazy" width="300" height="200" alt="car '.$car['br_nm'].' '.$car['mo_nm'].' id'.$car['id'].' main photo" />
+            <div class="prc">
+                <strong class="val">'.($car['prc'] > 100 ? $prc.' &#8364;' : ($lng['w']['negociabil'] ?? 'Negociabil')).'</strong>
+                <span class="stock-status'.$stock_status_class.'">'.$stock_status_text.'</span>
+            </div>
+            <div class="txt">
+                <div class="specs">';
+        
+        if($car['prc'] > 100) {
+            $monthly_payment = floor($car['prc'] * (9.2/1200) / (1 - pow(1 + (9.2/1200), -60)));
+            $html .= '
+                    <p class="ar">
+                        <span class="name">'.($lng['w']['monthly_payment'] ?? 'Plată lunară').'</span>
+                        <span class="space"></span>
+                        <span class="val">'.($lng['w']['from'] ?? 'de la').' <span style="color: #ff0000; font-weight: bold;">'.$monthly_payment.'</span> €</span>
+                    </p>';
+        }
+        
+        $html .= '
+                </div>
+            </div>
         </a>';
     }
     return $html;
