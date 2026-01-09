@@ -507,6 +507,7 @@
   
   main > .smlr {float:left; margin-top:1.5rem;}
   main > .smlr > h3 {border-bottom:2px solid #e2001a; margin:0 0 1rem; text-transform:uppercase;}
+  main > .smlr > .cross-section-notice {color:#666; font-style:italic; margin:0 0 1rem; font-size:0.95rem;}
       
   /*---------------------------------HOME AND CARS PAGE-----------------------------------*/
   
