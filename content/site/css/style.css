@@ -2523,6 +2523,13 @@ footer .columns-wrapper .column-container.col-logo-container {
           padding-left: 0.3rem !important;
       }
       
+      main > .smlr > h3 {
+          padding-left: 0.5rem !important;
+      }
+      main > .smlr > .cross-section-notice {
+          padding-left: 0.5rem !important;
+      }
+      
       #services .insurance-content ul li {
           position: relative;
           padding-right: 55px;
