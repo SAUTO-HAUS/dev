@@ -268,30 +268,51 @@ if (strpos($model, 'gpt-4o') !== false) {
     $maxTokens = 8192; 
 }
 
-// GPT-5.x uses different request format (responses API)
+// GPT-5.x uses responses API with role/content structure
 if (strpos($model, 'gpt-5') !== false) {
     $systemPrompt = 'You are a JSON generator. Always respond with valid JSON only, no markdown, no explanations.';
     
     if ($useOpenAI && !empty($carImages) && $analyzePhotos) {
-        $inputContent = [];
+        $userContentParts = [];
         foreach ($carImages as $imgUrl) {
-            $inputContent[] = [
+            $userContentParts[] = [
                 'type' => 'input_image',
-                'image_url' => $imgUrl
+                'image_url' => $imgUrl,
+                'detail' => 'auto'
             ];
         }
-        $inputContent[] = [
+        $userContentParts[] = [
             'type' => 'input_text',
-            'text' => $systemPrompt . "\n\n" . $prompt
+            'text' => $prompt
         ];
         $requestData = [
             'model' => $model,
-            'input' => $inputContent
+            'input' => [
+                [
+                    'role' => 'system',
+                    'content' => [['type' => 'input_text', 'text' => $systemPrompt]]
+                ],
+                [
+                    'role' => 'user',
+                    'content' => $userContentParts
+                ]
+            ],
+            'max_output_tokens' => 8192
         ];
     } else {
         $requestData = [
             'model' => $model,
-            'input' => $systemPrompt . "\n\n" . $prompt
+            'input' => [
+                [
+                    'role' => 'system',
+                    'content' => [['type' => 'input_text', 'text' => $systemPrompt]]
+                ],
+                [
+                    'role' => 'user',
+                    'content' => [['type' => 'input_text', 'text' => $prompt]]
+                ]
+            ],
+            'max_output_tokens' => 8192
         ];
     }
 } else {

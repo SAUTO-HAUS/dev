@@ -132,26 +132,47 @@ if (strpos($aiModel, 'gpt-5') !== false) {
     $systemPrompt = 'You are a car expert assistant. Generate accurate car features based on the model, year, and images if provided. Return ONLY valid JSON.';
     
     if ($useOpenAIVision) {
-        $inputContent = [];
+        $userContentParts = [];
         foreach ($offerImages as $imgUrl) {
-            $inputContent[] = [
+            $userContentParts[] = [
                 'type' => 'input_image',
-                'image_url' => $imgUrl
+                'image_url' => $imgUrl,
+                'detail' => 'auto'
             ];
         }
         $imagePrompt = "Analyze the car images above and the car data below to generate accurate SAFETY and COMFORT features. Look at the images to identify visible features like: LED lights, sunroof, parking sensors, alloy wheels, leather seats, navigation screen, etc.\n\n" . $prompt;
-        $inputContent[] = [
+        $userContentParts[] = [
             'type' => 'input_text',
-            'text' => $systemPrompt . "\n\n" . $imagePrompt
+            'text' => $imagePrompt
         ];
         $requestData = [
             'model' => $aiModel,
-            'input' => $inputContent
+            'input' => [
+                [
+                    'role' => 'system',
+                    'content' => [['type' => 'input_text', 'text' => $systemPrompt]]
+                ],
+                [
+                    'role' => 'user',
+                    'content' => $userContentParts
+                ]
+            ],
+            'max_output_tokens' => 2048
         ];
     } else {
         $requestData = [
             'model' => $aiModel,
-            'input' => $systemPrompt . "\n\n" . $prompt
+            'input' => [
+                [
+                    'role' => 'system',
+                    'content' => [['type' => 'input_text', 'text' => $systemPrompt]]
+                ],
+                [
+                    'role' => 'user',
+                    'content' => [['type' => 'input_text', 'text' => $prompt]]
+                ]
+            ],
+            'max_output_tokens' => 2048
         ];
     }
 } else {
