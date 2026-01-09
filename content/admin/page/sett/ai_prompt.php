@@ -152,7 +152,7 @@ $rtrn = '
             <input type="text" name="photo_positions" value="'.htmlspecialchars($currentPhotoPositions).'" placeholder="1,2,5,8" style="width:200px; padding:.5rem; border:1px solid #ccc; border-radius:.5rem; margin-bottom:.5rem;">
             <div class="hint">Номера фотографий через запятую (например: 1,2,5,8). Пустое поле = все фото.</div>
             <label style="margin-top:1rem;">Промпт для анализа фотографий:</label>
-            <textarea name="image_prompt">'.htmlspecialchars($currentImagePrompt).'</textarea>
+            <textarea name="image_prompt">'.htmlspecialchars(html_entity_decode($currentImagePrompt, ENT_QUOTES, 'UTF-8')).'</textarea>
             <div class="hint">Этот промпт используется только если включен анализ фотографий выше.</div>
         </div>
         
