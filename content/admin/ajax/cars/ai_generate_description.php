@@ -271,11 +271,29 @@ if (strpos($model, 'gpt-4o') !== false) {
 // GPT-5.x uses different request format (responses API)
 if (strpos($model, 'gpt-5') !== false) {
     $systemPrompt = 'You are a JSON generator. Always respond with valid JSON only, no markdown, no explanations.';
-    $fullPrompt = $systemPrompt . "\n\n" . $prompt;
-    $requestData = [
-        'model' => $model,
-        'input' => $fullPrompt
-    ];
+    
+    if ($useOpenAI && !empty($carImages) && $analyzePhotos) {
+        $inputContent = [];
+        foreach ($carImages as $imgUrl) {
+            $inputContent[] = [
+                'type' => 'input_image',
+                'image_url' => $imgUrl
+            ];
+        }
+        $inputContent[] = [
+            'type' => 'input_text',
+            'text' => $systemPrompt . "\n\n" . $prompt
+        ];
+        $requestData = [
+            'model' => $model,
+            'input' => $inputContent
+        ];
+    } else {
+        $requestData = [
+            'model' => $model,
+            'input' => $systemPrompt . "\n\n" . $prompt
+        ];
+    }
 } else {
     $requestData = [
         'model' => $model,

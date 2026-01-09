@@ -80,9 +80,13 @@ Return ONLY valid JSON (no markdown, no explanation):
 $aiProvider = $aiSettings['ai_provider'] ?? 'openai';
 
 if ($aiProvider === 'openai' && !empty($openaiApiKey)) {
-    $apiUrl = "https://api.openai.com/v1/chat/completions";
-    $apiKey = $openaiApiKey;
     $aiModel = $aiSettings['openai_model'] ?? 'gpt-4o-mini';
+    if (strpos($aiModel, 'gpt-5') !== false) {
+        $apiUrl = "https://api.openai.com/v1/responses";
+    } else {
+        $apiUrl = "https://api.openai.com/v1/chat/completions";
+    }
+    $apiKey = $openaiApiKey;
 } elseif ($aiProvider === 'groq' && !empty($groqApiKey)) {
     $apiUrl = "https://api.groq.com/openai/v1/chat/completions";
     $apiKey = $groqApiKey;
@@ -124,20 +128,48 @@ if ($useOpenAIVision) {
     $userContent[] = ['type' => 'text', 'text' => $prompt];
 }
 
-$requestData = [
-    'model' => $aiModel,
-    'messages' => [
-        ['role' => 'system', 'content' => 'You are a car expert assistant. Generate accurate car features based on the model, year, and images if provided.'],
-        ['role' => 'user', 'content' => $useOpenAIVision ? $userContent : $prompt]
-    ],
-    'temperature' => 0.7
-];
-
-// Use max_completion_tokens for newer OpenAI models, max_tokens for others
-if (strpos($aiModel, 'gpt-4o') !== false || strpos($aiModel, 'gpt-5') !== false || strpos($aiModel, 'o1') !== false || strpos($aiModel, 'o3') !== false) {
-    $requestData['max_completion_tokens'] = 1024;
+if (strpos($aiModel, 'gpt-5') !== false) {
+    $systemPrompt = 'You are a car expert assistant. Generate accurate car features based on the model, year, and images if provided. Return ONLY valid JSON.';
+    
+    if ($useOpenAIVision) {
+        $inputContent = [];
+        foreach ($offerImages as $imgUrl) {
+            $inputContent[] = [
+                'type' => 'input_image',
+                'image_url' => $imgUrl
+            ];
+        }
+        $imagePrompt = "Analyze the car images above and the car data below to generate accurate SAFETY and COMFORT features. Look at the images to identify visible features like: LED lights, sunroof, parking sensors, alloy wheels, leather seats, navigation screen, etc.\n\n" . $prompt;
+        $inputContent[] = [
+            'type' => 'input_text',
+            'text' => $systemPrompt . "\n\n" . $imagePrompt
+        ];
+        $requestData = [
+            'model' => $aiModel,
+            'input' => $inputContent
+        ];
+    } else {
+        $requestData = [
+            'model' => $aiModel,
+            'input' => $systemPrompt . "\n\n" . $prompt
+        ];
+    }
 } else {
-    $requestData['max_tokens'] = 1024;
+    $requestData = [
+        'model' => $aiModel,
+        'messages' => [
+            ['role' => 'system', 'content' => 'You are a car expert assistant. Generate accurate car features based on the model, year, and images if provided.'],
+            ['role' => 'user', 'content' => $useOpenAIVision ? $userContent : $prompt]
+        ],
+        'temperature' => 0.7
+    ];
+    
+    // Use max_completion_tokens for newer OpenAI models, max_tokens for others
+    if (strpos($aiModel, 'gpt-4o') !== false || strpos($aiModel, 'o1') !== false || strpos($aiModel, 'o3') !== false) {
+        $requestData['max_completion_tokens'] = 1024;
+    } else {
+        $requestData['max_tokens'] = 1024;
+    }
 }
 
 $ch = curl_init($apiUrl);
@@ -171,7 +203,19 @@ if (!$responseData) {
     return;
 }
 
-$content = $responseData['choices'][0]['message']['content'] ?? '';
+if (strpos($aiModel, 'gpt-5') !== false) {
+    if (isset($responseData['output_text'])) {
+        $content = $responseData['output_text'];
+    } elseif (isset($responseData['output'][0]['content'][0]['text'])) {
+        $content = $responseData['output'][0]['content'][0]['text'];
+    } elseif (isset($responseData['choices'][0]['message']['content'])) {
+        $content = $responseData['choices'][0]['message']['content'];
+    } else {
+        $content = '';
+    }
+} else {
+    $content = $responseData['choices'][0]['message']['content'] ?? '';
+}
 
 if (empty($content)) {
     $returnIt = ['success' => false, 'error' => 'Empty content from API', 'debug' => $response];
