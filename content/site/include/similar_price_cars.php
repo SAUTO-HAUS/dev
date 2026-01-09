@@ -12,57 +12,49 @@ function getSimilarPriceCars($currentCar, $limit = 8, $db, $prefx, $lng, $img_fr
     $currentSection = isset($currentCar['catalog_type']) ? $currentCar['catalog_type'] : 'in_stock';
     $otherSection = ($currentSection === 'in_stock') ? 'on_order' : 'in_stock';
     $priceRanges = [0.20, 0.30, 0.40];
-    $sameSectionCars = [];
-    $otherSectionCars = [];
+    $allFoundCars = [];
     $modelCounts = [];
     
-    // Step 1: Get cars from same section
+    // Search both sections with expanding price ranges
     foreach ($priceRanges as $range) {
         $priceLow = $basePrice * (1 - $range);
         $priceHigh = $basePrice * (1 + $range);
         
-        if (count($sameSectionCars) < $limit) {
-            $needed = $limit - count($sameSectionCars);
-            $excludeIds = array_merge([$currentCar['id']], array_column($sameSectionCars, 'id'));
-            $newCars = fetchSimilarCars($db, $prefx, $currentCar, $priceLow, $priceHigh, $currentSection, $excludeIds, $needed, $modelCounts);
-            
+        // First: same section
+        if (count($allFoundCars) < $limit) {
+            $excludeIds = array_merge([$currentCar['id']], array_column($allFoundCars, 'id'));
+            $newCars = fetchSimilarCars($db, $prefx, $currentCar, $priceLow, $priceHigh, $currentSection, $excludeIds, $limit, $modelCounts);
             foreach ($newCars as $car) {
-                if (count($sameSectionCars) >= $limit) break;
+                if (count($allFoundCars) >= $limit) break;
                 $modelKey = $car['br'] . '_' . $car['mo'];
                 if (!isset($modelCounts[$modelKey])) $modelCounts[$modelKey] = 0;
                 if ($modelCounts[$modelKey] >= 1) continue;
                 $modelCounts[$modelKey]++;
                 $car['from_other_section'] = false;
-                $sameSectionCars[] = $car;
+                $allFoundCars[] = $car;
             }
         }
-        if (count($sameSectionCars) >= $limit) break;
-    }
-    
-    // Step 2: Get from other section if needed
-    $totalFound = count($sameSectionCars);
-    if ($totalFound < $limit) {
-        foreach ($priceRanges as $range) {
-            $priceLow = $basePrice * (1 - $range);
-            $priceHigh = $basePrice * (1 + $range);
-            $needed = $limit - $totalFound - count($otherSectionCars);
-            if ($needed <= 0) break;
-            
-            $excludeIds = array_merge([$currentCar['id']], array_column($sameSectionCars, 'id'), array_column($otherSectionCars, 'id'));
-            $newCars = fetchSimilarCars($db, $prefx, $currentCar, $priceLow, $priceHigh, $otherSection, $excludeIds, $needed, $modelCounts);
-            
+        
+        // Second: other section (fill remaining slots)
+        if (count($allFoundCars) < $limit) {
+            $excludeIds = array_merge([$currentCar['id']], array_column($allFoundCars, 'id'));
+            $newCars = fetchSimilarCars($db, $prefx, $currentCar, $priceLow, $priceHigh, $otherSection, $excludeIds, $limit, $modelCounts);
             foreach ($newCars as $car) {
-                if (count($sameSectionCars) + count($otherSectionCars) >= $limit) break;
+                if (count($allFoundCars) >= $limit) break;
                 $modelKey = $car['br'] . '_' . $car['mo'];
                 if (!isset($modelCounts[$modelKey])) $modelCounts[$modelKey] = 0;
                 if ($modelCounts[$modelKey] >= 1) continue;
                 $modelCounts[$modelKey]++;
                 $car['from_other_section'] = true;
-                $otherSectionCars[] = $car;
+                $allFoundCars[] = $car;
             }
-            if (count($sameSectionCars) + count($otherSectionCars) >= $limit) break;
         }
+        
+        if (count($allFoundCars) >= $limit) break;
     }
+    
+    $sameSectionCars = array_filter($allFoundCars, fn($c) => !$c['from_other_section']);
+    $otherSectionCars = array_filter($allFoundCars, fn($c) => $c['from_other_section']);
     
     // Step 3: Fallback to fresh arrivals
     $allCars = array_merge($sameSectionCars, $otherSectionCars);
