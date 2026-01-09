@@ -201,7 +201,8 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Content-Type: application/json',
     'Authorization: Bearer ' . $apiKey
 ]);
-curl_setopt($ch, CURLOPT_TIMEOUT, 120);
+curl_setopt($ch, CURLOPT_TIMEOUT, 300);
+curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 60);
 
 $response = curl_exec($ch);
 $curlError = curl_error($ch);
