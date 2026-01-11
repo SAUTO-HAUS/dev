@@ -239,6 +239,51 @@ function generateSimilarCarsHTML($cars, $currentSection, $db, $prefx, $lng, $img
                     </p>';
         }
         
+        // Add import country with flag
+        if (!empty($car['import_country_id'])) {
+            $country_name = '';
+            $country_code = '';
+            
+            $langColumn = 'name_ro';
+            if (isset($_COOKIE['lang']) && $_COOKIE['lang'] == 'ru') {
+                $langColumn = 'name_ru';
+                $country_label = 'Страна импорта';
+            } elseif (isset($_COOKIE['lang']) && $_COOKIE['lang'] == 'en') {
+                $langColumn = 'name_en';
+                $country_label = 'Import country';
+            } else {
+                $country_label = 'Țara de import';
+            }
+            
+            try {
+                $stmt = $db->prepare("SELECT {$langColumn}, code FROM countries WHERE id = :id LIMIT 1");
+                $stmt->execute(['id' => $car['import_country_id']]);
+                $result = $stmt->fetch(PDO::FETCH_ASSOC);
+                if ($result) {
+                    $country_name = $result[$langColumn] ?? '';
+                    $country_code = isset($result['code']) ? strtolower($result['code']) : '';
+                }
+            } catch (Exception $e) {
+                // Silent error handling
+            }
+            
+            if (!empty($country_name)) {
+                $html .= '
+                    <p class="ar">
+                        <span class="name">'.$country_label.'</span>
+                        <span class="space"></span>
+                        <span class="val">'.$country_name.'</span>
+                    </p>';
+                
+                if (!empty($country_code)) {
+                    $html .= '
+                    <div style="text-align: right; margin-right:-3px; margin-top: -8px; padding: 0; border: none;">
+                        <img src="/media/images/flags/'.$country_code.'.svg" alt="'.$country_name.' flag" style="width: 36px; height: 30px; border: none; padding: 0;">
+                    </div>';
+                }
+            }
+        }
+        
         $html .= '
                 </div>
             </div>
