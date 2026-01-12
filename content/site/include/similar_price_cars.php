@@ -12,46 +12,48 @@ function getSimilarPriceCars($currentCar, $limit = 8, $db, $prefx, $lng, $img_fr
     $currentSection = isset($currentCar['catalog_type']) ? $currentCar['catalog_type'] : 'in_stock';
     $otherSection = ($currentSection === 'in_stock') ? 'on_order' : 'in_stock';
     $priceRanges = [0.20, 0.30, 0.40];
-    $allFoundCars = [];
+    $sameSectionCars = [];
+    $otherSectionCars = [];
     $modelCounts = [];
+    $modelCountsOther = [];
     
-    // Search both sections with expanding price ranges
     foreach ($priceRanges as $range) {
+        if (count($sameSectionCars) >= $limit) break;
         $priceLow = $basePrice * (1 - $range);
         $priceHigh = $basePrice * (1 + $range);
-        
-        // First: same section
-        if (count($allFoundCars) < $limit) {
-            $excludeIds = array_merge([$currentCar['id']], array_column($allFoundCars, 'id'));
-            $newCars = fetchSimilarCars($db, $prefx, $currentCar, $priceLow, $priceHigh, $currentSection, $excludeIds, $limit, $modelCounts);
-            foreach ($newCars as $car) {
-                if (count($allFoundCars) >= $limit) break;
-                $modelKey = $car['br'] . '_' . $car['mo'];
-                if (!isset($modelCounts[$modelKey])) $modelCounts[$modelKey] = 0;
-                if ($modelCounts[$modelKey] >= 2) continue;
-                $modelCounts[$modelKey]++;
-                $car['from_other_section'] = false;
-                $allFoundCars[] = $car;
-            }
+        $excludeIds = array_merge([$currentCar['id']], array_column($sameSectionCars, 'id'));
+        $newCars = fetchSimilarCars($db, $prefx, $currentCar, $priceLow, $priceHigh, $currentSection, $excludeIds, $limit, $modelCounts);
+        foreach ($newCars as $car) {
+            if (count($sameSectionCars) >= $limit) break;
+            $modelKey = $car['br'] . '_' . $car['mo'];
+            if (!isset($modelCounts[$modelKey])) $modelCounts[$modelKey] = 0;
+            if ($modelCounts[$modelKey] >= 2) continue;
+            $modelCounts[$modelKey]++;
+            $car['from_other_section'] = false;
+            $sameSectionCars[] = $car;
         }
-        
-        // Second: other section (fill remaining slots)
-        if (count($allFoundCars) < $limit) {
-            $excludeIds = array_merge([$currentCar['id']], array_column($allFoundCars, 'id'));
-            $newCars = fetchSimilarCars($db, $prefx, $currentCar, $priceLow, $priceHigh, $otherSection, $excludeIds, $limit, $modelCounts);
-            foreach ($newCars as $car) {
-                if (count($allFoundCars) >= $limit) break;
-                $modelKey = $car['br'] . '_' . $car['mo'];
-                if (!isset($modelCounts[$modelKey])) $modelCounts[$modelKey] = 0;
-                if ($modelCounts[$modelKey] >= 2) continue;
-                $modelCounts[$modelKey]++;
-                $car['from_other_section'] = true;
-                $allFoundCars[] = $car;
-            }
-        }
-        
-        if (count($allFoundCars) >= $limit) break;
     }
+    
+    if (count($sameSectionCars) < $limit) {
+        foreach ($priceRanges as $range) {
+            if (count($sameSectionCars) + count($otherSectionCars) >= $limit) break;
+            $priceLow = $basePrice * (1 - $range);
+            $priceHigh = $basePrice * (1 + $range);
+            $excludeIds = array_merge([$currentCar['id']], array_column($sameSectionCars, 'id'), array_column($otherSectionCars, 'id'));
+            $newCars = fetchSimilarCars($db, $prefx, $currentCar, $priceLow, $priceHigh, $otherSection, $excludeIds, $limit, $modelCountsOther);
+            foreach ($newCars as $car) {
+                if (count($sameSectionCars) + count($otherSectionCars) >= $limit) break;
+                $modelKey = $car['br'] . '_' . $car['mo'];
+                if (!isset($modelCountsOther[$modelKey])) $modelCountsOther[$modelKey] = 0;
+                if ($modelCountsOther[$modelKey] >= 2) continue;
+                $modelCountsOther[$modelKey]++;
+                $car['from_other_section'] = true;
+                $otherSectionCars[] = $car;
+            }
+        }
+    }
+    
+    $allFoundCars = array_merge($sameSectionCars, $otherSectionCars);
     
     $sameSectionCars = array_filter($allFoundCars, fn($c) => !$c['from_other_section']);
     $otherSectionCars = array_filter($allFoundCars, fn($c) => $c['from_other_section']);
