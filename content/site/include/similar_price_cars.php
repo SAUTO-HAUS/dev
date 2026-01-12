@@ -90,7 +90,7 @@ function getSimilarPriceCars($currentCar, $limit = 8, $db, $prefx, $lng, $img_fr
 function fetchSimilarCars($db, $prefx, $currentCar, $priceLow, $priceHigh, $section, $excludeIds, $limit, &$modelCounts) {
     $excludeList = implode(',', array_map('intval', $excludeIds));
     $sql = "SELECT *, 
-            CASE WHEN br = :br AND mo = :mo THEN 1 WHEN br = :br2 THEN 2 WHEN bt = :bt THEN 3 ELSE 9 END AS priority,
+            CASE WHEN br = :br AND mo = :mo THEN 1 WHEN br = :br2 THEN 2 WHEN bt = :bt THEN 3 ELSE 4 END AS priority,
             ABS(prc - :base_price) AS price_diff
             FROM {$prefx}_car_ctlg 
             WHERE vis = '1' AND act = '1' AND n_a = '0'
@@ -109,7 +109,7 @@ function fetchSimilarCars($db, $prefx, $currentCar, $priceLow, $priceHigh, $sect
         $stmt->bindValue(':price_high', $priceHigh, PDO::PARAM_INT);
         $stmt->bindValue(':section', $section, PDO::PARAM_STR);
         $stmt->bindValue(':section2', $section, PDO::PARAM_STR);
-        $stmt->bindValue(':limit', $limit * 3, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', 50, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
