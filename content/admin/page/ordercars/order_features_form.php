@@ -220,11 +220,12 @@ if (!isset($new999)) $new999 = true;
                                                 break;
                                         }
                                         ?>
-                                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; margin-bottom: 3px; background: #f8f9fa; border-left: 3px solid <?= $statusColor ?>; border-radius: 3px; font-size: 11px;">
+                                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 4px 8px; margin-bottom: 3px; background: #f8f9fa; border-left: 3px solid <?= $statusColor ?>; border-radius: 3px; font-size: 11px;" data-schedule-id="<?= $schedule['id'] ?>">
                                             <span style="font-weight: 500; color: #495057;"><?= $formattedDate ?></span>
                                             <div style="display: flex; align-items: center; gap: 4px;">
                                                 <span style="font-size: 14px;"><?= $statusIcon ?></span>
                                                 <span style="font-size: 10px; color: <?= $statusColor ?>; font-weight: 500;"><?= $statusText ?></span>
+                                                <button type="button" class="delete-schedule-btn" data-schedule-id="<?= $schedule['id'] ?>" data-status="<?= $schedule['status'] ?>" data-999-id="<?= $schedule['published_999_id'] ?? '' ?>" style="background: #dc3545; color: white; border: none; border-radius: 50%; width: 16px; height: 16px; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin-left: 4px; padding: 0;" title="<?= __('cars.delete_schedule') ?? 'Șterge' ?>">✕</button>
                                             </div>
                                         </div>
                                     <?php endforeach; ?>

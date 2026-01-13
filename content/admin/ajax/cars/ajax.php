@@ -702,6 +702,24 @@ elseif (__post('fn') == 'ai_generate' || (isset($_GET['fn']) && $_GET['fn'] == '
     echo json_encode($returnIt);
     exit;
 }
+//---------------------------------------------DELETE SCHEDULE (Personal 999.md scheduling)
+elseif (__post('fn') == 'delete_schedule') {
+    $scheduleId = __post('schedule_id');
+    
+    if (empty($scheduleId)) {
+        $returnIt = ['success' => false, 'error' => 'ID расписания не указан'];
+    } else {
+        try {
+            // Delete from database
+            $stmt = $db->prepare("DELETE FROM {$prefx}_sauto_personal_schedules WHERE id = ?");
+            $stmt->execute([$scheduleId]);
+            
+            $returnIt = ['success' => true, 'message' => 'Расписание удалено'];
+        } catch (Exception $e) {
+            $returnIt = ['success' => false, 'error' => 'Не удалось удалить расписание: ' . $e->getMessage()];
+        }
+    }
+}
 elseif (__post('fn') == 'save_ai_settings') {
     try {
         $db->exec("CREATE TABLE IF NOT EXISTS {$prefx}_ai_settings (
