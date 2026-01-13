@@ -265,7 +265,7 @@ try {
                             echo "[" . date('Y-m-d H:i:s') . "] ✅ Объявление обновлено актуальными данными\n";
                             $featuresData['features'] = $updatedFeatures;
                             $updatedFeaturesJson = json_encode($featuresData, JSON_UNESCAPED_UNICODE);
-                            $updateDbStmt = $db->prepare("UPDATE {$prefx}_car_ctlg SET `999` = :features, `features_json` = :features WHERE id = :car_id");
+                            $updateDbStmt = $db->prepare("UPDATE {$prefx}_car_ctlg SET `999` = :features WHERE id = :car_id");
                             $updateDbStmt->execute(['features' => $updatedFeaturesJson, 'car_id' => $schedule['car_id']]);
                         } else {
                             echo "[" . date('Y-m-d H:i:s') . "] ⚠️ Предупреждение: Не удалось обновить данные, продолжаем републикацию\n";
