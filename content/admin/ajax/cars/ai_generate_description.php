@@ -63,9 +63,6 @@ if ($fromForm) {
                 $stmtPhotos->execute(['it_id' => $carId]);
                 $photos = $stmtPhotos->fetchAll(PDO::FETCH_ASSOC);
                 
-                $imgFormat = (usr_agent()==='IOS'||usr_agent()==='MAC') ? '.jpg' : '.webp';
-                $siteUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
-                
                 $photoPositionsSetting = '';
                 try {
                     $stmtPos = $db->query("SELECT setting_value FROM {$prefx}_ai_settings WHERE setting_key = 'photo_positions' LIMIT 1");
@@ -80,11 +77,26 @@ if ($fromForm) {
                     $selectedPositions = array_map('intval', array_filter(explode(',', $photoPositionsSetting)));
                 }
                 
+                // Use local file path for base64 encoding - try .jpg first, then .webp
+                $basePath = $_SERVER['DOCUMENT_ROOT'] . '/' . _CAR_IMG . '/' . $carRow['p_path'] . '/' . $carId . '/high/';
+                
                 $photoIndex = 0;
                 foreach ($photos as $photo) {
                     $photoIndex++;
                     if (empty($selectedPositions) || in_array($photoIndex, $selectedPositions)) {
-                        $carImages[] = $siteUrl . '/' . _CAR_IMG . '/' . $carRow['p_path'] . '/' . $carId . '/high/' . $photo['name'] . $imgFormat;
+                        // Try .jpg first, then .webp
+                        $jpgPath = $basePath . $photo['name'] . '.jpg';
+                        $webpPath = $basePath . $photo['name'] . '.webp';
+                        
+                        if (file_exists($jpgPath)) {
+                            $imageData = file_get_contents($jpgPath);
+                            $base64 = base64_encode($imageData);
+                            $carImages[] = 'data:image/jpeg;base64,' . $base64;
+                        } elseif (file_exists($webpPath)) {
+                            $imageData = file_get_contents($webpPath);
+                            $base64 = base64_encode($imageData);
+                            $carImages[] = 'data:image/webp;base64,' . $base64;
+                        }
                     }
                 }
             }
@@ -123,9 +135,6 @@ if ($fromForm) {
         $stmtPhotos->execute(['it_id' => $carId]);
         $photos = $stmtPhotos->fetchAll(PDO::FETCH_ASSOC);
         
-        $imgFormat = (usr_agent()==='IOS'||usr_agent()==='MAC') ? '.jpg' : '.webp';
-        $siteUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $_SERVER['HTTP_HOST'];
-        
         $photoPositionsSetting = ''; 
         try {
             $stmtPos = $db->query("SELECT setting_value FROM {$prefx}_ai_settings WHERE setting_key = 'photo_positions' LIMIT 1");
@@ -140,11 +149,26 @@ if ($fromForm) {
             $selectedPositions = array_map('intval', array_filter(explode(',', $photoPositionsSetting)));
         }
         
+        // Use local file path for base64 encoding - try .jpg first, then .webp
+        $basePath = $_SERVER['DOCUMENT_ROOT'] . '/' . _CAR_IMG . '/' . $car['p_path'] . '/' . $carId . '/high/';
+        
         $photoIndex = 0;
         foreach ($photos as $photo) {
             $photoIndex++;
             if (empty($selectedPositions) || in_array($photoIndex, $selectedPositions)) {
-                $carImages[] = $siteUrl . '/' . _CAR_IMG . '/' . $car['p_path'] . '/' . $carId . '/high/' . $photo['name'] . $imgFormat;
+                // Try .jpg first, then .webp
+                $jpgPath = $basePath . $photo['name'] . '.jpg';
+                $webpPath = $basePath . $photo['name'] . '.webp';
+                
+                if (file_exists($jpgPath)) {
+                    $imageData = file_get_contents($jpgPath);
+                    $base64 = base64_encode($imageData);
+                    $carImages[] = 'data:image/jpeg;base64,' . $base64;
+                } elseif (file_exists($webpPath)) {
+                    $imageData = file_get_contents($webpPath);
+                    $base64 = base64_encode($imageData);
+                    $carImages[] = 'data:image/webp;base64,' . $base64;
+                }
             }
         }
         
