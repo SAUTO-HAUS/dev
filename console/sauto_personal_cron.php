@@ -276,9 +276,17 @@ try {
                 $result = $api999Service->republishAdvert($schedule['existing_999_id']);
                 
                 if ($result && isset($result['success']) && $result['success']) {
-                    // Delete schedule after successful publish
-                    $stmt = $db->prepare("DELETE FROM gh3sp_sauto_personal_schedules WHERE id = :id");
-                    $stmt->execute(['id' => $schedule['id']]);
+                       $stmt = $db->prepare("
+                        UPDATE gh3sp_sauto_personal_schedules 
+                        SET status = 'published', 
+                            published_at = NOW(), 
+                            `999_id` = :api_id
+                        WHERE id = :id
+                    ");
+                    $stmt->execute([
+                        'api_id' => $schedule['existing_999_id'],
+                        'id' => $schedule['id']
+                    ]);
                     
                     echo "[" . date('Y-m-d H:i:s') . "] ✅ Успешно републиковано авто {$schedule['car_id']} на 999.md ({$apiAccount})\n";
                 } else {
@@ -448,9 +456,13 @@ try {
                             'car_id' => $schedule['car_id']
                         ]);
                         
-                        // Delete schedule after successful publish
-                        $stmt = $db->prepare("DELETE FROM gh3sp_sauto_personal_schedules WHERE id = :id");
-                        $stmt->execute(['id' => $schedule['id']]);
+                        // Update schedule as published
+                        $stmt = $db->prepare("
+                            UPDATE gh3sp_sauto_personal_schedules 
+                            SET status = 'published', published_at = NOW(), `999_id` = :api_id
+                            WHERE id = :id
+                        ");
+                        $stmt->execute(['api_id' => $new999Id, 'id' => $schedule['id']]);
                         
                         echo "[" . date('Y-m-d H:i:s') . "] ✅ Successfully created new 999.md listing {$new999Id} for car {$schedule['car_id']}\n";
                     } else {
