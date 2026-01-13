@@ -22,6 +22,11 @@ echo '
     <img src="/content/admin/page/sett/monitoring/icons/logs.svg" style="width:24px; height:24px; filter:brightness(0) invert(1);" alt="Logs">
     '.$adm_lang['sitemap_logs'].'
 </a>
+
+<a href="/tools/in_stock_export.php?token=comet-ladder-sphinx-A7K3M9" target="_blank" style="display:flex; align-items:center; gap:10px; padding:15px; background:#17a2b8; color:white; text-decoration:none; border-radius:8px; margin-bottom:15px; font-size:18px;">
+    <svg style="width:24px; height:24px; fill:white;" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+    '.$adm_lang['in_stock_export'].'
+</a>
 ';
 
 ?>
