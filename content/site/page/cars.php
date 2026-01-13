@@ -1035,7 +1035,30 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                         '.$link_text_brand.' '.$r['br_nm'].$suffix.'
                     </a>
                 </div>
-                            </div> ';
+                ';
+                
+                // R/M/P tech string: R{weeks since creation}-M{weeks since status change}-P10
+                $weeks_since_creation = 0;
+                $weeks_since_status_change = 0;
+                
+                if (!empty($r['date'])) {
+                    $weeks_since_creation = floor((time() - $r['date']) / (7 * 24 * 60 * 60));
+                }
+                
+                if (!empty($r['status_changed_at'])) {
+                    $status_timestamp = strtotime($r['status_changed_at']);
+                    if ($status_timestamp) {
+                        $weeks_since_status_change = floor((time() - $status_timestamp) / (7 * 24 * 60 * 60));
+                    }
+                }
+                
+                $tech_string = 'R' . $weeks_since_creation . '-M' . $weeks_since_status_change . '-P10';
+                
+                $rtrn .= '<div style="text-align: center; margin: 10px 0;">
+                    <span class="fl" style="color: #999; font-size: 12px;">' . $tech_string . '</span>
+                </div>';
+                
+                $rtrn .= '</div> ';
 
                 $rtrn .= '<div style="clear:both"></div>';
 
