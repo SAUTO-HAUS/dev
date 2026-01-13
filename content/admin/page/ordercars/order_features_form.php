@@ -225,7 +225,9 @@ if (!isset($new999)) $new999 = true;
                                             <div style="display: flex; align-items: center; gap: 4px;">
                                                 <span style="font-size: 14px;"><?= $statusIcon ?></span>
                                                 <span style="font-size: 10px; color: <?= $statusColor ?>; font-weight: 500;"><?= $statusText ?></span>
+                                                <?php if ($schedule['status'] !== 'published'): ?>
                                                 <button type="button" class="delete-schedule-btn" data-schedule-id="<?= $schedule['id'] ?>" data-status="<?= $schedule['status'] ?>" data-999-id="<?= $schedule['published_999_id'] ?? '' ?>" style="background: #dc3545; color: white; border: none; border-radius: 50%; width: 16px; height: 16px; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; margin-left: 4px; padding: 0;" title="<?= __('cars.delete_schedule') ?? 'Șterge' ?>">✕</button>
+                                                <?php endif; ?>
                                             </div>
                                         </div>
                                     <?php endforeach; ?>
