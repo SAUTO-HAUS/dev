@@ -225,8 +225,22 @@ foreach ($pdo as $r){
 			<div class="views" title="views"> '.$r['views'].' <div class="img"></div> </div>
 			<div class="date" title="'.date('H:i:s', $r['date']).'">'.date('d.m.Y', $r['date']).'</div>
 		</div>
-		
-		<div class="img" style="background-image:url(/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/'.$p_nm.( !empty($p_ff) ? ('.'.$p_ff) : $img_frmt ).'), url(/media/images/site/no_image.png);">';
+		';
+	
+	// Check for HTML description
+	$hasHtml = false;
+	try {
+		$seoStmt = $db->prepare("SELECT params_html FROM {$prefx}_car_seo WHERE car_id = ?");
+		$seoStmt->execute([$r['id']]);
+		$seoRow = $seoStmt->fetch(\PDO::FETCH_ASSOC);
+		$hasHtml = !empty($seoRow['params_html']) && strlen(trim($seoRow['params_html'])) > 10;
+	} catch (Exception $e) {
+		$hasHtml = false;
+	}
+	$htmlIndicator = '<div class="html-indicator" title="'.($hasHtml ? 'HTML описание есть' : 'HTML описание отсутствует').'" style="position:absolute;top:5px;left:5px;width:14px;height:14px;border-radius:3px;text-align:center;line-height:14px;font-size:9px;font-weight:bold;color:#fff;background:'.($hasHtml ? '#28a745' : '#dc3545').';z-index:10;">'.($hasHtml ? '✓' : '✗').'</div>';
+	
+	$rtrn .= '
+		<div class="img" style="background-image:url(/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/'.$p_nm.( !empty($p_ff) ? ('.'.$p_ff) : $img_frmt ).'), url(/media/images/site/no_image.png);position:relative;">'.$htmlIndicator;
 			//if($r['top']){$rtrn .= '<div class="top-sales" title="Top Sales">'.$lng['l']['stat']['top1'].'</div>';}
 			if( $r['act'] == 0 ){$rtrn .= '<div class="remove_after" timer="'.( $r['del_t']-time() ).'" ra="'.$r['del_t'].'">**, **:**:**</div>';}
 			$rtrn .= '
