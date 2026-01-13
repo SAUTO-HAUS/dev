@@ -230,7 +230,7 @@ foreach ($pdo as $r){
 	// Check for HTML description
 	$hasHtml = false;
 	try {
-		$seoStmt = $db->prepare("SELECT params_html FROM {$prefx}_car_seo WHERE car_id = ?");
+		$seoStmt = $db->prepare("SELECT params_html FROM {$prefx}_seo2 WHERE it_id = ? AND tp = 'item' AND p1 = 'ordercars' AND lng = 'ro' LIMIT 1");
 		$seoStmt->execute([$r['id']]);
 		$seoRow = $seoStmt->fetch(\PDO::FETCH_ASSOC);
 		$hasHtml = !empty($seoRow['params_html']) && strlen(trim($seoRow['params_html'])) > 10;
