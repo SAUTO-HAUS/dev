@@ -60,8 +60,101 @@ foreach ($pdo as $r){
 	$z_loc = ( in_array($user_login, ['comerzan']) ) ? 2 : 1;
 	$av_k = ['id'=>0, 'br'=>0, 'mo'=>0, 'br_nm'=>1, 'mo_nm'=>1, 'yr'=>0, 'bt'=>0, 'mlg'=>1, 'unit'=>0, 'vol'=>0, 'hp'=>0, 'fl'=>0, 'tra'=>0, 'wd'=>0, 'sts'=>0, 'clr'=>0, 'prc'=>1, 'cur'=>1];
 	
+	// Build publication icons HTML
+	$pub_icons_html = '<div class="log_sauto_999">';
+	
+	// SAUTO logo
+	if (!empty($r['br'])) {
+		$pub_icons_html .= '<img src="/media/images/site/v2/logo_b.svg" class="log_sauto" title="Published on SAUTO" alt="Published on SAUTO"/>';
+	}
+	
+	// 999.md icon
+	$pending999Schedules = [];
+	$failed999Schedule = null;
+	$all999Schedules = [];
+	try {
+		$stmt = $db->prepare("SELECT * FROM {$prefx}_sauto_personal_schedules WHERE car_id = ? AND status = 'pending' AND catalog_type = 'on_order' ORDER BY schedule_date, schedule_time");
+		$stmt->execute([$r['id']]);
+		$pending999Schedules = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+		
+		$stmt = $db->prepare("SELECT * FROM {$prefx}_sauto_personal_schedules WHERE car_id = ? AND status = 'failed' AND catalog_type = 'on_order' ORDER BY updated_at DESC LIMIT 1");
+		$stmt->execute([$r['id']]);
+		$failed999Schedule = $stmt->fetch(\PDO::FETCH_ASSOC);
+		
+		$stmt = $db->prepare("SELECT * FROM {$prefx}_sauto_personal_schedules WHERE car_id = ? AND catalog_type = 'on_order' ORDER BY schedule_date, schedule_time");
+		$stmt->execute([$r['id']]);
+		$all999Schedules = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+	} catch (Exception $e) {
+		$pending999Schedules = [];
+		$failed999Schedule = null;
+		$all999Schedules = [];
+	}
+	
+	if (!empty($r['999_id']) || !empty($pending999Schedules) || $failed999Schedule || !empty($all999Schedules)) {
+		$adverts = (new \App\Db\Adverts())->getActiveAdvertsByCarId($r['id']);
+		$tooltip = '';
+		if (!empty($adverts)) {
+			$tooltip = ($lng['cars']['date_next_public'] ?? 'Next publication') . ':<br>';
+			foreach ($adverts as $advert) {
+				$tooltip .= 'Clone #' . $advert['type'] . ' - ' . $advert['publish_datetime'] . '<br>';
+			}
+		}
+		
+		if (!empty($all999Schedules)) {
+			foreach ($all999Schedules as $schedule) {
+				$scheduleDateTime = DateTime::createFromFormat('Y-m-d H:i:s', $schedule['schedule_date'] . ' ' . $schedule['schedule_time']);
+				$formattedDate = $scheduleDateTime ? $scheduleDateTime->format('d.m.Y, H:i') : $schedule['schedule_date'] . ' ' . $schedule['schedule_time'];
+				
+				switch ($schedule['status']) {
+					case 'published': $statusText = 'опубликовано'; break;
+					case 'pending': $statusText = 'в ожидании'; break;
+					case 'failed': $statusText = 'неудачно'; break;
+					case 'cancelled': $statusText = 'отменено'; break;
+					case 'postponed': $statusText = 'отложено (таймер истёк)'; break;
+					default: $statusText = $schedule['status'];
+				}
+				
+				$tooltip .= ($tooltip ? '<br>' : '') . $formattedDate . ' - ' . $statusText;
+			}
+		}
+		if ($failed999Schedule) {
+			$tooltip .= ($tooltip ? '<br>' : '') . 'Ошибка: ' . ($failed999Schedule['error_message'] ?? 'Неизвестная ошибка');
+		}
+		
+		if (!empty($r['999_id'])) {
+			$pub_icons_html .= '<a href="https://999.md/'.$r['999_id'].'" target="_blank"><img src="/media/images/site/logo_999.svg" class="log_999" data-tooltip="'.htmlspecialchars($tooltip).'" alt="Published on 999"/></a>';
+		} elseif ($failed999Schedule) {
+			$pub_icons_html .= '<img src="/media/images/site/logo_999.svg" class="log_999" style="filter: hue-rotate(0deg) saturate(2) brightness(0.8) contrast(1.2); color: #dc3545;" data-tooltip="'.htmlspecialchars($tooltip).'" alt="Failed 999"/>';
+		} else {
+			$pub_icons_html .= '<img src="/media/images/site/logo_999.svg" class="log_999" style="filter: grayscale(100%) opacity(0.6);" data-tooltip="'.htmlspecialchars($tooltip).'" alt="Scheduled for 999"/>';
+		}
+	}
+	$pub_icons_html .= '</div>';
+	
+	// Telegram & Facebook icons
+	$tg_fb_icons_html = '';
+	if ($r['telegram_published'] >= 1 || $r['facebook_published'] >= 1) {
+		$tg_fb_icons_html .= '<div class="icon_list_cattg">';
+		
+		if ($r['telegram_published'] >= 1) {
+			$tg_title = $r['telegram_published'] == 1 ? 'Опубликовано в Telegram' : 'Запланировано в Telegram';
+			$tg_color = $r['telegram_published'] == 1 ? '#0088cc' : '#888888';
+			$tg_fb_icons_html .= '<div class="icon_tg" title="'.$tg_title.'"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><circle cx="248" cy="256" r="248" fill="'.$tg_color.'"/><path fill="#ffffff" d="M248,8C111.033,8,0,119.033,0,256S111.033,504,248,504,496,392.967,496,256,384.967,8,248,8ZM362.952,176.66c-3.732,39.215-19.881,134.378-28.1,178.3-3.476,18.584-10.322,24.816-16.948,25.425-14.4,1.326-25.338-9.517-39.287-18.661-21.827-14.308-34.158-23.215-55.346-37.177-24.485-16.135-8.612-25,5.342-39.5,3.652-3.793,67.107-61.51,68.335-66.746.153-.655.3-3.1-1.154-4.384s-3.59-.849-5.135-.5q-3.283.746-104.608,69.142-14.845,10.194-26.894,9.934c-8.855-.191-25.888-5.006-38.551-9.123-15.531-5.048-27.875-7.717-26.8-16.291q.84-6.7,18.45-13.7,108.446-47.248,144.628-62.3c68.872-28.647,83.183-33.623,92.511-33.789,2.052-.034,6.639.474,9.61,2.885a10.452,10.452,0,0,1,3.53,6.716A43.765,43.765,0,0,1,362.952,176.66Z"/></svg></div>';
+		}
+		
+		if ($r['facebook_published'] >= 1) {
+			$fb_title = $r['facebook_published'] == 1 ? 'Опубликовано в Facebook' : 'Запланировано в Facebook';
+			$fb_color = $r['facebook_published'] == 1 ? '#1877F2' : '#888888';
+			$tg_fb_icons_html .= '<div class="icon_tg" title="'.$fb_title.'"><svg style="top: 7px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><circle cx="256" cy="256" r="256" fill="'.$fb_color.'"/><path fill="#ffffff" d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.5 90.9 225.8 209 245v-173h-63v-72h63v-55c0-62.3 37-96.5 93.7-96.5 27.1 0 55.5 4.8 55.5 4.8v61h-31.2c-30.8 0-40.4 19.1-40.4 38.7v46.1h68.8l-11 72h-57.8v173c118.1-19.2 209-121.5 209-245z"/></svg></div>';
+		}
+		
+		$tg_fb_icons_html .= '</div>';
+	}
+
 	$rtrn .= '
 	<div class="bx'.$stts.'" data-id="'.$r['id'].'">
+		'.$pub_icons_html.'
+		'.$tg_fb_icons_html.'
 		<div class="icon comment '.$z_msg.'" title="'.$lng['w']['comment'].'"></div>
 		<textarea class="comment_txt">'.(isset($restrict_admin_menu[$user_id]['act']['com']['cars'])&&$r['loc']==1?'Informatie restrictionata':$r['txt']).'</textarea>
 		<div class="icon print '.$z_msg.'" title="'.$lng['w']['print'].'"></div>
