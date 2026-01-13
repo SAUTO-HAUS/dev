@@ -173,7 +173,7 @@ if (!isset($new999)) $new999 = true;
                             if (!empty($car['id'])) {
                                 try {
                                     $catalogType = 'on_order'; // Always on_order for ordercars
-                                    $stmt = $db->prepare("SELECT * FROM {$prefx}_sauto_personal_schedules WHERE car_id = ? AND catalog_type = ? ORDER BY schedule_date ASC, schedule_time ASC LIMIT 5");
+                                    $stmt = $db->prepare("SELECT * FROM {$prefx}_sauto_personal_schedules WHERE car_id = ? AND catalog_type = ? ORDER BY schedule_date ASC, schedule_time ASC");
                                     $stmt->execute([$car['id'], $catalogType]);
                                     $all999Schedules = $stmt->fetchAll(\PDO::FETCH_ASSOC);
                                 } catch (Exception $e) {
