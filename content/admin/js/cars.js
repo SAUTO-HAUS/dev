@@ -1883,9 +1883,9 @@ $(document).ready(function() {
 		e.preventDefault();
 		e.stopPropagation();
 		
-		const btn = $(this);
-		const scheduleId = btn.data('schedule-id');
-		const status = btn.data('status');
+		var btn = $(this);
+		var scheduleId = btn.data('schedule-id');
+		var status = btn.data('status');
 		
 		if (!scheduleId) {
 			alert('ID расписания не найден');
@@ -1900,7 +1900,7 @@ $(document).ready(function() {
 		}
 		
 		// Determine page type (cars or ordercars)
-		const currentPage = window.location.pathname.includes('ordercars') ? 'ordercars' : 'cars';
+		var currentPage = window.location.pathname.includes('ordercars') ? 'ordercars' : 'cars';
 		
 		// Send AJAX request to delete
 		$.ajax({
@@ -1916,14 +1916,14 @@ $(document).ready(function() {
 			success: function(response) {
 				if (response.success) {
 					// Remove the schedule item from DOM
-					btn.closest('[data-schedule-id]').fadeOut(300, function() {
+					btn.parent().parent().fadeOut(300, function() {
 						$(this).remove();
 					});
 				} else {
 					alert('Ошибка: ' + (response.error || 'Не удалось удалить расписание'));
 				}
 			},
-			error: function(xhr, status, error) {
+			error: function(xhr, st, error) {
 				alert('Ошибка соединения: ' + error);
 			}
 		});

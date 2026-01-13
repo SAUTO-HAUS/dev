@@ -1855,4 +1855,52 @@ $(document).ready(function() {
 			$('.account_999_id').val('4').trigger('change');
 		}
 	});
+
+	// Delete schedule from database (for existing schedules in history)
+	$(document).on('click', '.delete-schedule-btn', function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		
+		var btn = $(this);
+		var scheduleId = btn.data('schedule-id');
+		var status = btn.data('status');
+		
+		if (!scheduleId) {
+			alert('ID расписания не найден');
+			return;
+		}
+		
+		// Only confirm for pending schedules, published ones delete automatically
+		if (status === 'pending') {
+			if (!confirm('Вы уверены, что хотите удалить эту публикацию?')) {
+				return;
+			}
+		}
+		
+		// Send AJAX request to delete
+		$.ajax({
+			url: '/ajax.php',
+			method: 'POST',
+			data: {
+				tp: 'adm',
+				pg: 'ordercars',
+				fn: 'delete_schedule',
+				schedule_id: scheduleId
+			},
+			dataType: 'json',
+			success: function(response) {
+				if (response.success) {
+					// Remove the schedule item from DOM
+					btn.parent().parent().fadeOut(300, function() {
+						$(this).remove();
+					});
+				} else {
+					alert('Ошибка: ' + (response.error || 'Не удалось удалить расписание'));
+				}
+			},
+			error: function(xhr, st, error) {
+				alert('Ошибка соединения: ' + error);
+			}
+		});
+	});
 });
