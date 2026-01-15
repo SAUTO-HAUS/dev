@@ -2,7 +2,11 @@
 
 $abr = 'FP';
 
-$rtrn = '';
+$rtrn = '
+<div id="p_cont" class="base">
+	<div class="pg">
+	</div>
+</div>';
 
 echo $rtrn;
 ?>
