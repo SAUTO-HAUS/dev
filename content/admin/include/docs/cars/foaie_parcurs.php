@@ -132,6 +132,52 @@ $rtrn = '
 					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.7rem;"></td>
 				</tr>
 			</table>
+			
+			<!-- Rând 7: 2 coloane - gol, menţiuni speciale -->
+			<table style="width:100%; border-collapse:collapse; margin-top:0;">
+				<tr>
+					<td style="width:75%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.7rem;"></td>
+					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.7rem;"><div>Menţiuni speciale</div><div>Особые отметки</div></td>
+				</tr>
+			</table>
+			
+			<!-- Rând 8: 2 coloane - gol, cifra 10 -->
+			<table style="width:100%; border-collapse:collapse; margin-top:0;">
+				<tr>
+					<td style="width:75%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.7rem;"></td>
+					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:center; font-size:0.7rem; font-weight:bold;">10</td>
+				</tr>
+			</table>
+			
+			<!-- Rând 9: 2 coloane - starea tehnică, gol -->
+			<table style="width:100%; border-collapse:collapse; margin-top:0;">
+				<tr>
+					<td style="width:75%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.7rem;"><div>Starea tehnică</div><div>Техническое состояние</div></td>
+					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.7rem;"></td>
+				</tr>
+			</table>
+			
+			<!-- Rând 10: 7 coloane header (6 x 12.5% + 1 x 25%) -->
+			<table style="width:100%; border-collapse:collapse; margin-top:0;">
+				<tr">
+					<td style="width:9%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+					<td style="width:9%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"><div>Data</div><div>Дата</div></td>
+					<td style="width:9%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"><div>Ora, min.</div><div>Час., мин.</div></td>
+					<td style="width:11.4%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"><div>Parcurs zero, km</div><div>Нулевой пробег, км</div></td>
+					<td style="width:11.4%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"><div>Kilometraj</div><div>Показания спидометра, км</div></td>
+					<td style="width:25.2%; border:1px solid #000; border-top:1px solid #fff; padding:0; font-size:0.6rem; vertical-align:top;">
+						<div style="border-bottom:1px solid #000; padding:1mm;"><div>Autovehiculul e în stare bună de funcţionare</div><div>Автомобиль в технически исправном состоянии</div></div>
+						<div style="display:flex; height:10mm;">
+							<div style="width:50%; border-right:1px solid #000; padding:1mm; font-size:0.6rem; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><div>Semnătura şoferului</div><div>Подпись водителя</div></div>
+							<div style="width:50%; padding:1mm; font-size:0.6rem; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><div>Semnătura responsabilului</div><div>Подпись ответственного лица</div></div>
+						</div>
+					</td>
+					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; padding:0; font-size:0.6rem;">
+						<div style="border-bottom:1px solid #000; padding:1mm; height:50%;"></div>
+						<div style="padding:1mm; height:50%;"></div>
+					</td>
+				</tr>
+			</table>
 		</div>
 	</div>
 </div>';
