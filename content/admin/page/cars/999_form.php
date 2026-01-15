@@ -7,16 +7,8 @@ $subcategories = (new Api999Service())->getSubcategories(DefaultText::CATEGORY_A
 
 if (!empty($car['999'])) {
     $car999 = json_decode($car['999'], true);
-    if (!empty($car999['category_id']) && !empty($car999['subcategory_id'])) {
-        $offer_types = (new Api999Service())->getSubcategoryOfferTypes($car999['category_id'], $car999['subcategory_id']);
-    } else {
-        $offer_types = (new Api999Service())->getSubcategoryOfferTypes(DefaultText::CATEGORY_AUTO, '659');
-    }
+    $offer_types = (new Api999Service())->getSubcategoryOfferTypes($car999['category_id'], $car999['subcategory_id']);
 } else {
-    $offer_types = (new Api999Service())->getSubcategoryOfferTypes(DefaultText::CATEGORY_AUTO, '659');
-}
-
-if (empty($offer_types['offer_types'])) {
     $offer_types = (new Api999Service())->getSubcategoryOfferTypes(DefaultText::CATEGORY_AUTO, '659');
 }
 

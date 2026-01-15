@@ -495,14 +495,14 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 		}
 		
 		if ($is_mobile) {
-			// Mobile: Get all images for slider (limited to 10 with lazy loading)
-			$pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `main` DESC, `pos` ASC LIMIT 10'); 
+			// Mobile: Get images for slider (limited to 5 for better mobile performance)
+			$pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `main` DESC, `pos` ASC LIMIT 5'); 
 			$pdo2->execute([ 'it_id'=>$r['id'] ]); 
 			$all_images = $pdo2->fetchAll(PDO::FETCH_ASSOC);
 			
-			// Ensure maximum 10 images for mobile performance
-			if (count($all_images) > 10) {
-				$all_images = array_slice($all_images, 0, 10);
+			// Ensure maximum 5 images for mobile performance
+			if (count($all_images) > 5) {
+				$all_images = array_slice($all_images, 0, 5);
 			}
 			
 			if (count($all_images) > 1) {
