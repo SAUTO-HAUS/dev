@@ -142,7 +142,7 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 			<link rel="stylesheet" type="text/css" href="/content/default/css/default.css" />
 			<style>
 				@media print {
-					@page {size:auto; size: A4 portrait; margin:0;}
+					@page {size:auto; size: A4 '.(isset($_POST['doc_f']) && $_POST['doc_f']=='foaie_parcurs' ? 'landscape' : 'portrait').'; margin:0;}
 					* {-webkit-print-color-adjust:exact !important; color-adjust:exact !important; print-color-adjust:exact !important;}
 					.sep {display:none;}
 				}
@@ -150,7 +150,7 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 				body {background-color:#fff;}
 				
 				.base {font-family:"def"; filter:grayscale(1); -webkit-filter:grayscale(1);}
-				.base > .pg {width:210mm; height:297mm; margin:0 auto; padding:5mm 10mm; background-color:#fff; position:relative;}
+				.base > .pg {width:'.(isset($_POST['doc_f']) && $_POST['doc_f']=='foaie_parcurs' ? '297mm' : '210mm').'; height:'.(isset($_POST['doc_f']) && $_POST['doc_f']=='foaie_parcurs' ? '210mm' : '297mm').'; margin:0 auto; padding:5mm 10mm; background-color:#fff; position:relative;}
 				.base > .pg.bg {background:#fffc url("/media/images/site/print/bg_pg.webp") repeat center / contain; background-blend-mode:soft-light;}
 				.cont {width:100%; float:left; padding:5mm 0 0; font-size:0.8rem;}
 				.logo {float:right;}
@@ -215,7 +215,7 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 								filename:     "sauto_doc.pdf",
 								image:        { type: "jpeg", quality: 0.98 },
 								html2canvas:  { scale: 2, ignoreElements : (".sep") },
-								jsPDF:        { orientation: "portrait" }
+								jsPDF:        { orientation: "'.(isset($_POST['doc_f']) && $_POST['doc_f']=='foaie_parcurs' ? 'landscape' : 'portrait').'" }
 							};
 							//html2pdf().set(opt).from(element).save();
 							html2pdf(element, opt);';
