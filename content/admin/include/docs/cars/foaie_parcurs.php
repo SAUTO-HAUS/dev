@@ -34,6 +34,30 @@ $rtrn = '
 				<div style="font-size:0.8rem;">SERIA&nbsp;&nbsp;&nbsp;&nbsp;<b>DAA&nbsp;&nbsp;&nbsp;&nbsp;Nr. '.$fp_nr.'</b></div>
 			</div>
 		</div>
+		
+		<div class="fp-tables" style="margin-top:5mm;">
+			<!-- Rând 1: 4 coloane la 70% din dreapta -->
+			<table style="width:70%; border-collapse:collapse; margin-left:30%;">
+				<tr>
+					<td style="width:5%; border:1px solid #000; border-bottom:1px solid #fff; padding:1mm; text-align:center; font-size:0.7rem; font-weight:bold;">1</td>
+					<td style="width:45%; border:1px solid #000; border-bottom:1px solid #fff; padding:1mm; font-size:0.7rem;"><div>Data emiterii</div><div>Дата выдачи</div></td>
+					<td style="width:5%; border:1px solid #000; border-bottom:1px solid #fff; padding:1mm; text-align:center; font-size:0.7rem; font-weight:bold;">2</td>
+					<td style="width:45%; border:1px solid #000; border-bottom:1px solid #fff; padding:1mm; font-size:0.7rem;"><div>Nr. diagramă tahograf</div><div>№ диаграммы тахографа</div></td>
+				</tr>
+			</table>
+			
+			<!-- Rând 2: 6 coloane la 100% -->
+			<table style="width:100%; border-collapse:collapse; margin-top:0;">
+				<tr>
+					<td style="width:20%; border:1px solid #000; padding:1mm; font-size:0.65rem;"><div>Marca autovehiculului, remorcii (semiremorcii)</div><div>Марка автомобиля, прицепа (полуприцепа)</div></td>
+					<td style="width:10%; border:1px solid #000; padding:1mm; font-size:0.65rem;"><div>Nr. de înmatriculare</div><div>Регистрационный номер</div></td>
+					<td style="width:10%; border:1px solid #000; border-right:1px solid #fff; padding:1mm; font-size:0.65rem;"><div>Nr. inventar</div><div>Гаражный №</div></td>
+					<td style="width:25%; border:1px solid #000; border-left:1px solid #fff; padding:1mm; font-size:0.65rem;"><div>Numele şi prenumele şoferilor</div><div>Фамилия и имя водителей</div></td>
+					<td style="width:10%; border:1px solid #000; padding:1mm; font-size:0.65rem;"><div>Nr. matricol</div><div>Табельный №</div></td>
+					<td style="width:25%; border:1px solid #000; padding:1mm; font-size:0.65rem;"><div>Starea sănătăţii şoferului</div><div>Состояние здоровья водителя</div></td>
+				</tr>
+			</table>
+		</div>
 	</div>
 </div>';
 
