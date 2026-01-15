@@ -167,7 +167,7 @@ $rtrn = '
 					<td style="width:11.4%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"><div>Kilometraj</div><div>Показания спидометра, км</div></td>
 					<td style="width:25.2%; border:1px solid #000; border-top:1px solid #fff; padding:0; font-size:0.6rem; vertical-align:top;">
 						<div style="border-bottom:1px solid #000; padding:1mm;"><div>Autovehiculul e în stare bună de funcţionare</div><div>Автомобиль в технически исправном состоянии</div></div>
-						<div style="display:flex; height:10mm;">
+						<div style="display:flex;">
 							<div style="width:50%; border-right:1px solid #000; padding:1mm; font-size:0.6rem; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><div>Semnătura şoferului</div><div>Подпись водителя</div></div>
 							<div style="width:50%; padding:1mm; font-size:0.6rem; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><div>Semnătura responsabilului</div><div>Подпись ответственного лица</div></div>
 						</div>
