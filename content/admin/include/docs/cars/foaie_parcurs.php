@@ -3,6 +3,9 @@
 $abr = 'FP';
 
 $rtrn = '
+<style>
+
+</style>
 <div id="p_cont" class="base">
 	<div class="pg">
 	</div>

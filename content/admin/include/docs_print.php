@@ -150,7 +150,7 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 				body {background-color:#fff;}
 				
 				.base {font-family:"def"; filter:grayscale(1); -webkit-filter:grayscale(1);}
-				.base > .pg {width:'.(isset($_POST['doc_f']) && $_POST['doc_f']=='foaie_parcurs' ? '297mm' : '210mm').'; height:'.(isset($_POST['doc_f']) && $_POST['doc_f']=='foaie_parcurs' ? '210mm' : '297mm').'; margin:0 auto; padding:5mm 10mm; background-color:#fff; position:relative;}
+				.base > .pg {width:'.(isset($_POST['doc_f']) && $_POST['doc_f']=='foaie_parcurs' ? '297mm' : '210mm').'; height:'.(isset($_POST['doc_f']) && $_POST['doc_f']=='foaie_parcurs' ? '210mm' : '297mm').'; margin:0 auto; padding:'.(isset($_POST['doc_f']) && $_POST['doc_f']=='foaie_parcurs' ? '10mm' : '5mm 10mm').'; background-color:#fff; position:relative;}
 				.base > .pg.bg {background:#fffc url("/media/images/site/print/bg_pg.webp") repeat center / contain; background-blend-mode:soft-light;}
 				.cont {width:100%; float:left; padding:5mm 0 0; font-size:0.8rem;}
 				.logo {float:right;}
