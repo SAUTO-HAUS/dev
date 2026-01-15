@@ -242,6 +242,14 @@ $rtrn = '
 					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
 				</tr>
 			</table>
+			
+			<!-- Rând 15: 2 coloane - Date vizînd combustibilul (75%), gol (25%) -->
+			<table style="width:100%; border-collapse:collapse; margin-top:0;">
+				<tr>
+					<td style="width:75%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"><div>Date vizînd combustibilul, litri/m3</div><div>Данные о горючем, литр/м3</div></td>
+					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+				</tr>
+			</table>
 		</div>
 	</div>
 </div>';
