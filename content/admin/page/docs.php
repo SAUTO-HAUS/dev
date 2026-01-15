@@ -43,6 +43,7 @@ if ( isset($t_mp[4]) ){
 					,($lng['m']['doc_cat_transport'] ?? 'Transport')=>[
 						'com_transport'=>'Comanda pentru transport'
 						,'invoice'=>'Invoice'
+						,'foaie_parcurs'=>'Foaie de parcurs pentru autocamioane'
 					]
 					,($lng['m']['doc_cat_sauto_buyer'] ?? 'Sauto cumparator')=>[
 						'vinzare_sauto'=>'Contract de vânzare-cumpărare<br>( Sauto cumparator )'
@@ -77,6 +78,7 @@ if ( isset($t_mp[4]) ){
 					,($lng['m']['doc_cat_transport'] ?? 'Transport')=>[
 						'com_transport'=>'Comanda pentru transport'
 						,'invoice'=>'Invoice'
+						,'foaie_parcurs'=>'Foaie de parcurs pentru autocamioane'
 					]
 					,($lng['m']['doc_cat_sauto_buyer'] ?? 'Sauto cumparator')=>[
 						'vinzare_sauto'=>'Contract de vânzare-cumpărare<br>( Sauto cumparator )'

@@ -182,10 +182,30 @@ if ( $t_mp[5]=='invoice' || isset($mixall) ){
 	</script>';
 }
 
-
-
-
-
+//__________________________________________________________________________________________FOAIE DE PARCURS PENTRU AUTOCAMIOANE
+if ( $t_mp[5]=='foaie_parcurs' || isset($mixall) ){
+	$rtrn .= ( isset($mixall)?'<form class="menu_foaie_parcurs">':'' ).'
+	<div class="ttl">Document</div>
+	<label class="lbl"><span class="ttl">Data</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Data" value="'.date('Y-m-d').'" /></label>
+	
+	<div class="ttl">Șofer și Autovehicul</div>
+	<label class="lbl"><span class="ttl">Numele și prenumele șoferului</span><select name="sofer" title="Șofer" class="need">
+		<option value="" class="def" disabled selected>- Selectează șoferul -</option>
+		<option value="Covalciuc Anatolie">Covalciuc Anatolie</option>
+		<option value="Mocanu Ion">Mocanu Ion</option>
+		<option value="Mocanu Igor">Mocanu Igor</option>
+		<option value="Bilic Anatolie">Bilic Anatolie</option>
+	</select></label>
+	
+	<label class="lbl max"><span class="ttl">Marca autovehiculului, remorcii</span><select name="autovehicul" title="Autovehicul" class="need">
+		<option value="" class="def" disabled selected>- Selectează autovehiculul -</option>
+		<option value="MERCEDES ACTROS - SMM149 | KASSBORHER - X239XC">MERCEDES ACTROS - SMM149 | KASSBORHER - X239XC</option>
+		<option value="MERCEDES ACTROS - MHD202 | KASSBORHER - B717BR">MERCEDES ACTROS - MHD202 | KASSBORHER - B717BR</option>
+		<option value="MERCEDES ACTROS - WDW545 | LOHR - W289AL">MERCEDES ACTROS - WDW545 | LOHR - W289AL</option>
+		<option value="MERCEDES ACTROS - LXL103 | LOHR - L065TT">MERCEDES ACTROS - LXL103 | LOHR - L065TT</option>
+	</select></label>
+	'.( isset($mixall)?'</form>':'' );
+}
 
 
 //__________________________________________________________________________________________ANNEXA (CESIUNE DREPT DE PLATĂ)
