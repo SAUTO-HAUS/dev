@@ -178,6 +178,24 @@ $rtrn = '
 					</td>
 				</tr>
 			</table>
+			
+			<!-- Rând 11: 7 coloane cu numere A, 11, 12, 13, 14, 15, 16 -->
+			<table style="width:100%; border-collapse:collapse; margin-top:0;">
+				<tr>
+					<td style="width:9%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">A</td>
+					<td style="width:9%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">11</td>
+					<td style="width:9%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">12</td>
+					<td style="width:11.4%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">13</td>
+					<td style="width:11.4%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">14</td>
+					<td style="width:25.2%; border:1px solid #000; border-top:1px solid #fff; padding:0; font-size:0.6rem;">
+						<div style="display:flex;">
+							<div style="width:50%; border-right:1px solid #000; padding:1mm; text-align:center; font-weight:bold; display:flex; align-items:center; justify-content:center;">15</div>
+							<div style="width:50%; padding:1mm; text-align:center; font-weight:bold; display:flex; align-items:center; justify-content:center;">16</div>
+						</div>
+					</td>
+					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;"></td>
+				</tr>
+			</table>
 		</div>
 	</div>
 </div>';
