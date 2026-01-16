@@ -42,7 +42,7 @@ $sofer_nume = isset($_POST['sofer']) ? strtoupper($_POST['sofer']) : '';
 
 $rtrn = '
 <style>
-	.fp_page {font-family:"Times New Roman", Times, serif !important; background-color:#f0f0f0 !important;}
+	.fp_page {font-family:"Times New Roman", Times, serif;}
 	.fp_page .top-right {position:absolute; top:2mm; right:5mm; text-align:right; font-size:0.6rem; line-height:1.4; font-weight:bold;}
 	</style>
 <div id="p_cont" class="base">
@@ -347,7 +347,7 @@ $rtrn = '
 			</table>
 		</div>
 		
-		<div style="text-align:left; font-size:0.6rem; margin-top: 3mm;">
+		<div style="text-align:left; font-size:0.6rem; margin-top: 2mm;">
 			Editura de Imprimate «Statistica», a4 (181n) 05.04. t.100000
 		</div>
 	</div>
