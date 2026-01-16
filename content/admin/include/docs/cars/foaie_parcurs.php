@@ -72,14 +72,12 @@ $rtrn = '
 		
 		<div class="fp-tables" style="margin-top:2mm;">
 			<!-- Rând 1: 4 coloane la 70% din dreapta -->
-			<table style="width:70%; border-collapse:collapse; margin-left:30%;">
+			<table style="width:65%; border-collapse:collapse; margin-left:35%;">
 				<tr>
 					<td style="width:5%; border:1px solid #000; border-bottom:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">1</td>
-					<td style="width:45%; border:1px solid #000; border-bottom:1px solid #fff; padding:1mm; font-size:0.6rem;">
-						<div style="display:flex; align-items:center;">
-							<div style="text-align:left;"><div>Data emiterii</div><div>Дата выдачи</div></div>
-							<div style="text-align:center; font-weight:bold; font-size:0.8rem; flex:1;">'.$data_emiterii.'</div>
-						</div>
+					<td style="width:45%; border:1px solid #000; border-bottom:1px solid #fff; padding:1mm; font-size:0.6rem; position:relative;">
+						<div style="text-align:left;"><div>Data emiterii</div><div>Дата выдачи</div></div>
+						<div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-weight:bold; font-size:0.8rem;">'.$data_emiterii.'</div>
 					</td>
 					<td style="width:5%; border:1px solid #000; border-bottom:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">2</td>
 					<td style="width:45%; border:1px solid #000; border-bottom:1px solid #fff; padding:1mm; text-align:left; font-size:0.6rem;"><div>Nr. diagramă tahograf</div><div>№ диаграммы тахографа</div></td>
