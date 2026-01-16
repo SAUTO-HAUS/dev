@@ -349,7 +349,7 @@ $rtrn = '
 			<table style="width:100%; border-collapse:collapse; margin-top:0;">
 				<tr>
 					<td style="width:3.5%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">28</td>
-					<td style="width:71.5%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"><div>Nr.        documentelor de       confirmare:</div><div>№          подтверждающего  документа:</div></td>
+					<td style="width:71.5%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem; text-align:left;"><div>Nr. documentelor de confirmare:</div><div>№ подтверждающего документа:</div></td>
 					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
 				</tr>
 			</table>
