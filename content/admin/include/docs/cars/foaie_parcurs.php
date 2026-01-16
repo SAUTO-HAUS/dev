@@ -250,6 +250,38 @@ $rtrn = '
 					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
 				</tr>
 			</table>
+			
+			<!-- Rând 16: 8 coloane - Tipul de combustibil, Eliberat, Rest la, Predat, Coeficient, Timp, Consum, gol -->
+			<table style="width:100%; border-collapse:collapse; margin-top:0;">
+				<tr>
+					<td style="width:9%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"><div>Tipul de combustibil</div><div>Вид топлива</div></td>
+					<td style="width:7%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"><div>Eliberat</div><div>Выдано</div></td>
+					<td style="width:12%; border:1px solid #000; border-top:1px solid #fff; padding:0; font-size:0.6rem; vertical-align:top;">
+						<div style="border-bottom:1px solid #000; padding:1mm;"><div>Rest la:</div><div>Остаток при:</div></div>
+						<div style="display:flex;">
+							<div style="width:50%; border-right:1px solid #000; padding:1mm; font-size:0.6rem; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><div>Plecare</div><div>выезде</div></div>
+							<div style="width:50%; padding:1mm; font-size:0.6rem; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><div>sosire</div><div>возвращении</div></div>
+						</div>
+					</td>
+					<td style="width:6%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"><div>Predat</div><div>Сдано</div></td>
+					<td style="width:12%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"><div style="font-size:0.5rem;">Coeficientul de corecţie a normei</div><div style="font-size:0.5rem;">Коэффициент изменения нормы</div></td>
+					<td style="width:16%; border:1px solid #000; border-top:1px solid #fff; padding:0; font-size:0.6rem; vertical-align:top;">
+						<div style="border-bottom:1px solid #000; padding:1mm;"><div>Timp în exploatare, ore</div><div>Время работы, часов</div></div>
+						<div style="display:flex;">
+							<div style="width:50%; border-right:1px solid #000; padding:1mm; font-size:0.6rem; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><div>echipament special</div><div>спецоборудование</div></div>
+							<div style="width:50%; padding:1mm; font-size:0.6rem; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><div>motor</div><div>двигатель</div></div>
+						</div>
+					</td>
+					<td style="width:13%; border:1px solid #000; border-top:1px solid #fff; padding:0; font-size:0.6rem; vertical-align:top;">
+						<div style="border-bottom:1px solid #000; padding:1mm;"><div>Consum combustibil</div><div>Расход горючего</div></div>
+						<div style="display:flex;">
+							<div style="width:50%; border-right:1px solid #000; padding:1mm; font-size:0.6rem; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><div>normat</div><div>по норме</div></div>
+							<div style="width:50%; padding:1mm; font-size:0.6rem; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><div>efectiv</div><div>фактически</div></div>
+						</div>
+					</td>
+					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+				</tr>
+			</table>
 		</div>
 	</div>
 </div>';
