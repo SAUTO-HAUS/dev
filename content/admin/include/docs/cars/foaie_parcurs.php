@@ -2,7 +2,6 @@
 
 $abr = 'FP';
 
-// Auto-increment number for foaie de parcurs starting from 40992836
 $fp_start_nr = 40992836;
 if (isset($cont_n)) {
 	$fp_nr = $fp_start_nr + intval($cont_n) - 1;
@@ -10,35 +9,41 @@ if (isset($cont_n)) {
 	$fp_nr = $fp_start_nr;
 }
 
-// Parse autovehicul to extract marca and nr inmatriculare
 $autovehicul_marca = '';
 $autovehicul_nr = '';
 $remorca_marca = '';
 $remorca_nr = '';
 if (isset($_POST['autovehicul']) && !empty($_POST['autovehicul'])) {
-	// Format: "MERCEDES ACTROS - SMM149 | KASSBORHER - X239XC"
 	$parts = explode(' | ', $_POST['autovehicul']);
 	if (isset($parts[0])) {
 		$auto_parts = explode(' - ', $parts[0]);
 		if (isset($auto_parts[0])) {
-			$autovehicul_marca = trim($auto_parts[0]); // MERCEDES ACTROS
+			$autovehicul_marca = trim($auto_parts[0]); 
 		}
 		if (isset($auto_parts[1])) {
-			$autovehicul_nr = trim($auto_parts[1]); // SMM149
+			$autovehicul_nr = trim($auto_parts[1]); 
 		}
 	}
 	if (isset($parts[1])) {
 		$remorca_parts = explode(' - ', $parts[1]);
 		if (isset($remorca_parts[0])) {
-			$remorca_marca = trim($remorca_parts[0]); // KASSBORHER
+			$remorca_marca = trim($remorca_parts[0]); 
 		}
 		if (isset($remorca_parts[1])) {
-			$remorca_nr = trim($remorca_parts[1]); // X239XC
+			$remorca_nr = trim($remorca_parts[1]); 
 		}
 	}
 }
 
 $sofer_nume = isset($_POST['sofer']) ? strtoupper($_POST['sofer']) : '';
+$data_emiterii_raw = isset($_POST['date']) ? $_POST['date'] : '';
+$data_emiterii = '';
+if (!empty($data_emiterii_raw)) {
+	$date_parts = explode('-', $data_emiterii_raw);
+	if (count($date_parts) == 3) {
+		$data_emiterii = $date_parts[2] . '.' . $date_parts[1] . '.' . $date_parts[0];
+	}
+}
 
 $rtrn = '
 <style>
@@ -70,7 +75,12 @@ $rtrn = '
 			<table style="width:70%; border-collapse:collapse; margin-left:30%;">
 				<tr>
 					<td style="width:5%; border:1px solid #000; border-bottom:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">1</td>
-					<td style="width:45%; border:1px solid #000; border-bottom:1px solid #fff; padding:1mm; text-align:left; font-size:0.6rem;"><div>Data emiterii</div><div>Дата выдачи</div></td>
+					<td style="width:45%; border:1px solid #000; border-bottom:1px solid #fff; padding:1mm; font-size:0.6rem;">
+						<div style="display:flex; align-items:center;">
+							<div style="text-align:left;"><div>Data emiterii</div><div>Дата выдачи</div></div>
+							<div style="text-align:center; font-weight:bold; font-size:0.8rem; flex:1;">'.$data_emiterii.'</div>
+						</div>
+					</td>
 					<td style="width:5%; border:1px solid #000; border-bottom:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">2</td>
 					<td style="width:45%; border:1px solid #000; border-bottom:1px solid #fff; padding:1mm; text-align:left; font-size:0.6rem;"><div>Nr. diagramă tahograf</div><div>№ диаграммы тахографа</div></td>
 				</tr>
