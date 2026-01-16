@@ -43,7 +43,7 @@ $sofer_nume = isset($_POST['sofer']) ? $_POST['sofer'] : '';
 $rtrn = '
 <style>
 	.fp_page {font-family:"Times New Roman", Times, serif !important; background-color:#f0f0f0 !important;}
-	.fp_page .top-right {position:absolute; top:5mm; right:5mm; text-align:right; font-size:0.6rem; line-height:1.4; font-weight:bold;}
+	.fp_page .top-right {position:absolute; top:2mm; right:5mm; text-align:right; font-size:0.6rem; line-height:1.4; font-weight:bold;}
 	</style>
 <div id="p_cont" class="base">
 	<div class="pg fp_page">
@@ -51,7 +51,7 @@ $rtrn = '
 		
 		<div style="text-align:center; font-size:0.6rem;">Aprobat prin Ordinul comun al Departamentului Statisticii al Republicii Moldova şi Ministerului Finantelor al Republicii Moldova nr.24/36 din 25 martie 1998<br>Утверждена совместным приказом Департамента статистики и Министерства финансов Республики Молдова № 24/36 от 25 марта 1998 г.</div>
 		
-		<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-top:5mm;">
+		<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-top:2mm;">
 			<div style="text-align:center; width:30%;">
 				<div style="font-size:0.6rem;">Ştampila transportatorului</div>
 				<div style="font-size:0.6rem;">Печать (штамп) перевозчика</div>
@@ -61,11 +61,11 @@ $rtrn = '
 				<div style="font-size:0.8rem;">ПУТЕВОЙ ЛИСТ ГРУЗОВОГО АВТОМОБИЛЯ</div>
 			</div>
 			<div style="text-align:center; width:30%;">
-				<div style="font-size:0.6rem;">SERIA&nbsp;&nbsp;&nbsp;&nbsp;<b>DAA&nbsp;&nbsp;&nbsp;&nbsp;Nr. '.$fp_nr.'</b></div>
+				<div style="font-size:0.8rem;">SERIA&nbsp;&nbsp;&nbsp;&nbsp;<b>DAA&nbsp;&nbsp;&nbsp;&nbsp;Nr. '.$fp_nr.'</b></div>
 			</div>
 		</div>
 		
-		<div class="fp-tables" style="margin-top:3mm;">
+		<div class="fp-tables" style="margin-top:2mm;">
 			<!-- Rând 1: 4 coloane la 70% din dreapta -->
 			<table style="width:70%; border-collapse:collapse; margin-left:30%;">
 				<tr>
@@ -218,7 +218,7 @@ $rtrn = '
 			<!-- Rând 13: 7 coloane - col 1 "La sosire / При возвращении", restul goale -->
 			<table style="width:100%; border-collapse:collapse; margin-top:0;">
 				<tr>
-					<td style="width:9%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"><div>La sosire</div><div>При возвращении</div></td>
+					<td style="width:9%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"><div>La Sosire</div><div>При Возвращении</div></td>
 					<td style="width:9%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;"></td>
 					<td style="width:9%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;"></td>
 					<td style="width:11.4%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;"></td>
@@ -260,7 +260,7 @@ $rtrn = '
 						<div style="border-bottom:1px solid #000; padding:1mm;"><div>Rest la:</div><div>Остаток при:</div></div>
 						<div style="display:flex;">
 							<div style="width:50%; border-right:1px solid #000; padding:1mm; font-size:0.6rem; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><div>Plecare</div><div>выезде</div></div>
-							<div style="width:50%; padding:1mm; font-size:0.6rem; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><div>sosire</div><div>возвращении</div></div>
+							<div style="width:50%; padding:1mm; font-size:0.6rem; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><div>Sosire</div><div>Возвращении</div></div>
 						</div>
 					</td>
 					<td style="width:6%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"><div>Predat</div><div>Сдано</div></td>
@@ -268,15 +268,15 @@ $rtrn = '
 					<td style="width:16%; border:1px solid #000; border-top:1px solid #fff; padding:0; font-size:0.6rem; vertical-align:top;">
 						<div style="border-bottom:1px solid #000; padding:1mm;"><div>Timp în exploatare, ore</div><div>Время работы, часов</div></div>
 						<div style="display:flex;">
-							<div style="width:50%; border-right:1px solid #000; padding:1mm; font-size:0.6rem; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><div>echipament special</div><div>спецоборудование</div></div>
-							<div style="width:50%; padding:1mm; font-size:0.6rem; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><div>motor</div><div>двигатель</div></div>
+							<div style="width:50%; border-right:1px solid #000; padding:1mm; font-size:0.6rem; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><div>Echipament special</div><div>Спецоборудование</div></div>
+							<div style="width:50%; padding:1mm; font-size:0.6rem; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><div>Motor</div><div>Двигатель</div></div>
 						</div>
 					</td>
 					<td style="width:13%; border:1px solid #000; border-top:1px solid #fff; padding:0; font-size:0.6rem; vertical-align:top;">
 						<div style="border-bottom:1px solid #000; padding:1mm;"><div>Consum combustibil</div><div>Расход горючего</div></div>
 						<div style="display:flex;">
-							<div style="width:50%; border-right:1px solid #000; padding:1mm; font-size:0.6rem; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><div>normat</div><div>по норме</div></div>
-							<div style="width:50%; padding:1mm; font-size:0.6rem; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><div>efectiv</div><div>фактически</div></div>
+							<div style="width:50%; border-right:1px solid #000; padding:1mm; font-size:0.6rem; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><div>Normat</div><div>По норме</div></div>
+							<div style="width:50%; padding:1mm; font-size:0.6rem; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><div>Efectiv</div><div>Фактически</div></div>
 						</div>
 					</td>
 					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; padding:0; font-size:0.6rem; vertical-align:middle;">
@@ -347,7 +347,7 @@ $rtrn = '
 			</table>
 		</div>
 		
-		<div style="text-align:left; font-size:0.6rem; margin-top:3mm;">
+		<div style="text-align:left; font-size:0.6rem; margin-top: 3mm;">
 			Editura de Imprimate «Statistica», a4 (181n) 05.04. t.100000
 		</div>
 	</div>
