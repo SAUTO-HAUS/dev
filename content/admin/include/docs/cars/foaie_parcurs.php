@@ -279,7 +279,10 @@ $rtrn = '
 							<div style="width:50%; padding:1mm; font-size:0.6rem; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><div>efectiv</div><div>фактически</div></div>
 						</div>
 					</td>
-					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; padding:0; font-size:0.6rem; vertical-align:middle;">
+						<div style="border-bottom:1px solid #000; padding:1mm;"></div>
+						<div style="padding:1mm;"></div>
+					</td>
 				</tr>
 			</table>
 		</div>
