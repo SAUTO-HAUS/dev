@@ -38,7 +38,7 @@ if (isset($_POST['autovehicul']) && !empty($_POST['autovehicul'])) {
 	}
 }
 
-$sofer_nume = isset($_POST['sofer']) ? $_POST['sofer'] : '';
+$sofer_nume = isset($_POST['sofer']) ? strtoupper($_POST['sofer']) : '';
 
 $rtrn = '
 <style>
@@ -70,9 +70,9 @@ $rtrn = '
 			<table style="width:70%; border-collapse:collapse; margin-left:30%;">
 				<tr>
 					<td style="width:5%; border:1px solid #000; border-bottom:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">1</td>
-					<td style="width:45%; border:1px solid #000; border-bottom:1px solid #fff; padding:1mm; font-size:0.6rem;"><div>Data emiterii</div><div>Дата выдачи</div></td>
+					<td style="width:45%; border:1px solid #000; border-bottom:1px solid #fff; padding:1mm; text-align:left; font-size:0.6rem;"><div>Data emiterii</div><div>Дата выдачи</div></td>
 					<td style="width:5%; border:1px solid #000; border-bottom:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">2</td>
-					<td style="width:45%; border:1px solid #000; border-bottom:1px solid #fff; padding:1mm; font-size:0.6rem;"><div>Nr. diagramă tahograf</div><div>№ диаграммы тахографа</div></td>
+					<td style="width:45%; border:1px solid #000; border-bottom:1px solid #fff; padding:1mm; text-align:left; font-size:0.6rem;"><div>Nr. diagramă tahograf</div><div>№ диаграммы тахографа</div></td>
 				</tr>
 			</table>
 			
@@ -103,10 +103,10 @@ $rtrn = '
 			<!-- Rând 4: 6 coloane cu date din formular -->
 			<table style="width:100%; border-collapse:collapse; margin-top:0;">
 				<tr>
-					<td style="width:20%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;">'.$autovehicul_marca.'</td>
-					<td style="width:10%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;">'.$autovehicul_nr.'</td>
+					<td style="width:20%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.8rem; font-weight:bold;">'.$autovehicul_marca.'</td>
+					<td style="width:10%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.8rem; font-weight:bold;">'.$autovehicul_nr.'</td>
 					<td style="width:10%; border:1px solid #000; border-top:1px solid #fff; border-right:0px solid; padding:1mm; font-size:0.6rem;"></td>
-					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; border-left:0px solid; padding:1mm; font-size:0.6rem;">'.$sofer_nume.'</td>
+					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; border-left:0px solid; padding:1mm; font-size:0.8rem; font-weight:bold;">'.$sofer_nume.'</td>
 					<td style="width:10%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
 					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; border-bottom:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
 				</tr>
@@ -115,8 +115,8 @@ $rtrn = '
 			<!-- Rând 5: 6 coloane cu date remorca -->
 			<table style="width:100%; border-collapse:collapse; margin-top:0;">
 				<tr>
-					<td style="width:20%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;">'.$remorca_marca.'</td>
-					<td style="width:10%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;">'.$remorca_nr.'</td>
+					<td style="width:20%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.8rem; font-weight:bold;">'.$remorca_marca.'</td>
+					<td style="width:10%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.8rem; font-weight:bold;">'.$remorca_nr.'</td>
 					<td style="width:10%; border:1px solid #000; border-top:1px solid #fff; border-right:0px solid; padding:1mm; font-size:0.6rem;"></td>
 					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; border-left:0px solid; padding:1mm; font-size:0.6rem;"></td>
 					<td style="width:10%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
@@ -128,7 +128,7 @@ $rtrn = '
 			<table style="width:100%; border-collapse:collapse; margin-top:0;">
 				<tr>
 					<td style="width:3.5%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">9</td>
-					<td style="width:71.5%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"><div>Sarcina şoferului:</div><div>Задание водителю:</div></td>
+					<td style="width:71.5%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:left; font-size:0.6rem;"><div>Sarcina şoferului:</div><div>Задание водителю:</div></td>
 					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
 				</tr>
 			</table>
@@ -137,7 +137,7 @@ $rtrn = '
 			<table style="width:100%; border-collapse:collapse; margin-top:0;">
 				<tr>
 					<td style="width:75%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
-					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"><div>Menţiuni speciale</div><div>Особые отметки</div></td>
+					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem; font-weight:bold;"><div>Menţiuni speciale</div><div>Особые отметки</div></td>
 				</tr>
 			</table>
 			
@@ -152,7 +152,7 @@ $rtrn = '
 			<!-- Rând 9: 2 coloane - starea tehnică, gol -->
 			<table style="width:100%; border-collapse:collapse; margin-top:0;">
 				<tr>
-					<td style="width:75%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"><div>Starea tehnică</div><div>Техническое состояние</div></td>
+					<td style="width:75%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem; font-weight:bold;"><div>Starea tehnică</div><div>Техническое состояние</div></td>
 					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
 				</tr>
 			</table>
@@ -246,7 +246,7 @@ $rtrn = '
 			<!-- Rând 15: 2 coloane - Date vizînd combustibilul (75%), gol (25%) -->
 			<table style="width:100%; border-collapse:collapse; margin-top:0;">
 				<tr>
-					<td style="width:75%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"><div>Date vizînd combustibilul, litri/m3</div><div>Данные о горючем, литр/м3</div></td>
+					<td style="width:75%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem; font-weight:bold;"><div>Date vizînd combustibilul, litri/m3</div><div>Данные о горючем, литр/м3</div></td>
 					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
 				</tr>
 			</table>
