@@ -49,7 +49,7 @@ $rtrn = '
 	<div class="pg fp_page">
 		<div class="top-right">Formular tipizat<br>Типовая форма</div>
 		
-		<div style="text-align:center; font-size:0.6rem; padding-top:10mm;">Aprobat prin Ordinul comun al Departamentului Statisticii al Republicii Moldova şi Ministerului Finantelor al Republicii Moldova nr.24/36 din 25 martie 1998<br>Утверждена совместным приказом Департамента статистики и Министерства финансов Республики Молдова № 24/36 от 25 марта 1998 г.</div>
+		<div style="text-align:center; font-size:0.6rem;">Aprobat prin Ordinul comun al Departamentului Statisticii al Republicii Moldova şi Ministerului Finantelor al Republicii Moldova nr.24/36 din 25 martie 1998<br>Утверждена совместным приказом Департамента статистики и Министерства финансов Республики Молдова № 24/36 от 25 марта 1998 г.</div>
 		
 		<div style="display:flex; justify-content:space-between; align-items:flex-start; margin-top:5mm;">
 			<div style="text-align:center; width:30%;">
@@ -65,7 +65,7 @@ $rtrn = '
 			</div>
 		</div>
 		
-		<div class="fp-tables" style="margin-top:5mm;">
+		<div class="fp-tables" style="margin-top:3mm;">
 			<!-- Rând 1: 4 coloane la 70% din dreapta -->
 			<table style="width:70%; border-collapse:collapse; margin-left:30%;">
 				<tr>
@@ -285,6 +285,70 @@ $rtrn = '
 					</td>
 				</tr>
 			</table>
+			
+			<!-- Rând 17: 11 coloane cu numere, ultima 25%, înălțime 4mm -->
+			<table style="width:100%; border-collapse:collapse; margin-top:0;">
+				<tr>
+					<td style="width:9%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">18</td>
+					<td style="width:7%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">19</td>
+					<td style="width:6%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">20</td>
+					<td style="width:6%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">21</td>
+					<td style="width:6%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">22</td>
+					<td style="width:12%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">23</td>
+					<td style="width:8%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">24</td>
+					<td style="width:8%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">25</td>
+					<td style="width:6.5%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">26</td>
+					<td style="width:6.5%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">27</td>
+					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+				</tr>
+			</table>
+			
+			<!-- Rând 18: 11 coloane goale, ultima 25%, înălțime 4mm -->
+			<table style="width:100%; border-collapse:collapse; margin-top:0;">
+				<tr style="height:5mm;">
+					<td style="width:9%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+					<td style="width:7%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+					<td style="width:6%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+					<td style="width:6%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+					<td style="width:6%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+					<td style="width:12%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+					<td style="width:8%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+					<td style="width:8%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+					<td style="width:6.5%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+					<td style="width:6.5%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+				</tr>
+			</table>
+			
+			<!-- Rând 19: 11 coloane goale, ultima 25%, înălțime 4mm -->
+			<table style="width:100%; border-collapse:collapse; margin-top:0;">
+				<tr style="height:5mm;">
+					<td style="width:9%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+					<td style="width:7%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+					<td style="width:6%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+					<td style="width:6%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+					<td style="width:6%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+					<td style="width:12%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+					<td style="width:8%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+					<td style="width:8%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+					<td style="width:6.5%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+					<td style="width:6.5%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+				</tr>
+			</table>
+			
+			<!-- Rând 20: 3 coloane - cifra 28, text documente, gol 25% -->
+			<table style="width:100%; border-collapse:collapse; margin-top:0;">
+				<tr>
+					<td style="width:3.5%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; text-align:center; font-size:0.6rem; font-weight:bold;">28</td>
+					<td style="width:71.5%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"><div>Nr.        documentelor de       confirmare:</div><div>№          подтверждающего  документа:</div></td>
+					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
+				</tr>
+			</table>
+		</div>
+		
+		<div style="text-align:left; font-size:0.6rem; margin-top:3mm;">
+			Editura de Imprimate «Statistica», a4 (181n) 05.04. t.100000
 		</div>
 	</div>
 </div>';
