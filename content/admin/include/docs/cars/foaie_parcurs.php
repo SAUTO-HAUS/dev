@@ -111,10 +111,10 @@ $rtrn = '
 			<!-- Rând 4: 6 coloane cu date din formular -->
 			<table style="width:100%; border-collapse:collapse; margin-top:0;">
 				<tr>
-					<td style="width:20%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.8rem; font-weight:bold;">'.$autovehicul_marca.'</td>
-					<td style="width:10%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.8rem; font-weight:bold;">'.$autovehicul_nr.'</td>
+					<td style="width:20%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.8rem; font-weight:bold; min-height:5mm; height:5mm;">'.$autovehicul_marca.'</td>
+					<td style="width:10%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.8rem; font-weight:bold; min-height:5mm; height:5mm;">'.$autovehicul_nr.'</td>
 					<td style="width:10%; border:1px solid #000; border-top:1px solid #fff; border-right:0px solid; padding:1mm; font-size:0.6rem;"></td>
-					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; border-left:0px solid; padding:1mm; font-size:0.8rem; font-weight:bold;">'.$sofer_nume.'</td>
+					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; border-left:0px solid; padding:1mm; font-size:0.8rem; font-weight:bold; min-height:5mm; height:5mm;">'.$sofer_nume.'</td>
 					<td style="width:10%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
 					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; border-bottom:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
 				</tr>
@@ -123,8 +123,8 @@ $rtrn = '
 			<!-- Rând 5: 6 coloane cu date remorca -->
 			<table style="width:100%; border-collapse:collapse; margin-top:0;">
 				<tr>
-					<td style="width:20%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.8rem; font-weight:bold;">'.$remorca_marca.'</td>
-					<td style="width:10%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.8rem; font-weight:bold;">'.$remorca_nr.'</td>
+					<td style="width:20%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.8rem; font-weight:bold; min-height:5mm; height:5mm;">'.$remorca_marca.'</td>
+					<td style="width:10%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.8rem; font-weight:bold; min-height:5mm; height:5mm;">'.$remorca_nr.'</td>
 					<td style="width:10%; border:1px solid #000; border-top:1px solid #fff; border-right:0px solid; padding:1mm; font-size:0.6rem;"></td>
 					<td style="width:25%; border:1px solid #000; border-top:1px solid #fff; border-left:0px solid; padding:1mm; font-size:0.6rem;"></td>
 					<td style="width:10%; border:1px solid #000; border-top:1px solid #fff; padding:1mm; font-size:0.6rem;"></td>
