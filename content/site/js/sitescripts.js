@@ -342,6 +342,35 @@ $(document).on("click", "#fltr > .ctrl > .btns > .unst", function(){
 	});
 })
 
+if ( $('#fltr').length ){
+	var initData = $("#fltr > .ctrl > .btns > .sbmt").data();
+	var initHref = "";
+	
+	if (initData.br && initData.br !== "") {
+		var brand = initData.br.replace(/_/g, '-');
+		initHref = $("#fltr > .ctrl > .btns").data("link") + brand;
+		if (initData.mo && initData.mo !== "") {
+			var model = initData.mo.replace(/_/g, '-');
+			initHref += "/" + model;
+		}
+	} else {
+		initHref = $("#fltr > .ctrl > .btns").data("def");
+	}
+	
+	var initParams = [];
+	$.each(initData, function(key, value) {
+		if (key !== 'br' && key !== 'mo' && key !== 'link' && value !== "" && value !== undefined) {
+			initParams.push(key + "=" + value);
+		}
+	});
+	
+	if (initParams.length > 0) {
+		initHref += "?" + initParams.join("&");
+	}
+	
+	$("#fltr > .ctrl > .btns > .sbmt").attr("href", initHref);
+}
+
 //FIXED
 if ( $('#fltr').length ){
 	var elH = $('#fltr').outerHeight(true),

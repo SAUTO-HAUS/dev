@@ -43,8 +43,8 @@ if (!isset($t_mp[2]) || $t_mp[2]=='' || $t_mp[2]=='cars'){
 				<option value="" class="x">'.$lng['w']['all'].'</option>';
 				//ksort($f_arr['brmo']['br']);
 				foreach ($f_arr['brmo']['br'] as $v){
-					$zArr = isset($_GET['br']) ? explode("-", $_GET['br'] ) : null;
-					$chkd = ( isset($_GET['br'])&&in_array($v['name'], $zArr) ) ? ' selected="selected"' : '';
+					$getBr = isset($_GET['br']) ? str_replace('-', '_', $_GET['br']) : null;
+					$chkd = ( $getBr !== null && $v['name'] == $getBr ) ? ' selected="selected"' : '';
 					echo '
 					<option value="'.str_replace('_','-',$v['name']).'" data-parent="cars" '.$chkd.'>'.$v['r_name'].'</option>';
 				}
@@ -59,10 +59,11 @@ if (!isset($t_mp[2]) || $t_mp[2]=='' || $t_mp[2]=='cars'){
 				<option value="" class="x">'.$lng['w']['all'].'</option>';
 				//ksort($f_arr['brmo']['mo']);
 				if (isset($_GET['br']) && $_GET['br'] !== '') {
+	$getBr = str_replace('-', '_', $_GET['br']);
+	$getMo = isset($_GET['mo']) ? str_replace('-', '_', $_GET['mo']) : null;
 	foreach ($f_arr['brmo']['mo'] as $v) {
-		if ($_GET['br'] == $v['brand']) {
-			$zArr = isset($_GET['mo']) ? explode("-", $_GET['mo']) : null;
-			$chkd = (isset($_GET['mo']) && in_array($v['name'], $zArr)) ? ' selected="selected"' : '';
+		if ($getBr == $v['brand']) {
+			$chkd = ($getMo !== null && $v['name'] == $getMo) ? ' selected="selected"' : '';
 			echo '<option value="'.str_replace('_','-',$v['name']).'" data-parent="'.str_replace('_','-',$v['brand']).'" '.$chkd.'>'.$v['r_name'].'</option>';
 		}
 	}
@@ -166,7 +167,7 @@ if (!isset($t_mp[2]) || $t_mp[2]=='' || $t_mp[2]=='cars'){
 						<span class="cls">'.$lng['w']['simplified'].'</span>
 					</span>
 				</div>
-				<a class="btn sbmt" href="/'.$_COOKIE['lang'].'/cars'.$q_uri.'" data-gr="'.(isset($_GET['gr'])?$_GET['gr']:'').'" data-br="'.(isset($_GET['br'])?$_GET['br']:'').'" data-mo="'.(isset($_GET['mo'])?$_GET['mo']:'').'" data-bt="'.(isset($_GET['bt'])?$_GET['bt']:'').'"';
+				<a class="btn sbmt" href="/'.$_COOKIE['lang'].'/cars'.$q_uri.'" data-gr="'.(isset($_GET['gr'])?$_GET['gr']:'').'" data-br="'.(isset($_GET['br'])?str_replace('_','-',$_GET['br']):'').'" data-mo="'.(isset($_GET['mo'])?str_replace('_','-',$_GET['mo']):'').'" data-bt="'.(isset($_GET['bt'])?$_GET['bt']:'').'"';
 				
 				// Add all detailed filter parameters as data attributes
 				foreach($f_it_xtd_arr['car'] as $k => $v){
