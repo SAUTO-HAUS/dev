@@ -230,31 +230,6 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 				}
 			}
 
-			// Add visibility conditions
-			$sql .= ' AND `vis`="1" AND `act`="1"';
-			
-			// Add ORDER BY and LIMIT - prioritize in_stock cars first, then on_order
-			$sql .= ' ORDER BY CASE WHEN catalog_type = "in_stock" THEN 1 WHEN catalog_type = "on_order" THEN 2 ELSE 3 END, `n_a` ASC, `id` DESC LIMIT :lmt';
-			
-			// Log final SQL and parameters
-			// file_put_contents('debug_sql.log', "\nFinal SQL: {$sql}\n", FILE_APPEND);
-			// file_put_contents('debug_sql.log', "Final parameters: " . print_r($query_args, true) . "\n", FILE_APPEND);
-			
-			// Execute query and log results
-			try {
-				$stmt = $db->prepare($sql);
-				$stmt->execute($query_args);
-				$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-				// file_put_contents('debug_sql.log', "\nQuery returned " . count($results) . " results\n", FILE_APPEND);
-				if (count($results) > 0) {
-					// file_put_contents('debug_sql.log', "First result: " . print_r($results[0], true) . "\n", FILE_APPEND);
-				}
-			} catch (PDOException $e) {
-				// file_put_contents('debug_sql.log', "\nSQL Error: " . $e->getMessage() . "\n", FILE_APPEND);
-			}
-
-			// Initialize counter
-			$i = 0;
 
 			// Process remaining filter parameters directly
 			$common_filters = ['loc', 'sts']; // Only leaving location and status in the common filters
@@ -403,7 +378,11 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 		}
 	}
 	
-	if ($v1!='smlr'){ $sql .= ' ORDER BY `n_a` ASC, `id` DESC LIMIT :lmt '; }
+	if ($v1=='fltr'){ 
+		$sql .= ' ORDER BY CASE WHEN catalog_type = "in_stock" AND n_a = 0 THEN 1 WHEN catalog_type = "on_order" THEN 2 ELSE 3 END, `id` DESC LIMIT :lmt '; 
+	} elseif ($v1!='smlr'){ 
+		$sql .= ' ORDER BY `n_a` ASC, `id` DESC LIMIT :lmt '; 
+	}
 	
 	// Debug info disabled
 
