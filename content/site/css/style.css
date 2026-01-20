@@ -1570,7 +1570,7 @@ footer .columns-wrapper .column-container.col-logo-container {
   
   body > .fltr .data > .pbx > .md_gr > input[type="checkbox"]:checked+label+.sub{width:100%; display:block; border-bottom:1px solid #e8e8e8; float:left;}
   
-  body > .fltr .data > .unit {position:absolute; right:15px; top:.8rem; color:#8c8c8c; font-size:.8rem;}
+  body > .fltr .data > .unit {position:absolute; right:35px; top:.8rem; color:#8c8c8c; font-size:.8rem;}
   
   
   body > .fltr > .ctrl {width:100%; border-top:1px solid #d8d8d8; margin-top:1rem; float:left;}
