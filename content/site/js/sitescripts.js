@@ -228,22 +228,22 @@ $(document).on("change", "#fltr .srch", function(e){
 		}
 	});
 	
+	queryParams.push("tg=fltr");
+	hasDetailedFilters = true;
+	
 	// Add all filter parameters to the URL, now properly merged
 	$.each(zData, function(key, value) {
 		// Skip brand and model (in path) and link (internal)
 		if (key !== 'br' && key !== 'mo' && key !== 'link' && value !== "") {
 			queryParams.push(key + "=" + value);
-			hasDetailedFilters = true;
 		}
 	});
 	
 	// Log the data being used (for debugging)
 	console.log("Filter data:", zData);
 	
-	// Append query parameters if we have any detailed filters
-	if (hasDetailedFilters) {
-		zHref += "?" + queryParams.join("&");
-	}
+
+	zHref += "?" + queryParams.join("&");
 	
 	// Ensure URL has no duplicate parameters or multiple question marks
 	if (zHref.indexOf("?") !== zHref.lastIndexOf("?")) {
@@ -357,16 +357,14 @@ if ( $('#fltr').length ){
 		initHref = $("#fltr > .ctrl > .btns").data("def");
 	}
 	
-	var initParams = [];
+	var initParams = ["tg=fltr"];
 	$.each(initData, function(key, value) {
 		if (key !== 'br' && key !== 'mo' && key !== 'link' && value !== "" && value !== undefined) {
 			initParams.push(key + "=" + value);
 		}
 	});
 	
-	if (initParams.length > 0) {
-		initHref += "?" + initParams.join("&");
-	}
+	initHref += "?" + initParams.join("&");
 	
 	$("#fltr > .ctrl > .btns > .sbmt").attr("href", initHref);
 }

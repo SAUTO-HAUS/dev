@@ -1,5 +1,13 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
+if (isset($t_mp[3]) && !empty($t_mp[3]) && !is_numeric($t_mp[3])) {
+	$_GET['tg'] = 'fltr';
+	$_GET['br'] = str_replace('-', '_', explode('?', $t_mp[3])[0]);
+	if (isset($t_mp[4]) && !empty($t_mp[4])) {
+		$_GET['mo'] = str_replace('-', '_', explode('?', $t_mp[4])[0]);
+	}
+}
+
 //----------------------------------------------------------------------------------------------CARS
 if (!isset($t_mp[2]) || $t_mp[2]=='' || $t_mp[2]=='cars'){
 	$f_arr = array();
