@@ -289,6 +289,29 @@ $(document).on("input", "#fltr > .ext > .data > .srch", function(e){
 	$(this).trigger('change');
 })
 
+$(document).on("focus", "#fltr .inp[list]", function(){
+	var $input = $(this);
+	var currentVal = $input.val();
+	if (currentVal !== "") {
+		$input.data("prev-val", currentVal);
+		$input.val("");
+		setTimeout(function(){
+			if ($input.val() === "") {
+				$input.attr("placeholder", currentVal);
+			}
+		}, 50);
+	}
+})
+
+$(document).on("blur", "#fltr .inp[list]", function(){
+	var $input = $(this);
+	var prevVal = $input.data("prev-val");
+	if ($input.val() === "" && prevVal && prevVal !== "") {
+		$input.val(prevVal);
+	}
+	$input.removeData("prev-val");
+})
+
 $(document).on("click", "#fltr > .ext > .data > .act, #fltr > .ext > .data > .inp", function(){
 	$("#fltr > .ext > .data > .act").not(this).prop("checked", false).attr("checked", false);
 })
