@@ -89,6 +89,7 @@ function getSimilarPriceCars($currentCar, $limit = 8, $db, $prefx, $lng, $img_fr
 
 function fetchSimilarCars($db, $prefx, $currentCar, $priceLow, $priceHigh, $section, $excludeIds, $limit, &$modelCounts) {
     $excludeList = implode(',', array_map('intval', $excludeIds));
+    $currentTime = time();
     $sql = "SELECT *, 
             CASE WHEN br = :br AND mo = :mo THEN 1 WHEN br = :br2 THEN 2 WHEN bt = :bt THEN 3 ELSE 4 END AS priority,
             ABS(prc - :base_price) AS price_diff
@@ -97,6 +98,7 @@ function fetchSimilarCars($db, $prefx, $currentCar, $priceLow, $priceHigh, $sect
             AND prc BETWEEN :price_low AND :price_high
             AND id NOT IN ({$excludeList})
             AND (catalog_type = :section OR (catalog_type IS NULL AND :section2 = 'in_stock'))
+            AND (offer_timer_end IS NULL OR offer_timer_end = 0 OR offer_timer_end > :current_time)
             ORDER BY priority ASC, price_diff ASC, id DESC LIMIT :limit";
     try {
         $stmt = $db->prepare($sql);
@@ -109,6 +111,7 @@ function fetchSimilarCars($db, $prefx, $currentCar, $priceLow, $priceHigh, $sect
         $stmt->bindValue(':price_high', $priceHigh, PDO::PARAM_INT);
         $stmt->bindValue(':section', $section, PDO::PARAM_STR);
         $stmt->bindValue(':section2', $section, PDO::PARAM_STR);
+        $stmt->bindValue(':current_time', $currentTime, PDO::PARAM_INT);
         $stmt->bindValue(':limit', 50, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -119,14 +122,17 @@ function fetchSimilarCars($db, $prefx, $currentCar, $priceLow, $priceHigh, $sect
 }
 function fetchFreshArrivals($db, $prefx, $currentCar, $maxPrice, $preferSection, $excludeIds, $limit) {
     $excludeList = implode(',', array_map('intval', $excludeIds));
+    $currentTime = time();
     $sql = "SELECT * FROM {$prefx}_car_ctlg 
             WHERE vis = '1' AND act = '1' AND n_a = '0' AND prc <= :max_price AND prc > 100
             AND id NOT IN ({$excludeList})
+            AND (offer_timer_end IS NULL OR offer_timer_end = 0 OR offer_timer_end > :current_time)
             ORDER BY CASE WHEN catalog_type = :section THEN 0 ELSE 1 END, id DESC LIMIT :limit";
     try {
         $stmt = $db->prepare($sql);
         $stmt->bindValue(':max_price', $maxPrice, PDO::PARAM_INT);
         $stmt->bindValue(':section', $preferSection, PDO::PARAM_STR);
+        $stmt->bindValue(':current_time', $currentTime, PDO::PARAM_INT);
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -138,8 +144,10 @@ function fetchFreshArrivals($db, $prefx, $currentCar, $maxPrice, $preferSection,
 function getSimilarByBrandModel($currentCar, $limit, $db, $prefx, $lng, $img_frmt) {
     $result = ['cars' => [], 'txt' => '', 'message' => '', 'has_cross_section' => false];
     $currentSection = isset($currentCar['catalog_type']) ? $currentCar['catalog_type'] : 'in_stock';
+    $currentTime = time();
     $sql = "SELECT *, CASE WHEN br = :br AND mo = :mo THEN 1 WHEN br = :br2 THEN 2 ELSE 3 END AS priority
             FROM {$prefx}_car_ctlg WHERE vis = '1' AND act = '1' AND n_a = '0' AND id <> :id
+            AND (offer_timer_end IS NULL OR offer_timer_end = 0 OR offer_timer_end > :current_time)
             ORDER BY CASE WHEN catalog_type = :section THEN 0 ELSE 1 END, priority ASC, id DESC LIMIT :limit";
     try {
         $stmt = $db->prepare($sql);
@@ -148,6 +156,7 @@ function getSimilarByBrandModel($currentCar, $limit, $db, $prefx, $lng, $img_frm
         $stmt->bindValue(':mo', $currentCar['mo'], PDO::PARAM_STR);
         $stmt->bindValue(':id', $currentCar['id'], PDO::PARAM_INT);
         $stmt->bindValue(':section', $currentSection, PDO::PARAM_STR);
+        $stmt->bindValue(':current_time', $currentTime, PDO::PARAM_INT);
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
         $cars = $stmt->fetchAll(PDO::FETCH_ASSOC);
