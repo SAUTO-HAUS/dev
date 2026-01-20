@@ -1532,6 +1532,7 @@ footer .columns-wrapper .column-container.col-logo-container {
   }
   
   body > .fltr select:hover {background-position:right 1rem top 55%;}
+  body > .fltr select.y, body > .fltr .data > input.y {background-color:#e8e8e8; color:#333;}
   
   body > .fltr select > option {margin:1rem 0; padding:1rem 0;}
   body > .fltr select > option.h {display:none;}

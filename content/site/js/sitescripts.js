@@ -366,6 +366,20 @@ $(document).on("click", "#fltr > .ctrl > .btns > .unst", function(){
 })
 
 if ( $('#fltr').length ){
+	// Apply .y class to filters that already have values on page load
+	$("#fltr select.srch").each(function(){
+		var val = $(this).val();
+		if (val !== "" && val !== null) {
+			$(this).addClass("y");
+		}
+	});
+	$("#fltr input.srch").each(function(){
+		var val = $(this).val();
+		if (val !== "" && val !== null && val !== "0") {
+			$(this).addClass("y");
+		}
+	});
+	
 	var initData = $("#fltr > .ctrl > .btns > .sbmt").data();
 	var initHref = "";
 	
