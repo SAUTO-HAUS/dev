@@ -112,6 +112,15 @@ class PhoneReplacementService
     }
     
     /**
+     * Get phone number for stock/cars page
+     * @return string
+     */
+    public function getStockPhone()
+    {
+        return $this->phoneConfig['stock_website'];
+    }
+    
+    /**
      * Check if location is Prunkul
      * @param mixed $location
      * @return bool

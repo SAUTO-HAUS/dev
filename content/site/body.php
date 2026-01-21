@@ -377,9 +377,11 @@ elseif ( $t_mp[2]=='ordercars' && (!isset($t_mp[3]) || $t_mp[3]=='' || !is_numer
 </main>
 
 <?php 
-if (!isset($t_mp[2]) || $t_mp[2]=='') { ?>
+if (!isset($t_mp[2]) || $t_mp[2]=='') { 
+    $floatingPhone = PhoneHelper::getGeneralPhone();
+?>
 <div id="mobile-call-button" class="mobile-call-button-green">
-    <a href="tel:+37379600361" class="call-button-inner-green">
+    <a href="tel:<?php echo $floatingPhone; ?>" class="call-button-inner-green">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="28" height="28" fill="white">
             <path d="M6.62 10.79a15.464 15.464 0 006.59 6.59l2.2-2.2a1
                      1 0 011.01-.24c1.12.37 2.33.57 3.58.57.55 0 1
@@ -498,10 +500,16 @@ if (!isset($t_mp[2]) || $t_mp[2]=='') { ?>
                             <div class="contacts-subcolumn">
                                 <div class="section">
                                     <?php
-                                    $generalPhone = PhoneHelper::getGeneralPhone();
-                                    $formattedGeneralPhone = PhoneHelper::formatPhone($generalPhone, 'display');
+                                    if ( isset($t_mp[2])&&$t_mp[2]=='cars' ) {
+                                        $footerPhone = PhoneHelper::getStockPhone();
+                                    } elseif ( isset($t_mp[2])&&$t_mp[2]=='ordercars' ) {
+                                        $footerPhone = PhoneHelper::getOrderPhone();
+                                    } else {
+                                        $footerPhone = PhoneHelper::getGeneralPhone();
+                                    }
+                                    $formattedGeneralPhone = PhoneHelper::formatPhone($footerPhone, 'display');
                                     ?>
-                                    <a href="tel:<?php echo $generalPhone; ?>" class="phone-item">
+                                    <a href="tel:<?php echo $footerPhone; ?>" class="phone-item">
                                         <i class="fa-solid fa-phone"></i>
                                         <?php echo $formattedGeneralPhone; ?>
                                     </a>

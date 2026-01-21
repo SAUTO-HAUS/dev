@@ -50,6 +50,15 @@ class PhoneHelper
     }
     
     /**
+     * Get phone number for stock/cars page
+     * @return string
+     */
+    public static function getStockPhone()
+    {
+        return self::getPhoneService()->getStockPhone();
+    }
+    
+    /**
      * Format phone for display
      * @param string $phone
      * @param string $format
@@ -85,9 +94,12 @@ class PhoneHelper
         
         if (is_array($urlSegments) && 
             count($urlSegments) >= 3 && 
-            $urlSegments[2] === 'cars' && 
-            $carData) {
-            return self::getCarPhone($carData, 'car_page');
+            $urlSegments[2] === 'cars') {
+            if ($carData) {
+                return self::getCarPhone($carData, 'car_page');
+            }
+            
+            return self::getStockPhone();
         }
         
         // If car data is provided, get car-specific phone

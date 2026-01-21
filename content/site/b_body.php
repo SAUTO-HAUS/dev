@@ -112,6 +112,9 @@ if (isset($t_mp[2]) && $t_mp[2] == 'ordercars') {
 				} elseif ( isset($t_mp[2])&&$t_mp[2]=='ordercars' ) {
 					$orderPhone = PhoneHelper::getOrderPhone();
 					echo'href="tel:'.$orderPhone.'" title="'.PhoneHelper::formatPhone($orderPhone, 'display').'"';
+				} elseif ( isset($t_mp[2])&&$t_mp[2]=='cars' ) {
+					$stockPhone = PhoneHelper::getStockPhone();
+					echo'href="tel:'.$stockPhone.'" title="'.PhoneHelper::formatPhone($stockPhone, 'display').'"';
 				} else {
 					$generalPhone = PhoneHelper::getGeneralPhone();
 					echo'href="tel:'.$generalPhone.'" title="'.PhoneHelper::formatPhone($generalPhone, 'display').'"';
@@ -239,10 +242,16 @@ if (isset($t_mp[2]) && $t_mp[2] == 'ordercars') {
 		<div class="col cnts">
 			<div class="ttl"><?php echo $lng['w']['contacts']; ?></div>
 			<?php 
-			$generalPhone = PhoneHelper::getGeneralPhone();
-			$formattedPhone = PhoneHelper::formatPhone($generalPhone, 'display');
+			if ( isset($t_mp[2])&&$t_mp[2]=='cars' ) {
+				$footerPhone = PhoneHelper::getStockPhone();
+			} elseif ( isset($t_mp[2])&&$t_mp[2]=='ordercars' ) {
+				$footerPhone = PhoneHelper::getOrderPhone();
+			} else {
+				$footerPhone = PhoneHelper::getGeneralPhone();
+			}
+			$formattedPhone = PhoneHelper::formatPhone($footerPhone, 'display');
 			?>
-			<a href="tel:<?php echo $generalPhone; ?>" class="phone"><?php echo $formattedPhone; ?></a>
+			<a href="tel:<?php echo $footerPhone; ?>" class="phone"><?php echo $formattedPhone; ?></a>
 			<p>
 				<?php echo $lng['t']['x']['address'][0].'
 				<ul>
