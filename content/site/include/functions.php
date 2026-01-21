@@ -72,6 +72,12 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 				// file_put_contents('debug_sql.log', "Added model filter: mo = {$zreq['mo']}\n", FILE_APPEND);
 			}
 			
+			// Add group filter if present (car/com - autoturisme/autocomerciale)
+			if (!empty($zreq['gr'])) {
+				$sql .= ' AND `gr` = :gr';
+				$query_args['gr'] = $zreq['gr'];
+			}
+			
 			// Add body type filter if present
 			if (!empty($zreq['bt'])) {
 				$sql .= ' AND `bt` = :bt';
@@ -225,7 +231,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 
 
 			// Handle other filter parameters (legacy approach for select fields)
-			$processed_filters = ['tg', 'br', 'mo', 'bt', 'clr', 'tra', 'fl', 'wd', 'yr', 'mlg', 'vol', 'prc', 'loc', 'sts'];
+			$processed_filters = ['tg', 'br', 'mo', 'gr', 'bt', 'clr', 'tra', 'fl', 'wd', 'yr', 'mlg', 'vol', 'prc', 'loc', 'sts'];
 			foreach($zreq as $k => $v){
 				// Skip parameters already processed
 				if (in_array($k, $processed_filters)){continue;}
