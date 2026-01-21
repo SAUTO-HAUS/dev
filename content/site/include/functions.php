@@ -39,16 +39,9 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 	}
 	elseif ($v1=='fltr'){
 		if ($zreq!==null){
-			// Clear log file first
-			// file_put_contents('debug_sql.log', "");
-			
 			// Debug incoming parameters
-			// file_put_contents('debug_sql.log', "\n--------------------\n", FILE_APPEND);
-			// file_put_contents('debug_sql.log', "Function parameters:\n", FILE_APPEND);
-			// file_put_contents('debug_sql.log', "v1: {$v1}\n", FILE_APPEND);
-			// file_put_contents('debug_sql.log', "lmt: {$lmt}\n", FILE_APPEND);
-			// file_put_contents('debug_sql.log', "stts: {$stts}\n", FILE_APPEND);
-			// file_put_contents('debug_sql.log', "zreq: " . print_r($zreq, true) . "\n", FILE_APPEND);
+			file_put_contents('debug_sql.log', "\n--------------------\n");
+			file_put_contents('debug_sql.log', "zreq: " . print_r($zreq, true) . "\n", FILE_APPEND);
 
 			// Clean up parameters - remove query string from values
 			foreach ($zreq as $k => $v) {
@@ -231,87 +224,11 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 			}
 
 
-			// Process remaining filter parameters directly
-			$common_filters = ['loc', 'sts']; // Only leaving location and status in the common filters
-			
-			// Special handling for transmission filter
-			if (isset($zreq['tra']) && !empty($zreq['tra'])) {
-				$sql .= " AND `tra` = :tra";
-				$query_args['tra'] = $zreq['tra'];
-				// file_put_contents('debug_sql.log', "\nDIRECTLY APPLIED TRANSMISSION FILTER: tra = {$zreq['tra']}\n", FILE_APPEND);
-			} else {
-				// file_put_contents('debug_sql.log', "\nNO TRANSMISSION FILTER FOUND IN REQUEST\n", FILE_APPEND);
-			}
-			
-			// Special handling for fuel type filter
-			if (isset($zreq['fl']) && !empty($zreq['fl'])) {
-				$sql .= " AND `fl` = :fl";
-				$query_args['fl'] = $zreq['fl'];
-				// file_put_contents('debug_sql.log', "\nDIRECTLY APPLIED FUEL TYPE FILTER: fl = {$zreq['fl']}\n", FILE_APPEND);
-			} else {
-				// file_put_contents('debug_sql.log', "\nNO FUEL TYPE FILTER FOUND IN REQUEST\n", FILE_APPEND);
-			}
-			
-			// Special handling for drivetrain filter
-			if (isset($zreq['wd']) && !empty($zreq['wd'])) {
-				$sql .= " AND `wd` = :wd";
-				$query_args['wd'] = $zreq['wd'];
-				// file_put_contents('debug_sql.log', "\nDIRECTLY APPLIED DRIVETRAIN FILTER: wd = {$zreq['wd']}\n", FILE_APPEND);
-			} else {
-				// file_put_contents('debug_sql.log', "\nNO DRIVETRAIN FILTER FOUND IN REQUEST\n", FILE_APPEND);
-			}
-			
-			// Process range filters individually for better control
-			$range_filters = ['yr', 'mlg', 'vol', 'prc'];
-			foreach ($range_filters as $filter) {
-				if (isset($zreq[$filter]) && !empty($zreq[$filter])) {
-					// Check if it's a range with hyphen format
-					$range_values = explode("-", $zreq[$filter]);
-					if (count($range_values) == 2) {
-						// Handle special range formats
-						if ($range_values[0] == 'x') {
-							// Less than max value
-							$sql .= " AND `{$filter}` <= :{$filter}_max";
-							$query_args["{$filter}_max"] = (int)$range_values[1];
-							// file_put_contents('debug_sql.log', "RANGE FILTER: {$filter} <= {$range_values[1]}\n", FILE_APPEND);
-						} elseif ($range_values[1] == 'x') {
-							// Greater than min value
-							$sql .= " AND `{$filter}` >= :{$filter}_min";
-							$query_args["{$filter}_min"] = (int)$range_values[0];
-							// file_put_contents('debug_sql.log', "RANGE FILTER: {$filter} >= {$range_values[0]}\n", FILE_APPEND);
-						} else {
-							// Between min and max
-							$sql .= " AND `{$filter}` BETWEEN :{$filter}_min AND :{$filter}_max";
-							$query_args["{$filter}_min"] = (int)min($range_values);
-							$query_args["{$filter}_max"] = (int)max($range_values);
-							// file_put_contents('debug_sql.log', "RANGE FILTER: {$filter} BETWEEN {$query_args["{$filter}_min"]} AND {$query_args["{$filter}_max"]}\n", FILE_APPEND);
-						}
-					} else {
-						// Single value (exact match)
-						$sql .= " AND `{$filter}` = :{$filter}";
-						$query_args[$filter] = (int)$zreq[$filter];
-						// file_put_contents('debug_sql.log', "EXACT FILTER: {$filter} = {$zreq[$filter]}\n", FILE_APPEND);
-					}
-				}
-			}
-			
-			// Log all request parameters for debugging
-			// file_put_contents('debug_sql.log', "All request params: " . print_r($zreq, true) . "\n", FILE_APPEND);
-			
-			// Handle any remaining special filters (location, status)
-			foreach ($common_filters as $filter) {
-				// Skip if parameter is empty or null
-				if (empty($zreq[$filter])) continue;
-				
-				$sql .= " AND `{$filter}` = :{$filter}";
-				$query_args[$filter] = $zreq[$filter];
-				// file_put_contents('debug_sql.log', "Added {$filter} filter: {$filter} = {$zreq[$filter]}\n", FILE_APPEND);
-			}
-			
-			// Handle other filter parameters (legacy approach for compatibility)
+			// Handle other filter parameters (legacy approach for select fields)
+			$processed_filters = ['tg', 'br', 'mo', 'bt', 'clr', 'tra', 'fl', 'wd', 'yr', 'mlg', 'vol', 'prc', 'loc', 'sts'];
 			foreach($zreq as $k => $v){
-				// Skip parameters already processed or special parameters
-				if ($k=='tg' || $k=='br' || $k=='mo' || $k=='bt' || $k=='clr' || in_array($k, $common_filters)){continue;}
+				// Skip parameters already processed
+				if (in_array($k, $processed_filters)){continue;}
 				
 				if ( isset( $f_arr[$k] ) ){
 					if ($f_arr[$k]=='1'){//inp
@@ -366,6 +283,18 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 					}
 				}
 			}
+			
+			// Handle location filter
+			if (!empty($zreq['loc'])) {
+				$sql .= " AND `loc` = :loc";
+				$query_args['loc'] = $zreq['loc'];
+			}
+			
+			// Handle status filter
+			if (!empty($zreq['sts'])) {
+				$sql .= " AND `sts` = :sts";
+				$query_args['sts'] = $zreq['sts'];
+			}
 		}
 		if ($stts=='av'){ $sql .= ' AND `vis`="1" AND `act`="1" '; }
 		else if ($stts=='na'){ $sql .= ' AND `vis`="1" AND `act`="0" '; }
@@ -380,6 +309,8 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 	
 	if ($v1=='fltr'){ 
 		$sql .= ' ORDER BY CASE WHEN catalog_type = "in_stock" AND n_a = 0 THEN 1 WHEN catalog_type = "on_order" THEN 2 ELSE 3 END, `id` DESC LIMIT :lmt '; 
+		file_put_contents('debug_sql.log', "SQL: " . $sql . "\n", FILE_APPEND);
+		file_put_contents('debug_sql.log', "Params: " . print_r($query_args, true) . "\n", FILE_APPEND);
 	} elseif ($v1!='smlr'){ 
 		$sql .= ' ORDER BY `n_a` ASC, `id` DESC LIMIT :lmt '; 
 	}
