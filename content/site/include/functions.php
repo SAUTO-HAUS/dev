@@ -39,9 +39,9 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 	}
 	elseif ($v1=='fltr'){
 		if ($zreq!==null){
-			// Debug incoming parameters
-			file_put_contents('debug_sql.log', "\n--------------------\n");
-			file_put_contents('debug_sql.log', "zreq: " . print_r($zreq, true) . "\n", FILE_APPEND);
+			// Debug disabled
+			// file_put_contents('debug_sql.log', "\n--------------------\n");
+			// file_put_contents('debug_sql.log', "zreq: " . print_r($zreq, true) . "\n", FILE_APPEND);
 
 			// Clean up parameters - remove query string from values
 			foreach ($zreq as $k => $v) {
@@ -309,8 +309,8 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 	
 	if ($v1=='fltr'){ 
 		$sql .= ' ORDER BY CASE WHEN catalog_type = "in_stock" AND n_a = 0 THEN 1 WHEN catalog_type = "on_order" THEN 2 ELSE 3 END, `id` DESC LIMIT :lmt '; 
-		file_put_contents('debug_sql.log', "SQL: " . $sql . "\n", FILE_APPEND);
-		file_put_contents('debug_sql.log', "Params: " . print_r($query_args, true) . "\n", FILE_APPEND);
+		// file_put_contents('debug_sql.log', "SQL: " . $sql . "\n", FILE_APPEND);
+		// file_put_contents('debug_sql.log', "Params: " . print_r($query_args, true) . "\n", FILE_APPEND);
 	} elseif ($v1!='smlr'){ 
 		$sql .= ' ORDER BY `n_a` ASC, `id` DESC LIMIT :lmt '; 
 	}
