@@ -1114,7 +1114,7 @@ $rtrn = '
                     <label for="offer-seats">'.$t['seats'].'</label>
                     <select id="offer-seats" name="seats">
                         <option value="">'.$t['seats'].'</option>';
-                        for ($s = 2; $s <= 15; $s++) {
+                        for ($s = 2; $s <= 50; $s++) {
                             $selected = ($s == 5) ? ' selected' : '';
                             $rtrn .= '<option value="'.$s.'"'.$selected.'>'.$s.'</option>';
                         }
