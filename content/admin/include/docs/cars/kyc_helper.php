@@ -109,9 +109,10 @@ function requiresKycPages($contractType = null, $price = null) {
     }
     
     // List of contract types that require KYC pages
+    // Note: con_arvon and con_arvon_com (deposit contracts) excluded - they don't need KYC annex
     $kycContractTypes = [
         'vinzare_proc', 'vinzare_avans', 'vinzare_sauto', 
-        'con_plata', 'con_arvon', 'con_arvon_com', 
+        'con_plata', 
         'com_transport'
     ];
     
