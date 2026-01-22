@@ -1037,7 +1037,6 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                 </div>
                 ';
                 
-                // R/M/P tech string: R{weeks since creation}-M{weeks since status change}-P10
                 $weeks_since_creation = 0;
                 $weeks_since_status_change = 0;
                 
@@ -1045,7 +1044,7 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                     $weeks_since_creation = floor((time() - $r['date']) / (7 * 24 * 60 * 60));
                 }
                 
-                if (!empty($r['status_changed_at'])) {
+                if (!empty($r['n_a']) && $r['n_a'] == 1 && !empty($r['status_changed_at'])) {
                     $status_timestamp = strtotime($r['status_changed_at']);
                     if ($status_timestamp) {
                         $weeks_since_status_change = floor((time() - $status_timestamp) / (7 * 24 * 60 * 60));

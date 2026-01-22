@@ -28,7 +28,7 @@ logMessage("Starting R/M/P tech string recalculation...", $log_file);
 
 try {
     // Get all active cars from in_stock catalog
-    $sql = "SELECT id, date, status_changed_at FROM {$prefx}_car_ctlg WHERE catalog_type = 'in_stock' AND act = 1";
+    $sql = "SELECT id, date, status_changed_at, n_a FROM {$prefx}_car_ctlg WHERE catalog_type = 'in_stock' AND act = 1";
     $stmt = $db->query($sql);
     $cars = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
@@ -46,7 +46,7 @@ try {
             $weeks_since_creation = floor(($current_time - $car['date']) / $seconds_per_week);
         }
         
-        if (!empty($car['status_changed_at'])) {
+        if (!empty($car['n_a']) && $car['n_a'] == 1 && !empty($car['status_changed_at'])) {
             $status_timestamp = strtotime($car['status_changed_at']);
             if ($status_timestamp) {
                 $weeks_since_status_change = floor(($current_time - $status_timestamp) / $seconds_per_week);
