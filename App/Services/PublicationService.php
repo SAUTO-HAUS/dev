@@ -369,7 +369,7 @@ class PublicationService
             
             // Add link to website page
             if (!empty($carData['id'])) {
-                $caption_lines[] = '🔗 <a href="https://www.sauto.md/ru/ordercars/' . $carData['id'] . '">Vezi detalii complete pe site</a>';
+                $caption_lines[] = '🔗 https://www.sauto.md/ru/ordercars/' . $carData['id'];
             }
             
             $caption_lines[] = '';
