@@ -229,6 +229,26 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 					// file_put_contents('debug_sql.log', "Added exact volume filter: vol = {$zreq['vol']}\n", FILE_APPEND);
 				}
 			}
+			
+			if (!empty($zreq['sts'])) {
+				$range = explode('-', $zreq['sts']);
+				if (count($range) == 2) {
+					if ($range[0] == 'x') {
+						$sql .= " AND `sts` = :sts";
+						$query_args['sts'] = (int)$range[1];
+					} elseif ($range[1] == 'x') {
+						$sql .= " AND `sts` >= :sts_min";
+						$query_args['sts_min'] = (int)$range[0];
+					} else {
+						$sql .= " AND `sts` BETWEEN :sts_min AND :sts_max";
+						$query_args['sts_min'] = (int)min($range);
+						$query_args['sts_max'] = (int)max($range);
+					}
+				} else {
+					$sql .= " AND `sts` = :sts";
+					$query_args['sts'] = (int)$zreq['sts'];
+				}
+			}
 
 			// Add visibility conditions
 			$sql .= ' AND `vis`="1" AND `act`="1"';
@@ -257,7 +277,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 			$i = 0;
 
 			// Process remaining filter parameters directly
-			$common_filters = ['loc', 'sts']; // Only leaving location and status in the common filters
+			$common_filters = ['loc'];
 			
 			// Special handling for transmission filter
 			if (isset($zreq['tra']) && !empty($zreq['tra'])) {
@@ -315,15 +335,11 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 						// Single value (exact match)
 						$sql .= " AND `{$filter}` = :{$filter}";
 						$query_args[$filter] = (int)$zreq[$filter];
-						// file_put_contents('debug_sql.log', "EXACT FILTER: {$filter} = {$zreq[$filter]}\n", FILE_APPEND);
 					}
 				}
 			}
 			
-			// Log all request parameters for debugging
-			// file_put_contents('debug_sql.log', "All request params: " . print_r($zreq, true) . "\n", FILE_APPEND);
 			
-			// Handle any remaining special filters (location, status)
 			foreach ($common_filters as $filter) {
 				// Skip if parameter is empty or null
 				if (empty($zreq[$filter])) continue;
@@ -336,7 +352,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 			// Handle other filter parameters (legacy approach for compatibility)
 			foreach($zreq as $k => $v){
 				// Skip parameters already processed or special parameters
-				if ($k=='tg' || $k=='br' || $k=='mo' || $k=='bt' || $k=='clr' || in_array($k, $common_filters)){continue;}
+				if ($k=='tg' || $k=='br' || $k=='mo' || $k=='bt' || $k=='clr' || $k=='sts' || in_array($k, $common_filters)){continue;}
 				
 				if ( isset( $f_arr[$k] ) ){
 					if ($f_arr[$k]=='1'){//inp

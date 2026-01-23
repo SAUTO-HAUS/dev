@@ -295,11 +295,25 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 				$sql .= " AND `loc` = :loc";
 				$query_args['loc'] = $zreq['loc'];
 			}
-			
-			// Handle status filter
+
 			if (!empty($zreq['sts'])) {
-				$sql .= " AND `sts` = :sts";
-				$query_args['sts'] = $zreq['sts'];
+				$range = explode('-', $zreq['sts']);
+				if (count($range) == 2) {
+					if ($range[0] == 'x') {
+						$sql .= " AND `sts` = :sts";
+						$query_args['sts'] = (int)$range[1];
+					} elseif ($range[1] == 'x') {
+						$sql .= " AND `sts` >= :sts_min";
+						$query_args['sts_min'] = (int)$range[0];
+					} else {
+						$sql .= " AND `sts` BETWEEN :sts_min AND :sts_max";
+						$query_args['sts_min'] = (int)min($range);
+						$query_args['sts_max'] = (int)max($range);
+					}
+				} else {
+					$sql .= " AND `sts` = :sts";
+					$query_args['sts'] = (int)$zreq['sts'];
+				}
 			}
 		}
 		if ($stts=='av'){ $sql .= ' AND `vis`="1" AND `act`="1" '; }
