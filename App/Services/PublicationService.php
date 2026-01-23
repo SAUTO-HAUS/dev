@@ -366,6 +366,13 @@ class PublicationService
             $transmission = isset($lng['l']['car']['tra'][$carData['tra']]) ? $lng['l']['car']['tra'][$carData['tra']] : ($carData['tra'] ?? 'Necunoscut');
             $caption_lines[] = '▪️ Transmisie: ' . $transmission;
             $caption_lines[] = '';
+            
+            // Add link to website page
+            if (!empty($carData['id'])) {
+                $caption_lines[] = '🔗 <a href="https://www.sauto.md/ru/ordercars/' . $carData['id'] . '">Vezi detalii complete pe site</a>';
+            }
+            
+            $caption_lines[] = '';
             $caption_lines[] = '📞 Pentru detalii: +37379600352';
             $caption_lines[] = '';
             $caption_lines[] = '<a href="https://t.me/Sauto_LA_Comanda_bot">👉 Sauto la comandă – deschideți chatul pentru întrebări! 👈</a>';
