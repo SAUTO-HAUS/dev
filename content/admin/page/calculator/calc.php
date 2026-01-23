@@ -1908,43 +1908,43 @@ $rtrn = '
         if (document.getElementById("enable-value").checked) {
             results.push({ label: t.value_mdl, mdl: values.value.mdl, eur: values.value.eur });
         }
-        if (document.getElementById("enable-excise").checked) {
+        if (document.getElementById("enable-excise").checked && (parseFloat(values.excise.mdl) > 0 || parseFloat(values.excise.eur) > 0)) {
             results.push({ label: t.excise, mdl: values.excise.mdl, eur: values.excise.eur });
         }
-        if (document.getElementById("enable-luxury").checked && document.getElementById("res-luxury-row").style.display !== "none") {
+        if (document.getElementById("enable-luxury").checked && document.getElementById("res-luxury-row").style.display !== "none" && (parseFloat(values.luxury.mdl) > 0 || parseFloat(values.luxury.eur) > 0)) {
             results.push({ label: t.luxury_tax, mdl: values.luxury.mdl, eur: values.luxury.eur });
         }
-        if (document.getElementById("enable-customs").checked) {
+        if (document.getElementById("enable-customs").checked && (parseFloat(values.customs.mdl) > 0 || parseFloat(values.customs.eur) > 0)) {
             results.push({ label: t.customs_duty, mdl: values.customs.mdl, eur: values.customs.eur });
         }
-        if (document.getElementById("enable-damage").checked) {
+        if (document.getElementById("enable-damage").checked && (parseFloat(values.damage.mdl) > 0 || parseFloat(values.damage.eur) > 0)) {
             results.push({ label: t.damage_protection, mdl: values.damage.mdl, eur: values.damage.eur });
         }
-        if (document.getElementById("enable-export").checked) {
+        if (document.getElementById("enable-export").checked && (parseFloat(values.exportDecl.mdl) > 0 || parseFloat(values.exportDecl.eur) > 0)) {
             results.push({ label: t.export_declaration, mdl: values.exportDecl.mdl, eur: values.exportDecl.eur });
         }
-        if (document.getElementById("enable-bank").checked) {
+        if (document.getElementById("enable-bank").checked && (parseFloat(values.bank.mdl) > 0 || parseFloat(values.bank.eur) > 0)) {
             results.push({ label: t.bank_commission, mdl: values.bank.mdl, eur: values.bank.eur });
         }
-        if (document.getElementById("enable-auction").checked) {
+        if (document.getElementById("enable-auction").checked && (parseFloat(values.auction.mdl) > 0 || parseFloat(values.auction.eur) > 0)) {
             results.push({ label: t.auction_commission, mdl: values.auction.mdl, eur: values.auction.eur });
         }
-        if (document.getElementById("enable-pollution").checked) {
+        if (document.getElementById("enable-pollution").checked && (parseFloat(values.pollution.mdl) > 0 || parseFloat(values.pollution.eur) > 0)) {
             results.push({ label: t.pollution_tax, mdl: values.pollution.mdl, eur: values.pollution.eur });
         }
-        if (document.getElementById("enable-shipping").checked) {
+        if (document.getElementById("enable-shipping").checked && (parseFloat(values.shipping.mdl) > 0 || parseFloat(values.shipping.eur) > 0)) {
             results.push({ label: t.shipping_docs, mdl: values.shipping.mdl, eur: values.shipping.eur });
         }
-        if (document.getElementById("enable-accessories").checked) {
+        if (document.getElementById("enable-accessories").checked && (parseFloat(values.accessories.mdl) > 0 || parseFloat(values.accessories.eur) > 0)) {
             results.push({ label: t.accessories, mdl: values.accessories.mdl, eur: values.accessories.eur });
         }
-        if (document.getElementById("enable-transaction").checked) {
+        if (document.getElementById("enable-transaction").checked && (parseFloat(values.transaction.mdl) > 0 || parseFloat(values.transaction.eur) > 0)) {
             results.push({ label: t.transaction_commission, mdl: values.transaction.mdl, eur: values.transaction.eur });
         }
-        if (document.getElementById("enable-polishing").checked) {
+        if (document.getElementById("enable-polishing").checked && (parseFloat(values.polishing.mdl) > 0 || parseFloat(values.polishing.eur) > 0)) {
             results.push({ label: t.polishing, mdl: values.polishing.mdl, eur: values.polishing.eur });
         }
-        if (document.getElementById("enable-painting").checked) {
+        if (document.getElementById("enable-painting").checked && (parseFloat(values.painting.mdl) > 0 || parseFloat(values.painting.eur) > 0)) {
             results.push({ label: t.painting, mdl: values.painting.mdl, eur: values.painting.eur });
         }
         
@@ -2589,6 +2589,10 @@ $rtrn = '
                 if (calcData.luxury) {
                     document.getElementById("res-luxury-mdl").value = calcData.luxury.mdl || 0;
                     document.getElementById("res-luxury-eur").value = calcData.luxury.eur || 0;
+                    // Show luxury row if value > 0
+                    if (parseFloat(calcData.luxury.mdl) > 0 || parseFloat(calcData.luxury.eur) > 0) {
+                        document.getElementById("res-luxury-row").style.display = "flex";
+                    }
                 }
                 if (calcData.customs) {
                     document.getElementById("res-customs-mdl").value = calcData.customs.mdl || 0;
