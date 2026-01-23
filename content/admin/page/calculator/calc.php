@@ -1593,6 +1593,7 @@ $rtrn = '
             results: "Ofertă comercială",
             value_mdl: "Valoarea in vama",
             excise: "Acciza",
+            luxury_tax: "Taxa de lux",
             customs_duty: "Taxa proceduri vamale",
             damage_protection: "Protectie impotriva daunelor",
             export_declaration: "Declaratia de export (MRN)",
@@ -1613,6 +1614,7 @@ $rtrn = '
             results: "Результат расчёта",
             value_mdl: "Таможенная стоимость",
             excise: "Акциз",
+            luxury_tax: "Налог на роскошь",
             customs_duty: "Сбор за таможенные процедуры",
             damage_protection: "Защита от повреждений",
             export_declaration: "Декларация экспорта (MRN)",
@@ -1633,6 +1635,7 @@ $rtrn = '
             results: "Commercial Offer",
             value_mdl: "Customs Value",
             excise: "Excise",
+            luxury_tax: "Luxury Tax",
             customs_duty: "Customs Procedures Fee",
             damage_protection: "Damage Protection",
             export_declaration: "Export Declaration (MRN)",
@@ -1669,6 +1672,7 @@ $rtrn = '
         const values = {
             value: { mdl: document.getElementById("res-value-mdl").value || "0", eur: document.getElementById("res-value-eur").value || "0" },
             excise: { mdl: document.getElementById("res-excise-mdl").value || "0", eur: document.getElementById("res-excise-eur").value || "0" },
+            luxury: { mdl: document.getElementById("res-luxury-mdl").value || "0", eur: document.getElementById("res-luxury-eur").value || "0" },
             customs: { mdl: document.getElementById("res-customs-mdl").value || "0", eur: document.getElementById("res-customs-eur").value || "0" },
             damage: { mdl: document.getElementById("res-damage-mdl").value || "0", eur: document.getElementById("res-damage-eur").value || "0" },
             exportDecl: { mdl: document.getElementById("res-export-mdl").value || "0", eur: document.getElementById("res-export-eur").value || "0" },
@@ -1906,6 +1910,9 @@ $rtrn = '
         }
         if (document.getElementById("enable-excise").checked) {
             results.push({ label: t.excise, mdl: values.excise.mdl, eur: values.excise.eur });
+        }
+        if (document.getElementById("enable-luxury").checked && document.getElementById("res-luxury-row").style.display !== "none") {
+            results.push({ label: t.luxury_tax, mdl: values.luxury.mdl, eur: values.luxury.eur });
         }
         if (document.getElementById("enable-customs").checked) {
             results.push({ label: t.customs_duty, mdl: values.customs.mdl, eur: values.customs.eur });

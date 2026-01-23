@@ -569,6 +569,7 @@ $rtrn = '
         client: "Client",
         value_mdl: "Valoarea in vama",
         excise: "Acciza",
+        luxury_tax: "Taxa de lux",
         customs_duty: "Taxa proceduri vamale",
         damage_protection: "Protectie impotriva daunelor",
         export_declaration: "Declaratia de export (MRN)",
@@ -765,6 +766,7 @@ $rtrn = '
         const values = {
             value: calcData.value || {mdl: 0, eur: 0},
             excise: calcData.excise || {mdl: 0, eur: 0},
+            luxury: calcData.luxury || {mdl: 0, eur: 0},
             customs: calcData.customs || {mdl: 0, eur: 0},
             damage: calcData.damage || {mdl: 0, eur: 0},
             exportDecl: calcData.exportDecl || {mdl: 0, eur: 0},
@@ -1403,6 +1405,7 @@ $rtrn = '
             const allResults = [
                 { key: "value", toggleKey: "value", label: t.value_mdl },
                 { key: "excise", toggleKey: "excise", label: t.excise },
+                { key: "luxury", toggleKey: "luxury", label: t.luxury_tax },
                 { key: "customs", toggleKey: "customs", label: t.customs_duty },
                 { key: "damage", toggleKey: "damage", label: t.damage_protection },
                 { key: "exportDecl", toggleKey: "export", label: t.export_declaration },
