@@ -375,11 +375,11 @@ $rtrn = '
 			<!-- Row 1: Main headers -->
 			<tr>
 				<td style="width:14%; border:1px solid #000;" rowspan="4"></td>
-				<td style="width:43%; border:1px solid #000; text-align:center; font-weight:bold; padding:2mm;" colspan="4">
+				<td style="width:43%; border:1px solid #000; text-align:center; font-weight:bold; padding:1mm; font-size:0.6rem;" colspan="4">
 					<div>Transporturi republicane</div>
 					<div>Республиканские перевозки</div>
 				</td>
-				<td style="width:43%; border:1px solid #000; text-align:center; font-weight:bold; padding:2mm;" colspan="5">
+				<td style="width:43%; border:1px solid #000; text-align:center; font-weight:bold; padding:1mm; font-size:0.6rem;" colspan="5">
 					<div>Transporturi internaționale</div>
 					<div>Международные перевозки</div>
 				</td>
@@ -459,25 +459,24 @@ $rtrn = '
 				</td>
 			</tr>
 			<!-- Row 5: Column numbers -->
-			<tr>
-				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;">A</td>
-				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;">29</td>
-				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;">30</td>
-				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;">31</td>
-				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;">32</td>
-				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;">33</td>
-				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;">34</td>
-				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;">35</td>
-				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;">36</td>
-				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;">37</td>
+			<tr style="height:6mm;">
+				<td style="border:1px solid #000; text-align:center; vertical-align:middle; font-weight:bold; padding:1mm; font-size:0.6rem; height:6mm;">A</td>
+				<td style="border:1px solid #000; text-align:center; vertical-align:middle; font-weight:bold; padding:1mm; font-size:0.6rem;">29</td>
+				<td style="border:1px solid #000; text-align:center; vertical-align:middle; font-weight:bold; padding:1mm; font-size:0.6rem;">30</td>
+				<td style="border:1px solid #000; text-align:center; vertical-align:middle; font-weight:bold; padding:1mm; font-size:0.6rem;">31</td>
+				<td style="border:1px solid #000; text-align:center; vertical-align:middle; font-weight:bold; padding:1mm; font-size:0.6rem;">32</td>
+				<td style="border:1px solid #000; text-align:center; vertical-align:middle; font-weight:bold; padding:1mm; font-size:0.6rem;">33</td>
+				<td style="border:1px solid #000; text-align:center; vertical-align:middle; font-weight:bold; padding:1mm; font-size:0.6rem;">34</td>
+				<td style="border:1px solid #000; text-align:center; vertical-align:middle; font-weight:bold; padding:1mm; font-size:0.6rem;">35</td>
+				<td style="border:1px solid #000; text-align:center; vertical-align:middle; font-weight:bold; padding:1mm; font-size:0.6rem;">36</td>
+				<td style="border:1px solid #000; text-align:center; vertical-align:middle; font-weight:bold; padding:1mm; font-size:0.6rem;">37</td>
 			</tr>
 			<!-- Row 6: Transportul încărcăturii -->
 			<tr style="height:12mm;">
 				<td style="border:1px solid #000; padding:1mm; height:12mm;">
 					<div>Transportul</div>
 					<div>încărcăturii, tone</div>
-					<div>Перевезено грузов,</div>
-					<div>тонн</div>
+					<div>Перевезено грузов, тонн</div>
 				</td>
 				<td style="border:1px solid #000; padding:1mm;"></td>
 				<td style="border:1px solid #000; padding:1mm;"></td>
