@@ -359,6 +359,171 @@ $rtrn = '
 			Editura de Imprimate «Statistica», a4 (181n) 05.04. t.100000
 		</div>
 	</div>
+	
+	<!-- Second Page - VOLUMUL DE TRANSPORTURI -->
+	<div class="pg fp_page bg" style="page-break-before: always; background-color:#fff !important; background-image:none !important;">
+		<div style="text-align:left; font-size:0.6rem;">
+			Editura de Imprimate «Statistica», a4 (181n) 05.04.
+		</div>
+		<div style="font-size:0.8rem; font-weight:bold; margin-top:1mm;">
+			<div>VOLUMUL DE TRANSPORTURI</div>
+			<div>ОБЪЕМ ПЕРЕВОЗОК</div>
+		</div>
+		
+		<!-- Main Table -->
+		<table style="width:100%; border-collapse:collapse; margin-top:2mm; font-size:0.55rem;">
+			<!-- Row 1: Main headers -->
+			<tr>
+				<td style="width:14%; border:1px solid #000;" rowspan="4"></td>
+				<td style="width:43%; border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;" colspan="4">
+					<div>Transporturi republicane</div>
+					<div>Республиканские перевозки</div>
+				</td>
+				<td style="width:43%; border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;" colspan="5">
+					<div>Transporturi internaționale</div>
+					<div>Международные перевозки</div>
+				</td>
+			</tr>
+			<!-- Row 2: Sub-headers (total, din care, din col) -->
+			<tr>
+				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;" rowspan="3">
+					<div>total</div>
+					<div>всего</div>
+				</td>
+				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;" colspan="2">
+					<div>din care:</div>
+					<div>в том числе:</div>
+				</td>
+				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;" rowspan="2">
+					<div>din</div>
+					<div>col.29</div>
+				</td>
+				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;" rowspan="3">
+					<div>total</div>
+					<div>всего</div>
+				</td>
+				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;" colspan="3">
+					<div>din care:</div>
+					<div>в том числе:</div>
+				</td>
+				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;" rowspan="2">
+					<div>din</div>
+					<div>col.33</div>
+				</td>
+			</tr>
+			<!-- Row 3: Detailed sub-columns -->
+			<tr>
+				<td style="border:1px solid #000; text-align:center; padding:1mm;" rowspan="2">
+					<div>interur-</div>
+					<div>bane</div>
+					<div>между-</div>
+					<div>город-</div>
+					<div>ные</div>
+				</td>
+				<td style="border:1px solid #000; text-align:center; padding:1mm;" rowspan="2">
+					<div>urbane și</div>
+					<div>suburban</div>
+					<div>e</div>
+					<div>внутриго-</div>
+					<div>родские и</div>
+					<div>пригор.</div>
+				</td>
+				<td style="border:1px solid #000; text-align:center; padding:1mm;" rowspan="2">
+					<div>export</div>
+					<div>экспорт</div>
+				</td>
+				<td style="border:1px solid #000; text-align:center; padding:1mm;" rowspan="2">
+					<div>import</div>
+					<div>импорт</div>
+				</td>
+				<td style="border:1px solid #000; text-align:center; padding:1mm;" rowspan="2">
+					<div>tranzit</div>
+					<div>транзит</div>
+				</td>
+			</tr>
+			<!-- Row 4: cu re-morci text -->
+			<tr>
+				<td style="border:1px solid #000; text-align:center; padding:1mm;">
+					<div>cu re-</div>
+					<div>morci из</div>
+					<div>гр.29 на</div>
+					<div>при-</div>
+					<div>цепах</div>
+				</td>
+				<td style="border:1px solid #000; text-align:center; padding:1mm;">
+					<div>cu re-</div>
+					<div>morci</div>
+					<div>из гр.33</div>
+					<div>на при-</div>
+					<div>цепах</div>
+				</td>
+			</tr>
+			<!-- Row 5: Column numbers -->
+			<tr>
+				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;">A</td>
+				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;">29</td>
+				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;">30</td>
+				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;">31</td>
+				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;">32</td>
+				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;">33</td>
+				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;">34</td>
+				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;">35</td>
+				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;">36</td>
+				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;">37</td>
+			</tr>
+			<!-- Row 6: Transportul încărcăturii -->
+			<tr>
+				<td style="border:1px solid #000; padding:1mm;">
+					<div>Transportul</div>
+					<div>încărcăturii, tone</div>
+					<div>Перевезено грузов,</div>
+					<div>тонн</div>
+				</td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+			</tr>
+			<!-- Row 7: Trafic de încărcături -->
+			<tr>
+				<td style="border:1px solid #000; padding:1mm;">
+					<div>Trafic de</div>
+					<div>încărcături, t-km</div>
+					<div>Грузооборот, т-км</div>
+				</td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+			</tr>
+			<!-- Row 8: Venturi -->
+			<tr>
+				<td style="border:1px solid #000; padding:1mm;">
+					<div>Venturi, lei</div>
+					<div>Доходы, леев</div>
+				</td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm; text-align:center; font-weight:bold;">X</td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm; text-align:center; font-weight:bold;">X</td>
+			</tr>
+		</table>
+	</div>
 </div>';
 
 echo $rtrn;
