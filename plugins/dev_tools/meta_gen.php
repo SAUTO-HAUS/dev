@@ -69,7 +69,10 @@ if ($z2 === 'credit') {
     }
 }
 
-$sa['meta']['ttl'] = 'Vînzarea autoturismelor și utilitarelor.';
+// Set default title only if not already set (e.g., by credit page)
+if (!isset($sa['meta']['ttl']) || empty($sa['meta']['ttl'])) {
+    $sa['meta']['ttl'] = 'Vînzarea autoturismelor și utilitarelor.';
+}
 $current_lang = isset($_COOKIE['lang']) ? $_COOKIE['lang'] : 'ro';
 
 // Set language-dependent default H1 title
@@ -81,8 +84,13 @@ if ($current_lang == 'ru') {
     $sa['meta']['h1'] = 'Vânzări auto în Chișinău';
 }
 
-$sa['meta']['dsc'] = 'Sauto - Vânzare de mașini, pagina auto, vă oferim o gamă largă de mașini.';
-$sa['meta']['kwd'] = 'sauto, md, Renault Megane, Renault Kadjar, Renault Clio, Nissan Qashqai, Nissan Juke, Nissan X Trail, Ford Focus, Opel Astra, Ford Transit, Ford Fiesta, Ford Fusion, VW Passat, VW Golf';
+// Set default description and keywords only if not already set (e.g., by credit page)
+if (!isset($sa['meta']['dsc']) || empty($sa['meta']['dsc'])) {
+    $sa['meta']['dsc'] = 'Sauto - Vânzare de mașini, pagina auto, vă oferim o gamă largă de mașini.';
+}
+if (!isset($sa['meta']['kwd']) || empty($sa['meta']['kwd'])) {
+    $sa['meta']['kwd'] = 'sauto, md, Renault Megane, Renault Kadjar, Renault Clio, Nissan Qashqai, Nissan Juke, Nissan X Trail, Ford Focus, Opel Astra, Ford Transit, Ford Fiesta, Ford Fusion, VW Passat, VW Golf';
+}
 
 if ($z2 === 'tradein') {
     switch ($current_lang) {
