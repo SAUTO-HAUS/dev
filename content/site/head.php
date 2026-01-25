@@ -25,6 +25,44 @@ use App\Helper\PhoneHelper;?>
 
 <link rel="stylesheet" href="/content/site/css/brand_seo.css?v=<?php echo time(); ?>">
 
+<script>
+(function(){
+    var ttq = window.ttq = window.ttq || [];
+    ttq.methods = ["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"];
+    ttq.setAndDefer = function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};
+    for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);
+    ttq.load = function(){console.log('TikTok Pixel blocked for performance')};
+    ttq.instance = function(){return ttq};
+    ttq._i = ttq._i || {};
+
+    var origCreate = document.createElement;
+    document.createElement = function(tag){
+        var el = origCreate.call(document, tag);
+        if(tag.toLowerCase() === 'script'){
+            var origSetAttr = el.setAttribute;
+            el.setAttribute = function(name, value){
+                if(name === 'src' && value && value.indexOf('analytics.tiktok.com') !== -1){
+                    console.log('Blocked TikTok script:', value);
+                    return;
+                }
+                return origSetAttr.call(el, name, value);
+            };
+            Object.defineProperty(el, 'src', {
+                set: function(value){
+                    if(value && value.indexOf('analytics.tiktok.com') !== -1){
+                        console.log('Blocked TikTok script:', value);
+                        return;
+                    }
+                    origSetAttr.call(el, 'src', value);
+                },
+                get: function(){ return el.getAttribute('src'); }
+            });
+        }
+        return el;
+    };
+})();
+</script>
+
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
