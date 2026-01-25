@@ -375,11 +375,11 @@ $rtrn = '
 			<!-- Row 1: Main headers -->
 			<tr>
 				<td style="width:14%; border:1px solid #000;" rowspan="4"></td>
-				<td style="width:43%; border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;" colspan="4">
+				<td style="width:43%; border:1px solid #000; text-align:center; font-weight:bold; padding:2mm;" colspan="4">
 					<div>Transporturi republicane</div>
 					<div>Республиканские перевозки</div>
 				</td>
-				<td style="width:43%; border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;" colspan="5">
+				<td style="width:43%; border:1px solid #000; text-align:center; font-weight:bold; padding:2mm;" colspan="5">
 					<div>Transporturi internaționale</div>
 					<div>Международные перевозки</div>
 				</td>
@@ -387,73 +387,73 @@ $rtrn = '
 			<!-- Row 2: Sub-headers (total, din care, din col) -->
 			<tr>
 				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;" rowspan="3">
-					<div>total</div>
-					<div>всего</div>
+					<div>Total</div>
+					<div>Всего</div>
 				</td>
 				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;" colspan="2">
-					<div>din care:</div>
-					<div>в том числе:</div>
+					<div>Din care:</div>
+					<div>В том числе:</div>
 				</td>
 				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;" rowspan="2">
-					<div>din</div>
-					<div>col.29</div>
+					<div>Din</div>
+					<div>Col.29</div>
 				</td>
 				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;" rowspan="3">
-					<div>total</div>
-					<div>всего</div>
+					<div>Total</div>
+					<div>Всего</div>
 				</td>
 				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;" colspan="3">
-					<div>din care:</div>
-					<div>в том числе:</div>
+					<div>Din care:</div>
+					<div>В том числе:</div>
 				</td>
 				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;" rowspan="2">
-					<div>din</div>
-					<div>col.33</div>
+					<div>Din</div>
+					<div>Col.33</div>
 				</td>
 			</tr>
 			<!-- Row 3: Detailed sub-columns -->
 			<tr>
 				<td style="border:1px solid #000; text-align:center; padding:1mm;" rowspan="2">
-					<div>interur-</div>
+					<div>Interur-</div>
 					<div>bane</div>
-					<div>между-</div>
+					<div>Между-</div>
 					<div>город-</div>
 					<div>ные</div>
 				</td>
 				<td style="border:1px solid #000; text-align:center; padding:1mm;" rowspan="2">
-					<div>urbane și</div>
+					<div>Urbane și</div>
 					<div>suburban</div>
 					<div>e</div>
-					<div>внутриго-</div>
+					<div>Внутриго-</div>
 					<div>родские и</div>
 					<div>пригор.</div>
 				</td>
 				<td style="border:1px solid #000; text-align:center; padding:1mm;" rowspan="2">
-					<div>export</div>
-					<div>экспорт</div>
+					<div>Export</div>
+					<div>Экспорт</div>
 				</td>
 				<td style="border:1px solid #000; text-align:center; padding:1mm;" rowspan="2">
-					<div>import</div>
-					<div>импорт</div>
+					<div>Import</div>
+					<div>Импорт</div>
 				</td>
 				<td style="border:1px solid #000; text-align:center; padding:1mm;" rowspan="2">
-					<div>tranzit</div>
-					<div>транзит</div>
+					<div>Tranzit</div>
+					<div>Транзит</div>
 				</td>
 			</tr>
 			<!-- Row 4: cu re-morci text -->
 			<tr>
 				<td style="border:1px solid #000; text-align:center; padding:1mm;">
-					<div>cu re-</div>
+					<div>Cu re-</div>
 					<div>morci из</div>
-					<div>гр.29 на</div>
+					<div>Гр.29 на</div>
 					<div>при-</div>
 					<div>цепах</div>
 				</td>
 				<td style="border:1px solid #000; text-align:center; padding:1mm;">
-					<div>cu re-</div>
+					<div>Cu re-</div>
 					<div>morci</div>
-					<div>из гр.33</div>
+					<div>Из гр.33</div>
 					<div>на при-</div>
 					<div>цепах</div>
 				</td>
@@ -472,8 +472,8 @@ $rtrn = '
 				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;">37</td>
 			</tr>
 			<!-- Row 6: Transportul încărcăturii -->
-			<tr>
-				<td style="border:1px solid #000; padding:1mm;">
+			<tr style="height:12mm;">
+				<td style="border:1px solid #000; padding:1mm; height:12mm;">
 					<div>Transportul</div>
 					<div>încărcăturii, tone</div>
 					<div>Перевезено грузов,</div>
@@ -490,8 +490,8 @@ $rtrn = '
 				<td style="border:1px solid #000; padding:1mm;"></td>
 			</tr>
 			<!-- Row 7: Trafic de încărcături -->
-			<tr>
-				<td style="border:1px solid #000; padding:1mm;">
+			<tr style="height:12mm;">
+				<td style="border:1px solid #000; padding:1mm; height:12mm;">
 					<div>Trafic de</div>
 					<div>încărcături, t-km</div>
 					<div>Грузооборот, т-км</div>
@@ -507,8 +507,8 @@ $rtrn = '
 				<td style="border:1px solid #000; padding:1mm;"></td>
 			</tr>
 			<!-- Row 8: Venturi -->
-			<tr>
-				<td style="border:1px solid #000; padding:1mm;">
+			<tr style="height:12mm;">
+				<td style="border:1px solid #000; padding:1mm; height:12mm;">
 					<div>Venturi, lei</div>
 					<div>Доходы, леев</div>
 				</td>
