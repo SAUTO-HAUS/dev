@@ -394,7 +394,7 @@ $rtrn = '
 					<div>Din care:</div>
 					<div>В том числе:</div>
 				</td>
-				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;" rowspan="2">
+				<td style="border:1px solid #000; border-bottom:1px solid #fff; text-align:center; font-weight:bold; padding:1mm;" rowspan="2">
 					<div>Din</div>
 					<div>Col.29</div>
 				</td>
@@ -406,7 +406,7 @@ $rtrn = '
 					<div>Din care:</div>
 					<div>В том числе:</div>
 				</td>
-				<td style="border:1px solid #000; text-align:center; font-weight:bold; padding:1mm;" rowspan="2">
+				<td style="border:1px solid #000; border-bottom:1px solid #fff; text-align:center; font-weight:bold; padding:1mm;" rowspan="2">
 					<div>Din</div>
 					<div>Col.33</div>
 				</td>
@@ -414,19 +414,13 @@ $rtrn = '
 			<!-- Row 3: Detailed sub-columns -->
 			<tr>
 				<td style="border:1px solid #000; text-align:center; padding:1mm;" rowspan="2">
-					<div>Interur-</div>
-					<div>bane</div>
-					<div>Между-</div>
-					<div>город-</div>
-					<div>ные</div>
+					<div>Interurbane</div>
+					<div>Междугородные</div>
 				</td>
 				<td style="border:1px solid #000; text-align:center; padding:1mm;" rowspan="2">
-					<div>Urbane și</div>
-					<div>suburban</div>
-					<div>e</div>
-					<div>Внутриго-</div>
-					<div>родские и</div>
-					<div>пригор.</div>
+					<div>Urbane și suburbane</div>
+					<div>Внутригородские и</div>
+					<div>пригородные</div>
 				</td>
 				<td style="border:1px solid #000; text-align:center; padding:1mm;" rowspan="2">
 					<div>Export</div>
@@ -444,18 +438,14 @@ $rtrn = '
 			<!-- Row 4: cu re-morci text -->
 			<tr>
 				<td style="border:1px solid #000; text-align:center; padding:1mm;">
-					<div>Cu re-</div>
-					<div>morci из</div>
-					<div>Гр.29 на</div>
-					<div>при-</div>
-					<div>цепах</div>
+					<div>Cu remorci</div>
+					<div>Из гр.29</div>
+					<div>На прицепах</div>
 				</td>
 				<td style="border:1px solid #000; text-align:center; padding:1mm;">
-					<div>Cu re-</div>
-					<div>morci</div>
+					<div>Cu remorci</div>
 					<div>Из гр.33</div>
-					<div>на при-</div>
-					<div>цепах</div>
+					<div>На прицепах</div>
 				</td>
 			</tr>
 			<!-- Row 5: Column numbers -->
