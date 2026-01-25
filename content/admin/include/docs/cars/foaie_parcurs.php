@@ -361,7 +361,7 @@ $rtrn = '
 	</div>
 	
 	<!-- Second Page - VOLUMUL DE TRANSPORTURI -->
-	<div class="pg fp_page bg" style="page-break-before: always; background-color:#fff !important; background-image:none !important;">
+	<div class="pg fp_page bg" style="page-break-before: always; background-color:#fff !important; background-image:none !important; display:flex; flex-direction:column; justify-content:center;">
 		<div style="text-align:left; font-size:0.6rem;">
 			Editura de Imprimate «Statistica», a4 (181n) 05.04.
 		</div>
@@ -503,8 +503,8 @@ $rtrn = '
 				</td>
 				<td style="border:1px solid #000; padding:1mm;"></td>
 				<td style="border:1px solid #000; padding:1mm;"></td>
-				<td style="border:1px solid #000; padding:1mm; text-align:center; font-weight:bold;">X</td>
 				<td style="border:1px solid #000; padding:1mm;"></td>
+				<td style="border:1px solid #000; padding:1mm; text-align:center; font-weight:bold;">X</td>
 				<td style="border:1px solid #000; padding:1mm;"></td>
 				<td style="border:1px solid #000; padding:1mm;"></td>
 				<td style="border:1px solid #000; padding:1mm;"></td>
