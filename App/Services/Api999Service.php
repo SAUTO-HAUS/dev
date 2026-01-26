@@ -427,7 +427,7 @@ class Api999Service
 
     protected function sendCachedRequest(string $url, string $method = 'GET', array $data = null, int $duration = 3600)
     {
-        $cacheKey = md5($method . $url . json_encode($data));
+        $cacheKey = md5($this->api_key . $method . $url . json_encode($data));
 
         $cachePath = $_SERVER['DOCUMENT_ROOT'] . '/cache/';
 
