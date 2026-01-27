@@ -2,6 +2,10 @@
 defined( '_DOIT' ) or die( 'Restricted access' ); 
 // Set 404 response code (in case of direct call)
 http_response_code(404);
+
+// Log 404 error for analysis
+require_once(__DIR__ . '/404_logger.php');
+Error404Logger::log();
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru" lang="ru" >
