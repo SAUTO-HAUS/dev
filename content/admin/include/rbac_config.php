@@ -158,7 +158,7 @@ $rbac_admin_menu = [
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['add', 'ctlg'],
         'stock' => ['ctlg', 'extern'],
-        'sett' => ['info', 'adm_usr', 'roles', 'phone_config', 'publication_settings', 'monitoring', 'ai_prompt']
+        'sett' => ['info', 'adm_usr', 'roles', 'phone_config', 'publication_settings', 'monitoring', 'ai_prompt', '404_stats']
     ],
     'admin' => [
         'cars' => ['add', 'ctlg'],
@@ -195,7 +195,7 @@ $rbac_internal_actions = [
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['add', 'create', 'detail', 'ctlg'],
         'stock' => ['ctlg'],
-        'sett' => ['info', 'adm_usr', 'roles', 'phone_config', 'publication_settings', 'ai_prompt']
+        'sett' => ['info', 'adm_usr', 'roles', 'phone_config', 'publication_settings', 'ai_prompt', '404_stats']
     ],
     'admin' => [
         'cars' => ['add', 'create', 'detail', 'ctlg'],
