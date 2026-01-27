@@ -55,6 +55,12 @@ if ( !isset($t_mp[3]) ){
 		$chkr_av = 0;
 		$it_id = toNumber($t_mp[3]);
 		
+		// redirect old url
+		if ($it_id == 0 && !is_numeric($t_mp[3])) {
+			header('Location: /' . $_COOKIE['lang'] . '/tyres', true, 301);
+			exit;
+		}
+		
 		if ( $it_id > 0 ){
 			$spec_ar = array('br', 'mo', 'w', 'h', 'd', 'ss');
 			
