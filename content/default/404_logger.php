@@ -161,12 +161,17 @@ class Error404Logger {
             }
             $stats['by_date'][$date] += $count;
             
+            $ipHash = $entry['ip_hash'] ?? '';
             if ($entry['is_bot'] ?? false) {
-                $stats['bots_vs_users']['bots']++;
+                $stats['bots_vs_users']['bot_ips'][$ipHash] = true;
             } else {
-                $stats['bots_vs_users']['users']++;
+                $stats['bots_vs_users']['user_ips'][$ipHash] = true;
             }
         }
+        
+        $stats['bots_vs_users']['bots'] = count($stats['bots_vs_users']['bot_ips'] ?? []);
+        $stats['bots_vs_users']['users'] = count($stats['bots_vs_users']['user_ips'] ?? []);
+        unset($stats['bots_vs_users']['bot_ips'], $stats['bots_vs_users']['user_ips']);
         
         arsort($stats['unique_urls']);
         $stats['top_urls'] = array_slice($stats['unique_urls'], 0, 20, true);

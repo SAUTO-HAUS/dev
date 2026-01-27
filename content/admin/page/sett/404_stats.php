@@ -128,35 +128,37 @@ $categoryNames = [
         </div>
     </div>
     
-    <?php if (!empty($stats['by_date'])): ?>
-    <div class="s404-box">
-        <div class="s404-box-hdr">Ошибки по дням</div>
-        <div class="s404-box-body">
-            <table class="s404-tbl">
-                <tr><th>Дата</th><th class="cnt">Кол-во</th></tr>
-                <?php foreach ($stats['by_date'] as $date => $count): ?>
-                <tr>
-                    <td><?= date('d.m.Y', strtotime($date)) ?></td>
-                    <td class="cnt"><span><?= number_format($count) ?></span></td>
-                </tr>
-                <?php endforeach; ?>
-            </table>
+    <div class="s404-row">
+        <?php if (!empty($stats['by_date'])): ?>
+        <div class="s404-box">
+            <div class="s404-box-hdr">Ошибки по дням</div>
+            <div class="s404-box-body">
+                <table class="s404-tbl">
+                    <tr><th>Дата</th><th class="cnt">Кол-во</th></tr>
+                    <?php foreach ($stats['by_date'] as $date => $count): ?>
+                    <tr>
+                        <td><?= date('d.m.Y', strtotime($date)) ?></td>
+                        <td class="cnt"><span><?= number_format($count) ?></span></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </table>
+            </div>
         </div>
-    </div>
-    <?php endif; ?>
-    
-    <div class="s404-box">
-        <div class="s404-box-hdr">По категориям</div>
-        <div class="s404-box-body">
-            <table class="s404-tbl">
-                <tr><th>Категория</th><th class="cnt">Кол-во</th></tr>
-                <?php foreach ($stats['by_category'] ?? [] as $cat => $count): ?>
-                <tr>
-                    <td><span class="s404-tag <?= $cat ?>"><?= $categoryNames[$cat] ?? $cat ?></span></td>
-                    <td class="cnt"><span><?= number_format($count) ?></span></td>
-                </tr>
-                <?php endforeach; ?>
-            </table>
+        <?php endif; ?>
+        
+        <div class="s404-box">
+            <div class="s404-box-hdr">По категориям</div>
+            <div class="s404-box-body">
+                <table class="s404-tbl">
+                    <tr><th>Категория</th><th class="cnt">Кол-во</th></tr>
+                    <?php foreach ($stats['by_category'] ?? [] as $cat => $count): ?>
+                    <tr>
+                        <td><span class="s404-tag <?= $cat ?>"><?= $categoryNames[$cat] ?? $cat ?></span></td>
+                        <td class="cnt"><span><?= number_format($count) ?></span></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </table>
+            </div>
         </div>
     </div>
     
