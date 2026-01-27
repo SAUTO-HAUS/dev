@@ -11,3 +11,9 @@ environment.php
 sitemap-1.xml
 sitemap.xml
 df_cars.xml
+
+sitemap-*.xml
+api/data_feed/df_cars.xml
+api/data_feed/df_cars_pruncul.xml
+api/data_feed/df_cars_orders.xml
+api/data_feed/df_cars_yandex.yml
