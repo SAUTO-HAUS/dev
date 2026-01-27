@@ -183,13 +183,19 @@ $categoryNames = [
         <div class="s404-box-hdr">Последние ошибки 404</div>
         <div class="s404-box-body">
             <table class="s404-tbl">
-                <tr><th>URL</th><th>Категория</th><th class="cnt">Кол-во</th><th>Последний доступ</th><th>Тип</th></tr>
+                <tr><th>URL</th><th>Источник</th><th>Категория</th><th class="cnt">Кол-во</th><th>Последний доступ</th><th>Тип</th></tr>
                 <?php if (empty($recentLogs)): ?>
-                <tr><td colspan="5" class="s404-empty">Логов пока нет</td></tr>
+                <tr><td colspan="6" class="s404-empty">Логов пока нет</td></tr>
                 <?php else: ?>
                 <?php foreach ($recentLogs as $log): ?>
+                <?php 
+                $referer = $log['referer'] ?? '';
+                $refererSource = $log['referer_source'] ?? ($log['referer_domain'] ?? 'direct');
+                if (empty($refererSource)) $refererSource = 'direct';
+                ?>
                 <tr>
                     <td class="url" title="<?= htmlspecialchars($log['url'] ?? '') ?>"><?= htmlspecialchars($log['url'] ?? '-') ?></td>
+                    <td title="<?= htmlspecialchars($referer) ?>"><?= htmlspecialchars($refererSource) ?></td>
                     <td><span class="s404-tag <?= $log['url_category'] ?? 'other' ?>"><?= $categoryNames[$log['url_category'] ?? 'other'] ?? $log['url_category'] ?></span></td>
                     <td class="cnt"><span><?= $log['count'] ?? 1 ?></span></td>
                     <td style="white-space:nowrap;font-size:12px;"><?= $log['last_access'] ?? $log['timestamp'] ?? '-' ?></td>

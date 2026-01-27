@@ -53,6 +53,39 @@ class Error404Logger {
         return 'other';
     }
     
+    private static function getRefererSource($referer) {
+        if (empty($referer)) return 'direct';
+        
+        $refererLower = strtolower($referer);
+        
+        if (strpos($refererLower, 'facebook.com') !== false || strpos($refererLower, 'fb.com') !== false) return 'Facebook';
+        if (strpos($refererLower, 'instagram.com') !== false) return 'Instagram';
+        if (strpos($refererLower, 'tiktok.com') !== false) return 'TikTok';
+        if (strpos($refererLower, 't.me') !== false || strpos($refererLower, 'telegram') !== false) return 'Telegram';
+        if (strpos($refererLower, 'google.') !== false) return 'Google';
+        if (strpos($refererLower, 'yandex.') !== false) return 'Yandex';
+        if (strpos($refererLower, 'bing.com') !== false) return 'Bing';
+        if (strpos($refererLower, 'youtube.com') !== false) return 'YouTube';
+        if (strpos($refererLower, 'twitter.com') !== false || strpos($refererLower, 'x.com') !== false) return 'Twitter/X';
+        if (strpos($refererLower, 'vk.com') !== false) return 'VK';
+        if (strpos($refererLower, 'ok.ru') !== false) return 'Odnoklassniki';
+        if (strpos($refererLower, 'whatsapp') !== false) return 'WhatsApp';
+        if (strpos($refererLower, 'viber') !== false) return 'Viber';
+        if (strpos($refererLower, 'linkedin.com') !== false) return 'LinkedIn';
+        if (strpos($refererLower, 'pinterest') !== false) return 'Pinterest';
+        if (strpos($refererLower, 'reddit.com') !== false) return 'Reddit';
+        if (strpos($refererLower, 'discord') !== false) return 'Discord';
+        if (strpos($refererLower, 'mail.google.com') !== false) return 'Gmail';
+        if (strpos($refererLower, 'mail.ru') !== false) return 'Mail.ru';
+        if (strpos($refererLower, 'mail.yandex') !== false) return 'Yandex Mail';
+        if (strpos($refererLower, 'outlook') !== false || strpos($refererLower, 'live.com') !== false) return 'Outlook';
+        if (strpos($refererLower, 'yahoo.com/mail') !== false) return 'Yahoo Mail';
+        if (strpos($refererLower, 'sauto.md') !== false) return 'sauto.md';
+        
+        $host = parse_url($referer, PHP_URL_HOST);
+        return $host ?: 'unknown';
+    }
+    
     public static function log() {
         $logFile = self::initLogFile();
         
@@ -68,6 +101,7 @@ class Error404Logger {
             'url_category' => self::getUrlCategory($requestUri),
             'referer' => $referer,
             'referer_domain' => !empty($referer) ? parse_url($referer, PHP_URL_HOST) : '',
+            'referer_source' => self::getRefererSource($referer),
             'user_agent' => substr($userAgent, 0, 200),
             'is_bot' => self::isBot($userAgent),
             'ip_hash' => md5(self::anonymizeIp($ip)),
