@@ -55,6 +55,13 @@ require_once(_DEFAULT.'/redirect.php');
 //---Maintenance work
 //if ( $offline == 1 && myIp()=='xx.xx.xx.xx' ){ require_once(_DEFAULT.'/offline.php'); die(); }
 
+//---Redirect old tyres URL format to /tyres
+if (isset($t_mp[2]) && $t_mp[2] == 'tyres' && isset($t_mp[3]) && !is_numeric($t_mp[3])) {
+    $lang = isset($t_mp[1]) ? $t_mp[1] : 'ro';
+    header('Location: /' . $lang . '/tyres', true, 301);
+    exit;
+}
+
 //$t_mp - array responsible for URL (separated by slash "/") www.sauto.md/ro/cars -> 0:www.sauto.md | 1:ro | 2:cars
 if (isset($t_mp[2])&&$t_mp[2]==$admin_dir){ // If request to admin panel (admin_dir is defined in config.php)
 	if (isset($_POST)) { include(_ADM.'/action/post.php'); }
