@@ -417,6 +417,9 @@ if ( isset($t_mp[4]) ){
 			include dirname(__FILE__) . '/sett/monitoring.php';
 		}
 	}
+	elseif ( $t_mp[4]=='404_stats' ){
+		include dirname(__FILE__) . '/sett/404_stats.php';
+	}
 	elseif ( $t_mp[4]=='ai_prompt' ){
 		include dirname(__FILE__) . '/sett/ai_prompt.php';
 	}

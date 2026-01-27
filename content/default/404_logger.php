@@ -82,7 +82,21 @@ class Error404Logger {
             }
         }
         
-        $logs[] = $entry;
+        $found = false;
+        foreach ($logs as &$existingLog) {
+            if (($existingLog['url'] ?? '') === $entry['url']) {
+                $existingLog['count'] = ($existingLog['count'] ?? 1) + 1;
+                $existingLog['last_access'] = $entry['timestamp'];
+                $found = true;
+                break;
+            }
+        }
+        unset($existingLog);
+        
+        if (!$found) {
+            $entry['count'] = 1;
+            $logs[] = $entry;
+        }
         
         if (count($logs) > self::$maxEntries) {
             $logs = array_slice($logs, -self::$maxEntries);
@@ -108,7 +122,7 @@ class Error404Logger {
         });
         
         $stats = [
-            'total_404' => count($recentLogs),
+            'total_404' => 0,
             'unique_urls' => [],
             'by_category' => [],
             'by_referer_domain' => [],
@@ -119,30 +133,33 @@ class Error404Logger {
         ];
         
         foreach ($recentLogs as $entry) {
+            $count = $entry['count'] ?? 1;
+            $stats['total_404'] += $count;
+            
             $url = $entry['url'] ?? '';
             if (!isset($stats['unique_urls'][$url])) {
                 $stats['unique_urls'][$url] = 0;
             }
-            $stats['unique_urls'][$url]++;
+            $stats['unique_urls'][$url] += $count;
             
             $cat = $entry['url_category'] ?? 'other';
             if (!isset($stats['by_category'][$cat])) {
                 $stats['by_category'][$cat] = 0;
             }
-            $stats['by_category'][$cat]++;
+            $stats['by_category'][$cat] += $count;
             
             $refDomain = $entry['referer_domain'] ?? 'direct';
             if (empty($refDomain)) $refDomain = 'direct';
             if (!isset($stats['by_referer_domain'][$refDomain])) {
                 $stats['by_referer_domain'][$refDomain] = 0;
             }
-            $stats['by_referer_domain'][$refDomain]++;
+            $stats['by_referer_domain'][$refDomain] += $count;
             
             $date = $entry['date'] ?? 'unknown';
             if (!isset($stats['by_date'][$date])) {
                 $stats['by_date'][$date] = 0;
             }
-            $stats['by_date'][$date]++;
+            $stats['by_date'][$date] += $count;
             
             if ($entry['is_bot'] ?? false) {
                 $stats['bots_vs_users']['bots']++;
