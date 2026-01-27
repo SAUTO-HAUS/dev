@@ -160,6 +160,7 @@ class Error404Logger {
             'unique_urls' => [],
             'by_category' => [],
             'by_referer_domain' => [],
+            'by_referer_source' => [],
             'by_date' => [],
             'bots_vs_users' => ['bots' => 0, 'users' => 0],
             'top_urls' => [],
@@ -189,6 +190,13 @@ class Error404Logger {
             }
             $stats['by_referer_domain'][$refDomain] += $count;
             
+            $refSource = $entry['referer_source'] ?? 'direct';
+            if (empty($refSource)) $refSource = 'direct';
+            if (!isset($stats['by_referer_source'][$refSource])) {
+                $stats['by_referer_source'][$refSource] = 0;
+            }
+            $stats['by_referer_source'][$refSource] += $count;
+            
             $date = $entry['date'] ?? 'unknown';
             if (!isset($stats['by_date'][$date])) {
                 $stats['by_date'][$date] = 0;
@@ -212,6 +220,7 @@ class Error404Logger {
         
         arsort($stats['by_referer_domain']);
         $stats['top_referers'] = array_slice($stats['by_referer_domain'], 0, 10, true);
+        arsort($stats['by_referer_source']);
         arsort($stats['by_category']);
         ksort($stats['by_date']);
         unset($stats['unique_urls']);

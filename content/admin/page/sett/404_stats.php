@@ -71,7 +71,22 @@ $categoryNames = [
 .s404-tag.bot { background: #ffcdd2; color: #c62828; }
 .s404-tag.user { background: #c8e6c9; color: #2e7d32; }
 
-.s404-row { display: flex; gap: 15px; }
+.s404-tag.src-facebook { background: #1877f2; color: #fff; }
+.s404-tag.src-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); color: #fff; }
+.s404-tag.src-tiktok { background: #000; color: #fff; }
+.s404-tag.src-telegram { background: #0088cc; color: #fff; }
+.s404-tag.src-google { background: #4285f4; color: #fff; }
+.s404-tag.src-yandex { background: #fc0; color: #000; }
+.s404-tag.src-youtube { background: #ff0000; color: #fff; }
+.s404-tag.src-vk { background: #4a76a8; color: #fff; }
+.s404-tag.src-whatsapp { background: #25d366; color: #fff; }
+.s404-tag.src-viber { background: #7360f2; color: #fff; }
+.s404-tag.src-gmail { background: #ea4335; color: #fff; }
+.s404-tag.src-outlook { background: #0078d4; color: #fff; }
+.s404-tag.src-direct { background: #6c757d; color: #fff; }
+.s404-tag.src-sautomd { background: #CE3226; color: #fff; }
+
+.s404-row { display: flex; gap: 15px; flex-wrap: wrap; }
 .s404-row > div { flex: 1; }
 @media (max-width: 800px) { .s404-row { flex-direction: column; } }
 
@@ -160,6 +175,21 @@ $categoryNames = [
                 </table>
             </div>
         </div>
+        
+        <div class="s404-box">
+            <div class="s404-box-hdr">По источникам</div>
+            <div class="s404-box-body">
+                <table class="s404-tbl">
+                    <tr><th>Источник</th><th class="cnt">Кол-во</th></tr>
+                    <?php foreach ($stats['by_referer_source'] ?? [] as $source => $count): ?>
+                    <tr>
+                        <td><span class="s404-tag src-<?= strtolower(preg_replace('/[^a-z0-9]/i', '', $source)) ?>"><?= htmlspecialchars($source) ?></span></td>
+                        <td class="cnt"><span><?= number_format($count) ?></span></td>
+                    </tr>
+                    <?php endforeach; ?>
+                </table>
+            </div>
+        </div>
     </div>
     
     <div class="s404-box">
@@ -167,17 +197,19 @@ $categoryNames = [
         <div class="s404-box-body">
             <table class="s404-tbl">
                 <tr><th>URL</th><th class="cnt">Кол-во</th></tr>
+                <?php if (empty($stats['top_urls'] ?? [])): ?>
+                <tr><td colspan="2" class="s404-empty">Нет данных</td></tr>
+                <?php else: ?>
                 <?php foreach ($stats['top_urls'] ?? [] as $url => $count): ?>
                 <tr>
                     <td class="url" title="<?= htmlspecialchars($url) ?>"><?= htmlspecialchars($url) ?></td>
                     <td class="cnt"><span><?= number_format($count) ?></span></td>
                 </tr>
                 <?php endforeach; ?>
+                <?php endif; ?>
             </table>
         </div>
     </div>
-    
-    <?php endif; ?>
     
     <div class="s404-box">
         <div class="s404-box-hdr">Последние ошибки 404</div>
@@ -206,4 +238,6 @@ $categoryNames = [
             </table>
         </div>
     </div>
+    
+    <?php endif; ?>
 </div>
