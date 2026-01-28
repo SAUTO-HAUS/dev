@@ -1495,6 +1495,14 @@ footer .columns-wrapper .column-container.col-logo-container {
   body > .fltr .data > input::placeholder {color:#777; opacity:1;}
   body > .fltr .data > .fr {border-radius:.4rem 0 0 .4rem; border-right:none;}
   body > .fltr .data > .to {border-radius:0 .4rem .4rem 0; border-left:none; background-image:url(/media/images/site/v2/line.svg); background-repeat:no-repeat; background-position:left center;}
+  body > .fltr .data > select.fr,
+  body > .fltr .data > select.to {width:50%; background-color:#fff; border:1px solid #dbdbdb; padding:.8rem 2rem .8rem 1rem; box-sizing:border-box; color:#777; font-family:inherit; float:left; cursor:pointer; background-image:url(/media/images/site/v2/dropdown.svg); background-repeat:no-repeat; background-position:right .5rem center; transition:.1s;}
+  body > .fltr .data > select.fr {border-radius:.4rem 0 0 .4rem; border-right:none;}
+  body > .fltr .data > select.to {border-radius:0 .4rem .4rem 0; border-left:none;}
+  body > .fltr .data > select.fr:hover,
+  body > .fltr .data > select.to:hover {background-position:right .5rem top 55%;}
+  body > .fltr .data > select.fr.y,
+  body > .fltr .data > select.to.y {background-color:#e8e8e8; color:#333;}
   
   body > .fltr .data > .pck {font-size:.8em; cursor:pointer;}
   

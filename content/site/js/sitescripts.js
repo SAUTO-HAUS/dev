@@ -117,7 +117,19 @@ $(document).on("change", "#fltr .srch", function(e){
 	
 	if (zVal!=''&&zVal!=null){ $(this).addClass('y'); }else{ $(this).removeClass('y'); }
 	
-	if ( $(this).hasClass("inp") ){
+	if ( $(this).hasClass("fr") || $(this).hasClass("to") ){
+		$(this).parent().children("select.fr, select.to").each(function(){
+			zName = $(this).attr("data-tg");
+			if (zVals!=""){zVals += "-"}
+			if ( $(this).val() && $(this).val().length !== 0 && $(this).val()!="0" ){ 
+				zVals += $(this).val(); 
+			}else{
+				if ( $(this).hasClass("fr") ){ zVals += "x"; }
+				else if ( $(this).hasClass("to") ){ zVals += "x"; }
+			}
+		})
+		$("#fltr > .ctrl > .btns > .sbmt").data(zName, zVals).attr("data-" + zName, zVals);
+	}else if ( $(this).hasClass("inp") ){
 		$(this).parent().children(".inp").each(function(){
 			zName = $(this).attr("data-tg");
 			if (zVals!=""){zVals += "-"}
@@ -128,7 +140,7 @@ $(document).on("change", "#fltr .srch", function(e){
 				else if ( $(this).hasClass("to") ){ zVals += "x"; }
 			}
 		})
-	}else if ( ($(this).hasClass("sel") || $(this).hasClass("rad")) ){
+	}else if ( ($(this).hasClass("sel") && !$(this).hasClass("fr") && !$(this).hasClass("to")) || $(this).hasClass("rad") ){
 		zName = $(this).attr("name");
 		if ( $(this).val() ){zVals += $(this).val();}else{zVals += "";}
 		if ( zName=="br" ){ 
@@ -149,7 +161,7 @@ $(document).on("change", "#fltr .srch", function(e){
 	var zSbmt = $("#fltr > .ctrl > .btns > .sbmt");
 	
 	var zCnt2 = 0;
-	$("#fltr .srch").each(function(){
+	$("#fltr .srch").not(".fr, .to").each(function(){
 		if ( ($(this).hasClass("inp") && $(this).val()!="") || ( $(this).hasClass("sel") && $(this).val()!="" && $(this).val()!=null ) ){
 		//if ( ( $(this).hasClass("inp") || $(this).hasClass("sel") ) && $(this).val()!="" ){
 			zSbmt.data( $(this).data("tg"), zSbmt.data($(this).data("tg")) ).attr( "data-"+$(this).data("tg"), zSbmt.data($(this).data("tg")) );
@@ -206,8 +218,7 @@ $(document).on("change", "#fltr .srch", function(e){
 		}
 	});
 	
-	// Then check for selects
-	$("#fltr .sel").each(function() {
+	$("#fltr .sel").not(".fr, .to").each(function() {
 		var filterKey = $(this).attr("name");
 		var filterVal = $(this).val();
 		

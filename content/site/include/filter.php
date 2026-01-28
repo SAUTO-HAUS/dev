@@ -125,33 +125,46 @@ if (!isset($t_mp[2]) || $t_mp[2]=='' || $t_mp[2]=='cars'){
 			foreach($f_it_xtd_arr['car'] as $k => $v){
 				$zData .= isset($_GET[$k])?' data-'.$k.'="'.$_GET[$k].'"':' data-'.$k.'=""';
 				if ($v['i']=='1'){
-					$v0 = ''; $v1 = '';
 					$zArr = isset($_GET[$k]) ? explode("-", $_GET[$k] ) : null;
-					if ($zArr!==null){ $v0 = ' value="'.$zArr[0].'"'; $v1 = ' value="'.(isset($zArr[1])?$zArr[1]:$zArr[0]).'"';}
+					$v0 = ($zArr!==null && isset($zArr[0]) && $zArr[0]!='x') ? $zArr[0] : '';
+					$v1 = ($zArr!==null && isset($zArr[1]) && $zArr[1]!='x') ? $zArr[1] : '';
 					
 					echo '
-					<div class="data '.$k.'" data-name="'.$k.'" data-type="text">
-						<input '.$v0.' data-tg="'.$k.'" class="srch inp fr" list="list_'.$k.'" type="text" name="'.$k.'[]" placeholder="'.$v['t'].', '.$lng['w']['from'].'" title="'.$v['t'].' ['.$lng['w']['from'].']"/>
-						<input '.$v1.' data-tg="'.$k.'" class="srch inp to" list="list_'.$k.'" type="text" name="'.$k.'[]" placeholder="'.$lng['w']['to'].'" title="'.$v['t'].' ['.$lng['w']['to'].']"/>
-						<span class="unit">'.$v['unit'].'</span>
-						<datalist id="list_'.$k.'">';
+					<div class="data '.$k.'" data-name="'.$k.'" data-type="select">
+						<select data-tg="'.$k.'" class="srch sel fr'.($v0!=''?' y':'').'" name="'.$k.'[]" title="'.$v['t'].' ['.$lng['w']['from'].']">
+							<option value="" class="x" disabled="disabled"'; if ($v0==''){echo ' selected="selected"';} echo '>'.$v['t'].', '.$lng['w']['from'].'</option>
+							<option value="" class="x">'.$lng['w']['all'].'</option>';
 							ksort($f_arr[$k]['list']);
-							foreach($f_arr[$k]['list'] as $lv){ echo '<option>'.$lv.'</option>'; }
+							foreach($f_arr[$k]['list'] as $lv){ 
+								$chkd = ($v0!='' && $v0==$lv) ? ' selected="selected"' : '';
+								echo '<option value="'.$lv.'"'.$chkd.'>'.$lv.'</option>'; 
+							}
 						echo '
-						</datalist> 
+						</select>
+						<select data-tg="'.$k.'" class="srch sel to'.($v1!=''?' y':'').'" name="'.$k.'[]" title="'.$v['t'].' ['.$lng['w']['to'].']">
+							<option value="" class="x" disabled="disabled"'; if ($v1==''){echo ' selected="selected"';} echo '>'.$lng['w']['to'].'</option>
+							<option value="" class="x">'.$lng['w']['all'].'</option>';
+							ksort($f_arr[$k]['list']);
+							foreach($f_arr[$k]['list'] as $lv){ 
+								$chkd = ($v1!='' && $v1==$lv) ? ' selected="selected"' : '';
+								echo '<option value="'.$lv.'"'.$chkd.'>'.$lv.'</option>'; 
+							}
+						echo '
+						</select>
+						<span class="unit">'.$v['unit'].'</span>
 					</div>
 					';
 				}else{
 					echo '
 					<select class="srch data sel '.$k.'" data-tg="'.$k.'" name="'.$k.'" title="'.$v['t'].'">
-						<option value="" disabled="disabled" class="x" '; if (!isset($_GET[$k])){echo ' selected="selected"';} echo '>'.$v['t'].'</option>
+						<option value="" disabled="disabled" class="x" selected="selected">'.$v['t'].'</option>
 						<option value="" class="x">'.$lng['w']['all'].'</option>';
 						ksort($f_arr[$k]['list']);
 						foreach ($f_arr[$k]['list'] as $v){
 							$zArr = isset($_GET[$k]) ? explode("-", $_GET[$k] ) : null;
 							$chkd = ( isset($_GET[$k])&&in_array($v['val'], $zArr) ) ? ' selected="selected"' : '';
 							echo '
-							<option value="'.$v['val'].'" data-tg="'.$k.'" data-lng="'.$lng['l']['car']['spec'][$k].': '.$v['lng'].'" '.$chkd.'>'.$v['lng'].'</option>';
+							<option value="'.$v['val'].'" data-tg="'.$k.'" data-lng="'.(isset($lng['l']['car']['spec'][$k])?$lng['l']['car']['spec'][$k]:$k).': '.$v['lng'].'" '.$chkd.'>'.$v['lng'].'</option>';
 						}
 					echo '
 					</select>';
