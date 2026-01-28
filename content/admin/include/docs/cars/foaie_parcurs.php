@@ -48,7 +48,7 @@ if (!empty($data_emiterii_raw)) {
 $rtrn = '
 <style>
 	.fp_page {font-family:"Times New Roman", Times, serif;}
-	.fp_page .top-right {position:absolute; top:2mm; right:5mm; text-align:right; font-size:0.6rem; line-height:1.4; font-weight:bold;}
+	.fp_page .top-right {position:absolute; top:5mm; right:5mm; text-align:right; font-size:0.6rem; line-height:1.4; font-weight:bold;}
 	</style>
 <div id="p_cont" class="base">
 	<div class="pg fp_page">
