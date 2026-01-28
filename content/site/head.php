@@ -25,46 +25,22 @@ use App\Helper\PhoneHelper;?>
 
 <link rel="stylesheet" href="/content/site/css/brand_seo.css?v=<?php echo time(); ?>">
 
-<script>
-(function(){
-    var ttq = window.ttq = window.ttq || [];
-    ttq.methods = ["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"];
-    ttq.setAndDefer = function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};
-    for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);
-    ttq.load = function(){console.log('TikTok Pixel blocked for performance')};
-    ttq.instance = function(){return ttq};
-    ttq._i = ttq._i || {};
+<!-- TikTok blocking script removed - was interfering with GTM/GA4 -->
 
-    var origCreate = document.createElement;
-    document.createElement = function(tag){
-        var el = origCreate.call(document, tag);
-        if(tag.toLowerCase() === 'script'){
-            var origSetAttr = el.setAttribute;
-            el.setAttribute = function(name, value){
-                if(name === 'src' && value && value.indexOf('analytics.tiktok.com') !== -1){
-                    console.log('Blocked TikTok script:', value);
-                    return;
-                }
-                return origSetAttr.call(el, name, value);
-            };
-            Object.defineProperty(el, 'src', {
-                set: function(value){
-                    if(value && value.indexOf('analytics.tiktok.com') !== -1){
-                        console.log('Blocked TikTok script:', value);
-                        return;
-                    }
-                    origSetAttr.call(el, 'src', value);
-                },
-                get: function(){ return el.getAttribute('src'); }
-            });
-        }
-        return el;
-    };
-})();
+<!-- Google Consent Mode v2 - MUST be before any Google tags -->
+<script data-cfasync="false">
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {
+	'ad_storage': 'denied',
+	'ad_user_data': 'denied',
+	'ad_personalization': 'denied',
+	'analytics_storage': 'denied'
+});
 </script>
 
 <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+<script data-cfasync="false">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
@@ -72,12 +48,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- End Google Tag Manager -->
 
 <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-TP4GJ51GSL"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
+<script data-cfasync="false" async src="https://www.googletagmanager.com/gtag/js?id=G-TP4GJ51GSL"></script>
+<script data-cfasync="false">
   gtag('js', new Date());
-
   gtag('config', 'G-TP4GJ51GSL');
   gtag('config', 'AW-964347386');
 </script>
@@ -267,16 +240,8 @@ include('plugins/dev_tools/meta_gen.php');
 <style>
 
 </style>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('consent', 'default', {
-	'ad_storage': 'denied',
-	'ad_user_data': 'denied',
-	'ad_personalization': 'denied',
-	'analytics_storage': 'denied'
-});
-
+<script data-cfasync="false">
+// Consent UI helper functions (gtag already defined above)
 function showPref(){document.getElementById('cons_bx').style.display = 'none'; var prefBox = document.getElementById('pref_bx'); prefBox.style.display = 'flex'; prefBox.style.visibility = 'visible'; prefBox.style.opacity = '1'; prefBox.style.alignItems = 'center'; prefBox.style.justifyContent = 'center';}
 function hidePref(){document.getElementById('pref_bx').style.display = 'none'; document.getElementById('pref_bx').style.visibility = 'hidden'; document.getElementById('pref_bx').style.opacity = '0'; document.getElementById('cons_bx').style.display = 'flex';}
 
@@ -303,8 +268,15 @@ function updateConsent(ad_cons, usr_dt_cons, pers_cons, ana_cons ) {
 		'ad_personalization': pers_cons ? 'granted' : 'denied',
 		'analytics_storage': ana_cons ? 'granted' : 'denied'
 	});
+	// Send page_view after consent is granted for analytics
+	if (ana_cons) {
+		gtag('event', 'page_view', {
+			page_title: document.title,
+			page_location: window.location.href
+		});
+	}
 	// Cookie version system - increment this number to force all users to see consent banner again
-	const CONSENT_VERSION = 4;
+	const CONSENT_VERSION = 5;
 	localStorage.setItem( 'z_cks_alwd', '{"ad":'+(ad_cons?'true':'false')+', "usrDt":'+(usr_dt_cons?'true':'false')+', "prsn":'+(pers_cons?'true':'false')+', "ana":'+(ana_cons?'true':'false')+', "version":'+CONSENT_VERSION+'}' );
 	localStorage.setItem( 'z_cks_alwd_t', unixTime() );
 	localStorage.setItem( 'z_cks_alwd_v', '20325' );
@@ -316,7 +288,7 @@ $(document).ready(function(){
 		const cksAlwdObj = JSON.parse( localStorage.getItem('z_cks_alwd') );
 		
 		// Check consent version - if version doesn't match, show banner again
-		const CURRENT_VERSION = 4;
+		const CURRENT_VERSION = 5;
 		const storedVersion = cksAlwdObj['version'] || 1;
 		
 		if (storedVersion >= CURRENT_VERSION) {

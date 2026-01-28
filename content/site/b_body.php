@@ -14,16 +14,6 @@ if (isset($t_mp[2]) && $t_mp[2] == 'ordercars') {
 	<?php include(_SITE.'/head.php'); ?>
 </head>
 
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-TP4GJ51GSL"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-TP4GJ51GSL');
-</script>
-
 <body class="ffd" <?php /*class="noselect ffd"*/ echo ' data-mbl="'.$isMobile.'" data-lng="'.$_COOKIE['lang'].'"'; ?> data-js="0" data-host="SAUTO">
 	
 	<!-- Google Tag Manager (noscript) -->
