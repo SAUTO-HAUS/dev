@@ -1,34 +1,10 @@
 <?php defined('_DOIT') or die('Restricted access'); ?>
 
 <style>
-html:has(#analytics-container),
-html:has(#analytics-container) body,
-html:has(#analytics-container) #main_admin,
-html:has(#analytics-container) #content {
-    overflow: hidden !important;
-    height: 100vh !important;
-    max-height: 100vh !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-}
-
-html:has(#analytics-container) #content {
-    margin-left: 0 !important;
-}
-
-html:has(#analytics-container) #menu,
-html:has(#analytics-container) #header {
-    display: none !important;
-}
-
 #analytics-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 100%;
+    height: calc(100vh - 100px);
+    min-height: 600px;
 }
 
 #analytics-container iframe {
@@ -36,12 +12,14 @@ html:has(#analytics-container) #header {
     height: 100%;
     border: 0;
     display: block;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 </style>
 
 <div id="analytics-container">
     <iframe
-        src="https://lookerstudio.google.com/embed/reporting/abb9521f-4a9f-4f55-9823-294819c3d224/page/p_pu544nyf0d"
+        src="https://lookerstudio.google.com/embed/reporting/0a38df0b-2d31-402d-89b6-d0875a51aed1/page/93xmF"
         allowfullscreen>
     </iframe>
 </div>
