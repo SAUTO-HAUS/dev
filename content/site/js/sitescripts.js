@@ -117,7 +117,19 @@ $(document).on("change", "#fltr .srch", function(e){
 	
 	if (zVal!=''&&zVal!=null){ $(this).addClass('y'); }else{ $(this).removeClass('y'); }
 	
-	if ( $(this).hasClass("fr") || $(this).hasClass("to") ){
+	if ( $(this).hasClass("inp") && ($(this).hasClass("fr") || $(this).hasClass("to")) ){
+		$(this).parent().children(".inp").each(function(){
+			zName = $(this).attr("data-tg");
+			if (zVals!=""){zVals += "-"}
+			if ( $(this).val().length !== 0 && $(this).val()!="0" && $(this).val()!="" ){ 
+				zVals += $(this).val(); 
+			}else{
+				if ( $(this).hasClass("fr") ){ zVals += "x"; }
+				else if ( $(this).hasClass("to") ){ zVals += "x"; }
+			}
+		})
+		$("#fltr > .ctrl > .btns > .sbmt").data(zName, zVals).attr("data-" + zName, zVals);
+	}else if ( $(this).hasClass("sel") && ($(this).hasClass("fr") || $(this).hasClass("to")) ){
 		$(this).parent().children("select.fr, select.to").each(function(){
 			zName = $(this).attr("data-tg");
 			if (zVals!=""){zVals += "-"}
@@ -133,13 +145,14 @@ $(document).on("change", "#fltr .srch", function(e){
 		$(this).parent().children(".inp").each(function(){
 			zName = $(this).attr("data-tg");
 			if (zVals!=""){zVals += "-"}
-			if ( $(this).val().length !== 0 && $(this).val()!=0 ){ 
+			if ( $(this).val().length !== 0 && $(this).val()!="0" && $(this).val()!="" ){ 
 				zVals += $(this).val(); 
 			}else{
 				if ( $(this).hasClass("fr") ){ zVals += "x"; }
 				else if ( $(this).hasClass("to") ){ zVals += "x"; }
 			}
 		})
+		$("#fltr > .ctrl > .btns > .sbmt").data(zName, zVals).attr("data-" + zName, zVals);
 	}else if ( ($(this).hasClass("sel") && !$(this).hasClass("fr") && !$(this).hasClass("to")) || $(this).hasClass("rad") ){
 		zName = $(this).attr("name");
 		if ( $(this).val() ){zVals += $(this).val();}else{zVals += "";}

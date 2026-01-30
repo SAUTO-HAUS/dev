@@ -130,27 +130,9 @@ if (!isset($t_mp[2]) || $t_mp[2]=='' || $t_mp[2]=='cars'){
 					$v1 = ($zArr!==null && isset($zArr[1]) && $zArr[1]!='x') ? $zArr[1] : '';
 					
 					echo '
-					<div class="data '.$k.'" data-name="'.$k.'" data-type="select">
-						<select data-tg="'.$k.'" class="srch sel fr'.($v0!=''?' y':'').'" name="'.$k.'[]" title="'.$v['t'].' ['.$lng['w']['from'].']">
-							<option value="" class="x" disabled="disabled"'; if ($v0==''){echo ' selected="selected"';} echo '>'.$v['t'].', '.$lng['w']['from'].'</option>
-							<option value="" class="x">'.$lng['w']['all'].'</option>';
-							ksort($f_arr[$k]['list']);
-							foreach($f_arr[$k]['list'] as $lv){ 
-								$chkd = ($v0!='' && $v0==$lv) ? ' selected="selected"' : '';
-								echo '<option value="'.$lv.'"'.$chkd.'>'.$lv.'</option>'; 
-							}
-						echo '
-						</select>
-						<select data-tg="'.$k.'" class="srch sel to'.($v1!=''?' y':'').'" name="'.$k.'[]" title="'.$v['t'].' ['.$lng['w']['to'].']">
-							<option value="" class="x" disabled="disabled"'; if ($v1==''){echo ' selected="selected"';} echo '>'.$lng['w']['to'].'</option>
-							<option value="" class="x">'.$lng['w']['all'].'</option>';
-							ksort($f_arr[$k]['list']);
-							foreach($f_arr[$k]['list'] as $lv){ 
-								$chkd = ($v1!='' && $v1==$lv) ? ' selected="selected"' : '';
-								echo '<option value="'.$lv.'"'.$chkd.'>'.$lv.'</option>'; 
-							}
-						echo '
-						</select>
+					<div class="data '.$k.'" data-name="'.$k.'" data-type="input">
+						<input type="number" data-tg="'.$k.'" class="srch inp fr'.($v0!=''?' y':'').'" name="'.$k.'[]" placeholder="'.$v['t'].', '.$lng['w']['from'].'" title="'.$v['t'].' ['.$lng['w']['from'].']" value="'.$v0.'" />
+						<input type="number" data-tg="'.$k.'" class="srch inp to'.($v1!=''?' y':'').'" name="'.$k.'[]" placeholder="'.$lng['w']['to'].'" title="'.$v['t'].' ['.$lng['w']['to'].']" value="'.$v1.'" />
 						<span class="unit">'.$v['unit'].'</span>
 					</div>
 					';
