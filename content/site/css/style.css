@@ -1542,6 +1542,30 @@ footer .columns-wrapper .column-container.col-logo-container {
   body > .fltr select:hover {background-position:right 1rem top 55%;}
   body > .fltr select.y, body > .fltr .data > input.y {background-color:#e8e8e8; color:#333;}
   
+  /* Filter icons */
+  body > .fltr select.gr {background-image:url(/content/site/img/svg_description/img_fltr/group.png), url(/media/images/site/v2/dropdown.svg); background-position:left .8rem center, right 1rem top 50%; background-size:1.2rem, auto;}
+  body > .fltr select.bt {background-image:url(/content/site/img/svg_description/img_fltr/body.png), url(/media/images/site/v2/dropdown.svg); background-position:left .8rem center, right 1rem top 50%; background-size:1.2rem, auto;}
+  body > .fltr select.fl {background-image:url(/content/site/img/svg_description/img_fltr/fuel.png), url(/media/images/site/v2/dropdown.svg); background-position:left .8rem center, right 1rem top 50%; background-size:1.2rem, auto;}
+  body > .fltr select.tra {background-image:url(/content/site/img/svg_description/img_fltr/transmission.png), url(/media/images/site/v2/dropdown.svg); background-position:left .8rem center, right 1rem top 50%; background-size:1.2rem, auto;}
+  body > .fltr select.wd {background-image:url(/content/site/img/svg_description/img_fltr/drivetrain.png), url(/media/images/site/v2/dropdown.svg); background-position:left .8rem center, right 1rem top 50%; background-size:1.2rem, auto;}
+  body > .fltr select.clr {background-image:url(/content/site/img/svg_description/img_fltr/color.png), url(/media/images/site/v2/dropdown.svg); background-position:left .8rem center, right 1rem top 50%; background-size:1.2rem, auto;}
+  body > .fltr select.sts {background-image:url(/content/site/img/svg_description/img_fltr/seat.png), url(/media/images/site/v2/dropdown.svg); background-position:left .8rem center, right 1rem top 50%; background-size:1.2rem, auto;}
+  body > .fltr select.gr, body > .fltr select.bt, body > .fltr select.fl, body > .fltr select.tra, body > .fltr select.wd, body > .fltr select.clr, body > .fltr select.sts {padding-left:2.5rem;}
+  
+  /* Filter icons for input fields */
+  body > .fltr .data.yr {position:relative;}
+  body > .fltr .data.yr::before {content:''; position:absolute; left:.8rem; top:50%; transform:translateY(-50%); width:1.2rem; height:1.2rem; background:url(/content/site/img/svg_description/img_fltr/year.png) no-repeat center / contain; pointer-events:none; z-index:1;}
+  body > .fltr .data.yr > input.fr {padding-left:2.5rem;}
+  body > .fltr .data.mlg {position:relative;}
+  body > .fltr .data.mlg::before {content:''; position:absolute; left:.8rem; top:50%; transform:translateY(-50%); width:1.2rem; height:1.2rem; background:url(/content/site/img/svg_description/img_fltr/mileage.png) no-repeat center / contain; pointer-events:none; z-index:1;}
+  body > .fltr .data.mlg > input.fr {padding-left:2.5rem;}
+  body > .fltr .data.vol {position:relative;}
+  body > .fltr .data.vol::before {content:''; position:absolute; left:.8rem; top:50%; transform:translateY(-50%); width:1.2rem; height:1.2rem; background:url(/content/site/img/svg_description/img_fltr/volume.png) no-repeat center / contain; pointer-events:none; z-index:1;}
+  body > .fltr .data.vol > input.fr {padding-left:2.5rem;}
+  body > .fltr .data.prc {position:relative;}
+  body > .fltr .data.prc::before {content:''; position:absolute; left:.8rem; top:50%; transform:translateY(-50%); width:1.2rem; height:1.2rem; background:url(/content/site/img/svg_description/img_fltr/price.png) no-repeat center / contain; pointer-events:none; z-index:1;}
+  body > .fltr .data.prc > input.fr {padding-left:2.5rem;}
+  
   body > .fltr select > option {margin:1rem 0; padding:1rem 0;}
   body > .fltr select > option.h {display:none;}
   body > .fltr select > option:disabled {color:#fff; background-color:#8c8c8c;}
