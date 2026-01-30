@@ -317,33 +317,37 @@ $last_car_id = 0;
                     <a class="btn edit" href="<?= '/'.$_COOKIE['lang'].'/'.$admin_dir.'/cars/detail?id=' . $r['id'] ?>" title="<?= $lng['adm']['edit'] ?>">
                         <div></div>
                     </a>
-                    <?php endif; ?>
-                    <?php if (rbac_has_permission($user_role, 'cars', 'update')): ?>
                     <div class="btn fn_av" data-fn="<?= ($r['n_a']==0 ? 'av0' : 'av1') ?>" title="<?= ($r['n_a']==0?'Нет в наличии':'Есть в наличии') ?>" data-alt="<?= ($r['n_a']==0 ? '+' : '-') ?>">
                         <div></div>
                     </div>
                     <?php endif; ?>
-                    <?php if (rbac_has_permission($user_role, 'cars', 'update')): ?>
+                    <?php /* DISABLED: hide/reveal button
+                    if (rbac_has_permission($user_role, 'cars', 'update')): ?>
                     <div class="btn fn_hr" data-fn="<?= ($r['vis']==0 ? 'reveal' : 'hide')?>" title="<?= $lng['adm'][($r['vis']==0 ? 'reveal' : 'hide')] ?>" data-alt="<?= $lng['adm'][($r['vis']==0?'hide':'reveal')] ?>">
                         <div></div>
                     </div>
-                    <?php endif; ?>
-                    <?php if (rbac_has_permission($user_role, 'cars', 'delete')): ?>
+                    <?php endif;
+                    */ ?>
+                    <?php /* DISABLED: delete button
+                    if (rbac_has_permission($user_role, 'cars', 'delete')): ?>
                     <div class="btn fn_dre" data-fn="delete" title="<?= $lng['adm']['delete'] ?>">
                         <div></div>
                     </div>
-                    <?php endif; ?>
+                    <?php endif;
+                    */ ?>
                 <?php elseif ( $r['act'] == 0 ) : ?>
                     <?php if (rbac_has_permission($user_role, 'cars', 'restore')): ?>
                     <div class="btn fn_dre" data-fn="restore" title="<?= $lng['adm']['restore'] ?>">
                         <div></div>
                     </div>
                     <?php endif; ?>
-                    <?php if (rbac_has_permission($user_role, 'cars', 'delete')): ?>
+                    <?php /* DISABLED: erase button
+                    if (rbac_has_permission($user_role, 'cars', 'delete')): ?>
                     <div class="btn fn_dre" data-fn="erase" title="<?= $lng['adm']['delete'] ?>">
                         <div></div>
                     </div>
-                    <?php endif; ?>
+                    <?php endif;
+                    */ ?>
                 <?php endif; ?>
             </div>
 

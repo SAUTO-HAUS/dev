@@ -1140,4 +1140,86 @@ setTimeout(function() {
 setInterval(animatePredatorCanvas, 1000);
 setInterval(initPredatorCanvas, 1000);
 
+// ============================================================
+// BRAND PAGE - LOAD MORE FUNCTIONALITY
+// ============================================================
+(function() {
+	var loadMoreBtn = document.getElementById('load-more-btn');
+	var container = document.getElementById('brand-cars-container');
+
+	if (!loadMoreBtn || !container) return;
+
+	var brand = container.dataset.brand || '';
+	var model = container.dataset.model || '';
+	var pageType = container.dataset.pageType || 'cars';
+	var total = parseInt(container.dataset.total) || 0;
+	var loaded = parseInt(container.dataset.loaded) || 0;
+	var isLoading = false;
+	var limit = 16;
+
+	// Update button visibility
+	function updateButtonVisibility() {
+		if (loaded >= total) {
+			loadMoreBtn.style.display = 'none';
+		}
+	}
+
+	loadMoreBtn.addEventListener('click', function() {
+		if (isLoading || loaded >= total) return;
+
+		isLoading = true;
+		loadMoreBtn.disabled = true;
+		loadMoreBtn.style.opacity = '0.6';
+
+		var spinner = document.querySelector('.load-more-spinner');
+		if (spinner) spinner.style.display = 'block';
+
+		var formData = new FormData();
+		formData.append('tp', 'ste');
+		formData.append('fn', 'load_more_brand_cars');
+		formData.append('brand', brand);
+		formData.append('model', model);
+		formData.append('page_type', pageType);
+		formData.append('offset', loaded);
+		formData.append('limit', limit);
+
+		fetch('/ajax.php', {
+			method: 'POST',
+			body: formData
+		})
+		.then(function(response) { return response.json(); })
+		.then(function(data) {
+			if (data.html) {
+				// Append new cards to container
+				container.insertAdjacentHTML('beforeend', data.html);
+
+				// Update loaded count
+				loaded += data.count;
+				container.dataset.loaded = loaded;
+
+				// Re-initialize mobile sliders if needed
+				if (typeof initMobileCardSliders === 'function') {
+					initMobileCardSliders();
+				}
+			}
+
+			// Check if we should hide the button
+			if (!data.has_more || loaded >= total) {
+				loadMoreBtn.style.display = 'none';
+			}
+		})
+		.catch(function(error) {
+			console.error('Error loading more cars:', error);
+		})
+		.finally(function() {
+			isLoading = false;
+			loadMoreBtn.disabled = false;
+			loadMoreBtn.style.opacity = '1';
+			if (spinner) spinner.style.display = 'none';
+		});
+	});
+
+	updateButtonVisibility();
+})();
+
 })

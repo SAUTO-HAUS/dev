@@ -307,27 +307,33 @@ $last_car_id = 0;
                         <div></div>
                     </div>
                     <?php endif; ?>
-                    <?php if (rbac_has_permission($user_role, 'cars', 'update')): ?>
+                    <?php /* DISABLED: hide/reveal button
+                    if (rbac_has_permission($user_role, 'cars', 'update')): ?>
                     <div class="btn fn_hr" data-fn="<?= ($r['vis']==0 ? 'reveal' : 'hide')?>" title="<?= $lng['adm'][($r['vis']==0 ? 'reveal' : 'hide')] ?>" data-alt="<?= $lng['adm'][($r['vis']==0?'hide':'reveal')] ?>">
                         <div></div>
                     </div>
-                    <?php endif; ?>
-                    <?php if (rbac_has_permission($user_role, 'cars', 'delete')): ?>
+                    <?php endif;
+                    */ ?>
+                    <?php /* DISABLED: delete button
+                    if (rbac_has_permission($user_role, 'cars', 'delete')): ?>
                     <div class="btn fn_dre" data-fn="delete" title="<?= $lng['adm']['delete'] ?>">
                         <div></div>
                     </div>
-                    <?php endif; ?>
+                    <?php endif;
+                    */ ?>
                 <?php elseif ( $r['act'] == 0 ) : ?>
                     <?php if (rbac_has_permission($user_role, 'cars', 'restore')): ?>
                     <div class="btn fn_dre" data-fn="restore" title="<?= $lng['adm']['restore'] ?>">
                         <div></div>
                     </div>
                     <?php endif; ?>
-                    <?php if (rbac_has_permission($user_role, 'cars', 'delete')): ?>
+                    <?php /* DISABLED: erase button
+                    if (rbac_has_permission($user_role, 'cars', 'delete')): ?>
                     <div class="btn fn_dre" data-fn="erase" title="<?= $lng['adm']['delete'] ?>">
                         <div></div>
                     </div>
-                    <?php endif; ?>
+                    <?php endif;
+                    */ ?>
                 <?php endif; ?>
             </div>
 

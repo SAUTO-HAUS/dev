@@ -206,15 +206,17 @@ foreach ($pdo as $r){
 				$rtrn .= '
 				<a class="btn edit" href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/ordercars/detail?id=' . $r['id'].'&v='.time().'" title="'.$lng['adm']['edit'].'"> <div></div> </a><!--data-fn="edit"-->
 				<div class="btn fn_av" data-fn="'.($r['n_a']==0?'av0':'av1').'" title="'.($r['n_a']==0?'+':'-').'" data-alt="'.($r['n_a']==0?'-':'+').'"> <div></div> </div>';
-				if ( in_array($user_type, ['dev', 'sad']) ){
-					$rtrn .= '
-					<div class="btn fn_hr" data-fn="'.($r['vis']==0?'reveal':'hide').'" title="'.$lng['adm'][($r['vis']==0?'reveal':'hide')].'" data-alt="'.$lng['adm'][($r['vis']==0?'hide':'reveal')].'" data-fn> <div></div> </div>
-					<div class="btn fn_dre" data-fn="delete" title="'.$lng['adm']['delete'].'"> <div></div> </div>';
-				}
+				// DISABLED: hide/reveal and delete buttons
+				// if ( in_array($user_type, ['dev', 'sad']) ){
+				// 	$rtrn .= '
+				// 	<div class="btn fn_hr" data-fn="'.($r['vis']==0?'reveal':'hide').'" title="'.$lng['adm'][($r['vis']==0?'reveal':'hide')].'" data-alt="'.$lng['adm'][($r['vis']==0?'hide':'reveal')].'" data-fn> <div></div> </div>
+				// 	<div class="btn fn_dre" data-fn="delete" title="'.$lng['adm']['delete'].'"> <div></div> </div>';
+				// }
 			} elseif ( $r['act'] == 0 && in_array($user_type, ['dev', 'sad']) ){
 				$rtrn .= '
-				<div class="btn fn_dre" data-fn="restore" title="'.$lng['adm']['restore'].'"> <div></div> </div>
-				<div class="btn fn_dre" data-fn="erase" title="'.$lng['adm']['delete'].'"> <div></div> </div>';
+				<div class="btn fn_dre" data-fn="restore" title="'.$lng['adm']['restore'].'"> <div></div> </div>';
+				// DISABLED: erase button
+				// <div class="btn fn_dre" data-fn="erase" title="'.$lng['adm']['delete'].'"> <div></div> </div>';
 			}
 		$rtrn .= '
 		</div>

@@ -157,6 +157,7 @@ if ($_COOKIE['lang']=='ru'){
             'in_stock'=>'В наличии',
             'on_order'=>'Под заказ',
             'not_available'=>'Нет в наличии',
+            'load_more'=>'Загрузить ещё',
 			'similar_price_title'=>'Автомобили по схожей цене',
 			'similar_few_in_stock'=>'На стоянке похожих мало — смотрите варианты под заказ',
 			'similar_few_on_order'=>'Под заказ похожих мало — смотрите варианты на стоянке',
@@ -1197,7 +1198,9 @@ if ($_COOKIE['lang']=='ru'){
 		'calc'=>'Калькулятор',
 		'usage'=>'Использование',
 		'rates'=>'Ставки',
-		'calculator'=>'Калькулятор'
+		'calculator'=>'Калькулятор',
+		'analytics'=>'Аналитика',
+		'view'=>'Просмотр'
 	);
 
 // ... rest of the code remains the same ...
@@ -1728,6 +1731,7 @@ elseif ($_COOKIE['lang']=='ro'){
             'in_stock'=>'În stoc',
             'on_order'=>'La comandă',
 			'not_available'=>'Nu este în stoc',
+            'load_more'=>'Încarcă mai multe',
 			'similar_price_title'=>'Automobile la preț similar',
             'similar_few_in_stock'=>'În stoc sunt puține similare — vezi variante la comandă',
             'similar_few_on_order'=>'La comandă sunt puține similare — vezi variante în stoc',
@@ -2713,7 +2717,9 @@ $adm_lang = array(
 	'calculator'=>'Calculator',
 	'calc'=>'Calculator',
 	'usage'=>'Statistici',
-	'rates'=>'Cote'
+	'rates'=>'Cote',
+	'analytics'=>'Analitica',
+	'view'=>'Vizualizare'
 );
 
 // ... rest of the code remains the same ...
@@ -3238,6 +3244,7 @@ elseif ($_COOKIE['lang']=='en'){
             'in_stock'=>'In Stock',
             'on_order'=>'On Order',
             'not_available'=>'Out of Stock',
+            'load_more'=>'Load More',
 			'similar_price_title'=>'Cars at Similar Price',
             'similar_few_in_stock'=>'Few similar in stock — see options on order',
             'similar_few_on_order'=>'Few similar on order — see options in stock',
@@ -4228,7 +4235,9 @@ $adm_lang = array(
 	'brands_seo'=>'Brands SEO',
 	'calc'=>'Calculator',
 	'usage'=>'Statistics',
-	'rates'=>'Rates'
+	'rates'=>'Rates',
+	'analytics'=>'Analytics',
+	'view'=>'View'
 );
 
 }

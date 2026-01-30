@@ -1,4 +1,5 @@
 <?php use App\Services\Api999Service;
+use App\Helper\CarValidator;
 
 defined( '_DOIT' ) or die( 'Restricted access' );
 
@@ -18,6 +19,29 @@ if (__post('sub') == 'mo_search') {
 
 } elseif (__post('sub') == 'end') {
     try {
+        $carData = [
+            'yr' => __post('yr'),
+            'vol' => __post('vol'),
+            'hp' => __post('hp'),
+            'mlg' => __post('mlg'),
+            'sts' => __post('sts'),
+            'prc' => __post('prc'),
+            'bt' => __post('bt'),
+            'fl' => __post('fl'),
+            'tra' => __post('tra'),
+            'wd' => __post('wd'),
+            'clr' => __post('clr'),
+            'gr' => __post('gr'),
+            'cur' => __post('cur')
+        ];
+        
+        $validation = CarValidator::validate($carData);
+        if (!$validation['valid']) {
+            $rtrn = ['error' => true, 'validation_errors' => $validation['errors']];
+            echo json_encode($rtrn);
+            exit;
+        }
+        
         $br = __post('br');
         $mo = __post('mo');
 

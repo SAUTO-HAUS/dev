@@ -391,6 +391,7 @@
   
   #content_box input.need {color:#000 !important; transition:0.5s;}
   #content_box .empty {background-color:rgba(255,0,0,0.1) !important;}
+  #content_box .invalid-range {background-color:rgba(255,0,0,0.1) !important;}
   
   #content_box .add_info .seo > .content > label,
   #content_box .add_info .txt > .content > label {transition:.2s; display:block; max-height:300px; overflow:hidden;}

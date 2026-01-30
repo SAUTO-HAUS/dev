@@ -464,49 +464,17 @@ $(document).ready(function(){
 			del_img.push($(this).val());
 		});
 
-		// Synchronize price from 999 form to main form before data collection
-		console.log('=== SEARCHING FOR PRICE FIELD ===');
-		let allNumberInputs = $('#main_form_999').find('input[type="number"]');
-		console.log('All number inputs found:', allNumberInputs.length);
-		allNumberInputs.each(function(index) {
-			console.log(`Input ${index}:`, this, 'name:', $(this).attr('name'), 'value:', $(this).val());
-		});
-		
-		let priceField = $('#main_form_999').find('input[type="number"]').filter(function() {
-			return $(this).attr('name') && $(this).attr('name').includes('feature[') && 
-				   $(this).closest('.form-group').find('select[name*="feature_units"]').length > 0;
-		});
-		console.log('Price field after filtering:', priceField.length);
-		
-		if (priceField.length > 0) {
+		// Synchronize price from 999 form (feature[2]) to main form
+		let priceField = $('#main_form_999').find('input[name="feature[2]"]');
+		if (priceField.length > 0 && priceField.val()) {
 			let priceValue = priceField.val();
-			let priceUnitSelect = priceField.closest('.form-group').find('select[name*="feature_units"]');
-			let priceUnit = priceUnitSelect.val();
+			let priceUnitSelect = $('#main_form_999').find('select[name="feature_units[2]"]');
+			let priceUnit = priceUnitSelect.length > 0 ? priceUnitSelect.val() : null;
 			
-			console.log('=== PRICE SYNCHRONIZATION DEBUG ===');
-			console.log('Price field found:', priceField.length);
-			console.log('Price field element:', priceField[0]);
-			console.log('Price field name attribute:', priceField.attr('name'));
-			console.log('Price field raw DOM value:', priceField[0].value);
-			console.log('Price field jQuery val():', priceValue, 'type:', typeof priceValue);
-			console.log('Price unit select:', priceUnitSelect[0]);
-			console.log('Price unit value:', priceUnit);
-			
-			// Update the main form's price field
-			if (priceValue && priceUnit) {
-				let prcField = $formSauto.find('input[name="prc"]');
-				let curField = $formSauto.find('select[name="cur"], input[name="cur"]');
-				
-				console.log('Before update - prc field value:', prcField.val());
-				console.log('Before update - cur field value:', curField.val());
-				
-				prcField.val(priceValue);
-				curField.val(priceUnit.toUpperCase());
-				
-				console.log('After update - prc field value:', prcField.val());
-				console.log('After update - cur field value:', curField.val());
+			$formSauto.find('input[name="prc"]').val(priceValue);
+			if (priceUnit) {
+				$formSauto.find('select[name="cur"]').val(priceUnit.toUpperCase());
 			}
-			console.log('=== END PRICE SYNCHRONIZATION DEBUG ===');
 		}
 		
 		let dataSauto = collectFormDataSauto($formSauto, bx_id);
@@ -1114,16 +1082,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function validateInputsSauto($contentBox, fileInput) {
 	let isValid = true;
+	const currentYear = new Date().getFullYear();
+
+	const rules = {
+		yr: { min: 1980, max: currentYear + 1, digits: 4, name: 'Year' },
+		vol: { min: 700, max: 10000, name: 'Engine volume' },
+		hp: { min: 30, max: 2000, name: 'Power' },
+		mlg: { min: 1, max: 999999, name: 'Mileage' },
+		sts: { min: 2, max: 60, name: 'Seats' },
+		prc: { min: 100, max: 10000000, name: 'Price', special: [1] }
+	};
 
 	if (!$('#content_box').data('car-id')) {
 		if (!fileInput[0].files.length) {
 			console.warn('No image uploaded for new car');
-			// isValid = false;
-			// $contentBox.find('.img_bx > .dd_plc').addClass('empty');
 		}
 	}
 
-	// Validation of text fields
 	$contentBox.find('.need:not(.nmb)').each(function () {
 		if ($(this).val()) {
 			$(this).removeClass('empty');
@@ -1133,15 +1108,43 @@ function validateInputsSauto($contentBox, fileInput) {
 		}
 	});
 
-	// Validation of number fields
+	const fuelType = $contentBox.find('[name="fl"]').val();
+
 	$contentBox.find('.need.nmb').each(function () {
-		if ($(this).val() > 0) {
-			$(this).removeClass('empty');
-		} else {
-			isValid = false;
-			$(this).addClass('empty');
+		const fieldName = $(this).attr('name');
+		const val = parseInt($(this).val(), 10);
+		let rule = rules[fieldName];
+		
+		if (fieldName === 'vol' && fuelType === 'elc') {
+			rule = { ...rule, special: [0] };
+		}
+		
+		$(this).removeClass('empty invalid-range');
+		
+		if (!val && val !== 0) {
+			if (!rule || rule.required !== false) {
+				isValid = false;
+				$(this).addClass('empty');
+			}
+			return;
+		}
+		
+		if (rule) {
+			if (rule.special && rule.special.includes(val)) {
+				return;
+			}
+			if (rule.digits && String(val).length !== rule.digits) {
+				isValid = false;
+				$(this).addClass('invalid-range');
+				return;
+			}
+			if (val < rule.min || val > rule.max) {
+				isValid = false;
+				$(this).addClass('invalid-range');
+			}
 		}
 	});
+	
 	return isValid;
 }
 

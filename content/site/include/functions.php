@@ -2,9 +2,9 @@
 
 use App\Helper\PhoneHelper;
 
-$car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$db, &$img_frmt, &$lng){
+$car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_brand_page=false) use (&$prefx, &$db, &$img_frmt, &$lng){
 	/** @var PDO $db */
-	$ar = [ 'ids'=>[], 'txt'=>'', 'qu'=>0 ];
+	$ar = [ 'ids'=>[], 'txt'=>'', 'qu'=>0, 'total'=>0 ];
 	$debug_enabled = false; // Disable debugging
 	
 	// Debug disabled
@@ -327,19 +327,38 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 		}
 	}
 	
-	if ($v1=='fltr'){ 
-		$sql .= ' ORDER BY CASE WHEN catalog_type = "in_stock" AND n_a = 0 THEN 1 WHEN catalog_type = "on_order" THEN 2 ELSE 3 END, `id` DESC LIMIT :lmt '; 
+	// For brand pages with pagination, first get total count
+	if ($v1=='fltr' && $is_brand_page) {
+		$count_sql = str_replace('SELECT *', 'SELECT COUNT(*) as total', $sql);
+		$count_args = array_filter($query_args, function($key) { return $key !== 'lmt'; }, ARRAY_FILTER_USE_KEY);
+		try {
+			$count_pdo = $db->prepare($count_sql);
+			$count_pdo->execute($count_args);
+			$count_result = $count_pdo->fetch(PDO::FETCH_ASSOC);
+			$ar['total'] = (int)$count_result['total'];
+		} catch (PDOException $e) {
+			$ar['total'] = 0;
+		}
+	}
+
+	if ($v1=='fltr'){
+		if ($offset > 0) {
+			$sql .= ' ORDER BY CASE WHEN catalog_type = "in_stock" AND n_a = 0 THEN 1 WHEN catalog_type = "on_order" THEN 2 ELSE 3 END, `id` DESC LIMIT :offset, :lmt ';
+			$query_args['offset'] = (int)$offset;
+		} else {
+			$sql .= ' ORDER BY CASE WHEN catalog_type = "in_stock" AND n_a = 0 THEN 1 WHEN catalog_type = "on_order" THEN 2 ELSE 3 END, `id` DESC LIMIT :lmt ';
+		}
 		// file_put_contents('debug_sql.log', "SQL: " . $sql . "\n", FILE_APPEND);
 		// file_put_contents('debug_sql.log', "Params: " . print_r($query_args, true) . "\n", FILE_APPEND);
-	} elseif ($v1!='smlr'){ 
-		$sql .= ' ORDER BY `n_a` ASC, `id` DESC LIMIT :lmt '; 
+	} elseif ($v1!='smlr'){
+		$sql .= ' ORDER BY `n_a` ASC, `id` DESC LIMIT :lmt ';
 	}
-	
+
 	// Debug info disabled
 
 	try {
 		$pdo = $db->prepare($sql);
-		
+
 		// All debugging information has been disabled
 
 		$pdo->execute($query_args);
@@ -621,14 +640,15 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$
 		
 		$i++;
 		$card_counter++;
-		
-		if ($card_counter % 16 == 0 && $card_counter > 0) {
+
+		// Promo inserts disabled on brand pages
+		if (!$is_brand_page && $card_counter % 16 == 0 && $card_counter > 0) {
 			// On /cars page show hint about ordercars, on /ordercars show hint about cars
 			$is_order_page = (strpos($_SERVER['REQUEST_URI'], '/ordercars') !== false);
 			$hint_text = $is_order_page ? $lng['w']['in_stock_hint'] : $lng['w']['on_order_hint'];
 			$hint_link = $is_order_page ? '/'.$_COOKIE['lang'].'/cars' : '/'.$_COOKIE['lang'].'/ordercars';
 			$hint_link_text = $is_order_page ? $lng['w']['in_stock'] : $lng['w']['on_order'];
-			
+
 			$ar['txt'] .= '<div class="catalog-hint-block" style="width: 100%; padding: 20px; margin: 15px 0; background-color: #f8f9fa; border-left: 4px solid #ff0000; border-radius: 4px; box-sizing: border-box;">';
 			$ar['txt'] .= '<p style="margin: 0 0 10px 0; color: #333; font-size: 15px;">'.$hint_text.'</p>';
 			$ar['txt'] .= '<a href="'.$hint_link.'" style="display: inline-block; background-color: #ff0000; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 14px;">'.$hint_link_text.'</a>';

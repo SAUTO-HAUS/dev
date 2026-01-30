@@ -49,6 +49,49 @@ elseif ($_POST['fn']=='snd_msg'){
 }
 
 
+//LOAD MORE BRAND CARS------------------------------------------------------------------
+elseif ($_POST['fn']=='load_more_brand_cars'){
+	// Check page type to use appropriate functions file
+	$page_type = isset($_POST['page_type']) ? $_POST['page_type'] : 'cars';
+
+	if ($page_type === 'ordercars') {
+		require_once(_SITE_INCL.'/order_functions.php');
+	} else {
+		require_once(_SITE_INCL.'/functions.php');
+	}
+
+	$brand = isset($_POST['brand']) ? str_replace('-', '_', $_POST['brand']) : '';
+	$model = isset($_POST['model']) && !empty($_POST['model']) ? str_replace('-', '_', $_POST['model']) : null;
+	$offset = isset($_POST['offset']) ? (int)$_POST['offset'] : 0;
+	$limit = isset($_POST['limit']) ? (int)$_POST['limit'] : 16;
+
+	// Build filter request
+	$filter_req = ['tg' => 'fltr', 'br' => $brand];
+	if ($model) {
+		$filter_req['mo'] = $model;
+	}
+
+	// Get additional filter params if any
+	$filter_params = ['bt', 'fl', 'tra', 'wd', 'clr', 'yr', 'mlg', 'vol', 'prc', 'sts', 'loc', 'gr'];
+	foreach ($filter_params as $param) {
+		if (isset($_POST[$param]) && !empty($_POST[$param])) {
+			$filter_req[$param] = $_POST[$param];
+		}
+	}
+
+	// Call car_card with pagination support - $is_brand_page=true disables promo inserts
+	$card = $car_card('fltr', $limit, $filter_req, 'av', $offset, true);
+
+	$returnIt = array(
+		'fn' => $_POST['fn'],
+		'html' => $card['txt'],
+		'count' => $card['qu'],
+		'total' => $card['total'],
+		'offset' => $offset,
+		'has_more' => ($offset + $card['qu']) < $card['total']
+	);
+}
+
 elseif  ($_POST['fn']=='calculator'){
     // C8 сумма кредита
     // С10 срок мес

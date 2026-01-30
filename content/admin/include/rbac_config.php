@@ -16,7 +16,8 @@ $rbac_permissions = [
         'mail' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
         'stock' => ['read' => true],
-        'sett' => ['read' => true, 'update' => true]
+        'sett' => ['read' => true, 'update' => true],
+        'analytics' => ['read' => true]
     ],
     // Admin (Администратор) - Полный доступ ко всем документам и почти полный доступ к остальному, кроме управления пользователями
     'admin' => [
@@ -158,6 +159,7 @@ $rbac_admin_menu = [
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['add', 'ctlg'],
         'stock' => ['ctlg', 'extern'],
+        'analytics' => ['view'],
         'sett' => ['info', 'adm_usr', 'roles', 'phone_config', 'publication_settings', 'monitoring', 'ai_prompt', '404_stats']
     ],
     'admin' => [
@@ -195,6 +197,7 @@ $rbac_internal_actions = [
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['add', 'create', 'detail', 'ctlg'],
         'stock' => ['ctlg'],
+        'analytics' => ['view'],
         'sett' => ['info', 'adm_usr', 'roles', 'phone_config', 'publication_settings', 'ai_prompt', '404_stats']
     ],
     'admin' => [

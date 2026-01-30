@@ -18,6 +18,7 @@ use App\Helper\PhoneHelper;?>
 
 <script src="/<?php e(_DEFAULT)?>/js/sitescripts.js?d=<?php echo date("GYimsd", filemtime(_DEFAULT.'/js/sitescripts.js')); ?>" defer></script>
 <script src="/<?php e(_SITE)?>/js/sitescripts.js?d=<?php echo date("GYimsd", filemtime(_SITE.'/js/sitescripts.js')); ?>" defer></script>
+<script src="/<?php e(_SITE)?>/js/faceted-filter.js?d=<?php echo date("GYimsd", filemtime(_SITE.'/js/faceted-filter.js')); ?>" defer></script>
 
 <!-- Product Card Slider Assets -->
 <link rel="stylesheet" href="/content/site/components/product-card-slider/product-card-slider.css?v=<?php echo time(); ?>">

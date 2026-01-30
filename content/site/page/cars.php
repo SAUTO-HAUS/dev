@@ -57,6 +57,38 @@ function getImportCountryName($countryId, $language = 'ro') {
             color: #ff0000;
             font-weight: bold;
         }
+        /* Load more button spinner animation */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .load-more-btn {
+            background: #e2001a;
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0.25rem 0.75rem rgba(226, 0, 26, 0.2);
+            white-space: nowrap;
+        }
+        .load-more-btn:hover {
+            background: #c40017;
+            transform: translateY(-0.125rem);
+            box-shadow: 0 0.5rem 1.25rem rgba(226, 0, 26, 0.3);
+        }
+        .load-more-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 0.25rem 0.75rem rgba(226, 0, 26, 0.2);
+        }
+        .load-more-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+            transform: none !important;
+        }
     </style>
 
 
@@ -159,8 +191,15 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
     // Log SQL parameters for debugging
     // file_put_contents('debug_sql.log', "Processing filtered catalog with params: " . print_r($_GET, true) . "\n", FILE_APPEND);
 
+    // Check if this is a brand page (has brand filter, no other complex filters)
+    $is_brand_page = isset($_GET['br']) && !isset($_GET['bt']) && !isset($_GET['fl']) && !isset($_GET['tra']) && !isset($_GET['wd']) && !isset($_GET['clr']) && !isset($_GET['yr']) && !isset($_GET['mlg']) && !isset($_GET['vol']) && !isset($_GET['prc']) && !isset($_GET['sts']);
+
+    // For brand pages: show 16 cars initially with pagination support
+    // For other filtered pages: show all cars up to limit
+    $initial_limit = $is_brand_page ? 16 : $cr_lmt;
+
     // This is a filtered catalogue page
-    $card = $car_card('fltr', $cr_lmt, $_GET, 'av');
+    $card = $car_card('fltr', $initial_limit, $_GET, 'av', 0, $is_brand_page);
 
     // Handle body type filter - set appropriate H1 or hide it
     if(isset($_GET['bt']) && !isset($_GET['br'])) {
@@ -268,19 +307,42 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
         strpos($sa['meta']['h1'], 'Asigurări Auto') === false) {
         $rtrn .= '<h1 style="font-size: inherit;">'.$sa['meta']['h1'].'</h1>';
     }
-    $rtrn .= '<div class="cnt list">';
+
+    // For brand pages, add data attributes for JS load more functionality
+    $brand_data_attr = '';
+    if ($is_brand_page) {
+        $brand_data_attr = ' data-brand="'.htmlspecialchars($_GET['br'] ?? '').'"';
+        $brand_data_attr .= ' data-model="'.htmlspecialchars($_GET['mo'] ?? '').'"';
+        $brand_data_attr .= ' data-total="'.(int)($card['total'] ?? 0).'"';
+        $brand_data_attr .= ' data-loaded="'.(int)$card['qu'].'"';
+    }
+
+    $rtrn .= '<div class="cnt list" id="brand-cars-container"'.$brand_data_attr.'>';
     $rtrn .= $card['txt'];
     $rtrn .= '</div>';
 
+    // For brand pages: Show "Load more" button if there are more cars to load
+    if ($is_brand_page && isset($card['total']) && $card['total'] > $card['qu']) {
+        $rtrn .= '<div class="load-more-container" style="width: 100%; text-align: center; margin: 30px 0 20px 0;">';
+        $rtrn .= '<button id="load-more-btn" class="load-more-btn">';
+        $rtrn .= $lng['w']['load_more'];
+        $rtrn .= '</button>';
+        $rtrn .= '<div class="load-more-spinner" style="display: none; margin-top: 15px;">';
+        $rtrn .= '<div style="width: 30px; height: 30px; border: 3px solid #f3f3f3; border-top: 3px solid #ff0000; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;"></div>';
+        $rtrn .= '</div>';
+        $rtrn .= '</div>';
+    }
+
+    // SEO description now appears right after the "Load more" button (or after cars if no button)
     if(isset($_GET['br']) && !isset($_GET['mo'])) {
         $brand_code = str_replace('-', '_', $_GET['br']);
         $current_lang = isset($_COOKIE['lang']) ? $_COOKIE['lang'] : 'ro';
-        
+
         try {
             $pdo_brand_seo = $db->prepare('SELECT `description_'.$current_lang.'` as description FROM '.$prefx.'_brands_seo WHERE `brand_code`=:brand_code LIMIT 1');
             $pdo_brand_seo->execute(['brand_code' => $brand_code]);
             $brand_seo = $pdo_brand_seo->fetch(PDO::FETCH_ASSOC);
-            
+
             if($brand_seo && !empty(trim($brand_seo['description']))) {
                 $rtrn .= '<div class="brand-description">';
                 $rtrn .= $brand_seo['description'];
