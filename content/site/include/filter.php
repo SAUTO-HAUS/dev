@@ -141,7 +141,17 @@ if (!isset($t_mp[2]) || $t_mp[2]=='' || $t_mp[2]=='cars'){
 					<select class="srch data sel '.$k.'" data-tg="'.$k.'" name="'.$k.'" title="'.$v['t'].'">
 						<option value="" disabled="disabled" class="x" selected="selected">'.$v['t'].'</option>
 						<option value="" class="x">'.$lng['w']['all'].'</option>';
-						ksort($f_arr[$k]['list']);
+						// Custom order for fuel types
+						if ($k == 'fl') {
+							$fl_order = ['pih'=>1, 'hbd'=>2, 'dsl'=>3, 'gsl'=>4, 'gpn'=>5, 'gmn'=>6, 'gas'=>7, 'elc'=>8];
+							uasort($f_arr[$k]['list'], function($a, $b) use ($fl_order) {
+								$orderA = isset($fl_order[$a['val']]) ? $fl_order[$a['val']] : 99;
+								$orderB = isset($fl_order[$b['val']]) ? $fl_order[$b['val']] : 99;
+								return $orderA - $orderB;
+							});
+						} else {
+							ksort($f_arr[$k]['list']);
+						}
 						foreach ($f_arr[$k]['list'] as $v){
 							$zArr = isset($_GET[$k]) ? explode("-", $_GET[$k] ) : null;
 							$chkd = ( isset($_GET[$k])&&in_array($v['val'], $zArr) ) ? ' selected="selected"' : '';
