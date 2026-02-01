@@ -2,11 +2,47 @@
 
 $abr = 'FP';
 
-$fp_start_nr = 40992836;
-if (isset($cont_n)) {
-	$fp_nr = $fp_start_nr + intval($cont_n) - 1;
+if (isset($_POST['fp_daa']) && $_POST['fp_daa'] != '') {
+	$fp_nr = intval($_POST['fp_daa']);
+} elseif (isset($_POST['doc_view']) && $_POST['doc_view'] == '1' && isset($cont_n)) {
+	$fp_nr = 40992836 + intval($cont_n) - 1;
+	$_POST['fp_daa'] = $fp_nr;
 } else {
-	$fp_nr = $fp_start_nr;
+	if (isset($_POST['fp_daa_start']) && $_POST['fp_daa_start'] != '') {
+		$fp_start_nr = intval($_POST['fp_daa_start']);
+	} else {
+		$fp_start_nr = 40992842; 
+		$pdo_fp_start = $db->prepare('SELECT `value` FROM '.$prefx.'_info WHERE `name`=:name AND `x1`=:x1 AND `x2`=:x2 LIMIT 1');
+		$pdo_fp_start->execute(['name' => 'fp_daa_start', 'x1' => 'cars', 'x2' => 'foaie_parcurs']);
+		$fp_start_row = $pdo_fp_start->fetch(PDO::FETCH_ASSOC);
+		if ($fp_start_row) { $fp_start_nr = intval($fp_start_row['value']); }
+	}
+
+	$pdo_fp_docs = $db->prepare('SELECT `value` FROM '.$prefx.'_info WHERE `name`=:name AND `x1`=:x1 AND `x2`=:x2 LIMIT 1');
+	$pdo_fp_docs->execute(['name' => 'docs', 'x1' => 'cars', 'x2' => 'foaie_parcurs']);
+	$fp_docs_info = $pdo_fp_docs->fetch(PDO::FETCH_ASSOC);
+	$fp_counter = $fp_docs_info ? intval($fp_docs_info['value']) : 0;
+
+	$pdo_fp_serie = $db->prepare('SELECT `value`, `x3` FROM '.$prefx.'_info WHERE `name`=:name AND `x1`=:x1 AND `x2`=:x2 LIMIT 1');
+	$pdo_fp_serie->execute(['name' => 'fp_daa_serie', 'x1' => 'cars', 'x2' => 'foaie_parcurs']);
+	$fp_serie_info = $pdo_fp_serie->fetch(PDO::FETCH_ASSOC);
+
+	if ($fp_serie_info && $fp_serie_info['x3'] == strval($fp_start_nr)) {
+		$fp_counter_before = intval($fp_serie_info['value']);
+	} else {
+		$fp_counter_before = $fp_counter;
+		if ($fp_serie_info) {
+			$pdo_fp_upd = $db->prepare('UPDATE '.$prefx.'_info SET `value`=:value, `x3`=:x3 WHERE `name`=:name AND `x1`=:x1 AND `x2`=:x2');
+			$pdo_fp_upd->execute(['value' => $fp_counter_before, 'x3' => strval($fp_start_nr), 'name' => 'fp_daa_serie', 'x1' => 'cars', 'x2' => 'foaie_parcurs']);
+		} else {
+			$pdo_fp_ins = $db->prepare('INSERT INTO '.$prefx.'_info (`name`, `x1`, `x2`, `x3`, `value`) VALUES (:name, :x1, :x2, :x3, :value)');
+			$pdo_fp_ins->execute(['name' => 'fp_daa_serie', 'x1' => 'cars', 'x2' => 'foaie_parcurs', 'x3' => strval($fp_start_nr), 'value' => $fp_counter_before]);
+		}
+	}
+
+	$fp_nr = $fp_start_nr + ($fp_counter - $fp_counter_before);
+
+	$_POST['fp_daa'] = $fp_nr;
 }
 
 $autovehicul_marca = '';

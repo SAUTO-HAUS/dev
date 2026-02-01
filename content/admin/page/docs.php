@@ -476,6 +476,8 @@ c/f 1017600006845, c/TVA 0609417</pre>
 									+"</div>"
 									+"</div>"
 								);
+
+								$("#overlay > .content > form .fp-daa-only-add").hide();
 								
 								$("#overlay > .content > form").append(""
 									+"<input type=\"hidden\" name=\"doc_gr\" value=\""+vals.data("gr")+"\" />"

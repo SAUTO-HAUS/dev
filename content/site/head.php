@@ -26,20 +26,6 @@ use App\Helper\PhoneHelper;?>
 
 <link rel="stylesheet" href="/content/site/css/brand_seo.css?v=<?php echo time(); ?>">
 
-<!-- TikTok blocking script removed - was interfering with GTM/GA4 -->
-
-<!-- Google Consent Mode v2 - MUST be before any Google tags -->
-<script data-cfasync="false">
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('consent', 'default', {
-	'ad_storage': 'denied',
-	'ad_user_data': 'denied',
-	'ad_personalization': 'denied',
-	'analytics_storage': 'denied'
-});
-</script>
-
 <!-- Google Tag Manager -->
 <script data-cfasync="false">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
@@ -51,6 +37,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <!-- Google tag (gtag.js) -->
 <script data-cfasync="false" async src="https://www.googletagmanager.com/gtag/js?id=G-TP4GJ51GSL"></script>
 <script data-cfasync="false">
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-TP4GJ51GSL');
   gtag('config', 'AW-964347386');
@@ -242,7 +230,17 @@ include('plugins/dev_tools/meta_gen.php');
 
 </style>
 <script data-cfasync="false">
-// Consent UI helper functions (gtag already defined above)
+// Google Consent Mode v2
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {
+	'ad_storage': 'denied',
+	'ad_user_data': 'denied',
+	'ad_personalization': 'denied',
+	'analytics_storage': 'denied'
+});
+
+// Consent UI helper functions
 function showPref(){document.getElementById('cons_bx').style.display = 'none'; var prefBox = document.getElementById('pref_bx'); prefBox.style.display = 'flex'; prefBox.style.visibility = 'visible'; prefBox.style.opacity = '1'; prefBox.style.alignItems = 'center'; prefBox.style.justifyContent = 'center';}
 function hidePref(){document.getElementById('pref_bx').style.display = 'none'; document.getElementById('pref_bx').style.visibility = 'hidden'; document.getElementById('pref_bx').style.opacity = '0'; document.getElementById('cons_bx').style.display = 'flex';}
 

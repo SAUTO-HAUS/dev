@@ -1287,9 +1287,18 @@ JAVASCRIPT;
 
 	//__________________________________________________________________________________________FOAIE DE PARCURS PENTRU AUTOCAMIOANE
 	if ( $t_mp[5]=='foaie_parcurs' || isset($mixall) ){
+		$fp_daa_start = 40992842; 
+		$pdo_daa = $db->prepare('SELECT `value` FROM '.$prefx.'_info WHERE `name`=:name AND `x1`=:x1 AND `x2`=:x2 LIMIT 1');
+		$pdo_daa->execute(['name' => 'fp_daa_start', 'x1' => 'cars', 'x2' => 'foaie_parcurs']);
+		$daa_row = $pdo_daa->fetch(PDO::FETCH_ASSOC);
+		if ($daa_row) { $fp_daa_start = intval($daa_row['value']); }
+
 		$rtrn .= ( isset($mixall)?'<form class="menu_foaie_parcurs">':'' ).'
 		<div class="ttl">Document</div>
-		<label class="lbl"><span class="ttl">Data</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Data" value="'.date('Y-m-d').'" /></label>
+		<div style="display:flex; gap:15px; align-items:flex-end; flex-wrap:wrap;">
+			<label class="lbl" style="flex:1; min-width:150px;"><span class="ttl">Data</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Data" value="'.date('Y-m-d').'" /></label>
+			<label class="lbl fp-daa-only-add" style="min-width:150px;"><span class="ttl">Seria DAA de la Nr.</span><input type="number" name="fp_daa_start" value="'.$fp_daa_start.'" title="Numărul de start DAA" /></label>
+		</div>
 		
 		<div class="ttl">Șofer și Autovehicul</div>
 		<div style="display:flex; gap:10px;">

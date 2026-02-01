@@ -240,6 +240,19 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 	</html>';
 	
 	if (isset($_POST['save_inf']) && $_POST['save_inf']=='1'){
+		if ($_POST['doc_f'] == 'foaie_parcurs' && isset($_POST['fp_daa_start']) && $_POST['fp_daa_start'] != '' && (!isset($_POST['doc_view']) || $_POST['doc_view'] != '1')) {
+			$fp_daa_val = intval($_POST['fp_daa_start']);
+			$pdo_daa_check = $db->prepare('SELECT `id` FROM '.$prefx.'_info WHERE `name`=:name AND `x1`=:x1 AND `x2`=:x2 LIMIT 1');
+			$pdo_daa_check->execute(['name' => 'fp_daa_start', 'x1' => 'cars', 'x2' => 'foaie_parcurs']);
+			if ($pdo_daa_check->fetch()) {
+				$pdo_daa_upd = $db->prepare('UPDATE '.$prefx.'_info SET `value`=:value WHERE `name`=:name AND `x1`=:x1 AND `x2`=:x2');
+				$pdo_daa_upd->execute(['value' => $fp_daa_val, 'name' => 'fp_daa_start', 'x1' => 'cars', 'x2' => 'foaie_parcurs']);
+			} else {
+				$pdo_daa_ins = $db->prepare('INSERT INTO '.$prefx.'_info (`name`, `x1`, `x2`, `value`) VALUES (:name, :x1, :x2, :value)');
+				$pdo_daa_ins->execute(['name' => 'fp_daa_start', 'x1' => 'cars', 'x2' => 'foaie_parcurs', 'value' => $fp_daa_val]);
+			}
+		}
+
 		$u_tp = isset($_POST['u_tp'])&&$_POST['u_tp']!=''?$_POST['u_tp']:'x';
 		$u_nm = isset($_POST['u_nm'])&&$_POST['u_nm']!=''?$_POST['u_nm']:'x';
 		$u_cf_idno = isset($_POST['u_cf_idno'])&&$_POST['u_cf_idno']!=''?$_POST['u_cf_idno']:0;
@@ -276,7 +289,7 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 		
 		//__________________INFO generator
 		$inf=''; $qu=0;
-		$inf_ar = ['br', 'mo', 'vin', 'yr', 'clr', 'prc', 'cur', 'prc_eur', 'prc_av', 'loc', 'term_livr', 'cntr_fr', 'cntr_to', 'adr_to', 't2pay', 'plate', 'extras', 'orig', 'u_eur', 'description', 'dealer', 'sauto_role', 'seller_name', 'seller_vat', 'seller_account', 'seller_address', 'seller_country', 'seller_swift', 'buyer_name', 'buyer_vat', 'buyer_account', 'buyer_address', 'buyer_country', 'buyer_swift', 'annexa_nr', 'cont_nr', 'add_cesionar', 'cesionar_nm', 'cesionar_cf_idno', 'cesionar_account', 'cesionar_suma', 'base_contract_id', 'sofer', 'autovehicul', 'kyc_client_name', 'kyc_idnp', 'kyc_address', 'kyc_phone', 'kyc_email', 'kyc_completion_date', 'kyc_residence_addr', 'kyc_transaction_purpose', 'kyc_doc_type', 'kyc_doc_series', 'kyc_doc_office', 'kyc_doc_date', 'kyc_doc_expiry', 'kyc_citizenship', 'kyc_birth_info', 'kyc_occupation', 'kyc_occupation_other', 'kyc_institution_name', 'kyc_position', 'kyc_no_public_function', 'kyc_public_function', 'kyc_public_function_other', 'kyc_affiliated_company', 'kyc_parents_names', 'kyc_spouse_name', 'kyc_children_names', 'kyc_partner_name', 'kyc_transaction_purpose_other', 'kyc_money_source', 'kyc_money_source_other', 'kyc_approval_date', 'kyc_doc_buletin', 'kyc_doc_permis', 'kyc_doc_pasaport', 'kyc_occupation_angajat', 'kyc_occupation_student', 'kyc_occupation_antreprenor', 'kyc_occupation_somer', 'kyc_occupation_pensionar', 'kyc_public_function_deputat', 'kyc_public_function_judecator', 'kyc_public_function_guvern', 'kyc_public_function_primar', 'kyc_public_function_partid', 'kyc_public_function_consilier', 'kyc_transaction_personal', 'kyc_transaction_family', 'kyc_transaction_company', 'kyc_transaction_resale', 'kyc_transaction_commercial', 'kyc_transaction_transfer', 'kyc_funds_salary', 'kyc_funds_dividends', 'kyc_funds_loan', 'kyc_funds_business', 'kyc_funds_inheritance', 'kyc_funds_donations'];
+		$inf_ar = ['br', 'mo', 'vin', 'yr', 'clr', 'prc', 'cur', 'prc_eur', 'prc_av', 'loc', 'term_livr', 'cntr_fr', 'cntr_to', 'adr_to', 't2pay', 'plate', 'extras', 'orig', 'u_eur', 'description', 'dealer', 'sauto_role', 'seller_name', 'seller_vat', 'seller_account', 'seller_address', 'seller_country', 'seller_swift', 'buyer_name', 'buyer_vat', 'buyer_account', 'buyer_address', 'buyer_country', 'buyer_swift', 'annexa_nr', 'cont_nr', 'add_cesionar', 'cesionar_nm', 'cesionar_cf_idno', 'cesionar_account', 'cesionar_suma', 'base_contract_id', 'sofer', 'autovehicul', 'fp_daa', 'kyc_client_name', 'kyc_idnp', 'kyc_address', 'kyc_phone', 'kyc_email', 'kyc_completion_date', 'kyc_residence_addr', 'kyc_transaction_purpose', 'kyc_doc_type', 'kyc_doc_series', 'kyc_doc_office', 'kyc_doc_date', 'kyc_doc_expiry', 'kyc_citizenship', 'kyc_birth_info', 'kyc_occupation', 'kyc_occupation_other', 'kyc_institution_name', 'kyc_position', 'kyc_no_public_function', 'kyc_public_function', 'kyc_public_function_other', 'kyc_affiliated_company', 'kyc_parents_names', 'kyc_spouse_name', 'kyc_children_names', 'kyc_partner_name', 'kyc_transaction_purpose_other', 'kyc_money_source', 'kyc_money_source_other', 'kyc_approval_date', 'kyc_doc_buletin', 'kyc_doc_permis', 'kyc_doc_pasaport', 'kyc_occupation_angajat', 'kyc_occupation_student', 'kyc_occupation_antreprenor', 'kyc_occupation_somer', 'kyc_occupation_pensionar', 'kyc_public_function_deputat', 'kyc_public_function_judecator', 'kyc_public_function_guvern', 'kyc_public_function_primar', 'kyc_public_function_partid', 'kyc_public_function_consilier', 'kyc_transaction_personal', 'kyc_transaction_family', 'kyc_transaction_company', 'kyc_transaction_resale', 'kyc_transaction_commercial', 'kyc_transaction_transfer', 'kyc_funds_salary', 'kyc_funds_dividends', 'kyc_funds_loan', 'kyc_funds_business', 'kyc_funds_inheritance', 'kyc_funds_donations'];
 		$inf_up_ar = ['vin'];
 		$kyc_checkbox_fields = ['kyc_doc_buletin', 'kyc_doc_permis', 'kyc_doc_pasaport', 'kyc_occupation_angajat', 'kyc_occupation_student', 'kyc_occupation_antreprenor', 'kyc_occupation_somer', 'kyc_occupation_pensionar', 'kyc_no_public_function', 'kyc_public_function_deputat', 'kyc_public_function_judecator', 'kyc_public_function_guvern', 'kyc_public_function_primar', 'kyc_public_function_partid', 'kyc_public_function_consilier', 'kyc_transaction_personal', 'kyc_transaction_family', 'kyc_transaction_company', 'kyc_transaction_resale', 'kyc_transaction_commercial', 'kyc_transaction_transfer', 'kyc_funds_salary', 'kyc_funds_dividends', 'kyc_funds_loan', 'kyc_funds_business', 'kyc_funds_inheritance', 'kyc_funds_donations'];
 		$kyc_default_checked_fields = ['kyc_doc_buletin', 'kyc_no_public_function', 'kyc_transaction_personal', 'kyc_funds_salary'];
@@ -324,30 +337,31 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 		unset($inf_ar, $qu);
 		//__________________
 		
-		//ADD INFO TO CTLG
-		// Ensure we have a valid user ID before inserting
-		if ($u_id == 0 && $u_cf_idno != 0) {
-			$pdo = $db->prepare('SELECT `id` FROM '.$prefx.'_docs_u WHERE `cf_idno`=:cf_idno LIMIT 1');
-			$pdo->execute(['cf_idno' => $u_cf_idno]);
-			$user_check = $pdo->fetch(PDO::FETCH_ASSOC);
-			if ($user_check) {
-				$u_id = $user_check['id'];
+		if (!isset($_POST['doc_view']) || $_POST['doc_view'] != '1') {
+			// Ensure we have a valid user ID before inserting
+			if ($u_id == 0 && $u_cf_idno != 0) {
+				$pdo = $db->prepare('SELECT `id` FROM '.$prefx.'_docs_u WHERE `cf_idno`=:cf_idno LIMIT 1');
+				$pdo->execute(['cf_idno' => $u_cf_idno]);
+				$user_check = $pdo->fetch(PDO::FETCH_ASSOC);
+				if ($user_check) {
+					$u_id = $user_check['id'];
+				}
 			}
-		}
-		$pdo = $db->prepare('
-			INSERT INTO '.$prefx.'_docs_ctlg (`gr`, `f`, `abr`, `y`, `q`, `n`, `cd`, `inf`, `u`, `date`, `adm`, `crtd`)
-			VALUES (:gr, :f, :abr, :y, :q, :n, :cd, :inf, :u, :date, :adm, :crtd)
-		');
-		        // Determine creator (adm) from session primarily; fallback to cookie if necessary
-        $adm_creator = isset($_SESSION) && isset($_SESSION['user_id']) && $_SESSION['user_id'] !== '' ? $_SESSION['user_id'] : ( $_COOKIE['usr_id'] ?? 0 );
-        $pdo->execute([ 'gr'=>$_POST['doc_gr'], 'f'=>$_POST['doc_f'], 'abr'=>$abr, 'y'=>$cont_y, 'q'=>$cont_q, 'n'=>$cont_n, 'cd'=>$it_cd, 'inf'=>$inf, 'u'=>$u_id, 'date'=>$doc_date, 'adm'=>$adm_creator, 'crtd'=>date('Y-m-d') ]);
-		
-		if ($info_exist == 1){
-			$pdo = $db->prepare('UPDATE '.$prefx.'_info SET `value`=`value`+1 WHERE `name`=:name AND `x1`=:x1 AND `x2`=:x2 ');
-			$pdo->execute([ 'name'=>'docs', 'x1'=>$_POST['doc_gr'], 'x2'=>$_POST['doc_f'] ]);
-		} else {
-			$pdo = $db->prepare('INSERT INTO '.$prefx.'_info (`name`, `xtr`, `x1`, `x2`, `x3`, `value`) VALUES (:name, :xtr, :x1, :x2, :x3, :value)');
-			$pdo->execute([ 'name'=>'docs', 'xtr'=>'', 'x1'=>$_POST['doc_gr'], 'x2'=>$_POST['doc_f'], 'x3'=>'', 'value'=>1 ]);
+			$pdo = $db->prepare('
+				INSERT INTO '.$prefx.'_docs_ctlg (`gr`, `f`, `abr`, `y`, `q`, `n`, `cd`, `inf`, `u`, `date`, `adm`, `crtd`)
+				VALUES (:gr, :f, :abr, :y, :q, :n, :cd, :inf, :u, :date, :adm, :crtd)
+			');
+			// Determine creator (adm) from session primarily; fallback to cookie if necessary
+			$adm_creator = isset($_SESSION) && isset($_SESSION['user_id']) && $_SESSION['user_id'] !== '' ? $_SESSION['user_id'] : ( $_COOKIE['usr_id'] ?? 0 );
+			$pdo->execute([ 'gr'=>$_POST['doc_gr'], 'f'=>$_POST['doc_f'], 'abr'=>$abr, 'y'=>$cont_y, 'q'=>$cont_q, 'n'=>$cont_n, 'cd'=>$it_cd, 'inf'=>$inf, 'u'=>$u_id, 'date'=>$doc_date, 'adm'=>$adm_creator, 'crtd'=>date('Y-m-d') ]);
+
+			if ($info_exist == 1){
+				$pdo = $db->prepare('UPDATE '.$prefx.'_info SET `value`=`value`+1 WHERE `name`=:name AND `x1`=:x1 AND `x2`=:x2 ');
+				$pdo->execute([ 'name'=>'docs', 'x1'=>$_POST['doc_gr'], 'x2'=>$_POST['doc_f'] ]);
+			} else {
+				$pdo = $db->prepare('INSERT INTO '.$prefx.'_info (`name`, `xtr`, `x1`, `x2`, `x3`, `value`) VALUES (:name, :xtr, :x1, :x2, :x3, :value)');
+				$pdo->execute([ 'name'=>'docs', 'xtr'=>'', 'x1'=>$_POST['doc_gr'], 'x2'=>$_POST['doc_f'], 'x3'=>'', 'value'=>1 ]);
+			}
 		}
 	}
 }
