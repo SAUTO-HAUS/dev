@@ -17,11 +17,55 @@ if (isset($GLOBALS['page_is_404']) && $GLOBALS['page_is_404'] === true) {
 .testdrive-page {
     margin: 1.5rem 0 2.5rem;
     display: grid;
-    gap: 2rem;
+    gap: 2.5rem;
 }
 .testdrive-hero {
+    background: radial-gradient(circle at top left, rgba(248, 244, 236, 0.9), rgba(233, 236, 240, 0.6) 55%, rgba(245, 246, 247, 0.9));
+    border-radius: 24px;
+    padding: 2.5rem;
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 18px 40px rgba(15, 17, 20, 0.08);
+}
+.testdrive-hero::after {
+    content: '';
+    position: absolute;
+    right: -20%;
+    top: -35%;
+    width: 60%;
+    height: 120%;
+    background: radial-gradient(circle, rgba(255, 200, 82, 0.18), transparent 70%);
+    pointer-events: none;
+}
+.testdrive-hero__content {
     display: grid;
     gap: 0.75rem;
+    position: relative;
+    z-index: 1;
+}
+.testdrive-hero__title {
+    font-size: clamp(1.8rem, 2.8vw, 2.6rem);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: #111;
+}
+.testdrive-hero__media {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    justify-items: end;
+}
+.testdrive-hero__media img {
+    width: min(100%, 420px);
+    border-radius: 18px;
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.2);
+    object-fit: cover;
+    aspect-ratio: 4 / 3;
 }
 .testdrive-hero__lead {
     font-size: 1.05rem;
@@ -42,42 +86,106 @@ if (isset($GLOBALS['page_is_404']) && $GLOBALS['page_is_404'] === true) {
     text-transform: uppercase;
     letter-spacing: 0.02em;
 }
-.testdrive-list {
+.testdrive-features {
     margin: 0;
-    padding-left: 1.2rem;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+.testdrive-card {
+    background: #ffffff;
+    border-radius: 18px;
+    padding: 1rem 1.1rem;
     display: grid;
     gap: 0.5rem;
+    box-shadow: 0 12px 24px rgba(15, 17, 20, 0.08);
+    border: 1px solid rgba(15, 17, 20, 0.05);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.testdrive-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 32px rgba(15, 17, 20, 0.12);
+}
+.testdrive-card__icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #f2c94c;
+    display: grid;
+    place-items: center;
+    color: #111;
+}
+.testdrive-card__text {
+    font-size: 0.95rem;
+    margin: 0;
+    color: #1c2127;
 }
 .testdrive-steps {
     margin: 0;
-    padding-left: 1.4rem;
+    padding: 0;
+    list-style: none;
     display: grid;
-    gap: 0.6rem;
+    gap: 0.9rem;
+}
+.testdrive-step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.9rem;
+    align-items: start;
+    padding: 0.85rem 1rem;
+    border-radius: 16px;
+    background: #f7f7f8;
+    border: 1px solid rgba(15, 17, 20, 0.05);
+}
+.testdrive-step__index {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #111;
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-weight: 600;
+}
+.testdrive-step__text {
+    margin: 0;
+    color: #1c2127;
+    line-height: 1.45;
 }
 .testdrive-trust {
     background: #f6f7f8;
-    border-radius: 16px;
-    padding: 1.25rem 1.5rem;
+    border-radius: 18px;
+    padding: 1.5rem 1.8rem;
     display: grid;
     gap: 0.6rem;
 }
 .testdrive-trust p {
     margin: 0;
 }
+.testdrive-trust__headline {
+    font-weight: 600;
+    color: #111;
+}
+.testdrive-trust__subtitle {
+    color: #32363d;
+}
 .td-game {
     background: #0f1114;
     color: #f5f5f5;
-    border-radius: 18px;
-    padding: 1.25rem;
+    border-radius: 24px;
+    padding: 1.5rem;
     display: grid;
-    gap: 1rem;
+    gap: 1.25rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
 }
 .td-game__header {
     display: grid;
     gap: 0.5rem;
 }
 .td-game__title {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
     margin: 0;
 }
 .td-game__hint {
@@ -87,18 +195,44 @@ if (isset($GLOBALS['page_is_404']) && $GLOBALS['page_is_404'] === true) {
 }
 .td-game__wrap {
     background: #1b1f24;
-    border-radius: 14px;
-    padding: 0.75rem;
+    border-radius: 18px;
+    padding: 1rem;
     display: grid;
-    gap: 0.75rem;
+    gap: 1rem;
+}
+.td-game__canvas-wrap {
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
 }
 .td-game__canvas {
     width: 100%;
-    height: 360px;
-    border-radius: 12px;
+    height: 420px;
     background: #13161a;
     display: block;
     touch-action: none;
+}
+.td-game__overlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    text-align: center;
+    padding: 1.5rem;
+    background: linear-gradient(135deg, rgba(15, 17, 20, 0.65), rgba(15, 17, 20, 0.4));
+    color: #f5f5f5;
+    gap: 0.5rem;
+}
+.td-game__overlay-title {
+    font-size: 1.3rem;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.td-game__overlay-text {
+    margin: 0;
+    color: #d4d7db;
+    font-size: 0.95rem;
 }
 .td-game__stats {
     display: flex;
@@ -106,6 +240,21 @@ if (isset($GLOBALS['page_is_404']) && $GLOBALS['page_is_404'] === true) {
     gap: 0.75rem 1.5rem;
     font-size: 0.95rem;
     color: #c9ced4;
+}
+.td-game__stat {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+.td-game__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(245, 245, 245, 0.08);
+    font-size: 0.85rem;
+    color: #f5f5f5;
 }
 .td-game__buttons {
     display: flex;
@@ -116,10 +265,15 @@ if (isset($GLOBALS['page_is_404']) && $GLOBALS['page_is_404'] === true) {
     background: #f5f5f5;
     border: 0;
     color: #111;
-    padding: 0.6rem 1.2rem;
+    padding: 0.7rem 1.4rem;
     border-radius: 999px;
     font-weight: 600;
     cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+.td-game__button:hover {
+    transform: translateY(-2px);
 }
 .td-game__button--secondary {
     background: #2a2f36;
@@ -129,9 +283,57 @@ if (isset($GLOBALS['page_is_404']) && $GLOBALS['page_is_404'] === true) {
     font-size: 0.95rem;
     color: #d4d7db;
 }
+.td-game__result-overlay {
+    position: absolute;
+    inset: 0;
+    display: none;
+    place-items: center;
+    text-align: center;
+    padding: 1.5rem;
+    background: rgba(15, 17, 20, 0.8);
+    color: #f5f5f5;
+    gap: 0.6rem;
+}
+.td-game__result-overlay.is-visible {
+    display: grid;
+}
+.td-game__result-title {
+    font-size: 1.2rem;
+    margin: 0;
+}
+.td-game__result-meta {
+    color: #d4d7db;
+    font-size: 0.9rem;
+}
+.td-game__result-message {
+    font-size: 0.95rem;
+    margin: 0;
+    color: #f5f5f5;
+}
+.td-game__result-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.td-reveal {
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.td-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
 @media (max-width: 768px) {
+    .testdrive-hero {
+        padding: 1.8rem;
+    }
+    .testdrive-hero__media {
+        justify-items: start;
+    }
     .td-game__canvas {
-        height: 280px;
+        height: 320px;
     }
     .testdrive-section__title {
         font-size: 1.15rem;
@@ -304,64 +506,133 @@ if ($t_mp[3] == 'insurance') {
 	                                include(_SITE_PAGE.'/new_pages/sale/sale.php');
 	                        } else {
 	                                $lang_code = isset($_COOKIE['lang']) ? $_COOKIE['lang'] : 'ro';
-	                                if ($t_mp[3] == 'testdrive' && $lang_code == 'ru') {
-	                                    $serv_img = $serv_arr[$t_mp[3]]['img'];
-	                                    $serv_h1 = $sa['meta']['h1'];
-	                                    echo <<<HTML
-	                                    <img class="m_img" src="/media/images/site/v2/{$serv_img}" />
-	                                    <h1>{$serv_h1}</h1>
+	                            if ($t_mp[3] == 'testdrive' && $lang_code == 'ru') {
+	                                    echo <<<'HTML'
 	                                    <div class="testdrive-page">
-	                                        <section class="testdrive-hero">
-	                                            <p class="testdrive-hero__lead">Сомневаешься между моделями? Хочешь понять посадку, обзорность, динамику, багажник, тормоза? Это решается за 15 минут на реальной дороге — без гаданий и «потом разберусь».</p>
-	                                            <p class="testdrive-hero__cta">Записывайся и приезжай — мы подготовим авто и маршрут.</p>
+	                                        <section class="testdrive-hero td-reveal">
+	                                            <div class="testdrive-hero__content">
+	                                                <h1 class="testdrive-hero__title">Твой будущий автомобиль ждет тебя на тест-драйве</h1>
+	                                                <p class="testdrive-hero__lead">Перестань гадать по фото и отзывам. 10–20 минут за рулем — и ты понимаешь посадку, обзорность, динамику и комфорт.</p>
+	                                                <p class="testdrive-hero__cta">Запишись на удобное время — подготовим автомобиль и маршрут.</p>
+	                                            </div>
+	                                            <div class="testdrive-hero__media">
+	                                                <img src="/media/images/site/services/testdrive-hero.jpg" loading="lazy" alt="Автомобиль SAUTO на дороге" />
+	                                            </div>
 	                                        </section>
-	                                        <section class="testdrive-section">
+	                                        <section class="testdrive-section td-reveal">
 	                                            <h2 class="testdrive-section__title">Зачем тест-драйв</h2>
-	                                            <ul class="testdrive-list">
-	                                                <li>Посадка и удобство: руль, сиденье, зеркала.</li>
-	                                                <li>Обзорность и габариты: парковка без мата.</li>
-	                                                <li>Подвеска: как переживает молдавскую реальность.</li>
-	                                                <li>Динамика и тормоза в живом режиме.</li>
-	                                                <li>Шумоизоляция без «на словах».</li>
-	                                                <li>Багажник вживую, а не по цифрам.</li>
-	                                                <li>Понимание «мое / не мое» за 10 минут.</li>
+	                                            <ul class="testdrive-features">
+	                                                <li class="testdrive-card">
+	                                                    <span class="testdrive-card__icon">
+	                                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M12 5v14"/></svg>
+	                                                    </span>
+	                                                    <p class="testdrive-card__text">Посадка и удобство</p>
+	                                                </li>
+	                                                <li class="testdrive-card">
+	                                                    <span class="testdrive-card__icon">
+	                                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="7"/><path d="M12 5v4l3 3"/></svg>
+	                                                    </span>
+	                                                    <p class="testdrive-card__text">Обзорность и габариты</p>
+	                                                </li>
+	                                                <li class="testdrive-card">
+	                                                    <span class="testdrive-card__icon">
+	                                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 16l4-4 4 4 4-4 4 4"/></svg>
+	                                                    </span>
+	                                                    <p class="testdrive-card__text">Подвеска на реальных дорогах</p>
+	                                                </li>
+	                                                <li class="testdrive-card">
+	                                                    <span class="testdrive-card__icon">
+	                                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 14h7l3-4 6 8"/></svg>
+	                                                    </span>
+	                                                    <p class="testdrive-card__text">Динамика и тормоза</p>
+	                                                </li>
+	                                                <li class="testdrive-card">
+	                                                    <span class="testdrive-card__icon">
+	                                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 8h16M4 16h10"/></svg>
+	                                                    </span>
+	                                                    <p class="testdrive-card__text">Шум и комфорт</p>
+	                                                </li>
+	                                                <li class="testdrive-card">
+	                                                    <span class="testdrive-card__icon">
+	                                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="7" width="16" height="10" rx="2"/></svg>
+	                                                    </span>
+	                                                    <p class="testdrive-card__text">Багажник и мелочи</p>
+	                                                </li>
+	                                                <li class="testdrive-card">
+	                                                    <span class="testdrive-card__icon">
+	                                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 6v12M6 12h12"/></svg>
+	                                                    </span>
+	                                                    <p class="testdrive-card__text">«Мое/не мое» за 10 минут</p>
+	                                                </li>
 	                                            </ul>
 	                                        </section>
-	                                        <section class="testdrive-section">
+	                                        <section class="testdrive-section td-reveal">
 	                                            <h2 class="testdrive-section__title">Как это проходит</h2>
 	                                            <ol class="testdrive-steps">
-	                                                <li>Выбираешь авто (или мы рекомендуем 2–3 варианта).</li>
-	                                                <li>Запись на удобное время.</li>
-	                                                <li>Приезжаешь в SAUTO, короткий инструктаж.</li>
-	                                                <li>Маршрут 10–20 минут (город + кусочек нормальной дороги).</li>
-	                                                <li>Возвращаешься — отвечаем на вопросы, сравниваем варианты.</li>
+	                                                <li class="testdrive-step">
+	                                                    <span class="testdrive-step__index">1</span>
+	                                                    <p class="testdrive-step__text">Выбираешь авто (или мы предложим варианты).</p>
+	                                                </li>
+	                                                <li class="testdrive-step">
+	                                                    <span class="testdrive-step__index">2</span>
+	                                                    <p class="testdrive-step__text">Записываешься на удобное время.</p>
+	                                                </li>
+	                                                <li class="testdrive-step">
+	                                                    <span class="testdrive-step__index">3</span>
+	                                                    <p class="testdrive-step__text">Приезжаешь — быстрый инструктаж.</p>
+	                                                </li>
+	                                                <li class="testdrive-step">
+	                                                    <span class="testdrive-step__index">4</span>
+	                                                    <p class="testdrive-step__text">Едешь 10–20 минут по маршруту.</p>
+	                                                </li>
+	                                                <li class="testdrive-step">
+	                                                    <span class="testdrive-step__index">5</span>
+	                                                    <p class="testdrive-step__text">Возвращаешься — обсуждаем, сравниваем, отвечаем.</p>
+	                                                </li>
 	                                            </ol>
 	                                        </section>
-	                                        <section class="testdrive-trust">
-	                                            <p>Подскажем по выбору без давления. Тест-драйв — чтобы ты сам понял.</p>
-	                                            <p>Никаких обещаний «лучше всех». Просто честно и по делу.</p>
+	                                        <section class="testdrive-trust td-reveal">
+	                                            <p class="testdrive-trust__headline">Без давления и уговоров. Тест-драйв нужен, чтобы ты сам понял.</p>
+	                                            <p class="testdrive-trust__subtitle">Мы поможем сравнить варианты, но решение всегда за тобой.</p>
 	                                        </section>
-	                                        <section class="td-game" aria-labelledby="virtual-testdrive-title">
+	                                        <section class="td-game td-reveal" aria-labelledby="virtual-testdrive-title">
 	                                            <div class="td-game__header">
-	                                                <h2 class="td-game__title" id="virtual-testdrive-title">Виртуальный тест-драйв</h2>
-	                                                <p class="td-game__hint">Проведи машинку до финиша — мышью или пальцем. Собери минимум 2 значка.</p>
+	                                                <h2 class="td-game__title" id="virtual-testdrive-title">Мини-игра: виртуальный тест-драйв</h2>
+	                                                <p class="td-game__hint">Проверь тест-драйв до тест-драйва. 30 секунд — и ты уже в теме.</p>
 	                                            </div>
 	                                            <div class="td-game__wrap">
-	                                                <canvas class="td-game__canvas" id="testdrive-canvas"></canvas>
+	                                                <div class="td-game__canvas-wrap">
+	                                                    <canvas class="td-game__canvas" id="testdrive-canvas"></canvas>
+	                                                    <div class="td-game__overlay" id="td-overlay">
+	                                                        <h3 class="td-game__overlay-title">Готов к заезду?</h3>
+	                                                        <p class="td-game__overlay-text">Веди машину влево-вправо мышью или пальцем. Собирай значки, избегай конусов.</p>
+	                                                    </div>
+	                                                    <div class="td-game__result-overlay" id="td-result-overlay">
+	                                                        <h3 class="td-game__result-title">Заезд завершен</h3>
+	                                                        <div class="td-game__result-meta" id="td-result-meta"></div>
+	                                                        <p class="td-game__result-message" id="td-result-message"></p>
+	                                                        <div class="td-game__result-actions">
+	                                                            <button class="td-game__button" id="td-play-again" type="button">Заново</button>
+	                                                        </div>
+	                                                    </div>
+	                                                </div>
 	                                                <div class="td-game__stats">
-	                                                    <div>Время: <span id="td-time">0.0</span> сек</div>
-	                                                    <div>Ошибки: <span id="td-errors">0</span></div>
-	                                                    <div>Значки: <span id="td-pickups">0</span>/3</div>
+	                                                    <div class="td-game__stat">Время: <span id="td-time">0.0</span> сек</div>
+	                                                    <div class="td-game__stat">Ошибки: <span id="td-errors">0</span>/3</div>
+	                                                    <div class="td-game__stat">Очки: <span id="td-score">0</span></div>
+	                                                    <div class="td-game__badge">Руль <span id="td-badge-steer">0</span></div>
+	                                                    <div class="td-game__badge">Тормоз <span id="td-badge-brake">0</span></div>
+	                                                    <div class="td-game__badge">Багажник <span id="td-badge-trunk">0</span></div>
 	                                                </div>
 	                                                <div class="td-game__buttons">
 	                                                    <button class="td-game__button" id="td-start" type="button">Старт</button>
 	                                                    <button class="td-game__button td-game__button--secondary" id="td-restart" type="button">Заново</button>
 	                                                </div>
-	                                                <div class="td-game__result" id="td-result">Совет: на мобильном можно вести пальцем прямо по трассе.</div>
+	                                                <div class="td-game__result" id="td-result">Совет: на мобильном веди машину пальцем прямо по трассе.</div>
 	                                            </div>
 	                                        </section>
-	                                        <section class="testdrive-section">
-	                                            <p>Ок, виртуально ты доехал. В реале интереснее — записывайся на тест-драйв через кнопки сайта или контакты.</p>
+	                                        <section class="testdrive-section td-reveal">
+	                                            <p>Ок, виртуально ты доехал. В реале будет интереснее — приезжай на тест-драйв и почувствуй разницу.</p>
 	                                        </section>
 	                                    </div>
 	                                    <script>
@@ -371,47 +642,87 @@ if ($t_mp[3] == 'insurance') {
 	                                        const ctx = canvas.getContext('2d');
 	                                        const timeEl = document.getElementById('td-time');
 	                                        const errorsEl = document.getElementById('td-errors');
-	                                        const pickupsEl = document.getElementById('td-pickups');
+	                                        const scoreEl = document.getElementById('td-score');
+	                                        const badgeSteerEl = document.getElementById('td-badge-steer');
+	                                        const badgeBrakeEl = document.getElementById('td-badge-brake');
+	                                        const badgeTrunkEl = document.getElementById('td-badge-trunk');
 	                                        const resultEl = document.getElementById('td-result');
+	                                        const overlayEl = document.getElementById('td-overlay');
+	                                        const resultOverlayEl = document.getElementById('td-result-overlay');
+	                                        const resultMetaEl = document.getElementById('td-result-meta');
+	                                        const resultMessageEl = document.getElementById('td-result-message');
+	                                        const playAgainBtn = document.getElementById('td-play-again');
 	                                        const startBtn = document.getElementById('td-start');
 	                                        const restartBtn = document.getElementById('td-restart');
+
+	                                        const trackEvent = (name, params = {}) => {
+	                                            if (window.yaCounter87984800 && typeof window.yaCounter87984800.reachGoal === 'function') {
+	                                                window.yaCounter87984800.reachGoal(name, params);
+	                                            }
+	                                            if (window.dataLayer && Array.isArray(window.dataLayer)) {
+	                                                window.dataLayer.push({ event: name, ...params });
+	                                            }
+	                                        };
+
+	                                        const successMessages = [
+	                                            'Ок, виртуально ты доехал. В реале будет интереснее — приезжай на тест-драйв.',
+	                                            '0 ошибок — ты из тех, кто паркуется с первого раза. Подозрительно.',
+	                                            'Есть касания — норм. Главное, что в реале бампер будет не пиксельный.',
+	                                            'Руль, тормоз, багажник — ты прошел базовый курс. Дальше — настоящий тест-драйв.',
+	                                            'Хорош. Теперь проверь посадку и обзорность вживую — это решает.',
+	                                            'Заезд чистый. Теперь пора услышать настоящий звук двигателя.',
+	                                            'Уверенно! В реальности будет еще понятнее — особенно на поворотах.',
+	                                            'Легко и по делу. Вживую эмоций будет больше.',
+	                                            'Маршрут пройден. Осталось почувствовать машину руками.',
+	                                            'Скорость есть. Теперь — тест-драйв в реальном городе.'
+	                                        ];
+
+	                                        const failMessages = [
+	                                            'Кажется, тебе нужен тест-драйв особенно срочно.',
+	                                            'Это была тренировка характера. В реале будет проще.',
+	                                            'Ничего, у нас конусы настоящие. Но аккуратные.',
+	                                            'Было жарко. Вживую подскажем и поможем привыкнуть.',
+	                                            'Пару касаний — и уже есть повод попробовать реальный тест-драйв.'
+	                                        ];
 
 	                                        const state = {
 	                                            running: false,
 	                                            finished: false,
 	                                            startTime: 0,
 	                                            lastTime: 0,
+	                                            elapsed: 0,
 	                                            errors: 0,
-	                                            collected: 0,
-	                                            collisionCooldown: 0,
+	                                            score: 0,
 	                                            pointerActive: false,
-	                                            pointer: { x: 0, y: 0 }
-	                                        };
-
-	                                        const track = {
-	                                            outerPadding: 20,
-	                                            innerPadding: 120,
-	                                            finishWidth: 80,
-	                                            finishHeight: 20
+	                                            pointerX: 0,
+	                                            shake: 0,
+	                                            flash: 0,
+	                                            lineOffset: 0,
+	                                            nextSpawn: 0,
+	                                            collisionCooldown: 0,
+	                                            badges: {
+	                                                steer: 0,
+	                                                brake: 0,
+	                                                trunk: 0
+	                                            }
 	                                        };
 
 	                                        const car = {
 	                                            x: 0,
 	                                            y: 0,
-	                                            angle: 0,
-	                                            speed: 0,
-	                                            maxSpeed: 3.2
+	                                            width: 40,
+	                                            height: 70,
+	                                            speed: 0
 	                                        };
 
-	                                        const pickups = [
-	                                            { x: 0, y: 0, collected: false, label: 'Руль' },
-	                                            { x: 0, y: 0, collected: false, label: 'Тормоз' },
-	                                            { x: 0, y: 0, collected: false, label: 'Багажник' }
-	                                        ];
-
-	                                        const cones = [];
-
+	                                        const obstacles = [];
+	                                        const pickups = [];
 	                                        const keys = new Set();
+
+	                                        const config = {
+	                                            duration: 30,
+	                                            maxErrors: 3
+	                                        };
 
 	                                        const resize = () => {
 	                                            const ratio = window.devicePixelRatio || 1;
@@ -419,89 +730,130 @@ if ($t_mp[3] == 'insurance') {
 	                                            canvas.width = rect.width * ratio;
 	                                            canvas.height = rect.height * ratio;
 	                                            ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-	                                            setupTrack();
+	                                            resetGame();
 	                                        };
 
-	                                        const setupTrack = () => {
-	                                            const width = canvas.getBoundingClientRect().width;
-	                                            const height = canvas.getBoundingClientRect().height;
-	                                            car.x = track.outerPadding + 40;
-	                                            car.y = height - track.outerPadding - 40;
-	                                            car.angle = -Math.PI / 2;
-	                                            car.speed = 0;
-	                                            state.errors = 0;
-	                                            state.collected = 0;
-	                                            state.collisionCooldown = 0;
-	                                            state.finished = false;
+	                                        const resetGame = () => {
 	                                            state.running = false;
+	                                            state.finished = false;
 	                                            state.startTime = 0;
 	                                            state.lastTime = 0;
-	                                            pickups.forEach((item, index) => {
-	                                                item.collected = false;
-	                                                item.x = track.outerPadding + 80 + index * 140;
-	                                                item.y = track.outerPadding + 80 + index * 40;
-	                                            });
-	                                            cones.length = 0;
-	                                            const conePoints = [
-	                                                [width * 0.45, height * 0.25],
-	                                                [width * 0.6, height * 0.45],
-	                                                [width * 0.35, height * 0.6],
-	                                                [width * 0.7, height * 0.7]
-	                                            ];
-	                                            conePoints.forEach(([x, y]) => cones.push({ x, y, r: 12 }));
+	                                            state.elapsed = 0;
+	                                            state.errors = 0;
+	                                            state.score = 0;
+	                                            state.lineOffset = 0;
+	                                            state.nextSpawn = 0;
+	                                            state.collisionCooldown = 0;
+	                                            state.badges.steer = 0;
+	                                            state.badges.brake = 0;
+	                                            state.badges.trunk = 0;
+	                                            obstacles.length = 0;
+	                                            pickups.length = 0;
+	                                            const { width, height } = getCanvasSize();
+	                                            car.x = width / 2;
+	                                            car.y = height - 90;
+	                                            car.speed = 0;
+	                                            overlayEl.style.display = 'grid';
+	                                            resultOverlayEl.classList.remove('is-visible');
+	                                            resultEl.textContent = 'Совет: на мобильном веди машину пальцем прямо по трассе.';
 	                                            updateUI();
 	                                            draw();
 	                                        };
 
+	                                        const getCanvasSize = () => ({
+	                                            width: canvas.getBoundingClientRect().width,
+	                                            height: canvas.getBoundingClientRect().height
+	                                        });
+
 	                                        const updateUI = () => {
+	                                            timeEl.textContent = state.elapsed.toFixed(1);
 	                                            errorsEl.textContent = state.errors;
-	                                            pickupsEl.textContent = state.collected;
+	                                            scoreEl.textContent = state.score;
+	                                            badgeSteerEl.textContent = state.badges.steer;
+	                                            badgeBrakeEl.textContent = state.badges.brake;
+	                                            badgeTrunkEl.textContent = state.badges.trunk;
 	                                        };
 
 	                                        const start = () => {
 	                                            if (state.running) return;
+	                                            if (state.finished) {
+	                                                resetGame();
+	                                            }
 	                                            state.running = true;
 	                                            state.finished = false;
 	                                            state.startTime = performance.now();
 	                                            state.lastTime = state.startTime;
-	                                            resultEl.textContent = 'Держись трассы и собирай значки.';
+	                                            overlayEl.style.display = 'none';
+	                                            resultOverlayEl.classList.remove('is-visible');
+	                                            trackEvent('testdrive_game_start');
 	                                        };
 
-	                                        const reset = () => {
-	                                            setupTrack();
-	                                            resultEl.textContent = 'Совет: на мобильном можно вести пальцем прямо по трассе.';
-	                                        };
-
-	                                        const finish = () => {
+	                                        const finish = (success) => {
 	                                            state.running = false;
 	                                            state.finished = true;
-	                                            const success = state.errors <= 3;
-	                                            if (success) {
-	                                                resultEl.textContent = 'Ты аккуратный водитель. В реале станет еще понятнее — записывайся на тест-драйв.';
-	                                            } else {
-	                                                resultEl.textContent = 'Тем более нужен тест-драйв — проверим, как оно в реальности.';
-	                                            }
+	                                            const messagePool = success ? successMessages : failMessages;
+	                                            const message = messagePool[Math.floor(Math.random() * messagePool.length)];
+	                                            resultMessageEl.textContent = message;
+	                                            resultMetaEl.textContent = `Время: ${state.elapsed.toFixed(1)} сек · Ошибки: ${state.errors} · Очки: ${state.score}`;
+	                                            resultOverlayEl.classList.add('is-visible');
+	                                            overlayEl.style.display = 'none';
+	                                            trackEvent('testdrive_game_finish', {
+	                                                time: state.elapsed.toFixed(1),
+	                                                errors: state.errors,
+	                                                score: state.score
+	                                            });
 	                                        };
 
-	                                        const checkRoadCollision = () => {
-	                                            const width = canvas.getBoundingClientRect().width;
-	                                            const height = canvas.getBoundingClientRect().height;
-	                                            const outer = track.outerPadding;
-	                                            const inner = track.innerPadding;
-	                                            const insideOuter = car.x > outer && car.x < width - outer && car.y > outer && car.y < height - outer;
-	                                            const insideInner = car.x > inner && car.x < width - inner && car.y > inner && car.y < height - inner;
-	                                            return !insideOuter || insideInner;
+	                                        const getLevelConfig = () => {
+	                                            if (state.elapsed < 10) {
+	                                                return { speed: 3.2, spawn: 900 };
+	                                            }
+	                                            if (state.elapsed < 20) {
+	                                                return { speed: 4.1, spawn: 650 };
+	                                            }
+	                                            return { speed: 5, spawn: 520 };
+	                                        };
+
+	                                        const spawnObstacle = () => {
+	                                            const { width } = getCanvasSize();
+	                                            const roadWidth = width * 0.62;
+	                                            const roadLeft = (width - roadWidth) / 2;
+	                                            const x = roadLeft + 20 + Math.random() * (roadWidth - 40);
+	                                            obstacles.push({
+	                                                x,
+	                                                y: -40,
+	                                                width: 30,
+	                                                height: 40,
+	                                                type: Math.random() > 0.5 ? 'cone' : 'barrier'
+	                                            });
+	                                        };
+
+	                                        const spawnPickup = () => {
+	                                            const types = ['steer', 'brake', 'trunk'];
+	                                            const { width } = getCanvasSize();
+	                                            const roadWidth = width * 0.62;
+	                                            const roadLeft = (width - roadWidth) / 2;
+	                                            const type = types[Math.floor(Math.random() * types.length)];
+	                                            pickups.push({
+	                                                x: roadLeft + 30 + Math.random() * (roadWidth - 60),
+	                                                y: -30,
+	                                                size: 18,
+	                                                type
+	                                            });
 	                                        };
 
 	                                        const handleCollision = () => {
 	                                            const now = performance.now();
 	                                            if (state.collisionCooldown > now) return;
-	                                            state.collisionCooldown = now + 500;
+	                                            state.collisionCooldown = now + 400;
 	                                            state.errors += 1;
-	                                            car.speed *= 0.4;
-	                                            updateUI();
+	                                            state.shake = 6;
+	                                            state.flash = 1;
 	                                            if (navigator.vibrate) {
-	                                                navigator.vibrate(50);
+	                                                navigator.vibrate(30);
+	                                            }
+	                                            if (state.errors >= config.maxErrors) {
+	                                                finish(false);
 	                                            }
 	                                        };
 
@@ -510,137 +862,207 @@ if ($t_mp[3] == 'insurance') {
 	                                                draw();
 	                                                return;
 	                                            }
-	                                            const delta = (timestamp - state.lastTime) / 16.6;
+
+	                                            const delta = Math.min(1.6, (timestamp - state.lastTime) / 16.6);
 	                                            state.lastTime = timestamp;
-	                                            const elapsed = (timestamp - state.startTime) / 1000;
-	                                            timeEl.textContent = elapsed.toFixed(1);
+	                                            state.elapsed = (timestamp - state.startTime) / 1000;
+	                                            const level = getLevelConfig();
 
-	                                            const steerSpeed = 0.05 * delta;
-	                                            const accel = 0.08 * delta;
-
-	                                            if (keys.has('ArrowLeft') || keys.has('a')) {
-	                                                car.angle -= steerSpeed;
-	                                            }
-	                                            if (keys.has('ArrowRight') || keys.has('d')) {
-	                                                car.angle += steerSpeed;
-	                                            }
-	                                            if (keys.has('ArrowUp') || keys.has('w')) {
-	                                                car.speed = Math.min(car.maxSpeed, car.speed + accel);
-	                                            }
-	                                            if (keys.has('ArrowDown') || keys.has('s')) {
-	                                                car.speed = Math.max(-car.maxSpeed / 2, car.speed - accel);
+	                                            if (state.elapsed >= config.duration) {
+	                                                finish(true);
+	                                                return;
 	                                            }
 
-	                                            if (state.pointerActive) {
-	                                                const dx = state.pointer.x - car.x;
-	                                                const dy = state.pointer.y - car.y;
-	                                                const targetAngle = Math.atan2(dy, dx);
-	                                                const angleDiff = Math.atan2(Math.sin(targetAngle - car.angle), Math.cos(targetAngle - car.angle));
-	                                                car.angle += angleDiff * 0.08;
-	                                                if (Math.hypot(dx, dy) > 10) {
-	                                                    car.speed = Math.min(car.maxSpeed, car.speed + accel);
+	                                            if (timestamp > state.nextSpawn) {
+	                                                spawnObstacle();
+	                                                if (Math.random() > 0.55) {
+	                                                    spawnPickup();
 	                                                }
+	                                                state.nextSpawn = timestamp + level.spawn;
 	                                            }
 
-	                                            car.speed *= 0.98;
-	                                            car.x += Math.cos(car.angle) * car.speed * 2.4;
-	                                            car.y += Math.sin(car.angle) * car.speed * 2.4;
-
-	                                            if (checkRoadCollision()) {
-	                                                handleCollision();
+	                                            if (keys.has('arrowleft') || keys.has('a')) {
+	                                                car.x -= 6 * delta;
 	                                            }
-	                                            cones.forEach((cone) => {
-	                                                const dist = Math.hypot(car.x - cone.x, car.y - cone.y);
-	                                                if (dist < cone.r + 10) {
+	                                            if (keys.has('arrowright') || keys.has('d')) {
+	                                                car.x += 6 * delta;
+	                                            }
+	                                            if (state.pointerActive) {
+	                                                car.x += (state.pointerX - car.x) * 0.18;
+	                                            }
+
+	                                            const { width, height } = getCanvasSize();
+	                                            const roadWidth = width * 0.62;
+	                                            const roadLeft = (width - roadWidth) / 2;
+	                                            const roadRight = roadLeft + roadWidth;
+	                                            car.x = Math.max(roadLeft + car.width / 2 + 6, Math.min(roadRight - car.width / 2 - 6, car.x));
+	                                            car.y = height - 90;
+
+	                                            const speed = level.speed * delta;
+	                                            state.lineOffset += speed * 6;
+
+	                                            obstacles.forEach((obstacle) => {
+	                                                obstacle.y += speed * 6;
+	                                            });
+	                                            pickups.forEach((pickup) => {
+	                                                pickup.y += speed * 6;
+	                                            });
+
+	                                            while (obstacles.length && obstacles[0].y > height + 60) {
+	                                                obstacles.shift();
+	                                            }
+	                                            while (pickups.length && pickups[0].y > height + 60) {
+	                                                pickups.shift();
+	                                            }
+
+	                                            const carBox = {
+	                                                left: car.x - car.width / 2,
+	                                                right: car.x + car.width / 2,
+	                                                top: car.y - car.height / 2,
+	                                                bottom: car.y + car.height / 2
+	                                            };
+
+	                                            obstacles.forEach((obstacle) => {
+	                                                const hit =
+	                                                    carBox.right > obstacle.x - obstacle.width / 2 &&
+	                                                    carBox.left < obstacle.x + obstacle.width / 2 &&
+	                                                    carBox.bottom > obstacle.y - obstacle.height / 2 &&
+	                                                    carBox.top < obstacle.y + obstacle.height / 2;
+	                                                if (hit) {
 	                                                    handleCollision();
 	                                                }
 	                                            });
 
-	                                            pickups.forEach((item) => {
-	                                                if (item.collected) return;
-	                                                const dist = Math.hypot(car.x - item.x, car.y - item.y);
-	                                                if (dist < 18) {
-	                                                    item.collected = true;
-	                                                    state.collected += 1;
-	                                                    updateUI();
+	                                            pickups.forEach((pickup) => {
+	                                                if (pickup.collected) return;
+	                                                const hit =
+	                                                    carBox.right > pickup.x - pickup.size &&
+	                                                    carBox.left < pickup.x + pickup.size &&
+	                                                    carBox.bottom > pickup.y - pickup.size &&
+	                                                    carBox.top < pickup.y + pickup.size;
+	                                                if (hit) {
+	                                                    pickup.collected = true;
+	                                                    state.score += 120;
+	                                                    state.badges[pickup.type] += 1;
 	                                                }
 	                                            });
 
-	                                            const width = canvas.getBoundingClientRect().width;
-	                                            const finishX = width - track.outerPadding - track.finishWidth - 10;
-	                                            const finishY = track.outerPadding + 10;
-	                                            const inFinish = car.x > finishX && car.x < finishX + track.finishWidth && car.y > finishY && car.y < finishY + track.finishHeight;
-	                                            if (inFinish) {
-	                                                if (state.collected >= 2) {
-	                                                    finish();
-	                                                } else {
-	                                                    resultEl.textContent = 'Собери минимум 2 значка, прежде чем финишировать.';
-	                                                }
-	                                            }
+	                                            state.score = Math.max(0, state.score - Math.floor(delta * 2));
 
+	                                            updateUI();
 	                                            draw();
 	                                        };
 
-	                                        const draw = () => {
-	                                            const width = canvas.getBoundingClientRect().width;
-	                                            const height = canvas.getBoundingClientRect().height;
-	                                            ctx.clearRect(0, 0, width, height);
-	                                            ctx.fillStyle = '#1c2127';
-	                                            ctx.fillRect(0, 0, width, height);
-
-	                                            ctx.fillStyle = '#2b323a';
-	                                            ctx.fillRect(track.outerPadding, track.outerPadding, width - track.outerPadding * 2, height - track.outerPadding * 2);
-
-	                                            ctx.fillStyle = '#1c2127';
-	                                            ctx.fillRect(track.innerPadding, track.innerPadding, width - track.innerPadding * 2, height - track.innerPadding * 2);
-
+	                                        const drawRoadLines = (roadLeft, roadWidth, height) => {
+	                                            const lineHeight = 40;
+	                                            const gap = 30;
+	                                            let y = -lineHeight + (state.lineOffset % (lineHeight + gap));
 	                                            ctx.strokeStyle = '#f2c94c';
 	                                            ctx.lineWidth = 3;
-	                                            ctx.setLineDash([10, 10]);
-	                                            ctx.strokeRect(track.outerPadding + 6, track.outerPadding + 6, width - track.outerPadding * 2 - 12, height - track.outerPadding * 2 - 12);
-	                                            ctx.setLineDash([]);
-
-	                                            const finishX = width - track.outerPadding - track.finishWidth - 10;
-	                                            const finishY = track.outerPadding + 10;
-	                                            ctx.fillStyle = '#4caf50';
-	                                            ctx.fillRect(finishX, finishY, track.finishWidth, track.finishHeight);
-	                                            ctx.fillStyle = '#0f1114';
-	                                            ctx.font = '12px sans-serif';
-	                                            ctx.fillText('ФИНИШ', finishX + 8, finishY + 14);
-
-	                                            cones.forEach((cone) => {
-	                                                ctx.fillStyle = '#ff7a00';
+	                                            while (y < height) {
 	                                                ctx.beginPath();
-	                                                ctx.arc(cone.x, cone.y, cone.r, 0, Math.PI * 2);
-	                                                ctx.fill();
-	                                                ctx.strokeStyle = '#f5f5f5';
-	                                                ctx.lineWidth = 2;
+	                                                ctx.moveTo(roadLeft + roadWidth / 2, y);
+	                                                ctx.lineTo(roadLeft + roadWidth / 2, y + lineHeight);
 	                                                ctx.stroke();
+	                                                y += lineHeight + gap;
+	                                            }
+	                                        };
+
+	                                        const draw = () => {
+	                                            const { width, height } = getCanvasSize();
+	                                            ctx.clearRect(0, 0, width, height);
+
+	                                            ctx.fillStyle = '#0f1114';
+	                                            ctx.fillRect(0, 0, width, height);
+
+	                                            const roadWidth = width * 0.62;
+	                                            const roadLeft = (width - roadWidth) / 2;
+	                                            const roadRight = roadLeft + roadWidth;
+
+	                                            ctx.fillStyle = '#1b2026';
+	                                            ctx.fillRect(roadLeft, 0, roadWidth, height);
+
+	                                            ctx.fillStyle = '#111418';
+	                                            ctx.fillRect(roadLeft, 0, 8, height);
+	                                            ctx.fillRect(roadRight - 8, 0, 8, height);
+
+	                                            drawRoadLines(roadLeft, roadWidth, height);
+
+	                                            obstacles.forEach((obstacle) => {
+	                                                if (obstacle.type === 'cone') {
+	                                                    ctx.fillStyle = '#ff7a00';
+	                                                    ctx.beginPath();
+	                                                    ctx.moveTo(obstacle.x, obstacle.y - obstacle.height / 2);
+	                                                    ctx.lineTo(obstacle.x - obstacle.width / 2, obstacle.y + obstacle.height / 2);
+	                                                    ctx.lineTo(obstacle.x + obstacle.width / 2, obstacle.y + obstacle.height / 2);
+	                                                    ctx.closePath();
+	                                                    ctx.fill();
+	                                                    ctx.strokeStyle = '#fff3';
+	                                                    ctx.stroke();
+	                                                } else {
+	                                                    ctx.fillStyle = '#e74c3c';
+	                                                    ctx.fillRect(
+	                                                        obstacle.x - obstacle.width / 2,
+	                                                        obstacle.y - obstacle.height / 2,
+	                                                        obstacle.width,
+	                                                        obstacle.height
+	                                                    );
+	                                                }
 	                                            });
 
-	                                            pickups.forEach((item) => {
-	                                                if (item.collected) return;
+	                                            pickups.forEach((pickup) => {
+	                                                if (pickup.collected) return;
 	                                                ctx.fillStyle = '#5ad1ff';
 	                                                ctx.beginPath();
-	                                                ctx.arc(item.x, item.y, 10, 0, Math.PI * 2);
+	                                                ctx.arc(pickup.x, pickup.y, pickup.size, 0, Math.PI * 2);
 	                                                ctx.fill();
 	                                                ctx.fillStyle = '#0f1114';
-	                                                ctx.font = '10px sans-serif';
-	                                                ctx.fillText(item.label[0], item.x - 3, item.y + 3);
+	                                                ctx.font = '11px sans-serif';
+	                                                const label = pickup.type === 'steer' ? 'R' : pickup.type === 'brake' ? 'T' : 'B';
+	                                                ctx.fillText(label, pickup.x - 4, pickup.y + 4);
 	                                            });
 
 	                                            ctx.save();
-	                                            ctx.translate(car.x, car.y);
-	                                            ctx.rotate(car.angle);
+	                                            if (state.shake > 0) {
+	                                                const offsetX = (Math.random() - 0.5) * state.shake;
+	                                                const offsetY = (Math.random() - 0.5) * state.shake;
+	                                                ctx.translate(offsetX, offsetY);
+	                                                state.shake *= 0.9;
+	                                            }
+	                                            const drawRoundedRect = (x, y, w, h, r) => {
+	                                                ctx.beginPath();
+	                                                ctx.moveTo(x + r, y);
+	                                                ctx.lineTo(x + w - r, y);
+	                                                ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+	                                                ctx.lineTo(x + w, y + h - r);
+	                                                ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+	                                                ctx.lineTo(x + r, y + h);
+	                                                ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+	                                                ctx.lineTo(x, y + r);
+	                                                ctx.quadraticCurveTo(x, y, x + r, y);
+	                                                ctx.closePath();
+	                                            };
+
 	                                            ctx.fillStyle = '#f5f5f5';
-	                                            ctx.fillRect(-10, -6, 20, 12);
+	                                            drawRoundedRect(car.x - car.width / 2, car.y - car.height / 2, car.width, car.height, 8);
+	                                            ctx.fill();
 	                                            ctx.fillStyle = '#ff4d4f';
-	                                            ctx.fillRect(4, -4, 8, 8);
+	                                            ctx.fillRect(car.x - 10, car.y - 10, 20, 20);
 	                                            ctx.restore();
+
+	                                            if (state.flash > 0) {
+	                                                ctx.fillStyle = `rgba(255, 0, 0, ${0.18 * state.flash})`;
+	                                                ctx.fillRect(0, 0, width, height);
+	                                                state.flash *= 0.7;
+	                                            }
 	                                        };
 
 	                                        startBtn.addEventListener('click', start);
-	                                        restartBtn.addEventListener('click', reset);
+	                                        restartBtn.addEventListener('click', resetGame);
+	                                        playAgainBtn.addEventListener('click', () => {
+	                                            resetGame();
+	                                            start();
+	                                        });
 	                                        window.addEventListener('resize', resize);
 
 	                                        document.addEventListener('keydown', (event) => {
@@ -652,27 +1074,52 @@ if ($t_mp[3] == 'insurance') {
 
 	                                        const setPointer = (event) => {
 	                                            const rect = canvas.getBoundingClientRect();
-	                                            state.pointer.x = event.clientX - rect.left;
-	                                            state.pointer.y = event.clientY - rect.top;
+	                                            state.pointerX = event.clientX - rect.left;
 	                                        };
 
 	                                        canvas.addEventListener('pointerdown', (event) => {
 	                                            state.pointerActive = true;
+	                                            canvas.setPointerCapture(event.pointerId);
 	                                            setPointer(event);
+	                                            if (state.running) {
+	                                                event.preventDefault();
+	                                            }
 	                                        });
 	                                        canvas.addEventListener('pointermove', (event) => {
 	                                            if (!state.pointerActive) return;
 	                                            setPointer(event);
+	                                            if (state.running) {
+	                                                event.preventDefault();
+	                                            }
 	                                        });
-	                                        canvas.addEventListener('pointerup', () => {
+	                                        canvas.addEventListener('pointerup', (event) => {
 	                                            state.pointerActive = false;
+	                                            canvas.releasePointerCapture(event.pointerId);
 	                                        });
 	                                        canvas.addEventListener('pointerleave', () => {
 	                                            state.pointerActive = false;
 	                                        });
 
+	                                        const revealEls = document.querySelectorAll('.td-reveal');
+	                                        if ('IntersectionObserver' in window) {
+	                                            const observer = new IntersectionObserver(
+	                                                (entries) => {
+	                                                    entries.forEach((entry) => {
+	                                                        if (entry.isIntersecting) {
+	                                                            entry.target.classList.add('is-visible');
+	                                                            observer.unobserve(entry.target);
+	                                                        }
+	                                                    });
+	                                                },
+	                                                { threshold: 0.2 }
+	                                            );
+	                                            revealEls.forEach((el) => observer.observe(el));
+	                                        } else {
+	                                            revealEls.forEach((el) => el.classList.add('is-visible'));
+	                                        }
+
 	                                        resize();
-	                                        reset();
+	                                        resetGame();
 	                                        const loop = (timestamp) => {
 	                                            update(timestamp);
 	                                            requestAnimationFrame(loop);
