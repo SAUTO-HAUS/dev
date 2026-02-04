@@ -507,7 +507,7 @@ if ($t_mp[3] == 'insurance') {
 	                        } else {
 	                                $lang_code = isset($_COOKIE['lang']) ? $_COOKIE['lang'] : 'ro';
 	                            if ($t_mp[3] == 'testdrive' && $lang_code == 'ru') {
-	                                    echo <<<'HTML'
+	                                    echo <<<HTML
 	                                    <div class="testdrive-page">
 	                                        <section class="testdrive-hero td-reveal">
 	                                            <div class="testdrive-hero__content">
