@@ -507,13 +507,13 @@ if ($t_mp[3] == 'insurance') {
 	                        } else {
 	                                $lang_code = isset($_COOKIE['lang']) ? $_COOKIE['lang'] : 'ro';
 	                            if ($t_mp[3] == 'testdrive' && $lang_code == 'ru') {
-	                                    echo <<<HTML
+	                                    echo <<<'HTML'
 	                                    <div class="testdrive-page">
 	                                        <section class="testdrive-hero td-reveal">
 	                                            <div class="testdrive-hero__content">
 	                                                <h1 class="testdrive-hero__title">Твой будущий автомобиль ждет тебя на тест-драйве</h1>
-	                                                <p class="testdrive-hero__lead">Перестань гадать по фото и отзывам. 10–20 минут за рулем — и ты понимаешь посадку, обзорность, динамику и комфорт.</p>
-	                                                <p class="testdrive-hero__cta">Запишись на удобное время — подготовим автомобиль и маршрут.</p>
+	                                                <p class="testdrive-hero__lead">Хочешь понять — твое или нет? Посадка, обзорность, подвеска, шум, тормоза — это решается за 15 минут на реальной дороге.</p>
+	                                                <p class="testdrive-hero__cta">Выбирай удобное время — подготовим автомобиль и маршрут для короткого, но честного тест-драйва.</p>
 	                                            </div>
 	                                            <div class="testdrive-hero__media">
 	                                                <img src="/media/images/site/services/testdrive-hero.jpg" loading="lazy" alt="Автомобиль SAUTO на дороге" />
@@ -556,13 +556,19 @@ if ($t_mp[3] == 'insurance') {
 	                                                    <span class="testdrive-card__icon">
 	                                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="7" width="16" height="10" rx="2"/></svg>
 	                                                    </span>
-	                                                    <p class="testdrive-card__text">Багажник и мелочи</p>
+	                                                    <p class="testdrive-card__text">Багажник и практичность</p>
 	                                                </li>
 	                                                <li class="testdrive-card">
 	                                                    <span class="testdrive-card__icon">
 	                                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 6v12M6 12h12"/></svg>
 	                                                    </span>
 	                                                    <p class="testdrive-card__text">«Мое/не мое» за 10 минут</p>
+	                                                </li>
+	                                                <li class="testdrive-card">
+	                                                    <span class="testdrive-card__icon">
+	                                                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 6h6v12H4z"/><path d="M14 8h6v10h-6z"/></svg>
+	                                                    </span>
+	                                                    <p class="testdrive-card__text">Сравнение 2–3 авто за визит</p>
 	                                                </li>
 	                                            </ul>
 	                                        </section>
@@ -593,23 +599,25 @@ if ($t_mp[3] == 'insurance') {
 	                                        </section>
 	                                        <section class="testdrive-trust td-reveal">
 	                                            <p class="testdrive-trust__headline">Без давления и уговоров. Тест-драйв нужен, чтобы ты сам понял.</p>
-	                                            <p class="testdrive-trust__subtitle">Мы поможем сравнить варианты, но решение всегда за тобой.</p>
+	                                            <p class="testdrive-trust__subtitle">Подготовим авто и маршрут — приезжай и проверь.</p>
+	                                            <p class="testdrive-trust__subtitle">Мы рядом, чтобы ответить на вопросы, но решение всегда за тобой.</p>
 	                                        </section>
 	                                        <section class="td-game td-reveal" aria-labelledby="virtual-testdrive-title">
 	                                            <div class="td-game__header">
 	                                                <h2 class="td-game__title" id="virtual-testdrive-title">Мини-игра: виртуальный тест-драйв</h2>
-	                                                <p class="td-game__hint">Проверь тест-драйв до тест-драйва. 30 секунд — и ты уже в теме.</p>
+	                                                <p class="td-game__hint">Дорога едет вниз сама. Управляй только влево-вправо и собери три значка.</p>
 	                                            </div>
 	                                            <div class="td-game__wrap">
 	                                                <div class="td-game__canvas-wrap">
 	                                                    <canvas class="td-game__canvas" id="testdrive-canvas"></canvas>
 	                                                    <div class="td-game__overlay" id="td-overlay">
 	                                                        <h3 class="td-game__overlay-title">Готов к заезду?</h3>
-	                                                        <p class="td-game__overlay-text">Веди машину влево-вправо мышью или пальцем. Собирай значки, избегай конусов.</p>
+	                                                        <p class="td-game__overlay-text">Проведи машину до финиша — мышью или пальцем. Только влево-вправо.</p>
 	                                                    </div>
 	                                                    <div class="td-game__result-overlay" id="td-result-overlay">
 	                                                        <h3 class="td-game__result-title">Заезд завершен</h3>
 	                                                        <div class="td-game__result-meta" id="td-result-meta"></div>
+	                                                        <div class="td-game__result-meta" id="td-result-badges"></div>
 	                                                        <p class="td-game__result-message" id="td-result-message"></p>
 	                                                        <div class="td-game__result-actions">
 	                                                            <button class="td-game__button" id="td-play-again" type="button">Заново</button>
@@ -650,6 +658,7 @@ if ($t_mp[3] == 'insurance') {
 	                                        const overlayEl = document.getElementById('td-overlay');
 	                                        const resultOverlayEl = document.getElementById('td-result-overlay');
 	                                        const resultMetaEl = document.getElementById('td-result-meta');
+	                                        const resultBadgesEl = document.getElementById('td-result-badges');
 	                                        const resultMessageEl = document.getElementById('td-result-message');
 	                                        const playAgainBtn = document.getElementById('td-play-again');
 	                                        const startBtn = document.getElementById('td-start');
@@ -665,23 +674,25 @@ if ($t_mp[3] == 'insurance') {
 	                                        };
 
 	                                        const successMessages = [
-	                                            'Ок, виртуально ты доехал. В реале будет интереснее — приезжай на тест-драйв.',
+	                                            'Ок, виртуально доехал. В реале будет интереснее — приезжай на тест-драйв.',
 	                                            '0 ошибок — ты из тех, кто паркуется с первого раза. Подозрительно.',
-	                                            'Есть касания — норм. Главное, что в реале бампер будет не пиксельный.',
-	                                            'Руль, тормоз, багажник — ты прошел базовый курс. Дальше — настоящий тест-драйв.',
-	                                            'Хорош. Теперь проверь посадку и обзорность вживую — это решает.',
-	                                            'Заезд чистый. Теперь пора услышать настоящий звук двигателя.',
-	                                            'Уверенно! В реальности будет еще понятнее — особенно на поворотах.',
-	                                            'Легко и по делу. Вживую эмоций будет больше.',
-	                                            'Маршрут пройден. Осталось почувствовать машину руками.',
-	                                            'Скорость есть. Теперь — тест-драйв в реальном городе.'
+	                                            'Собрал руль + тормоз + багажник — базовый курс пройден. Дальше только реальность.',
+	                                            'Хорошо. Теперь проверь посадку и обзорность вживую — это решает.',
+	                                            'Ты справился. Настоящий тест-драйв еще проще: дорога шире, эмоций больше.',
+	                                            'Есть касания — нормально. В реале у нас конусы не пиксельные, но мы добрые.',
+	                                            'Финиш! Теперь осталось главное — почувствовать машину телом, а не курсором.',
+	                                            'Уровень «аккуратный водитель». Осталось выбрать свое авто.',
+	                                            'Ты явно умеешь рулить. Проверь, как рулится именно эта модель.',
+	                                            'Победа. Реальный тест-драйв — лучший анти-сомнения.',
+	                                            'Проехал. Теперь вопрос один: когда записываемся?',
+	                                            'Ок. Вживую подвеска и тормоза расскажут правду еще быстрее.'
 	                                        ];
 
 	                                        const failMessages = [
-	                                            'Кажется, тебе нужен тест-драйв особенно срочно.',
+	                                            'Кажется, тебе нужен тест-драйв срочно — без шуток.',
+	                                            'Ничего. В реале машина помогает больше, чем мышка.',
+	                                            'Давай еще раз. В жизни тоже так.',
 	                                            'Это была тренировка характера. В реале будет проще.',
-	                                            'Ничего, у нас конусы настоящие. Но аккуратные.',
-	                                            'Было жарко. Вживую подскажем и поможем привыкнуть.',
 	                                            'Пару касаний — и уже есть повод попробовать реальный тест-драйв.'
 	                                        ];
 
@@ -755,6 +766,7 @@ if ($t_mp[3] == 'insurance') {
 	                                            car.speed = 0;
 	                                            overlayEl.style.display = 'grid';
 	                                            resultOverlayEl.classList.remove('is-visible');
+	                                            resultBadgesEl.textContent = '';
 	                                            resultEl.textContent = 'Совет: на мобильном веди машину пальцем прямо по трассе.';
 	                                            updateUI();
 	                                            draw();
@@ -794,7 +806,11 @@ if ($t_mp[3] == 'insurance') {
 	                                            const messagePool = success ? successMessages : failMessages;
 	                                            const message = messagePool[Math.floor(Math.random() * messagePool.length)];
 	                                            resultMessageEl.textContent = message;
-	                                            resultMetaEl.textContent = `Время: ${state.elapsed.toFixed(1)} сек · Ошибки: ${state.errors} · Очки: ${state.score}`;
+	                                            resultMetaEl.textContent = 'Время: ' + state.elapsed.toFixed(1) + ' сек · Ошибки: ' + state.errors + ' · Очки: ' + state.score;
+	                                            resultBadgesEl.textContent =
+	                                                'Собрано: Руль ' + state.badges.steer +
+	                                                ' · Тормоз ' + state.badges.brake +
+	                                                ' · Багажник ' + state.badges.trunk;
 	                                            resultOverlayEl.classList.add('is-visible');
 	                                            overlayEl.style.display = 'none';
 	                                            trackEvent('testdrive_game_finish', {
@@ -1051,7 +1067,7 @@ if ($t_mp[3] == 'insurance') {
 	                                            ctx.restore();
 
 	                                            if (state.flash > 0) {
-	                                                ctx.fillStyle = `rgba(255, 0, 0, ${0.18 * state.flash})`;
+	                                                ctx.fillStyle = 'rgba(255, 0, 0, ' + (0.18 * state.flash) + ')';
 	                                                ctx.fillRect(0, 0, width, height);
 	                                                state.flash *= 0.7;
 	                                            }
