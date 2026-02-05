@@ -84,7 +84,7 @@ foreach($car_array as $key => $value){
 	$page_type = (isset($value['catalog_type']) && $value['catalog_type'] == 'on_order') ? 'ordercars' : 'cars';
 	
 	echo '
-    <a class="car_box similar" style="position:relative;" href="/'.$_COOKIE['lang'].'/'.$page_type.'/'.$value['brand'].'-'.$value['model'].'-'.$value['id'].'">
+    <a class="car_box similar" style="position:relative;" href="/'.$_COOKIE['lang'].'/'.$page_type.'/'.$value['id'].'">
 		<div style="width:100%; height:30px; text-align:center; float:left; position:absolute; left:0; z-index:15; background-color:rgba(0,0,0,0.7); color:#fff; line-height:30px;">'.${'lang_info_by_'.$value['similiar_by']}.'</div>
 		<div class="img_container">
 			<img src="/'._CAR_IMG.'/'.$value['photo_path'].'/'.$value['id'].'/med/'.$c_photo_name.'.jpg" alt="'.$value['brand_name'].' '.$value['model_name'].'" title="'.$value['brand_name'].' '.$value['model_name'].'" />

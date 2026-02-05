@@ -12,37 +12,11 @@ if (isset($t_mp[2]) && $t_mp[2] == 'ordercars') {
 
 $GLOBALS['page_is_404'] = false;
 
-// Check CARS detail page
+
 if (isset($t_mp[2]) && $t_mp[2] == 'cars' && isset($t_mp[3]) && !isset($_GET['tg'])) {
-    $check_id = 0;
-    
     if (is_numeric($t_mp[3])) {
         $check_id = toNumber($t_mp[3]);
-    } else {
-        // Clean URL format - check if car exists
-        $check_brand = str_replace('-', '_', $t_mp[3]);
-        $check_model = isset($t_mp[4]) ? str_replace('-', '_', $t_mp[4]) : null;
         
-        $check_sql = 'SELECT id FROM '.$prefx.'_car_ctlg WHERE `br`=:brand';
-        $check_params = ['brand' => $check_brand];
-        
-        if ($check_model) {
-            $check_sql .= ' AND `mo`=:model';
-            $check_params['model'] = $check_model;
-        }
-        
-        $check_sql .= ' AND `vis`="1" AND `act`="1" LIMIT 1';
-        
-        $check_pdo = $db->prepare($check_sql);
-        $check_pdo->execute($check_params);
-        $check_car = $check_pdo->fetch(PDO::FETCH_ASSOC);
-        
-        if ($check_car) {
-            $check_id = $check_car['id'];
-        }
-    }
-    
-    if ($check_id > 0) {
         $check_pdo = $db->prepare('SELECT id, catalog_type FROM '.$prefx.'_car_ctlg WHERE `id`= :id AND `vis`="1" AND `act`="1" LIMIT 1');
         $check_pdo->execute(['id' => $check_id]);
         $check_car = $check_pdo->fetch(PDO::FETCH_ASSOC);
@@ -50,8 +24,6 @@ if (isset($t_mp[2]) && $t_mp[2] == 'cars' && isset($t_mp[3]) && !isset($_GET['tg
         if (!$check_car || empty($check_car['catalog_type']) || $check_car['catalog_type'] !== 'in_stock') {
             $GLOBALS['page_is_404'] = true;
         }
-    } else {
-        $GLOBALS['page_is_404'] = true;
     }
 }
 
@@ -96,37 +68,11 @@ if (isset($t_mp[2]) && $t_mp[2] == 'offers' && isset($t_mp[3])) {
     }
 }
 
-// Check ORDERCARS detail page (uses same table as cars)
+
 if (isset($t_mp[2]) && $t_mp[2] == 'ordercars' && isset($t_mp[3]) && !isset($_GET['tg'])) {
-    $check_id = 0;
-    
     if (is_numeric($t_mp[3])) {
         $check_id = toNumber($t_mp[3]);
-    } else {
-        // Clean URL format - check if car exists
-        $check_brand = str_replace('-', '_', $t_mp[3]);
-        $check_model = isset($t_mp[4]) ? str_replace('-', '_', $t_mp[4]) : null;
         
-        $check_sql = 'SELECT id FROM '.$prefx.'_car_ctlg WHERE `br`=:brand';
-        $check_params = ['brand' => $check_brand];
-        
-        if ($check_model) {
-            $check_sql .= ' AND `mo`=:model';
-            $check_params['model'] = $check_model;
-        }
-        
-        $check_sql .= ' AND `vis`="1" AND `act`="1" LIMIT 1';
-        
-        $check_pdo = $db->prepare($check_sql);
-        $check_pdo->execute($check_params);
-        $check_car = $check_pdo->fetch(PDO::FETCH_ASSOC);
-        
-        if ($check_car) {
-            $check_id = $check_car['id'];
-        }
-    }
-    
-    if ($check_id > 0) {
         $check_pdo = $db->prepare('SELECT id, catalog_type FROM '.$prefx.'_car_ctlg WHERE `id`= :id AND `vis`="1" AND `act`="1" LIMIT 1');
         $check_pdo->execute(['id' => $check_id]);
         $check_car = $check_pdo->fetch(PDO::FETCH_ASSOC);
@@ -135,8 +81,6 @@ if (isset($t_mp[2]) && $t_mp[2] == 'ordercars' && isset($t_mp[3]) && !isset($_GE
         if (!$check_car || empty($check_car['catalog_type']) || $check_car['catalog_type'] !== 'on_order') {
             $GLOBALS['page_is_404'] = true;
         }
-    } else {
-        $GLOBALS['page_is_404'] = true;
     }
 }
 

@@ -72,7 +72,7 @@ foreach ($pdo as $row){
 	$page_type = ($c_catalog_type == 'on_order') ? 'ordercars' : 'cars';
 	
 	$cars[] = '
-	<a class="car_box" href="/'.$_COOKIE['lang'].'/'.$page_type.'/'.$c_brand.'-'.$c_model.'-'.$c_id.'" title="'.$c_brand_name.' '.$c_model_name.'">
+	<a class="car_box" href="/'.$_COOKIE['lang'].'/'.$page_type.'/'.$c_id.'" title="'.$c_brand_name.' '.$c_model_name.'">
 		<div class="img_container">
 			'.$top_sales.'
 			<img src="/'._CAR_IMG.'/'.$c_path.'/'.$c_id.'/med/'.$c_photo_name.'.jpg" alt="'.$c_brand_name.' '.$c_model_name.'" />

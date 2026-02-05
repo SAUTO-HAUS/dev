@@ -35,7 +35,7 @@ foreach ($lang_arr as $lang){
 				foreach ($pdo as $row){
 					// Generate correct URL based on catalog_type
 					$page_type = (isset($row['catalog_type']) && $row['catalog_type'] == 'on_order') ? 'ordercars' : 'cars';
-					$page = $site_url.'/'.$lang.'/'.$page_type.'/'.$row['brand'].'-'.$row['model'].'-'.$row['id'];
+					$page = $site_url.'/'.$lang.'/'.$page_type.'/'.$row['id'];
 					$c_desc = ' '.$row['brand_name'].' '.$row['model_name'].', '.$row['year'];
 					echo $menu.', '.$lang.', '.$page.'<br/>'.$meta_desc['car'][$lang].$c_desc.'<br/>'.$changefreq.', '.$priority.'<br/><br/>';
 				}
