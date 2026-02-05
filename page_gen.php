@@ -2,6 +2,7 @@
 
 define('_DOIT', 1);
 define('_DEFAULT', $_SERVER["DOCUMENT_ROOT"].'/content/default');
+/** @var PDO $db */
 
 require_once (_DEFAULT.'/defines.php');
 require_once (_DEFAULT.'/functions.php');
@@ -47,7 +48,7 @@ foreach ($lang_arr as $lang){
 				$pdo = $db->prepare('SELECT * FROM '.$prefx.'_tyres');
 				$pdo->execute();
 				foreach ($pdo as $row){
-					$page = $site_url.'/'.$lang.'/tyre/'.mb_strtolower($row['brand'], 'UTF-8').'-'.$row['width'].'-'.$row['height'].'-r'.$row['ins_diam'].'-'.$row['season'].'-'.$row['id'];
+					$page = $site_url.'/'.$lang.'/tyres/'.$row['id'];
 					$c_desc = ' '.$row['brand'].' '.$row['width'].'/'.$row['height'].' R'.$row['ins_diam'];
 					echo $menu.', '.$lang.', '.$page.'<br/>'.$meta_desc['tyre'][$lang].$c_desc.'<br/>'.$changefreq.', '.$priority.'<br/><br/>';
 				}

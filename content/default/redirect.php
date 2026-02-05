@@ -77,15 +77,20 @@ if (isset($q_mp[1])){//query check
 
 
 if ( strpos($uri, 'catalog') ){
-	$uri = str_replace(['catalog?1','catalog?','catalog'], 'cars', $uri);
 	if ( strpos($uri, 'car_info') ){
-		$pdo = $db->prepare('SELECT * FROM '.$prefx.'_catalog WHERE `id`=:id');
-		$pdo->execute( ['id' => $old_mp[3]] );
-		foreach ($pdo as $row){
-			$c_brand = $row['brand'];
-			$c_model = $row['model'];
+		$car_id = isset($old_mp[3]) ? (int)$old_mp[3] : 0;
+		if ($car_id > 0) {
+			$pdo = $db->prepare('SELECT catalog_type FROM '.$prefx.'_car_ctlg WHERE id=:id LIMIT 1');
+			$pdo->execute(['id' => $car_id]);
+			$car = $pdo->fetch(PDO::FETCH_ASSOC);
+			$section = (isset($car['catalog_type']) && $car['catalog_type'] == 'on_order') ? 'ordercars' : 'cars';
+			$uri = '/'.$_COOKIE['lang'].'/'.$section.'/'.$car_id;
+		} else {
+			$uri = str_replace(['catalog?1','catalog?','catalog'], 'cars', $uri);
+			$uri = str_replace(['scar_info?', 'car_info?'], '/', $uri);
 		}
-		$uri = str_replace(['scar_info?', 'car_info?'], '/'.$c_brand.'-'.$c_model.'-', $uri);
+	} else {
+		$uri = str_replace(['catalog?1','catalog?','catalog'], 'cars', $uri);
 	}
 	$redirect = 1;
 }
