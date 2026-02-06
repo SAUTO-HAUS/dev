@@ -650,6 +650,8 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' || ($t_mp[2]=='services' && isset($t_mp[
     ?>
     <script>
         $(document).ready(function () {
+            if ($("#suma-creditului").length === 0 || $("#termen-creditului").length === 0) return;
+
             let updateRateTimeout;
             let inputSumaTimeout;
             let inputTermenTimeout;
@@ -727,8 +729,11 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' || ($t_mp[2]=='services' && isset($t_mp[
             });
 
             function updateRate() {
-                const suma = $("#suma-creditului").data("ionRangeSlider").result.from;
-                const termen = $("#termen-creditului").data("ionRangeSlider").result.from;
+                var sumaSlider = $("#suma-creditului").data("ionRangeSlider");
+                var termenSlider = $("#termen-creditului").data("ionRangeSlider");
+                if (!sumaSlider || !termenSlider) return;
+                const suma = sumaSlider.result.from;
+                const termen = termenSlider.result.from;
                 console.log(`Сумма: ${suma}, Срок: ${termen}`);
                 $('.calc_btt_r1_nrl').text( termen);
 
