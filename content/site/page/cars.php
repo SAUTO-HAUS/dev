@@ -93,12 +93,17 @@ function getImportCountryName($countryId, $language = 'ro') {
 
 
 <?php // webs25 ?>
+<?php
+    $carsGalleryVersion = date('GYimsd', filemtime(_SITE . '/css/cars_gallery.css'));
+    $carDescriptionCssVersion = date('GYimsd', filemtime(_SITE . '/css/car_description.css'));
+    $carDescriptionJsVersion = date('GYimsd', filemtime(_SITE . '/js/car_description.js'));
+?>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5/dist/carousel/carousel.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5/dist/fancybox/fancybox.css" />
 
-    <link rel="stylesheet" href="/content/site/css/cars_gallery.css?v=<?=time()?>" />
-    <link rel="stylesheet" href="/content/site/css/car_description.css?v=<?=time()?>" />
-    <script src="/content/site/js/car_description.js?v=<?=time()?>"></script>
+    <link rel="stylesheet" href="/content/site/css/cars_gallery.css?v=<?=$carsGalleryVersion?>" />
+    <link rel="stylesheet" href="/content/site/css/car_description.css?v=<?=$carDescriptionCssVersion?>" />
+    <script src="/content/site/js/car_description.js?v=<?=$carDescriptionJsVersion?>"></script>
 
 <?php
 
