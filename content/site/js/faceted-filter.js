@@ -628,8 +628,7 @@
     // Expose for external use
     window.FacetedFilter = {
         refresh: loadFacets,
-        getCurrentFilters: getCurrentFilters,
-        showToast: showToast
+        getCurrentFilters: getCurrentFilters
     };
 
 })();

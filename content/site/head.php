@@ -8,8 +8,8 @@ use App\Helper\PhoneHelper;?>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js" defer></script>
+<script data-cfasync="false" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script data-cfasync="false" src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js" defer></script>
 <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css"></noscript>
 
@@ -21,10 +21,10 @@ use App\Helper\PhoneHelper;?>
 <script src="/<?php e(_SITE)?>/js/faceted-filter.js?d=<?php echo date("GYimsd", filemtime(_SITE.'/js/faceted-filter.js')); ?>" defer></script>
 
 <!-- Product Card Slider Assets -->
-<link rel="stylesheet" href="/content/site/components/product-card-slider/product-card-slider.css?v=<?php echo time(); ?>">
-<script src="/content/site/components/product-card-slider/product-card-slider.js?v=<?php echo time(); ?>" defer></script>
+<link rel="stylesheet" href="/content/site/components/product-card-slider/product-card-slider.css?v=<?php echo date('GYimsd', filemtime(_SITE . '/components/product-card-slider/product-card-slider.css')); ?>">
+<script src="/content/site/components/product-card-slider/product-card-slider.js?v=<?php echo date('GYimsd', filemtime(_SITE . '/components/product-card-slider/product-card-slider.js')); ?>" defer></script>
 
-<link rel="stylesheet" href="/content/site/css/brand_seo.css?v=<?php echo time(); ?>">
+<link rel="stylesheet" href="/content/site/css/brand_seo.css?v=<?php echo date('GYimsd', filemtime(_SITE . '/css/brand_seo.css')); ?>">
 
 <!-- Google Tag Manager -->
 <script data-cfasync="false">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
