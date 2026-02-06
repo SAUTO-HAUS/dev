@@ -277,6 +277,12 @@ elseif ( $t_mp[2]=='ordercars' && (!isset($t_mp[3]) || $t_mp[3]=='' || !is_numer
             echo "</pre>";
             // exit(); */
 
+    if(isset($t_mp[2]) && ($t_mp[2]=='cars' || $t_mp[2]=='ordercars' || ($t_mp[2]=='services' && isset($t_mp[3]) && $t_mp[3]=='credit')) ) {
+    ?>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css"/>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js"></script>
+    <?php }
+
     if ( !isset($t_mp[2]) || $t_mp[2]=='') {include (_SITE_PAGE.'/home.php');}
 
     elseif ($t_mp[2]=='cars') {include (_SITE_PAGE.'/cars.php');}
@@ -642,12 +648,6 @@ if (isset($t_mp[2])) {
 <?php
 if(isset($t_mp[2]) && ($t_mp[2]=='cars' || ($t_mp[2]=='services' && isset($t_mp[3]) && $t_mp[3]=='credit')) ) {
     ?>
-    <!--Plugin CSS file with desired skin - load async -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css" media="print" onload="this.media='all'"/>
-
-    <!--Plugin JavaScript file-->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js" defer></script>
-
     <script>
         $(document).ready(function () {
             let updateRateTimeout;

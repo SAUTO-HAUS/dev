@@ -100,8 +100,6 @@ function getImportCountryName($countryId, $language = 'ro') {
     $carsGalleryVersion = date('GYimsd', filemtime(_SITE . '/css/cars_gallery.css'));
     $carDescriptionCssVersion = date('GYimsd', filemtime(_SITE . '/css/car_description.css'));
     $carDescriptionJsVersion = date('GYimsd', filemtime(_SITE . '/js/car_description.js'));
-    $productCardSliderCssVersion = date('GYimsd', filemtime(_SITE . '/components/product-card-slider/product-card-slider.css'));
-    $productCardSliderJsVersion = date('GYimsd', filemtime(_SITE . '/components/product-card-slider/product-card-slider.js'));
 ?>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5/dist/carousel/carousel.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5/dist/fancybox/fancybox.css" />
@@ -111,10 +109,6 @@ function getImportCountryName($countryId, $language = 'ro') {
     <!-- Car Description Assets -->
     <link rel="stylesheet" href="/content/site/css/car_description.css?v=<?=$carDescriptionCssVersion?>" />
     <script src="/content/site/js/car_description.js?v=<?=$carDescriptionJsVersion?>" defer></script>
-    
-    <!-- Product Card Slider Assets -->
-    <link rel="stylesheet" href="/content/site/components/product-card-slider/product-card-slider.css?v=<?=$productCardSliderCssVersion?>" />
-    <script src="/content/site/components/product-card-slider/product-card-slider.js?v=<?=$productCardSliderJsVersion?>" defer></script>
 
 <?php
 
