@@ -89,19 +89,23 @@ if (__post('sub') == 'get_subcategory') {
             try {
                 $response = (new Api999Service($advert['999_api_id']))->updateAdvert($advert['999_id'], $features);
                 
+                $updatedJson = json_encode([
+                    'category_id' => $advertFeatures['category_id'],
+                    'subcategory_id' => $advertFeatures['subcategory_id'],
+                    'offer_type' => $advertFeatures['offer_type'],
+                    'announcement_type' => $advertFeatures['announcement_type'] ?? null,
+                    'scenario' => $advertFeatures['scenario'] ?? null,
+                    'text_option' => $advertFeatures['text_option'] ?? null,
+                    'features' => $features,
+                ]);
                 $stmt = $pdo->prepare("
                     UPDATE gh3sp_car_ctlg
-                    SET `999` = :featuresJson
+                    SET `999` = :featuresJson, `features_json` = :featuresJson2
                     WHERE id = :carId
                 ");
                 $stmt->execute([
-                    ':featuresJson' => json_encode([
-                        'category_id' => $advertFeatures['category_id'],
-                        'subcategory_id' => $advertFeatures['subcategory_id'],
-                        'offer_type' => $advertFeatures['offer_type'],
-                        'announcement_type' => $advertFeatures['announcement_type'] ?? null,
-                        'features' => $features,
-                    ]),
+                    ':featuresJson' => $updatedJson,
+                    ':featuresJson2' => $updatedJson,
                     ':carId' => $carId
                 ]);
                 
