@@ -363,6 +363,7 @@ if (__post('sub') == 'get_subcategory') {
                 'subcategory_id' => $advertFeatures["subcategory_id"],
                 'offer_type' => $advertFeatures["offer_type"],
                 'announcement_type' => $advertFeatures["announcement_type"] ?? null,
+                'text_option' => $_POST["text_option"] ?? ($advertFeatures["text_option"] ?? null),
                 'features' => $features,
             ]),
             ':carId' => $carId,
@@ -442,6 +443,7 @@ if (__post('sub') == 'get_subcategory') {
             'offer_type' => $input["car"]["subcategory_offer_types"],
             'announcement_type' => $input["announcement_type"],
             'scenario' => $input["scenario"] ?? 'maximal',
+            'text_option' => $_POST["text_option"] ?? null,
             'features' => $features,
         ]);
         

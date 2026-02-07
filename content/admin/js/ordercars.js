@@ -525,7 +525,8 @@ $(document).ready(function(){
 			category: $(this).val(),
 			bx_id: $(this).closest('.bx').data('bx_id'),
 			carId: carId,
-			isChecked: isChecked
+			isChecked: isChecked,
+			text_option: $('input[name="text_option"]:checked').val() ?? ''
 		};
 
 		
@@ -886,6 +887,11 @@ $(document).ready(function(){
 				`;
 				textOptions.append(radioButton);
 			});
+			// Auto-check saved text_option from DB
+			const savedOption = $('#text_options_wrapper').data('text-option');
+			if (savedOption !== '' && savedOption !== undefined) {
+				$('.text-option-radio.order-personal-radio[value="' + savedOption + '"]').prop('checked', true);
+			}
 			$("#text_options_wrapper").show();
 		}
 	});
@@ -934,6 +940,12 @@ $(document).ready(function(){
 					textOptions.append(radioButton);
 				});
 				
+				// Auto-check saved text_option from DB (overrides default)
+				const savedOption = $('#text_options_wrapper').data('text-option');
+				if (savedOption !== '' && savedOption !== undefined) {
+					$('.text-option-radio.order-personal-radio').prop('checked', false);
+					$('.text-option-radio.order-personal-radio[value="' + savedOption + '"]').prop('checked', true);
+				}
 				// Set default text based on selected account
 				if (orderPersonalTexts['auto_company'][defaultIndex]) {
 					$("#feature_13").val(orderPersonalTexts['auto_company'][defaultIndex].text);
@@ -975,8 +987,14 @@ $(document).ready(function(){
 		if (radio.is(':checked')) {
 			$("#feature_13").val($(this).val());
 		}
-		$('#btn_update_text_999').show();
-		$('#update_text_status').html('');
+		const btn = $('#btn_update_text_999');
+		const sts = $('#update_text_status');
+		if (btn.length) {
+			wrapper.append(btn);
+			wrapper.append(sts);
+			btn.show();
+			sts.html('');
+		}
 	}).on("click", "#btn_update_text_999", function () {
 		const btn = $(this);
 		const carId = $('#content_box').data('car-id');

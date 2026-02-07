@@ -30,14 +30,14 @@ if (!isset($new999)) $new999 = true;
             </select>
         </div>
 
-        <div id="text_options_wrapper" class="form-group" style="display: none;">
+        <div id="text_options_wrapper" class="form-group" style="display: none;" data-text-option="<?= $car999['text_option'] ?? '' ?>">
             <label>
                 <?= __('cars.select_text_option') ?>
                 <span class="text-danger">*</span>
             </label>
             <div id="text_options" class="d-flex"></div>
             <?php if (!$new999 && !empty($car999['announcement_type']) && $car999['announcement_type'] == 'sauto_personal'): ?>
-            <button type="button" id="btn_update_text_999" class="btn btn-warning btn-sm mt-2" style="display:none;">обновить текст 999.md</button>
+            <button type="button" id="btn_update_text_999" class="btn btn-sm mt-2" style="display:none; background-color:#dc3545; color:#fff; border:none; padding: 8px 16px; font-size:14px;">обновить текст 999.md</button>
             <span id="update_text_status" class="ml-2" style="font-size:12px;"></span>
             <?php endif; ?>
         </div>
