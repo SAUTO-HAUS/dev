@@ -62,6 +62,64 @@ if (__post('sub') == 'get_subcategory') {
         }
         $rtrn = [ 'bx_id'=>__post('bx_id'), 'str'=>$rtrn ];
     }
+} elseif (__post('sub') == 'update_text') {
+    // Update only the description text (feature 13) on 999.md without republishing
+    $pdo = Container::get('db');
+    $carId = __post('carId');
+    $newText = __post('text');
+    
+    if (empty($carId) || empty($newText)) {
+        $rtrn = ['error' => 'Missing carId or text'];
+    } else {
+        $advert = (new Car())->getCarById($carId);
+        
+        if (empty($advert['999_id'])) {
+            $rtrn = ['error' => 'Car has no 999.md listing yet'];
+        } else {
+            // Get current features from DB
+            $advertFeatures = json_decode($advert['999'], true);
+            $features = $advertFeatures['features'] ?? [];
+            
+            // Update feature 13 (description)
+            $feature13Found = false;
+            foreach ($features as $index => $feature) {
+                if ($feature['id'] === '13' || $feature['id'] === 13) {
+                    $features[$index]['value'] = $newText;
+                    $feature13Found = true;
+                    break;
+                }
+            }
+            if (!$feature13Found) {
+                $features[] = ['id' => '13', 'value' => $newText];
+            }
+            
+            // Update on 999.md
+            try {
+                $response = (new Api999Service($advert['999_api_id']))->updateAdvert($advert['999_id'], $features);
+                
+                // Save updated features to DB
+                $stmt = $pdo->prepare("
+                    UPDATE gh3sp_car_ctlg
+                    SET `999` = :featuresJson
+                    WHERE id = :carId
+                ");
+                $stmt->execute([
+                    ':featuresJson' => json_encode([
+                        'category_id' => $advertFeatures['category_id'],
+                        'subcategory_id' => $advertFeatures['subcategory_id'],
+                        'offer_type' => $advertFeatures['offer_type'],
+                        'announcement_type' => $advertFeatures['announcement_type'] ?? null,
+                        'features' => $features,
+                    ]),
+                    ':carId' => $carId
+                ]);
+                
+                $rtrn = ['success' => true, 'message' => 'Text updated on 999.md'];
+            } catch (Exception $e) {
+                $rtrn = ['error' => $e->getMessage()];
+            }
+        }
+    }
 } elseif (__post('sub') == 'set_999') {
 
     // Validate form data

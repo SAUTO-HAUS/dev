@@ -866,8 +866,28 @@ $(document).ready(function(){
 		texts = data;
 	});
 	
-	$.getJSON("/api/order_personal_texts.json", function (data) {
+		$.getJSON("/api/order_personal_texts.json", function (data) {
 		orderPersonalTexts = data;
+		
+		// Show text options on page load (for both new and existing ads)
+		const existingType = $("#announcement_type").val();
+		if (existingType === "sauto_personal" && data['auto_company']) {
+			const textOptions = $("#text_options");
+			textOptions.empty();
+			data['auto_company'].forEach((item, index) => {
+				const radioButton = `
+					<div class="text-option-wrapper" style="margin-right: 20px; margin-bottom: 10px;">
+						<label style="display: inline-block; text-align: center;">
+							<input type="radio" name="text_option" value="${index}" class="text-option-radio order-personal-radio">
+							<span>${item.title}</span>
+						</label>
+						<textarea class="text-preview form-control" style="height: 400px; margin-top: 5px; font-size: 12px;" data-index="${index}">${item.text}</textarea>
+					</div>
+				`;
+				textOptions.append(radioButton);
+			});
+			$("#text_options_wrapper").show();
+		}
 	});
 
 	// Attach event listeners
@@ -908,9 +928,7 @@ $(document).ready(function(){
 									<input type="radio" name="text_option" value="${index}" class="text-option-radio order-personal-radio" ${isChecked}>
 									<span>${item.title}</span>
 								</label>
-								<div class="text-preview" style="border: 1px solid #ccc; padding: 10px; margin-top: 5px; border-radius: 5px; background: #f9f9f9;">
-									${item.text}
-								</div>
+					<textarea class="text-preview form-control" style="height: 400px; margin-top: 5px; font-size: 12px;" data-index="${index}">${item.text}</textarea>
 							</div>
 						`;
 					textOptions.append(radioButton);
@@ -941,18 +959,68 @@ $(document).ready(function(){
 		} else if (type === "auto_realization" || type === "auto_realization_min") {
 			textArea.val(texts['auto_realization'][0].text);
 		}
-	}).on("change", ".text-option-radio", function () {
+		}).on("change", ".text-option-radio", function () {
 		const index = $(this).val();
 		if ($(this).hasClass('order-personal-radio')) {
-			const selectedText = orderPersonalTexts['auto_company'][index].text;
+			const textarea = $(this).closest('.text-option-wrapper').find('.text-preview');
+			const selectedText = textarea.length ? textarea.val() : orderPersonalTexts['auto_company'][index].text;
 			$("#feature_13").val(selectedText);
 		} else {
 			const selectedText = texts['auto_company'][index].text;
 			$("#feature_13").val(selectedText);
 		}
+	}).on("input", ".text-preview", function () {
+		const wrapper = $(this).closest('.text-option-wrapper');
+		const radio = wrapper.find('.text-option-radio');
+		if (radio.is(':checked')) {
+			$("#feature_13").val($(this).val());
+		}
+		$('#btn_update_text_999').show();
+		$('#update_text_status').html('');
+	}).on("click", "#btn_update_text_999", function () {
+		const btn = $(this);
+		const carId = $('#content_box').data('car-id');
+		const text = $("#feature_13").val();
+		const status = $('#update_text_status');
+
+		if (!carId || !text) {
+			status.html('<span style="color:red;">Отсутствует ID авто или текст</span>');
+			return;
+		}
+
+		btn.prop('disabled', true).text('Обновление...');
+		status.html('');
+
+		$.ajax({
+			url: '/ajax.php',
+			method: 'POST',
+			data: {
+				tp: reqType,
+				pg: reqPage,
+				fn: '999_catalog',
+				sub: 'update_text',
+				carId: carId,
+				text: text
+			},
+			dataType: 'json',
+			success: function(response) {
+				if (response.rtrn?.success) {
+					status.html('<span style="color:green;">Текст обновлён на 999.md</span>');
+					btn.hide();
+				} else {
+					const err = response.rtrn?.error || 'Неизвестная ошибка';
+					status.html('<span style="color:red;">Ошибка: ' + err + '</span>');
+				}
+			},
+			error: function() {
+				status.html('<span style="color:red;">Ошибка соединения</span>');
+			},
+			complete: function() {
+				btn.prop('disabled', false).text('update text 999.md');
+			}
+		});
 	});
 });
-
 
 document.addEventListener("DOMContentLoaded", function () {
 	const modal = document.getElementById("boosterModal");

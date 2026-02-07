@@ -36,6 +36,10 @@ if (!isset($new999)) $new999 = true;
                 <span class="text-danger">*</span>
             </label>
             <div id="text_options" class="d-flex"></div>
+            <?php if (!$new999 && !empty($car999['announcement_type']) && $car999['announcement_type'] == 'sauto_personal'): ?>
+            <button type="button" id="btn_update_text_999" class="btn btn-warning btn-sm mt-2" style="display:none;">update text 999.md</button>
+            <span id="update_text_status" class="ml-2" style="font-size:12px;"></span>
+            <?php endif; ?>
         </div>
     </fieldset>
 
