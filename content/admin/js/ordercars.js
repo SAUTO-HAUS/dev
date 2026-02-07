@@ -891,6 +891,11 @@ $(document).ready(function(){
 			const savedOption = $('#text_options_wrapper').data('text-option');
 			if (savedOption !== '' && savedOption !== undefined) {
 				$('.text-option-radio.order-personal-radio[value="' + savedOption + '"]').prop('checked', true);
+
+				const dbText = $('#feature_13').val();
+				if (dbText) {
+					$('.text-option-radio.order-personal-radio[value="' + savedOption + '"]').closest('.text-option-wrapper').find('.text-preview').val(dbText);
+				}
 			}
 			$("#text_options_wrapper").show();
 		}
