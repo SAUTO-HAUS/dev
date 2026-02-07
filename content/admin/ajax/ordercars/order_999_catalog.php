@@ -109,12 +109,11 @@ if (__post('sub') == 'get_subcategory') {
                 ]);
                 $stmt = $pdo->prepare("
                     UPDATE gh3sp_car_ctlg
-                    SET `999` = :featuresJson, `features_json` = :featuresJson2
+                    SET `999` = :featuresJson
                     WHERE id = :carId
                 ");
                 $stmt->execute([
                     ':featuresJson' => $updatedJson,
-                    ':featuresJson2' => $updatedJson,
                     ':carId' => $carId
                 ]);
                 
