@@ -981,8 +981,14 @@ $(document).ready(function(){
 		if (radio.is(':checked')) {
 			$("#feature_13").val($(this).val());
 		}
-		$('#btn_update_text_999').show();
-		$('#update_text_status').html('');
+		const btn = $('#btn_update_text_999');
+		const sts = $('#update_text_status');
+		if (btn.length) {
+			wrapper.append(btn);
+			wrapper.append(sts);
+			btn.show();
+			sts.html('');
+		}
 	}).on("click", "#btn_update_text_999", function () {
 		const btn = $(this);
 		const carId = $('#content_box').data('car-id');
