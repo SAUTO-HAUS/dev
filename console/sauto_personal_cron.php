@@ -160,6 +160,25 @@ try {
     $stmt->execute(['current_time' => $currentDateTime]);
     $pendingSchedules = $stmt->fetchAll();
     
+    $postponedStmt = $db->prepare("
+        SELECT s.*, c.id as car_id, c.999_id as existing_999_id, s.catalog_type,
+               CONCAT(s.schedule_date, ' ', s.schedule_time) as full_schedule_time
+        FROM gh3sp_sauto_personal_schedules s
+        LEFT JOIN {$prefx}_car_ctlg c ON s.car_id = c.id
+        WHERE s.status = 'postponed' 
+        AND s.retry_count < 72
+        AND (s.last_retry_at IS NULL OR s.last_retry_at <= DATE_SUB(:current_time, INTERVAL 2 HOUR))
+        ORDER BY s.schedule_date, s.schedule_time
+        LIMIT 5
+    ");
+    $postponedStmt->execute(['current_time' => $currentDateTime]);
+    $postponedSchedules = $postponedStmt->fetchAll();
+    
+    if (!empty($postponedSchedules)) {
+        echo "[" . date('Y-m-d H:i:s') . "] Found " . count($postponedSchedules) . " postponed schedules to retry (insufficient balance)\n";
+        $pendingSchedules = array_merge($pendingSchedules, $postponedSchedules);
+    }
+    
     // Debug: Count pending schedules
     $debugStmt = $db->prepare("
         SELECT COUNT(*) as total_pending
@@ -169,7 +188,16 @@ try {
     $debugStmt->execute();
     $totalPending = $debugStmt->fetchColumn();
     
-    echo "[" . date('Y-m-d H:i:s') . "] Total pending schedules: {$totalPending}\n";
+    // Count postponed schedules
+    $debugPostponedStmt = $db->prepare("
+        SELECT COUNT(*) as total_postponed
+        FROM gh3sp_sauto_personal_schedules s
+        WHERE s.status = 'postponed' AND s.retry_count < 72
+    ");
+    $debugPostponedStmt->execute();
+    $totalPostponed = $debugPostponedStmt->fetchColumn();
+    
+    echo "[" . date('Y-m-d H:i:s') . "] Total pending schedules: {$totalPending}, postponed (awaiting retry): {$totalPostponed}\n";
     
     if (empty($pendingSchedules)) {
         echo "[" . date('Y-m-d H:i:s') . "] No pending schedules to publish\n";
@@ -295,18 +323,38 @@ try {
                         $errorMsg = json_encode($errorMsg, JSON_UNESCAPED_UNICODE);
                     }
                     
-                    $stmt = $db->prepare("
-                        UPDATE gh3sp_sauto_personal_schedules 
-                        SET status = 'failed', 
-                            error_message = :error
-                        WHERE id = :id
-                    ");
-                    $stmt->execute([
-                        'error' => $errorMsg,
-                        'id' => $schedule['id']
-                    ]);
+                    $isInsufficientBalance = (stripos($errorMsg, 'insufficient balance') !== false || stripos($errorMsg, 'insufficient funds') !== false || stripos($errorMsg, 'баланс') !== false);
+                    $currentRetryCount = isset($schedule['retry_count']) ? (int)$schedule['retry_count'] : 0;
                     
-                    echo "[" . date('Y-m-d H:i:s') . "] ❌ Ошибка републикации авто {$schedule['car_id']} на {$apiAccount}: $errorMsg\n";
+                    if ($isInsufficientBalance && $currentRetryCount < 72) {
+                        $stmt = $db->prepare("
+                            UPDATE gh3sp_sauto_personal_schedules 
+                            SET status = 'postponed', 
+                                error_message = :error,
+                                retry_count = retry_count + 1,
+                                last_retry_at = NOW()
+                            WHERE id = :id
+                        ");
+                        $stmt->execute([
+                            'error' => $errorMsg,
+                            'id' => $schedule['id']
+                        ]);
+                        
+                        echo "[" . date('Y-m-d H:i:s') . "] ⏸️ Insufficient balance - postponed republish for car {$schedule['car_id']} (retry " . ($currentRetryCount + 1) . "/72, next retry in 2h)\n";
+                    } else {
+                        $stmt = $db->prepare("
+                            UPDATE gh3sp_sauto_personal_schedules 
+                            SET status = 'failed', 
+                                error_message = :error
+                            WHERE id = :id
+                        ");
+                        $stmt->execute([
+                            'error' => $errorMsg,
+                            'id' => $schedule['id']
+                        ]);
+                        
+                        echo "[" . date('Y-m-d H:i:s') . "] ❌ Ошибка републикации авто {$schedule['car_id']} на {$apiAccount}: $errorMsg\n";
+                    }
                 }
             } else {
                 // Car doesn't have 999.md listing yet - create new one for SAUTO Personal
@@ -470,39 +518,91 @@ try {
                         if (is_array($errorMsg)) {
                             $errorMsg = json_encode($errorMsg, JSON_UNESCAPED_UNICODE);
                         }
+                        
+                        $isInsufficientBalance = (stripos($errorMsg, 'insufficient balance') !== false || stripos($errorMsg, 'insufficient funds') !== false || stripos($errorMsg, 'баланс') !== false);
+                        $currentRetryCount = isset($schedule['retry_count']) ? (int)$schedule['retry_count'] : 0;
+                        
+                        if ($isInsufficientBalance && $currentRetryCount < 72) {
+                            $stmt = $db->prepare("
+                                UPDATE gh3sp_sauto_personal_schedules 
+                                SET status = 'postponed', 
+                                    error_message = :error,
+                                    retry_count = retry_count + 1,
+                                    last_retry_at = NOW()
+                                WHERE id = :id
+                            ");
+                            $stmt->execute(['error' => $errorMsg, 'id' => $schedule['id']]);
+                            echo "[" . date('Y-m-d H:i:s') . "] ⏸️ Insufficient balance - postponed create for car {$schedule['car_id']} (retry " . ($currentRetryCount + 1) . "/72, next retry in 2h)\n";
+                        } else {
+                            $stmt = $db->prepare("
+                                UPDATE gh3sp_sauto_personal_schedules 
+                                SET status = 'failed', error_message = :error
+                                WHERE id = :id
+                            ");
+                            $stmt->execute(['error' => $errorMsg, 'id' => $schedule['id']]);
+                            echo "[" . date('Y-m-d H:i:s') . "] ❌ Failed to create listing: $errorMsg\n";
+                        }
+                    }
+                } catch (Exception $e) {
+                    $exMsg = $e->getMessage();
+                    $isInsufficientBalance = (stripos($exMsg, 'insufficient balance') !== false || stripos($exMsg, 'insufficient funds') !== false || stripos($exMsg, 'баланс') !== false);
+                    $currentRetryCount = isset($schedule['retry_count']) ? (int)$schedule['retry_count'] : 0;
+                    
+                    if ($isInsufficientBalance && $currentRetryCount < 72) {
+                        $stmt = $db->prepare("
+                            UPDATE gh3sp_sauto_personal_schedules 
+                            SET status = 'postponed', 
+                                error_message = :error,
+                                retry_count = retry_count + 1,
+                                last_retry_at = NOW()
+                            WHERE id = :id
+                        ");
+                        $stmt->execute(['error' => $exMsg, 'id' => $schedule['id']]);
+                        echo "[" . date('Y-m-d H:i:s') . "] ⏸️ Insufficient balance (exception) - postponed for car {$schedule['car_id']} (retry " . ($currentRetryCount + 1) . "/72, next retry in 2h)\n";
+                    } else {
                         $stmt = $db->prepare("
                             UPDATE gh3sp_sauto_personal_schedules 
                             SET status = 'failed', error_message = :error
                             WHERE id = :id
                         ");
-                        $stmt->execute(['error' => $errorMsg, 'id' => $schedule['id']]);
-                        echo "[" . date('Y-m-d H:i:s') . "] ❌ Failed to create listing: $errorMsg\n";
+                        $stmt->execute(['error' => $exMsg, 'id' => $schedule['id']]);
+                        echo "[" . date('Y-m-d H:i:s') . "] ❌ Exception: " . $exMsg . "\n";
                     }
-                } catch (Exception $e) {
-                    $stmt = $db->prepare("
-                        UPDATE gh3sp_sauto_personal_schedules 
-                        SET status = 'failed', error_message = :error
-                        WHERE id = :id
-                    ");
-                    $stmt->execute(['error' => $e->getMessage(), 'id' => $schedule['id']]);
-                    echo "[" . date('Y-m-d H:i:s') . "] ❌ Exception: " . $e->getMessage() . "\n";
                 }
             }
             
         } catch (Exception $e) {
-            // Update schedule as failed
-            $stmt = $db->prepare("
-                UPDATE gh3sp_sauto_personal_schedules 
-                SET status = 'failed', 
-                    error_message = :error
-                WHERE id = :id
-            ");
-            $stmt->execute([
-                'error' => $e->getMessage(),
-                'id' => $schedule['id']
-            ]);
+            $exMsg = $e->getMessage();
+            $isInsufficientBalance = (stripos($exMsg, 'insufficient balance') !== false || stripos($exMsg, 'insufficient funds') !== false || stripos($exMsg, 'баланс') !== false);
+            $currentRetryCount = isset($schedule['retry_count']) ? (int)$schedule['retry_count'] : 0;
             
-            echo "[" . date('Y-m-d H:i:s') . "] Failed to process schedule ID: {$schedule['id']}, Error: " . $e->getMessage() . "\n";
+            if ($isInsufficientBalance && $currentRetryCount < 72) {
+                $stmt = $db->prepare("
+                    UPDATE gh3sp_sauto_personal_schedules 
+                    SET status = 'postponed', 
+                        error_message = :error,
+                        retry_count = retry_count + 1,
+                        last_retry_at = NOW()
+                    WHERE id = :id
+                ");
+                $stmt->execute([
+                    'error' => $exMsg,
+                    'id' => $schedule['id']
+                ]);
+                echo "[" . date('Y-m-d H:i:s') . "] ⏸️ Insufficient balance - postponed schedule {$schedule['id']} for car {$schedule['car_id']} (retry " . ($currentRetryCount + 1) . "/72, next retry in 2h)\n";
+            } else {
+                $stmt = $db->prepare("
+                    UPDATE gh3sp_sauto_personal_schedules 
+                    SET status = 'failed', 
+                        error_message = :error
+                    WHERE id = :id
+                ");
+                $stmt->execute([
+                    'error' => $exMsg,
+                    'id' => $schedule['id']
+                ]);
+                echo "[" . date('Y-m-d H:i:s') . "] Failed to process schedule ID: {$schedule['id']}, Error: " . $exMsg . "\n";
+            }
         }
         
         // Small delay between republishes

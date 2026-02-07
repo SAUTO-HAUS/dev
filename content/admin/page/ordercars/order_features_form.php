@@ -215,7 +215,8 @@ if (!isset($new999)) $new999 = true;
                                                 break;
                                             case 'postponed':
                                                 $statusIcon = '⏸️';
-                                                $statusText = __('cars.status_postponed');
+                                                $retryInfo = !empty($schedule['retry_count']) ? " (retry {$schedule['retry_count']}/72)" : '';
+                                                $statusText = (__('cars.status_postponed') ?? 'Postponed') . $retryInfo;
                                                 $statusColor = '#ff9800';
                                                 break;
                                         }
