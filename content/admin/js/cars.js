@@ -520,7 +520,8 @@ $(document).ready(function(){
 			category: $(this).val(),
 			bx_id: $(this).closest('.bx').data('bx_id'),
 			carId: carId,
-			isChecked: isChecked
+			isChecked: isChecked,
+			text_option: $('input[name="text_option"]:checked').val() ?? ''
 		};
 
 		console.log('Preparing final data for ajaxMain:', data);
@@ -891,6 +892,11 @@ $(document).ready(function(){
 				`;
 				textOptions.append(radioButton);
 			});
+			// Auto-check saved text_option from DB
+			const savedOption = $('#text_options_wrapper').data('text-option');
+			if (savedOption !== '' && savedOption !== undefined) {
+				$('.text-option-radio.sauto-personal-radio[value="' + savedOption + '"]').prop('checked', true);
+			}
 			$("#text_options_wrapper").show();
 		}
 	});
@@ -933,6 +939,11 @@ $(document).ready(function(){
 						`;
 					textOptions.append(radioButton);
 				});
+				// Auto-check saved text_option from DB
+				const savedOption = $('#text_options_wrapper').data('text-option');
+				if (savedOption !== '' && savedOption !== undefined) {
+					$('.text-option-radio.sauto-personal-radio[value="' + savedOption + '"]').prop('checked', true);
+				}
 			}
 			textOptionsWrapper.show();
 		} else if (type === "auto_company" || type === "auto_company_min") {

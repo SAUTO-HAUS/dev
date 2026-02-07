@@ -30,7 +30,7 @@ if (!isset($new999)) $new999 = true;
             </select>
         </div>
 
-        <div id="text_options_wrapper" class="form-group" style="display: none;">
+        <div id="text_options_wrapper" class="form-group" style="display: none;" data-text-option="<?= $car999['text_option'] ?? '' ?>">
             <label>
                 <?= __('cars.select_text_option') ?>
                 <span class="text-danger">*</span>
