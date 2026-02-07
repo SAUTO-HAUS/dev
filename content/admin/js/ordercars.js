@@ -1652,7 +1652,24 @@ $(document).ready(function() {
 	setTimeout(function() {
 		$('#announcement_type').trigger('change');
 	}, 100);
-	
+
+	// Restore real DB text AFTER everything else has initialized
+	setTimeout(function() {
+		var dbText = $('#text_options_wrapper').data('db-text');
+		if (dbText) {
+			var savedOption = $('#text_options_wrapper').data('text-option');
+			if (savedOption !== '' && savedOption !== undefined) {
+				$('.text-option-radio.order-personal-radio').prop('checked', false);
+				$('.text-option-radio.order-personal-radio[value="' + savedOption + '"]').prop('checked', true);
+			}
+			var checkedRadio = $('.text-option-radio.order-personal-radio:checked');
+			if (checkedRadio.length) {
+				checkedRadio.closest('.text-option-wrapper').find('.text-preview').val(dbText);
+			}
+			$('#feature_13').val(dbText);
+		}
+	}, 500);
+
 	// Initialize calendar when SAUTO Personal is selected
 	$(document).on('change', '#announcement_type', function() {
 		if ($(this).val() === 'sauto_personal') {
