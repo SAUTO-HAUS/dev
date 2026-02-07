@@ -876,12 +876,12 @@ $(document).ready(function(){
 			textOptions.empty();
 			data['auto_company'].forEach((item, index) => {
 				const radioButton = `
-					<div class="text-option-wrapper" style="margin-right: 20px; margin-bottom: 10px;">
+					<div class="text-option-wrapper" style="flex:1; margin-right: 20px; margin-bottom: 10px;">
 						<label style="display: inline-block; text-align: center;">
 							<input type="radio" name="text_option" value="${index}" class="text-option-radio order-personal-radio">
 							<span>${item.title}</span>
 						</label>
-						<textarea class="text-preview form-control" style="height: 400px; margin-top: 5px; font-size: 12px;" data-index="${index}">${item.text}</textarea>
+						<textarea class="text-preview form-control" style="width: 100%; height: 400px; margin-top: 5px; font-size: 12px;" data-index="${index}">${item.text}</textarea>
 					</div>
 				`;
 				textOptions.append(radioButton);
@@ -923,12 +923,12 @@ $(document).ready(function(){
 				orderPersonalTexts['auto_company'].forEach((item, index) => {
 					const isChecked = index === defaultIndex ? 'checked' : '';
 					const radioButton = `
-							<div class="text-option-wrapper" style="margin-right: 20px; margin-bottom: 10px;">
+							<div class="text-option-wrapper" style="flex:1; margin-right: 20px; margin-bottom: 10px;">
 								<label style="display: inline-block; text-align: center;">
 									<input type="radio" name="text_option" value="${index}" class="text-option-radio order-personal-radio" ${isChecked}>
 									<span>${item.title}</span>
 								</label>
-					<textarea class="text-preview form-control" style="height: 400px; margin-top: 5px; font-size: 12px;" data-index="${index}">${item.text}</textarea>
+					<textarea class="text-preview form-control" style="width: 100%; height: 400px; margin-top: 5px; font-size: 12px;" data-index="${index}">${item.text}</textarea>
 							</div>
 						`;
 					textOptions.append(radioButton);
@@ -943,7 +943,7 @@ $(document).ready(function(){
 		} else if (type === "auto_company" || type === "auto_company_min") {
 			texts['auto_company'].forEach((item, index) => {
 				const radioButton = `
-						<div class="text-option-wrapper" style="margin-right: 20px; margin-bottom: 10px;">
+						<div class="text-option-wrapper" style="flex:1; margin-right: 20px; margin-bottom: 10px;">
 							<label style="display: inline-block; text-align: center;">
 								<input type="radio" name="text_option" value="${index}" class="text-option-radio">
 								<span>${item.title}</span>
@@ -1016,7 +1016,7 @@ $(document).ready(function(){
 				status.html('<span style="color:red;">Ошибка соединения</span>');
 			},
 			complete: function() {
-				btn.prop('disabled', false).text('update text 999.md');
+				btn.prop('disabled', false).text('обновить текст 999.md');
 			}
 		});
 	});
