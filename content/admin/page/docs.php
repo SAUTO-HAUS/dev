@@ -32,6 +32,7 @@ if ( isset($t_mp[4]) ){
 						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
 						,'cesionar'=>'Anexa<br>(Cesiune drept de plată)'
 						,'con_intermed'=>'Contract de intermediere'
+						,'foaie_parcurs_cars'=>'Foaie de parcurs pentru automobile'
 						// ,'vinzare_proc'=>'Contract de vânzare-cumpărare'
 					]
 					,($lng['m']['doc_cat_comanda'] ?? 'Set de acte auto la comanda')=>[
@@ -67,6 +68,7 @@ if ( isset($t_mp[4]) ){
 						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
 						,'cesionar'=>'Anexa (Cesiune drept de plată)'
 						,'con_intermed'=>'Contract de intermediere'
+						,'foaie_parcurs_cars'=>'Foaie de parcurs pentru automobile'
 						// ,'vinzare_proc'=>'Contract de vânzare-cumpărare'
 					]
 					,($lng['m']['doc_cat_comanda'] ?? 'Set de acte auto la comanda')=>[
@@ -986,7 +988,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 							<div class="col max" data-id="'.$r['u_id'].'" data-tp="'.$r['u_tp'].'"><span class="u_nm">'.mb_convert_case($r['u_nm'], MB_CASE_TITLE, 'UTF-8').'</span> <span class="u_cf_idno">'.$r['u_cf_idno'].'</span></div>
 							<div class="col"><span class="prc">'.( isset($inf['prc'])?$inf['prc']:'-' ).'</span></div>
 							<div class="col max">'.$br_mo_vin.'</div>
-							<div class="col max">'.($r['f']=='foaie_parcurs' ? (isset($inf['sofer'])?$inf['sofer']:'').', '.(isset($inf['autovehicul'])?$inf['autovehicul']:'') : $br_mo_vin).'</div>
+							<div class="col max">'.($r['f']=='foaie_parcurs' ? (isset($inf['sofer'])?$inf['sofer']:'').', '.(isset($inf['autovehicul'])?$inf['autovehicul']:'') : ($r['f']=='foaie_parcurs_cars' ? (isset($inf['sofer'])?$inf['sofer']:'').', '.(isset($inf['plate'])?$inf['plate']:'') : $br_mo_vin)).'</div>
 							<div class="col min">'.( isset($adm_ar[ $r['adm'] ])?$adm_ar[ $r['adm'] ]:$r['adm'] ).'</div>
 							<div class="col min">-</div>
 							<div class="col min">-</div>

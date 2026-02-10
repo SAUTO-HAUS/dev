@@ -142,7 +142,7 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 			<link rel="stylesheet" type="text/css" href="/content/default/css/default.css" />
 			<style>
 				@media print {
-					@page {size:auto; size: A4 '.(isset($_POST['doc_f']) && $_POST['doc_f']=='foaie_parcurs' ? 'landscape' : 'portrait').'; margin:0;}
+					@page {size:auto; size: A4 '.(isset($_POST['doc_f']) && in_array($_POST['doc_f'], ['foaie_parcurs','foaie_parcurs_cars']) ? 'landscape' : 'portrait').'; margin:0;}
 					* {-webkit-print-color-adjust:exact !important; color-adjust:exact !important; print-color-adjust:exact !important;}
 					.sep {display:none;}
 				}
@@ -150,7 +150,7 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 				body {background-color:#fff;}
 				
 				.base {font-family:"def"; filter:grayscale(1); -webkit-filter:grayscale(1);}
-				.base > .pg {width:'.(isset($_POST['doc_f']) && $_POST['doc_f']=='foaie_parcurs' ? '297mm' : '210mm').'; height:'.(isset($_POST['doc_f']) && $_POST['doc_f']=='foaie_parcurs' ? '210mm' : '297mm').'; margin:0 auto; padding:'.(isset($_POST['doc_f']) && $_POST['doc_f']=='foaie_parcurs' ? '5mm' : '5mm 10mm').'; background-color:#fff; position:relative;}
+				.base > .pg {width:'.(isset($_POST['doc_f']) && in_array($_POST['doc_f'], ['foaie_parcurs','foaie_parcurs_cars']) ? '297mm' : '210mm').'; height:'.(isset($_POST['doc_f']) && in_array($_POST['doc_f'], ['foaie_parcurs','foaie_parcurs_cars']) ? '210mm' : '297mm').'; margin:0 auto; padding:'.(isset($_POST['doc_f']) && in_array($_POST['doc_f'], ['foaie_parcurs','foaie_parcurs_cars']) ? '5mm' : '5mm 10mm').'; background-color:#fff; position:relative;}
 				.base > .pg.bg {background:#fffc url("/media/images/site/print/bg_pg.webp") repeat center / contain; background-blend-mode:soft-light;}
 				.cont {width:100%; float:left; padding:5mm 0 0; font-size:0.8rem;}
 				.logo {float:right;}
@@ -215,7 +215,7 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 								filename:     "sauto_doc.pdf",
 								image:        { type: "jpeg", quality: 0.98 },
 								html2canvas:  { scale: 2, ignoreElements : (".sep") },
-								jsPDF:        { orientation: "'.(isset($_POST['doc_f']) && $_POST['doc_f']=='foaie_parcurs' ? 'landscape' : 'portrait').'" }
+								jsPDF:        { orientation: "'.(isset($_POST['doc_f']) && in_array($_POST['doc_f'], ['foaie_parcurs','foaie_parcurs_cars']) ? 'landscape' : 'portrait').'" }
 							};
 							//html2pdf().set(opt).from(element).save();
 							html2pdf(element, opt);';
@@ -240,16 +240,17 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 	</html>';
 	
 	if (isset($_POST['save_inf']) && $_POST['save_inf']=='1'){
-		if ($_POST['doc_f'] == 'foaie_parcurs' && isset($_POST['fp_daa_start']) && $_POST['fp_daa_start'] != '' && (!isset($_POST['doc_view']) || $_POST['doc_view'] != '1')) {
+		if (in_array($_POST['doc_f'], ['foaie_parcurs','foaie_parcurs_cars']) && isset($_POST['fp_daa_start']) && $_POST['fp_daa_start'] != '' && (!isset($_POST['doc_view']) || $_POST['doc_view'] != '1')) {
 			$fp_daa_val = intval($_POST['fp_daa_start']);
+			$fp_x2_key = $_POST['doc_f'];
 			$pdo_daa_check = $db->prepare('SELECT `id` FROM '.$prefx.'_info WHERE `name`=:name AND `x1`=:x1 AND `x2`=:x2 LIMIT 1');
-			$pdo_daa_check->execute(['name' => 'fp_daa_start', 'x1' => 'cars', 'x2' => 'foaie_parcurs']);
+			$pdo_daa_check->execute(['name' => 'fp_daa_start', 'x1' => 'cars', 'x2' => $fp_x2_key]);
 			if ($pdo_daa_check->fetch()) {
 				$pdo_daa_upd = $db->prepare('UPDATE '.$prefx.'_info SET `value`=:value WHERE `name`=:name AND `x1`=:x1 AND `x2`=:x2');
-				$pdo_daa_upd->execute(['value' => $fp_daa_val, 'name' => 'fp_daa_start', 'x1' => 'cars', 'x2' => 'foaie_parcurs']);
+				$pdo_daa_upd->execute(['value' => $fp_daa_val, 'name' => 'fp_daa_start', 'x1' => 'cars', 'x2' => $fp_x2_key]);
 			} else {
 				$pdo_daa_ins = $db->prepare('INSERT INTO '.$prefx.'_info (`name`, `x1`, `x2`, `value`) VALUES (:name, :x1, :x2, :value)');
-				$pdo_daa_ins->execute(['name' => 'fp_daa_start', 'x1' => 'cars', 'x2' => 'foaie_parcurs', 'value' => $fp_daa_val]);
+				$pdo_daa_ins->execute(['name' => 'fp_daa_start', 'x1' => 'cars', 'x2' => $fp_x2_key, 'value' => $fp_daa_val]);
 			}
 		}
 

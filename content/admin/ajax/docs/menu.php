@@ -1320,6 +1320,37 @@ JAVASCRIPT;
 		'.( isset($mixall)?'</form>':'' );
 	}
 
+		//__________________________________________________________________________________________FOAIE DE PARCURS PENTRU AUTOMOBILE
+	if ( $t_mp[5]=='foaie_parcurs_cars' || isset($mixall) ){
+		$fp_daa_start_cars = 40992842; 
+		$pdo_daa_cars = $db->prepare('SELECT `value` FROM '.$prefx.'_info WHERE `name`=:name AND `x1`=:x1 AND `x2`=:x2 LIMIT 1');
+		$pdo_daa_cars->execute(['name' => 'fp_daa_start', 'x1' => 'cars', 'x2' => 'foaie_parcurs_cars']);
+		$daa_row_cars = $pdo_daa_cars->fetch(PDO::FETCH_ASSOC);
+		if ($daa_row_cars) { $fp_daa_start_cars = intval($daa_row_cars['value']); }
+
+		$rtrn .= ( isset($mixall)?'<form class="menu_foaie_parcurs_cars">':'' ).'
+		<div class="ttl">Document</div>
+		<div style="display:flex; gap:15px; align-items:flex-end; flex-wrap:wrap;">
+			<label class="lbl" style="flex:1; min-width:150px;"><span class="ttl">Data</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Data" value="'.date('Y-m-d').'" /></label>
+			<label class="lbl fp-daa-only-add" style="min-width:150px;"><span class="ttl">Seria DAA de la Nr.</span><input type="number" name="fp_daa_start" value="'.$fp_daa_start_cars.'" title="Numărul de start DAA" /></label>
+		</div>
+		
+		<div class="ttl">Auto</div>
+		<label class="lbl"><span class="ttl">Marca</span><select name="br" title="Marca">
+			<option value="x" class="def" disabled selected>-</option>
+			'.$br_html.'
+		</select></label>
+		<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model">
+			<option value="x" data-br="" class="def" disabled selected>-</option>
+			'.$mo_html.'
+		</select></label>
+		<label class="lbl"><span class="ttl">Nr. de înmatriculare</span><input class="need" type="text" name="plate" title="Nr. de înmatriculare" /></label>
+		
+		<div class="ttl">Șofer</div>
+		<label class="lbl"><span class="ttl">Numele și prenumele</span><input class="need" type="text" name="sofer" title="Numele și prenumele șoferului" /></label>
+		'.( isset($mixall)?'</form>':'' );
+	}
+
 	//__________________________________________________________________________________________Contract de intermediere [TEST]
 	if ( $t_mp[5]=='con_intermed' || isset($mixall) ){
 		$rtrn .= ( isset($mixall)?'<form class="menu_con_intermed">':'' ).'
