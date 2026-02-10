@@ -242,7 +242,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 			.docs > .list .rowz > .col:nth-child(7) {width:19%;}
 			.docs > .list .rowz > .col:nth-child(8) {width:14%; min-width:60px;}
 
-			.docs > .list .rowz.hdr {background:linear-gradient(135deg,#6c757d 0%,#545b62 100%); color:#fff; font-weight:600; font-size:.75rem; text-transform:uppercase; letter-spacing:.5px;}
+			.docs > .list .rowz.hdr {background:linear-gradient(135deg,#6c757d 0%,#545b62 100%); color:#fff; font-weight:600; font-size:.75rem; text-transform:uppercase; letter-spacing:.5px; margin-top:1rem;}
 			.docs > .list .rowz.hdr > .col {padding:.75rem .5rem; border-right:1px solid rgba(255,255,255,.1);}
 			.docs > .list .rowz.hdr > .col:last-child {border-right:none;}
 
