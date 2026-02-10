@@ -375,7 +375,7 @@ class PublicationService
             $caption_lines[] = '';
             $caption_lines[] = '📞 Pentru detalii: +37379600352';
             $caption_lines[] = '';
-            $caption_lines[] = '<a href="https://t.me/Sauto_LA_Comanda_bot">👉 Sauto la comandă – deschideți chatul pentru întrebări! 👈</a>';
+            $caption_lines[] = '<a href="https://t.me/Sauto_B24_bot">👉 Sauto la comandă – deschideți chatul pentru întrebări! 👈</a>';
             
         } else {
             // In stock cars format
