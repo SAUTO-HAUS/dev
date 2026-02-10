@@ -228,38 +228,51 @@ c/f 1017600006845, c/TVA 0609417</pre>
 			#find_user_rslt > p {position:relative; padding-right:3rem; transition:.2s;}
 			#find_user_rslt > p:hover {background-color:#f0f0f0;}
 			#find_user_rslt > p > .edit_user_btn {position:absolute; right:.5rem; top:50%; transform:translateY(-50%); padding:.5rem; cursor:pointer; color:#e2001a; font-size:1.2rem; transition:.2s;}
-			#find_user_rslt > p > .edit_user_btn:hover {color:#bf4040; transform:translateY(-50%) scale(1.2);}
-			
-			.docs > .list {width:100%; font-family:Verdana; font-size:.8rem; border-top: 1px solid; margin:1rem 0 0; padding:1rem 0;}
 			.docs > .list input.srch {cursor:auto;}
-			
-			.docs > .list .rowz {display:flex; cursor:default;}
-			.docs > .list .rowz > .col {flex:1; overflow-wrap:anywhere; padding:.5rem .25rem;}
-			
-			.docs > .list .rowz > .col.max {flex:1 0 12rem;}
-			.docs > .list .rowz > .col.med {flex:1 0 6rem;}
-			.docs > .list .rowz > .col.min_med {flex:1 0 4rem;}
-			.docs > .list .rowz > .col.min {/*flex:1 0 1rem;*/ flex:inherit;}
-			
+
+			.docs > .list .rowz {display:flex; cursor:default; align-items:center;}
+			.docs > .list .rowz > .col {overflow-wrap:anywhere; padding:.6rem .5rem; font-size:.78rem; line-height:1.4; box-sizing:border-box;}
+
+			.docs > .list .rowz > .col:nth-child(1) {width:6%; min-width:55px;}
+			.docs > .list .rowz > .col:nth-child(2) {width:12%; min-width:80px;}
+			.docs > .list .rowz > .col:nth-child(3) {width:10%; min-width:60px;}
+			.docs > .list .rowz > .col:nth-child(4) {width:15%;}
+			.docs > .list .rowz > .col:nth-child(5) {width:6%; min-width:50px;}
+			.docs > .list .rowz > .col:nth-child(6) {width:18%;}
+			.docs > .list .rowz > .col:nth-child(7) {width:19%;}
+			.docs > .list .rowz > .col:nth-child(8) {width:14%; min-width:60px;}
+
+			.docs > .list .rowz.hdr {background:linear-gradient(135deg,#6c757d 0%,#545b62 100%); color:#fff; font-weight:600; font-size:.75rem; text-transform:uppercase; letter-spacing:.5px;}
+			.docs > .list .rowz.hdr > .col {padding:.75rem .5rem; border-right:1px solid rgba(255,255,255,.1);}
+			.docs > .list .rowz.hdr > .col:last-child {border-right:none;}
+
 			.sep {width:100%; text-align:center; color:#bf4040; margin:.5rem 0;}
-			
-			.bx {position:relative; display:block; margin:.2rem 0; transition:.3s;}
+
+			.bx {position:relative; display:block; margin:0; transition:.2s; border-bottom:1px solid #f0f0f0;}
 			.bx.odd {background-color:#fff;}
-			.bx.even {background-color:#fff8f8;}
+			.bx.even {background-color:#fafbfc;}
 			.bx.hide {transform:scale(0); opacity:0;}
-			.bx:hover {background-color:#f4e0e0;}
+			.bx:hover {background-color:#fff3f3;}
+			
+			.bx .rowz > .col .date {color:#555; font-weight:400;}
+			.bx .rowz > .col .u_nm {font-weight:400; color:#333;}
+			.bx .rowz > .col .u_cf_idno {color:#888; font-size:.72rem;}
+			.bx .rowz > .col .prc {font-weight:400; color:#333;}
+			.bx .rowz > .col .br {color:#333;}
+			.bx .rowz > .col .mo {color:#555;}
+			.bx .rowz > .col .vin {color:#aaa; font-size:.7rem;}
 			
 			.bx .u > .nm {text-transform:capitalize;}
 			.bx .nr > .date,
 			.bx .it > .vin	{color:#9f9f9f; font-size:.7rem;}
 			
-			.bx > .info {width:100%; min-height:3rem;}
+			.bx > .info {width:100%; min-height:2.8rem;}
 			
-			.bx > .btns {width:0; height:100%; overflow:hidden; display:flex; flex-flow:row wrap; justify-content:center; opacity:0; position:absolute; top:0; right:0; background-color:#f4e0e0ee; transition:.1s;}
+			.bx > .btns {width:0; height:100%; overflow:hidden; display:flex; flex-flow:row wrap; justify-content:center; opacity:0; position:absolute; top:0; right:0; background-color:#f4e0e0ee; transition:.15s;}
 			.bx > input[name="btns_act"]:checked ~ .btns {width:100%; opacity:1;}
 			.bx > .btns > input[type="submit"] {background:none; color:inherit; border:none; font:inherit; outline:inherit;}
-			.bx > .btns > .btn {height:inherit; align-items:center; display:flex; padding:0 1rem; cursor:pointer; align-self:center; border-radius:.75rem; margin:0 1rem; transition:.25s;}
-			.bx > .btns > .btn:hover {background-color:#bf4040; color:#fff;}
+			.bx > .btns > .btn {height:inherit; align-items:center; display:flex; padding:.4rem 1.2rem; cursor:pointer; align-self:center; border-radius:6px; margin:0 .5rem; transition:.2s; font-size:.78rem; font-weight:500;}
+			.bx > .btns > .btn:hover {background-color:#e2001a; color:#fff; transform:translateY(-1px); box-shadow:0 2px 6px rgba(226,0,26,.3);}
 			
 			/* Special styling for buttons after edit operation */
 			.bx.edited > .btns {background-color:#e2001a;}
@@ -479,8 +492,6 @@ c/f 1017600006845, c/TVA 0609417</pre>
 									+"</div>"
 								);
 
-								$("#overlay > .content > form .fp-daa-only-add").hide();
-								
 								$("#overlay > .content > form").append(""
 									+"<input type=\"hidden\" name=\"doc_gr\" value=\""+vals.data("gr")+"\" />"
 									+"<input type=\"hidden\" name=\"doc_f\" value=\""+vals.data("doc")+"\" />"
@@ -889,13 +900,12 @@ c/f 1017600006845, c/TVA 0609417</pre>
 				<div class="rowz hdr">
 					<div class="col">Date</div>
 					<div class="col">Doc</div>
-					<div class="col min_med">Nr</div>
-					<div class="col max">Contragent</div>
+					<div class="col">Nr</div>
+					<div class="col">Client</div>
 					<div class="col">Suma</div>
-					<div class="col max">Info</div>
-					<div class="col min">Added by</div>
-					<div class="col min">V</div>
-					<div class="col min">X</div>
+					<div class="col">Auto</div>
+					<div class="col">Info</div>
+					<div class="col">Added by</div>
 				</div>';
 				
 				foreach ($pdo as $r){
@@ -984,14 +994,12 @@ c/f 1017600006845, c/TVA 0609417</pre>
 						<div class="rowz info">
 							<div class="col"><span class="date">'.date( 'd.m.y', strtotime( $r['date'] ) ).'</span></div>
 							<div class="col">'.( strtr(mb_convert_case($r['f'], MB_CASE_TITLE, 'UTF-8'), ['_'=>' ']) ).'</div>
-							<div class="col min_med">'.$r['abr'].$r['y'].$r['q'].'/'.$r['n'].'</div>
-							<div class="col max" data-id="'.$r['u_id'].'" data-tp="'.$r['u_tp'].'">'.( in_array($r['f'], ['foaie_parcurs','foaie_parcurs_cars']) ? '<span class="u_nm">'.(isset($inf['sofer'])?$inf['sofer']:'').'</span>' : '<span class="u_nm">'.mb_convert_case($r['u_nm'], MB_CASE_TITLE, 'UTF-8').'</span> <span class="u_cf_idno">'.$r['u_cf_idno'].'</span>' ).'</div>
+							<div class="col">'.$r['abr'].$r['y'].$r['q'].'/'.$r['n'].'</div>
+							<div class="col" data-id="'.$r['u_id'].'" data-tp="'.$r['u_tp'].'">'.( in_array($r['f'], ['foaie_parcurs','foaie_parcurs_cars']) ? '<span class="u_nm">'.(isset($inf['sofer'])?$inf['sofer']:'').'</span>' : '<span class="u_nm">'.mb_convert_case($r['u_nm'], MB_CASE_TITLE, 'UTF-8').'</span> <span class="u_cf_idno">'.$r['u_cf_idno'].'</span>' ).'</div>
 							<div class="col"><span class="prc">'.( isset($inf['prc'])?$inf['prc']:'-' ).'</span></div>
-							<div class="col max">'.( $r['f']=='foaie_parcurs' ? (isset($inf['autovehicul'])?$inf['autovehicul']:'') : ($r['f']=='foaie_parcurs_cars' ? $br_mo_vin.( isset($inf['plate'])?' ['.$inf['plate'].']':'' ) : $br_mo_vin) ).'</div>
-							<div class="col max">'.($r['f']=='foaie_parcurs' ? (isset($inf['sofer'])?$inf['sofer']:'').', '.(isset($inf['autovehicul'])?$inf['autovehicul']:'') : ($r['f']=='foaie_parcurs_cars' ? (isset($inf['sofer'])?$inf['sofer']:'').', '.(isset($inf['plate'])?$inf['plate']:'') : $br_mo_vin)).'</div>
-							<div class="col min">'.( isset($adm_ar[ $r['adm'] ])?$adm_ar[ $r['adm'] ]:$r['adm'] ).'</div>
-							<div class="col min">-</div>
-							<div class="col min">-</div>
+							<div class="col">'.( $r['f']=='foaie_parcurs' ? (isset($inf['autovehicul'])?$inf['autovehicul']:'') : ($r['f']=='foaie_parcurs_cars' ? $br_mo_vin.( isset($inf['plate'])?' ['.$inf['plate'].']':'' ) : $br_mo_vin) ).'</div>
+							<div class="col">'.($r['f']=='foaie_parcurs' ? (isset($inf['sofer'])?$inf['sofer']:'').', '.(isset($inf['autovehicul'])?$inf['autovehicul']:'') : ($r['f']=='foaie_parcurs_cars' ? (isset($inf['sofer'])?$inf['sofer']:'').', '.(isset($inf['plate'])?$inf['plate']:'') : $br_mo_vin)).'</div>
+							<div class="col">'.( isset($adm_ar[ $r['adm'] ])?$adm_ar[ $r['adm'] ]:$r['adm'] ).'</div>
 						</div>
 						<input type="radio" name="btns_act" class="none">
 						<div class="btns">
