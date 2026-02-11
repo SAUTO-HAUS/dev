@@ -296,10 +296,10 @@ if (!function_exists('__log')) {
  * @return string 
  */
 function buildCarUrl($brand, $model = '') {
-    $brand_clean = str_replace('_', '-', $brand);
+    $brand_clean = str_replace('_', '-', strtolower($brand));
     if (empty($model)) {
         return $brand_clean;
     }
-    $model_clean = str_replace('_', '-', $model);
-    return $brand_clean . '-' . $model_clean;
+    $model_clean = str_replace('_', '-', strtolower($model));
+    return $brand_clean . '/' . $model_clean;
 }

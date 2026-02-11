@@ -115,93 +115,68 @@ if ( strpos($uri, '/car/') ){
 	$redirect = 1;
 }
 
-// Special handling for car filters - we want to keep clean URLs
-// Format: /lang/cars/brand-model but process as brand/model internally
-if (isset($_GET['tg']) && $_GET['tg'] == 'fltr' && isset($_GET['br'])) {
-    // Convert query parameters to clean URL with brand-model format
-    $clean_url = '/'.$_COOKIE['lang'].'/cars/'.str_replace('_', '-', $_GET['br']);
-    if (isset($_GET['mo'])) {
-        $clean_url .= '-'.str_replace('_', '-', $_GET['mo']);
+if ((isset($t_mp[2]) && ($t_mp[2]=='cars' || $t_mp[2]=='ordercars')) && isset($t_mp[3]) && !is_numeric($t_mp[3])) {
+    $section = $t_mp[2]; 
+    
+    if (isset($t_mp[4]) && !empty($t_mp[4])) {
+        $_GET['tg'] = 'fltr';
+    } else {
+        $brand_model = explode('?', $t_mp[3])[0];
+        
+        $pdo = $db->prepare('SELECT `br`, `br_nm` FROM '.$prefx.'_car_list GROUP BY `br`, `br_nm` ORDER BY LENGTH(`br`) DESC');
+        $pdo->execute();
+        $brands = $pdo->fetchAll(PDO::FETCH_ASSOC);
+        
+        $found_brand = false;
+        foreach ($brands as $brand_row) {
+            $brand_url = strtolower(str_replace('_', '-', $brand_row['br']));
+            
+            if (strpos($brand_model, $brand_url) === 0) {
+                $remainder = substr($brand_model, strlen($brand_url));
+                
+                if ($remainder === '' || $remainder === false) {
+                    $found_brand = true;
+                    $_GET['tg'] = 'fltr';
+                    $_GET['br'] = $brand_row['br'];
+                    $t_mp[3] = $brand_url;
+                    break;
+                } elseif ($remainder[0] === '-') {
+                    $found_brand = true;
+                    $model_part = substr($remainder, 1);
+                    
+                    if (!empty($model_part)) {
+                        $lang = isset($_COOKIE['lang']) ? $_COOKIE['lang'] : 'ro';
+                        $new_url = '/'.$lang.'/'.$section.'/'.$brand_url.'/'.$model_part;
+                        
+                        $qs = isset($q_mp[1]) ? '?'.$q_mp[1] : '';
+                        
+                        header('HTTP/1.1 301 Moved Permanently');
+                        header('Location: '.$protocol.'://'.$http_host.$new_url.$qs);
+                        exit();
+                    }
+                    break;
+                }
+            }
+        }
+        
+        if (!$found_brand) {
+            $_GET['tg'] = 'fltr';
+            $_GET['br'] = str_replace('-', '_', $brand_model);
+            $t_mp[3] = $brand_model;
+        }
+    }
+}
+
+if (isset($_GET['tg']) && $_GET['tg'] == 'fltr' && isset($_GET['br']) && !isset($t_mp[3])) {
+    $section = (isset($t_mp[2]) && $t_mp[2] == 'ordercars') ? 'ordercars' : 'cars';
+    $clean_url = '/'.$_COOKIE['lang'].'/'.$section.'/'.str_replace('_', '-', strtolower($_GET['br']));
+    if (isset($_GET['mo']) && !empty($_GET['mo'])) {
+        $clean_url .= '/'.str_replace('_', '-', strtolower($_GET['mo']));
     }
     
     if ($uri !== $clean_url) {
         $uri = $clean_url;
         $redirect = 1;
-    }
-}
-
-// Handle clean URLs for car filters and single car pages
-if ((isset($t_mp[2]) && ($t_mp[2]=='cars' || $t_mp[2]=='ordercars')) && isset($t_mp[3])) {
-    // Check if this is a numeric ID (single car) or a brand/model format
-    if (!is_numeric($t_mp[3])) {
-        if (isset($t_mp[4]) && !empty($t_mp[4])) {
-            $_GET['tg'] = 'fltr';
-            file_put_contents('debug_redirect.log', "Clean URL format detected: {$t_mp[3]}/{$t_mp[4]} - setting filter mode\n", FILE_APPEND);
-        } else {
-            $url_segments = explode('-', $t_mp[3]);
-            $last_segment = end($url_segments);
-            
-            if (is_numeric($last_segment) && count($url_segments) > 1) {
-                file_put_contents('debug_redirect.log', "Old URL format detected in redirect.php: {$t_mp[3]}\n", FILE_APPEND);
-            } else {
-                $_GET['tg'] = 'fltr';
-                
-                // Handle URLs like cars/ds-automobiles-ds-7-crossback
-                $url_parts = explode('/', $uri);
-                $brand_model = end($url_parts);
-            
-            // Try to match the brand first from the database
-            $pdo = $db->prepare('SELECT `br`, `br_nm` FROM '.$prefx.'_car_list GROUP BY `br`, `br_nm` ORDER BY LENGTH(`br`) DESC');
-            $pdo->execute();
-            $brands = $pdo->fetchAll(PDO::FETCH_ASSOC);
-            
-            $found_brand = false;
-            foreach ($brands as $brand) {
-                $brand_url = str_replace('_', '-', $brand['br']);
-                if (strpos($brand_model, $brand_url) === 0) {
-                    // Found the brand, everything after it is the model
-                    $found_brand = true;
-                    $model = trim(substr($brand_model, strlen($brand_url)), '-');
-                    
-                    $_GET['br'] = $brand['br'];
-                    if (!empty($model)) {
-                        $_GET['mo'] = str_replace('-', '_', $model);
-                    }
-                    
-                    // Set t_mp array to match old format for compatibility
-                    $t_mp[3] = $brand_url;
-                    if (!empty($model)) {
-                        $t_mp[4] = $model;
-                    }
-                    break;
-                }
-            }
-            
-            if (!$found_brand) {
-                // Fallback: try to split at the last hyphen
-                $last_brand_pos = strrpos($brand_model, '-');
-                if ($last_brand_pos !== false) {
-                    $brand = substr($brand_model, 0, $last_brand_pos);
-                    $model = substr($brand_model, $last_brand_pos + 1);
-                    
-                    $_GET['br'] = str_replace('-', '_', $brand);
-                    $_GET['mo'] = str_replace('-', '_', $model);
-                    
-                    $t_mp[3] = $brand;
-                    $t_mp[4] = $model;
-                } else {
-                    // No model specified, just brand
-                    $_GET['br'] = str_replace('-', '_', $brand_model);
-                    $t_mp[3] = $brand_model;
-                }
-            }
-            
-            // Log for debugging
-            file_put_contents('debug_redirect.log', "Processing URL: " . print_r($t_mp, true) . "\n", FILE_APPEND);
-            file_put_contents('debug_redirect.log', "Set GET params: " . print_r($_GET, true) . "\n", FILE_APPEND);
-            file_put_contents('debug_redirect.log', "Final URI: {$uri}\n\n", FILE_APPEND);
-        }
-        }
     }
 }
 

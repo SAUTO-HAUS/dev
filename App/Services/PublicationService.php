@@ -268,7 +268,7 @@ class PublicationService
             
             // Use /ordercars/ for on_order cars, /cars/ for in_stock
             $path = ($catalogType === 'on_order') ? 'ordercars' : 'cars';
-            $message .= "\n🔗 Alte modele: sauto.md/ro/{$path}/{$brand}-{$model}";
+            $message .= "\n🔗 Alte modele: sauto.md/ro/{$path}/{$brand}/{$model}";
         }
         
         return $message;
