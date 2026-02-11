@@ -520,34 +520,6 @@ class SitemapGeneratorReal {
             }
             
             $this->log('Retrieved ' . count($pages) . ' brand pages for sitemap inclusion');
-            
-            // Also add model pages: /ro/cars/{brand}/{model}
-            $modelSql = "SELECT DISTINCT `br`, `br_nm`, `mo`, `mo_nm` FROM `{$carListTable}` WHERE `br` IS NOT NULL AND `br` != '' AND `mo` IS NOT NULL AND `mo` != '' ORDER BY `br_nm` ASC, `mo_nm` ASC";
-            $modelStmt = $this->db->query($modelSql);
-            $models = $modelStmt->fetchAll(PDO::FETCH_ASSOC);
-            
-            $modelCount = 0;
-            foreach ($models as $model) {
-                $brandSlug = str_replace('_', '-', strtolower($model['br']));
-                $modelSlug = str_replace('_', '-', strtolower($model['mo']));
-                
-                $pages[] = [
-                    'type' => 'model',
-                    'url' => '/ro/cars/' . $brandSlug . '/' . $modelSlug,
-                    'created_at' => new DateTimeImmutable('now'),
-                    'lastmod' => new DateTimeImmutable('now'),
-                    'status' => 'active',
-                    'page_type' => 'model',
-                    'is_archived' => false,
-                    'is_deleted' => false,
-                    'translations' => $this->languages,
-                    'brand_name' => $model['br_nm'],
-                    'brand_code' => $model['br']
-                ];
-                $modelCount++;
-            }
-            
-            $this->log('Retrieved ' . $modelCount . ' model pages for sitemap inclusion');
         } catch (Exception $e) {
             $this->log('ERROR retrieving brands: ' . $e->getMessage());
         }
@@ -846,9 +818,6 @@ class SitemapGeneratorReal {
             case 'brand':
                 return 1.0;
             
-            case 'model':
-                return 0.9;
-            
             case 'car':
                 if (!empty($page['status']) && $page['status'] === 'sold') {
                     return 0.2;
@@ -899,8 +868,6 @@ class SitemapGeneratorReal {
     private function getChangeFreq($page) {
         switch ($page['type']) {
             case 'brand':
-                return 'daily';
-            case 'model':
                 return 'daily';
             case 'car':
                 return 'daily';
