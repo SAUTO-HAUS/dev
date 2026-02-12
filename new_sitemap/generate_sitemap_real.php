@@ -1447,6 +1447,7 @@ class SitemapGeneratorReal {
         // Check if URL follows expected structure
         $validPatterns = [
             '/\/ro\/cars\/\d+$/',                    // /ro/cars/123 (car detail pages)
+            '/\/ro\/cars\/[a-z0-9-]+\/[a-z0-9-]+$/', // /ro/cars/bmw/x1 
             '/\/ro\/cars\/[a-z0-9-]+$/',             // /ro/cars/audi (brand pages)
             '/\/ro\/ordercars\/\d+$/',               // /ro/ordercars/123 (order car detail pages)
             '/\/ro\/tyres\/\d+$/',                   // /ro/tyres/123 (tyre detail pages)
