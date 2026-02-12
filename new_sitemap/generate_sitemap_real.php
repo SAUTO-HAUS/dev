@@ -245,6 +245,9 @@ class SitemapGeneratorReal {
                 }
                 return true;
 
+            case 'model':
+                return true;
+
             case 'static':
                 return true;
 
