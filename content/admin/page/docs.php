@@ -834,6 +834,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 			</div>
 			<div class="find doc">
 				<label class="lbl"><span class="ttl">Search</span><input type="text" class="srch" /></label>
+				<span class="btn" style="display:inline-block; padding:0.4rem 1rem; margin:0 0 0 0.5rem; background:#e2001a; color:#fff; cursor:pointer; border-radius:3px; vertical-align:top; line-height:1.8;" onclick="window.location.href=\'/\'+Cookies.get(\'lang\')+\'/adminsauto/docs/ctlg\';">&#10005;</span>
 			</div>
 			<div class="list">';
 				$rtrn .= '<div class="copy none">';
@@ -1043,72 +1044,133 @@ c/f 1017600006845, c/TVA 0609417</pre>
 		var ajaxRequest = null;
 		var allDocsLoaded = ($("#load_more_btn").length === 0);
 		
+		function hlText(txt, q) {
+			var low = q.toLowerCase();
+			var result = "";
+			var i = 0;
+			while (i < txt.length) {
+				if (i === 0 || /[\s,.\[\]()\/\-]/.test(txt[i-1])) {
+					if (txt.substr(i, q.length).toLowerCase() === low) {
+						result += "<b style=\"color:#e2001a\">" + txt.substr(i, q.length) + "</b>";
+						i += q.length;
+						continue;
+					}
+				}
+				result += txt[i];
+				i++;
+			}
+			return result;
+		}
+		function highlightSearch(rawVal) {
+			$(".docs > .list > .bx .rowz.info .col").each(function(){
+				var el = $(this);
+				if (!el.data("orig-html")) { el.data("orig-html", el.html()); }
+				el.html(el.data("orig-html"));
+			});
+			if (!rawVal || rawVal === "") return;
+			$(".docs > .list > .bx:not(.none):not(.srch-hide) .rowz.info .col").each(function(){
+				var el = $(this);
+				el.find("span, a").each(function(){
+					var sp = $(this);
+					var txt = sp.text();
+					var h = hlText(txt, rawVal);
+					if (h !== txt) { sp.html(h); }
+				});
+				var cNodes = Array.prototype.slice.call(this.childNodes);
+				cNodes.forEach(function(node){
+					if (node.nodeType === 3 && node.textContent.length > 0) {
+						var h = hlText(node.textContent, rawVal);
+						if (h !== node.textContent) {
+							var wrapper = document.createElement("span");
+							wrapper.innerHTML = h;
+							node.parentNode.replaceChild(wrapper, node);
+						}
+					}
+				});
+			});
+		}
+		
 		// Instant search: client-side filter on loaded docs + AJAX for older docs
 		searchInput.on("input", function(){
 			var val = $(this).val().toLowerCase().replace(/[ăâ]/g,"a").replace(/[î]/g,"i").replace(/[ș]/g,"s").replace(/[ț]/g,"t").replace(/_/g," ");
 			
 			// Remove previous AJAX results
 			$(".docs > .list > .bx.ajax-result").remove();
-			
-			if (val === "") {
-				// Show all loaded docs, respect year filter
-				$(".docs > .list > .bx").removeClass("none srch-hide");
-				var yearVal = $(".docs > .find.doc select").val();
-				if (yearVal && yearVal !== "all") {
-					$(".docs > .list > .bx").each(function(){
-						$(this).attr("data-year") == yearVal ? $(this).removeClass("none") : $(this).addClass("none");
-					});
-				}
-				return;
+		
+		if (val === "") {
+			// Show all loaded docs, respect year filter
+			$(".docs > .list > .bx").removeClass("none srch-hide");
+			$("#load_more_btn").show();
+			highlightSearch("");
+			var yearVal = $(".docs > .find.doc select").val();
+			if (yearVal && yearVal !== "all") {
+				$(".docs > .list > .bx").each(function(){
+					$(this).attr("data-year") == yearVal ? $(this).removeClass("none") : $(this).addClass("none");
+				});
 			}
+			return;
+		}
+		
+		// Hide "More" button during search
+		$("#load_more_btn").hide();
+		
+		var rawVal = $(this).val();
+		
+		// Client-side filter on already loaded docs
+		$(".docs > .list > .bx:not(.ajax-result)").each(function(){
+			var tags = $(this).attr("data-tags") || "";
+			var words = tags.split(/\s+/);
+			var found = false;
+			for (var w = 0; w < words.length; w++) {
+				if (words[w].indexOf(val) === 0) { found = true; break; }
+			}
+			if (found) {
+				$(this).removeClass("none srch-hide");
+			} else {
+				$(this).addClass("none srch-hide");
+			}
+		});
+		
+		highlightSearch(rawVal);
+		
+		// If not all docs are loaded, also search server-side
+		if (!allDocsLoaded && val.length >= 2) {
+			if (searchTimer) clearTimeout(searchTimer);
+			if (ajaxRequest) ajaxRequest.abort();
 			
-			// Client-side filter on already loaded docs
-			$(".docs > .list > .bx:not(.ajax-result)").each(function(){
-				var tags = $(this).attr("data-tags") || "";
-				if (tags.indexOf(val) >= 0) {
-					$(this).removeClass("none srch-hide");
-				} else {
-					$(this).addClass("none srch-hide");
-				}
-			});
-			
-			// If not all docs are loaded, also search server-side
-			if (!allDocsLoaded && val.length >= 2) {
-				if (searchTimer) clearTimeout(searchTimer);
-				if (ajaxRequest) ajaxRequest.abort();
+			searchTimer = setTimeout(function(){
+				// Collect IDs of already loaded docs
+				var loadedIds = [];
+				$(".docs > .list > .bx:not(.ajax-result)").each(function(){
+					loadedIds.push($(this).data("id"));
+				});
 				
-				searchTimer = setTimeout(function(){
-					// Collect IDs of already loaded docs
-					var loadedIds = [];
-					$(".docs > .list > .bx:not(.ajax-result)").each(function(){
-						loadedIds.push($(this).data("id"));
-					});
-					
-					ajaxRequest = $.ajax({
-						url: "/ajax.php",
-						method: "POST",
-						data: { tp: "adm", pg: "docs", fn: "search_docs", q: val, loaded_ids: loadedIds },
-						success: function(response){
-							try {
-								var data = typeof response === "string" ? JSON.parse(response) : response;
-								if (data && data.results && data.results.length > 0) {
-									// Check current search value still matches
-									var currentVal = searchInput.val().toLowerCase().replace(/[ăâ]/g,"a").replace(/[î]/g,"i").replace(/[ș]/g,"s").replace(/[ț]/g,"t").replace(/_/g," ");
-									if (currentVal !== val) return;
-									
-									var list = $(".docs > .list");
-									for (var i = 0; i < data.results.length; i++) {
-										// Don\'t add if already exists
-										if (list.find(".bx[data-id=\"" + data.results[i].id + "\"]").length === 0) {
-											list.append(data.results[i].html);
-										}
+				ajaxRequest = $.ajax({
+					url: "/ajax.php",
+					method: "POST",
+					data: { tp: "adm", pg: "docs", fn: "search_docs", q: val, loaded_ids: loadedIds },
+					success: function(response){
+						try {
+							var data = typeof response === "string" ? JSON.parse(response) : response;
+							if (data && data.results && data.results.length > 0) {
+								// Check current search value still matches
+								var currentVal = searchInput.val().toLowerCase().replace(/[ăâ]/g,"a").replace(/[î]/g,"i").replace(/[ș]/g,"s").replace(/[ț]/g,"t").replace(/_/g," ");
+								if (currentVal !== val) return;
+								
+								var list = $(".docs > .list");
+								for (var i = 0; i < data.results.length; i++) {
+									// Don\'t add if already exists
+									if (list.find(".bx[data-id=\"" + data.results[i].id + "\"]").length === 0) {
+										list.append(data.results[i].html);
 									}
 								}
-							} catch(e) {}
-						}
-					});
-				}, 350);
-			}
+								highlightSearch(searchInput.val());
+							}
+						} catch(e) {}
+					}
+				});
+			}, 350);
+		}	
 		});
 		
 		// Auto-focus search if loadall is set

@@ -270,13 +270,15 @@ elseif ( $_POST['fn']=='search_docs' ){
 				$mo_formatted = isset($inf['mo']) ? ucwords(str_replace('_', ' ', $inf['mo'])) : '';
 				$br_mo_vin .= '<span class="br">'.$br_formatted.'</span> <span class="mo">'.$mo_formatted.'</span> <span class="vin">'.(isset($inf['vin'])?'['.$inf['vin'].']':'').'</span>';
 			}
-			
 			// Build tags for client-side filtering
 			$tags = strtr(mb_strtolower( $r['u_nm'].' '.$r['u_cf_idno'].' '.$r['u_tp'].' '.$r['abr'].$r['y'].$r['q'].'/'.$r['n'].' '.( isset($inf['br'])?$inf['br']:'' ).' '.( isset($inf['mo'])?$inf['mo']:'' ).' '.( isset($inf['vin'])?$inf['vin']:'' ).' '.( isset($inf['prc'])?$inf['prc']:'' ).' '.( isset($inf['plate'])?$inf['plate']:'' ).' '.( isset($inf['sofer'])?$inf['sofer']:'' ).' '.( isset($inf['autovehicul'])?$inf['autovehicul']:'' ).' '.date( 'd.m.Y', strtotime( $r['date'] ) ).' '.$r['f'], 'UTF-8' ), ['ă'=>'a', 'â'=>'a', 'î'=>'i', 'ș'=>'s', 'ț'=>'t', '_'=>' ']);
-			
-			// Check if tags match search
-			if (strpos($tags, $searchNorm) === false) { continue; }
-			
+
+			// Check if any word in tags starts with search term
+			$tagWords = preg_split('/\s+/', $tags);
+			$tagMatch = false;
+			foreach ($tagWords as $tw) { if (strpos($tw, $searchNorm) === 0) { $tagMatch = true; break; } }
+			if (!$tagMatch) { continue; }
+
 			$results[] = [
 				'id' => $r['id'],
 				'tags' => $tags,
