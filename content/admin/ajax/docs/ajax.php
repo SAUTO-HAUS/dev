@@ -204,6 +204,147 @@ elseif ( $_POST['fn']=='del_it' ){
 	$pdo = $db->prepare('DELETE FROM '.$prefx.'_docs_ctlg WHERE `id`=:id AND `f`=:f AND `gr`=:gr'); $pdo->execute([ 'id'=>$_POST['id'], 'f'=>$_POST['doc'], 'gr'=>$_POST['gr'] ]);
 	$returnIt = [ 'fn'=>$_POST['fn'] ];
 }
-
-
+//---------------------------------------------SEARCH DOCS (AJAX)
+elseif ( $_POST['fn']=='search_docs' ){
+	$search = isset($_POST['q']) ? trim($_POST['q']) : '';
+	$loaded_ids = isset($_POST['loaded_ids']) ? $_POST['loaded_ids'] : [];
+	
+	if ($search !== '' && mb_strlen($search) >= 2) {
+		// Normalize search term
+		$searchNorm = mb_strtolower($search, 'UTF-8');
+		$searchNorm = strtr($searchNorm, ['ă'=>'a', 'â'=>'a', 'î'=>'i', 'ș'=>'s', 'ț'=>'t', '_'=>' ']);
+		
+		// Get admin users for display
+		$adm_ar = [];
+		$pdo_adm = $db->prepare('SELECT * FROM '.$prefx.'_adm_usr ORDER BY `id` ASC'); $pdo_adm->execute();
+		foreach ($pdo_adm as $ra){ $adm_ar[ $ra['id'] ] = $ra['name']; }
+		
+		// Search across ALL documents with LIKE - covers all visible columns
+		$likeTerm = '%'.$search.'%';
+		
+		$params = ['s1'=>$likeTerm, 's2'=>$likeTerm, 's3'=>$likeTerm, 's4'=>$likeTerm, 's5'=>$likeTerm, 's6'=>$likeTerm];
+		
+		$pdo = $db->prepare('SELECT 
+			u.id u_id, u.nm u_nm, u.tp u_tp, u.cf_idno u_cf_idno, u.tva_dt u_tva_dt, u.iban_dt_tk u_iban_dt_tk, u.adr u_adr, u.phn u_phn, u.eml u_eml, 
+			c.*, 
+			c.last_edited_by
+			FROM 
+				'.$prefx.'_docs_u AS u 
+				INNER JOIN 
+				'.$prefx.'_docs_ctlg AS c 
+			ON u.id=c.u 
+			WHERE LOWER(u.nm) LIKE :s1 
+			   OR LOWER(u.cf_idno) LIKE :s2 
+			   OR LOWER(c.inf) LIKE :s3 
+			   OR c.n LIKE :s4
+			   OR LOWER(c.f) LIKE :s5
+			   OR c.date LIKE :s6
+			ORDER BY c.date DESC, c.id DESC
+			LIMIT 200');
+		$pdo->execute($params);
+		
+		$results = [];
+		$i = 0;
+		foreach ($pdo as $r){
+			// Skip already loaded docs
+			if (is_array($loaded_ids) && in_array($r['id'], $loaded_ids)) { continue; }
+			
+			$inf = [];
+			if ( $r['inf']!='' ){
+				foreach ( explode('&&', $r['inf']) as $v){
+					$tmp = explode('==', $v);
+					if ( isset($tmp[1]) ){ $inf[ $tmp[0] ] = $tmp[1]; }
+				}
+			}
+			
+			$br_mo_vin = '';
+			if ( isset($inf['br']) && strpos($inf['br'], '||') !== false && strpos($inf['mo'], '||') !== false ){
+				$br_ar = explode('||', $inf['br']); $mo_ar = explode('||', $inf['mo']); if ( strpos($inf['vin'], '||') !== false ){ $vin_ar = explode('||', $inf['vin']); }
+				foreach ($br_ar as $k => $v){
+					if ( isset($mo_ar[$k]) ){
+						$br_mo_vin .= ($k>0?', ':'').ucwords(strtolower(str_replace('_', ' ', $v))).' '.ucwords(str_replace('_', ' ', $mo_ar[$k])).( isset($vin_ar[$k])?'['.$vin_ar[$k].']':'' );
+					}
+				}
+			} else {
+				$br_formatted = isset($inf['br']) ? ucwords(strtolower(str_replace('_', ' ', $inf['br']))) : '';
+				$mo_formatted = isset($inf['mo']) ? ucwords(str_replace('_', ' ', $inf['mo'])) : '';
+				$br_mo_vin .= '<span class="br">'.$br_formatted.'</span> <span class="mo">'.$mo_formatted.'</span> <span class="vin">'.(isset($inf['vin'])?'['.$inf['vin'].']':'').'</span>';
+			}
+			
+			// Build tags for client-side filtering
+			$tags = strtr(mb_strtolower( $r['u_nm'].' '.$r['u_cf_idno'].' '.$r['u_tp'].' '.$r['abr'].$r['y'].$r['q'].'/'.$r['n'].' '.( isset($inf['br'])?$inf['br']:'' ).' '.( isset($inf['mo'])?$inf['mo']:'' ).' '.( isset($inf['vin'])?$inf['vin']:'' ).' '.( isset($inf['prc'])?$inf['prc']:'' ).' '.( isset($inf['plate'])?$inf['plate']:'' ).' '.( isset($inf['sofer'])?$inf['sofer']:'' ).' '.( isset($inf['autovehicul'])?$inf['autovehicul']:'' ).' '.date( 'd.m.Y', strtotime( $r['date'] ) ).' '.$r['f'], 'UTF-8' ), ['ă'=>'a', 'â'=>'a', 'î'=>'i', 'ș'=>'s', 'ț'=>'t', '_'=>' ']);
+			
+			// Check if tags match search
+			if (strpos($tags, $searchNorm) === false) { continue; }
+			
+			$results[] = [
+				'id' => $r['id'],
+				'tags' => $tags,
+				'year' => date('Y', strtotime($r['date'])),
+				'html' => '<label class="bx '.( $i%2>0?'odd':'even' ).' ajax-result" data-id="'.$r['id'].'" data-u_id="'.$r['u_id'].'" data-tags="'.$tags.'">
+						<div class="values"
+							data-id="'.$r['id'].'" data-doc="'.$r['f'].'" data-gr="'.$r['gr'].'"
+							data-cont_y="'.$r['y'].'" data-cont_q="'.$r['q'].'" data-cont_n="'.$r['n'].'" 
+							data-u_id="'.$r['u_id'].'" data-u_cf_idno="'.$r['u_cf_idno'].'" data-u_nm="'.$r['u_nm'].'" data-date="'.$r['date'].'" 
+							data-u_tva_dt="'.( $r['u_tp']=='fiz'&&strtotime($r['u_tva_dt'])!==false?date('Y-m-d',strtotime($r['u_tva_dt'])):$r['u_tva_dt'] ).'" 
+							data-u_iban_dt_tk="'.( $r['u_tp']=='fiz'&&strtotime($r['u_iban_dt_tk'])!==false?date('Y-m-d',strtotime($r['u_iban_dt_tk'])):$r['u_iban_dt_tk'] ).'" 
+							data-u_adr="'.$r['u_adr'].'" data-u_phn="'.$r['u_phn'].'" data-u_eml="'.$r['u_eml'].'"
+							'.(isset($inf['cntr_fr'])?'data-cntr_fr="'.$inf['cntr_fr'].'"':'').' '.(isset($inf['cntr_to'])?'data-cntr_to="'.$inf['cntr_to'].'"':'').' '.(isset($inf['adr_to'])?'data-adr_to="'.$inf['adr_to'].'"':'').'
+							'.(isset($inf['t2pay'])?'data-t2pay="'.$inf['t2pay'].'"':'').' '.(isset($inf['plate'])?'data-plate="'.$inf['plate'].'"':'').'
+							'.(isset($inf['vin'])?'data-vin="'.$inf['vin'].'"':'').' '.(isset($inf['mo'])?'data-mo="'.$inf['mo'].'"':'').' '.(isset($inf['br'])?'data-br="'.$inf['br'].'"':'').'
+							'.(isset($inf['prc'])?'data-prc="'.$inf['prc'].'"':'').' '.(isset($inf['prc_eur'])?'data-prc_eur="'.$inf['prc_eur'].'"':'').' '.(isset($inf['term_livr'])?'data-term_livr="'.$inf['term_livr'].'"':'').' 
+							'.(isset($inf['yr'])?'data-yr="'.$inf['yr'].'"':'').' '.(isset($inf['clr'])?'data-clr="'.$inf['clr'].'"':'').' '.(isset($inf['loc'])?'data-loc="'.$inf['loc'].'"':'').' '.(isset($inf['u_eur'])?'data-u_eur="'.$inf['u_eur'].'"':'').' 
+							'.(isset($inf['pays'])?'data-pays="'.$inf['pays'].'"':'').' '.(isset($inf['grnt_txt'])?'data-grnt_txt="'.$inf['grnt_txt'].'"':'').'
+							'.(isset($inf['extras'])?'data-extras="'.$inf['extras'].'"':'').' '.(isset($inf['dmg_pos'])?'data-dmg_pos="'.$inf['dmg_pos'].'"':'').' '.(isset($inf['dmg_txt'])?'data-dmg_txt="'.$inf['dmg_txt'].'"':'').'
+							'.(isset($inf['orig'])?'data-orig="'.$inf['orig'].'"':'').' 
+							'.(isset($inf['cur'])?'data-cur="'.$inf['cur'].'"':'').' '.(isset($inf['description'])?'data-description="'.htmlspecialchars($inf['description']).'"':'').' '.(isset($inf['dealer'])?'data-dealer="'.htmlspecialchars($inf['dealer']).'"':'').'
+							'.(isset($inf['sauto_role'])?'data-sauto_role="'.$inf['sauto_role'].'"':'').'
+							'.(isset($inf['seller_name'])?'data-seller_name="'.htmlspecialchars($inf['seller_name']).'"':'').' '.(isset($inf['seller_vat'])?'data-seller_vat="'.htmlspecialchars($inf['seller_vat']).'"':'').' '.(isset($inf['seller_account'])?'data-seller_account="'.htmlspecialchars($inf['seller_account']).'"':'').'
+							'.(isset($inf['seller_address'])?'data-seller_address="'.htmlspecialchars($inf['seller_address']).'"':'').' '.(isset($inf['seller_country'])?'data-seller_country="'.htmlspecialchars($inf['seller_country']).'"':'').' '.(isset($inf['seller_swift'])?'data-seller_swift="'.htmlspecialchars($inf['seller_swift']).'"':'').'
+							'.(isset($inf['buyer_name'])?'data-buyer_name="'.htmlspecialchars($inf['buyer_name']).'"':'').' '.(isset($inf['buyer_vat'])?'data-buyer_vat="'.htmlspecialchars($inf['buyer_vat']).'"':'').' '.(isset($inf['buyer_account'])?'data-buyer_account="'.htmlspecialchars($inf['buyer_account']).'"':'').'
+							'.(isset($inf['buyer_address'])?'data-buyer_address="'.htmlspecialchars($inf['buyer_address']).'"':'').' '.(isset($inf['buyer_country'])?'data-buyer_country="'.htmlspecialchars($inf['buyer_country']).'"':'').' '.(isset($inf['buyer_swift'])?'data-buyer_swift="'.htmlspecialchars($inf['buyer_swift']).'"':'').' 
+							'.(isset($inf['add_cesionar'])?'data-add_cesionar="'.$inf['add_cesionar'].'"':'').' '.(isset($inf['cesionar_account'])?'data-cesionar_account="'.htmlspecialchars($inf['cesionar_account']).'"':'').' '.(isset($inf['cesionar_nm'])?'data-cesionar_nm="'.htmlspecialchars($inf['cesionar_nm']).'"':'').' '.(isset($inf['cesionar_cf_idno'])?'data-cesionar_cf_idno="'.htmlspecialchars($inf['cesionar_cf_idno']).'"':'').' '.(isset($inf['cesionar_suma'])?'data-cesionar_suma="'.$inf['cesionar_suma'].'"':'').' '.(isset($inf['base_contract_id'])?'data-base_contract_id="'.$inf['base_contract_id'].'"':'').' 
+							'.(isset($inf['sofer'])?'data-sofer="'.htmlspecialchars($inf['sofer']).'"':'').' '.(isset($inf['autovehicul'])?'data-autovehicul="'.htmlspecialchars($inf['autovehicul']).'"':'').'
+							'.(isset($inf['kyc_doc_buletin'])?'data-kyc_doc_buletin="'.$inf['kyc_doc_buletin'].'"':'').' '.(isset($inf['kyc_doc_permis'])?'data-kyc_doc_permis="'.$inf['kyc_doc_permis'].'"':'').' '.(isset($inf['kyc_doc_pasaport'])?'data-kyc_doc_pasaport="'.$inf['kyc_doc_pasaport'].'"':'').'
+							'.(isset($inf['kyc_occupation_angajat'])?'data-kyc_occupation_angajat="'.$inf['kyc_occupation_angajat'].'"':'').' '.(isset($inf['kyc_occupation_student'])?'data-kyc_occupation_student="'.$inf['kyc_occupation_student'].'"':'').' '.(isset($inf['kyc_occupation_antreprenor'])?'data-kyc_occupation_antreprenor="'.$inf['kyc_occupation_antreprenor'].'"':'').' '.(isset($inf['kyc_occupation_somer'])?'data-kyc_occupation_somer="'.$inf['kyc_occupation_somer'].'"':'').' '.(isset($inf['kyc_occupation_pensionar'])?'data-kyc_occupation_pensionar="'.$inf['kyc_occupation_pensionar'].'"':'').'
+							'.(isset($inf['kyc_no_public_function'])?'data-kyc_no_public_function="'.$inf['kyc_no_public_function'].'"':'').' '.(isset($inf['kyc_public_function_deputat'])?'data-kyc_public_function_deputat="'.$inf['kyc_public_function_deputat'].'"':'').' '.(isset($inf['kyc_public_function_judecator'])?'data-kyc_public_function_judecator="'.$inf['kyc_public_function_judecator'].'"':'').' '.(isset($inf['kyc_public_function_guvern'])?'data-kyc_public_function_guvern="'.$inf['kyc_public_function_guvern'].'"':'').' '.(isset($inf['kyc_public_function_primar'])?'data-kyc_public_function_primar="'.$inf['kyc_public_function_primar'].'"':'').' '.(isset($inf['kyc_public_function_partid'])?'data-kyc_public_function_partid="'.$inf['kyc_public_function_partid'].'"':'').' '.(isset($inf['kyc_public_function_consilier'])?'data-kyc_public_function_consilier="'.$inf['kyc_public_function_consilier'].'"':'').'
+							'.(isset($inf['kyc_transaction_personal'])?'data-kyc_transaction_personal="'.$inf['kyc_transaction_personal'].'"':'').' '.(isset($inf['kyc_transaction_family'])?'data-kyc_transaction_family="'.$inf['kyc_transaction_family'].'"':'').' '.(isset($inf['kyc_transaction_company'])?'data-kyc_transaction_company="'.$inf['kyc_transaction_company'].'"':'').' '.(isset($inf['kyc_transaction_resale'])?'data-kyc_transaction_resale="'.$inf['kyc_transaction_resale'].'"':'').' '.(isset($inf['kyc_transaction_commercial'])?'data-kyc_transaction_commercial="'.$inf['kyc_transaction_commercial'].'"':'').' '.(isset($inf['kyc_transaction_transfer'])?'data-kyc_transaction_transfer="'.$inf['kyc_transaction_transfer'].'"':'').'
+							'.(isset($inf['kyc_funds_salary'])?'data-kyc_funds_salary="'.$inf['kyc_funds_salary'].'"':'').' '.(isset($inf['kyc_funds_dividends'])?'data-kyc_funds_dividends="'.$inf['kyc_funds_dividends'].'"':'').' '.(isset($inf['kyc_funds_loan'])?'data-kyc_funds_loan="'.$inf['kyc_funds_loan'].'"':'').' '.(isset($inf['kyc_funds_business'])?'data-kyc_funds_business="'.$inf['kyc_funds_business'].'"':'').' '.(isset($inf['kyc_funds_inheritance'])?'data-kyc_funds_inheritance="'.$inf['kyc_funds_inheritance'].'"':'').' '.(isset($inf['kyc_funds_donations'])?'data-kyc_funds_donations="'.$inf['kyc_funds_donations'].'"':'').'
+							data-u_tp="'.$r['u_tp'].'" 
+							data-adm="'.$r['adm'].'" data-last_edited_by="'.($r['last_edited_by'] ?? $r['adm']).'"
+						></div>
+						<div class="rowz info">
+							<div class="col"><span class="date">'.date( 'd.m.y', strtotime( $r['date'] ) ).'</span></div>
+							<div class="col">'.( strtr(mb_convert_case($r['f'], MB_CASE_TITLE, 'UTF-8'), ['_'=>' ']) ).'</div>
+							<div class="col">'.$r['abr'].$r['y'].$r['q'].'/'.$r['n'].'</div>
+							<div class="col" data-id="'.$r['u_id'].'" data-tp="'.$r['u_tp'].'">'.( in_array($r['f'], ['foaie_parcurs','foaie_parcurs_cars']) ? '<span class="u_nm">'.(isset($inf['sofer'])?$inf['sofer']:'').'</span>' : '<span class="u_nm">'.mb_convert_case($r['u_nm'], MB_CASE_TITLE, 'UTF-8').'</span> <span class="u_cf_idno">'.$r['u_cf_idno'].'</span>' ).'</div>
+							<div class="col"><span class="prc">'.( isset($inf['prc'])?$inf['prc']:'-' ).'</span></div>
+							<div class="col">'.( $r['f']=='foaie_parcurs' ? (isset($inf['autovehicul'])?$inf['autovehicul']:'') : ($r['f']=='foaie_parcurs_cars' ? $br_mo_vin.( isset($inf['plate'])?' ['.$inf['plate'].']':'' ) : $br_mo_vin) ).'</div>
+							<div class="col">'.($r['f']=='foaie_parcurs' ? (isset($inf['sofer'])?$inf['sofer']:'').', '.(isset($inf['autovehicul'])?$inf['autovehicul']:'') : ($r['f']=='foaie_parcurs_cars' ? (isset($inf['sofer'])?$inf['sofer']:'').', '.(isset($inf['plate'])?$inf['plate']:'') : $br_mo_vin)).'</div>
+							<div class="col">'.( isset($adm_ar[ $r['adm'] ])?$adm_ar[ $r['adm'] ]:$r['adm'] ).'</div>
+						</div>
+						<input type="radio" name="btns_act" class="none">
+						<div class="btns">
+							<div class="btn show" data-fn="show_it">Vizualiza</div>
+							<div class="btn pdf" data-fn="save_pdf">PDF
+								 <input type="checkbox" name="stamp" title="Stampila" style="accent-color:#e2001a;" />
+								 <input type="checkbox" name="usr_stamp" title="Stampila client" style="accent-color:#e2001a;">
+							</div>
+							<div class="btn print" data-fn="print_it">Print
+								 <input type="checkbox" name="stamp" title="Stampila" style="accent-color:#e2001a;" />
+								 <input type="checkbox" name="usr_stamp" title="Stampila client" style="accent-color:#e2001a;">
+							</div>
+							<div class="btn edit" data-fn="edit_it">Edit</div>
+							<div class="btn del" data-fn="del_it">Delete</div>
+						</div>
+					</label>'
+			];
+			$i++;
+		}
+		
+		$returnIt = [ 'fn'=>$_POST['fn'], 'results'=>$results, 'count'=>count($results) ];
+	} else {
+		$returnIt = [ 'fn'=>$_POST['fn'], 'results'=>[], 'count'=>0 ];
+	}
+}
 ?>

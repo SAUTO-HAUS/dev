@@ -959,7 +959,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
                     }
 					
 					$rtrn .= '
-					<label class="bx '.( $i%2>0?'odd':'even' ).'" data-id="'.$r['id'].'" data-u_id="'.$r['u_id'].'" data-tags="'.strtr(mb_strtolower( $r['u_nm'].' '.$r['u_cf_idno'].' '.$r['u_tp'].' '.$r['abr'].$r['y'].$r['q'].'/'.$r['n'].' '.( isset($inf['br'])?$inf['br']:'' ).' '.( isset($inf['mo'])?$inf['mo']:'' ).' '.( isset($inf['vin'])?$inf['vin']:'' ).' '.( isset($inf['prc'])?$inf['prc']:'' ).' '.date( 'd.m.Y', strtotime( $r['date'] ) ).' '.$r['f'].' '.( isset($adm_ar[ $r['adm'] ])?$adm_ar[ $r['adm'] ]:$r['adm'] ), 'UTF-8' ), ['ă'=>'a', 'â'=>'a', 'î'=>'i', 'ș'=>'s', 'ț'=>'t', '_'=>' ']).'">
+					<label class="bx '.( $i%2>0?'odd':'even' ).'" data-id="'.$r['id'].'" data-u_id="'.$r['u_id'].'" data-tags="'.strtr(mb_strtolower( $r['u_nm'].' '.$r['u_cf_idno'].' '.$r['u_tp'].' '.$r['abr'].$r['y'].$r['q'].'/'.$r['n'].' '.( isset($inf['br'])?$inf['br']:'' ).' '.( isset($inf['mo'])?$inf['mo']:'' ).' '.( isset($inf['vin'])?$inf['vin']:'' ).' '.( isset($inf['prc'])?$inf['prc']:'' ).' '.( isset($inf['plate'])?$inf['plate']:'' ).' '.( isset($inf['sofer'])?$inf['sofer']:'' ).' '.( isset($inf['autovehicul'])?$inf['autovehicul']:'' ).' '.date( 'd.m.Y', strtotime( $r['date'] ) ).' '.$r['f'], 'UTF-8' ), ['ă'=>'a', 'â'=>'a', 'î'=>'i', 'ș'=>'s', 'ț'=>'t', '_'=>' ']).'">
 						<div class="values"
 							data-id="'.$r['id'].'" data-doc="'.$r['f'].'" data-gr="'.$r['gr'].'"
 							data-cont_y="'.$r['y'].'" data-cont_q="'.$r['q'].'" data-cont_n="'.$r['n'].'" 
@@ -1033,21 +1033,87 @@ c/f 1017600006845, c/TVA 0609417</pre>
 </div>
 	<script>
 	$(document).ready(function(){
-		// Handle "More" button click
+		// Handle "More" button click - load all via AJAX now
 		$("#load_more_btn").on("click", function(){
 			window.location.href = window.location.pathname + "?loadall=1";
 		});
 		
-		// Auto-load all documents when user clicks on search
 		var searchInput = $(".docs > .find.doc input.srch");
-		searchInput.on("focus", function(){
-			if ($("#load_more_btn").length > 0) {
-				window.location.href = window.location.pathname + "?loadall=1";
+		var searchTimer = null;
+		var ajaxRequest = null;
+		var allDocsLoaded = ($("#load_more_btn").length === 0);
+		
+		// Instant search: client-side filter on loaded docs + AJAX for older docs
+		searchInput.on("input", function(){
+			var val = $(this).val().toLowerCase().replace(/[ăâ]/g,"a").replace(/[î]/g,"i").replace(/[ș]/g,"s").replace(/[ț]/g,"t").replace(/_/g," ");
+			
+			// Remove previous AJAX results
+			$(".docs > .list > .bx.ajax-result").remove();
+			
+			if (val === "") {
+				// Show all loaded docs, respect year filter
+				$(".docs > .list > .bx").removeClass("none srch-hide");
+				var yearVal = $(".docs > .find.doc select").val();
+				if (yearVal && yearVal !== "all") {
+					$(".docs > .list > .bx").each(function(){
+						$(this).attr("data-year") == yearVal ? $(this).removeClass("none") : $(this).addClass("none");
+					});
+				}
+				return;
+			}
+			
+			// Client-side filter on already loaded docs
+			$(".docs > .list > .bx:not(.ajax-result)").each(function(){
+				var tags = $(this).attr("data-tags") || "";
+				if (tags.indexOf(val) >= 0) {
+					$(this).removeClass("none srch-hide");
+				} else {
+					$(this).addClass("none srch-hide");
+				}
+			});
+			
+			// If not all docs are loaded, also search server-side
+			if (!allDocsLoaded && val.length >= 2) {
+				if (searchTimer) clearTimeout(searchTimer);
+				if (ajaxRequest) ajaxRequest.abort();
+				
+				searchTimer = setTimeout(function(){
+					// Collect IDs of already loaded docs
+					var loadedIds = [];
+					$(".docs > .list > .bx:not(.ajax-result)").each(function(){
+						loadedIds.push($(this).data("id"));
+					});
+					
+					ajaxRequest = $.ajax({
+						url: "/ajax.php",
+						method: "POST",
+						data: { tp: "adm", pg: "docs", fn: "search_docs", q: val, loaded_ids: loadedIds },
+						success: function(response){
+							try {
+								var data = typeof response === "string" ? JSON.parse(response) : response;
+								if (data && data.results && data.results.length > 0) {
+									// Check current search value still matches
+									var currentVal = searchInput.val().toLowerCase().replace(/[ăâ]/g,"a").replace(/[î]/g,"i").replace(/[ș]/g,"s").replace(/[ț]/g,"t").replace(/_/g," ");
+									if (currentVal !== val) return;
+									
+									var list = $(".docs > .list");
+									for (var i = 0; i < data.results.length; i++) {
+										// Don\'t add if already exists
+										if (list.find(".bx[data-id=\"" + data.results[i].id + "\"]").length === 0) {
+											list.append(data.results[i].html);
+										}
+									}
+								}
+							} catch(e) {}
+						}
+					});
+				}, 350);
 			}
 		});
 		
 		// Auto-focus search if loadall is set
 		if (window.location.search.indexOf("loadall=1") !== -1) {
+			allDocsLoaded = true;
 			setTimeout(function(){
 				searchInput.focus();
 			}, 100);
