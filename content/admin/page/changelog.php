@@ -96,6 +96,29 @@ $field_labels = [
     'import_country_id' => 'Страна импорта'
 ];
 
+// Value translation maps for coded fields
+$value_maps = [
+    'fl'  => $lng['l']['car']['fl'] ?? [],
+    'tra' => $lng['l']['car']['tra'] ?? [],
+    'wd'  => $lng['l']['car']['wd'] ?? [],
+    'clr' => $lng['l']['car']['clr'] ?? [],
+    'bt'  => $lng['l']['car']['bt'] ?? [],
+    'gr'  => $lng['l']['car']['gr'] ?? [],
+    'cur' => $lng['l']['cur'] ?? [],
+    'loc' => [1 => $lng['t']['x']['address'][1] ?? 'Филиал 1', 2 => $lng['t']['x']['address'][2] ?? 'Филиал 2'],
+    'soon' => ['0' => 'Нет', '1' => 'Да'],
+    'n_a'  => ['0' => 'В наличии', '1' => 'Нет в наличии'],
+    'tva'  => ['0' => 'Нет', '1' => 'Да'],
+    'top'  => ['0' => 'Нет', '1' => 'Да'],
+    'gift' => ['0' => 'Нет', '1' => 'Да']
+];
+
+function changelog_translate_value($field, $value, $value_maps) {
+    if ($value === null || $value === '') return $value;
+    if (isset($value_maps[$field][$value])) return $value_maps[$field][$value];
+    return $value;
+}
+
 // Action labels
 $action_labels = [
     'create' => ['Создание', '#28a745'],
@@ -148,6 +171,28 @@ $base_url = '/'.$_COOKIE['lang'].'/'.$admin_dir.'/changelog/ctlg';
 .changelog-summary { font-size:12px; color:#888; margin-bottom:10px; }
 .changelog-car-link { color:#007bff; text-decoration:none; font-weight:600; }
 .changelog-car-link:hover { text-decoration:underline; }
+
+@media (max-width: 768px) {
+    .changelog-wrap { padding:5px; }
+    .changelog-filters { flex-direction:column; gap:6px; }
+    .changelog-filters label { width:100%; font-size:13px; }
+    .changelog-filters input, .changelog-filters select { width:100% !important; height:38px; font-size:14px; }
+    .changelog-filters .btn-filter, .changelog-filters .btn-reset { width:48%; height:38px; text-align:center; font-size:14px; }
+    .changelog-filters .changelog-btns { display:flex; gap:4%; justify-content:center; width:100%; }
+
+    .changelog-table { border-collapse:separate; border-spacing:0 10px; }
+    .changelog-table thead { display:none; }
+    .changelog-table tbody tr { display:block; background:#fff; border:1px solid #ccc; border-radius:8px; padding:0; margin-bottom:10px; box-shadow:0 1px 3px rgba(0,0,0,.08); overflow:hidden; }
+    .changelog-table td { display:block; padding:10px 12px; border-bottom:1px solid #f0f0f0; border-right:none; text-align:left; font-size:14px; position:relative; padding-left:45%; }
+    .changelog-table td:last-child { border-bottom:none; }
+    .changelog-table td::before { content:attr(data-label); position:absolute; left:12px; top:10px; font-weight:700; color:#555; font-size:12px; text-transform:uppercase; width:38%; white-space:nowrap; overflow:hidden; }
+    .changelog-table td:first-child { background:#f8f8f8; border-radius:8px 8px 0 0; font-weight:600; }
+    .changelog-val { max-width:100%; white-space:normal; word-break:break-all; font-size:13px; }
+    .changelog-badge { font-size:12px; padding:3px 10px; }
+    .changelog-pager { flex-wrap:wrap; justify-content:center; }
+    .changelog-pager a, .changelog-pager span { padding:8px 14px; font-size:14px; }
+    .changelog-summary { font-size:13px; }
+}
 </style>
 
 <div class="changelog-wrap">
@@ -174,8 +219,10 @@ $base_url = '/'.$_COOKIE['lang'].'/'.$admin_dir.'/changelog/ctlg';
             </label>
             <label>Дата от <input type="date" name="date_from" value="<?= htmlspecialchars($filter_date_from) ?>"></label>
             <label>Дата до <input type="date" name="date_to" value="<?= htmlspecialchars($filter_date_to) ?>"></label>
-            <button type="submit" class="btn-filter">Фильтр</button>
-            <a href="<?= $base_url ?>" class="btn-reset">Сброс</a>
+            <div class="changelog-btns">
+                <button type="submit" class="btn-filter">Фильтр</button>
+                <a href="<?= $base_url ?>" class="btn-reset">Сброс</a>
+            </div>
         </div>
     </form>
 
@@ -201,16 +248,19 @@ $base_url = '/'.$_COOKIE['lang'].'/'.$admin_dir.'/changelog/ctlg';
                 <?php foreach ($rows as $row): 
                     $al = $action_labels[$row['action']] ?? [$row['action'], '#999'];
                     $cat_label = $row['catalog_type'] === 'ordercars' ? 'Под заказ' : 'В наличии';
+                    $fn = $row['field_name'] ?? '';
+                    $display_old = changelog_translate_value($fn, $row['old_value'] ?? null, $value_maps);
+                    $display_new = changelog_translate_value($fn, $row['new_value'] ?? null, $value_maps);
                 ?>
                 <tr>
-                    <td style="white-space:nowrap;"><?= date('d.m.Y H:i:s', $row['created_at']) ?></td>
-                    <td><a class="changelog-car-link" href="/<?= $_COOKIE['lang'] ?>/<?= $row['catalog_type'] === 'ordercars' ? 'ordercars' : 'cars' ?>/<?= $row['car_id'] ?>" target="_blank"><?= $row['car_id'] ?></a></td>
-                    <td><?= $cat_label ?></td>
-                    <td><span class="changelog-badge" style="background:<?= $al[1] ?>"><?= $al[0] ?></span></td>
-                    <td><?= $field_labels[$row['field_name']] ?? htmlspecialchars($row['field_name'] ?? '') ?></td>
-                    <td><div class="changelog-val" title="<?= htmlspecialchars($row['old_value'] ?? '') ?>"><?= htmlspecialchars($row['old_value'] ?? '—') ?></div></td>
-                    <td><div class="changelog-val" title="<?= htmlspecialchars($row['new_value'] ?? '') ?>"><?= htmlspecialchars($row['new_value'] ?? '—') ?></div></td>
-                    <td><?= htmlspecialchars($row['user_login'] ?? '') ?></td>
+                    <td data-label="Дата" style="white-space:nowrap;"><?= date('d.m.Y H:i:s', $row['created_at']) ?></td>
+                    <td data-label="ID авто"><a class="changelog-car-link" href="/<?= $_COOKIE['lang'] ?>/<?= $row['catalog_type'] === 'ordercars' ? 'ordercars' : 'cars' ?>/<?= $row['car_id'] ?>" target="_blank"><?= $row['car_id'] ?></a></td>
+                    <td data-label="Каталог"><?= $cat_label ?></td>
+                    <td data-label="Действие"><span class="changelog-badge" style="background:<?= $al[1] ?>"><?= $al[0] ?></span></td>
+                    <td data-label="Поле"><?= $field_labels[$row['field_name']] ?? htmlspecialchars($row['field_name'] ?? '') ?></td>
+                    <td data-label="Было"><div class="changelog-val" title="<?= htmlspecialchars($row['old_value'] ?? '') ?>"><?= htmlspecialchars($display_old ?? '—') ?></div></td>
+                    <td data-label="Стало"><div class="changelog-val" title="<?= htmlspecialchars($row['new_value'] ?? '') ?>"><?= htmlspecialchars($display_new ?? '—') ?></div></td>
+                    <td data-label="Пользователь"><?= htmlspecialchars($row['user_login'] ?? '') ?></td>
                 </tr>
                 <?php endforeach; ?>
             <?php endif; ?>
