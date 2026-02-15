@@ -35,7 +35,9 @@
 <?php
 // Conditional JavaScript loading to prevent conflicts between pages
 $current_url = $_SERVER['REQUEST_URI'];
-if (strpos($current_url, '/cars/') !== false) {
+if (strpos($current_url, '/mail/') !== false) {
+    echo '<script src="/' . _ADM . '/js/mail.js?d=' . date("GYimsd", filemtime(_ADM.'/js/mail.js')) . '"></script>' . "\n";
+} elseif (strpos($current_url, '/cars/') !== false) {
     // Load only cars.js for cars pages
     echo '<script src="/' . _ADM . '/js/cars.js?d=' . date("GYimsd", filemtime(_ADM.'/js/cars.js')) . '"></script>' . "\n";
 } elseif (strpos($current_url, '/ordercars/') !== false) {
