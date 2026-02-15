@@ -237,6 +237,7 @@ if (__post('sub') == 'mo_search') {
             if (!empty(__post('del_img'))) {
                 $x1 = ['high', 'med'];
                 $x2 = ['jpg', 'webp'];
+                $changelog_photos_deleted = [];
                 foreach (explode(',', __post('del_img')) as $v) {
                     $pdo = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `id`=:id AND `it_id`=:it_id LIMIT 1');
                     $pdo->execute(['id' => $v, 'it_id' => __post('id')]);
@@ -253,12 +254,14 @@ if (__post('sub') == 'mo_search') {
                     $pdo = $db->prepare('DELETE FROM '.$prefx.'_car_pht WHERE `id`=:id AND `it_id`=:it_id ');
                     $pdo->execute(['id' => $v, 'it_id' => __post('id')]);
 
-                    // --- CHANGELOG: log photo delete ---
+                    $changelog_photos_deleted[] = $p['name'] ?? ('photo_id:'.$v);
+                }
+                if (!empty($changelog_photos_deleted)) {
                     car_changelog_log($db, $prefx, [
                         'car_id' => __post('id'),
                         'action' => 'photo_delete',
                         'field_name' => 'photo',
-                        'old_value' => $p['name'] ?? ('photo_id:'.$v),
+                        'old_value' => count($changelog_photos_deleted).' фото: '.implode(', ', $changelog_photos_deleted),
                         'new_value' => null,
                         'catalog_type' => 'ordercars'
                     ]);

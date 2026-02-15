@@ -36,6 +36,7 @@ foreach ($_FILES as $inp => $ar){//________________Цикл по типу фай
 	$i=0;
     $pdo_v = '';
     $pdo_ar = [];
+    $changelog_photos_added = [];
 	//________________________Цикл файлов
 	foreach ($ar['name'] as $k => $nm) {
 		//________________Сбор информации о файле (F)
@@ -119,15 +120,7 @@ foreach ($_FILES as $inp => $ar){//________________Цикл по типу фай
                                 'pos'=>$pos
                             ]);
 
-                            // --- CHANGELOG: log photo add ---
-                            car_changelog_log($db, $prefx, [
-                                'car_id' => $last_id,
-                                'action' => 'photo_add',
-                                'field_name' => 'photo',
-                                'old_value' => null,
-                                'new_value' => $n_nm.'.'.$file_av_ar[$inp]['frmt'][$fi_tp][0],
-                                'catalog_type' => 'cars'
-                            ]);
+                            $changelog_photos_added[] = $n_nm.'.'.$file_av_ar[$inp]['frmt'][$fi_tp][0];
 						}
 					} else {
                         $rtrn .= ' | File #'.$i.': '.$nm[0].' - Upload failed.';
@@ -153,6 +146,18 @@ foreach ($_FILES as $inp => $ar){//________________Цикл по типу фай
 		}
 		$i++;
 	}
+}
+
+// --- CHANGELOG: log all added photos as one entry ---
+if (!empty($changelog_photos_added)) {
+    car_changelog_log($db, $prefx, [
+        'car_id' => $last_id,
+        'action' => 'photo_add',
+        'field_name' => 'photo',
+        'old_value' => null,
+        'new_value' => count($changelog_photos_added).' фото: '.implode(', ', $changelog_photos_added),
+        'catalog_type' => 'cars'
+    ]);
 }
 
 unset($ihtml);

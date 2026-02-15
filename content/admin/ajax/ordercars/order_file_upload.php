@@ -36,6 +36,7 @@ foreach ($_FILES as $inp => $ar){//________________Цикл по типу фай
 	$i=0;
     $pdo_v = '';
     $pdo_ar = [];
+    $changelog_photos_added = [];
 	//________________________Цикл файлов
 	foreach ($ar['name'] as $k => $nm) {
 		$i++;
@@ -152,15 +153,7 @@ foreach ($_FILES as $inp => $ar){//________________Цикл по типу фай
                                 'pos'=>$pos
                             ]);
                             
-                            // --- CHANGELOG: log photo add ---
-                            car_changelog_log($db, $prefx, [
-                                'car_id' => $last_id,
-                                'action' => 'photo_add',
-                                'field_name' => 'photo',
-                                'old_value' => null,
-                                'new_value' => $n_nm.'.jpg',
-                                'catalog_type' => 'ordercars'
-                            ]);
+                            $changelog_photos_added[] = $n_nm.'.jpg';
                             
                             // Debug success
                             error_log("Image saved to DB: {$n_nm}.jpg for car {$last_id}");
@@ -192,6 +185,18 @@ foreach ($_FILES as $inp => $ar){//________________Цикл по типу фай
 		}
 		$i++;
 	}
+}
+
+// --- CHANGELOG: log all added photos as one entry ---
+if (!empty($changelog_photos_added)) {
+    car_changelog_log($db, $prefx, [
+        'car_id' => $last_id,
+        'action' => 'photo_add',
+        'field_name' => 'photo',
+        'old_value' => null,
+        'new_value' => count($changelog_photos_added).' фото: '.implode(', ', $changelog_photos_added),
+        'catalog_type' => 'ordercars'
+    ]);
 }
 
 unset($ihtml);

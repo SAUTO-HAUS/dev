@@ -127,12 +127,12 @@ $base_url = '/'.$_COOKIE['lang'].'/'.$admin_dir.'/changelog/ctlg';
 .changelog-wrap { padding: 10px; }
 .changelog-filters { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:15px; align-items:flex-end; }
 .changelog-filters label { display:flex; flex-direction:column; font-size:11px; color:#888; }
-.changelog-filters input, .changelog-filters select { padding:5px 8px; border:1px solid #ccc; border-radius:4px; font-size:13px; }
+.changelog-filters input, .changelog-filters select { padding:0 8px; border:1px solid #ccc; border-radius:4px; font-size:13px; height:32px; box-sizing:border-box; }
 .changelog-filters input[type="text"] { width:100px; }
 .changelog-filters input[type="date"] { width:140px; }
 .changelog-filters select { width:140px; }
-.changelog-filters .btn-filter { padding:6px 16px; background:#333; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:13px; }
-.changelog-filters .btn-reset { padding:6px 12px; background:#eee; color:#333; border:1px solid #ccc; border-radius:4px; cursor:pointer; font-size:13px; text-decoration:none; }
+.changelog-filters .btn-filter { padding:0 16px; height:32px; background:#333; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:13px; box-sizing:border-box; }
+.changelog-filters .btn-reset { padding:0 12px; height:32px; line-height:30px; background:#eee; color:#333; border:1px solid #ccc; border-radius:4px; cursor:pointer; font-size:13px; text-decoration:none; box-sizing:border-box; display:inline-block; }
 .changelog-table { width:100%; border-collapse:collapse; font-size:13px; }
 .changelog-table th { background:#f5f5f5; padding:8px 6px; text-align:left; border-bottom:2px solid #ddd; font-size:12px; color:#666; }
 .changelog-table td { padding:7px 6px; border-bottom:1px solid #eee; vertical-align:top; }
