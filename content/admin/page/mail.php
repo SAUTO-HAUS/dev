@@ -43,8 +43,14 @@ echo "
 $(document).ready(function(){
 	
 	$('#mail_content > .mail > .title > div').on('click', function(){
-		$('#mail_content > .mail.active').removeClass('active');
-		$(this).parent().parent().addClass('active');
+		var mail = $(this).parent().parent();
+		var isMobile = window.matchMedia('(max-width:767px),(orientation:portrait),(max-height:500px) and (orientation:landscape)').matches;
+		if (isMobile && mail.hasClass('active')) {
+			mail.removeClass('active');
+		} else {
+			$('#mail_content > .mail.active').removeClass('active');
+			mail.addClass('active');
+		}
 	})
 	
 	$('#mail_content > .mail > .title > input[type=\"checkbox\"]').change(function(){
