@@ -43,13 +43,15 @@
 	
 	#add_photo, #photo_frame .photo {width:120px; height:120px;}
 	
-	#main_admin.slim {width:60%;}
+	#main_admin.slim {width:75%; padding-bottom:0;}
 	
-	#action_menu {width:40%; overflow-y:auto; overflow-x:hidden; padding:0; border-bottom:none !important; border-left:1px solid #000; top:3.5rem;}
-	#action_menu.active {height:auto; max-height:calc(100vh - 3.5rem);}
+	#action_menu {width:25%; height:0; position:fixed; top:3.5rem; right:0; bottom:0; left:auto; z-index:10; background:#fff; border-top:none; border-left:2px solid #bf4040; border-bottom:none !important; box-shadow:none; padding:0; overflow-y:auto; overflow-x:hidden; display:flex; flex-flow:column nowrap;}
+	#action_menu.active {height:calc(100vh - 3.5rem); box-shadow:-3px 3px 12px rgba(0,0,0,.12);}
 	
-	#action_menu > div {width:100%; height:40px; line-height:40px; border-right:none !important; text-align:center; font-size:12px; padding:0 5px; box-sizing:border-box;}
-	#action_menu > div.count {border-bottom:1px solid #000; font-size:16px; font-weight:700; color:#bf4040; height:45px; line-height:45px;}
+	#action_menu > div {width:100%; flex:1; min-height:36px; line-height:1.2; border-right:none !important; border-bottom:1px solid #f0f0f0; text-align:center; font-size:12px; padding:24px 4px 6px; box-sizing:border-box; background-size:20px 20px !important; background-position:center 8px !important; background-repeat:no-repeat !important; cursor:pointer; color:#555; transition:background .2s;}
+	#action_menu > div:last-child {border-bottom:none;}
+	#action_menu > div:active {background:#f5f5f5;}
+	#action_menu > div.count {font-size:18px; font-weight:800; color:#bf4040; padding:8px 4px; line-height:1; background-image:none !important; flex:0 0 auto; min-height:auto; border-bottom:2px solid #bf4040;}
 	
 	#mail_content {padding:0 6px;}
 	#mail_content > .date {height:auto; line-height:1; padding:14px 6px 8px; font-size:12px; color:#bf4040; font-weight:700; border-bottom:none; margin:0; text-align:left;}
