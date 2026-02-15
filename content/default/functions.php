@@ -295,6 +295,61 @@ if (!function_exists('__log')) {
  * @param string 
  * @return string 
  */
+/**
+ * Log a change to the car changelog (audit log)
+ * @param PDO $db Database connection
+ * @param string $prefx Table prefix
+ * @param array $data Associative array with keys: car_id, action, field_name, old_value, new_value, catalog_type
+ */
+function car_changelog_log($db, $prefx, $data) {
+    try {
+        $pdo = $db->prepare('INSERT INTO '.$prefx.'_car_changelog 
+            (`car_id`, `action`, `field_name`, `old_value`, `new_value`, `user_id`, `user_login`, `catalog_type`, `created_at`) 
+            VALUES (:car_id, :action, :field_name, :old_value, :new_value, :user_id, :user_login, :catalog_type, :created_at)');
+        $pdo->execute([
+            'car_id'       => $data['car_id'] ?? 0,
+            'action'       => $data['action'] ?? '',
+            'field_name'   => $data['field_name'] ?? null,
+            'old_value'    => isset($data['old_value']) ? mb_substr((string)$data['old_value'], 0, 5000) : null,
+            'new_value'    => isset($data['new_value']) ? mb_substr((string)$data['new_value'], 0, 5000) : null,
+            'user_id'      => $_SESSION['user_id'] ?? null,
+            'user_login'   => $_SESSION['user_name'] ?? null,
+            'catalog_type' => $data['catalog_type'] ?? 'cars',
+            'created_at'   => time()
+        ]);
+    } catch (Exception $e) {
+        error_log('car_changelog_log error: ' . $e->getMessage());
+    }
+}
+
+/**
+ * Log multiple field edits by comparing old and new values
+ * @param PDO $db
+ * @param string $prefx
+ * @param int $car_id
+ * @param array $old_row Old DB row
+ * @param array $new_data New POST data (field => value)
+ * @param string $catalog_type 'cars' or 'ordercars'
+ */
+function car_changelog_log_diff($db, $prefx, $car_id, $old_row, $new_data, $catalog_type = 'cars') {
+    $tracked_fields = ['gr','br','mo','br_nm','mo_nm','yr','bt','sts','mlg','unit','vol','hp','fl','tra','wd','clr','loc','txt','vin','prc','cur','soon','n_a','tva','top','gift','import_country_id'];
+    foreach ($tracked_fields as $field) {
+        if (!array_key_exists($field, $new_data)) continue;
+        $old_val = isset($old_row[$field]) ? (string)$old_row[$field] : '';
+        $new_val = (string)$new_data[$field];
+        if ($old_val !== $new_val) {
+            car_changelog_log($db, $prefx, [
+                'car_id'       => $car_id,
+                'action'       => 'edit',
+                'field_name'   => $field,
+                'old_value'    => $old_val,
+                'new_value'    => $new_val,
+                'catalog_type' => $catalog_type
+            ]);
+        }
+    }
+}
+
 function buildCarUrl($brand, $model = '') {
     $brand_clean = str_replace('_', '-', strtolower($brand));
     if (empty($model)) {

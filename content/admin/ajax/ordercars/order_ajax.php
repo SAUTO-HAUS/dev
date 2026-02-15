@@ -119,6 +119,9 @@ elseif ( __post('fn')=='hide' ) {
     $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `vis`=0 WHERE `id`=:id');
     $pdo->execute([ 'id' => __post('id') ]);
 
+    // --- CHANGELOG: log hide ---
+    car_changelog_log($db, $prefx, ['car_id' => __post('id'), 'action' => 'hide', 'catalog_type' => 'ordercars']);
+
     $car = (new Car())->getCarById(__post('id'));
     if (!empty($car['999_id'])) {
         (new Api999Service($car['999_api_id']))->changeAccessPolicy($car);
@@ -129,6 +132,9 @@ elseif ( __post('fn')=='hide' ) {
 elseif ( __post('fn')=='reveal' ) {
     $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `vis`=1 WHERE `id`=:id');
     $pdo->execute([ 'id' => __post('id') ]);
+
+    // --- CHANGELOG: log reveal ---
+    car_changelog_log($db, $prefx, ['car_id' => __post('id'), 'action' => 'reveal', 'catalog_type' => 'ordercars']);
 
     $car = (new Car())->getCarById(__post('id'));
     if (!empty($car['999_id'])) {
@@ -141,6 +147,9 @@ elseif (__post('fn')=='delete') {
     $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `act`=0, `del_t`=:del_t WHERE `id`=:id');
     $pdo->execute([ 'id' => __post('id'), 'del_t' => time()+(60*60*24*30) ]);
 
+    // --- CHANGELOG: log delete ---
+    car_changelog_log($db, $prefx, ['car_id' => __post('id'), 'action' => 'delete', 'catalog_type' => 'ordercars']);
+
     $car = (new Car())->getCarById(__post('id'));
     if (!empty($car['999_id'])) {
         (new Api999Service($car['999_api_id']))->changeAccessPolicy($car);
@@ -151,6 +160,9 @@ elseif (__post('fn')=='delete') {
 elseif ( __post('fn')=='restore' ) {
     $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `act`=1, `del_t`=0 WHERE `id`=:id');
     $pdo->execute([ 'id' => __post('id') ]);
+
+    // --- CHANGELOG: log restore ---
+    car_changelog_log($db, $prefx, ['car_id' => __post('id'), 'action' => 'restore', 'catalog_type' => 'ordercars']);
 
     if (!empty($car['999_id'])) {
         (new Api999Service($car['999_api_id']))->changeAccessPolicy($car, 'public');
@@ -181,6 +193,10 @@ elseif ( __post('fn')=='erase' ){
 		$pdo = $db->prepare('DELETE FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id');
         $pdo->execute([ 'it_id' => __post('id') ]);
 	;}
+
+	// --- CHANGELOG: log erase ---
+	car_changelog_log($db, $prefx, ['car_id' => __post('id'), 'action' => 'erase', 'catalog_type' => 'ordercars']);
+
 	$pdo = $db->prepare('DELETE FROM '.$prefx.'_car_ctlg WHERE `id`=:id AND `act`="0" ');
     $pdo->execute([ 'id' => __post('id') ]);
 	$pdo = $db->prepare('DELETE FROM '.$prefx.'_seo2 WHERE `tp`="item" AND `p1`="cars" AND `it_id`=:it_id ');

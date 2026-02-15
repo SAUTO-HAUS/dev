@@ -217,6 +217,22 @@ if (__post('sub') == 'mo_search') {
                 'data_999' => $updated_999_data
             ]);
 
+            // --- CHANGELOG: log field edits ---
+            car_changelog_log_diff($db, $prefx, __post('id'), $r, [
+                'gr' => __post('gr'), 'br' => __post('br'), 'mo' => __post('mo'),
+                'br_nm' => $new_br_nm, 'mo_nm' => $new_mo_nm, 'yr' => __post('yr'),
+                'bt' => __post('bt'), 'sts' => __post('sts'), 'mlg' => __post('mlg'),
+                'unit' => __post('unit'), 'vol' => __post('vol'), 'hp' => __post('hp'),
+                'fl' => __post('fl'), 'tra' => __post('tra'), 'wd' => __post('wd'),
+                'clr' => __post('clr'), 'loc' => __post('loc', 0),
+                'txt' => (__post('txt')==null?'':__post('txt')),
+                'vin' => __post('vin', ''), 'prc' => __post('prc', 0),
+                'cur' => __post('cur'), 'soon' => __post('soon', 0),
+                'n_a' => __post('n_a', 0), 'tva' => __post('tva', 0),
+                'top' => __post('top', 0), 'gift' => __post('gift', 0),
+                'import_country_id' => __post('import_country_id', 0)
+            ], 'ordercars');
+
             //------- DELETE SOME IMGs
             if (!empty(__post('del_img'))) {
                 $x1 = ['high', 'med'];
@@ -236,6 +252,16 @@ if (__post('sub') == 'mo_search') {
 
                     $pdo = $db->prepare('DELETE FROM '.$prefx.'_car_pht WHERE `id`=:id AND `it_id`=:it_id ');
                     $pdo->execute(['id' => $v, 'it_id' => __post('id')]);
+
+                    // --- CHANGELOG: log photo delete ---
+                    car_changelog_log($db, $prefx, [
+                        'car_id' => __post('id'),
+                        'action' => 'photo_delete',
+                        'field_name' => 'photo',
+                        'old_value' => $p['name'] ?? ('photo_id:'.$v),
+                        'new_value' => null,
+                        'catalog_type' => 'ordercars'
+                    ]);
                 }
             }
 
@@ -247,6 +273,15 @@ if (__post('sub') == 'mo_search') {
                     $pdo = $db->prepare('UPDATE ' . $prefx . '_car_pht SET `main`="1" WHERE `id`=:id AND `it_id`=:it_id');
                     $pdo->execute(['id' => __post('main_img'), 'it_id' => __post('id')]);
                 }
+                // --- CHANGELOG: log main photo change ---
+                car_changelog_log($db, $prefx, [
+                    'car_id' => __post('id'),
+                    'action' => 'photo_main',
+                    'field_name' => 'main_photo',
+                    'old_value' => null,
+                    'new_value' => 'photo_id:' . __post('main_img'),
+                    'catalog_type' => 'ordercars'
+                ]);
             }
 
             if (!empty($r['999_id']) && __post('n_a', 0) != $r['n_a']) {
@@ -383,6 +418,15 @@ if (__post('sub') == 'mo_search') {
 
             $last_id = $db->lastInsertId();
 
+            // --- CHANGELOG: log car creation ---
+            car_changelog_log($db, $prefx, [
+                'car_id' => $last_id,
+                'action' => 'create',
+                'field_name' => null,
+                'old_value' => null,
+                'new_value' => __post('br').' / '.__post('mo').' / '.__post('yr'),
+                'catalog_type' => 'ordercars'
+            ]);
 
             //________________ SEO INSERT ________________
             $pdo_v = '';

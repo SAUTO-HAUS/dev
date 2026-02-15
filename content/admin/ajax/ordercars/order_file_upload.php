@@ -152,6 +152,16 @@ foreach ($_FILES as $inp => $ar){//________________Цикл по типу фай
                                 'pos'=>$pos
                             ]);
                             
+                            // --- CHANGELOG: log photo add ---
+                            car_changelog_log($db, $prefx, [
+                                'car_id' => $last_id,
+                                'action' => 'photo_add',
+                                'field_name' => 'photo',
+                                'old_value' => null,
+                                'new_value' => $n_nm.'.jpg',
+                                'catalog_type' => 'ordercars'
+                            ]);
+                            
                             // Debug success
                             error_log("Image saved to DB: {$n_nm}.jpg for car {$last_id}");
 						} else {

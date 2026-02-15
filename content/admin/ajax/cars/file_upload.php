@@ -118,6 +118,16 @@ foreach ($_FILES as $inp => $ar){//________________Цикл по типу фай
                                 'main'=>$main_file,
                                 'pos'=>$pos
                             ]);
+
+                            // --- CHANGELOG: log photo add ---
+                            car_changelog_log($db, $prefx, [
+                                'car_id' => $last_id,
+                                'action' => 'photo_add',
+                                'field_name' => 'photo',
+                                'old_value' => null,
+                                'new_value' => $n_nm.'.'.$file_av_ar[$inp]['frmt'][$fi_tp][0],
+                                'catalog_type' => 'cars'
+                            ]);
 						}
 					} else {
                         $rtrn .= ' | File #'.$i.': '.$nm[0].' - Upload failed.';
