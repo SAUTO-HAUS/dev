@@ -400,7 +400,7 @@ if (__post('sub') == 'mo_search') {
                 'action' => 'create',
                 'field_name' => null,
                 'old_value' => null,
-                'new_value' => __post('br').' / '.__post('mo').' / '.__post('yr'),
+                'new_value' => ucwords($br_nm).' '.ucwords($mo_nm).' '.__post('yr'),
                 'catalog_type' => 'cars'
             ]);
 

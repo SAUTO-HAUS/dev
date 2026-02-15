@@ -164,13 +164,15 @@ $base_url = '/'.$_COOKIE['lang'].'/'.$admin_dir.'/changelog/ctlg';
 .changelog-table tr:hover { background:#fafafa; }
 .changelog-badge { display:inline-block; padding:2px 8px; border-radius:3px; color:#fff; font-size:11px; font-weight:600; }
 .changelog-val { max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; color:#555; }
-.changelog-val:hover { white-space:normal; word-break:break-all; }
 .changelog-pager { display:flex; gap:4px; margin-top:15px; justify-content:center; }
 .changelog-pager a, .changelog-pager span { display:inline-block; padding:4px 10px; border:1px solid #ddd; border-radius:3px; font-size:13px; text-decoration:none; color:#333; }
 .changelog-pager span.act { background:#333; color:#fff; border-color:#333; }
 .changelog-summary { font-size:12px; color:#888; margin-bottom:10px; }
 .changelog-car-link { color:#007bff; text-decoration:none; font-weight:600; }
 .changelog-car-link:hover { text-decoration:underline; }
+
+/* Mobile cards */
+.changelog-cards { display:none; }
 
 @media (max-width: 768px) {
     .changelog-wrap { padding:5px; }
@@ -179,16 +181,21 @@ $base_url = '/'.$_COOKIE['lang'].'/'.$admin_dir.'/changelog/ctlg';
     .changelog-filters input, .changelog-filters select { width:100% !important; height:38px; font-size:14px; }
     .changelog-filters .btn-filter, .changelog-filters .btn-reset { width:48%; height:38px; text-align:center; font-size:14px; }
     .changelog-filters .changelog-btns { display:flex; gap:4%; justify-content:center; width:100%; }
-
-    .changelog-table { border-collapse:separate; border-spacing:0 10px; }
-    .changelog-table thead { display:none; }
-    .changelog-table tbody tr { display:block; background:#fff; border:1px solid #ccc; border-radius:8px; padding:0; margin-bottom:10px; box-shadow:0 1px 3px rgba(0,0,0,.08); overflow:hidden; }
-    .changelog-table td { display:block; padding:10px 12px; border-bottom:1px solid #f0f0f0; border-right:none; text-align:left; font-size:14px; position:relative; padding-left:45%; }
-    .changelog-table td:last-child { border-bottom:none; }
-    .changelog-table td::before { content:attr(data-label); position:absolute; left:12px; top:10px; font-weight:700; color:#555; font-size:12px; text-transform:uppercase; width:38%; white-space:nowrap; overflow:hidden; }
-    .changelog-table td:first-child { background:#f8f8f8; border-radius:8px 8px 0 0; font-weight:600; }
-    .changelog-val { max-width:100%; white-space:normal; word-break:break-all; font-size:13px; }
-    .changelog-badge { font-size:12px; padding:3px 10px; }
+    .changelog-table { display:none; }
+    .changelog-cards { display:block; }
+    .cl-card { background:#fff; border:1px solid #ddd; border-radius:8px; margin-bottom:10px; overflow:hidden; box-shadow:0 1px 3px rgba(0,0,0,.06); }
+    .cl-card-head { display:flex; justify-content:space-between; align-items:center; padding:8px 10px; background:#f5f5f5; border-bottom:1px solid #eee; font-size:12px; color:#777; }
+    .cl-card-head .cl-date { font-weight:600; color:#333; }
+    .cl-card-head .cl-user { color:#555; }
+    .cl-card-meta { display:flex; gap:6px; align-items:center; padding:6px 10px; border-bottom:1px solid #f0f0f0; font-size:13px; flex-wrap:wrap; }
+    .cl-card-meta .cl-id { font-weight:700; color:#007bff; }
+    .cl-card-meta .cl-cat { color:#888; font-size:11px; }
+    .cl-card-body { padding:8px 10px; }
+    .cl-card-field { font-weight:700; color:#333; font-size:13px; margin-bottom:4px; }
+    .cl-card-diff { display:flex; align-items:flex-start; gap:6px; font-size:13px; flex-wrap:wrap; }
+    .cl-card-diff .cl-old { background:#ffeaea; color:#c0392b; padding:3px 8px; border-radius:4px; word-break:break-all; max-width:100%; }
+    .cl-card-diff .cl-arrow { color:#999; font-size:16px; line-height:1; flex-shrink:0; }
+    .cl-card-diff .cl-new { background:#e8f5e9; color:#27ae60; padding:3px 8px; border-radius:4px; word-break:break-all; max-width:100%; }
     .changelog-pager { flex-wrap:wrap; justify-content:center; }
     .changelog-pager a, .changelog-pager span { padding:8px 14px; font-size:14px; }
     .changelog-summary { font-size:13px; }
@@ -266,6 +273,42 @@ $base_url = '/'.$_COOKIE['lang'].'/'.$admin_dir.'/changelog/ctlg';
             <?php endif; ?>
         </tbody>
     </table>
+
+    <!-- Mobile cards (visible only on mobile) -->
+    <div class="changelog-cards">
+        <?php if (empty($rows)): ?>
+            <div style="text-align:center; padding:30px; color:#999;">Нет записей</div>
+        <?php else: ?>
+            <?php foreach ($rows as $row):
+                $al = $action_labels[$row['action']] ?? [$row['action'], '#999'];
+                $cat_label = $row['catalog_type'] === 'ordercars' ? 'Под заказ' : 'В наличии';
+                $fn = $row['field_name'] ?? '';
+                $d_old = changelog_translate_value($fn, $row['old_value'] ?? null, $value_maps);
+                $d_new = changelog_translate_value($fn, $row['new_value'] ?? null, $value_maps);
+                $field_label = $field_labels[$fn] ?? $fn;
+            ?>
+            <div class="cl-card">
+                <div class="cl-card-head">
+                    <span class="cl-date"><?= date('d.m.Y H:i', $row['created_at']) ?></span>
+                    <span class="cl-user"><?= htmlspecialchars($row['user_login'] ?? '') ?></span>
+                </div>
+                <div class="cl-card-meta">
+                    <a class="cl-id" href="/<?= $_COOKIE['lang'] ?>/<?= $row['catalog_type'] === 'ordercars' ? 'ordercars' : 'cars' ?>/<?= $row['car_id'] ?>" target="_blank">#<?= $row['car_id'] ?></a>
+                    <span class="cl-cat"><?= $cat_label ?></span>
+                    <span class="changelog-badge" style="background:<?= $al[1] ?>"><?= $al[0] ?></span>
+                </div>
+                <div class="cl-card-body">
+                    <?php if ($field_label): ?><div class="cl-card-field"><?= $field_label ?></div><?php endif; ?>
+                    <div class="cl-card-diff">
+                        <span class="cl-old"><?= htmlspecialchars($d_old ?? '—') ?></span>
+                        <span class="cl-arrow">&rarr;</span>
+                        <span class="cl-new"><?= htmlspecialchars($d_new ?? '—') ?></span>
+                    </div>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+    </div>
 
     <?php if ($total_pages > 1): ?>
     <div class="changelog-pager">
