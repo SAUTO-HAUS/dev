@@ -58,7 +58,7 @@ $total = $count_stmt->fetchColumn();
 $total_pages = max(1, ceil($total / $per_page));
 
 // Get records
-$sql = 'SELECT cl.* FROM '.$prefx.'_car_changelog cl '.$where_sql.' ORDER BY cl.created_at DESC LIMIT '.$per_page.' OFFSET '.$offset;
+$sql = 'SELECT cl.*, c.br_nm, c.mo_nm FROM '.$prefx.'_car_changelog cl LEFT JOIN '.$prefx.'_car_ctlg c ON c.id = cl.car_id '.$where_sql.' ORDER BY cl.created_at DESC LIMIT '.$per_page.' OFFSET '.$offset;
 $stmt = $db->prepare($sql);
 $stmt->execute($params);
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -207,7 +207,7 @@ $base_url = '/'.$_COOKIE['lang'].'/'.$admin_dir.'/changelog/ctlg';
 
     <form method="get" action="<?= $base_url ?>">
         <div class="changelog-filters">
-            <label>ID авто <input type="text" name="car_id" value="<?= htmlspecialchars($filter_car_id) ?>" placeholder="12305"></label>
+            <label>ID <input type="text" name="car_id" value="<?= htmlspecialchars($filter_car_id) ?>" placeholder="12305"></label>
             <label>Действие
                 <select name="action">
                     <option value="">Все</option>
@@ -239,7 +239,7 @@ $base_url = '/'.$_COOKIE['lang'].'/'.$admin_dir.'/changelog/ctlg';
         <thead>
             <tr>
                 <th>Дата</th>
-                <th>ID авто</th>
+                <th>Авто</th>
                 <th>Каталог</th>
                 <th>Действие</th>
                 <th>Поле</th>
@@ -261,7 +261,7 @@ $base_url = '/'.$_COOKIE['lang'].'/'.$admin_dir.'/changelog/ctlg';
                 ?>
                 <tr>
                     <td data-label="Дата" style="white-space:nowrap;"><?= date('d.m.Y H:i:s', $row['created_at']) ?></td>
-                    <td data-label="ID авто"><a class="changelog-car-link" href="/<?= $_COOKIE['lang'] ?>/<?= $row['catalog_type'] === 'ordercars' ? 'ordercars' : 'cars' ?>/<?= $row['car_id'] ?>" target="_blank"><?= $row['car_id'] ?></a></td>
+                    <td data-label="Авто"><a class="changelog-car-link" href="/<?= $_COOKIE['lang'] ?>/<?= $row['catalog_type'] === 'ordercars' ? 'ordercars' : 'cars' ?>/<?= $row['car_id'] ?>" target="_blank"><?= $row['car_id'] ?> <?= ucwords($row['br_nm'] ?? '') ?> <?= ucwords($row['mo_nm'] ?? '') ?></a></td>
                     <td data-label="Каталог"><?= $cat_label ?></td>
                     <td data-label="Действие"><span class="changelog-badge" style="background:<?= $al[1] ?>"><?= $al[0] ?></span></td>
                     <td data-label="Поле"><?= $field_labels[$row['field_name']] ?? htmlspecialchars($row['field_name'] ?? '') ?></td>
@@ -293,7 +293,7 @@ $base_url = '/'.$_COOKIE['lang'].'/'.$admin_dir.'/changelog/ctlg';
                     <span class="cl-user"><?= htmlspecialchars($row['user_login'] ?? '') ?></span>
                 </div>
                 <div class="cl-card-meta">
-                    <a class="cl-id" href="/<?= $_COOKIE['lang'] ?>/<?= $row['catalog_type'] === 'ordercars' ? 'ordercars' : 'cars' ?>/<?= $row['car_id'] ?>" target="_blank">#<?= $row['car_id'] ?></a>
+                    <a class="cl-id" href="/<?= $_COOKIE['lang'] ?>/<?= $row['catalog_type'] === 'ordercars' ? 'ordercars' : 'cars' ?>/<?= $row['car_id'] ?>" target="_blank">#<?= $row['car_id'] ?> <?= ucwords($row['br_nm'] ?? '') ?> <?= ucwords($row['mo_nm'] ?? '') ?></a>
                     <span class="cl-cat"><?= $cat_label ?></span>
                     <span class="changelog-badge" style="background:<?= $al[1] ?>"><?= $al[0] ?></span>
                 </div>
