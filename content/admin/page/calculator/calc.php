@@ -825,6 +825,191 @@ $rtrn = '
     #calculator-container .electric-notice.show {
         display: block;
     }
+    
+    @media (max-width:767px), (orientation: portrait) {
+        #calculator-container {
+            padding: 0 0.5rem;
+        }
+        
+        #calculator-container .calc-header h1 {
+            font-size: 1.3rem;
+        }
+        
+        #calculator-container .calc-header .eur-rate-row {
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+        
+        #calculator-container .calc-form {
+            padding: 1rem;
+        }
+        
+        #calculator-container .form-row {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        #calculator-container .form-group {
+            min-width: 100%;
+        }
+        
+        #calculator-container .form-group select,
+        #calculator-container .form-group input {
+            padding: 0.6rem 0.75rem;
+            font-size: 0.95rem;
+        }
+        
+        #calculator-container .fuel-types {
+            gap: 0.4rem;
+        }
+        
+        #calculator-container .fuel-type-btn {
+            min-width: 70px;
+            padding: 0.6rem 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        #calculator-container .hybrid-options {
+            padding: 0.75rem;
+        }
+        
+        #calculator-container .hybrid-fuel-select {
+            gap: 2rem;
+            font-size: 0.85rem;
+            justify-content: center;
+        }
+        
+        #calculator-container .hybrid-type-btn {
+            min-width: 90px;
+            padding: 0.6rem 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        #calculator-container .results {
+            padding: 1rem;
+        }
+        
+        #calculator-container .results h2 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+        
+        #calculator-container .result-row {
+            flex-direction: column;
+            gap: 0.5rem;
+            padding: 0.75rem 0;
+        }
+        
+        #calculator-container .result-row .label {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+        
+        #calculator-container .result-row .value {
+            font-size: 0.85rem;
+        }
+        
+        #calculator-container .editable-value {
+            flex-wrap: wrap;
+            gap: 0.2rem;
+        }
+        
+        #calculator-container .editable-input {
+            width: 70px;
+            padding: 0.25rem 0.4rem;
+            font-size: 0.85rem;
+        }
+        
+        #calculator-container .editable-input.eur-input {
+            width: 60px;
+            font-size: 0.8rem;
+        }
+        
+        #calculator-container .result-row.total {
+            margin: 1rem -1rem 0;
+            padding: 1rem;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        
+        #calculator-container .result-row.total.vehicle-total {
+            margin: 0 -1rem -1rem;
+            padding: 1rem;
+        }
+        
+        #calculator-container .result-row.total .label,
+        #calculator-container .result-row.total .value {
+            font-size: 1rem;
+        }
+        
+        .toggle-switch {
+            width: 40px;
+            height: 20px;
+            margin-right: 6px;
+        }
+        
+        .toggle-slider:before {
+            height: 14px;
+            width: 14px;
+        }
+        
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+        
+        #calculator-container .pdf-export-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: stretch;
+        }
+        
+        #calculator-container .pdf-lang-select {
+            width: 100%;
+            margin-right: 0;
+        }
+        
+        #calculator-container .pdf-btn {
+            width: 100%;
+        }
+        
+        #calculator-container .offer-fields {
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+        
+        #calculator-container .commercial-offer-section {
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+        
+        #calculator-container .offer-images-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem;
+        }
+        
+        #calculator-container .offer-images-grid .image-item:nth-child(7) {
+            grid-column: auto;
+        }
+        
+        #calculator-container .images-upload-area {
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        #calculator-container .admin-actions {
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+        }
+        
+        #calculator-container .admin-btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
 </style>
 
 <div id="calculator-container">
