@@ -261,7 +261,7 @@ $base_url = '/'.$_COOKIE['lang'].'/'.$admin_dir.'/changelog/ctlg';
                 ?>
                 <tr>
                     <td data-label="Дата" style="white-space:nowrap;"><?= date('d.m.Y H:i:s', $row['created_at']) ?></td>
-                    <td data-label="Авто"><a class="changelog-car-link" href="/<?= $_COOKIE['lang'] ?>/<?= $row['catalog_type'] === 'ordercars' ? 'ordercars' : 'cars' ?>/<?= $row['car_id'] ?>" target="_blank"><?= $row['car_id'] ?> <?= ucwords($row['br_nm'] ?? '') ?> <?= ucwords($row['mo_nm'] ?? '') ?></a></td>
+                    <td data-label="Авто"><a class="changelog-car-link" href="/<?= $_COOKIE['lang'] ?>/<?= $admin_dir ?>/<?= $row['catalog_type'] === 'ordercars' ? 'ordercars' : 'cars' ?>/detail?id=<?= $row['car_id'] ?>" target="_blank"><?= $row['car_id'] ?> <?= ucwords($row['br_nm'] ?? '') ?> <?= ucwords($row['mo_nm'] ?? '') ?></a></td>
                     <td data-label="Каталог"><?= $cat_label ?></td>
                     <td data-label="Действие"><span class="changelog-badge" style="background:<?= $al[1] ?>"><?= $al[0] ?></span></td>
                     <td data-label="Поле"><?= $field_labels[$row['field_name']] ?? htmlspecialchars($row['field_name'] ?? '') ?></td>
@@ -293,7 +293,7 @@ $base_url = '/'.$_COOKIE['lang'].'/'.$admin_dir.'/changelog/ctlg';
                     <span class="cl-user"><?= htmlspecialchars($row['user_login'] ?? '') ?></span>
                 </div>
                 <div class="cl-card-meta">
-                    <a class="cl-id" href="/<?= $_COOKIE['lang'] ?>/<?= $row['catalog_type'] === 'ordercars' ? 'ordercars' : 'cars' ?>/<?= $row['car_id'] ?>" target="_blank">#<?= $row['car_id'] ?> <?= ucwords($row['br_nm'] ?? '') ?> <?= ucwords($row['mo_nm'] ?? '') ?></a>
+                    <a class="cl-id" href="/<?= $_COOKIE['lang'] ?>/<?= $admin_dir ?>/<?= $row['catalog_type'] === 'ordercars' ? 'ordercars' : 'cars' ?>/detail?id=<?= $row['car_id'] ?>" target="_blank">#<?= $row['car_id'] ?> <?= ucwords($row['br_nm'] ?? '') ?> <?= ucwords($row['mo_nm'] ?? '') ?></a>
                     <span class="cl-cat"><?= $cat_label ?></span>
                     <span class="changelog-badge" style="background:<?= $al[1] ?>"><?= $al[0] ?></span>
                 </div>
