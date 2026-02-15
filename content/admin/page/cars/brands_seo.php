@@ -287,6 +287,102 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_brand_seo'])) {
     .preview-btn:hover {
         background: #1976D2;
     }
+    
+    @media (max-width:767px), (orientation: portrait), (max-height:500px) and (orientation: landscape) {
+        .brands-seo-container {
+            padding: 10px 5px;
+        }
+        
+        .page-title {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            padding-bottom: 8px;
+            text-align: center;
+        }
+        
+        .brands-grid {
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            margin-bottom: 15px;
+            justify-items: center;
+            text-align: center;
+        }
+        
+        .brand-card {
+            padding: 5px 6px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .brand-name {
+            font-size: 12px;
+        }
+        
+        .brand-code {
+            font-size: 9px;
+        }
+        
+        .brand-status {
+            font-size: 9px;
+        }
+        
+        .lang-indicators {
+            font-size: 9px;
+            justify-content: center;
+        }
+        
+        .editor-container {
+            padding: 10px 5px;
+            box-shadow: none;
+            border-radius: 0;
+            margin: 0 -5px;
+        }
+        
+        .editor-header {
+            font-size: 1rem;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .lang-tabs {
+            gap: 0;
+            margin-bottom: 10px;
+            justify-content: center;
+        }
+        
+        .lang-tab {
+            padding: 8px 10px;
+            font-size: 12px;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .form-group {
+            margin-bottom: 10px;
+        }
+        
+        .form-label {
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+        
+        .form-textarea {
+            min-height: 180px;
+            font-size: 12px;
+            padding: 8px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .btn-save, .preview-btn {
+            width: 100%;
+            margin: 5px 0 0 0;
+            padding: 10px;
+            font-size: 13px;
+            box-sizing: border-box;
+            display: block;
+        }
+    }
 </style>
 
 <div class="brands-seo-container">
