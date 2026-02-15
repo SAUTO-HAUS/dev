@@ -2,17 +2,17 @@
 
 	#header {height:3rem; display:flex; flex-flow:row wrap; align-items:center; position:fixed; top:0; left:0; right:0; z-index:10;}
 	
-	.burger-btn {display:flex; flex-direction:column; justify-content:center; align-items:center; width:3rem; height:3rem; cursor:pointer; z-index:12; position:relative;}
-	.burger-btn span {display:block; width:1.4rem; height:2px; background:#333; border-radius:2px; transition:.3s ease-in-out;}
+	.burger-btn {display:flex; flex-direction:column; justify-content:center; align-items:center; width:3.5rem; height:3rem; cursor:pointer; z-index:12; position:relative;}
+	.burger-btn span {display:block; width:1.8rem; height:2.5px; background:#333; border-radius:2px; transition:.3s ease-in-out;}
 	.burger-btn span + span {margin-top:5px;}
 	.burger-btn.active span:nth-child(1) {transform:translateY(7px) rotate(45deg); background:var(--clr);}
 	.burger-btn.active span:nth-child(2) {opacity:0;}
 	.burger-btn.active span:nth-child(3) {transform:translateY(-7px) rotate(-45deg); background:var(--clr);}
 	
-	#header .info {width:auto; flex:1; display:flex; flex-flow:row nowrap; align-items:center; font-size:.75rem;}
-	#header .info > #adm_out {width:auto;}
-	#adm_out_submit {width:auto; height:2.5rem; font-size:.75rem; padding:0 .75rem;}
-	#header .info > .home {margin:0 0 0 .5rem; white-space:nowrap;}
+	#header .info {width:auto; flex:1; display:flex; flex-flow:row nowrap; align-items:center; justify-content:center; font-size:.75rem;}
+	#header .info > #adm_out {width:auto; display:flex; align-items:center;}
+	#adm_out_submit {width:auto; height:2rem; font-size:.75rem; padding:0 .75rem; line-height:2rem; float:none;}
+	#header .info > .home {margin:0 0 0 .5rem; white-space:nowrap; display:flex; align-items:center; line-height:1;}
 	
 	#header .lng {width:auto; float:none; display:flex; align-items:center; margin-right:.5rem;}
 	
