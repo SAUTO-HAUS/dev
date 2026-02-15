@@ -150,6 +150,49 @@ $rtrn = '
         background: #fff;
         border-radius: 8px;
     }
+    
+    @media (max-width:767px), (orientation: portrait) {
+        #usage-container {
+            padding: 0 0.5rem 1rem;
+        }
+        
+        #usage-container .usage-header {
+            flex-direction: column;
+            gap: 0.5rem;
+            text-align: center;
+            padding-top: 0.5rem;
+        }
+        
+        #usage-container .usage-header h1 {
+            font-size: 1.1rem;
+        }
+        
+        #usage-container .back-btn {
+            width: 100%;
+            text-align: center;
+            display: block;
+        }
+        
+        #usage-container .date-selector {
+            justify-content: center;
+        }
+        
+        #usage-container .users-table {
+            border-radius: 0;
+            box-shadow: none;
+        }
+        
+        #usage-container .users-table th,
+        #usage-container .users-table td {
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+        
+        #usage-container .no-data {
+            border-radius: 0;
+            padding: 2rem 1rem;
+        }
+    }
 </style>
 
 <div id="usage-container">

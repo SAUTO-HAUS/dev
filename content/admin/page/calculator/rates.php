@@ -208,6 +208,77 @@ $rtrn = '
     #rates-container .success-msg.show {
         display: block;
     }
+    
+    @media (max-width:767px), (orientation: portrait) {
+        #rates-container {
+            padding: 0.5rem;
+        }
+        
+        #rates-container .rates-header {
+            flex-direction: column;
+            gap: 0.5rem;
+            text-align: center;
+        }
+        
+        #rates-container .rates-header h1 {
+            font-size: 1.1rem;
+        }
+        
+        #rates-container .back-btn {
+            width: 100%;
+            text-align: center;
+        }
+        
+        #rates-container .section {
+            border-radius: 0;
+            box-shadow: none;
+            margin-bottom: 1rem;
+        }
+        
+        #rates-container .section-header {
+            padding: 0.75rem;
+            font-size: 0.95rem;
+        }
+        
+        #rates-container .section-content {
+            padding: 0.5rem;
+        }
+        
+        #rates-container .settings-grid {
+            grid-template-columns: 1fr;
+            gap: 0.5rem;
+        }
+        
+        #rates-container .setting-item {
+            padding: 0.75rem;
+        }
+        
+        #rates-container table {
+            display: block;
+            overflow-x: auto;
+        }
+        
+        #rates-container th, #rates-container td {
+            padding: 0.4rem;
+            font-size: 0.8rem;
+        }
+        
+        #rates-container input[type="number"],
+        #rates-container input[type="text"] {
+            padding: 0.35rem;
+            font-size: 0.8rem;
+        }
+        
+        #rates-container .save-btn {
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 0.9rem;
+        }
+        
+        #rates-container .section-save {
+            padding: 0.75rem 0.5rem;
+        }
+    }
 </style>
 
 <div id="rates-container">

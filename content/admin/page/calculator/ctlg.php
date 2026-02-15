@@ -213,24 +213,101 @@ $rtrn = '
         margin-bottom: 0.5rem;
     }
     
-    @media (max-width: 768px) {
+    @media (max-width:767px), (orientation: portrait) {
         #catalog-container {
-            padding: 0.8rem;
+            padding: 0.5rem;
         }
         
         #catalog-container .catalog-header {
             flex-direction: column;
-            gap: 0.8rem;
+            gap: 0.5rem;
             text-align: center;
+        }
+        
+        #catalog-container .catalog-header h1 {
+            font-size: 1.1rem;
+        }
+        
+        #catalog-container .back-btn {
+            width: 100%;
+            justify-content: center;
         }
         
         #catalog-container .search-box input {
             width: 100%;
+            box-sizing: border-box;
         }
         
         #catalog-container .offers-table {
-            display: block;
-            overflow-x: auto;
+            border-radius: 0;
+        }
+        
+        #catalog-container .offers-table thead {
+            display: none;
+        }
+        
+        #catalog-container .offers-table tbody tr {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 0.75rem 0.5rem;
+            border-bottom: 2px solid #eee;
+            gap: 0.25rem 0.5rem;
+            align-items: center;
+        }
+        
+        #catalog-container .offers-table tbody tr:hover {
+            background: #f8f8f8;
+        }
+        
+        #catalog-container .offers-table td {
+            border-bottom: none;
+            padding: 0;
+            white-space: normal;
+        }
+        
+        #catalog-container .offers-table td.vehicle-info {
+            width: 100%;
+            font-size: 1rem;
+            margin-bottom: 0.2rem;
+            order: -2;
+        }
+        
+        #catalog-container .offers-table td.date-col {
+            order: -1;
+            font-size: 0.75rem;
+        }
+        
+        #catalog-container .offers-table td.client-name {
+            order: -1;
+            max-width: none;
+            font-size: 0.75rem;
+        }
+        
+        #catalog-container .offers-table td.client-name::before {
+            content: "· ";
+        }
+        
+        #catalog-container .offers-table td.actions {
+            width: 100%;
+            margin-top: 0.4rem;
+            justify-content: flex-start;
+            flex-wrap: wrap;
+        }
+        
+        #catalog-container .offers-table button {
+            padding: 0.4rem 0.6rem;
+            font-size: 0.8rem;
+            min-width: auto;
+            flex: 1;
+        }
+        
+        #catalog-container .pagination {
+            flex-wrap: wrap;
+        }
+        
+        #catalog-container .pagination button {
+            padding: 0.35rem 0.6rem;
+            font-size: 0.8rem;
         }
     }
 </style>
