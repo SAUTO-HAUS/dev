@@ -1202,7 +1202,13 @@ if ($_COOKIE['lang']=='ru'){
 		'rates'=>'Ставки',
 		'calculator'=>'Калькулятор',
 		'analytics'=>'Аналитика',
-		'view'=>'Просмотр'
+		'view'=>'Просмотр',
+		'docs'=>'Документы',
+		'stock'=>'Склад',
+		'adm_usr'=>'Пользователи',
+		'roles'=>'Роли',
+		'phone_config'=>'Телефоны',
+		'extern'=>'Внешний'
 	);
 
 // ... rest of the code remains the same ...
@@ -2723,7 +2729,13 @@ $adm_lang = array(
 	'usage'=>'Statistici',
 	'rates'=>'Cote',
 	'analytics'=>'Analitica',
-	'view'=>'Vizualizare'
+	'view'=>'Vizualizare',
+	'docs'=>'Documente',
+	'stock'=>'Stoc',
+	'adm_usr'=>'Utilizatori',
+	'roles'=>'Roluri',
+	'phone_config'=>'Telefoane',
+	'extern'=>'Extern'
 );
 
 // ... rest of the code remains the same ...
@@ -4243,7 +4255,13 @@ $adm_lang = array(
 	'usage'=>'Statistics',
 	'rates'=>'Rates',
 	'analytics'=>'Analytics',
-	'view'=>'View'
+	'view'=>'View',
+	'docs'=>'Documents',
+	'stock'=>'Stock',
+	'adm_usr'=>'Users',
+	'roles'=>'Roles',
+	'phone_config'=>'Phones',
+	'extern'=>'External'
 );
 
 }
