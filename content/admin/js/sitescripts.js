@@ -17,6 +17,24 @@ function getReqPage() {
 
 $(document).ready(function() {
 	
+	// Burger menu toggle
+	$('#burger_btn').on('click', function(){
+		$(this).toggleClass('active');
+		$('#menu').toggleClass('open');
+		$('#menu-overlay').toggleClass('active');
+	});
+	$('#menu-overlay').on('click', function(){
+		$('#burger_btn').removeClass('active');
+		$('#menu').removeClass('open');
+		$(this).removeClass('active');
+	});
+	// Close menu on link click (mobile)
+	$('#menu a.btn, #menu .single-item a.nm').on('click', function(){
+		$('#burger_btn').removeClass('active');
+		$('#menu').removeClass('open');
+		$('#menu-overlay').removeClass('active');
+	});
+	
 	if ( typeof Cookies.get('xtype') !== 'undefined' ){ Cookies.remove('xtype', { path: '/' }) }
 	
 	/*

@@ -23,6 +23,7 @@
 		echo '
 		<div id="main_admin">
 			<div id="header">
+				<div id="burger_btn" class="burger-btn"><span></span><span></span><span></span></div>
 				<div class="info">
 					<form method="post" action="" id="adm_out">
 						<input type="submit" value="'.$adm_lang['exit'].'" name="adm_out_submit" id="adm_out_submit">
@@ -38,6 +39,7 @@
 				<div id="xInf" class="none" data-u="'.$user_name.'"></div>
 			</div>
 			
+			<div id="menu-overlay"></div>
 			<div id="menu" class="dev1">';
 				// Use RBAC menu system
 				$current_menu = rbac_update_admin_menu($user_type, $user_role ?? null);
