@@ -134,8 +134,10 @@ $base_url = '/'.$_COOKIE['lang'].'/'.$admin_dir.'/changelog/ctlg';
 .changelog-filters .btn-filter { padding:0 16px; height:32px; background:#333; color:#fff; border:none; border-radius:4px; cursor:pointer; font-size:13px; box-sizing:border-box; }
 .changelog-filters .btn-reset { padding:0 12px; height:32px; line-height:30px; background:#eee; color:#333; border:1px solid #ccc; border-radius:4px; cursor:pointer; font-size:13px; text-decoration:none; box-sizing:border-box; display:inline-block; }
 .changelog-table { width:100%; border-collapse:collapse; font-size:13px; }
-.changelog-table th { background:#f5f5f5; padding:8px 6px; text-align:left; border-bottom:2px solid #ddd; font-size:12px; color:#666; }
-.changelog-table td { padding:7px 6px; border-bottom:1px solid #eee; vertical-align:top; }
+.changelog-table th { background:#f5f5f5; padding:8px 6px; text-align:left; border-bottom:2px solid #ddd; border-right:2px solid #ddd; font-size:12px; color:#666; }
+.changelog-table th:last-child { border-right:none; }
+.changelog-table td { padding:8px 6px; border-bottom:2px solid #ddd; border-right:2px solid #ddd; vertical-align:top; }
+.changelog-table td:last-child { border-right:none; }
 .changelog-table tr:hover { background:#fafafa; }
 .changelog-badge { display:inline-block; padding:2px 8px; border-radius:3px; color:#fff; font-size:11px; font-weight:600; }
 .changelog-val { max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; color:#555; }
