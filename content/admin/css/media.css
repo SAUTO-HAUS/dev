@@ -1,4 +1,4 @@
-﻿@media (max-width:767px), (orientation: portrait) {
+﻿@media (max-width:767px), (orientation: portrait), (max-height:500px) and (orientation: landscape) {
 
 	#header {height:3rem; display:flex; flex-flow:row wrap; align-items:center; position:fixed; top:0; left:0; right:0; z-index:10;}
 	

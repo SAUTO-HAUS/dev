@@ -64,6 +64,17 @@ $content .= '
 	#s .i > .c > .exec {width:100%; border:none; line-height:3.5em; cursor:pointer; display:block; background-color:#81A86E; color:#fff; margin:10px auto 0; float:left; transition:'.($trnstn/2).'s; opacity:1;}
 	#s .i > .c > .exec:hover {background-color:#86BF6A;}
 	#s .i > .c > .exec.ghost {opacity:0 !important;}
+
+	@media (max-width:767px), (orientation: portrait), (max-height:500px) and (orientation: landscape) {
+		#s > .ii > .i > .b, #s > .new > .b {width:60%; font-size:.75rem; padding:0 5px; line-height:2.2em;}
+		#s .copy, #s .del {width:20%; line-height:2.2em;}
+		#s .new_title, #s .new_meta_desc, #s .new_h1, #s .new_txt {width:100%;}
+		#s .new_title, #s .new_h1 {border-right:1px solid #e6e4e4 !important;}
+		#s .i > .c > label > textarea, #s .i > .c > .new_page {width:100%; height:4rem; font-size:.85rem;}
+		#s .i > .c > label > .lang_txt {font-size:.8rem;}
+		#s .i > .c > .exec {font-size:.85rem; line-height:3em;}
+		#s > .new > .b {line-height:3em;}
+	}
 	
 </style>
 ';

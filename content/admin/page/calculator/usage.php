@@ -151,7 +151,7 @@ $rtrn = '
         border-radius: 8px;
     }
     
-    @media (max-width:767px), (orientation: portrait) {
+    @media (max-width:767px), (orientation: portrait), (max-height:500px) and (orientation: landscape) {
         #usage-container {
             padding: 0 0.5rem 1rem;
         }

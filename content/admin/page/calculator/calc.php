@@ -826,7 +826,7 @@ $rtrn = '
         display: block;
     }
     
-    @media (max-width:767px), (orientation: portrait) {
+    @media (max-width:767px), (orientation: portrait), (max-height:500px) and (orientation: landscape) {
         #calculator-container {
             padding: 0 0.5rem;
         }

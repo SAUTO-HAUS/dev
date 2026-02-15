@@ -209,7 +209,7 @@ $rtrn = '
         display: block;
     }
     
-    @media (max-width:767px), (orientation: portrait) {
+    @media (max-width:767px), (orientation: portrait), (max-height:500px) and (orientation: landscape) {
         #rates-container {
             padding: 0.5rem;
         }

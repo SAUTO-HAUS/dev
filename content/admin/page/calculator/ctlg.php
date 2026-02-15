@@ -213,7 +213,7 @@ $rtrn = '
         margin-bottom: 0.5rem;
     }
     
-    @media (max-width:767px), (orientation: portrait) {
+    @media (max-width:767px), (orientation: portrait), (max-height:500px) and (orientation: landscape) {
         #catalog-container {
             padding: 0.5rem;
         }
