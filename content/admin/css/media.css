@@ -51,7 +51,24 @@
 	#action_menu > div {width:100%; height:50px; border-right:none !important; text-align:center;}
 	#action_menu > div.count {border-bottom:1px solid #000;}
 	
-	#mail_content > .mail > .title > div {width:100% !important;}
+	#mail_content {padding:0 8px;}
+	#mail_content > .date {height:auto; line-height:1.4; padding:10px 0 6px; font-size:.75rem; margin:0 0 6px 0;}
+
+	#mail_content > .mail {margin:0 0 6px 0; border-radius:6px; border:1px solid #eee !important;}
+	#mail_content > .mail > .title {display:block; padding:10px 12px; cursor:pointer; float:none;}
+	#mail_content > .mail > .title > input[type="checkbox"] {float:right; margin:2px 0 0 8px;}
+	#mail_content > .mail > .title > div {float:none !important; width:100% !important; border-right:none !important; overflow:hidden; text-overflow:ellipsis; text-align:left; box-sizing:border-box; padding:0; line-height:1.5;}
+
+	#mail_content > .mail > .title > div.name {font-size:14px; font-weight:700; color:#222; margin-bottom:2px;}
+	#mail_content > .mail > .title > div.email {font-size:12px; color:#555; margin-bottom:2px;}
+	#mail_content > .mail > .title > div.phone {font-size:12px; color:#555; margin-bottom:4px;}
+	#mail_content > .mail > .title > div.date {font-size:10px !important; color:#aaa; margin-bottom:0;}
+	#mail_content > .mail > .title > div.folder {font-size:10px; color:#bf4040; text-transform:uppercase; letter-spacing:.5px; margin-bottom:4px;}
+	#mail_content > .mail > .title > .button.reply {display:none;}
+
+	#mail_content > .mail > .message {font-size:13px; padding:0 12px; float:none; width:100%; box-sizing:border-box;}
+	#mail_content > .mail.active {margin:0 0 6px 0; padding:0;}
+	#mail_content > .mail.active > .message {padding:10px 12px; border-top:1px solid #f0f0f0;}
 	
 }
 
