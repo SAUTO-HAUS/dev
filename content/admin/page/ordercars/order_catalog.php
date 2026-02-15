@@ -308,7 +308,7 @@ $last_car_id = 0;
                     </div>
                     <?php endif; ?>
                     <?php if (isset($user_role) && $user_role === 'gordon'): ?>
-                    <a class="btn" href="<?= '/'.$_COOKIE['lang'].'/'.$admin_dir.'/changelog/ctlg?car_id='.$r['id'].'&catalog=ordercars' ?>" title="Log" style="font-size:10px;line-height:28px;text-decoration:none;text-align:center;">LOG</a>
+                    <a class="btn" href="<?= '/'.$_COOKIE['lang'].'/'.$admin_dir.'/changelog/ctlg?car_id='.$r['id'].'&catalog=ordercars' ?>" title="Log" style="text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;">LOG</a>
                     <?php endif; ?>
                     <?php /* DISABLED: hide/reveal button
                     if (rbac_has_permission($user_role, 'cars', 'update')): ?>

@@ -63,6 +63,39 @@ $stmt = $db->prepare($sql);
 $stmt->execute($params);
 $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+// Field name labels (human-readable)
+$field_labels = [
+    'photo' => 'Фото',
+    'main_photo' => 'Главное фото',
+    'gr' => 'Группа',
+    'br' => 'Марка (код)',
+    'mo' => 'Модель (код)',
+    'br_nm' => 'Марка',
+    'mo_nm' => 'Модель',
+    'yr' => 'Год',
+    'bt' => 'Кузов',
+    'sts' => 'Мест',
+    'mlg' => 'Пробег',
+    'unit' => 'Ед. пробега',
+    'vol' => 'Объём',
+    'hp' => 'Мощность',
+    'fl' => 'Топливо',
+    'tra' => 'КПП',
+    'wd' => 'Привод',
+    'clr' => 'Цвет',
+    'loc' => 'Филиал',
+    'txt' => 'Описание',
+    'vin' => 'VIN',
+    'prc' => 'Цена',
+    'cur' => 'Валюта',
+    'soon' => 'Под заказ',
+    'n_a' => 'Нет в наличии',
+    'tva' => 'НДС',
+    'top' => 'Топ',
+    'gift' => 'Подарок',
+    'import_country_id' => 'Страна импорта'
+];
+
 // Action labels
 $action_labels = [
     'create' => ['Создание', '#28a745'],
@@ -172,7 +205,7 @@ $base_url = '/'.$_COOKIE['lang'].'/'.$admin_dir.'/changelog/ctlg';
                     <td><a class="changelog-car-link" href="/<?= $_COOKIE['lang'] ?>/<?= $row['catalog_type'] === 'ordercars' ? 'ordercars' : 'cars' ?>/<?= $row['car_id'] ?>" target="_blank"><?= $row['car_id'] ?></a></td>
                     <td><?= $cat_label ?></td>
                     <td><span class="changelog-badge" style="background:<?= $al[1] ?>"><?= $al[0] ?></span></td>
-                    <td><?= htmlspecialchars($row['field_name'] ?? '') ?></td>
+                    <td><?= $field_labels[$row['field_name']] ?? htmlspecialchars($row['field_name'] ?? '') ?></td>
                     <td><div class="changelog-val" title="<?= htmlspecialchars($row['old_value'] ?? '') ?>"><?= htmlspecialchars($row['old_value'] ?? '—') ?></div></td>
                     <td><div class="changelog-val" title="<?= htmlspecialchars($row['new_value'] ?? '') ?>"><?= htmlspecialchars($row['new_value'] ?? '—') ?></div></td>
                     <td><?= htmlspecialchars($row['user_login'] ?? '') ?></td>

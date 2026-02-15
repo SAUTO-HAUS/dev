@@ -249,21 +249,29 @@ if (__post('sub') == 'mo_search') {
 
             //Update Main Photo
             if (!empty(__post('main_img'))) {
+                // Get current main photo ID before update
+                $pdo_old_main = $db->prepare('SELECT `id` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id AND `main`="1" LIMIT 1');
+                $pdo_old_main->execute(['it_id' => __post('id')]);
+                $old_main_photo = $pdo_old_main->fetch(PDO::FETCH_ASSOC);
+                $old_main_id = $old_main_photo ? $old_main_photo['id'] : null;
+
                 $pdo = $db->prepare('UPDATE ' . $prefx . '_car_pht SET `main`="0" WHERE `it_id`=:it_id AND `main`="1"');
                 $pdo->execute(['it_id' => __post('id')]);
                 if (__post('main_img') * 1 > 10000) {
                     $pdo = $db->prepare('UPDATE ' . $prefx . '_car_pht SET `main`="1" WHERE `id`=:id AND `it_id`=:it_id');
                     $pdo->execute(['id' => __post('main_img'), 'it_id' => __post('id')]);
                 }
-                // --- CHANGELOG: log main photo change ---
-                car_changelog_log($db, $prefx, [
-                    'car_id' => __post('id'),
-                    'action' => 'photo_main',
-                    'field_name' => 'main_photo',
-                    'old_value' => null,
-                    'new_value' => 'photo_id:' . __post('main_img'),
-                    'catalog_type' => 'cars'
-                ]);
+                // --- CHANGELOG: log main photo change only if it actually changed ---
+                if ($old_main_id != __post('main_img')) {
+                    car_changelog_log($db, $prefx, [
+                        'car_id' => __post('id'),
+                        'action' => 'photo_main',
+                        'field_name' => 'main_photo',
+                        'old_value' => $old_main_id ? 'photo_id:'.$old_main_id : null,
+                        'new_value' => 'photo_id:' . __post('main_img'),
+                        'catalog_type' => 'cars'
+                    ]);
+                }
             }
 
             if (!empty($r['999_id']) && __post('n_a', 0) != $r['n_a']) {

@@ -502,6 +502,7 @@
   .bx:hover > .adm_menu > .btn[data-fn="restore"]:hover {background-color:rgba(100,200,50,.4);}
   .bx:hover > .adm_menu > .btn[data-fn="erase"] {background-image:url('/media/images/site/delete.svg'); height:100%; background-size:20%; float:right;}
   .bx:hover > .adm_menu > .btn[data-fn="erase"]:hover {background-color:rgba(230,80,50,.4);}
+  .bx:hover > .adm_menu > a.btn:hover {background-color:rgba(100,150,255,.4);}
   
   .bx > .nm {width:100%; height:40px; line-height:15px; float:left; text-align:center; padding:5px 0;}
   .bx > .nm > span {width:100%; display:block;}
