@@ -279,6 +279,13 @@
 	#content_box .prv > .action {margin:0.5rem 0 !important; justify-content:center; gap:12px;}
 	#content_box .prv > .action > .it {margin:0 !important;}
 	#content_box .download_zip, #content_box .chng_pos {width:auto !important; margin:0 !important; line-height:normal; padding:1rem 1.2rem; font-size:0.85rem; height:auto !important;}
+	#content_box .main_info > .checks_cont {display:flex !important; flex-flow:row nowrap !important; justify-content:space-evenly !important; gap:0; padding:0 4px;}
+	#content_box .main_info > .checks_cont > label {padding:0 4px !important; font-size:0.7rem; white-space:nowrap; display:flex; flex-direction:column; align-items:center; text-align:center;}
+	#content_box .main_info.row {flex-wrap:wrap !important; padding:0 4px;}
+	#content_box .main_info.row > .form-group {width:50% !important; padding-left:4px !important; padding-right:4px !important; margin-top:0.4rem !important; box-sizing:border-box;}
+	#content_box .main_info.row > .form-group:has(.group) {width:100% !important; max-width:60%; margin:0.4rem auto 0 !important; padding-left:0 !important; padding-right:0 !important;}
+	#content_box .form-control {font-size:0.85rem !important;}
+	#content_box input:not([type="checkbox"]):not([type="hidden"]):not([type="radio"]):not([type="file"]), #content_box select {height:38px !important; font-size:0.85rem !important;}
 	
 }
 
