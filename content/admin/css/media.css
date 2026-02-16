@@ -298,12 +298,12 @@
 	#content_box .site_999_block_title {font-size:14px !important; padding:12px 4px !important;}
 	#content_box .site_999_block_title a {font-size:11px !important; word-break:break-all;}
 	#main_form_999 .row {flex-wrap:wrap !important; padding:0 4px;}
-	#main_form_999 .row > .form-group[class*="col-md"] {width:50% !important; flex:0 0 50% !important; max-width:50% !important; padding:2px 4px !important; box-sizing:border-box;}
+	#main_form_999 .row > .form-group[class*="col-md"] {width:100% !important; flex:0 0 100% !important; max-width:100% !important; padding:2px 4px !important; box-sizing:border-box;}
 	#main_form_999 .row > .form-group:not([class*="col-md"]) {width:100% !important; flex:0 0 100% !important; max-width:100% !important; padding:2px 4px !important; box-sizing:border-box;}
 	#main_form_999 .form-control {font-size:0.8rem !important; height:36px !important;}
 	#main_form_999 .form-label {font-size:0.75rem !important;}
 	#main_form_999 .features .row {flex-wrap:wrap !important; padding:0 4px;}
-	#main_form_999 .features .row > .form-group[class*="col-md"] {width:50% !important; flex:0 0 50% !important; max-width:50% !important; padding:2px 4px !important; box-sizing:border-box;}
+	#main_form_999 .features .row > .form-group[class*="col-md"] {width:100% !important; flex:0 0 100% !important; max-width:100% !important; padding:2px 4px !important; box-sizing:border-box;}
 	#main_form_999 .features .row > .form-group:not([class*="col-md"]) {width:100% !important; flex:0 0 100% !important; max-width:100% !important; padding:2px 4px !important; box-sizing:border-box;}
 	#main_form_999 .features .main_info {max-width:100% !important; overflow:hidden !important; box-sizing:border-box !important; padding:0 4px !important;}
 	#main_form_999 .features fieldset {padding:4px !important; margin:4px 0 !important; max-width:100% !important; box-sizing:border-box !important; overflow:hidden !important;}
@@ -311,8 +311,6 @@
 	#main_form_999 .features legend {font-size:0.85rem !important;}
 	#main_form_999 .features textarea {height:120px !important; font-size:0.8rem !important;}
 	#main_form_999 .features .form-group-checkbox {width:auto !important; flex:0 0 auto !important; max-width:none !important;}
-	#main_form_999 .features .form-group:has(#feature_105) {order:-2 !important;}
-	#main_form_999 .features .form-group:has(#feature_108) {order:-1 !important;}
 	#main_form_999 .features .input-group {flex-direction:column !important; gap:4px !important;}
 	#main_form_999 .features .input-group .col-md-80 {width:100% !important; max-width:100% !important;}
 	#main_form_999 .features .input-group .col-md-20 {width:100% !important; max-width:100% !important;}
