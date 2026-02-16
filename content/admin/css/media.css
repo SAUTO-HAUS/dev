@@ -255,6 +255,17 @@
 	#content .ctlg .bx .icon_list_cattg {position:absolute !important; top:45px !important; right:4px !important; left:auto !important; display:flex !important; flex-direction:column !important; align-items:flex-end !important; gap:2px !important; z-index:3; transform:none !important;}
 	#content .ctlg .bx .icon_list_cattg .icon_tg {margin:0 !important; padding:0 !important; line-height:0;}
 	#content .ctlg .bx .icon_list_cattg .icon_tg svg {width:16px !important; top:0 !important; margin:0 !important;}
+	/* Display controls (Show + VIN search) */
+	.display-controls {flex-wrap:wrap !important; gap:8px; padding:0.5rem 0.25rem;}
+	.display-controls > div {width:100% !important; margin:0 !important;}
+	.display-controls > div:first-child {justify-content:space-between;}
+	.display-controls > div:first-child label {font-size:0.85rem;}
+	.display-controls > div:first-child select {flex:1; margin-left:8px !important; padding:0.5rem;}
+	.vin-search-container {flex-wrap:wrap !important; gap:6px;}
+	.vin-search-container label {width:100%; font-size:0.85rem;}
+	.vin-search-container input[type="text"] {flex:1 !important; width:auto !important; min-width:0 !important; padding:0.5rem !important; margin:0 !important; font-size:0.9rem;}
+	.vin-search-container button {padding:0.5rem 0.8rem !important; margin:0 !important; font-size:0.85rem;}
+
 	#content .ctlg #add_new {width:calc(50% - 4px) !important; margin:0 0 20px 0 !important; min-height:0 !important; height:auto; align-self:stretch;}
 	#content .ctlg #more_it {width:100% !important; margin:6px 0 !important;}
 	
