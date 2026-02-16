@@ -19,8 +19,21 @@
 	#menu-overlay {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.5); z-index:4; display:none;}
 	#menu-overlay.active {display:block;}
 	
-	#menu {width:75%; max-width:300px; height:100vh; position:fixed; top:0; left:-100%; z-index:5; padding:3.5rem 0 1rem; overflow-y:auto; transition:left .3s ease-in-out; box-shadow:none;}
-	#menu.open {left:0; box-shadow:4px 0 15px rgba(0,0,0,.2);}
+	#menu {width:80%; max-width:320px; height:100vh; position:fixed; top:0; left:-100%; z-index:5; padding:4rem 0 2rem; overflow-y:auto; transition:left .3s ease-in-out; box-shadow:none; background:linear-gradient(180deg, #fff 0%, #fafafa 100%);}
+	#menu.open {left:0; box-shadow:6px 0 25px rgba(0,0,0,.15);}
+	#menu > .bx {padding:16px 20px !important; margin:6px 12px; border-radius:12px; border:none !important; border-left:none !important; background:#fff; box-shadow:0 2px 8px rgba(0,0,0,.06); text-align:center; overflow:hidden; transform:none !important; max-height:3.5rem !important;}
+	#menu > .bx > .nm {font-size:1.1rem; font-weight:600; color:#2c3e50; letter-spacing:0.3px; padding:0 !important; margin:0 !important; line-height:1.4 !important; transform:none !important; text-shadow:none !important; display:block !important;}
+	#menu > .bx:hover {transform:none !important; border-left:none !important; padding:16px 20px !important;}
+	#menu > .bx:hover > .nm {transform:none !important; text-shadow:none !important; padding:0 !important;}
+	#menu > .bx:active {transform:scale(0.98) !important; background:#f8f9fa; padding:16px 20px !important;}
+	#menu > .bx.single-item.active {background:linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%); box-shadow:0 4px 15px rgba(191,64,64,.15); border-left:4px solid var(--clr) !important; padding:16px 16px 16px 16px !important;}
+	#menu > .bx.single-item.active > .nm {color:var(--clr); font-weight:700; padding:0 !important;}
+	#menu > .radio_inp:checked + .bx {max-height:99rem !important; background:#fff; box-shadow:0 4px 20px rgba(0,0,0,.1);}
+	#menu > .bx > .btn {width:46%; font-size:0.9rem; font-weight:500; line-height:3rem; margin:8px 2%; border-radius:10px; border:2px solid #e9ecef; background:#fff; color:#495057; text-align:center; transition:all .2s ease;}
+	#menu > .bx > .btn:active, #menu > .bx > .btn.act {background:var(--clr); color:#fff; border-color:var(--clr); transform:scale(0.96); box-shadow:0 4px 12px rgba(191,64,64,.3);}
+	#menu .sub_menu {padding:12px 16px; text-align:center;}
+	#menu .sub_menu a {padding:12px 16px; margin:4px 0; display:block; font-size:0.9rem; font-weight:500; color:#6c757d; border-radius:8px; background:#f8f9fa; transition:all .2s ease;}
+	#menu .sub_menu a:active, #menu .sub_menu a.act {color:#fff; background:var(--clr);}
 	
 	#content {width:100%; min-height:auto; margin-left:0; padding:3.5rem 2px 0; box-sizing:border-box;}
 	
