@@ -863,10 +863,43 @@ c/f 1017600006845, c/TVA 0609417</pre>
 		
 		// Check if we should load all documents (via loadall parameter or if there's a search query)
 		$loadAll = (isset($_GET['loadall']) && $_GET['loadall'] == '1') || (isset($_GET['search']) && $_GET['search'] != '');
+		$yearFilter_sql = (isset($_GET['year']) && $_GET['year'] != '' && $_GET['year'] != 'all') ? intval($_GET['year']) : 0;
+		$dateFrom_sql = (isset($_GET['date_from']) && $_GET['date_from'] != '') ? $_GET['date_from'] : '';
+		$dateTo_sql = (isset($_GET['date_to']) && $_GET['date_to'] != '') ? $_GET['date_to'] : '';
 		
-		// Always load all documents (search works on client-side via data-tags)
-		// We load only last 2 months initially, but search will trigger loading all via JavaScript
-		if (!$loadAll) {
+		if ($dateFrom_sql != '' || $dateTo_sql != '') {
+			// Date range filter (highest priority)
+			$where = [];
+			$params = [];
+			if ($dateFrom_sql != '') { $where[] = 'c.date >= :df'; $params['df'] = $dateFrom_sql; }
+			if ($dateTo_sql != '') { $where[] = 'c.date <= :dt'; $params['dt'] = $dateTo_sql; }
+			$pdo = $db->prepare('SELECT 
+				u.id u_id, u.nm u_nm, u.tp u_tp, u.cf_idno u_cf_idno, u.tva_dt u_tva_dt, u.iban_dt_tk u_iban_dt_tk, u.adr u_adr, u.phn u_phn, u.eml u_eml, 
+				c.*, 
+				c.last_edited_by
+				FROM 
+					'.$prefx.'_docs_u AS u 
+					INNER JOIN 
+					'.$prefx.'_docs_ctlg AS c 
+				ON u.id=c.u 
+				WHERE '.implode(' AND ', $where).'
+				ORDER BY c.date DESC, c.id DESC'); 
+			$pdo->execute($params);
+		} elseif ($yearFilter_sql > 0) {
+			// Year filter
+			$pdo = $db->prepare('SELECT 
+				u.id u_id, u.nm u_nm, u.tp u_tp, u.cf_idno u_cf_idno, u.tva_dt u_tva_dt, u.iban_dt_tk u_iban_dt_tk, u.adr u_adr, u.phn u_phn, u.eml u_eml, 
+				c.*, 
+				c.last_edited_by
+				FROM 
+					'.$prefx.'_docs_u AS u 
+					INNER JOIN 
+					'.$prefx.'_docs_ctlg AS c 
+				ON u.id=c.u 
+				WHERE YEAR(c.date) = :yr
+				ORDER BY c.date DESC, c.id DESC'); 
+			$pdo->execute(['yr' => $yearFilter_sql]);
+		} elseif (!$loadAll) {
 			// Load only last 2 months initially
 			$twoMonthsAgo = date('Y-m-d', strtotime('-2 months'));
 			
@@ -1020,8 +1053,8 @@ c/f 1017600006845, c/TVA 0609417</pre>
 					$i++;
 				}
 		
-		// Add "More" button only if not all documents are loaded
-		if (!$loadAll) {
+		// Add "More" button only if not all documents are loaded and no filters active
+		if (!$loadAll && $yearFilter_sql == 0 && $dateFrom_sql == '' && $dateTo_sql == '') {
 			$rtrn .= '
 			<div id="load_more_btn" style="text-align:center; padding:1.5rem; cursor:pointer; background:#f9f9f9; margin:1rem 0; border:1px solid #ddd;">
 				<span style="font-size:1.2rem; color:#666;">More</span>
@@ -1222,79 +1255,49 @@ c/f 1017600006845, c/TVA 0609417</pre>
 		$(".docs > .find.doc").append(dateFilterBtn);
 		$(".docs > .find.doc").append(dateClearBtn);
 		$(".docs > .find.doc").append(yearWrapper);
-		yearFilter.val(currentYear);
 		
-		// Date range filter function
-		function applyDateRangeFilter() {
+		// Set initial year from URL params
+		var urlParams = new URLSearchParams(window.location.search);
+		var yearParam = urlParams.get("year");
+		var dfParam = urlParams.get("date_from");
+		var dtParam = urlParams.get("date_to");
+		if (dfParam || dtParam) {
+			yearFilter.val("all");
+		} else if (yearParam) {
+			yearFilter.val(yearParam);
+		} else {
+			yearFilter.val(currentYear);
+		}
+		
+		// Pre-fill date inputs from URL
+		if (dfParam) { dateFromInput.val(dfParam).trigger("change"); }
+		if (dtParam) { dateToInput.val(dtParam).trigger("change"); }
+		
+		// Date range filter - server-side reload
+		dateFilterBtn.on("click", function(){
 			var dateFrom = dateFromInput.val();
 			var dateTo = dateToInput.val();
-			
 			if (dateFrom || dateTo) {
-				yearFilter.val("all");
-				$(".docs > .list > .bx").each(function(){
-					var dateStr = $(this).find(".values").data("date");
-					if (dateStr) {
-						var docDate = new Date(dateStr);
-						var fromDate = dateFrom ? new Date(dateFrom) : new Date("1900-01-01");
-						var toDate = dateTo ? new Date(dateTo) : new Date("2099-12-31");
-						toDate.setHours(23, 59, 59, 999);
-						
-						if (docDate >= fromDate && docDate <= toDate) {
-							$(this).removeClass("none");
-						} else {
-							$(this).addClass("none");
-						}
-					}
-				});
+				var url = window.location.pathname + "?";
+				if (dateFrom) url += "date_from=" + dateFrom + "&";
+				if (dateTo) url += "date_to=" + dateTo;
+				window.location.href = url.replace(/&$/, "");
 			}
-		}
-		
-		dateFilterBtn.on("click", applyDateRangeFilter);
-		
-		dateClearBtn.on("click", function(){
-			dateFromInput.val("");
-			dateToInput.val("");
-			yearFilter.val(currentYear).trigger("change");
 		});
 		
+		dateClearBtn.on("click", function(){
+			window.location.href = window.location.pathname;
+		});
+		
+		// Year filter - always server-side reload
 		yearFilter.on("change", function(){
-		var year = $(this).val();
-		dateFromInput.val("");
-		dateToInput.val("");
-		
-		// If year is selected and documents for that year are not loaded, reload page with loadall and year
-		if (year !== "all" && year !== currentYear.toString()) {
-			// Check if we have documents for this year loaded
-			var hasDocsForYear = false;
-			$(".docs > .list > .bx").each(function(){
-				if ($(this).attr("data-year") == year) {
-					hasDocsForYear = true;
-					return false; // break
-				}
-			});
-			
-			// If no documents for this year are loaded, reload with loadall and selected year
-			if (!hasDocsForYear && $("#load_more_btn").length > 0) {
-				window.location.href = window.location.pathname + "?loadall=1&year=" + year;
-				return;
+			var year = $(this).val();
+			if (year === "all") {
+				window.location.href = window.location.pathname;
+			} else {
+				window.location.href = window.location.pathname + "?year=" + year;
 			}
-		}
-		
-		if (year === "all") {
-			$(".docs > .list > .bx").removeClass("none");
-		} else {
-			$(".docs > .list > .bx").each(function(){
-				$(this).attr("data-year") == year ? $(this).removeClass("none") : $(this).addClass("none");
-			});
-		}
-	}).trigger("change");
-	
-	// If year parameter is in URL, set the year filter
-	var urlParams = new URLSearchParams(window.location.search);
-	var yearParam = urlParams.get("year");
-	if (yearParam) {
-		yearFilter.val(yearParam).trigger("change");
-	}
+		});
 	});
 	</script>';
 }elseif ( isset($t_mp[5]) ){
