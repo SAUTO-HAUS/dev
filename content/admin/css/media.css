@@ -154,7 +154,9 @@
 	.doc_pg form > .ttl {margin:0.75rem 0 0.25rem; font-size:0.95rem;}
 	.doc_pg form .btn {padding:0.5rem 1rem; margin:0 0.25rem 0.5rem; font-size:0.85rem;}
 	.doc_pg form input[type="submit"] {width:100% !important; margin:0.75rem 0 !important; padding:0.85rem !important; font-size:0.95rem;}
-	.doc_pg form label[style*="margin"] {display:block; margin:0.3rem 0 !important;}
+	.doc_pg form {text-align:center;}
+	.doc_pg form .lbl, .doc_pg form .lbl.max, .doc_pg form > .ttl {text-align:left;}
+	.doc_pg form > label[style*="margin"] {display:inline-block; margin:0.3rem 0.5rem !important; font-size:0.85rem;}
 	.doc_pg #date_pay_bx .lbl {width:100% !important;}
 	.doc_pg #its_bx .car_group {border:1px solid #eee; border-radius:6px; padding:0.5rem; margin:0.5rem 0; background:#fafafa;}
 	.doc_pg #its_bx .car_group .lbl {width:100% !important; margin:0.3rem 0 !important;}
