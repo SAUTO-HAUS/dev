@@ -293,6 +293,26 @@
 	#content_box .btns_fb_tg .adm_tg_btn input[type="time"] {width:90px !important; padding:4px !important; font-size:0.75rem !important; height:30px !important;}
 	#content_box .btns_fb_tg .icon_tg {margin-left:6px !important;}
 	#content_box .btns_fb_tg .icon_tg svg {width:18px !important; top:0 !important; vertical-align:middle !important;}
+	/* 999.md form */
+	#content_box .site_999_block {margin:10px 0 0 0 !important; padding:0 0 20px 0 !important;}
+	#content_box .site_999_block_title {font-size:14px !important; padding:12px 4px !important;}
+	#content_box .site_999_block_title a {font-size:11px !important; word-break:break-all;}
+	#main_form_999 .row {flex-wrap:wrap !important; padding:0 4px;}
+	#main_form_999 .row > .form-group[class*="col-md"] {width:50% !important; flex:0 0 50% !important; max-width:50% !important; padding:2px 4px !important; box-sizing:border-box;}
+	#main_form_999 .row > .form-group:not([class*="col-md"]) {width:100% !important; flex:0 0 100% !important; max-width:100% !important; padding:2px 4px !important; box-sizing:border-box;}
+	#main_form_999 .form-control {font-size:0.8rem !important; height:36px !important;}
+	#main_form_999 .form-label {font-size:0.75rem !important;}
+	#main_form_999 .features .row {flex-wrap:wrap !important; padding:0 4px;}
+	#main_form_999 .features .row > .form-group[class*="col-md"] {width:50% !important; flex:0 0 50% !important; max-width:50% !important; padding:2px 4px !important; box-sizing:border-box;}
+	#main_form_999 .features .row > .form-group:not([class*="col-md"]) {width:100% !important; flex:0 0 100% !important; max-width:100% !important; padding:2px 4px !important; box-sizing:border-box;}
+	#main_form_999 .features fieldset {padding:4px !important; margin:4px 0 !important;}
+	#main_form_999 .features legend {font-size:0.85rem !important;}
+	#main_form_999 .features textarea {height:120px !important; font-size:0.8rem !important;}
+	#main_form_999 .features .form-group-checkbox {width:auto !important; flex:0 0 auto !important; max-width:none !important;}
+	#main_form_999 #sauto_personal_scheduling > div > div {grid-template-columns:1fr !important;}
+	#main_form_999 .confirm_999, #content_box .confirm_999 {font-size:0.85rem !important; height:44px !important; margin:8px 4px 0 !important;}
+	#main_form_999 .d-flex {flex-wrap:wrap !important; gap:6px !important;}
+	#main_form_999 .promotion-description {font-size:0.7rem !important; padding:0 4px !important;}
 	
 }
 
