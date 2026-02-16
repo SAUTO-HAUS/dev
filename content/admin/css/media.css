@@ -76,6 +76,21 @@
 
 	#mail_content > .mail > .message {font-size:14px; line-height:1.6; padding:0 12px; float:none; width:auto; box-sizing:border-box; color:#333;}
 	#mail_content > .mail.active > .message {padding:8px 12px 12px; border-top:1px solid #f0f0f0;}
+
+	#docs {padding:0.5rem !important;}
+	#docs > .gr > .gr-title {font-size:1.2rem; margin-bottom:1rem;}
+	#docs > .gr > .categories-row {gap:0.5rem;}
+	#docs > .gr > .categories-row > .tp {min-width:100% !important; flex:none;}
+	#docs > .gr > .categories-row > .tp > .tp-header {min-height:44px; padding:0.6rem 0.5rem;}
+	#docs > .gr > .categories-row > .tp > .tp-header > .tp-title {font-size:0.8rem;}
+	#docs > .gr > .categories-row > .tp > .its > .it {padding:0.6rem 0.25rem;}
+	#docs > .gr > .categories-row > .tp > .its > .it > .txt {font-size:0.8rem;}
+
+	.sauto-info {padding:0.75rem !important; margin-top:1rem !important;}
+	.sauto-info h3 {font-size:1rem; margin-bottom:0.75rem;}
+	.sauto-block {display:block !important; width:100% !important; margin:0 0 0.75rem 0 !important; padding:0.5rem 0.75rem !important;}
+	.sauto-block pre {font-size:0.75rem; line-height:1.5;}
+	.sauto-block .copy-btn {padding:0.6rem 1rem; font-size:0.85rem;}
 	
 }
 
