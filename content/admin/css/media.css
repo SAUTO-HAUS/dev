@@ -256,15 +256,16 @@
 	#content .ctlg .bx .icon_list_cattg .icon_tg {margin:0 !important; padding:0 !important; line-height:0;}
 	#content .ctlg .bx .icon_list_cattg .icon_tg svg {width:16px !important; top:0 !important; margin:0 !important;}
 	/* Display controls (Show + VIN search) */
-	.display-controls {flex-wrap:wrap !important; gap:8px; padding:0.5rem 0.25rem;}
-	.display-controls > div {width:100% !important; margin:0 !important;}
-	.display-controls > div:first-child {justify-content:space-between;}
-	.display-controls > div:first-child label {font-size:0.85rem;}
-	.display-controls > div:first-child select {flex:1; margin-left:8px !important; padding:0.5rem;}
-	.vin-search-container {flex-wrap:wrap !important; gap:6px;}
+	.display-controls {flex-wrap:wrap !important; gap:8px; padding:0.5rem 0.25rem; padding-right:3rem; min-height:2.5rem; align-items:center;}
+	.display-controls > div:first-child {width:auto !important; margin:0 !important; flex:1;}
+	.display-controls > div:first-child label {font-size:0.85rem; white-space:nowrap;}
+	.display-controls > div:first-child select {margin-left:6px !important; padding:0.4rem 0.5rem;}
+	.vin-search-container {width:100% !important; margin:0 !important; flex-wrap:wrap !important; gap:6px;}
 	.vin-search-container label {width:100%; font-size:0.85rem;}
 	.vin-search-container input[type="text"] {flex:1 !important; width:auto !important; min-width:0 !important; padding:0.5rem !important; margin:0 !important; font-size:0.9rem;}
 	.vin-search-container button {padding:0.5rem 0.8rem !important; margin:0 !important; font-size:0.85rem;}
+	#search_content {padding-top:3rem !important;}
+	#search_content > .open_close {width:2.5rem; height:2.5rem; border-radius:0 0 0 4px; top:4rem !important; left:-3rem !important; background-size:auto 45% !important;}
 
 	#content .ctlg #add_new {width:calc(50% - 4px) !important; margin:0 0 20px 0 !important; min-height:0 !important; height:auto; align-self:stretch;}
 	#content .ctlg #more_it {width:100% !important; margin:6px 0 !important;}
