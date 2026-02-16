@@ -210,6 +210,28 @@
 	.form-row input, .form-row select {max-width:100% !important; width:100% !important; padding:0.6rem !important; font-size:0.9rem; box-sizing:border-box;}
 	.form-row label {font-size:0.85rem;}
 	.add-user-btn, .cancel-btn {width:100%; margin:0.3rem 0 !important; padding:0.7rem !important; font-size:0.9rem; box-sizing:border-box;}
+
+	/* 404 Stats page (/adminsauto/sett/404_stats) */
+	.s404 {padding:8px 0;}
+	.s404-hdr {flex-direction:column; align-items:flex-start; gap:8px;}
+	.s404-hdr h2 {font-size:15px;}
+	.s404-ctrl {width:100%;}
+	.s404-ctrl select {flex:1; min-height:40px; text-align:center;}
+	.s404-ctrl .btn {flex:1; text-align:center; min-height:40px;}
+	.s404-cards {gap:8px;}
+	.s404-card {min-width:0; flex:1 1 calc(50% - 8px); padding:10px 8px;}
+	.s404-card .num {font-size:20px;}
+	.s404-card .lbl {font-size:11px;}
+	.s404-row {flex-direction:column; gap:10px;}
+	.s404-box {margin-bottom:10px;}
+	.s404-box-hdr {padding:10px 12px; font-size:13px;}
+	.s404-box-body {padding:8px; overflow-x:auto; -webkit-overflow-scrolling:touch;}
+	.s404-tbl {font-size:12px; min-width:auto;}
+	.s404-tbl th, .s404-tbl td {padding:6px 6px;}
+	.s404-tbl .url {max-width:160px; font-size:11px;}
+
+	/* Hide "Previous position" button on mobile */
+	#prev_w_pos {display:none !important;}
 	
 }
 
