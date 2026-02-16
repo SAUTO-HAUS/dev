@@ -190,6 +190,25 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 				
 				span.stamp {display:block; top:-20mm; left:0;}
 				span.stamp > .signature {top:2mm; left:-5mm;}
+				
+				@media screen and (max-width:767px), screen and (orientation:portrait) and (max-width:900px) {
+					.base > .pg {width:100% !important; height:auto !important; padding:3mm 4mm !important; box-sizing:border-box;}
+					.base > .pg.bg {background-size:cover;}
+					.cont {font-size:0.7rem;}
+					.logo {max-width:80px;}
+					.logo img {max-width:100%; height:auto;}
+					.sign > * {width:48%;}
+					.sign {margin-top:10mm;}
+					table {font-size:0.65rem; table-layout:fixed; word-wrap:break-word;}
+					tr > td {padding:1.5mm 1mm;}
+					tr > td div[style*="white-space"] {white-space:normal !important;}
+					tr > td span[style*="width"], tr > td div[style*="width"] {width:auto !important; max-width:100% !important;}
+					tr > td span[style*="margin-left: 15mm"], tr > td span[style*="margin-left:15mm"] {margin-left:2mm !important;}
+					tr > td span[style*="margin-left: 5mm"], tr > td span[style*="margin-left:5mm"] {margin-left:1mm !important;}
+					.flx {min-height:auto;}
+					.stamp {width:25mm; height:25mm;}
+					.head div {font-size:0.75rem !important;}
+				}
 			</style>
 			
 			<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
