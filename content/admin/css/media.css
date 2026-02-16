@@ -237,9 +237,10 @@
 	#content .ctlg {column-gap:4px !important; row-gap:16px !important; justify-content:space-between !important; padding:0 3px;}
 	#content .ctlg .bx {width:calc(50% - 4px) !important; margin:0 0 20px 0 !important; float:none !important; border-radius:0.6rem !important;}
 	#content .ctlg .bx > .img {height:120px; border-radius:0.6rem 0.6rem 0 0;}
-	#content .ctlg .bx > .icon {width:1.2rem; height:1.2rem; top:-1.2rem;}
-	#content .ctlg .bx > .base_info {font-size:0.6rem; top:-1.2rem; width:80%;}
-	#content .ctlg .bx > .nm {padding:0.2rem 0.3rem;}
+	#content .ctlg .bx > .icon.comment {width:1.2rem; height:1.2rem; top:-1.2rem;}
+	#content .ctlg .bx > .icon.print {width:2rem; height:2rem; top:122px !important; right:0.3rem !important; left:auto !important; position:absolute; z-index:4;}
+	#content .ctlg .bx > .base_info {font-size:0.6rem; top:-1.8rem; width:80%;}
+	#content .ctlg .bx > .nm {padding:0.2rem 0.3rem; text-align:center;}
 	#content .ctlg .bx > .nm > .br, #content .ctlg .bx > .nm > .mo {font-size:0.7rem;}
 	#content .ctlg .bx > .info {padding:0.2rem 0.5rem; font-size:0.7rem; min-height:auto;}
 	#content .ctlg .bx > .info > .it {margin:1px 0;}
