@@ -340,6 +340,24 @@
 	#main_form_999 .form-group:has(input[name="scenario"]) > label {display:block !important; text-align:center !important;}
 	#main_form_999 .form-group:has(input[name="scenario"]) > .d-flex {display:flex !important; flex-direction:row !important; flex-wrap:nowrap !important; justify-content:center !important; gap:20px !important; width:100% !important;}
 	#main_form_999 .promotion-description {font-size:0.7rem !important; padding:0 4px !important;}
+	/* Calculator results responsive */
+	#calculator-container {padding:0 8px !important; max-width:100% !important; box-sizing:border-box !important;}
+	#calculator-container .results {padding:12px !important; max-width:100% !important; box-sizing:border-box !important;}
+	#calculator-container .results h2 {font-size:1.1rem !important; margin-bottom:0.75rem !important;}
+	#calculator-container .result-row {display:flex !important; flex-direction:column !important; gap:8px !important; padding:12px 0 !important; align-items:stretch !important;}
+	#calculator-container .result-row .label {font-size:0.9rem !important; width:100% !important; display:flex !important; align-items:center !important; justify-content:flex-start !important; text-align:left !important;}
+	#calculator-container .result-row .value {font-size:0.95rem !important; width:100% !important; display:flex !important; justify-content:center !important;}
+	#calculator-container .editable-value {display:flex !important; flex-wrap:nowrap !important; align-items:center !important; justify-content:center !important; gap:4px !important;}
+	#calculator-container .editable-input {width:80px !important; padding:6px 8px !important; font-size:0.9rem !important;}
+	#calculator-container .editable-input.eur-input {width:70px !important; font-size:0.85rem !important;}
+	#calculator-container .eur-equiv {display:inline-flex !important; align-items:center !important; gap:4px !important; margin-left:8px !important; white-space:nowrap !important;}
+	#calculator-container .result-row.total {margin:12px -12px 0 !important; padding:12px !important; flex-direction:column !important; gap:8px !important;}
+	#calculator-container .result-row.total.vehicle-total {margin:0 -12px -12px !important; padding:12px !important;}
+	#calculator-container .result-row.total .label, #calculator-container .result-row.total .value {font-size:1rem !important;}
+	#calculator-container .toggle-switch {width:44px !important; height:22px !important; margin-right:8px !important; flex-shrink:0 !important;}
+	#calculator-container .toggle-slider:before {width:16px !important; height:16px !important;}
+	#calculator-container .toggle-switch input:checked + .toggle-slider:before {transform:translateX(22px) !important;}
+	#calculator-container .inline-rate-input {width:45px !important; padding:2px 4px !important; font-size:0.85rem !important;}
 	
 }
 
