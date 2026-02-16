@@ -305,13 +305,24 @@
 	#main_form_999 .features .row {flex-wrap:wrap !important; padding:0 4px;}
 	#main_form_999 .features .row > .form-group[class*="col-md"] {width:50% !important; flex:0 0 50% !important; max-width:50% !important; padding:2px 4px !important; box-sizing:border-box;}
 	#main_form_999 .features .row > .form-group:not([class*="col-md"]) {width:100% !important; flex:0 0 100% !important; max-width:100% !important; padding:2px 4px !important; box-sizing:border-box;}
-	#main_form_999 .features fieldset {padding:4px !important; margin:4px 0 !important;}
+	#main_form_999 .features .main_info {max-width:100% !important; overflow:hidden !important; box-sizing:border-box !important; padding:0 4px !important;}
+	#main_form_999 .features fieldset {padding:4px !important; margin:4px 0 !important; max-width:100% !important; box-sizing:border-box !important; overflow:hidden !important;}
+	#main_form_999 .features fieldset.row {display:flex !important; flex-wrap:wrap !important; justify-content:center !important;}
 	#main_form_999 .features legend {font-size:0.85rem !important;}
 	#main_form_999 .features textarea {height:120px !important; font-size:0.8rem !important;}
 	#main_form_999 .features .form-group-checkbox {width:auto !important; flex:0 0 auto !important; max-width:none !important;}
-	#main_form_999 #sauto_personal_scheduling > div > div {grid-template-columns:1fr !important;}
+	#main_form_999 #sauto_personal_scheduling {max-width:100% !important; box-sizing:border-box !important;}
+	#main_form_999 #sauto_personal_scheduling > div {padding:10px !important; box-sizing:border-box !important; max-width:100% !important;}
+	#main_form_999 #sauto_personal_scheduling > div > div {grid-template-columns:1fr !important; max-width:100% !important; box-sizing:border-box !important;}
+	#main_form_999 #sauto_personal_scheduling h4 {font-size:1rem !important; margin-bottom:10px !important;}
+	#main_form_999 #sauto_personal_scheduling h6 {font-size:0.75rem !important;}
 	#main_form_999 .confirm_999, #content_box .confirm_999 {font-size:0.85rem !important; height:44px !important; margin:8px 4px 0 !important;}
 	#main_form_999 .d-flex {flex-wrap:wrap !important; gap:6px !important;}
+	#main_form_999 #text_options_wrapper #text_options.d-flex {flex-direction:column !important; gap:10px !important;}
+	#main_form_999 #text_options_wrapper #text_options.d-flex > div {width:100% !important; display:block !important; text-align:left !important;}
+	#main_form_999 .form-group:has(input[name="scenario"]) {text-align:center !important;}
+	#main_form_999 .form-group:has(input[name="scenario"]) > label {display:block !important; text-align:center !important;}
+	#main_form_999 .form-group:has(input[name="scenario"]) > .d-flex {display:flex !important; flex-direction:row !important; flex-wrap:nowrap !important; justify-content:center !important; gap:20px !important; width:100% !important;}
 	#main_form_999 .promotion-description {font-size:0.7rem !important; padding:0 4px !important;}
 	
 }
