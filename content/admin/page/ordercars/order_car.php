@@ -267,6 +267,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                 <!-----GROUP----->
                 <div class="form-group col-md-3">
+                    <div class="form-label-sm"><?= $lng['w']['group'] ?></div>
                     <select class="group need form-control" name="gr" tabindex="1" title="<?= mb_strtoupper($lng['w']['group'], "UTF-8")?>">
                         <?php foreach ($lng['l']['car']['gr'] as $k => $v) : ?>
                             <option value="<?= $k ?>" <?= ((isset($car['gr']) && $k==$car['gr']) ? 'selected' : '') ?> >
@@ -278,6 +279,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                 <!-----BRAND----->
                 <div class="form-group col-md-3">
+                    <div class="form-label-sm"><?= $lang_brand ?></div>
                     <select class="brand need form-control" name="br" tabindex="1">
                         <option value=""><?= mb_strtoupper($lang_brand, "UTF-8") ?></option>
                         <?php foreach ($it_br as $k => $v) : ?>
@@ -292,6 +294,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                 <?php if (!empty($car)) : ?>
                 <?php $list = (new \App\Db\Car())->getCarListByBrand($car['br'])?>
                 <div class="form-group col-md-3">
+                    <div class="form-label-sm"><?= $lang_model ?></div>
                     <select class="model need form-control" name="mo" def_text="<?= mb_strtoupper($lang_model, "UTF-8") ?>" tabindex="2">
                         <option value=""><?= mb_strtoupper($lang_model, "UTF-8") ?></option>
                         <?php foreach ($list as $v) : ?>
@@ -301,6 +304,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                 </div>
                 <?php else : ?>
                 <div class="form-group col-md-3">
+                    <div class="form-label-sm"><?= $lang_model ?></div>
                     <select class="model need form-control" name="mo" def_text="<?= mb_strtoupper($lang_model, "UTF-8") ?>" tabindex="2">
                         <option value=""><?= mb_strtoupper($lang_model, "UTF-8") ?></option>
                     </select>
@@ -309,6 +313,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                 <!-----COUNTRY OF IMPORT----->
                 <div class="form-group col-md-4">
+                    <div class="form-label-sm"><?= __('cars.import_country') ?></div>
                     <select class="country form-control" name="import_country_id" tabindex="9" title="<?= __('cars.import_country') ?>">
                         <?php if (!$new) : ?>
                         <option value=""><?= strtoupper(__('cars.import_country')) ?></option>
@@ -344,6 +349,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                 <!-----YEAR----->
                 <div class="form-group col-md-3">
+                    <div class="form-label-sm"><?= $lang_year ?></div>
                     <input class="year need nmb form-control" name="yr" tabindex="3" type="text"
                             placeholder="<?= mb_strtoupper($lang_year, "UTF-8") ?>"
                             title="<?= mb_strtoupper($lang_year, "UTF-8") ?>"
@@ -352,6 +358,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                 <!-----BODYTYPE----->
                 <div class="form-group col-md-3">
+                    <div class="form-label-sm"><?= $lang_bodytype ?></div>
                     <select class="bodytype need form-control" name="bt" tabindex="4">
                         <option value=""><?= mb_strtoupper($lang_bodytype, "UTF-8") ?></option>
                         <?php foreach ($lng['l']['car']['bt'] as $k => $v) : ?>
@@ -364,6 +371,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                 <!-----SEATS----->
                 <div class="form-group col-md-3">
+                    <div class="form-label-sm"><?= $lng['l']['car']['spec']['sts'] ?></div>
                     <input class="seats need nmb form-control" type="text" name="sts" tabindex="12"
                            value="<?= $car['sts'] ?? '' ?>"
                            placeholder="<?= mb_strtoupper($lng['l']['car']['spec']['sts'], "UTF-8") ?>"
@@ -372,6 +380,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                 <!-----MILEAGE----->
                 <div class="form-group col-md-40">
+                    <div class="form-label-sm"><?= $lang_mileage ?></div>
                     <input class="mileage need nmb form-control" name="mlg" size="11" tabindex="5"
                            value="<?= $car['mlg'] ?? '' ?>"
                            placeholder="<?= mb_strtoupper($lang_mileage, "UTF-8") ?>" type="text"
@@ -380,6 +389,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                 <!-----KM_OR_MI----->
                 <div class="form-group col-md-10">
+                    <div class="form-label-sm">km/mi</div>
                     <select class="km_or_mi need form-control" name="unit" tabindex="6">
                         <?php foreach ($info_km_or_mi as $k => $v) : ?>
                             <option value="<?= $k ?>" <?= ($car['unit'] ?? ($k == 'km' ? 'selected' : '')) ?>>
@@ -391,6 +401,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                 <!-----ENGINE----->
                 <div class="form-group col-md-40">
+                    <div class="form-label-sm"><?= $lang_engine ?></div>
                     <input class="engine need nmb form-control" name="vol" size="16" tabindex="7"
                            value="<?= $car['vol'] ?? '' ?>"
                            placeholder="<?= mb_strtoupper($lang_engine, "UTF-8") ?>" type="text"
@@ -399,6 +410,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                 <!-----HP----->
                 <div class="form-group col-md-10">
+                    <div class="form-label-sm"><?= $lang_hp ?></div>
                     <input class="hp need nmb form-control" name="hp" size="16" tabindex="7"
                            value="<?= $car['hp'] ?? '' ?>"
                            placeholder="<?= mb_strtoupper($lang_hp, "UTF-8") ?>" type="text"
@@ -407,6 +419,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                 <!-----FUEL----->
                 <div class="form-group col-md-2">
+                    <div class="form-label-sm"><?= $lang_fuel ?></div>
                     <select class="fuel need form-control" name="fl" tabindex="8">
                         <option value=""><?= mb_strtoupper($lang_fuel, "UTF-8") ?></option>
                         <?php foreach ($lng['l']['car']['fl'] as $k => $v) : ?>
@@ -419,6 +432,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                 <!-----TRANSMISSION----->
                 <div class="form-group col-md-2">
+                    <div class="form-label-sm"><?= $lang_transmission ?></div>
                     <select class="transmission need form-control" name="tra" tabindex="9">
                         <option value=""><?= mb_strtoupper($lang_transmission, "UTF-8") ?></option>
                         <?php foreach ($lng['l']['car']['tra'] as $k => $v) : ?>
@@ -431,6 +445,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                 <!-----WHEEL DRIVE----->
                 <div class="form-group col-md-3">
+                    <div class="form-label-sm"><?= $lang_wheel_drive ?></div>
                     <select class="wheel_drive need form-control" name="wd" tabindex="10">
                         <option value=""><?= mb_strtoupper($lang_wheel_drive, "UTF-8") ?></option>
                         <?php foreach ($lng['l']['car']['wd'] as $k => $v) : ?>
@@ -443,6 +458,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                 <!-----COLOR----->
                 <div class="form-group col-md-3">
+                    <div class="form-label-sm"><?= $lang_color ?></div>
                     <select class="color need form-control" name="clr" tabindex="11">
                         <option value=""><?= mb_strtoupper($lang_color, "UTF-8") ?></option>
                         <?php foreach ($lng['l']['car']['clr'] as $k => $v) : ?>
@@ -455,6 +471,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                 <!-----LOCATION----->
                 <div class="form-group col-md-3">
+                    <div class="form-label-sm"><?= $lng['w']['address'] ?></div>
                     <select class="location need form-control" name="loc" title="<?= $lng['w']['address'] ?>" tabindex="12">
                         <?php foreach ($lng['t']['x']['address'] as $k => $v) : ?>
                             <option value="<?= ($k == 0 ? '' : $k) ?>" <?= ((isset($car['loc']) && $k==$car['loc']) ? 'selected' : '') ?>>
@@ -466,6 +483,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                 <!-----VIN CODE----->
                 <div class="form-group col-md-6">
+                    <div class="form-label-sm">VIN</div>
                     <input class="vin need form-control" type="text" name="vin" tabindex="15"
                            value="<?= $car['vin'] ?? '' ?>"
                            placeholder="VIN КОД (17 символов)"
@@ -478,38 +496,22 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                 <!-----DELIVERY TIME----->
                 <div class="form-group col-md-6">
-                    <label class="form-label" style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">
-                        <?php 
-                            if ($_COOKIE['lang'] == 'ro') echo 'TERMEN DE LIVRARE:';
-                            elseif ($_COOKIE['lang'] == 'ru') echo 'СРОК ПОСТАВКИ:';
-                            else echo 'DELIVERY TIME:';
-                        ?>
-                    </label>
+                    <div class="form-label-sm"><?php 
+                            if ($_COOKIE['lang'] == 'ro') echo 'Termen de livrare';
+                            elseif ($_COOKIE['lang'] == 'ru') echo 'Срок поставки';
+                            else echo 'Delivery time';
+                        ?></div>
                     <input class="delivery_time form-control" type="number" name="delivery_time" tabindex="16"
                            value="<?= $car['delivery_time'] ?? '14' ?>"
-                           placeholder="<?php 
-                               if ($_COOKIE['lang'] == 'ro') echo 'TERMEN DE LIVRARE (ZILE)';
-                               elseif ($_COOKIE['lang'] == 'ru') echo 'СРОК ПОСТАВКИ (ДНИ)';
-                               else echo 'DELIVERY TIME (DAYS)';
-                           ?>"
-                           title="<?php 
-                               if ($_COOKIE['lang'] == 'ro') echo 'TERMEN DE LIVRARE ÎN ZILE';
-                               elseif ($_COOKIE['lang'] == 'ru') echo 'СРОК ПОСТАВКИ В ДНЯХ';
-                               else echo 'DELIVERY TIME IN DAYS';
-                           ?>"
+                           placeholder="<?= __('cars.delivery_time') ?>"
+                           title="<?= __('cars.delivery_time') ?>"
                            min="1"
                            max="365">
                 </div>
 
                 <!-----PRICE--->
                 <div class="form-group col-md-90">
-                    <label class="form-label" style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">
-                        <?php 
-                            if ($_COOKIE['lang'] == 'ro') echo 'PREȚ TOTAL:';
-                            elseif ($_COOKIE['lang'] == 'ru') echo 'ОБЩАЯ ЦЕНА:';
-                            else echo 'TOTAL PRICE:';
-                        ?>
-                    </label>
+                    <div class="form-label-sm"><?= $lang_price ?></div>
                     <input class="price need nmb form-control" type="text" name="prc" tabindex="16"
                            value="<?= $car['prc'] ?? '' ?>"
                            placeholder="<?= mb_strtoupper($lang_price, "UTF-8") ?>"
@@ -518,6 +520,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                 <!-----CURRENCY--->
                 <div class="form-group col-md-10">
+                    <div class="form-label-sm"><?= $lng['w']['currency'] ?? 'Val.' ?></div>
                     <select class="currency need form-control" name="cur" tabindex="17">
                         <?php foreach ($lng['l']['cur'] as $k => $v) : ?>
                             <option value="<?= $k ?>" <?= $car['cur'] ?? ($k == 'EUR' ? 'selected' : '') ?>>
@@ -529,13 +532,11 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
                 <!-----ADVANCE AMOUNT----->
                 <div class="form-group col-md-6">
-                    <label class="form-label" style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">
-                        <?php 
-                            if ($_COOKIE['lang'] == 'ro') echo 'SUMA AVANSULUI (70%):';
-                            elseif ($_COOKIE['lang'] == 'ru') echo 'СУММА АВАНСА (70%):';
-                            else echo 'ADVANCE AMOUNT (70%):';
-                        ?>
-                    </label>
+                    <div class="form-label-sm"><?php 
+                            if ($_COOKIE['lang'] == 'ro') echo 'Suma avansului (70%)';
+                            elseif ($_COOKIE['lang'] == 'ru') echo 'Сумма аванса (70%)';
+                            else echo 'Advance amount (70%)';
+                        ?></div>
                     <input class="advance_amount need nmb form-control" type="number" name="advance_amount" tabindex="18"
                            value="<?= $car['advance_amount'] ?? '' ?>"
                            placeholder="<?php 
@@ -553,13 +554,11 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                 </div>
                 
                 <div class="form-group col-md-6">
-                    <label class="form-label" style="font-weight: bold; color: #333; margin-bottom: 5px; display: block;">
-                        <?php 
-                            if ($_COOKIE['lang'] == 'ro') echo 'TIMER OFERTĂ (Zile:Ore:Minute:Secunde):';
-                            elseif ($_COOKIE['lang'] == 'ru') echo 'ТАЙМЕР ПРЕДЛОЖЕНИЯ (Дни:Часы:Минуты:Секунды):';
-                            else echo 'OFFER TIMER (Days:Hours:Minutes:Seconds):';
-                        ?>
-                    </label>
+                    <div class="form-label-sm"><?php 
+                            if ($_COOKIE['lang'] == 'ro') echo 'Timer ofertă (Zile:Ore:Min:Sec)';
+                            elseif ($_COOKIE['lang'] == 'ru') echo 'Таймер предложения (Дни:Часы:Мин:Сек)';
+                            else echo 'Offer timer (Days:Hrs:Min:Sec)';
+                        ?></div>
                     <?php
                     // Calculate remaining time from offer_timer_end if it exists
                     $timer_display_value = '30:00:00:00';

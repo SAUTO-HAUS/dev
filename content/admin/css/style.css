@@ -263,6 +263,7 @@
   .form-label {
 	  line-height: 32px;
   }
+  .form-label-sm {font-size:0.7rem; color:#888; margin:0 0 2px 2px; line-height:1.2;}
   #content_box .top {width:100%; padding:5px 0; line-height:2.2rem; font-size:1.1rem; text-align:center;background-color: white; position: relative;}
   #content_box .top > .title {height:100%; width:100%; box-sizing:border-box; background-color:transparent; color:var(--clr); float:left;}
   #content_box .top > .close {height: auto; box-sizing:border-box; color:#333; cursor:pointer; transition:.3s;position: absolute;right: 0;padding: 0 30px;}
