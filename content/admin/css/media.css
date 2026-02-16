@@ -286,6 +286,12 @@
 	#content_box .main_info.row > .form-group:has(.group) {width:100% !important; max-width:60%; margin:0.4rem auto 0 !important; padding-left:0 !important; padding-right:0 !important;}
 	#content_box .form-control {font-size:0.85rem !important;}
 	#content_box input:not([type="checkbox"]):not([type="hidden"]):not([type="radio"]):not([type="file"]), #content_box select {height:38px !important; font-size:0.85rem !important;}
+	#content_box .btns_fb_tg {flex-direction:column !important; gap:8px; padding:0 4px;}
+	#content_box .btns_fb_tg .adm_tg_btn {width:100% !important; padding:0 !important; font-size:0.8rem; box-sizing:border-box; display:block !important;}
+	#content_box .btns_fb_tg a.adm_tg_btn > div {display:flex !important; align-items:center !important; justify-content:center !important; gap:8px !important; flex-wrap:wrap !important; padding:10px 8px !important;}
+	#content_box .btns_fb_tg div.adm_tg_btn {display:flex !important; align-items:center !important; justify-content:center !important; gap:8px !important; flex-wrap:wrap !important; padding:10px 8px !important;}
+	#content_box .btns_fb_tg .adm_tg_btn input[type="time"] {width:90px !important; padding:4px !important; font-size:0.75rem !important; height:30px !important;}
+	#content_box .btns_fb_tg .icon_tg svg {width:18px !important; top:5px !important;}
 	
 }
 
