@@ -93,7 +93,7 @@
 	.sauto-block .copy-btn {padding:0.6rem 1rem; font-size:0.85rem;}
 
 	#overlay .content {width:100vw; height:100vh; padding:1rem; border:none; box-shadow:none; border-radius:0;}
-	#overlay > .close {top:0.25rem; right:0.25rem; width:36px; height:36px; z-index:5;}
+	#overlay > .close {top:0.5rem; right:0.5rem; width:40px; height:40px; z-index:5; background-size:200%; background-position:0 40px;}
 
 	#overlay .lbl {width:100% !important; margin:0.4rem 0 !important; display:block;}
 	#overlay .lbl.max {width:100% !important; margin:0.4rem 0 !important;}
@@ -105,7 +105,7 @@
 
 	#overlay .btn {padding:0.5rem 1rem; margin:0 0.25rem 0.5rem; font-size:0.85rem;}
 	#overlay .action {gap:0.5rem;}
-	#overlay .action > .btn.submit, #overlay .action > .btn.close {width:100%; margin:0.5rem 0 0; padding:0.85rem; font-size:0.95rem;}
+	#overlay .action > .btn.submit, #overlay .action > .btn.close {flex:1; margin:0.5rem 0 0; padding:0.85rem; font-size:0.95rem;}
 
 	#date_pay_bx .lbl {width:100% !important;}
 	#date_pay_bx input[type="date"] {width:100% !important;}
@@ -113,7 +113,7 @@
 	#overlay .content > form > div[style*="display: flex"] {flex-direction:column !important; gap:4px !important;}
 	#overlay .content > form > div[style*="display: flex"] > .lbl {flex:none !important;}
 
-	#overlay .doc_info {padding:0.5rem !important; margin-bottom:0.75rem !important;}
+	#overlay .doc_info {padding:0.5rem !important; margin-bottom:0.75rem !important; margin-top:2.5rem !important;}
 	#overlay .doc_info > div {flex-direction:column !important; gap:0.5rem !important; font-size:0.8rem !important;}
 
 	#overlay .kyc-questionnaire {margin-top:15px;}
