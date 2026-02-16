@@ -1200,7 +1200,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 		yearFilter.append("<option value=\"" + year + "\">" + year + "</option>");
 	});
 		
-		var yearWrapper = $("<span style=\"position:relative; display:inline-block; float:right; margin-right:1rem;\"></span>");
+		var yearWrapper = $("<span class=\"year-wrap\" style=\"position:relative; display:inline-block; float:right; margin-right:1rem;\"></span>");
 		yearWrapper.append(yearFilter);
 		yearWrapper.append("<span style=\"position:absolute; right:0.1rem; top:50%; transform:translateY(-50%); pointer-events:none; font-size:1rem;\">▼</span>");
 		

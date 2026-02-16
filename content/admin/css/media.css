@@ -124,20 +124,20 @@
 	#its_bx .car_group {border:1px solid #eee; border-radius:6px; padding:0.5rem; margin:0.5rem 0; background:#fafafa;}
 	#its_bx .car_group .lbl {width:100% !important; margin:0.3rem 0 !important;}
 
-	.docs > .find.doc {padding:0.5rem 0.25rem; display:flex; flex-wrap:wrap; gap:6px; align-items:center;}
+	.docs > .find.doc {padding:0.5rem 0.25rem; display:flex; flex-wrap:wrap; gap:6px; align-items:center; justify-content:center;}
 	.docs > .find.doc .lbl {width:100% !important; display:block; order:10; margin:0 !important;}
 	.docs > .find.doc .lbl input[type="text"] {padding:0.7rem !important; font-size:0.9rem; width:100% !important;}
 	.docs > .find.doc > span:last-child {order:0;}
-	.docs > .find.doc > .date-wrap {flex:1; min-width:0; order:1; margin:0 2px;}
+	.docs > .find.doc > .date-wrap {flex:1 1 0; min-width:0; order:1; margin:0 !important;}
 	.docs > .find.doc > .date-wrap::after {content:attr(data-ph); position:absolute; left:0; right:0; top:50%; transform:translateY(-50%); font-size:0.75rem; color:#999; pointer-events:none; text-align:center;}
 	.docs > .find.doc > .date-wrap.has-val::after {content:attr(data-val); color:#333; font-weight:500;}
 	.docs > .find.doc > .date-wrap > input[type="date"] {padding:0.4rem !important; font-size:0.75rem; width:100%; color:transparent !important; -webkit-appearance:none; appearance:none;}
 	.docs > .find.doc > .date-wrap > input[type="date"]::-webkit-date-and-time-value {color:transparent;}
 	.docs > .find.doc > .date-wrap > input[type="date"]::-webkit-inner-spin-button {display:none;}
 	.docs > .find.doc > .date-wrap > input[type="date"]::-webkit-calendar-picker-indicator {margin:0; padding:0; width:14px; opacity:0.5;}
-	.docs > .find.doc > button {padding:0.4rem 0.7rem !important; font-size:0.8rem; order:2;}
-	.docs > .find.doc > span[style*="float:right"], .docs > .find.doc > span[style*="float: right"] {float:none !important; order:3; margin:0 !important;}
-	.docs > .find.doc > span[style*="float"] select {padding:0.4rem 1.2rem 0.4rem 0.4rem !important; font-size:0.8rem;}
+	.docs > .find.doc > button {padding:0.4rem 0.7rem !important; font-size:0.8rem; order:2; margin:0 !important;}
+	.docs > .find.doc > .year-wrap {float:none !important; order:2; margin:0 0.25rem 0 0 !important;}
+	.docs > .find.doc > .year-wrap select {padding:0.4rem 1.2rem 0.4rem 0.4rem !important; font-size:0.8rem; margin:0 !important;}
 	.docs > .find.doc > .btn {order:11; width:auto; line-height:1.5 !important; padding:0.4rem 0.8rem !important; font-size:0.85rem;}
 	.docs > .find.user {flex-wrap:wrap;}
 	.docs > .find.user select, .docs > .find.user input[type="submit"] {padding:0.6rem; font-size:0.85rem;}
