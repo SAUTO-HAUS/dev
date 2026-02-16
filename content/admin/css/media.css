@@ -291,7 +291,8 @@
 	#content_box .btns_fb_tg a.adm_tg_btn > div {display:flex !important; align-items:center !important; justify-content:center !important; gap:8px !important; flex-wrap:wrap !important; padding:10px 8px !important;}
 	#content_box .btns_fb_tg div.adm_tg_btn {display:flex !important; align-items:center !important; justify-content:center !important; gap:8px !important; flex-wrap:wrap !important; padding:10px 8px !important;}
 	#content_box .btns_fb_tg .adm_tg_btn input[type="time"] {width:90px !important; padding:4px !important; font-size:0.75rem !important; height:30px !important;}
-	#content_box .btns_fb_tg .icon_tg svg {width:18px !important; top:5px !important;}
+	#content_box .btns_fb_tg .icon_tg {margin-left:6px !important;}
+	#content_box .btns_fb_tg .icon_tg svg {width:18px !important; top:0 !important; vertical-align:middle !important;}
 	
 }
 
