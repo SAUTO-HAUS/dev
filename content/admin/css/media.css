@@ -125,7 +125,7 @@
 	#its_bx .car_group .lbl {width:100% !important; margin:0.3rem 0 !important;}
 
 	.docs > .find.doc {padding:0.5rem 0.25rem; display:flex; flex-wrap:wrap; gap:6px; align-items:center; justify-content:center;}
-	.docs > .find.doc::before {content:""; order:9; flex-basis:100%; height:0;}
+	.docs > .find.doc::before {content:""; order:9; flex-basis:100%; height:0; margin-top:6px;}
 	.docs > .find.doc .lbl {flex:1; min-width:0; display:block; order:10; margin:0 !important; width:auto !important;}
 	.docs > .find.doc .lbl input[type="text"] {padding:0.7rem !important; font-size:0.9rem; width:100% !important;}
 	.docs > .find.doc > span:last-child {order:0;}
