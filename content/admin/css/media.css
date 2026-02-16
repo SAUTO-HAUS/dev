@@ -126,18 +126,35 @@
 
 	.docs > .find.doc {padding:0 0.25rem;}
 	.docs > .find.doc .lbl {width:calc(100% - 3rem) !important; display:inline-block;}
+	.docs > .find.doc input[type="text"] {padding:0.7rem !important; font-size:0.9rem;}
+	.docs > .find.user {flex-wrap:wrap;}
 	.docs > .find.user select, .docs > .find.user input[type="submit"] {padding:0.6rem; font-size:0.85rem;}
 
 	.docs > .list .rowz.hdr {display:none;}
-	.docs > .list > .bx > .info > .rowz {display:flex; flex-wrap:wrap; gap:2px 8px; padding:0.5rem;}
-	.docs > .list > .bx > .info > .rowz > .col {width:auto !important; min-width:auto !important; padding:2px 0; font-size:0.8rem;}
-	.docs > .list > .bx > .info > .rowz > .col:nth-child(1) {width:100% !important; font-weight:700; font-size:0.85rem;}
-	.docs > .list > .bx > .info > .rowz > .col:nth-child(4) {width:100% !important;}
-	.docs > .list > .bx > .info > .rowz > .col:nth-child(6) {width:100% !important;}
-	.docs > .list > .bx > .info > .rowz > .col:nth-child(7) {width:100% !important;}
+	.docs > .list > .bx {margin:0 0 6px 0; border:1px solid #e8e8e8 !important; border-radius:8px; border-bottom:1px solid #e8e8e8 !important; overflow:hidden;}
+	.docs > .list > .bx:hover {background-color:#fff !important;}
+	.docs > .list > .bx > .info {min-height:auto;}
 
-	.docs > .list > .bx > .btns {position:relative; width:100%; opacity:1; height:auto; background:#f9f0f0; flex-flow:row wrap; justify-content:center; gap:4px; padding:6px;}
-	.docs > .list > .bx > .btns > .btn {padding:0.4rem 0.8rem; font-size:0.75rem; margin:0;}
+	.docs > .list .rowz.info {display:grid !important; grid-template-columns:auto 1fr; gap:0 8px; padding:10px 12px !important; align-items:baseline;}
+	.docs > .list .rowz.info > .col {width:auto !important; min-width:auto !important; padding:0 !important; line-height:1.5; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+
+	.docs > .list .rowz.info > .col:nth-child(1) {grid-row:1; grid-column:1; font-size:0.75rem !important; color:#999;}
+	.docs > .list .rowz.info > .col:nth-child(2) {grid-row:2; grid-column:1; font-size:0.75rem !important; font-weight:700; color:#bf4040; text-transform:uppercase;}
+	.docs > .list .rowz.info > .col:nth-child(3) {display:none !important;}
+	.docs > .list .rowz.info > .col:nth-child(4) {grid-row:1; grid-column:2; font-size:0.85rem !important; font-weight:600; color:#222; text-align:right;}
+	.docs > .list .rowz.info > .col:nth-child(5) {display:none !important;}
+	.docs > .list .rowz.info > .col:nth-child(6) {grid-row:2; grid-column:2; font-size:0.8rem !important; color:#555; text-align:right;}
+	.docs > .list .rowz.info > .col:nth-child(7) {display:none !important;}
+	.docs > .list .rowz.info > .col:nth-child(8) {display:none !important;}
+
+	.bx > .btns {position:relative !important; width:100% !important; opacity:1 !important; height:auto !important; overflow:visible !important; background:#f9f0f0; flex-flow:row wrap !important; justify-content:center; gap:12px; padding:8px 6px !important;}
+	.bx > input[name="btns_act"]:checked ~ .btns {width:100% !important; opacity:1 !important;}
+	.bx > .btns > .btn {padding:0.45rem 0.7rem !important; font-size:0.75rem !important; margin:0 !important; border-radius:4px; background:#fff; border:1px solid #ddd; height:auto !important; align-self:center;}
+	.bx > .btns > .btn > input[type="checkbox"] {width:12px !important; height:12px !important; padding:0 !important; margin:0 0 0 2px !important; vertical-align:middle; float:none !important;}
+	.bx > .btns > .btn:hover {background:#e2001a; color:#fff; border-color:#e2001a;}
+
+	#load_more_btn {margin:0.5rem 0 !important; padding:1rem !important;}
+	#load_more_btn span {font-size:1rem !important;}
 
 	#overlay .print_bx .cnt > label {width:100%;}
 	#overlay .print_bx .cnt > label > input {font-size:1rem; padding:0.7rem;}
