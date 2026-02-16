@@ -1205,13 +1205,20 @@ c/f 1017600006845, c/TVA 0609417</pre>
 		yearWrapper.append("<span style=\"position:absolute; right:0.1rem; top:50%; transform:translateY(-50%); pointer-events:none; font-size:1rem;\">▼</span>");
 		
 		// Add date range filters
-		var dateFromInput = $("<input type=\"date\" placeholder=\"De la\" style=\"padding:0.5rem; margin:0 0.5rem; border:1px solid #ddd; background:#fff; cursor:pointer; display:inline-block; vertical-align:top;\" />");
-		var dateToInput = $("<input type=\"date\" placeholder=\"Până la\" style=\"padding:0.5rem; margin:0 0.5rem; border:1px solid #ddd; background:#fff; cursor:pointer; display:inline-block; vertical-align:top;\" />");
+		var dateFromWrap = $("<span class=\"date-wrap\" data-ph=\"De la\" style=\"position:relative; display:inline-block; vertical-align:top; margin:0 0.25rem;\"></span>");
+		var dateFromInput = $("<input type=\"date\" class=\"date-from\" style=\"padding:0.5rem; border:1px solid #ddd; background:#fff; cursor:pointer; width:100%;\" />");
+		dateFromWrap.append(dateFromInput);
+		var dateToWrap = $("<span class=\"date-wrap\" data-ph=\"Până la\" style=\"position:relative; display:inline-block; vertical-align:top; margin:0 0.25rem;\"></span>");
+		var dateToInput = $("<input type=\"date\" class=\"date-to\" style=\"padding:0.5rem; border:1px solid #ddd; background:#fff; cursor:pointer; width:100%;\" />");
+		dateToWrap.append(dateToInput);
+		function fmtShort(v){ if(!v)return ""; var p=v.split("-"); return p[2]+"."+p[1]+"."+p[0].slice(2); }
+		dateFromInput.on("change input", function(){ var w=$(this).parent(); w.toggleClass("has-val",!!this.value); w.attr("data-val",fmtShort(this.value)); });
+		dateToInput.on("change input", function(){ var w=$(this).parent(); w.toggleClass("has-val",!!this.value); w.attr("data-val",fmtShort(this.value)); });
 		var dateFilterBtn = $("<button style=\"padding:0.5rem 1rem; margin:0 0.5rem; border:1px solid #ddd; background:#e2001a; color:#fff; cursor:pointer; display:inline-block; vertical-align:top;\">Filter</button>");
 		var dateClearBtn = $("<button style=\"padding:0.5rem 1rem; margin:0 0.5rem; border:1px solid #ddd; background:#777; color:#fff; cursor:pointer; display:inline-block; vertical-align:top;\">Reset</button>");
 		
-		$(".docs > .find.doc").append(dateFromInput);
-		$(".docs > .find.doc").append(dateToInput);
+		$(".docs > .find.doc").append(dateFromWrap);
+		$(".docs > .find.doc").append(dateToWrap);
 		$(".docs > .find.doc").append(dateFilterBtn);
 		$(".docs > .find.doc").append(dateClearBtn);
 		$(".docs > .find.doc").append(yearWrapper);
