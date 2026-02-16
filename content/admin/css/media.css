@@ -194,6 +194,22 @@
 	.doc_pg .kyc-questionnaire {margin-top:15px;}
 	.doc_pg .kyc-questionnaire > div {padding:8px; margin:6px 0;}
 	.doc_pg .kyc-questionnaire label {display:block !important; margin:4px 0 !important; width:100% !important;}
+
+	/* Admin Users page (/adminsauto/sett/adm_usr) */
+	label.it[data-id] {padding:0.6rem 0.5rem; margin:0.4rem 0;}
+	label.it[data-id] > .hdr {flex-wrap:wrap; gap:2px;}
+	label.it[data-id] > .hdr > .usr {font-size:0.8rem !important;}
+	label.it[data-id] > .hdr > .sep {font-size:0.65rem !important;}
+	label.it[data-id] > .btns_wrp {margin:0.5rem 0 0 !important;}
+	label.it[data-id] > .btns_wrp > .btns {height:auto !important; flex-wrap:nowrap; gap:4px; justify-content:space-between;}
+	input[name="it_chk"]:checked + label.it[data-id] > .btns_wrp > .btns {position:relative !important; opacity:1;}
+	label.it[data-id] > .btns_wrp > .btns > .btn {font-size:0.65rem !important; padding:0.35rem 0.4rem !important; white-space:nowrap; text-align:center;}
+	label.it[data-id] > .btns_wrp > .btns > .btn[data-nm="act"] input[type="checkbox"] {display:none;}
+	.add-user-container {padding:0.75rem !important; margin-top:1rem !important;}
+	.add-user-form h3 {font-size:1rem;}
+	.form-row input, .form-row select {max-width:100% !important; width:100% !important; padding:0.6rem !important; font-size:0.9rem; box-sizing:border-box;}
+	.form-row label {font-size:0.85rem;}
+	.add-user-btn, .cancel-btn {width:100%; margin:0.3rem 0 !important; padding:0.7rem !important; font-size:0.9rem; box-sizing:border-box;}
 	
 }
 
