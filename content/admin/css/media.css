@@ -248,8 +248,11 @@
 	#content .ctlg .bx > .prc_wrap {padding:2px 4px;}
 	#content .ctlg .bx > .prc_wrap .prc {font-size:0.85rem; margin-right:0.3rem;}
 	#content .ctlg .bx > .adm_menu {border-radius:0 0 0.6rem 0.6rem;}
-	#content .ctlg .bx .log_sauto_999 {transform:scale(0.7); transform-origin:top left;}
-	#content .ctlg .bx .icon_list_cattg {transform:scale(0.7); transform-origin:top right;}
+	#content .ctlg .bx .log_sauto_999 {position:absolute; top:4px; right:4px; left:auto; display:flex; flex-direction:column; align-items:flex-end; gap:4px; z-index:3; transform:none;}
+	#content .ctlg .bx .log_sauto_999 .log_999, #content .ctlg .bx .log_sauto_999 .log_sauto {height:14px; margin:0;}
+	#content .ctlg .bx .icon_list_cattg {position:absolute !important; top:45px !important; right:4px !important; left:auto !important; display:flex !important; flex-direction:column !important; align-items:flex-end !important; gap:2px !important; z-index:3; transform:none !important;}
+	#content .ctlg .bx .icon_list_cattg .icon_tg {margin:0 !important; padding:0 !important; line-height:0;}
+	#content .ctlg .bx .icon_list_cattg .icon_tg svg {width:16px !important; top:0 !important; margin:0 !important;}
 	#content .ctlg #add_new {width:calc(50% - 4px) !important; margin:0 0 20px 0 !important; min-height:0 !important; height:auto; align-self:stretch;}
 	#content .ctlg #more_it {width:100% !important; margin:6px 0 !important;}
 	
