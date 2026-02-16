@@ -270,6 +270,15 @@
 
 	#content .ctlg #add_new {width:calc(50% - 4px) !important; margin:0 0 20px 0 !important; min-height:0 !important; height:auto; align-self:stretch;}
 	#content .ctlg #more_it {width:100% !important; margin:6px 0 !important;}
+
+	/* Car detail page */
+	#content_box .top > .close {left:0 !important; right:auto !important; padding:0 12px;}
+	#content_box .prv .it {max-width:calc(33.33% - 6px) !important; flex:0 0 calc(33.33% - 6px); margin:3px !important;}
+	#content_box .prv .it.f_img > .img {max-height:8rem;}
+	#content_box .prv > .its {margin:0 2px !important; justify-content:flex-start !important;}
+	#content_box .prv > .action {margin:0.5rem 0 !important; justify-content:center; gap:12px;}
+	#content_box .prv > .action > .it {margin:0 !important;}
+	#content_box .download_zip, #content_box .chng_pos {width:auto !important; margin:0 !important; line-height:normal; padding:1rem 1.2rem; font-size:0.85rem; height:auto !important;}
 	
 }
 
