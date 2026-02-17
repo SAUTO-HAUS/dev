@@ -34,6 +34,19 @@ $useOpenAI = !empty($openaiApiKey);
 $carImages = [];
 $carId = intval($_POST['car_id'] ?? $_GET['car_id'] ?? 0);
 
+$saveToDbCheck = ($_POST['save_to_db'] ?? $_GET['save_to_db'] ?? '') == '1';
+if ($saveToDbCheck && $carId > 0) {
+    $p1Value = 'cars';
+    $stmtCheckExisting = $db->prepare("SELECT id FROM {$prefx}_seo2 WHERE it_id = ? AND tp = 'item' AND p1 = ? AND lng = 'ro' AND params_html IS NOT NULL AND params_html != '' LIMIT 1");
+    $stmtCheckExisting->execute([$carId, $p1Value]);
+    $existingDesc = $stmtCheckExisting->fetch(PDO::FETCH_ASSOC);
+    
+    if ($existingDesc) {
+        $returnIt = ['success' => true, 'skipped' => true, 'reason' => 'Car already has AI description'];
+        return;
+    }
+}
+
 if ($fromForm) {
     $car = [
         'br_nm' => __post('brand') ?: '',

@@ -433,20 +433,16 @@ $(document).ready(function(){
 			data.append('main_img', main_img);
 			data.append('del_img', del_img);
 
-			// Check if this is ADD (new car) or EDIT by checking button's data-origin
-			let buttonOrigin = $('button.confirm').data('origin') || '';
-			let isNewCar = buttonOrigin.indexOf('EDITARE') === -1;
-			
 			let carId = await ajaxCarImg(fileInput, data);
 			
-			// Only trigger AI generation for NEW cars, not for EDIT
-			if (carId && isNewCar) {
+			// Always trigger AI generation - PHP will skip if car already has description
+			if (carId) {
 				localStorage.setItem('pending_ai_generation', JSON.stringify({
 					car_id: carId,
 					pg: 'cars',
 					timestamp: Date.now()
 				}));
-				console.log('AI generation scheduled for NEW car ID:', carId);
+				console.log('AI generation scheduled for car ID:', carId);
 			}
 			
 			finishProcess(confirmButton);
