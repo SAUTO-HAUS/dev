@@ -18,6 +18,7 @@ spl_autoload_register(function ($class) {
     }
 });
 
+require_once __DIR__ . '/../environment.php';
 require ('../' . _DEFAULT . '/dbi.php');
 require_once ('../' . _DEFAULT . '/functions.php');
 

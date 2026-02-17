@@ -465,19 +465,28 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 $view_update = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `views` = `views` + 1 WHERE `id` = :id');
                 $view_update->execute(['id' => $it_id]);
             } catch (PDOException $e) {
-                // Log the error but don't crash the page
-                error_log('PDO Error updating views for car ID ' . $it_id . ': ' . $e->getMessage());
+                if ($e->getCode() == 1615) {
+                    try {
+                        $view_update = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `views` = `views` + 1 WHERE `id` = :id');
+                        $view_update->execute(['id' => $it_id]);
+                    } catch (PDOException $e2) {}
+                }
             }
 
             try {
                 $pdo = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg WHERE `id`= :id AND `vis`="1" AND `act`="1" LIMIT 1');
                 $pdo->execute(['id' => $it_id]);
             } catch (PDOException $e) {
-                // Log the error but don't crash the page
-                error_log('PDO Error selecting car data for ID ' . $it_id . ': ' . $e->getMessage());
-                // file_put_contents('debug_sql.log', "PDO Error selecting car data for ID: {$it_id} - " . $e->getMessage() . "\n", FILE_APPEND);
-                // Create empty result to prevent foreach errors
-                $pdo = [];
+                if ($e->getCode() == 1615) {
+                    try {
+                        $pdo = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg WHERE `id`= :id AND `vis`="1" AND `act`="1" LIMIT 1');
+                        $pdo->execute(['id' => $it_id]);
+                    } catch (PDOException $e2) {
+                        $pdo = [];
+                    }
+                } else {
+                    $pdo = [];
+                }
             }
 
             foreach ($pdo as $r){
