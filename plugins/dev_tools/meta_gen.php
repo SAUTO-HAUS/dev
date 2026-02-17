@@ -477,7 +477,7 @@ skip_all_meta:
 echo '
 <meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
 <meta name="robots" content="'.$zrbt.'" />
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" id="mobile_viewport" />
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" id="mobile_viewport" />
 
 ';
 
