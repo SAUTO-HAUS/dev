@@ -51,7 +51,7 @@ $rtrn = '
 	.pg.d2 .gr > .inf > .n1 {float:left; text-align:left;}
 	.pg.d2 .gr > .inf > .n2 {float:right; text-align:right;}
 	.pg.d2 .head > .nr {text-align:left; font-size:1rem; font-family:"def_l";}
-	.pg.d2 .head > .ttl {margin-top:25mm; font-family:"def"; font-weight:normal;}
+	.pg.d2 .head > .ttl {margin-top:10mm; font-family:"def"; font-weight:normal;}
 	
 	table .n2, .txt_up {text-transform:uppercase;}
 	.txt_cpt {text-transform:capitalize;}
