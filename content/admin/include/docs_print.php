@@ -147,10 +147,11 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 					.sep {display:none;}
 				}
 				
+				html, body {min-height:auto !important; height:auto !important; margin:0; padding:0;}
 				body {background-color:#fff;}
 				
 				.base {font-family:"def"; filter:grayscale(1); -webkit-filter:grayscale(1);}
-				.base > .pg {width:'.(isset($_POST['doc_f']) && in_array($_POST['doc_f'], ['foaie_parcurs','foaie_parcurs_cars']) ? '297mm' : '210mm').'; height:'.(isset($_POST['doc_f']) && in_array($_POST['doc_f'], ['foaie_parcurs','foaie_parcurs_cars']) ? '210mm' : '297mm').'; margin:0 auto; padding:'.(isset($_POST['doc_f']) && in_array($_POST['doc_f'], ['foaie_parcurs','foaie_parcurs_cars']) ? '5mm' : '5mm 10mm').'; background-color:#fff; position:relative;}
+				.base > .pg {width:'.(isset($_POST['doc_f']) && in_array($_POST['doc_f'], ['foaie_parcurs','foaie_parcurs_cars']) ? '297mm' : '210mm').'; min-height:'.(isset($_POST['doc_f']) && in_array($_POST['doc_f'], ['foaie_parcurs','foaie_parcurs_cars']) ? '209mm' : '296mm').'; margin:0 auto; padding:'.(isset($_POST['doc_f']) && in_array($_POST['doc_f'], ['foaie_parcurs','foaie_parcurs_cars']) ? '5mm' : '5mm 10mm').'; background-color:#fff; position:relative; box-sizing:border-box;}
 				.base > .pg.bg {background:#fffc url("/media/images/site/print/bg_pg.webp") repeat center / contain; background-blend-mode:soft-light;}
 				.cont {width:100%; float:left; padding:5mm 0 0; font-size:0.8rem;}
 				.logo {float:right;}
@@ -233,8 +234,9 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 								margin:       0,
 								filename:     "sauto_doc.pdf",
 								image:        { type: "jpeg", quality: 0.98 },
-								html2canvas:  { scale: 2, ignoreElements : (".sep") },
-								jsPDF:        { orientation: "'.(isset($_POST['doc_f']) && in_array($_POST['doc_f'], ['foaie_parcurs','foaie_parcurs_cars']) ? 'landscape' : 'portrait').'" }
+								html2canvas:  { scale: 2, ignoreElements : (".sep"), useCORS: true },
+								jsPDF:        { orientation: "'.(isset($_POST['doc_f']) && in_array($_POST['doc_f'], ['foaie_parcurs','foaie_parcurs_cars']) ? 'landscape' : 'portrait').'", unit: "mm", format: "a4" },
+								pagebreak:    { mode: "avoid-all" }
 							};
 							//html2pdf().set(opt).from(element).save();
 							html2pdf(element, opt);';
