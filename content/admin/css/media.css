@@ -106,7 +106,7 @@
 	.sauto-block .copy-btn {padding:0.6rem 1rem; font-size:0.85rem;}
 
 	#overlay .content {width:100vw; height:100vh; padding:1rem; padding-top:3.5rem; border:none; box-shadow:none; border-radius:0; position:fixed; top:0; left:0; margin:0; box-sizing:border-box;}
-	#overlay > .close {position:absolute; top:0.5rem; left:0.5rem; right:auto; width:44px; height:44px; z-index:10; background:#e2001a; border-radius:50%; cursor:pointer;}
+	#overlay > .close {position:absolute; top:0.5rem; right:0.5rem; left:auto; width:44px; height:44px; z-index:10; background:#e2001a; border-radius:50%; cursor:pointer;}
 	#overlay > .close::before, #overlay > .close::after {content:""; position:absolute; top:50%; left:50%; width:20px; height:3px; background:#fff; border-radius:2px;}
 	#overlay > .close::before {transform:translate(-50%,-50%) rotate(45deg);}
 	#overlay > .close::after {transform:translate(-50%,-50%) rotate(-45deg);}
@@ -129,7 +129,7 @@
 	#overlay .content > form > div[style*="display: flex"] {flex-direction:column !important; gap:4px !important;}
 	#overlay .content > form > div[style*="display: flex"] > .lbl {flex:none !important;}
 
-	#overlay .doc_info {padding:0.5rem !important; margin-bottom:0.75rem !important; margin-top:2.5rem !important;}
+	#overlay .doc_info {padding:0.5rem !important; margin-bottom:0.75rem !important; margin-top:0.5rem !important;}
 	#overlay .doc_info > div {flex-direction:column !important; gap:0.5rem !important; font-size:0.8rem !important;}
 
 	#overlay .kyc-questionnaire {margin-top:15px;}
