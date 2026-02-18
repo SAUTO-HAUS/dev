@@ -231,19 +231,22 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 							echo '
 							$(".sep").remove();
 							$("body").addClass("pdf-export");
+							if(window.innerWidth < 768){ $(".fp-footer").remove(); $(".fp_page").css({"padding":"3mm","min-height":"auto","height":"auto"}); $(".fp-tables").css("margin-top","3mm"); }
 							
-							var element = document.getElementById("p_cont");
-							var opt = {
-								margin:       0,
-								filename:     "sauto_doc.pdf",
-								image:        { type: "jpeg", quality: 0.98 },
-								html2canvas:  { scale: 2, ignoreElements : (".sep"), useCORS: true },
-								jsPDF:        { orientation: "'.(isset($_POST['doc_f']) && in_array($_POST['doc_f'], ['foaie_parcurs','foaie_parcurs_cars']) ? 'landscape' : 'portrait').'", unit: "mm", format: "a4" },
-								pagebreak:    { mode: "avoid-all" }
-							};
-							html2pdf().set(opt).from(element).save().then(function(){
-								$("body").removeClass("pdf-export");
-							});';
+							setTimeout(function(){
+								var element = document.getElementById("p_cont");
+								var opt = {
+									margin:       0,
+									filename:     "sauto_doc.pdf",
+									image:        { type: "jpeg", quality: 0.98 },
+									html2canvas:  { scale: 2, ignoreElements : (".sep"), useCORS: true },
+									jsPDF:        { orientation: "'.(isset($_POST['doc_f']) && in_array($_POST['doc_f'], ['foaie_parcurs','foaie_parcurs_cars']) ? 'landscape' : 'portrait').'", unit: "mm", format: "a4" },
+									pagebreak:    { mode: "avoid-all" }
+								};
+								html2pdf().set(opt).from(element).save().then(function(){
+									$("body").removeClass("pdf-export");
+								});
+							}, 100);';
 						} elseif ( $_POST['fn']=='print_it' ){
 							echo ' 
 							window.print(); ';

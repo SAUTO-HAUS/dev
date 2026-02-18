@@ -80,7 +80,7 @@ if (!empty($data_emiterii_raw)) {
 
 $rtrn = '
 <style>
-	.pg.fp_page {padding:4mm !important;}
+	.pg.fp_page {padding:3mm !important;}
 	.fp_page {font-family:"Times New Roman", Times, serif;}
 	.fp_page .top-right {position:absolute; top:5mm; right:5mm; text-align:right; font-size:0.6rem; line-height:1.4; font-weight:bold;}
 	</style>
@@ -104,7 +104,7 @@ $rtrn = '
 			</div>
 		</div>
 		
-		<div class="fp-tables" style="margin-top:5mm;">
+		<div class="fp-tables" style="margin-top:3mm;">
 			<!-- Rând 1: 4 coloane la 70% din dreapta -->
 			<table style="width:65%; border-collapse:collapse; margin-left:35%;">
 				<tr>
@@ -389,7 +389,7 @@ $rtrn = '
 			</table>
 		</div>
 		
-		<div style="text-align:left; font-size:0.6rem; margin-top: 2mm;">
+		<div class="fp-footer" style="text-align:left; font-size:0.6rem; margin-top: 2mm;">
 			Editura de Imprimate «Statistica», a4 (181n) 05.04. t.100000
 		</div>
 	</div>
