@@ -231,7 +231,8 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 							echo '
 							$(".sep").remove();
 							$("body").addClass("pdf-export");
-							if(window.innerWidth < 768){ $(".fp-footer").remove(); $(".fp_page").css({"padding":"3mm","min-height":"auto","height":"auto"}); $(".fp-tables").css("margin-top","3mm"); }
+							$(".fp_page").css({"min-height":"auto"});
+							if(window.innerWidth < 768){ $(".fp-footer").remove(); $(".fp_page").css({"padding":"3mm","min-height":"auto"}); $(".fp-tables").css("margin-top","3mm"); }
 							
 							setTimeout(function(){
 								var element = document.getElementById("p_cont");
