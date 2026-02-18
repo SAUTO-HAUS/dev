@@ -42,7 +42,7 @@ $rtrn = '
 	
 	.pg > .gr:first-of-type {margin-top:0;}
 	
-	.pg > .flx {min-height:100mm;}
+	.pg > .flx {min-height:auto;}
 	
 	.txt_cpt {text-transform:capitalize;}
 	
@@ -114,7 +114,8 @@ $rtrn .= '
 				<tr><td>TRANSPORTATOR</td><td>CLIENT</td></tr>
 				<tr><td>'.$zcont.'</td><td><b class="txt_cpt">'.($_POST['u_tp']=='fiz'?strtolower($_POST['u_nm']):$_POST['u_nm']).'</b><br/>'.$_POST['u_adr'].'</br>'.($_POST['u_tp']=='fiz'?'cp':'cf').': <span class="txt_up">'.$_POST['u_cf_idno'].'</span><br/>'.($_POST['u_tp']=='fiz'?'dat.nast.: '.date( 'd.m.Y', strtotime( $_POST['u_tva_dt'] ) ):'TVA: '.$_POST['u_tva_dt']).'<br/>'.($_POST['u_tp']=='fiz'?'dat.el.: '.date( 'd.m.Y', strtotime( $_POST['u_iban_dt_tk'] ) ):'IBAN: '.$_POST['u_iban_dt_tk']).'</td></tr>
 			</table>
-			<div class="sign" style="margin-top:25mm;">
+			<div class="ws"></div>
+			<div class="sign">
 				<div class="s1">Semnatura / L. Ş.<div class="ln"></div>'.(isset($_POST['stamp'])&&$_POST['stamp']==1?'<div class="stamp ghost"><div class="signature"></div></div>':'').'</div>
 				<div class="s2">Semnatura / L. Ş.<div class="ln"></div>'.((isset($_POST['usr_stamp'])&&$_POST['usr_stamp']==1)&&isset($_POST['u_cf_idno'])?(file_exists($_SERVER['DOCUMENT_ROOT'].'/'._SITE_IMG.'/stamp_z/'.$_POST['u_cf_idno'].'.jpg')?'<div class="stamp ghost" style="background-image:url(/'._SITE_IMG.'/stamp_z/'.$_POST['u_cf_idno'].'.jpg); width:74mm; height:42mm;"></div>':''):'').'</div>
 			</div>
