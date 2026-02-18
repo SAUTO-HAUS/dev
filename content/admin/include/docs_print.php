@@ -169,7 +169,7 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 				.sign > .s1 {float:left; position:relative;}
 				.sign > .s2 {float:right; position:relative;}
 				
-				.flx {display:flex; flex-flow:column wrap; justify-content:space-evenly; min-height:180mm;}
+				.flx {display:flex; flex-flow:column wrap; justify-content:space-evenly;}
 				.flx > .ws {flex-grow:1;}
 				
 				/*

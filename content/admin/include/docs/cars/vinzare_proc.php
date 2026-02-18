@@ -29,10 +29,10 @@ $rtrn = '
 	
 	.pg > .gr:first-of-type {margin-top:0;}
 	
-	.pg.d1 > .flx {min-height:260mm;}
+	.pg.d1 > .flx {min-height:auto;}
 	.pg.d1 > .flx > .sign {margin-top:10mm;}
 	
-	.pg.d2 > .flx {min-height:280mm;}
+	.pg.d2 > .flx {min-height:auto;}
 	
 	.pg.d2 .res > .its {display:flex; flex-flow:row wrap; justify-content:space-between;}
 	.pg.d2 .res > .its > span {width:25%; margin:2mm 0 0;}
