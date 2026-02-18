@@ -13,7 +13,7 @@ $rtrn = '
 	
 	.who {margin-top:1rem; text-align:justify;}
 	
-	.gr {margin-top:7mm; text-align:justify;}
+	.gr {margin-top:4mm; text-align:justify;}
 	.gr > .ttl {text-align:center; font-weight:bold;}
 	.gr > .sb {padding-left:10mm;}
 	
@@ -34,7 +34,7 @@ $rtrn = '
 	
 	.pg.d1.p3 > .flx {min-height:auto;}
 	
-	.pg.d2 {font-size:.9rem;}
+	.pg.d2 {font-size:.9rem; min-height:auto !important;}
 	.pg.d2 .res > .its {display:flex; flex-flow:row wrap; justify-content:space-between;}
 	.pg.d2 .res > .its > span {width:25%; margin:5mm 0 0;}
 	.pg.d2 .flx {min-height:auto;}
@@ -163,7 +163,7 @@ $rtrn = '
 				<tr><td>'.$zcont.'</td><td><b class="txt_cpt">'.strtolower($_POST['u_nm']).'</b><br/>'.$_POST['u_adr'].'</br>'.($_POST['u_tp']=='fiz'?'cp':'cf').': <span class="txt_up">'.$_POST['u_cf_idno'].'</span><br/>'.($_POST['u_tp']=='fiz'?'dat.nast.: '.date( 'd.m.Y', strtotime( $_POST['u_tva_dt'] ) ):'TVA: '.$_POST['u_tva_dt']).'<br/>'.($_POST['u_tp']=='fiz'?'dat.el.: '.date( 'd.m.Y', strtotime( $_POST['u_iban_dt_tk'] ) ):'IBAN: '.$_POST['u_iban_dt_tk']).'</td></tr>
 			</table>
 			<div class="ws"></div>
-			<div class="sign">
+			<div class="sign" style="margin-top:20mm;">
 				<div class="s1">Semnatura / L. Ş.<div class="ln"></div>'.(isset($_POST['stamp'])&&$_POST['stamp']==1?'<div class="stamp ghost"><div class="signature"></div></div>':'').'</div>
 				<div class="s2">Semnatura / L. Ş.<div class="ln"></div></div>
 			</div>
