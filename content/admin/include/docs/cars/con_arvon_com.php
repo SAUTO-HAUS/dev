@@ -22,7 +22,7 @@ $rtrn = '
 	
 	.who {margin-top:1rem; text-align:justify;}
 	
-	.gr {margin-top:4mm; text-align:justify;}
+	.gr {margin-top:2mm; text-align:justify;}
 	.gr > .ttl {text-align:center; font-weight:bold;}
 	.gr > .sb {padding-left:10mm;}
 	
