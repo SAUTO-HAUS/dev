@@ -209,11 +209,11 @@ $rtrn = '
 				<tr><td>'.$zcont.'</td><td><b class="txt_cpt">'.strtolower($_POST['u_nm']).'</b><br/>'.$_POST['u_adr'].'</br>'.($_POST['u_tp']=='fiz'?'cp':'cf').': <span class="txt_up">'.$_POST['u_cf_idno'].'</span><br/>'.($_POST['u_tp']=='fiz'?'dat.nast.: '.date( 'd.m.Y', strtotime( $_POST['u_tva_dt'] ) ):'TVA: '.$_POST['u_tva_dt']).'<br/>'.($_POST['u_tp']=='fiz'?'dat.el.: '.date( 'd.m.Y', strtotime( $_POST['u_iban_dt_tk'] ) ):'IBAN: '.$_POST['u_iban_dt_tk']).'</td></tr>
 			</table>
 			<div class="ws"></div>
-			<div class="sign">
+			<div class="sign" style="margin-top:30mm;">
 				<div class="s1">Semnatura / L. Ş.<div class="ln"></div>'.(isset($_POST['stamp'])&&$_POST['stamp']==1?'<div class="stamp ghost"><div class="signature"></div></div>':'').'</div>
 				<div class="s2">Semnatura / L. Ş.<div class="ln"></div></div>
 			</div>
-			<div class="ws" style="max-height:20mm;"></div>
+			<div class="ws" style="max-height:10mm;"></div>
 		</div>
 		<div class="conf">CONFIDENTIAL</div>
 	</div>
