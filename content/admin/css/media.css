@@ -176,9 +176,9 @@
 	.docs > .list .rowz.info > .col:nth-child(7) {display:none !important;}
 	.docs > .list .rowz.info > .col:nth-child(8) {display:none !important;}
 
-	.bx > .btns {position:relative !important; width:100% !important; opacity:1 !important; height:auto !important; overflow:visible !important; background:#f9f0f0; flex-flow:row wrap !important; justify-content:center; gap:12px; padding:8px 6px !important;}
+	.bx > .btns {position:relative !important; width:100% !important; opacity:1 !important; height:auto !important; overflow:visible !important; background:#f9f0f0; flex-flow:row wrap !important; justify-content:center; gap:6px; padding:6px 2px !important;}
 	.bx > input[name="btns_act"]:checked ~ .btns {width:100% !important; opacity:1 !important;}
-	.bx > .btns > .btn {padding:0.45rem 0.7rem !important; font-size:0.75rem !important; margin:0 !important; border-radius:4px; background:#fff; border:1px solid #ddd; height:auto !important; align-self:center;}
+	.bx > .btns > .btn {padding:0.5rem 0.8rem !important; font-size:0.85rem !important; margin:0 !important; border-radius:4px; background:#fff; border:1px solid #ddd; height:auto !important; align-self:center;}
 	.bx > .btns > .btn > input[type="checkbox"] {width:12px !important; height:12px !important; padding:0 !important; margin:0 0 0 2px !important; vertical-align:middle; float:none !important;}
 	.bx > .btns > .btn:hover {background:#e2001a; color:#fff; border-color:#e2001a;}
 
