@@ -391,7 +391,7 @@ $rtrn = '
 			</table>
 		</div>
 		
-		<div style="text-align:left; font-size:0.6rem; margin-top: 2mm;">
+		<div class="fp-footer" style="text-align:left; font-size:0.6rem; margin-top: 2mm;">
 			Editura de Imprimate «Statistica», a4 (181n) 05.04. t.100000
 		</div>
 	</div>
