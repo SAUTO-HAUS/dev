@@ -193,22 +193,24 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 				span.stamp > .signature {top:2mm; left:-5mm;}
 				
 				@media screen and (max-width:767px), screen and (orientation:portrait) and (max-width:900px) {
-					.base > .pg {width:100% !important; height:auto !important; padding:3mm 4mm !important; box-sizing:border-box;}
-					.base > .pg.bg {background-size:cover;}
-					.cont {font-size:0.7rem;}
-					.logo {max-width:80px;}
-					.logo img {max-width:100%; height:auto;}
-					.sign > * {width:48%;}
-					.sign {margin-top:10mm;}
-					table {font-size:0.65rem; table-layout:fixed; word-wrap:break-word;}
-					tr > td {padding:1.5mm 1mm;}
-					tr > td div[style*="white-space"] {white-space:normal !important;}
-					tr > td span[style*="width"], tr > td div[style*="width"] {width:auto !important; max-width:100% !important;}
-					tr > td span[style*="margin-left: 15mm"], tr > td span[style*="margin-left:15mm"] {margin-left:2mm !important;}
-					tr > td span[style*="margin-left: 5mm"], tr > td span[style*="margin-left:5mm"] {margin-left:1mm !important;}
-					.flx {min-height:auto;}
-					.stamp {width:25mm; height:25mm;}
-					.head div {font-size:0.75rem !important;}
+					body:not(.pdf-export) .base > .pg {width:100% !important; height:auto !important; padding:3mm 4mm !important; box-sizing:border-box;}
+					body:not(.pdf-export) .base > .pg.bg {background-size:cover;}
+					body:not(.pdf-export) .cont {font-size:0.7rem;}
+					body:not(.pdf-export) .logo {max-width:80px;}
+					body:not(.pdf-export) .logo img {max-width:100%; height:auto;}
+					body:not(.pdf-export) .sign > * {width:48%;}
+					body:not(.pdf-export) .sign {margin-top:10mm;}
+					body:not(.pdf-export) table {font-size:0.65rem; table-layout:fixed; word-wrap:break-word;}
+					body:not(.pdf-export) tr > td {padding:1.5mm 1mm;}
+					body:not(.pdf-export) tr > td div[style*="white-space"] {white-space:normal !important;}
+					body:not(.pdf-export) tr > td span[style*="width"], body:not(.pdf-export) tr > td div[style*="width"] {width:auto !important; max-width:100% !important;}
+					body:not(.pdf-export) tr > td span[style*="margin-left: 15mm"], body:not(.pdf-export) tr > td span[style*="margin-left:15mm"] {margin-left:2mm !important;}
+					body:not(.pdf-export) tr > td span[style*="margin-left: 5mm"], body:not(.pdf-export) tr > td span[style*="margin-left:5mm"] {margin-left:1mm !important;}
+					body:not(.pdf-export) .flx {min-height:auto;}
+					body:not(.pdf-export) .stamp {width:20mm; height:20mm; top:-10mm; right:0;}
+					body:not(.pdf-export) .stamp > .signature {top:2mm; left:-5mm;}
+					body:not(.pdf-export) .sign > .s1, body:not(.pdf-export) .sign > .s2 {position:relative;}
+					body:not(.pdf-export) .head div {font-size:0.75rem !important;}
 				}
 			</style>
 			
@@ -228,6 +230,7 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 						if ( $_POST['fn']=='save_pdf' ){
 							echo '
 							$(".sep").remove();
+							$("body").addClass("pdf-export");
 							
 							var element = document.getElementById("p_cont");
 							var opt = {
@@ -238,8 +241,9 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 								jsPDF:        { orientation: "'.(isset($_POST['doc_f']) && in_array($_POST['doc_f'], ['foaie_parcurs','foaie_parcurs_cars']) ? 'landscape' : 'portrait').'", unit: "mm", format: "a4" },
 								pagebreak:    { mode: "avoid-all" }
 							};
-							//html2pdf().set(opt).from(element).save();
-							html2pdf(element, opt);';
+							html2pdf().set(opt).from(element).save().then(function(){
+								$("body").removeClass("pdf-export");
+							});';
 						} elseif ( $_POST['fn']=='print_it' ){
 							echo ' 
 							window.print(); ';
