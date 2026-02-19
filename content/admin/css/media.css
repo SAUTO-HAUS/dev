@@ -105,8 +105,8 @@
 	.sauto-block pre {font-size:0.75rem; line-height:1.5;}
 	.sauto-block .copy-btn {padding:0.6rem 1rem; font-size:0.85rem;}
 
-	#overlay .content {width:100vw; height:100vh; padding:1rem; padding-top:3.5rem; border:none; box-shadow:none; border-radius:0; position:fixed; top:0; left:0; margin:0; box-sizing:border-box;}
-	#overlay > .close {position:absolute; top:0.5rem; right:0.5rem; left:auto; width:44px; height:44px; z-index:10; background:#e2001a; border-radius:50%; cursor:pointer;}
+	#overlay .content {width:100vw !important; height:100vh !important; padding:1rem; padding-top:3.5rem; border:none; box-shadow:none; border-radius:0; position:fixed !important; top:0 !important; left:0 !important; margin:0 !important; box-sizing:border-box;}
+	#overlay > .close {position:fixed !important; top:0.5rem !important; right:0.5rem !important; left:auto !important; width:44px !important; height:44px !important; z-index:110 !important; background:#e2001a !important; background-image:none !important; border-radius:50% !important; cursor:pointer !important;}
 	#overlay > .close::before, #overlay > .close::after {content:""; position:absolute; top:50%; left:50%; width:20px; height:3px; background:#fff; border-radius:2px;}
 	#overlay > .close::before {transform:translate(-50%,-50%) rotate(45deg);}
 	#overlay > .close::after {transform:translate(-50%,-50%) rotate(-45deg);}
@@ -288,6 +288,9 @@
 	.vin-search-container button {padding:0.5rem 0.8rem !important; margin:0 !important; font-size:0.85rem;}
 	#search_content {padding-top:3rem !important;}
 	#search_content > .open_close {width:2.5rem; height:2.5rem; border-radius:0 0 0 4px; top:4rem !important; left:-3rem !important; background-size:auto 45% !important;}
+	
+	/* Hide filter when overlay is active */
+	#overlay.active ~ #main_admin #search_content {display:none !important;}
 
 	#content .ctlg #add_new {width:calc(50% - 4px) !important; margin:0 0 20px 0 !important; min-height:0 !important; height:auto; align-self:stretch;}
 	#content .ctlg a.close, a.close[href*="ctlg"] {font-size:1.5rem !important; min-width:44px; min-height:44px; display:inline-flex; align-items:center; justify-content:center;}
