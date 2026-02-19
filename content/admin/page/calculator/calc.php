@@ -1287,10 +1287,6 @@ $rtrn = '
                         $rtrn .= '</select>
                 </div>
                 <div class="offer-field">
-                    <label for="offer-vin">'.$t['vin_code'].'</label>
-                    <input type="text" id="offer-vin" name="vin_code" placeholder="'.$t['vin_code'].'" maxlength="17" minlength="17" pattern="[A-HJ-NPR-Z0-9]{17}" style="text-transform:uppercase;" title="VIN must be exactly 17 characters (A-Z, 0-9, excluding I, O, Q)">
-                </div>
-                <div class="offer-field">
                     <label for="offer-bodywork">'.$t['bodywork'].'</label>
                     <select id="offer-bodywork" name="bodywork">
                         <option value="">'.$t['bodywork'].'</option>';
@@ -1358,6 +1354,10 @@ $rtrn = '
                             $rtrn .= '<option value="'.$k.'">'.$v.'</option>';
                         }
                         $rtrn .= '</select>
+                </div>
+                <div class="offer-field">
+                    <label for="offer-vin">'.$t['vin_code'].'</label>
+                    <input type="text" id="offer-vin" name="vin_code" placeholder="'.$t['vin_code'].'" maxlength="17" minlength="17" pattern="[A-HJ-NPR-Z0-9]{17}" style="text-transform:uppercase;" title="VIN must be exactly 17 characters (A-Z, 0-9, excluding I, O, Q)">
                 </div>
             </div>
             
