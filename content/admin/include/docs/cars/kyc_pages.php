@@ -196,11 +196,11 @@ $kyc_pages = '
 				<td colspan="2" style="border: 1px solid #000; padding: 1mm; vertical-align: middle;">
 					<div style="display: flex; width: 100%; align-items: flex-start;">
 						<div style="width: 50%; text-align: center; vertical-align: top;">
-							<div style="font-weight: bold; margin-bottom: 2mm;">Data completării</div>
+							<div style="font-weight: bold; margin-bottom: 1mm;">Data completării</div>
 							<div style="border-bottom: 1px dotted #000; width: 50mm; height: 5mm; margin: 0 auto; font-weight: bold; display: flex; align-items: center; justify-content: center;">' . (isset($_POST['kyc_completion_date']) ? $_POST['kyc_completion_date'] : date('d.m.Y')) . '</div>
 						</div>
 						<div style="width: 50%; text-align: center; vertical-align: top;">
-							<div style="font-weight: bold; margin-bottom: 2mm;">Semnătura clientului</div>
+							<div style="font-weight: bold; margin-bottom: 1mm;">Semnătura clientului</div>
 							<div style="border-bottom: 1px dotted #000; width: 70mm; height: 5mm; margin: 0 auto; font-weight: bold;"></div>
 						</div>
 					</div>
