@@ -131,9 +131,23 @@ if ($fn === 'save_eur_rate') {
         $transmission = isset($_POST['transmission']) ? trim($_POST['transmission']) : '';
         $drive_type = isset($_POST['drive_type']) ? trim($_POST['drive_type']) : '';
         $color = isset($_POST['color']) ? trim($_POST['color']) : '';
+        $vin_code = isset($_POST['vin_code']) ? strtoupper(trim($_POST['vin_code'])) : '';
         $pdf_lang = isset($_POST['pdf_lang']) ? $_POST['pdf_lang'] : 'ro';
         $calculation_data = isset($_POST['calculation_data']) ? $_POST['calculation_data'] : '{}';
         $existing_offer_id = isset($_POST['offer_id']) ? intval($_POST['offer_id']) : 0;
+        
+        // Validate VIN code - must be exactly 17 characters
+        if (!empty($vin_code) && strlen($vin_code) !== 17) {
+            echo json_encode(['success' => false, 'error' => 'VIN code must be exactly 17 characters']);
+            exit;
+        }
+        
+        // Check if vin_code column exists, if not add it
+        try {
+            $db->query("SELECT vin_code FROM {$prefx}_calculator_offers LIMIT 1");
+        } catch (PDOException $e) {
+            $db->exec("ALTER TABLE {$prefx}_calculator_offers ADD COLUMN vin_code VARCHAR(17) NULL");
+        }
         
         // Validate exactly 7 images
         if (!isset($_FILES['images']) || count($_FILES['images']['name']) !== 7) {
@@ -149,7 +163,7 @@ if ($fn === 'save_eur_rate') {
                 bodywork = :bodywork, seats = :seats, cylinder_capacity = :cylinder_capacity, 
                 fuel_type = :fuel_type, mileage = :mileage, engine_power = :engine_power, 
                 transmission = :transmission, drive_type = :drive_type, color = :color, 
-                pdf_lang = :pdf_lang, calculation_data = :calculation_data
+                vin_code = :vin_code, pdf_lang = :pdf_lang, calculation_data = :calculation_data
                 WHERE id = :id');
             $pdo->execute([
                 'client_name' => $client_name,
@@ -165,6 +179,7 @@ if ($fn === 'save_eur_rate') {
                 'transmission' => $transmission,
                 'drive_type' => $drive_type,
                 'color' => $color,
+                'vin_code' => $vin_code,
                 'pdf_lang' => $pdf_lang,
                 'calculation_data' => $calculation_data,
                 'id' => $existing_offer_id
@@ -173,8 +188,8 @@ if ($fn === 'save_eur_rate') {
         } else {
             // INSERT new offer
             $pdo = $db->prepare('INSERT INTO '.$prefx.'_calculator_offers 
-                (client_name, brand, model, year, bodywork, seats, cylinder_capacity, fuel_type, mileage, engine_power, transmission, drive_type, color, pdf_lang, calculation_data, created_by) 
-                VALUES (:client_name, :brand, :model, :year, :bodywork, :seats, :cylinder_capacity, :fuel_type, :mileage, :engine_power, :transmission, :drive_type, :color, :pdf_lang, :calculation_data, :created_by)');
+                (client_name, brand, model, year, bodywork, seats, cylinder_capacity, fuel_type, mileage, engine_power, transmission, drive_type, color, vin_code, pdf_lang, calculation_data, created_by) 
+                VALUES (:client_name, :brand, :model, :year, :bodywork, :seats, :cylinder_capacity, :fuel_type, :mileage, :engine_power, :transmission, :drive_type, :color, :vin_code, :pdf_lang, :calculation_data, :created_by)');
             $pdo->execute([
                 'client_name' => $client_name,
                 'brand' => $brand,
@@ -189,6 +204,7 @@ if ($fn === 'save_eur_rate') {
                 'transmission' => $transmission,
                 'drive_type' => $drive_type,
                 'color' => $color,
+                'vin_code' => $vin_code,
                 'pdf_lang' => $pdf_lang,
                 'calculation_data' => $calculation_data,
                 'created_by' => $user_id

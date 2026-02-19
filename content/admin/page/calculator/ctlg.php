@@ -937,6 +937,12 @@ $rtrn = '
                 doc.text(removeDiacritics(engineInfo), 20, titleEndY + 18);
             }
             
+            // VIN code on new line
+            if (offer.vin_code) {
+                doc.setFontSize(24);
+                doc.text("VIN: " + offer.vin_code.toUpperCase(), 20, titleEndY + 32);
+            }
+            
             // Red rectangle bottom right with page number
             const rectWidth = 50;
             const rectHeight = 75;
