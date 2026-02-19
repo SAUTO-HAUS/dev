@@ -2475,11 +2475,11 @@ $rtrn = '
             }
         }
         
-        // Validate VIN - must be exactly 17 characters if provided
+        // Validate VIN - must be exactly 17 characters (required field)
         const vinField = document.getElementById("offer-vin");
         const vinValue = vinField.value.trim();
         vinField.classList.remove("field-error");
-        if (vinValue && vinValue.length !== 17) {
+        if (!vinValue || vinValue.length !== 17) {
             vinField.classList.add("field-error");
             hasError = true;
         }
