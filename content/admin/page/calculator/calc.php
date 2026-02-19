@@ -2475,6 +2475,15 @@ $rtrn = '
             }
         }
         
+        // Validate VIN - must be exactly 17 characters if provided
+        const vinField = document.getElementById("offer-vin");
+        const vinValue = vinField.value.trim();
+        vinField.classList.remove("field-error");
+        if (vinValue && vinValue.length !== 17) {
+            vinField.classList.add("field-error");
+            hasError = true;
+        }
+        
         // Validate images - exactly 7 required
         const imagesSection = document.getElementById("offer-images-section");
         imagesSection.classList.remove("field-error");
