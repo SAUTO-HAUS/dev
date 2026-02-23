@@ -62,11 +62,10 @@ try {
 
     // location_1_facebook_page_id - 725963964220309
 
-    $db['user_access_token'] = $settings['location_1_facebook_user_token'];
-    $db['page_tokens'] = $settings['location_1_facebook_token'];
-
-    $userToken = isset($db['user_access_token']) ? $db['user_access_token'] : '';
-    $pageTokens = isset($db['page_tokens']) && is_array($db['page_tokens']) ? $db['page_tokens'] : array();
+    $userToken = isset($settings['location_1_facebook_user_token']) ? $settings['location_1_facebook_user_token'] : '';
+    $pageTokensRaw = isset($settings['location_1_facebook_token']) ? $settings['location_1_facebook_token'] : '';
+    $pageTokens = !empty($pageTokensRaw) ? json_decode($pageTokensRaw, true) : array();
+    if (!is_array($pageTokens)) $pageTokens = array();
 
     if (!$userToken) {
         echo "ERROR: user_access_token is empty (DB)\n";
@@ -138,10 +137,10 @@ try {
 
             $stmt = $db->prepare("
                 UPDATE {$prefx}_settings  
-                SET value = '". $newPageTokens ."' 
+                SET value = :value 
                 WHERE name = :name 
             ");
-            $stmt->execute([ 'name' => 'location_1_facebook_token' ]);
+            $stmt->execute([ 'name' => 'location_1_facebook_token', 'value' => json_encode($newPageTokens) ]);
 
             $stmt = $db->prepare("
                 UPDATE {$prefx}_settings  
@@ -181,10 +180,10 @@ try {
 
             $stmt = $db->prepare("
                 UPDATE {$prefx}_settings  
-                SET value = '". $ensuredPageTokens ."' 
+                SET value = :value 
                 WHERE name = :name 
             ");
-            $stmt->execute([ 'name' => 'location_1_facebook_token' ]);
+            $stmt->execute([ 'name' => 'location_1_facebook_token', 'value' => json_encode($ensuredPageTokens) ]);
 
         } catch (Exception $e) {
             // echo "[" . date('Y-m-d H:i:s') . "] Fatal Error: " . $e->getMessage() . "\n";
@@ -219,11 +218,10 @@ try {
 
     // location_2_facebook_token - 482777831588669
 
-    $db['user_access_token'] = $settings['location_1_facebook_user_token'];
-    $db['page_tokens'] = $settings['location_2_facebook_token'];
-
-    $userToken = isset($db['user_access_token']) ? $db['user_access_token'] : '';
-    $pageTokens = isset($db['page_tokens']) && is_array($db['page_tokens']) ? $db['page_tokens'] : array();
+    $userToken = isset($settings['location_1_facebook_user_token']) ? $settings['location_1_facebook_user_token'] : '';
+    $pageTokensRaw = isset($settings['location_2_facebook_token']) ? $settings['location_2_facebook_token'] : '';
+    $pageTokens = !empty($pageTokensRaw) ? json_decode($pageTokensRaw, true) : array();
+    if (!is_array($pageTokens)) $pageTokens = array();
 
     if (!$userToken) {
         echo "ERROR: user_access_token is empty (DB)\n";
@@ -295,10 +293,10 @@ try {
 
             $stmt = $db->prepare("
                 UPDATE {$prefx}_settings  
-                SET value = '". $newPageTokens ."' 
+                SET value = :value 
                 WHERE name = :name 
             ");
-            $stmt->execute([ 'name' => 'location_2_facebook_token' ]);
+            $stmt->execute([ 'name' => 'location_2_facebook_token', 'value' => json_encode($newPageTokens) ]);
 
             $stmt = $db->prepare("
                 UPDATE {$prefx}_settings  
@@ -338,10 +336,10 @@ try {
 
             $stmt = $db->prepare("
                 UPDATE {$prefx}_settings  
-                SET value = '". $ensuredPageTokens ."' 
+                SET value = :value 
                 WHERE name = :name 
             ");
-            $stmt->execute([ 'name' => 'location_2_facebook_token' ]);
+            $stmt->execute([ 'name' => 'location_2_facebook_token', 'value' => json_encode($ensuredPageTokens) ]);
 
         } catch (Exception $e) {
             // echo "[" . date('Y-m-d H:i:s') . "] Fatal Error: " . $e->getMessage() . "\n";
