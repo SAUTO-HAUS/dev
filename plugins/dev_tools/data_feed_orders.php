@@ -18,7 +18,7 @@ include ($_SERVER["DOCUMENT_ROOT"].'/plugins/lalit/InitTrait.php');
 include ($_SERVER["DOCUMENT_ROOT"].'/plugins/lalit/Array2XML.php');
 
 // Orders catalog - only on_order cars with active timer (all locations)
-$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE `n_a`=0 AND `vis`=1 AND `act`=1 AND `catalog_type`=\'on_order\' AND `offer_timer_end` > UNIX_TIMESTAMP() ';
+$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE `n_a`=0 AND `vis`=1 AND `act`=1 AND (`is_at_client`=0 OR `is_at_client` IS NULL) AND `catalog_type`=\'on_order\' AND `offer_timer_end` > UNIX_TIMESTAMP() ';
 $pdo = $db->prepare($sql);
 $pdo->execute();
 $i=0; $ar=[];

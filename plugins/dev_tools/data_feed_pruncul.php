@@ -18,7 +18,7 @@ include ($_SERVER["DOCUMENT_ROOT"].'/plugins/lalit/InitTrait.php');
 include ($_SERVER["DOCUMENT_ROOT"].'/plugins/lalit/Array2XML.php');
 
 // Pruncul catalog - only in-stock cars from Pruncul branch (loc=2), no orders
-$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE `n_a`=0 AND `vis`=1 AND `act`=1 AND `catalog_type`=\'in_stock\' AND `loc`=\'2\' ';
+$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE `n_a`=0 AND `vis`=1 AND `act`=1 AND (`is_at_client`=0 OR `is_at_client` IS NULL) AND `catalog_type`=\'in_stock\' AND `loc`=\'2\' ';
 $pdo = $db->prepare($sql);
 $pdo->execute();
 $i=0; $ar=[];

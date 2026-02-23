@@ -422,6 +422,9 @@ if ($_COOKIE['lang']=='ru'){
 	$lang_top_sales = 'ХИТЫ ПРОДАЖ';
 	
 	$lang_not_av = 'Нет в наличии';
+
+	$lang_is_at_client = 'Машина у клиента';
+    $lang_is_at_client_badge = 'МАШИНА У КЛИЕНТА';
 	
 	$lang_tva = 'НДС';
 
@@ -1269,6 +1272,9 @@ $lang_offer_expired = 'Предложение истекло';
 
 	$lang_soon = 'Скоро в продаже';
 
+	$lang_is_at_client = 'Машина у клиента';
+    $lang_is_at_client_badge = 'МАШИНА У КЛИЕНТА';
+
 	$lang_top_sales = 'ХИТЫ ПРОДАЖ';
 	
 	$lang_not_av = 'Нет в наличии';
@@ -2087,6 +2093,9 @@ elseif ($_COOKIE['lang']=='ro'){
     $lang_top_sales = 'Top vinzari';
 	
 	$lang_not_av = 'Nu este in stoc';
+
+	$lang_is_at_client = 'Mașina la client';
+    $lang_is_at_client_badge = 'MAȘINA LA CLIENT';
 	
 	$lang_tva = 'TVA';
 
@@ -2798,6 +2807,9 @@ $lang_offer_expires = 'Oferta expiră în';
     $lang_top_sales = 'Top vinzari';
 	
 	$lang_not_av = 'Nu este in stoc';
+
+	$lang_is_at_client = 'Mașina la client';
+    $lang_is_at_client_badge = 'MAȘINA LA CLIENT';
 	
 	$lang_tva = 'TVA';
 
@@ -3557,6 +3569,9 @@ elseif ($_COOKIE['lang']=='en'){
 	$lang_top_sales = 'BESTSELLERS';
 	
 	$lang_not_av = 'Not available';
+	
+	$lang_is_at_client = 'Car at client';
+	$lang_is_at_client_badge = 'CAR AT CLIENT';
 	
 	$lang_tva = 'VAT';
 

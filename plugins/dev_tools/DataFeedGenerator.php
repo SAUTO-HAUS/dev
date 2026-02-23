@@ -46,7 +46,8 @@ class DataFeedGenerator {
      * @return string SQL WHERE clause
      */
     protected function getWhereClause() {
-        $baseWhere = "WHERE `n_a`=0 AND `vis`=1 AND `act`=1";
+        // Exclude cars that are at client (is_at_client=1) from all external feeds
+        $baseWhere = "WHERE `n_a`=0 AND `vis`=1 AND `act`=1 AND (`is_at_client`=0 OR `is_at_client` IS NULL)";
         
         switch ($this->feedType) {
             case 'main':

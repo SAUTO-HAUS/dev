@@ -175,7 +175,7 @@ if (__post('sub') == 'mo_search') {
                 `bt`=:bt, `sts`=:sts, `mlg`=:mlg, `unit`=:unit, `vol`=:vol, `hp`=:hp, `fl`=:fl,
                 `tra`=:tra, `wd`=:wd, `clr`=:clr, `loc`=:loc, `txt`=:txt, `vin`=:vin,
                 `prc`=:prc, `cur`=:cur, `soon`=:soon, `n_a`=:n_a, `tva`=:tva, `top`=:top,
-                `gift`=:gift, `import_country_id`=:import_country_id, `catalog_type`=:catalog_type,
+                `gift`=:gift, `is_at_client`=:is_at_client, `import_country_id`=:import_country_id, `catalog_type`=:catalog_type,
                 `delivery_time`=:delivery_time, `advance_amount`=:advance_amount, `offer_timer`=:offer_timer, `offer_timer_end`=:offer_timer_end, `prc_t`=:prc_t, `prc_n`=:prc_n, `999`=:data_999 
                 WHERE `id`=:id');
             $pdo->execute([
@@ -206,6 +206,7 @@ if (__post('sub') == 'mo_search') {
                 'tva' => __post('tva', 0),
                 'top' => __post('top', 0),
                 'gift' => __post('gift', 0),
+                'is_at_client' => __post('is_at_client', 0),
                 'import_country_id' => __post('import_country_id', 0),
                 'catalog_type' => 'on_order',
                 'delivery_time' => __post('delivery_time', 14),
@@ -386,8 +387,8 @@ if (__post('sub') == 'mo_search') {
             }
             $offer_timer_end = time() + $timer_seconds;
 
-            $pdo = $db->prepare('INSERT INTO ' . $prefx . '_car_ctlg (`gr`, `br`, `mo`, `br_nm`, `mo_nm`, `yr`, `vin`,`bt`, `sts`, `mlg`, `unit`, `vol`, `hp`, `fl`, `tra`, `wd`, `clr`, `loc`, `txt`, `prc`, `cur`, `soon`, `n_a`, `top`, `tva`, `gift`, `import_country_id`, `catalog_type`, `delivery_time`, `advance_amount`, `offer_timer`, `offer_timer_end`, `p_path`, `date`, `author`, `vis`) 
-                VALUES (:gr, :br, :mo, :br_nm, :mo_nm, :yr, :vin, :bt, :sts, :mlg, :unit, :vol, :hp, :fl, :tra, :wd, :clr, :loc, :txt, :prc, :cur, :soon, :n_a, :top, :tva, :gift, :import_country_id, :catalog_type, :delivery_time, :advance_amount, :offer_timer, :offer_timer_end, :p_path, :date, :author, "1")');//, `vis`, "0"
+            $pdo = $db->prepare('INSERT INTO ' . $prefx . '_car_ctlg (`gr`, `br`, `mo`, `br_nm`, `mo_nm`, `yr`, `vin`,`bt`, `sts`, `mlg`, `unit`, `vol`, `hp`, `fl`, `tra`, `wd`, `clr`, `loc`, `txt`, `prc`, `cur`, `soon`, `n_a`, `top`, `tva`, `gift`, `is_at_client`, `import_country_id`, `catalog_type`, `delivery_time`, `advance_amount`, `offer_timer`, `offer_timer_end`, `p_path`, `date`, `author`, `vis`) 
+                VALUES (:gr, :br, :mo, :br_nm, :mo_nm, :yr, :vin, :bt, :sts, :mlg, :unit, :vol, :hp, :fl, :tra, :wd, :clr, :loc, :txt, :prc, :cur, :soon, :n_a, :top, :tva, :gift, :is_at_client, :import_country_id, :catalog_type, :delivery_time, :advance_amount, :offer_timer, :offer_timer_end, :p_path, :date, :author, "1")');
 
             $pdo->execute([
                 'gr' => __post('gr'),
@@ -416,6 +417,7 @@ if (__post('sub') == 'mo_search') {
                 'top' => __post('top', 0),
                 'tva' => __post('tva', 0),
                 'gift' => __post('gift', 0),
+                'is_at_client' => __post('is_at_client', 0),
                 'import_country_id' => __post('import_country_id', 0),
                 'catalog_type' => 'on_order',
                 'delivery_time' => __post('delivery_time', 14),

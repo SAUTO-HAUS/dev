@@ -52,6 +52,12 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 			<div class="title"><?= !empty($car) ? (__('cars.edit_ad') . ' #' . $car['id']) : __('cars.new_ad') ?></div>
             <a class="close" href="<?= '/'.$_COOKIE['lang'].'/'.$admin_dir.'/ordercars/ctlg' ?>">X</a>
 		</div>
+
+		<?php if (!empty($car['is_at_client']) && $car['is_at_client'] == 1) : ?>
+		<div class="is-at-client-banner" style="background: #ffc107; padding: 10px 20px; margin: 10px 0; text-align: center; font-weight: bold; font-size: 1.2rem; color: #000;">
+			<?= $lang_is_at_client_badge ?>
+		</div>
+		<?php endif; ?>
 		
 		<?php 
 		// Display warning banner if offer has expired
@@ -262,6 +268,13 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                                 <?= isset($car['n_a']) && $car['n_a'] == 1 ? 'checked' : '' ?>
                                 value="<?= $car['n_a'] ?? 0 ?>">
                         <?=$lang_not_av?>
+                    </label>
+                    <label style="background-color: #fff3cd; border: 1px solid #ffc107; padding: 5px 10px; border-radius: 4px;">
+                        <input type="checkbox" name="is_at_client" class="no_need" tabindex="1"
+                                onchange="this.value = +this.checked;"
+                                <?= isset($car['is_at_client']) && $car['is_at_client'] == 1 ? 'checked' : '' ?>
+                                value="<?= $car['is_at_client'] ?? 0 ?>">
+                        <strong><?=$lang_is_at_client?></strong>
                     </label>
                 </div>
 

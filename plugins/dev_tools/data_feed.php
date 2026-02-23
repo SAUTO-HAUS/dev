@@ -5,7 +5,7 @@ include ($_SERVER["DOCUMENT_ROOT"].'/plugins/lalit/Constants.php');
 include ($_SERVER["DOCUMENT_ROOT"].'/plugins/lalit/InitTrait.php');
 include ($_SERVER["DOCUMENT_ROOT"].'/plugins/lalit/Array2XML.php');
 
-$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE `n_a`=0 AND `vis`=1 AND `act`=1 AND `catalog_type`=\'in_stock\' AND `loc`=\'1\' ';
+$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE `n_a`=0 AND `vis`=1 AND `act`=1 AND (`is_at_client`=0 OR `is_at_client` IS NULL) AND `catalog_type`=\'in_stock\' AND `loc`=\'1\' ';
 $pdo = $db->prepare($sql);
 $pdo->execute();
 $i=0; $ar=[];

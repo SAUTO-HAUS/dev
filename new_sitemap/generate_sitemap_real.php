@@ -604,6 +604,9 @@ class SitemapGeneratorReal {
         if (in_array('status', $columns, true)) {
             $conditions[] = "`status` IN ('active', 'sold', 'available', 'not_available', 'out_of_stock')";
         }
+        if (in_array('is_at_client', $columns, true)) {
+            $conditions[] = "(`is_at_client` = 0 OR `is_at_client` IS NULL)";
+        }
 
         if (!empty($conditions)) {
             $sql .= ' WHERE ' . implode(' AND ', $conditions);
@@ -652,6 +655,9 @@ class SitemapGeneratorReal {
         }
         if (in_array('deleted', $columns, true)) {
             $sql .= " AND (`deleted` = 0 OR `deleted` IS NULL)";
+        }
+        if (in_array('is_at_client', $columns, true)) {
+            $sql .= " AND (`is_at_client` = 0 OR `is_at_client` IS NULL)";
         }
 
         $stmt = $this->db->query($sql);
