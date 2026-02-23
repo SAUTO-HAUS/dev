@@ -128,12 +128,12 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                                 value="<?= $car['n_a'] ?? 0 ?>">
                         <?=$lang_not_av?>
                     </label>
-                    <label style="background-color: #fff3cd; border: 1px solid #ffc107; padding: 5px 10px; border-radius: 4px;">
+                    <label>
                         <input type="checkbox" name="is_at_client" class="no_need" tabindex="1"
                                 onchange="this.value = +this.checked;"
                                 <?= isset($car['is_at_client']) && $car['is_at_client'] == 1 ? 'checked' : '' ?>
                                 value="<?= $car['is_at_client'] ?? 0 ?>">
-                        <strong><?=$lang_is_at_client?></strong>
+                        <?=$lang_is_at_client?>
                     </label>
                 </div>
 
