@@ -60,7 +60,7 @@ class OrderCar
             // Publisher and other roles with all_branches access see everything (no filter)
         }
         
-        $sql .= ' ORDER BY `vis` DESC, `id` DESC LIMIT ' . ($limit+1);
+        $sql .= ' ORDER BY `n_a` ASC, `vis` DESC, `id` DESC LIMIT ' . ($limit+1);
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
