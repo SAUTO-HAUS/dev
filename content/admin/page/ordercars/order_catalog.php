@@ -77,6 +77,7 @@ $last_car_id = 0;
         $on_img .= $r['soon']==1 ? '<span class="soon" '.($_COOKIE['lang']=='ruXXXXXXX'?'style="order:1;"':'').'>'.$lng['l']['stat']['soon1'].'</span>' : '';
         $on_img .= $r['n_a']==1  ? '<span class="not_av">'.$lng['l']['stat']['n_a1'].'</span>' : '';
         $on_img .= $r['top']==1  ? '<span class="top">'.$lng['l']['stat']['top1'].'</span>' : '';
+        $on_img .= $r['is_at_client']==1  ? '<span class="at_client">'.$lang_is_at_client_badge.'</span>' : '';
 
         $new_item = 0;
         if ($r['new']!=''){
@@ -359,9 +360,6 @@ $last_car_id = 0;
                     <div class="remove_after" timer="<?= ( $r['del_t']-time() ) ?>" ra="<?= $r['del_t'] ?>">**, **:**:**</div>
                 <?php endif; ?>
                 <div class="html-indicator" title="<?= $hasHtml ? 'HTML описание есть' : 'HTML описание отсутствует' ?>" style="position:absolute;top:10px;left:10px;width:16px;height:16px;border-radius:3px;text-align:center;line-height:16px;font-size:10px;font-weight:bold;color:#fff;background:<?= $hasHtml ? '#28a745' : '#dc3545' ?>;"><?= $hasHtml ? '✓' : '✗' ?></div>
-                <?php if (!empty($r['is_at_client']) && $r['is_at_client'] == 1) : ?>
-                <div class="at-client-indicator" title="<?= $lang_is_at_client_badge ?>" style="position:absolute;top:10px;left:30px;width:16px;height:16px;border-radius:3px;text-align:center;line-height:16px;font-size:10px;font-weight:bold;color:#000;background:#ffc107;z-index:10;">К</div>
-                <?php endif; ?>
                 <a class="url" href="<?= $site_url.'/'.$_COOKIE['lang'].'/ordercars/'.$r['id'] ?>" target="_blank" title="To the item page">
                     <div class="ico"></div>
                 </a>

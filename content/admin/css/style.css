@@ -533,6 +533,8 @@
   .on_img > span.soon {background-color:#1b979d/*#e67d21*/;}
   .on_img > span.not_av {background-color:var(--clr); animation:blinker 1s infinite;}
   .on_img > span.top {background-color:#e8a300}
+  .on_img > span.at_client {background-color:#28a745; animation:blinker 1s infinite;}
+  @keyframes blinker {50% { opacity: 0.2;}}
   
   .top-sales{position:absolute; bottom:34px; right:0; background:#b73f3d; color:white; padding:5px 10px; font-size:12px;}
   
