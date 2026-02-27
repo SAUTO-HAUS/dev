@@ -286,22 +286,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         }
         
         .brand-card.expanded .brand-header {
-            background: linear-gradient(135deg, #4682B4 0%, #6495ED 100%);
-            border-bottom-color: rgba(255,255,255,0.2);
+            background: linear-gradient(135deg, #60a5fa 0%, #93c5fd 100%);
+            border-bottom-color: rgba(255,255,255,0.3);
         }
         
         .brand-card.expanded .brand-header .brand-name,
         .brand-card.expanded .brand-header .brand-toggle {
-            color: white;
+            color: #1e3a8a;
         }
         
         .brand-card.expanded .brand-header .brand-slug {
-            background: rgba(255,255,255,0.2);
-            color: white;
+            background: rgba(255,255,255,0.5);
+            color: #1e40af;
         }
         
         .brand-card.expanded .brand-header .brand-count {
-            background: rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.6);
+            color: #1e40af;
+        }
+        
+        .brand-card.expanded .brand-header .btn-sm {
+            background: white;
+            color: #0ea5e9;
+            border: 2px solid #0ea5e9;
+        }
+        
+        .brand-card.expanded .brand-header .btn-sm:hover {
+            background: #0ea5e9;
             color: white;
         }
         
@@ -614,7 +625,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             }
             
             h1 {
-                font-size: 22px;
+                font-size: 20px;
                 margin-bottom: 8px;
             }
             
