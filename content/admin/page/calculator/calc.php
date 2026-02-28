@@ -2872,23 +2872,23 @@ $rtrn = '
                     document.getElementById("res-transaction-eur").value = parseFloat(calcData.transaction.eur || 0).toFixed(2);
                 }
                 if (calcData.polishing) {
+                    document.getElementById("res-polishing-mdl").value = parseFloat(calcData.polishing.mdl || 0).toFixed(2);
+                    document.getElementById("res-polishing-eur").value = parseFloat(calcData.polishing.eur || 0).toFixed(2);
                     const polishingCheckbox = document.getElementById("enable-polishing");
                     if (calcData.polishing.mdl > 0) {
                         polishingCheckbox.checked = true;
                         document.getElementById("res-polishing-mdl").disabled = false;
                         document.getElementById("res-polishing-eur").disabled = false;
-                        document.getElementById("res-polishing-mdl").value = parseFloat(calcData.polishing.mdl || 0).toFixed(2);
-                        document.getElementById("res-polishing-eur").value = parseFloat(calcData.polishing.eur || 0).toFixed(2);
                     }
                 }
                 if (calcData.painting) {
+                    document.getElementById("res-painting-mdl").value = parseFloat(calcData.painting.mdl || 0).toFixed(2);
+                    document.getElementById("res-painting-eur").value = parseFloat(calcData.painting.eur || 0).toFixed(2);
                     const paintingCheckbox = document.getElementById("enable-painting");
                     if (calcData.painting.mdl > 0) {
                         paintingCheckbox.checked = true;
                         document.getElementById("res-painting-mdl").disabled = false;
                         document.getElementById("res-painting-eur").disabled = false;
-                        document.getElementById("res-painting-mdl").value = parseFloat(calcData.painting.mdl || 0).toFixed(2);
-                        document.getElementById("res-painting-eur").value = parseFloat(calcData.painting.eur || 0).toFixed(2);
                     }
                 }
                 if (calcData.vatRecovery) {
