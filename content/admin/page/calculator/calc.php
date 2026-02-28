@@ -1977,10 +1977,10 @@ $rtrn = '
                 if (document.getElementById("enable-shipping").checked) {
                     tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.shipping_docs}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.shipping.mdl))} MDL  <span style="font-size:10px;">(${formatNumber(parseFloat(values.shipping.eur))} EUR)</span></td></tr>`;
                 }
-                if (document.getElementById("enable-accessories").checked) {
+                if (document.getElementById("enable-accessories").checked && (parseFloat(values.accessories.mdl) > 0 || parseFloat(values.accessories.eur) > 0)) {
                     tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.accessories}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.accessories.mdl))} MDL  <span style="font-size:10px;">(${formatNumber(parseFloat(values.accessories.eur))} EUR)</span></td></tr>`;
                 }
-                if (document.getElementById("enable-transaction").checked) {
+                if (document.getElementById("enable-transaction").checked && (parseFloat(values.transaction.mdl) > 0 || parseFloat(values.transaction.eur) > 0)) {
                     tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.transaction_commission}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.transaction.mdl))} MDL  <span style="font-size:10px;">(${formatNumber(parseFloat(values.transaction.eur))} EUR)</span></td></tr>`;
                 }
                 if (document.getElementById("enable-vat-recovery").checked && (parseFloat(values.vatRecovery.mdl) > 0 || parseFloat(values.vatRecovery.eur) > 0)) {
@@ -2863,12 +2863,12 @@ $rtrn = '
                     document.getElementById("res-shipping-eur").value = calcData.shipping.eur || 0;
                 }
                 if (calcData.accessories) {
-                    document.getElementById("res-accessories-mdl").value = calcData.accessories.mdl || 0;
-                    document.getElementById("res-accessories-eur").value = calcData.accessories.eur || 0;
+                    document.getElementById("res-accessories-mdl").value = parseFloat(calcData.accessories.mdl || 0).toFixed(2);
+                    document.getElementById("res-accessories-eur").value = parseFloat(calcData.accessories.eur || 0).toFixed(2);
                 }
                 if (calcData.transaction) {
-                    document.getElementById("res-transaction-mdl").value = calcData.transaction.mdl || 0;
-                    document.getElementById("res-transaction-eur").value = calcData.transaction.eur || 0;
+                    document.getElementById("res-transaction-mdl").value = parseFloat(calcData.transaction.mdl || 0).toFixed(2);
+                    document.getElementById("res-transaction-eur").value = parseFloat(calcData.transaction.eur || 0).toFixed(2);
                 }
                 if (calcData.polishing) {
                     const polishingCheckbox = document.getElementById("enable-polishing");
@@ -2876,8 +2876,8 @@ $rtrn = '
                         polishingCheckbox.checked = true;
                         document.getElementById("res-polishing-mdl").disabled = false;
                         document.getElementById("res-polishing-eur").disabled = false;
-                        document.getElementById("res-polishing-mdl").value = calcData.polishing.mdl || 0;
-                        document.getElementById("res-polishing-eur").value = calcData.polishing.eur || 0;
+                        document.getElementById("res-polishing-mdl").value = parseFloat(calcData.polishing.mdl || 0).toFixed(2);
+                        document.getElementById("res-polishing-eur").value = parseFloat(calcData.polishing.eur || 0).toFixed(2);
                     }
                 }
                 if (calcData.painting) {
@@ -2886,18 +2886,18 @@ $rtrn = '
                         paintingCheckbox.checked = true;
                         document.getElementById("res-painting-mdl").disabled = false;
                         document.getElementById("res-painting-eur").disabled = false;
-                        document.getElementById("res-painting-mdl").value = calcData.painting.mdl || 0;
-                        document.getElementById("res-painting-eur").value = calcData.painting.eur || 0;
+                        document.getElementById("res-painting-mdl").value = parseFloat(calcData.painting.mdl || 0).toFixed(2);
+                        document.getElementById("res-painting-eur").value = parseFloat(calcData.painting.eur || 0).toFixed(2);
                     }
                 }
                 if (calcData.vatRecovery) {
+                    document.getElementById("res-vat-recovery-mdl").value = parseFloat(calcData.vatRecovery.mdl || 0).toFixed(2);
+                    document.getElementById("res-vat-recovery-eur").value = parseFloat(calcData.vatRecovery.eur || 0).toFixed(2);
                     const vatRecoveryCheckbox = document.getElementById("enable-vat-recovery");
                     if (calcData.vatRecovery.mdl > 0) {
                         vatRecoveryCheckbox.checked = true;
                         document.getElementById("res-vat-recovery-mdl").disabled = false;
                         document.getElementById("res-vat-recovery-eur").disabled = false;
-                        document.getElementById("res-vat-recovery-mdl").value = calcData.vatRecovery.mdl || 0;
-                        document.getElementById("res-vat-recovery-eur").value = calcData.vatRecovery.eur || 0;
                     }
                 }
                 
