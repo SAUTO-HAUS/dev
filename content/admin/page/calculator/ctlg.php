@@ -855,6 +855,7 @@ $rtrn = '
             transaction: calcData.transaction || {mdl: 0, eur: 0},
             polishing: calcData.polishing || {mdl: 0, eur: 0},
             painting: calcData.painting || {mdl: 0, eur: 0},
+            vatRecovery: calcData.vatRecovery || {mdl: 0, eur: 0},
             total: calcData.total || {mdl: 0, eur: 0},
             vehicle: calcData.vehicle || {mdl: 0, eur: 0}
         };
@@ -1498,6 +1499,7 @@ $rtrn = '
                 { key: "shipping", toggleKey: "shipping", label: t.shipping_docs },
                 { key: "accessories", toggleKey: "accessories", label: t.accessories },
                 { key: "transaction", toggleKey: "transaction", label: t.transaction_commission },
+                { key: "vatRecovery", toggleKey: "vatRecovery", label: t.vat_recovery },
                 { key: "polishing", toggleKey: "polishing", label: "Polizare si curatire chimica" },
                 { key: "painting", toggleKey: "painting", label: "Vopsire" }
             ];

@@ -1220,6 +1220,16 @@ $rtrn = '
         </div>
         <div class="result-row">
             <span class="label">
+                <label class="toggle-switch" for="enable-vat-recovery">
+                    <input type="checkbox" id="enable-vat-recovery" checked>
+                    <span class="toggle-slider"></span>
+                </label>
+                <label for="enable-vat-recovery" style="cursor:pointer;">'.$t['vat_recovery'].'</label>
+            </span>
+            <span class="value editable-value"><input type="number" class="editable-input" id="res-vat-recovery-mdl" data-field="vat-recovery" step="1" value="0"> MDL <span class="eur-equiv">~ <input type="number" class="editable-input eur-input" id="res-vat-recovery-eur" data-field="vat-recovery" step="1" value="0"> EUR</span></span>
+        </div>
+        <div class="result-row">
+            <span class="label">
                 <label class="toggle-switch" for="enable-polishing">
                     <input type="checkbox" id="enable-polishing">
                     <span class="toggle-slider"></span>
@@ -1613,6 +1623,7 @@ $rtrn = '
         setResultValue("shipping", shippingDocs);
         setResultValue("accessories", accessories);
         setResultValue("transaction", transactionCommission);
+        setResultValue("vat-recovery", 0);
         
         // Calculate and display totals
         recalculateTotals();
@@ -1656,7 +1667,7 @@ $rtrn = '
     
     // Recalculate totals based on current input values
     function recalculateTotals() {
-        const fields = ["excise", "luxury", "customs", "damage", "export", "bank", "auction", "pollution", "shipping", "accessories", "transaction", "polishing", "painting"];
+        const fields = ["excise", "luxury", "customs", "damage", "export", "bank", "auction", "pollution", "shipping", "accessories", "transaction", "vat-recovery", "polishing", "painting"];
         let totalMdl = 0;
         
         fields.forEach(field => {
@@ -1746,6 +1757,23 @@ $rtrn = '
         recalculateTotals();
     });
     
+    document.getElementById("enable-vat-recovery").addEventListener("change", function() {
+        const mdlInput = document.getElementById("res-vat-recovery-mdl");
+        const eurInput = document.getElementById("res-vat-recovery-eur");
+        if (this.checked) {
+            mdlInput.disabled = false;
+            eurInput.disabled = false;
+            mdlInput.value = "0.00";
+            eurInput.value = "0.00";
+        } else {
+            mdlInput.disabled = true;
+            eurInput.disabled = true;
+            mdlInput.value = 0;
+            eurInput.value = 0;
+        }
+        recalculateTotals();
+    });
+    
     // Event listeners for all other toggles (default ON)
     ["value", "excise", "luxury", "customs", "damage", "export", "bank", "auction", "pollution", "shipping", "accessories", "transaction"].forEach(field => {
         const checkbox = document.getElementById("enable-" + field);
@@ -1794,6 +1822,7 @@ $rtrn = '
             transaction_commission: "Comision pentru tranzactie",
             polishing: "Polizare si curatire chimica",
             painting: "Vopsire",
+            vat_recovery: "Comision recuperare TVA",
             total: "TOTAL COSTURI VAMUIRE",
             vehicle_total: "SUMA TOTALA VEHICUL",
             sales_manager: "Manager vanzari",
@@ -1815,6 +1844,7 @@ $rtrn = '
             transaction_commission: "Комиссия за транзакцию",
             polishing: "Полировка и химчистка",
             painting: "Покраска",
+            vat_recovery: "Комиссия возврата НДС",
             total: "ИТОГО РАСХОДЫ НА РАСТАМОЖКУ",
             vehicle_total: "ОБЩАЯ СУММА ЗА АВТОМОБИЛЬ",
             sales_manager: "Менеджер по продажам",
@@ -1836,6 +1866,7 @@ $rtrn = '
             transaction_commission: "Transaction Commission",
             polishing: "Polishing and Chemical Cleaning",
             painting: "Painting",
+            vat_recovery: "VAT Recovery Commission",
             total: "TOTAL CUSTOMS COSTS",
             vehicle_total: "TOTAL VEHICLE COST",
             sales_manager: "Sales Manager",
@@ -1873,6 +1904,7 @@ $rtrn = '
             transaction: { mdl: document.getElementById("res-transaction-mdl").value || "0", eur: document.getElementById("res-transaction-eur").value || "0" },
             polishing: { mdl: document.getElementById("res-polishing-mdl").value || "0", eur: document.getElementById("res-polishing-eur").value || "0" },
             painting: { mdl: document.getElementById("res-painting-mdl").value || "0", eur: document.getElementById("res-painting-eur").value || "0" },
+            vatRecovery: { mdl: document.getElementById("res-vat-recovery-mdl").value || "0", eur: document.getElementById("res-vat-recovery-eur").value || "0" },
             total: { mdl: document.getElementById("res-total-mdl").value || "0", eur: document.getElementById("res-total-eur").value || "0" },
             vehicle: { mdl: document.getElementById("res-vehicle-total-mdl").value || "0", eur: document.getElementById("res-vehicle-total-eur").value || "0" }
         };
@@ -1950,6 +1982,9 @@ $rtrn = '
                 }
                 if (document.getElementById("enable-transaction").checked) {
                     tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.transaction_commission}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.transaction.mdl))} MDL  <span style="font-size:10px;">(${formatNumber(parseFloat(values.transaction.eur))} EUR)</span></td></tr>`;
+                }
+                if (document.getElementById("enable-vat-recovery").checked && (parseFloat(values.vatRecovery.mdl) > 0 || parseFloat(values.vatRecovery.eur) > 0)) {
+                    tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.vat_recovery}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.vatRecovery.mdl))} MDL  <span style="font-size:10px;">(${formatNumber(parseFloat(values.vatRecovery.eur))} EUR)</span></td></tr>`;
                 }
                 if (document.getElementById("enable-polishing").checked) {
                     tableRows += `<tr style="border-bottom:1px solid rgba(255,255,255,0.2);"><td style="padding:6px 0;">${t.polishing}</td><td style="text-align:left;font-weight:bold;">${formatNumber(parseFloat(values.polishing.mdl))} MDL  <span style="font-size:10px;">(${formatNumber(parseFloat(values.polishing.eur))} EUR)</span></td></tr>`;
@@ -2129,6 +2164,9 @@ $rtrn = '
         }
         if (document.getElementById("enable-transaction").checked && (parseFloat(values.transaction.mdl) > 0 || parseFloat(values.transaction.eur) > 0)) {
             results.push({ label: t.transaction_commission, mdl: values.transaction.mdl, eur: values.transaction.eur });
+        }
+        if (document.getElementById("enable-vat-recovery").checked && (parseFloat(values.vatRecovery.mdl) > 0 || parseFloat(values.vatRecovery.eur) > 0)) {
+            results.push({ label: t.vat_recovery, mdl: values.vatRecovery.mdl, eur: values.vatRecovery.eur });
         }
         if (document.getElementById("enable-polishing").checked && (parseFloat(values.polishing.mdl) > 0 || parseFloat(values.polishing.eur) > 0)) {
             results.push({ label: t.polishing, mdl: values.polishing.mdl, eur: values.polishing.eur });
@@ -2528,7 +2566,8 @@ $rtrn = '
             accessories: document.getElementById("enable-accessories").checked,
             transaction: document.getElementById("enable-transaction").checked,
             polishing: document.getElementById("enable-polishing").checked,
-            painting: document.getElementById("enable-painting").checked
+            painting: document.getElementById("enable-painting").checked,
+            vatRecovery: document.getElementById("enable-vat-recovery").checked
         };
         
         // Get calculation result values
@@ -2549,6 +2588,7 @@ $rtrn = '
             transaction: { mdl: document.getElementById("res-transaction-mdl").value || "0", eur: document.getElementById("res-transaction-eur").value || "0" },
             polishing: { mdl: document.getElementById("res-polishing-mdl").value || "0", eur: document.getElementById("res-polishing-eur").value || "0" },
             painting: { mdl: document.getElementById("res-painting-mdl").value || "0", eur: document.getElementById("res-painting-eur").value || "0" },
+            vatRecovery: { mdl: document.getElementById("res-vat-recovery-mdl").value || "0", eur: document.getElementById("res-vat-recovery-eur").value || "0" },
             total: { mdl: document.getElementById("res-total-mdl").value || "0", eur: document.getElementById("res-total-eur").value || "0" },
             vehicle: { mdl: document.getElementById("res-vehicle-total-mdl").value || "0", eur: document.getElementById("res-vehicle-total-eur").value || "0" }
         };
@@ -2850,6 +2890,16 @@ $rtrn = '
                         document.getElementById("res-painting-eur").value = calcData.painting.eur || 0;
                     }
                 }
+                if (calcData.vatRecovery) {
+                    const vatRecoveryCheckbox = document.getElementById("enable-vat-recovery");
+                    if (calcData.vatRecovery.mdl > 0) {
+                        vatRecoveryCheckbox.checked = true;
+                        document.getElementById("res-vat-recovery-mdl").disabled = false;
+                        document.getElementById("res-vat-recovery-eur").disabled = false;
+                        document.getElementById("res-vat-recovery-mdl").value = calcData.vatRecovery.mdl || 0;
+                        document.getElementById("res-vat-recovery-eur").value = calcData.vatRecovery.eur || 0;
+                    }
+                }
                 
                 // Restore toggle states from saved data
                 if (calcData.toggles) {
@@ -2867,7 +2917,8 @@ $rtrn = '
                         accessories: "enable-accessories",
                         transaction: "enable-transaction",
                         polishing: "enable-polishing",
-                        painting: "enable-painting"
+                        painting: "enable-painting",
+                        vatRecovery: "enable-vat-recovery"
                     };
                     
                     for (const [key, elementId] of Object.entries(toggleMapping)) {
