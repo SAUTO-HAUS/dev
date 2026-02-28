@@ -1794,6 +1794,7 @@ $rtrn = '
     
     // Export PDF function
     function removeDiacritics(str) {
+        if (!str) return "";
         return str
             .replace(/ă/g, "a").replace(/Ă/g, "A")
             .replace(/â/g, "a").replace(/Â/g, "A")
@@ -2199,7 +2200,7 @@ $rtrn = '
             const mdlText = formatNumber(parseFloat(item.mdl)) + " MDL  ";
             const eurText = "(" + formatNumber(parseFloat(item.eur)) + " EUR)";
             doc.setFont("helvetica", "normal");
-            doc.text(item.label, 20, y);
+            doc.text(removeDiacritics(item.label || ""), 20, y);
             doc.setFont("helvetica", "bold");
             doc.setFontSize(13);
             doc.text(mdlText, valueX, y);

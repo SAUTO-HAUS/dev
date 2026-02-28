@@ -656,6 +656,7 @@ $rtrn = '
         shipping_docs: "Livrarea documentelor",
         accessories: "Accesorii",
         transaction_commission: "Comision pentru tranzactie",
+        vat_recovery: "Comision recuperare TVA",
         total: "TOTAL COSTURI VAMUIRE",
         vehicle_total: "SUMA TOTALA VEHICUL"
     };
@@ -709,6 +710,7 @@ $rtrn = '
         }
         
         function removeDiacritics(str) {
+            if (!str) return "";
             return str
                 .replace(/ă/g, "a").replace(/Ă/g, "A")
                 .replace(/â/g, "a").replace(/Â/g, "A")
