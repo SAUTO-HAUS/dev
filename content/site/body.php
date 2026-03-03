@@ -965,6 +965,18 @@ SVG
                 Arrows: false,
                 Dots: false
             });
+            heroCarousel.on('change', (carousel, to) => {
+                const slide = heroEl.querySelectorAll('.f-carousel__slide')[to];
+                if (slide) {
+                    const img = slide.querySelector('img[data-src]');
+                    if (img) { img.src = img.dataset.src; img.removeAttribute('data-src'); }
+                }
+                const next = heroEl.querySelectorAll('.f-carousel__slide')[to + 1];
+                if (next) {
+                    const nimg = next.querySelector('img[data-src]');
+                    if (nimg) { nimg.src = nimg.dataset.src; nimg.removeAttribute('data-src'); }
+                }
+            });
             heroCarousel.on('ready', ()=>{
 
                 heroEl.classList.remove('is-booting');
