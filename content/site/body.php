@@ -1413,6 +1413,7 @@ SVG
             return 'navigate';
         }
 
+        /* disabled: auto-open fullscreen gallery on mobile
         (function autoOpenGalleryOnce(){
             const navType = getNavType();           
             const ref     = document.referrer || '';
@@ -1423,25 +1424,16 @@ SVG
             const okByType   = (navType === 'navigate');
             const hasRef     = !!from;
             const isSamePage = hasRef && (from === here);
-            //const already    = sessionStorage.getItem('autoGalleryShown') === '1';
 
             if (okByType && hasRef && !isSamePage) {
                 setTimeout(function () {
-
                     const slides = Array.from(document.querySelectorAll('.f-carousel__slide.is-selected'));
-                    console.log('slides');
-                    console.log( slides);
-
                     if (slides.length && $(window).width() < 640 ) {
                         location.href = '#product-1';
-                        console.log('slides 2');
-                        // Fancybox.show(slides, { startIndex: 0 });
-                        // $('.f-carousel__slide.is-selected a').click();
-
-                        // sessionStorage.setItem('autoGalleryShown', '1');
                     }
                 },500);
             }
         })();
+        */
     </script>
 <?php } ?>
