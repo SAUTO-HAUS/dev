@@ -23,6 +23,16 @@ $filter_date_to = isset($_GET['date_to']) ? trim($_GET['date_to']) : '';
 $where = [];
 $params = [];
 
+// Hide mileage-related field changes in UI (keep data in DB/logs)
+$mileage_hidden_fields = ['mlg', 'unit', 'mileage'];
+$mileage_placeholders = [];
+foreach ($mileage_hidden_fields as $idx => $mileage_field) {
+    $ph = 'mileage_field_' . $idx;
+    $mileage_placeholders[] = ':' . $ph;
+    $params[$ph] = $mileage_field;
+}
+$where[] = '(cl.field_name IS NULL OR cl.field_name NOT IN (' . implode(',', $mileage_placeholders) . '))';
+
 if ($filter_car_id !== '') {
     $where[] = 'cl.car_id = :car_id';
     $params['car_id'] = (int)$filter_car_id;
