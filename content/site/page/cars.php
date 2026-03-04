@@ -1104,10 +1104,10 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                 
                 $rtrn .= '
                 <div class="seo_links_block" style="margin: 20px 0 0 0; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-                    <a href="/'.$current_lang.'/cars/'.$brand_series_url.'" target="_blank" style="display: inline-block; padding: 12px 20px; background-color: #ffcccc; color: #333; text-decoration: none; font-size: 15px; border-radius: 0.5rem; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor=\'#ffb3b3\'" onmouseout="this.style.backgroundColor=\'#ffcccc\'">
+                    <a href="/'.$current_lang.'/cars/'.$brand_series_url.'" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: linear-gradient(135deg, #e63946, #d62828); color: #fff; text-decoration: none; font-size: 15px; font-weight: 600; border-radius: 50px; box-shadow: 0 4px 15px rgba(230,57,70,0.35); transition: all 0.3s ease;" onmouseover="this.style.transform=\'translateY(-2px)\';this.style.boxShadow=\'0 6px 20px rgba(230,57,70,0.5)\'" onmouseout="this.style.transform=\'translateY(0)\';this.style.boxShadow=\'0 4px 15px rgba(230,57,70,0.35)\'"">
                         '.$link_text_series.' '.$r['br_nm'].' '.$model_display.$suffix.'
                     </a>
-                    <a href="/'.$current_lang.'/cars/'.$brand_url.'" target="_blank" style="display: inline-block; padding: 12px 20px; background-color: #ffcccc; color: #333; text-decoration: none; font-size: 15px; border-radius: 0.5rem; transition: background-color 0.2s;" onmouseover="this.style.backgroundColor=\'#ffb3b3\'" onmouseout="this.style.backgroundColor=\'#ffcccc\'">
+                    <a href="/'.$current_lang.'/cars/'.$brand_url.'" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: linear-gradient(135deg, #e63946, #d62828); color: #fff; text-decoration: none; font-size: 15px; font-weight: 600; border-radius: 50px; box-shadow: 0 4px 15px rgba(230,57,70,0.35); transition: all 0.3s ease;" onmouseover="this.style.transform=\'translateY(-2px)\';this.style.boxShadow=\'0 6px 20px rgba(230,57,70,0.5)\'" onmouseout="this.style.transform=\'translateY(0)\';this.style.boxShadow=\'0 4px 15px rgba(230,57,70,0.35)\'"">
                         '.$link_text_brand.' '.$r['br_nm'].$suffix.'
                     </a>
                 </div>
