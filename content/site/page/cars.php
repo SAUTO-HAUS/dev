@@ -659,7 +659,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                     <a href="<?=$z_src2?>" data-fancybox="product" data-id="p<?=$img_cnt?>"
                                        data-title="<?=$r['br']?> <?=$r['mo']?>, <?=$r['yr']?>, <?=$r['mlg']?>, <?=$lng['l']['car']['fl'][$r['fl']]?> <?=$lng['l']['car']['tra'][$r['tra']]?>"
                                        data-price="<?=$prc?> <?=$cur?>">
-                                        <?php if ($isMobile == '1' && $img_cnt > 1): ?><img data-src="<?=$z_src?>" loading="lazy" class="lazy" alt="<?=$img_cnt?>"><?php else: ?><img src="<?=$z_src?>" loading="lazy" class="lazy" alt="<?=$img_cnt?>"><?php endif; ?>
+                                         <img src="<?=$z_src?>" loading="lazy" class="lazy" alt="<?=$img_cnt?>">
                                     </a>
                                 </div>
                                 <?
