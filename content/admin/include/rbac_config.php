@@ -2,7 +2,6 @@
 
 // Role permissions mapping - Updated to match business requirements
 $rbac_permissions = [
-    // Gordon (Суперадминистратор) - Полный доступ ко всем разделам
     'gordon' => [
         'all' => true,
         'user_management' => true,
@@ -17,9 +16,9 @@ $rbac_permissions = [
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
         'stock' => ['read' => true],
         'sett' => ['read' => true, 'update' => true],
-        'analytics' => ['read' => true]
+        'analytics' => ['read' => true],
+        'terminal' => ['read' => true]
     ],
-    // Admin (Администратор) - Полный доступ ко всем документам и почти полный доступ к остальному, кроме управления пользователями
     'admin' => [
         'user_management' => false,
         'role_management' => false,
@@ -33,7 +32,6 @@ $rbac_permissions = [
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
         'calculator' => ['read' => true]
     ],
-    // Publisher (Публикатор) - Can view and add cars for sales purposes, full docs access to ALL branches
     'publisher' => [
         'user_management' => false,
         'role_management' => false,
@@ -47,7 +45,6 @@ $rbac_permissions = [
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'calculator' => ['read' => true]
     ],
-    // Publisher-Limited (Публикатор Филиал) - Can view and add cars for sales purposes, docs access limited to own branch
     'publisher_limited' => [
         'user_management' => false,
         'role_management' => false,
@@ -161,6 +158,7 @@ $rbac_admin_menu = [
         'docs' => ['add', 'ctlg'],
         'stock' => ['ctlg', 'extern'],
         'analytics' => ['view'],
+        'terminal' => ['view'],
         'sett' => ['info', 'adm_usr', 'roles', 'phone_config', 'publication_settings', 'monitoring', 'ai_prompt', '404_stats']
     ],
     'admin' => [
@@ -200,6 +198,7 @@ $rbac_internal_actions = [
         'docs' => ['add', 'create', 'detail', 'ctlg'],
         'stock' => ['ctlg'],
         'analytics' => ['view'],
+        'terminal' => ['view'],
         'sett' => ['info', 'adm_usr', 'roles', 'phone_config', 'publication_settings', 'ai_prompt', '404_stats']
     ],
     'admin' => [
