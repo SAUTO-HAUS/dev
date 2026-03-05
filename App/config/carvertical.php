@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'affiliate_id' => 'sauto_md', 
-    'base_url' => 'https://www.carvertical.com/check',
-    'affiliate_param' => 'a_aid',
+    'affiliate_id' => '68efaf1ca4aa1', 
+    'base_url' => 'https://www.carvertical.com',
+    'affiliate_param' => 'a',
     'vin_param' => 'vin',
-    'country' => 'md',
+    'country' => '',
 ];
