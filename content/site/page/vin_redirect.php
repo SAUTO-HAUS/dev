@@ -31,7 +31,7 @@ $country = $cv_config['country'];
 $action_url = $base_url . (!empty($country) ? '/' . $country : '');
 
 $rtrn = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Redirecting...</title></head><body>
-<form id="f" method="POST" action="' . htmlspecialchars($action_url) . '">
+<form id="f" method="GET" action="' . htmlspecialchars($action_url) . '">
 <input type="hidden" name="' . htmlspecialchars($cv_config['affiliate_param']) . '" value="' . htmlspecialchars($affiliate_id) . '">
 <input type="hidden" name="' . htmlspecialchars($cv_config['vin_param']) . '" value="' . htmlspecialchars($vin) . '">
 </form><script>document.getElementById("f").submit();</script></body></html>';
