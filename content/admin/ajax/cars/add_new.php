@@ -160,7 +160,7 @@ if (__post('sub') == 'mo_search') {
             $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET 
                 `gr`=:gr, `br`=:br, `mo`=:mo, `br_nm`=:br_nm, `mo_nm`=:mo_nm, `yr`=:yr,
                 `bt`=:bt, `sts`=:sts, `mlg`=:mlg, `unit`=:unit, `vol`=:vol, `hp`=:hp, `fl`=:fl,
-                `tra`=:tra, `wd`=:wd, `clr`=:clr, `loc`=:loc, `txt`=:txt, `vin`=:vin,
+                `tra`=:tra, `wd`=:wd, `clr`=:clr, `loc`=:loc, `txt`=:txt, `vin`=:vin, `vin_check_enabled`=:vin_check_enabled,
                 `prc`=:prc, `cur`=:cur, `soon`=:soon, `n_a`=:n_a, `tva`=:tva, `top`=:top,
                 `gift`=:gift, `is_at_client`=:is_at_client, `import_country_id`=:import_country_id,
                 `prc_t`=:prc_t, `prc_n`=:prc_n, `999`=:data_999 
@@ -186,6 +186,7 @@ if (__post('sub') == 'mo_search') {
                 'loc' => __post('loc', 0),
                 'txt' => ( __post('txt')==null?'':__post('txt') ),
                 'vin' => __post('vin', ''),
+                                'vin_check_enabled' => isset($_POST['vin_check_enabled']) ? (int)$_POST['vin_check_enabled'] : 0,
                 'prc' => $extracted_price,
                 'cur' => $extracted_currency,
                 'soon' => __post('soon', 0),
@@ -357,8 +358,8 @@ if (__post('sub') == 'mo_search') {
 
         } else {
 
-            $pdo = $db->prepare('INSERT INTO ' . $prefx . '_car_ctlg (`gr`, `br`, `mo`, `br_nm`, `mo_nm`, `yr`, `vin`,`bt`, `sts`, `mlg`, `unit`, `vol`, `hp`, `fl`, `tra`, `wd`, `clr`, `loc`, `txt`, `prc`, `cur`, `soon`, `n_a`, `top`, `tva`, `gift`, `is_at_client`, `import_country_id`, `p_path`, `date`, `author`, `vis`, `catalog_type`) 
-                VALUES (:gr, :br, :mo, :br_nm, :mo_nm, :yr, :vin, :bt, :sts, :mlg, :unit, :vol, :hp, :fl, :tra, :wd, :clr, :loc, :txt, :prc, :cur, :soon, :n_a, :top, :tva, :gift, :is_at_client, :import_country_id, :p_path, :date, :author, "1", "in_stock")');
+            $pdo = $db->prepare('INSERT INTO ' . $prefx . '_car_ctlg (`gr`, `br`, `mo`, `br_nm`, `mo_nm`, `yr`, `vin`, `vin_check_enabled`, `bt`, `sts`, `mlg`, `unit`, `vol`, `hp`, `fl`, `tra`, `wd`, `clr`, `loc`, `txt`, `prc`, `cur`, `soon`, `n_a`, `top`, `tva`, `gift`, `is_at_client`, `import_country_id`, `p_path`, `date`, `author`, `vis`, `catalog_type`) 
+                VALUES (:gr, :br, :mo, :br_nm, :mo_nm, :yr, :vin, :vin_check_enabled, :bt, :sts, :mlg, :unit, :vol, :hp, :fl, :tra, :wd, :clr, :loc, :txt, :prc, :cur, :soon, :n_a, :top, :tva, :gift, :is_at_client, :import_country_id, :p_path, :date, :author, "1", "in_stock")');
 
             $pdo->execute([
                 'gr' => __post('gr'),
@@ -368,6 +369,7 @@ if (__post('sub') == 'mo_search') {
                 'mo_nm' => $mo_nm,
                 'yr' => __post('yr'),
                 'vin' => __post('vin', ''),
+                'vin_check_enabled' => isset($_POST['vin_check_enabled']) ? (int)$_POST['vin_check_enabled'] : 0,
                 'bt' => __post('bt'),
                 'sts' => __post('sts') ,
                 'mlg' => __post('mlg'),

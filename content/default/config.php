@@ -99,7 +99,9 @@ $url_arr = [
     'credit',
     'tradein',
     'telegram',
-    'telegram_adv'
+    'telegram_adv',
+    'vin-redirect',
+    'vin-check'
 ];
 $sub_urls = [
     '',

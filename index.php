@@ -94,6 +94,17 @@ if ( isset($_COOKIE['lang']) ){ // if lang cookie exists that is responsible for
                 $db->connection = null;
                 exit();
         }
+        
+        if (isset($t_mp[2]) && $t_mp[2] == 'vin-redirect') {
+                require_once(_SITE . '/page/vin_redirect.php');
+                $db->connection = null;
+                exit();
+        }
+        if (isset($t_mp[2]) && $t_mp[2] == 'vin-check') {
+                require_once(_SITE . '/page/vin_check.php');
+                $db->connection = null;
+                exit();
+        }
 
         echo '
 <!DOCTYPE html>';

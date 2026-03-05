@@ -1,4 +1,4 @@
-<?php defined( '_DOIT' ) or die( 'Restricted access' );
+﻿<?php defined( '_DOIT' ) or die( 'Restricted access' );
 
 $rtrn = ''; $zY = substr( md5( date('Y') ), 0, 4 ); $zM = substr( md5( date('m') ), 0, 4 );
 

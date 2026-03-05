@@ -1463,6 +1463,30 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                 ];
                 
                 $current_lang = $_COOKIE['lang'];
+
+                // --- CarVertical VIN Check Block ---
+                $vin_check_texts = [
+                    'ro' => ['title' => 'Verifică istoricul după VIN cod', 'subtitle' => '', 'btn' => 'Verifică acum', 'unavailable' => 'VIN indisponibil'],
+                    'ru' => ['title' => 'Проверить историю по VIN коду', 'subtitle' => '', 'btn' => 'Проверить сейчас', 'unavailable' => 'VIN недоступен'],
+                    'en' => ['title' => 'Check history by VIN code', 'subtitle' => '', 'btn' => 'Check now', 'unavailable' => 'VIN unavailable'],
+                ];
+                $vt = $vin_check_texts[$_COOKIE['lang']] ?? $vin_check_texts['ro'];
+                $vin_val = trim($r['vin'] ?? '');
+                $vin_enabled = isset($r['vin_check_enabled']) ? (int)$r['vin_check_enabled'] : 0;
+                $cv_config = include($_SERVER['DOCUMENT_ROOT'] . '/App/config/carvertical.php');
+                
+                // Only show VIN check block if toggle is enabled
+                if ($vin_enabled == 1 && strlen($vin_val) === 17 && !empty($cv_config['affiliate_id'])) {
+                    $cv_url = '/'.$_COOKIE['lang'].'/vin-redirect?id='.$r['id'];
+                    $rtrn .= '
+                    <div style="margin:20px 0;padding:20px 24px;background:linear-gradient(135deg,#5a5a5a,#4a4a4a);border-radius:16px;text-align:center;">
+                        <div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:4px;">'.$vt['title'].'</div>
+                        <div style="font-size:14px;color:#aab;margin-bottom:14px;">'.$vt['subtitle'].'</div>
+                        <a href="'.$cv_url.'" target="_blank" rel="noopener" style="display:inline-block;padding:12px 36px;background:#e2001a;color:#fff;font-size:15px;font-weight:600;border-radius:50px;text-decoration:none;box-shadow:0 4px 15px rgba(226,0,26,0.4);transition:all .3s;" onmouseover="this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.transform=\'translateY(0)\'">'.$vt['btn'].'</a>
+                    </div>';
+                }
+
+
                 $link_text_series = $seo_link_texts[$current_lang]['all_series'];
                 $link_text_brand = $seo_link_texts[$current_lang]['all_brand'];
                 $suffix = $seo_link_texts[$current_lang]['suffix'];
