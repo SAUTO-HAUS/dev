@@ -1479,9 +1479,9 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                 if ($vin_enabled == 1 && strlen($vin_val) === 17 && !empty($cv_config['affiliate_id'])) {
                     $cv_url = '/'.$_COOKIE['lang'].'/vin-redirect?id='.$r['id'];
                     $rtrn .= '
-                    <div style="margin:20px 0;padding:20px 24px;background:linear-gradient(135deg,#5a5a5a,#4a4a4a);border-radius:16px;text-align:center;">
+                    <div style="margin:20px 0;padding:20px 24px;background:linear-gradient(135deg,#6b6b6b,#3a3a3a);border-radius:16px;text-align:center;">
                         <div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:4px;">'.$vt['title'].'</div>
-                        <div style="font-size:14px;color:#aab;margin-bottom:14px;">'.$vt['subtitle'].'</div>
+                        <div style="font-size:14px;color:#ccc;margin-bottom:14px;">'.$vt['subtitle'].'</div>
                         <a href="'.$cv_url.'" target="_blank" rel="noopener" style="display:inline-block;padding:12px 36px;background:#e2001a;color:#fff;font-size:15px;font-weight:600;border-radius:0.5rem;text-decoration:none;box-shadow:0 4px 15px rgba(226,0,26,0.4);transition:all .3s;" onmouseover="this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.transform=\'translateY(0)\'">'.$vt['btn'].'</a>
                     </div>';
                 }
