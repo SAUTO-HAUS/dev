@@ -1482,8 +1482,28 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                     <div style="margin:20px 0;padding:20px 24px;background:linear-gradient(135deg,#6b6b6b,#3a3a3a);border-radius:16px;text-align:center;">
                         <div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:4px;">'.$vt['title'].'</div>
                         <div style="font-size:14px;color:#ccc;margin-bottom:14px;">'.$vt['subtitle'].'</div>
-                        <a href="'.$cv_url.'" target="_blank" rel="noopener" style="display:inline-block;padding:12px 36px;background:#e2001a;color:#fff;font-size:15px;font-weight:600;border-radius:0.5rem;text-decoration:none;box-shadow:0 4px 15px rgba(226,0,26,0.4);transition:all .3s;" onmouseover="this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.transform=\'translateY(0)\'">'.$vt['btn'].'</a>
-                    </div>';
+                        <a href="'.$cv_url.'" target="_blank" rel="noopener" class="vin-attention-btn" style="display:inline-block;padding:12px 36px;background:#e2001a;color:#fff;font-size:15px;font-weight:600;border-radius:0.5rem;text-decoration:none;">'.$vt['btn'].'</a>
+                    </div>
+                    <style>
+                        @keyframes vinAttention {
+                            0%, 100% {
+                                transform: scale(1);
+                                box-shadow: 0 4px 15px rgba(226,0,26,0.4), 0 0 0 0 rgba(226,0,26,0.7);
+                            }
+                            50% {
+                                transform: scale(1.1);
+                                box-shadow: 0 6px 25px rgba(226,0,26,0.6), 0 0 20px 5px rgba(226,0,26,0);
+                            }
+                        }
+                        .vin-attention-btn {
+                            animation: vinAttention 2s ease-in-out infinite;
+                        }
+                        .vin-attention-btn:hover {
+                            animation-play-state: paused;
+                            transform: scale(1.1);
+                            box-shadow: 0 6px 25px rgba(226,0,26,0.6);
+                        }
+                    </style>';
                 }
 
 
