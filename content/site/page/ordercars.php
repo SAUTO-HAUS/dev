@@ -1498,10 +1498,10 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                 
                 $rtrn .= '
                 <div class="seo_links_block" style="margin: 20px 0 0 0; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-                    <a href="/'.$current_lang.'/ordercars/'.$brand_series_url.'" target="_blank" class="seo-link-btn" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: linear-gradient(135deg, #e63946, #d62828); color: #fff; text-decoration: none; font-size: 15px; font-weight: 600; border-radius: 0.5rem; box-shadow: 0 4px 15px rgba(230,57,70,0.35); transition: all 0.3s ease;">
+                    <a href="/'.$current_lang.'/ordercars/'.$brand_series_url.'" target="_blank" class="seo-link-btn" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 28px; background: linear-gradient(135deg, #e63946, #d62828); color: #fff; text-decoration: none; font-size: 15px; font-weight: 600; border-radius: 0.5rem; box-shadow: 0 4px 15px rgba(230,57,70,0.35); transition: all 0.3s ease; flex: 1; min-width: 250px; text-align: center;">
                         '.$link_text_series.' '.$r['br_nm'].' '.$model_display.$suffix.'
                     </a>
-                    <a href="/'.$current_lang.'/ordercars/'.$brand_url.'" target="_blank" class="seo-link-btn" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: linear-gradient(135deg, #e63946, #d62828); color: #fff; text-decoration: none; font-size: 15px; font-weight: 600; border-radius: 0.5rem; box-shadow: 0 4px 15px rgba(230,57,70,0.35); transition: all 0.3s ease;">
+                    <a href="/'.$current_lang.'/ordercars/'.$brand_url.'" target="_blank" class="seo-link-btn" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 14px 28px; background: linear-gradient(135deg, #e63946, #d62828); color: #fff; text-decoration: none; font-size: 15px; font-weight: 600; border-radius: 0.5rem; box-shadow: 0 4px 15px rgba(230,57,70,0.35); transition: all 0.3s ease; flex: 1; min-width: 250px; text-align: center;">
                         '.$link_text_brand.' '.$r['br_nm'].$suffix.'
                     </a>
                 </div>
