@@ -409,20 +409,13 @@ c/f 1017600006845, c/TVA 0609417</pre>
 							editedDoc.addClass("ready");
 						}, 1);
 						
-						// Restore scroll position to the edited document
-						if (scrollPosition) {
-							setTimeout(function() {
-								window.scrollTo(0, parseInt(scrollPosition));
-								localStorage.removeItem("docsScrollPosition");
-							}, 1);
-						} else {
-							// Fallback: scroll to the edited document
-							setTimeout(function() {
-								editedDoc[0].scrollIntoView({ behavior: "smooth", block: "center" });
-							}, 1);
-						}
+						// Always scroll to the edited document, regardless of saved position
+						setTimeout(function() {
+							editedDoc[0].scrollIntoView({ behavior: "smooth", block: "center" });
+						}, 100);
 					}
 					localStorage.removeItem("keepButtonsVisible");
+					localStorage.removeItem("docsScrollPosition");
 				} else if (scrollPosition) {
 					// Restore scroll position even without edited document
 					setTimeout(function() {
@@ -728,21 +721,21 @@ c/f 1017600006845, c/TVA 0609417</pre>
 							// Close the overlay
 							$("#overlay").hide();
 							
-							// If date changed and we are on a year filter, redirect to new year
+							// If date changed, always redirect to the new year
 							if (dateChanged && newYear) {
 								var currentUrl = window.location.search;
-								if (currentUrl.indexOf("year=") !== -1) {
-									// Redirect to the new year filter
+								if (currentUrl.indexOf("date_from=") !== -1 || currentUrl.indexOf("date_to=") !== -1) {
+									// On date range filter - redirect to new year
 									window.location.href = window.location.pathname + "?year=" + newYear;
 									return;
-								} else if (currentUrl.indexOf("date_from=") !== -1 || currentUrl.indexOf("date_to=") !== -1) {
-									// On date range filter - reload to show all
-									window.location.href = window.location.pathname;
+								} else {
+									// Always redirect to the new year filter when date changes
+									window.location.href = window.location.pathname + "?year=" + newYear;
 									return;
 								}
 							}
 							
-							// Normal reload if date did not change or no filter active
+							// Normal reload if date did not change
 							window.location.reload();
 						}
 					});
@@ -1080,7 +1073,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 						</div>
 						<input type="radio" name="btns_act" class="none">
 						<div class="btns">
-							<span class="client-name" style="color:#000; font-weight:600; margin-right:1rem;">'.$r['u_nm'].'</span>
+							<span class="client-name">'.date( 'd.m.y', strtotime( $r['date'] ) ).' | '.strtr(mb_convert_case($r['f'], MB_CASE_TITLE, 'UTF-8'), ['_'=>' ']).' | '.$r['u_nm'].'</span>
 							<div class="btn show" data-fn="show_it">Vizualiza</div>
 							<div class="btn pdf" data-fn="save_pdf">PDF
 								 <input type="checkbox" name="stamp" title="Stampila" style="accent-color:#e2001a;" />
