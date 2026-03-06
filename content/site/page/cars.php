@@ -1090,7 +1090,7 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                 if ($vin_enabled == 1 && strlen($vin_val) === 17 && !empty($cv_config['affiliate_id'])) {
                     $cv_url = '/'.$_COOKIE['lang'].'/vin-redirect?id='.$r['id'];
                     $rtrn .= '
-                    <div style="margin:20px 0;padding:20px 24px;background:linear-gradient(135deg,#6b6b6b,#3a3a3a);border-radius:16px;text-align:center;">
+                    <div style="margin:20px 0;padding:20px 24px;background:linear-gradient(135deg,#8a8a8a,#5a5a5a);border-radius:16px;text-align:center;">
                         <div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:4px;">'.$vt['title'].'</div>
                         <div style="font-size:14px;color:#ccc;margin-bottom:14px;">'.$vt['subtitle'].'</div>
                         <a href="'.$cv_url.'" target="_blank" rel="noopener" class="vin-attention-btn" style="display:inline-block;padding:12px 36px;background:#e2001a;color:#fff;font-size:15px;font-weight:600;border-radius:0.5rem;text-decoration:none;">'.$vt['btn'].'</a>
@@ -1102,20 +1102,21 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                                 box-shadow: 0 4px 15px rgba(226,0,26,0.4), 0 0 0 0 rgba(226,0,26,0.7);
                             }
                             50% {
-                                transform: scale(1.1);
-                                box-shadow: 0 6px 25px rgba(226,0,26,0.6), 0 0 20px 5px rgba(226,0,26,0);
+                                transform: scale(1.15);
+                                box-shadow: 0 8px 35px rgba(226,0,26,0.7), 0 0 30px 8px rgba(226,0,26,0);
                             }
                         }
                         .vin-attention-btn {
-                            animation: vinAttention 2s ease-in-out infinite;
+                            animation: vinAttention 1.8s ease-in-out infinite;
                         }
                         .vin-attention-btn:hover {
                             animation-play-state: paused;
-                            transform: scale(1.1);
-                            box-shadow: 0 6px 25px rgba(226,0,26,0.6);
+                            transform: scale(1.15);
+                            box-shadow: 0 8px 35px rgba(226,0,26,0.7);
                         }
                     </style>';
                 }
+
 
                 $seo_link_texts = [
                     'ro' => [
@@ -1156,7 +1157,7 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                 </div>
                 <style>
                     .seo-link-btn:hover {
-                        transform: translateY(-2px);
+                        transform: scale(1.05);
                         box-shadow: 0 6px 20px rgba(230,57,70,0.5);
                     }
                 </style>
