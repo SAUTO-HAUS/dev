@@ -674,7 +674,19 @@ c/f 1017600006845, c/TVA 0609417</pre>
 							// Update UI with saved data
 							var bx = $(".docs > .list > .bx[data-id=\""+data["inp"]["id"]+"\"]");
 							var vals = bx.find(".values");
+							var dateChanged = false;
+							var newYear = null;
+							
 							$.each( data["inp"], function(k,v){
+								// Check if date was changed
+								if (k === "date" && v) {
+									var oldDate = vals.data("date");
+									if (oldDate !== v) {
+										dateChanged = true;
+										newYear = new Date(v).getFullYear();
+									}
+								}
+								
 								if ( $.inArray(k, ["br", "mo", "vin", "extras", "dmg_pos", "dmg_txt"]) !== -1 && $.isArray(data["inp"][k]) ){
 									v = "";
 									for (i=0; i<data["inp"][k].length; i++){ v += (i>0?"||":"")+data["inp"][k][i]; }
@@ -698,8 +710,24 @@ c/f 1017600006845, c/TVA 0609417</pre>
 								//console.log(k+"::: "+v)
 							})
 							
-							// Close the overlay and reload AFTER successful save
+							// Close the overlay
 							$("#overlay").hide();
+							
+							// If date changed and we are on a year filter, redirect to new year
+							if (dateChanged && newYear) {
+								var currentUrl = window.location.search;
+								if (currentUrl.indexOf("year=") !== -1) {
+									// Redirect to the new year filter
+									window.location.href = window.location.pathname + "?year=" + newYear;
+									return;
+								} else if (currentUrl.indexOf("date_from=") !== -1 || currentUrl.indexOf("date_to=") !== -1) {
+									// On date range filter - reload to show all
+									window.location.href = window.location.pathname;
+									return;
+								}
+							}
+							
+							// Normal reload if date did not change or no filter active
 							window.location.reload();
 						}
 					});
