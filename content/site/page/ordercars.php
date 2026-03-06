@@ -1482,7 +1482,7 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                     <div style="margin:20px 0;padding:20px 24px;background:linear-gradient(135deg,#5a5a5a,#4a4a4a);border-radius:16px;text-align:center;">
                         <div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:4px;">'.$vt['title'].'</div>
                         <div style="font-size:14px;color:#aab;margin-bottom:14px;">'.$vt['subtitle'].'</div>
-                        <a href="'.$cv_url.'" target="_blank" rel="noopener" style="display:inline-block;padding:12px 36px;background:#e2001a;color:#fff;font-size:15px;font-weight:600;border-radius:50px;text-decoration:none;box-shadow:0 4px 15px rgba(226,0,26,0.4);transition:all .3s;" onmouseover="this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.transform=\'translateY(0)\'">'.$vt['btn'].'</a>
+                        <a href="'.$cv_url.'" target="_blank" rel="noopener" style="display:inline-block;padding:12px 36px;background:#e2001a;color:#fff;font-size:15px;font-weight:600;border-radius:0.5rem;text-decoration:none;box-shadow:0 4px 15px rgba(226,0,26,0.4);transition:all .3s;" onmouseover="this.style.transform=\'translateY(-2px)\'" onmouseout="this.style.transform=\'translateY(0)\'">'.$vt['btn'].'</a>
                     </div>';
                 }
 
@@ -1498,13 +1498,19 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                 
                 $rtrn .= '
                 <div class="seo_links_block" style="margin: 20px 0 0 0; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-                    <a href="/'.$current_lang.'/ordercars/'.$brand_series_url.'" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: linear-gradient(135deg, #e63946, #d62828); color: #fff; text-decoration: none; font-size: 15px; font-weight: 600; border-radius: 50px; box-shadow: 0 4px 15px rgba(230,57,70,0.35); transition: all 0.3s ease;" onmouseover="this.style.transform=\'translateY(-2px)\';this.style.boxShadow=\'0 6px 20px rgba(230,57,70,0.5)\'" onmouseout="this.style.transform=\'translateY(0)\';this.style.boxShadow=\'0 4px 15px rgba(230,57,70,0.35)\'"">
+                    <a href="/'.$current_lang.'/ordercars/'.$brand_series_url.'" target="_blank" class="seo-link-btn" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: linear-gradient(135deg, #e63946, #d62828); color: #fff; text-decoration: none; font-size: 15px; font-weight: 600; border-radius: 0.5rem; box-shadow: 0 4px 15px rgba(230,57,70,0.35); transition: all 0.3s ease;">
                         '.$link_text_series.' '.$r['br_nm'].' '.$model_display.$suffix.'
                     </a>
-                    <a href="/'.$current_lang.'/ordercars/'.$brand_url.'" target="_blank" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: linear-gradient(135deg, #e63946, #d62828); color: #fff; text-decoration: none; font-size: 15px; font-weight: 600; border-radius: 50px; box-shadow: 0 4px 15px rgba(230,57,70,0.35); transition: all 0.3s ease;" onmouseover="this.style.transform=\'translateY(-2px)\';this.style.boxShadow=\'0 6px 20px rgba(230,57,70,0.5)\'" onmouseout="this.style.transform=\'translateY(0)\';this.style.boxShadow=\'0 4px 15px rgba(230,57,70,0.35)\'"">
+                    <a href="/'.$current_lang.'/ordercars/'.$brand_url.'" target="_blank" class="seo-link-btn" style="display: inline-flex; align-items: center; gap: 8px; padding: 14px 28px; background: linear-gradient(135deg, #e63946, #d62828); color: #fff; text-decoration: none; font-size: 15px; font-weight: 600; border-radius: 0.5rem; box-shadow: 0 4px 15px rgba(230,57,70,0.35); transition: all 0.3s ease;">
                         '.$link_text_brand.' '.$r['br_nm'].$suffix.'
                     </a>
                 </div>
+                <style>
+                    .seo-link-btn:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 6px 20px rgba(230,57,70,0.5);
+                    }
+                </style>
                                 
                             </div> ';
 
