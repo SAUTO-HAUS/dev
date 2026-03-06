@@ -287,6 +287,21 @@ c/f 1017600006845, c/TVA 0609417</pre>
 				visibility: visible;
 			}
 			
+			/* Client name - show only when edited */
+			.bx > .btns > .client-name {
+				display: none;
+			}
+			.bx.edited > .btns > .client-name {
+				display: flex;
+				align-items: center;
+				align-self: center;
+				padding: .4rem 1.2rem;
+				margin: 0 .5rem;
+				font-size: .78rem;
+				font-weight: 600;
+				color: #000;
+			}
+			
 			#overlay label > input, #overlay label > select {width:100%; padding:1rem; border:1px solid #eee; background-color:#fff; transition:.2s;}
 			
 			#overlay .content {text-align:left;}
@@ -1065,6 +1080,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 						</div>
 						<input type="radio" name="btns_act" class="none">
 						<div class="btns">
+							<span class="client-name" style="color:#000; font-weight:600; margin-right:1rem;">'.$r['u_nm'].'</span>
 							<div class="btn show" data-fn="show_it">Vizualiza</div>
 							<div class="btn pdf" data-fn="save_pdf">PDF
 								 <input type="checkbox" name="stamp" title="Stampila" style="accent-color:#e2001a;" />
