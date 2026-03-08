@@ -63,7 +63,6 @@ RewriteRule .* index.php [L]
 
 RewriteCond %{HTTPS} off
 RewriteRule .* https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-# DISABLED: Cloudflare integration - no www redirect for testline8392.sauto.md
 # RewriteCond %{HTTP_HOST} !^www\. [NC]
 # RewriteRule .* https://www\.%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 Header set Strict-Transport-Security "max-age=31536000" env=HTTPS

@@ -441,7 +441,8 @@ class MonitorService
     public function checkDiskSpace()
     {
         try {
-            $rootPath = $_SERVER['DOCUMENT_ROOT'];
+            // Check /home directory for cPanel quota instead of physical disk
+            $rootPath = '/home';
             
             $totalSpace = disk_total_space($rootPath);
             $freeSpace = disk_free_space($rootPath);
