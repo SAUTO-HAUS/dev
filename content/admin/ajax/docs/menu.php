@@ -1336,7 +1336,7 @@ JAVASCRIPT;
 		</div>
 		
 		<div class="ttl">Auto</div>
-		<label class="lbl"><span class="ttl">Marca</span><select name="br" title="Marca">
+		<label class="lbl"><span class="ttl">Marca</span><select name="br" title="Marca" required>
 			<option value="" class="def" disabled selected>-</option>
 			'.$br_html.'
 		</select></label>
@@ -1344,10 +1344,10 @@ JAVASCRIPT;
 			<option value="" data-br="" class="def" disabled selected>-</option>
 			'.$mo_html.'
 		</select></label>
-		<label class="lbl"><span class="ttl">Nr. de înmatriculare</span><input class="need" type="text" name="plate" title="Nr. de înmatriculare" /></label>
+		<label class="lbl"><span class="ttl">Nr. de înmatriculare</span><input class="need" type="text" name="plate" title="Nr. de înmatriculare" required /></label>
 		
 		<div class="ttl">Șofer</div>
-		<label class="lbl"><span class="ttl">Numele și prenumele</span><input class="need" type="text" name="sofer" title="Numele și prenumele șoferului" /></label>
+		<label class="lbl"><span class="ttl">Numele și prenumele</span><input class="need" type="text" name="sofer" title="Numele și prenumele șoferului" required /></label>
 		'.( isset($mixall)?'</form>':'' );
 	}
 
