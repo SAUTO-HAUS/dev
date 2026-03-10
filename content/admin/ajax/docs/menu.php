@@ -1224,11 +1224,11 @@ JAVASCRIPT;
 			</div>
 			
 			<div class="car_group" data-n="0">
-				<label class="lbl"><span class="ttl">Brand</span><select name="br[]" title="Brand" data-n="0">
+				<label class="lbl"><span class="ttl">Brand</span><select name="br[]" title="Brand" data-n="0" required>
 					<option value="" class="def" disabled selected>-</option>
 					'.$br_html.'
 				</select></label>
-				<label class="lbl"><span class="ttl">Model</span><select name="mo[]" title="Model" data-n="0">
+				<label class="lbl"><span class="ttl">Model</span><select name="mo[]" title="Model" data-n="0" required>
 					<option value="" data-br="" class="def" disabled selected>-</option>
 					'.$mo_html.'
 				</select></label>
@@ -1240,7 +1240,7 @@ JAVASCRIPT;
 		<div class="btn" data-fn="add_it" data-next="1">Add car</div>
 		
 		<div class="ttl">Cumparator</div>
-		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp"><option value="fiz" selected>Fizic</option><option value="jur">Juridic</option></select></label>
+		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp" required><option value="fiz" selected>Fizic</option><option value="jur">Juridic</option></select></label>
 		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" required /></label>
 		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
 		<label class="lbl"><span class="ttl">Data nasterii</span><input class="need fj dt" type="date" name="u_tva_dt" min="1900-01-01" max="2099-12-31" title="Data nasterii" data-fiz="Data nasterii" data-jur="TVA" required /></label> <!--onfocus=\'(this.type="date")\'-->
@@ -1251,7 +1251,7 @@ JAVASCRIPT;
 		//---LOCATION---
 	$rtrn .= '
 	<div class="ttl">Info</div>
-	<label class="lbl"><span class="ttl">Țară (înc)</span><select class="need" name="cntr_fr" title="Țară (înc)" tabindex="12" title="Location">
+	<label class="lbl"><span class="ttl">Țară (înc)</span><select class="need" name="cntr_fr" title="Țară (înc)" tabindex="12" title="Location" required>
 		<option value="" class="def" disabled selected>-</option>';
 		$priority_countries = ['AT', 'BE', 'FR', 'DE', 'NL'];
 		foreach ($priority_countries as $code) {
@@ -1266,7 +1266,7 @@ JAVASCRIPT;
 		}
 	$rtrn .= '
 	</select></label>
-	<label class="lbl"><span class="ttl">Țară (desc)</span><select class="need" name="cntr_to" title="Țară (desc)" tabindex="12" title="Location">';
+	<label class="lbl"><span class="ttl">Țară (desc)</span><select class="need" name="cntr_to" title="Țară (desc)" tabindex="12" title="Location" required>';
 		if (isset($lng['l']['country']['MD'])) {
 			$rtrn .= '<option value="MD" selected>'.$lng['l']['country']['MD'].'</option>';
 		}
@@ -1278,9 +1278,9 @@ JAVASCRIPT;
 	$rtrn .= '
 	</select></label>
 	<label class="lbl"><span class="ttl">Price</span><input class="need" type="text" name="prc" title="Price" required /></label>
-	<label class="lbl"><span class="ttl">Adresa descărcării</span><input class="need" type="text" name="adr_to" value="Chișinău, str. Calea Moșilor 11" title="Adresa descărcării" /></label>
+	<label class="lbl"><span class="ttl">Adresa descărcării</span><input class="need" type="text" name="adr_to" value="Chișinău, str. Calea Moșilor 11" title="Adresa descărcării" required /></label>
 	<label class="lbl"><span class="ttl">Termenul de achitare</span><input class="need" type="text" name="t2pay" value="3" title="Termenul de achitare" required /></label>
-	<label class="lbl"><span class="ttl">Nr. Înma. Camion/remorca</span><textarea class="need" name="plate" title="Nr. Înma. Camion/remorca" rows="1"></textarea></label>
+	<label class="lbl"><span class="ttl">Nr. Înma. Camion/remorca</span><textarea class="need" name="plate" title="Nr. Înma. Camion/remorca" rows="1" required></textarea></label>
 
 		'.( isset($mixall)?'</form>':'' );
 	}
