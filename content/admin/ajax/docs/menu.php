@@ -38,41 +38,41 @@ if ( $t_mp[5]=='invoice' || isset($mixall) ){
 		<option value="" data-br="" class="def" disabled selected>-</option>
 		'.$mo_html.'
 	</select></label>
-	<label class="lbl"><span class="ttl">VIN code</span><input type="text" name="vin" title="VIN code" value="'.(isset($_POST['vin']) ? htmlspecialchars($_POST['vin']) : '').'" /></label>
+	<label class="lbl"><span class="ttl">VIN code</span><input type="text" name="vin" title="VIN code" value="'.(isset($_POST['vin']) ? htmlspecialchars($_POST['vin']) : '').'" required /></label>
 	<label class="lbl"><span class="ttl">Price</span><input class="need" type="number" name="prc" title="Price" value="'.(isset($_POST['prc']) ? $_POST['prc'] : '').'" required /></label>
-	<label class="lbl"><span class="ttl">Currency</span><select name="cur" title="Currency">
+	<label class="lbl"><span class="ttl">Currency</span><select name="cur" title="Currency" required>
 		<option value="EUR"'.(isset($_POST['cur']) && $_POST['cur'] == 'EUR' ? ' selected' : (!isset($_POST['cur']) ? ' selected' : '')).'>EUR</option>
 		<option value="USD"'.(isset($_POST['cur']) && $_POST['cur'] == 'USD' ? ' selected' : '').'>USD</option>
 	</select></label>
 	
 	<div class="ttl">Descriere & Dealer</div>
-	<label class="lbl max"><span class="ttl">Descriere</span><textarea name="description" title="Description" rows="3">'.(isset($_POST['description']) ? htmlspecialchars($_POST['description']) : '').'</textarea></label>
-	<label class="lbl"><span class="ttl">Dealer</span><input type="text" name="dealer" title="Dealer" value="'.(isset($_POST['dealer']) ? htmlspecialchars($_POST['dealer']) : 'Sauto').'" /></label>
+	<label class="lbl max"><span class="ttl">Descriere</span><textarea name="description" title="Description" rows="3" required>'.(isset($_POST['description']) ? htmlspecialchars($_POST['description']) : '').'</textarea></label>
+	<label class="lbl"><span class="ttl">Dealer</span><input type="text" name="dealer" title="Dealer" value="'.(isset($_POST['dealer']) ? htmlspecialchars($_POST['dealer']) : 'Sauto').'" required /></label>
 	
 	<div class="ttl">Sauto Role</div>
-	<label class="lbl"><span class="ttl">Sauto este</span><select name="sauto_role" title="Sauto Role">
+	<label class="lbl"><span class="ttl">Sauto este</span><select name="sauto_role" title="Sauto Role" required>
 	<option value="buyer"'.(isset($_POST['sauto_role']) && $_POST['sauto_role'] == 'buyer' ? ' selected' : (!isset($_POST['sauto_role']) ? ' selected' : '')).'>Cumpărător</option>
 		<option value="seller"'.(isset($_POST['sauto_role']) && $_POST['sauto_role'] == 'seller' ? ' selected' : '').'>Vânzător</option>
 	</select></label>
 	
 	<div class="ttl">Cumpărător</div>
-	<label class="lbl"><span class="ttl">Name</span><input class="need" type="text" name="buyer_name" title="Buyer Name" value="'.(isset($_POST['buyer_name']) ? htmlspecialchars($_POST['buyer_name']) : '').'" /></label>
-	<label class="lbl"><span class="ttl">VAT/IDNO</span><input type="text" name="buyer_vat" title="Buyer VAT/IDNO" value="'.(isset($_POST['buyer_vat']) ? htmlspecialchars($_POST['buyer_vat']) : '').'" /></label>
-	<label class="lbl"><span class="ttl">Cont bancar</span><input type="text" name="buyer_account" title="Buyer Account" value="'.(isset($_POST['buyer_account']) ? htmlspecialchars($_POST['buyer_account']) : '').'" /></label>
+	<label class="lbl"><span class="ttl">Name</span><input class="need" type="text" name="buyer_name" title="Buyer Name" value="'.(isset($_POST['buyer_name']) ? htmlspecialchars($_POST['buyer_name']) : '').'" required /></label>
+	<label class="lbl"><span class="ttl">VAT/IDNO</span><input type="text" name="buyer_vat" title="Buyer VAT/IDNO" value="'.(isset($_POST['buyer_vat']) ? htmlspecialchars($_POST['buyer_vat']) : '').'" required /></label>
+	<label class="lbl"><span class="ttl">Cont bancar</span><input type="text" name="buyer_account" title="Buyer Account" value="'.(isset($_POST['buyer_account']) ? htmlspecialchars($_POST['buyer_account']) : '').'" required /></label>
 	<div style="display: flex; gap: 10px;">
-		<label class="lbl" style="flex: 2;"><span class="ttl">Legal Address</span><textarea name="buyer_address" title="Buyer Address" rows="2">'.(isset($_POST['buyer_address']) ? htmlspecialchars($_POST['buyer_address']) : '').'</textarea></label>
-		<label class="lbl" style="flex: 1;"><span class="ttl">Țara</span><input type="text" name="buyer_country" title="Buyer Country" value="'.(isset($_POST['buyer_country']) ? htmlspecialchars($_POST['buyer_country']) : '').'" /></label>
-		<label class="lbl" style="flex: 1;"><span class="ttl">SWIFT/BIC</span><input type="text" name="buyer_swift" title="Buyer SWIFT/BIC" value="'.(isset($_POST['buyer_swift']) ? htmlspecialchars($_POST['buyer_swift']) : '').'" /></label>
+		<label class="lbl" style="flex: 2;"><span class="ttl">Legal Address</span><textarea name="buyer_address" title="Buyer Address" rows="2" required>'.(isset($_POST['buyer_address']) ? htmlspecialchars($_POST['buyer_address']) : '').'</textarea></label>
+		<label class="lbl" style="flex: 1;"><span class="ttl">Țara</span><input type="text" name="buyer_country" title="Buyer Country" value="'.(isset($_POST['buyer_country']) ? htmlspecialchars($_POST['buyer_country']) : '').'" required /></label>
+		<label class="lbl" style="flex: 1;"><span class="ttl">SWIFT/BIC</span><input type="text" name="buyer_swift" title="Buyer SWIFT/BIC" value="'.(isset($_POST['buyer_swift']) ? htmlspecialchars($_POST['buyer_swift']) : '').'" required /></label>
 	</div>
 	
 	<div class="ttl">Vânzător</div>
-	<label class="lbl"><span class="ttl">Name</span><input class="need" type="text" name="seller_name" title="Seller Name" value="'.(isset($_POST['seller_name']) ? htmlspecialchars($_POST['seller_name']) : '').'" /></label>
-	<label class="lbl"><span class="ttl">VAT/IDNO</span><input type="text" name="seller_vat" title="Seller VAT/IDNO" value="'.(isset($_POST['seller_vat']) ? htmlspecialchars($_POST['seller_vat']) : '').'" /></label>
-	<label class="lbl"><span class="ttl">Cont bancar</span><input type="text" name="seller_account" title="Seller Account" value="'.(isset($_POST['seller_account']) ? htmlspecialchars($_POST['seller_account']) : '').'" /></label>
+	<label class="lbl"><span class="ttl">Name</span><input class="need" type="text" name="seller_name" title="Seller Name" value="'.(isset($_POST['seller_name']) ? htmlspecialchars($_POST['seller_name']) : '').'" required /></label>
+	<label class="lbl"><span class="ttl">VAT/IDNO</span><input type="text" name="seller_vat" title="Seller VAT/IDNO" value="'.(isset($_POST['seller_vat']) ? htmlspecialchars($_POST['seller_vat']) : '').'" required /></label>
+	<label class="lbl"><span class="ttl">Cont bancar</span><input type="text" name="seller_account" title="Seller Account" value="'.(isset($_POST['seller_account']) ? htmlspecialchars($_POST['seller_account']) : '').'" required /></label>
 	<div style="display: flex; gap: 10px;">
-		<label class="lbl" style="flex: 2;"><span class="ttl">Legal Address</span><textarea name="seller_address" title="Seller Address" rows="2">'.(isset($_POST['seller_address']) ? htmlspecialchars($_POST['seller_address']) : '').'</textarea></label>
-		<label class="lbl" style="flex: 1;"><span class="ttl">Țara</span><input type="text" name="seller_country" title="Seller Country" value="'.(isset($_POST['seller_country']) ? htmlspecialchars($_POST['seller_country']) : '').'" /></label>
-		<label class="lbl" style="flex: 1;"><span class="ttl">SWIFT/BIC</span><input type="text" name="seller_swift" title="Seller SWIFT/BIC" value="'.(isset($_POST['seller_swift']) ? htmlspecialchars($_POST['seller_swift']) : '').'" /></label>
+		<label class="lbl" style="flex: 2;"><span class="ttl">Legal Address</span><textarea name="seller_address" title="Seller Address" rows="2" required>'.(isset($_POST['seller_address']) ? htmlspecialchars($_POST['seller_address']) : '').'</textarea></label>
+		<label class="lbl" style="flex: 1;"><span class="ttl">Țara</span><input type="text" name="seller_country" title="Seller Country" value="'.(isset($_POST['seller_country']) ? htmlspecialchars($_POST['seller_country']) : '').'" required /></label>
+		<label class="lbl" style="flex: 1;"><span class="ttl">SWIFT/BIC</span><input type="text" name="seller_swift" title="Seller SWIFT/BIC" value="'.(isset($_POST['seller_swift']) ? htmlspecialchars($_POST['seller_swift']) : '').'" required /></label>
 	</div>
 	
 	'.( isset($mixall)?'</form>':'' ).'
