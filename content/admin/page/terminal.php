@@ -82,6 +82,68 @@ body {
     color: #0f0;
     padding: 20px 0;
 }
+
+/* Mobile responsive styles */
+@media screen and (max-width: 768px) {
+    #terminal-container {
+        padding: 10px;
+        font-size: 12px;
+    }
+    
+    #terminal-header {
+        margin-bottom: 15px;
+        padding-bottom: 8px;
+    }
+    
+    #terminal-header h1 {
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+    
+    .clear-cache-btn {
+        font-size: 11px;
+        padding: 4px 10px;
+        margin-top: 8px;
+        width: 100%;
+        display: block;
+    }
+    
+    #terminal-content {
+        font-size: 11px;
+        overflow-x: auto;
+    }
+    
+    .terminal-footer {
+        font-size: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    #terminal-container {
+        padding: 8px;
+        font-size: 11px;
+    }
+    
+    #terminal-header h1 {
+        font-size: 13px;
+    }
+    
+    .clear-cache-btn {
+        font-size: 10px;
+        padding: 3px 8px;
+    }
+    
+    #terminal-content {
+        font-size: 10px;
+    }
+    
+    .terminal-footer {
+        font-size: 9px;
+    }
+}
 </style>
 
 <div id="terminal-container">
