@@ -459,7 +459,7 @@ JAVASCRIPT;
 		</select></label>
 		
 		<div class="ttl">Cumparator</div>
-		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp"><option value="fiz">Fizic</option><option value="jur">Juridic</option></select></label>
+		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp" required><option value="fiz">Fizic</option><option value="jur">Juridic</option></select></label>
 		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" required /></label>
 		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
 
@@ -574,7 +574,7 @@ JAVASCRIPT;
 			'.$mo_html.'
 		</select></label>
 		<label class="lbl"><span class="ttl">Year</span><input class="need" type="text" name="yr" title="Year" /></label>
-		<label class="lbl"><span class="ttl">Color</span><select name="clr" title="Color">
+		<label class="lbl"><span class="ttl">Color</span><select name="clr" title="Color" required>
 			<option value="" selected>-</option>
 			'.$clr_html.'
 		</select></label>
@@ -586,9 +586,9 @@ JAVASCRIPT;
 		$rtrn .= '</select></label>
 		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="text" name="prc" title="Price" /></label>
 		<label class="lbl"><span class="ttl">Avans</span><input type="number" name="prc_av" title="Avans" placeholder="0" /></label>
-		<label class="lbl"><span class="ttl">Termen de livrare, zile</span><input class="need" type="text" name="term_livr" title="Termen de livrare" min="0" step="1" placeholder="35" /></label>
+		<label class="lbl"><span class="ttl">Termen de livrare, zile</span><input class="need" type="text" name="term_livr" title="Termen de livrare" min="0" step="1" placeholder="35" required /></label>
 		<label class="lbl"><span class="ttl">Din ce surse</span>
-			<select name="orig">
+			<select name="orig" required>
 				<option value="0">-</option>
 				<option value="999">999.md</option>
 				<option value="ste">De pe sait SAUTO.MD</option>
@@ -603,7 +603,7 @@ JAVASCRIPT;
 		</label>
 		
 		<div class="ttl">Cumparator</div>
-		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp"><option value="fiz">Fizic</option><option value="jur">Juridic</option></select></label>
+		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp" required><option value="fiz">Fizic</option><option value="jur">Juridic</option></select></label>
 		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" required /></label>
 		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
 		<label class="lbl"><span class="ttl">Data nasterii</span><input class="need fj dt" type="text" name="u_tva_dt" min="1900-01-01" max="2099-12-31" title="Data nasterii" data-fiz="Data nasterii" data-jur="TVA" /></label> <!--onfocus=\'(this.type="date")\'-->
@@ -723,7 +723,7 @@ JAVASCRIPT;
 			'.$mo_html.'
 		</select></label>
 		<label class="lbl"><span class="ttl">Year</span><input class="need" type="text" name="yr" title="Year" /></label>
-		<label class="lbl"><span class="ttl">Color</span><select name="clr" title="Color">
+		<label class="lbl"><span class="ttl">Color</span><select name="clr" title="Color" required>
 			<option value="" selected>-</option>
 			'.$clr_html.'
 		</select></label>
@@ -735,10 +735,10 @@ JAVASCRIPT;
 		$rtrn .= '</select></label>
 		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="text" name="prc" title="Price" /></label>
 		<label class="lbl"><span class="ttl">Avans</span><input type="number" name="prc_av" title="Avans" placeholder="0" /></label>
-		<label class="lbl"><span class="ttl">Termen de livrare, zile</span><input class="need" type="text" name="term_livr" title="Termen de livrare" min="0" step="1" placeholder="35" /></label>
+		<label class="lbl"><span class="ttl">Termen de livrare, zile</span><input class="need" type="text" name="term_livr" title="Termen de livrare" min="0" step="1" placeholder="35" required /></label>
 		
 		<div class="ttl">Vinzator</div>
-		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp"><option value="fiz">Fizic</option><option value="jur">Juridic</option></select></label>
+		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp" required><option value="fiz">Fizic</option><option value="jur">Juridic</option></select></label>
 		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" required /></label>
 		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
 		<label class="lbl"><span class="ttl">Data nasterii</span><input class="need fj dt" type="text" name="u_tva_dt" min="1900-01-01" max="2099-12-31" title="Data nasterii" data-fiz="Data nasterii" data-jur="TVA" /></label> <!--onfocus=\'(this.type="date")\'-->
@@ -857,7 +857,7 @@ JAVASCRIPT;
 			'.$mo_html.'
 		</select></label>
 		<label class="lbl"><span class="ttl">Year</span><input class="need" type="text" name="yr" title="Year" required /></label>
-		<label class="lbl"><span class="ttl">Color</span><select name="clr" title="Color">
+		<label class="lbl"><span class="ttl">Color</span><select name="clr" title="Color" required>
 			<option value="" selected>-</option>
 			'.$clr_html.'
 		</select></label>
@@ -868,9 +868,9 @@ JAVASCRIPT;
 			foreach ($lng['t']['x']['address'] as $k => $v){if($k==0){continue;} $rtrn .= '<option value="'.$k.'">'.$v.'</option>';}
 		$rtrn .= '</select></label>
 		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="text" name="prc" title="Price" required /></label>
-		<label class="lbl"><span class="ttl">Termen de livrare, zile</span><input class="need" type="text" name="term_livr" title="Termen de livrare" min="0" step="1" placeholder="35" /></label>
+		<label class="lbl"><span class="ttl">Termen de livrare, zile</span><input class="need" type="text" name="term_livr" title="Termen de livrare" min="0" step="1" placeholder="35" required /></label>
 		<label class="lbl"><span class="ttl">Din ce surse</span>
-			<select name="orig">
+			<select name="orig" required>
 				<option value="0">-</option>
 				<option value="999">999.md</option>
 				<option value="ste">De pe sait SAUTO.MD</option>
@@ -889,7 +889,7 @@ JAVASCRIPT;
 		<div class="btn" data-fn="add_date_pay">Adăugati</div>
 		
 		<div class="ttl">Cumparator</div>
-		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp"><option value="fiz">Fizic</option><option value="jur">Juridic</option></select></label>
+		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp" required><option value="fiz">Fizic</option><option value="jur">Juridic</option></select></label>
 		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" required /></label>
 		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
 		<label class="lbl"><span class="ttl">Data nasterii</span><input class="need fj dt" type="text" name="u_tva_dt" min="1900-01-01" max="2099-12-31" title="Data nasterii" data-fiz="Data nasterii" data-jur="TVA" required /></label> <!--onfocus=\'(this.type="date")\'-->
@@ -1459,7 +1459,7 @@ JAVASCRIPT;
 			<option value="" data-br="" class="def" disabled selected>-</option>
 			'.$mo_html.'
 		</select></label>
-		<label class="lbl"><span class="ttl">Color</span><select name="clr" title="Color">
+		<label class="lbl"><span class="ttl">Color</span><select name="clr" title="Color" required>
 			<option value="" selected>-</option>
 			'.$clr_html.'
 		</select></label>
@@ -1472,7 +1472,7 @@ JAVASCRIPT;
 		$rtrn .= '</select></label>
 		
 		<div class="ttl">Cumparator</div>
-		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp"><option value="fiz">Fizic</option><option value="jur">Juridic</option></select></label>
+		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp" required><option value="fiz">Fizic</option><option value="jur">Juridic</option></select></label>
 		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" required /></label>
 		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
 		<label class="lbl"><span class="ttl">Data nasterii</span><input class="need fj dt" type="text" name="u_tva_dt" min="1900-01-01" max="2099-12-31" title="Data nasterii" data-fiz="Data nasterii" data-jur="TVA" /></label> <!--onfocus=\'(this.type="date")\'-->
