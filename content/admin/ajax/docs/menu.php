@@ -453,7 +453,7 @@ JAVASCRIPT;
 		</select></label>
 		<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" required /></label>
 		<label class="lbl"><span class="ttl">Price</span><input class="need" type="number" name="prc" title="Price" required /></label>
-		<label class="lbl"><span class="ttl">Currency</span><select name="cur" title="Currency">
+		<label class="lbl"><span class="ttl">Currency</span><select name="cur" title="Currency" required>
 			<option value="MDL" selected>MDL</option>
 			<option value="EUR">EUR</option>
 		</select></label>
@@ -1331,8 +1331,8 @@ JAVASCRIPT;
 		$rtrn .= ( isset($mixall)?'<form class="menu_foaie_parcurs_cars">':'' ).'
 		<div class="ttl">Document</div>
 		<div style="display:flex; gap:15px; align-items:flex-end; flex-wrap:wrap;">
-			<label class="lbl" style="flex:1; min-width:150px;"><span class="ttl">Data</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Data" value="'.date('Y-m-d').'" /></label>
-			<label class="lbl fp-daa-only-add" style="min-width:150px;"><span class="ttl">Seria DAA de la Nr.</span><input type="number" name="fp_daa_start" value="'.$fp_daa_start_cars.'" title="Numărul de start DAA" /></label>
+			<label class="lbl" style="flex:1; min-width:150px;"><span class="ttl">Data</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Data" value="'.date('Y-m-d').'" required /></label>
+			<label class="lbl fp-daa-only-add" style="min-width:150px;"><span class="ttl">Seria DAA de la Nr.</span><input type="number" name="fp_daa_start" value="'.$fp_daa_start_cars.'" title="Numărul de start DAA" required /></label>
 		</div>
 		
 		<div class="ttl">Auto</div>
