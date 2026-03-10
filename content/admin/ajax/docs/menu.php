@@ -273,8 +273,8 @@ if ($contract['contract_type'] == 'vinzare_proc') {
 	
 	$rtrn .= ( isset($mixall)?'<form class="menu_cesionar">':'' ).'
 	<div class="ttl">Bazele datelor</div>
-	<label class="lbl"><span class="ttl">Data</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Data" value="'.(isset($_POST['date']) ? $_POST['date'] : date('Y-m-d')).'" /></label>
-	<label class="lbl"><span class="ttl">Numărul Anexa</span><input class="need" type="text" name="annexa_nr" title="Numărul Anexa" value="'.(isset($_POST['annexa_nr']) ? htmlspecialchars($_POST['annexa_nr']) : $annexa_number).'" /></label>
+	<label class="lbl"><span class="ttl">Data</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Data" value="'.(isset($_POST['date']) ? $_POST['date'] : date('Y-m-d')).'" required /></label>
+	<label class="lbl"><span class="ttl">Numărul Anexa</span><input class="need" type="text" name="annexa_nr" title="Numărul Anexa" value="'.(isset($_POST['annexa_nr']) ? htmlspecialchars($_POST['annexa_nr']) : $annexa_number).'" required /></label>
 	
 	<div class="ttl">Selectare Contract</div>
 	<input type="text" id="contract_search" placeholder="Caută contract după nume, IDNP sau număr..." style="width:100%; padding:0.5rem; margin-bottom:0.5rem; border:1px solid #ddd; border-radius:4px;" />
@@ -308,17 +308,17 @@ if ($contract['contract_type'] == 'vinzare_proc') {
 	<label class="lbl"><span class="ttl">Număr contract</span><input class="need" type="text" name="cont_nr" title="Număr contract" value="'.(isset($_POST['cont_nr']) ? htmlspecialchars($_POST['cont_nr']) : '').'" readonly /></label>
 	
 	<div class="ttl">Cumpărător (din contract original)</div>
-	<label class="lbl"><span class="ttl">Nume cumpărător</span><input class="need" type="text" name="u_nm" title="Nume cumpărător" value="'.(isset($_POST['u_nm']) ? htmlspecialchars($_POST['u_nm']) : '').'" /></label>
-	<label class="lbl"><span class="ttl">IDNO/CF cumpărător</span><input class="need" type="text" name="u_cf_idno" title="IDNO/CF cumpărător" value="'.(isset($_POST['u_cf_idno']) ? htmlspecialchars($_POST['u_cf_idno']) : '').'" /></label>
+	<label class="lbl"><span class="ttl">Nume cumpărător</span><input class="need" type="text" name="u_nm" title="Nume cumpărător" value="'.(isset($_POST['u_nm']) ? htmlspecialchars($_POST['u_nm']) : '').'" required /></label>
+	<label class="lbl"><span class="ttl">IDNO/CF cumpărător</span><input class="need" type="text" name="u_cf_idno" title="IDNO/CF cumpărător" value="'.(isset($_POST['u_cf_idno']) ? htmlspecialchars($_POST['u_cf_idno']) : '').'" required /></label>
 	
 	<div class="ttl">Cesionar (terța parte care primește dreptul de plată)</div>
 	<input type="hidden" name="add_cesionar" value="1" />
 	
 		<div id="cesionar_section">
-		<label class="lbl"><span class="ttl">Nume cesionar</span><input class="cesionar-field" type="text" name="cesionar_nm" title="Nume cesionar" value="'.(isset($_POST['cesionar_nm']) ? htmlspecialchars($_POST['cesionar_nm']) : '').'" /></label>
-		<label class="lbl"><span class="ttl">IDNO/CF cesionar</span><input class="cesionar-field" type="text" name="cesionar_cf_idno" title="IDNO/CF cesionar" value="'.(isset($_POST['cesionar_cf_idno']) ? htmlspecialchars($_POST['cesionar_cf_idno']) : '').'" /></label>
-		<label class="lbl"><span class="ttl">Cont bancar cesionar</span><input class="cesionar-field" type="text" name="cesionar_account" title="Cont bancar cesionar" value="'.(isset($_POST['cesionar_account']) ? htmlspecialchars($_POST['cesionar_account']) : '').'" /></label>
-		<label class="lbl"><span class="ttl">Sumă cesiune * (în valuta contractului)</span><input class="need cesionar-field" type="number" name="cesionar_suma" title="Sumă cesiune" value="'.(isset($_POST['cesionar_suma']) ? $_POST['cesionar_suma'] : '').'" step="0.01" min="0.01" /></label>
+		<label class="lbl"><span class="ttl">Nume cesionar</span><input class="cesionar-field" type="text" name="cesionar_nm" title="Nume cesionar" value="'.(isset($_POST['cesionar_nm']) ? htmlspecialchars($_POST['cesionar_nm']) : '').'" required /></label>
+		<label class="lbl"><span class="ttl">IDNO/CF cesionar</span><input class="cesionar-field" type="text" name="cesionar_cf_idno" title="IDNO/CF cesionar" value="'.(isset($_POST['cesionar_cf_idno']) ? htmlspecialchars($_POST['cesionar_cf_idno']) : '').'" required /></label>
+		<label class="lbl"><span class="ttl">Cont bancar cesionar</span><input class="cesionar-field" type="text" name="cesionar_account" title="Cont bancar cesionar" value="'.(isset($_POST['cesionar_account']) ? htmlspecialchars($_POST['cesionar_account']) : '').'" required /></label>
+		<label class="lbl"><span class="ttl">Sumă cesiune * (în valuta contractului)</span><input class="need cesionar-field" type="number" name="cesionar_suma" title="Sumă cesiune" value="'.(isset($_POST['cesionar_suma']) ? $_POST['cesionar_suma'] : '').'" step="0.01" min="0.01" required /></label>
 	</div>
 	<div class="ttl">Text suplimentar (opțional)</div>
 	<div id="grnt_fld_bx" name="grnt_txt" data-qu="0"></div>
