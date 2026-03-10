@@ -1,257 +1,105 @@
 <?php defined('_DOIT') or die('Restricted access'); ?>
 
 <style>
+body {
+    background: #000;
+    margin: 0;
+    padding: 0;
+}
+
 #terminal-container {
+    background: #000;
+    color: #0f0;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 14px;
     padding: 20px;
-    max-width: 1400px;
+    min-height: 100vh;
+    line-height: 1.4;
 }
 
 #terminal-header {
-    margin-bottom: 30px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #0f0;
+    padding-bottom: 10px;
 }
 
 #terminal-header h1 {
-    font-size: 28px;
-    font-weight: 600;
-    color: #333;
+    color: #0f0;
+    font-size: 16px;
+    font-weight: normal;
     margin: 0;
-}
-
-#terminal-header .subtitle {
-    color: #666;
-    font-size: 14px;
+    font-family: 'Consolas', 'Courier New', monospace;
 }
 
 .clear-cache-btn {
-    background: #F44336;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 600;
+    background: transparent;
+    color: #0f0;
+    border: 1px solid #0f0;
+    padding: 5px 15px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 12px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-top: 10px;
 }
 
 .clear-cache-btn:hover {
-    background: #D32F2F;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    transform: translateY(-2px);
-}
-
-.clear-cache-btn:active {
-    transform: translateY(0);
+    background: #0f0;
+    color: #000;
 }
 
 .clear-cache-btn:disabled {
-    background: #ccc;
+    opacity: 0.5;
     cursor: not-allowed;
-    transform: none;
 }
 
-.terminal-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    margin-bottom: 30px;
+#terminal-content {
+    white-space: pre-wrap;
+    word-wrap: break-word;
 }
 
-.terminal-card {
-    background: #fff;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    border-left: 4px solid #ccc;
-    transition: all 0.3s ease;
+.terminal-line {
+    margin: 2px 0;
 }
 
-.terminal-card.status-ok {
-    border-left-color: #4CAF50;
+.terminal-section {
+    margin: 15px 0;
 }
 
-.terminal-card.status-warning {
-    border-left-color: #FF9800;
-}
-
-.terminal-card.status-error {
-    border-left-color: #F44336;
-}
-
-.terminal-card.status-unknown {
-    border-left-color: #9E9E9E;
-}
-
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-.card-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #333;
-}
-
-.card-status {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.card-status.ok {
-    background: #E8F5E9;
-    color: #4CAF50;
-}
-
-.card-status.warning {
-    background: #FFF3E0;
-    color: #FF9800;
-}
-
-.card-status.error {
-    background: #FFEBEE;
-    color: #F44336;
-}
-
-.card-status.unknown {
-    background: #F5F5F5;
-    color: #9E9E9E;
-}
-
-.card-content {
-    color: #666;
-    font-size: 14px;
-    line-height: 1.6;
-}
-
-.card-content .info-row {
-    margin: 8px 0;
-    display: flex;
-    justify-content: space-between;
-}
-
-.card-content .info-label {
-    font-weight: 500;
-    color: #555;
-}
-
-.card-content .info-value {
-    color: #333;
-    font-weight: 600;
+.terminal-separator {
+    color: #0f0;
+    margin: 10px 0;
 }
 
 .terminal-footer {
-    background: #fff;
-    border-radius: 8px;
-    padding: 15px 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-    color: #666;
-}
-
-.terminal-footer .refresh-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.terminal-footer .spinner {
-    width: 16px;
-    height: 16px;
-    border: 2px solid #f3f3f3;
-    border-top: 2px solid #3498db;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-    display: none;
-}
-
-.terminal-footer .spinner.active {
-    display: inline-block;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.error-card {
-    background: #fff;
-    border-radius: 8px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    border-left: 4px solid #F44336;
     margin-top: 20px;
-}
-
-.error-card .error-title {
-    font-size: 16px;
-    font-weight: 600;
-    color: #F44336;
-    margin-bottom: 10px;
-}
-
-.error-card .error-message {
-    font-size: 13px;
-    color: #666;
-    font-family: monospace;
-    background: #f5f5f5;
-    padding: 10px;
-    border-radius: 4px;
-    overflow-x: auto;
+    padding-top: 10px;
+    border-top: 1px solid #0f0;
+    color: #0f0;
+    font-size: 12px;
 }
 
 .monitor-unavailable {
-    text-align: center;
-    padding: 60px 20px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.monitor-unavailable h2 {
-    color: #F44336;
-    font-size: 24px;
-    margin-bottom: 10px;
-}
-
-.monitor-unavailable p {
-    color: #666;
-    font-size: 14px;
+    color: #0f0;
+    padding: 20px 0;
 }
 </style>
 
 <div id="terminal-container">
     <div id="terminal-header">
-        <h1>Терминал Мониторинга Системы</h1>
-        <button id="clear-cache-btn" class="clear-cache-btn">🗑️ Очистить Cache</button>
+        <h1>SAUTO Монитор Системы</h1>
+        <button id="clear-cache-btn" class="clear-cache-btn">[ОЧИСТИТЬ CACHE]</button>
     </div>
 
     <div id="terminal-content">
         <div class="monitor-unavailable">
-            <h2>Загрузка...</h2>
-            <p>Подключение к системе мониторинга</p>
+&gt; Загрузка монитора системы...
+&gt; Подключение к сервису мониторинга...
         </div>
     </div>
 
     <div class="terminal-footer">
-        <div class="refresh-info">
-            <div class="spinner" id="refresh-spinner"></div>
-            <span id="last-update">Последнее обновление: --:--:--</span>
-        </div>
-        <div id="next-refresh">Следующее обновление через: 10 сек</div>
+        <div id="last-update">Последнее обновление: --:--:--</div>
+        <div id="next-refresh">Следующее обновление: 10 сек</div>
     </div>
 </div>
 
@@ -262,9 +110,6 @@
     let secondsUntilRefresh = 10;
     
     function updateTerminal() {
-        const spinner = document.getElementById('refresh-spinner');
-        spinner.classList.add('active');
-        
         fetch('/ajax.php?tp=adm&pg=monitor&fn=get_status', {
             method: 'GET',
             credentials: 'same-origin',
@@ -281,304 +126,161 @@
         .then(data => {
             renderTerminal(data);
             updateLastRefreshTime();
-            spinner.classList.remove('active');
             secondsUntilRefresh = 10;
         })
         .catch(error => {
             console.error('Monitor API Error:', error);
             renderError(error.message);
-            spinner.classList.remove('active');
         });
     }
     
     function renderTerminal(data) {
         const content = document.getElementById('terminal-content');
+        content.innerHTML = '';
         
-        let html = '<div class="terminal-grid">';
+        // Header
+        addGreenLine(content, '> Проверка Состояния Системы [' + data.server_time + ']');
+        addGreenLine(content, '> ' + '='.repeat(70));
+        addLine(content, '');
         
-        // Database card
-        html += renderCard(
-            'База Данных',
-            data.database,
-            data.details.database,
-            'database.svg'
-        );
+        // Database
+        addGreenLine(content, '[БАЗА ДАННЫХ]');
+        addStatusLine(content, '  Статус: ' + data.database.toUpperCase(), data.database);
+        if (data.details.database.message) {
+            addWhiteLine(content, '  ' + data.details.database.message);
+        }
+        if (data.details.database.response_time) {
+            addWhiteLine(content, '  Время отклика: ' + data.details.database.response_time);
+        }
+        addLine(content, '');
         
-        // Cars card
-        html += renderCard(
-            'Каталог Автомобилей',
-            data.cars,
-            data.details.cars,
-            'car.svg'
-        );
+        // Cars
+        addGreenLine(content, '[КАТАЛОГ АВТОМОБИЛЕЙ]');
+        addStatusLine(content, '  Статус: ' + data.cars.toUpperCase(), data.cars);
+        if (data.details.cars.message) {
+            addWhiteLine(content, '  ' + data.details.cars.message);
+        }
+        if (data.details.cars.last_car) {
+            addWhiteLine(content, '  Последняя машина: #' + data.details.cars.last_car.id + ' - ' + data.details.cars.last_car.brand + ' ' + data.details.cars.last_car.model);
+            addWhiteLine(content, '  Добавлена: ' + data.details.cars.last_date + ' (' + data.details.cars.days_ago + ' дней назад)');
+        }
+        addLine(content, '');
         
-        // Leads card
-        html += renderCard(
-            'Лиды / Сообщения',
-            data.leads,
-            data.details.leads,
-            'sms.svg'
-        );
+        // Leads
+        addGreenLine(content, '[ЛИДЫ / СООБЩЕНИЯ]');
+        addStatusLine(content, '  Статус: ' + data.leads.toUpperCase(), data.leads);
+        if (data.details.leads.message) {
+            addWhiteLine(content, '  ' + data.details.leads.message);
+        }
+        if (data.details.leads.last_lead) {
+            addWhiteLine(content, '  Последний лид: #' + data.details.leads.last_lead.id + ' - ' + data.details.leads.last_lead.folder);
+            addWhiteLine(content, '  Получен: ' + data.details.leads.last_date + ' (' + data.details.leads.hours_ago + ' часов назад)');
+        }
+        addLine(content, '');
         
-        // Disk space card
-        html += renderDiskCard(
-            'Место на Диске',
-            data.disk,
-            data.details.disk,
-            'storage.svg'
-        );
+        // Disk
+        addGreenLine(content, '[МЕСТО НА ДИСКЕ]');
+        addStatusLine(content, '  Статус: ' + data.disk.toUpperCase(), data.disk);
+        if (data.details.disk.message) {
+            addWhiteLine(content, '  ' + data.details.disk.message);
+        }
+        if (data.details.disk.total) {
+            addWhiteLine(content, '  Всего: ' + data.details.disk.total);
+            addWhiteLine(content, '  Использовано: ' + data.details.disk.used + ' (' + data.details.disk.percent_used + '%)');
+            addWhiteLine(content, '  Свободно: ' + data.details.disk.free + ' (' + data.details.disk.percent_free + '%)');
+        }
+        addLine(content, '');
         
-        // Publication errors card
-        html += renderPublicationCard(
-            'Ошибки Публикации',
-            data.publications,
-            data.details.publications,
-            'announcement.svg'
-        );
+        // Publications
+        addGreenLine(content, '[ОШИБКИ ПУБЛИКАЦИИ - За последние 24 часа]');
+        addStatusLine(content, '  Статус: ' + data.publications.toUpperCase(), data.publications);
+        if (data.details.publications.message) {
+            addWhiteLine(content, '  ' + data.details.publications.message);
+        }
+        if (data.details.publications.details) {
+            addWhiteLine(content, '  999.md: Failed=' + data.details.publications.details['999'].failed + ' Postponed=' + data.details.publications.details['999'].postponed);
+            if (data.details.publications.details['999'].errors && data.details.publications.details['999'].errors.length > 0) {
+                data.details.publications.details['999'].errors.forEach(function(err) {
+                    addWhiteLine(content, '    - Car #' + err.car_id + ': ' + err.message.substring(0, 60) + '... [' + err.time + ']');
+                });
+            }
+            addWhiteLine(content, '  Facebook: Failed=' + data.details.publications.details.facebook.failed + ' Pending=' + data.details.publications.details.facebook.pending);
+            if (data.details.publications.details.facebook.errors && data.details.publications.details.facebook.errors.length > 0) {
+                data.details.publications.details.facebook.errors.forEach(function(err) {
+                    addWhiteLine(content, '    - Car #' + err.car_id + ': ' + err.message.substring(0, 60) + '... [' + err.time + ']');
+                });
+            }
+            addWhiteLine(content, '  Telegram: Failed=' + data.details.publications.details.telegram.failed + ' Pending=' + data.details.publications.details.telegram.pending);
+            if (data.details.publications.details.telegram.errors && data.details.publications.details.telegram.errors.length > 0) {
+                data.details.publications.details.telegram.errors.forEach(function(err) {
+                    addWhiteLine(content, '    - Car #' + err.car_id + ': ' + err.message.substring(0, 60) + '... [' + err.time + ']');
+                });
+            }
+            addWhiteLine(content, '  Всего ошибок: ' + data.details.publications.total_failed);
+        }
+        addLine(content, '');
         
-        // Server card
-        html += renderServerCard(data.server_time, 'server.svg');
-        
-        html += '</div>';
-        
-        // Last error card (shows last 1)
+        // Last error
         if (data.last_error && Array.isArray(data.last_error) && data.last_error.length > 0) {
-            html += '<div class="error-card">';
-            html += '<div class="error-title">⚠️ Последняя Ошибка</div>';
-            
+            addGreenLine(content, '[ПОСЛЕДНЯЯ ОШИБКА]');
             var error = data.last_error[0];
-            html += '<div class="error-message">';
-            html += '<div>' + escapeHtml(error.message) + '</div>';
-            html += '<div style="margin-top:10px;font-size:12px;color:#999;">Файл: ' + (error.file || 'N/A') + ' | Время: ' + (error.time || 'N/A') + '</div>';
-            html += '</div>';
-            
-            html += '</div>';
+            addWhiteLine(content, '  ' + error.message);
+            addWhiteLine(content, '  Файл: ' + (error.file || 'N/A') + ' | Время: ' + (error.time || 'N/A'));
+            addLine(content, '');
         }
         
-        content.innerHTML = html;
+        // Server info
+        addGreenLine(content, '[СЕРВЕР]');
+        addWhiteLine(content, '  Время: ' + data.server_time);
+        addWhiteLine(content, '  PHP: <?php echo PHP_VERSION; ?>');
+        addLine(content, '');
+        
+        addGreenLine(content, '> ' + '='.repeat(70));
+        addGreenLine(content, '> Проверка мониторинга завершена.');
     }
     
-    function renderCard(title, status, details, icon) {
-        let html = '<div class="terminal-card status-' + status + '">';
-        html += '<div class="card-header">';
-        html += '<div class="card-title">';
-        if (icon) {
-            html += '<img src="/content/admin/icons/' + icon + '" style="width:20px;height:20px;margin-right:8px;vertical-align:middle;"> ';
-        }
-        html += title + '</div>';
-        html += '<div class="card-status ' + status + '">' + getStatusText(status) + '</div>';
-        html += '</div>';
-        html += '<div class="card-content">';
-        
-        if (details.message) {
-            html += '<div style="margin-bottom:10px;">' + escapeHtml(details.message) + '</div>';
-        }
-        
-        if (details.response_time) {
-            html += '<div class="info-row"><span class="info-label">Время отклика:</span><span class="info-value">' + details.response_time + '</span></div>';
-        }
-        
-        if (details.last_date) {
-            html += '<div class="info-row"><span class="info-label">Последняя запись:</span><span class="info-value">' + details.last_date + '</span></div>';
-        }
-        
-        if (details.days_ago !== undefined) {
-            html += '<div class="info-row"><span class="info-label">Дней назад:</span><span class="info-value">' + details.days_ago + '</span></div>';
-        }
-        
-        if (details.hours_ago !== undefined) {
-            html += '<div class="info-row"><span class="info-label">Часов назад:</span><span class="info-value">' + details.hours_ago + '</span></div>';
-        }
-        
-        if (details.last_car) {
-            html += '<div class="info-row"><span class="info-label">ID:</span><span class="info-value">#' + details.last_car.id + '</span></div>';
-            html += '<div class="info-row"><span class="info-label">Модель:</span><span class="info-value">' + escapeHtml(details.last_car.brand + ' ' + details.last_car.model) + '</span></div>';
-        }
-        
-        if (details.last_lead) {
-            html += '<div class="info-row"><span class="info-label">ID:</span><span class="info-value">#' + details.last_lead.id + '</span></div>';
-            html += '<div class="info-row"><span class="info-label">Папка:</span><span class="info-value">' + escapeHtml(details.last_lead.folder) + '</span></div>';
-        }
-        
-        html += '</div>';
-        html += '</div>';
-        return html;
+    function addGreenLine(container, text) {
+        const div = document.createElement('div');
+        div.style.color = '#0f0';
+        div.textContent = text;
+        container.appendChild(div);
     }
     
-    function renderDiskCard(title, status, details, icon) {
-        let html = '<div class="terminal-card status-' + status + '">';
-        html += '<div class="card-header">';
-        html += '<div class="card-title">';
-        if (icon) {
-            html += '<img src="/content/admin/icons/' + icon + '" style="width:20px;height:20px;margin-right:8px;vertical-align:middle;"> ';
-        }
-        html += title + '</div>';
-        html += '<div class="card-status ' + status + '">' + getStatusText(status) + '</div>';
-        html += '</div>';
-        html += '<div class="card-content">';
-        
-        if (details.message) {
-            html += '<div style="margin-bottom:10px;">' + escapeHtml(details.message) + '</div>';
-        }
-        
-        if (details.total) {
-            html += '<div class="info-row"><span class="info-label">Всего:</span><span class="info-value">' + details.total + '</span></div>';
-            html += '<div class="info-row"><span class="info-label">Использовано:</span><span class="info-value">' + details.used + ' (' + details.percent_used + '%)</span></div>';
-            html += '<div class="info-row"><span class="info-label">Свободно:</span><span class="info-value">' + details.free + ' (' + details.percent_free + '%)</span></div>';
-            
-            // Progress bar
-            let barColor = status === 'ok' ? '#4CAF50' : (status === 'warning' ? '#FF9800' : '#F44336');
-            html += '<div style="margin-top:10px;">';
-            html += '<div style="background:#f0f0f0;border-radius:4px;height:8px;overflow:hidden;">';
-            html += '<div style="background:' + barColor + ';height:100%;width:' + details.percent_used + '%;transition:width 0.3s ease;"></div>';
-            html += '</div>';
-            html += '</div>';
-        }
-        
-        html += '</div>';
-        html += '</div>';
-        return html;
+    function addWhiteLine(container, text) {
+        const div = document.createElement('div');
+        div.style.color = '#fff';
+        div.textContent = text;
+        container.appendChild(div);
     }
     
-    function renderPublicationCard(title, status, details, icon) {
-        let html = '<div class="terminal-card status-' + status + '">';
-        html += '<div class="card-header">';
-        html += '<div class="card-title">';
-        if (icon) {
-            html += '<img src="/content/admin/icons/' + icon + '" style="width:20px;height:20px;margin-right:8px;vertical-align:middle;"> ';
+    function addStatusLine(container, text, status) {
+        const div = document.createElement('div');
+        if (status === 'ok') {
+            div.style.color = '#0f0';
+        } else if (status === 'warning' || status === 'error') {
+            div.style.color = '#f00';
+        } else {
+            div.style.color = '#fff';
         }
-        html += title + '</div>';
-        html += '<div class="card-status ' + status + '">' + getStatusText(status) + '</div>';
-        html += '</div>';
-        html += '<div class="card-content">';
-        
-        if (details.message) {
-            html += '<div style="margin-bottom:10px;">' + escapeHtml(details.message) + '</div>';
-        }
-        
-        if (details.details) {
-            html += '<div style="margin-bottom:10px;font-weight:600;">За последние 24 часа:</div>';
-            
-            // 999.md errors
-            if (details.details['999']) {
-                let total999 = details.details['999'].failed + details.details['999'].postponed;
-                let color999 = total999 > 0 ? '#FF9800' : '#4CAF50';
-                html += '<div style="margin-bottom:15px;padding:10px;background:#f9f9f9;border-radius:4px;">';
-                html += '<div class="info-row" style="margin-bottom:5px;">';
-                html += '<span class="info-label" style="font-weight:600;">999.md:</span>';
-                html += '<span class="info-value" style="color:' + color999 + '">Failed: ' + details.details['999'].failed + ' | Postponed: ' + details.details['999'].postponed + '</span>';
-                html += '</div>';
-                if (details.details['999'].errors && details.details['999'].errors.length > 0) {
-                    details.details['999'].errors.forEach(function(err) {
-                        html += '<div style="margin-top:8px;padding:8px;background:#fff;border-left:3px solid #FF9800;font-size:12px;">';
-                        html += '<div style="color:#F44336;margin-bottom:3px;">Car ID: #' + err.car_id + '</div>';
-                        html += '<div style="color:#666;">' + escapeHtml(err.message) + '</div>';
-                        html += '<div style="color:#999;font-size:11px;margin-top:3px;">' + err.time + '</div>';
-                        html += '</div>';
-                    });
-                }
-                html += '</div>';
-            }
-            
-            // Facebook errors
-            if (details.details.facebook) {
-                let totalFb = details.details.facebook.failed + details.details.facebook.pending;
-                let colorFb = totalFb > 5 ? '#FF9800' : '#4CAF50';
-                html += '<div style="margin-bottom:15px;padding:10px;background:#f9f9f9;border-radius:4px;">';
-                html += '<div class="info-row" style="margin-bottom:5px;">';
-                html += '<span class="info-label" style="font-weight:600;">Facebook:</span>';
-                html += '<span class="info-value" style="color:' + colorFb + '">Failed: ' + details.details.facebook.failed + ' | Pending: ' + details.details.facebook.pending + '</span>';
-                html += '</div>';
-                if (details.details.facebook.errors && details.details.facebook.errors.length > 0) {
-                    details.details.facebook.errors.forEach(function(err) {
-                        html += '<div style="margin-top:8px;padding:8px;background:#fff;border-left:3px solid #FF9800;font-size:12px;">';
-                        html += '<div style="color:#F44336;margin-bottom:3px;">Car ID: #' + err.car_id + '</div>';
-                        html += '<div style="color:#666;">' + escapeHtml(err.message) + '</div>';
-                        html += '<div style="color:#999;font-size:11px;margin-top:3px;">' + err.time + '</div>';
-                        html += '</div>';
-                    });
-                }
-                html += '</div>';
-            }
-            
-            // Telegram errors
-            if (details.details.telegram) {
-                let totalTg = details.details.telegram.failed + details.details.telegram.pending;
-                let colorTg = totalTg > 5 ? '#FF9800' : '#4CAF50';
-                html += '<div style="margin-bottom:15px;padding:10px;background:#f9f9f9;border-radius:4px;">';
-                html += '<div class="info-row" style="margin-bottom:5px;">';
-                html += '<span class="info-label" style="font-weight:600;">Telegram:</span>';
-                html += '<span class="info-value" style="color:' + colorTg + '">Failed: ' + details.details.telegram.failed + ' | Pending: ' + details.details.telegram.pending + '</span>';
-                html += '</div>';
-                if (details.details.telegram.errors && details.details.telegram.errors.length > 0) {
-                    details.details.telegram.errors.forEach(function(err) {
-                        html += '<div style="margin-top:8px;padding:8px;background:#fff;border-left:3px solid #FF9800;font-size:12px;">';
-                        html += '<div style="color:#F44336;margin-bottom:3px;">Car ID: #' + err.car_id + '</div>';
-                        html += '<div style="color:#666;">' + escapeHtml(err.message) + '</div>';
-                        html += '<div style="color:#999;font-size:11px;margin-top:3px;">' + err.time + '</div>';
-                        html += '</div>';
-                    });
-                }
-                html += '</div>';
-            }
-            
-            // Total summary
-            if (details.total_failed !== null) {
-                html += '<div style="margin-top:10px;padding-top:10px;border-top:1px solid #eee;">';
-                html += '<div class="info-row">';
-                html += '<span class="info-label" style="font-weight:600;">Всего ошибок:</span>';
-                html += '<span class="info-value" style="font-weight:600;color:' + (details.total_failed > 0 ? '#F44336' : '#4CAF50') + '">' + details.total_failed + '</span>';
-                html += '</div>';
-                html += '</div>';
-            }
-        }
-        
-        html += '</div>';
-        html += '</div>';
-        return html;
+        div.textContent = text;
+        container.appendChild(div);
     }
     
-    function renderServerCard(serverTime, icon) {
-        let html = '<div class="terminal-card status-ok">';
-        html += '<div class="card-header">';
-        html += '<div class="card-title">';
-        if (icon) {
-            html += '<img src="/content/admin/icons/' + icon + '" style="width:20px;height:20px;margin-right:8px;vertical-align:middle;"> ';
-        }
-        html += 'Сервер</div>';
-        html += '<div class="card-status ok">OK</div>';
-        html += '</div>';
-        html += '<div class="card-content">';
-        html += '<div class="info-row"><span class="info-label">Время сервера:</span><span class="info-value">' + serverTime + '</span></div>';
-        html += '<div class="info-row"><span class="info-label">PHP версия:</span><span class="info-value">' + '<?php echo PHP_VERSION; ?>' + '</span></div>';
-        html += '</div>';
-        html += '</div>';
-        return html;
+    function addLine(container, text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        container.appendChild(div);
     }
     
     function renderError(message) {
         const content = document.getElementById('terminal-content');
-        content.innerHTML = '<div class="monitor-unavailable">' +
-            '<h2>Monitor API unavailable</h2>' +
-            '<p>Не удалось подключиться к API мониторинга: ' + escapeHtml(message) + '</p>' +
-            '</div>';
+        let output = '';
+        output += '> ERROR: Monitor API unavailable\n';
+        output += '> Failed to connect to monitoring service\n';
+        output += '> ' + message + '\n';
+        content.textContent = output;
     }
     
-    function getStatusText(status) {
-        const texts = {
-            'ok': 'OK',
-            'warning': 'WARNING',
-            'error': 'ERROR',
-            'unknown': 'UNKNOWN'
-        };
-        return texts[status] || status.toUpperCase();
-    }
-    
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
     
     function updateLastRefreshTime() {
         const now = new Date();
@@ -589,7 +291,7 @@
     }
     
     function updateCountdown() {
-        document.getElementById('next-refresh').textContent = 'Следующее обновление через: ' + secondsUntilRefresh + ' сек';
+        document.getElementById('next-refresh').textContent = 'Следующее обновление: ' + secondsUntilRefresh + ' сек';
         secondsUntilRefresh--;
         if (secondsUntilRefresh < 0) {
             secondsUntilRefresh = 10;
@@ -598,13 +300,13 @@
     
     // Clear Cache button functionality
     document.getElementById('clear-cache-btn').addEventListener('click', function() {
-        if (!confirm('Вы уверены, что хотите очистить весь cache?')) {
+        if (!confirm('Очистить все файлы cache?')) {
             return;
         }
         
         const btn = this;
         btn.disabled = true;
-        btn.textContent = '⏳ Очистка...';
+        btn.textContent = '[ОЧИСТКА...]';
         
         fetch('/ajax.php?tp=adm&pg=monitor&fn=clear_cache', {
             method: 'POST',
@@ -616,24 +318,20 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                btn.textContent = '✅ Готово! (' + data.deleted + ')';
-                btn.style.background = '#4CAF50';
+                btn.textContent = '[OK: ' + data.deleted + ' файлов]';
                 
                 setTimeout(function() {
                     btn.disabled = false;
-                    btn.textContent = '🗑️ Очистить Cache';
-                    btn.style.background = '#F44336';
+                    btn.textContent = '[ОЧИСТИТЬ CACHE]';
                 }, 3000);
                 
                 alert('Cache успешно очищен!\nУдалено файлов: ' + data.deleted);
             } else {
                 btn.disabled = false;
-                btn.textContent = '❌ Ошибка';
-                btn.style.background = '#F44336';
+                btn.textContent = '[ОШИБКА]';
                 
                 setTimeout(function() {
-                    btn.textContent = '🗑️ Очистить Cache';
-                    btn.style.background = '#F44336';
+                    btn.textContent = '[ОЧИСТИТЬ CACHE]';
                 }, 3000);
                 
                 alert('Ошибка очистки cache: ' + (data.message || 'Unknown error'));
@@ -642,15 +340,13 @@
         .catch(error => {
             console.error('Clear cache error:', error);
             btn.disabled = false;
-            btn.textContent = '❌ Ошибка';
-            btn.style.background = '#F44336';
+            btn.textContent = '[ОШИБКА]';
             
             setTimeout(function() {
-                btn.textContent = '🗑️ Очистить Cache';
-                btn.style.background = '#F44336';
+                btn.textContent = '[ОЧИСТИТЬ CACHE]';
             }, 3000);
             
-            alert('Ошибка подключения к серверу');
+            alert('Ошибка подключения');
         });
     });
     
