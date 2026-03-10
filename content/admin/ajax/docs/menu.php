@@ -573,19 +573,19 @@ JAVASCRIPT;
 			<option value="" data-br="" class="def" disabled selected>-</option>
 			'.$mo_html.'
 		</select></label>
-		<label class="lbl"><span class="ttl">Year</span><input class="need" type="text" name="yr" title="Year" /></label>
+		<label class="lbl"><span class="ttl">Year</span><input class="need" type="text" name="yr" title="Year" required /></label>
 		<label class="lbl"><span class="ttl">Color</span><select name="clr" title="Color" required>
 			<option value="" selected>-</option>
 			'.$clr_html.'
 		</select></label>
 		<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" required /></label>';
 		//---LOCATION---
-		$rtrn .= '<label class="lbl"><span class="ttl">'.$lng['w']['address'].'</span><select class="need" name="loc" title="'.$lng['w']['address'].'" tabindex="12" title="Location">
+		$rtrn .= '<label class="lbl"><span class="ttl">'.$lng['w']['address'].'</span><select class="need" name="loc" title="'.$lng['w']['address'].'" tabindex="12" title="Location" required>
 			<option value="" class="def" disabled selected>-</option>';
 			foreach ($lng['t']['x']['address'] as $k => $v){if($k==0){continue;} $rtrn .= '<option value="'.$k.'">'.$v.'</option>';}
 		$rtrn .= '</select></label>
-		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="text" name="prc" title="Price" /></label>
-		<label class="lbl"><span class="ttl">Avans</span><input type="number" name="prc_av" title="Avans" placeholder="0" /></label>
+		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="text" name="prc" title="Price" required /></label>
+		<label class="lbl"><span class="ttl">Avans</span><input type="number" name="prc_av" title="Avans" placeholder="0" required /></label>
 		<label class="lbl"><span class="ttl">Termen de livrare, zile</span><input class="need" type="text" name="term_livr" title="Termen de livrare" min="0" step="1" placeholder="35" required /></label>
 		<label class="lbl"><span class="ttl">Din ce surse</span>
 			<select name="orig" required>
@@ -722,19 +722,19 @@ JAVASCRIPT;
 			<option value="" data-br="" class="def" disabled selected>-</option>
 			'.$mo_html.'
 		</select></label>
-		<label class="lbl"><span class="ttl">Year</span><input class="need" type="text" name="yr" title="Year" /></label>
+		<label class="lbl"><span class="ttl">Year</span><input class="need" type="text" name="yr" title="Year" required /></label>
 		<label class="lbl"><span class="ttl">Color</span><select name="clr" title="Color" required>
 			<option value="" selected>-</option>
 			'.$clr_html.'
 		</select></label>
 		<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" required /></label>';
 		//---LOCATION---
-		$rtrn .= '<label class="lbl"><span class="ttl">'.$lng['w']['address'].'</span><select class="need" name="loc" title="'.$lng['w']['address'].'" tabindex="12" title="Location">
+		$rtrn .= '<label class="lbl"><span class="ttl">'.$lng['w']['address'].'</span><select class="need" name="loc" title="'.$lng['w']['address'].'" tabindex="12" title="Location" required>
 			<option value="" class="def" disabled selected>-</option>';
 			foreach ($lng['t']['x']['address'] as $k => $v){if($k==0){continue;} $rtrn .= '<option value="'.$k.'">'.$v.'</option>';}
 		$rtrn .= '</select></label>
-		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="text" name="prc" title="Price" /></label>
-		<label class="lbl"><span class="ttl">Avans</span><input type="number" name="prc_av" title="Avans" placeholder="0" /></label>
+		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="text" name="prc" title="Price" required /></label>
+		<label class="lbl"><span class="ttl">Avans</span><input type="number" name="prc_av" title="Avans" placeholder="0" required /></label>
 		<label class="lbl"><span class="ttl">Termen de livrare, zile</span><input class="need" type="text" name="term_livr" title="Termen de livrare" min="0" step="1" placeholder="35" required /></label>
 		
 		<div class="ttl">Vinzator</div>
@@ -1296,20 +1296,20 @@ JAVASCRIPT;
 		$rtrn .= ( isset($mixall)?'<form class="menu_foaie_parcurs">':'' ).'
 		<div class="ttl">Document</div>
 		<div style="display:flex; gap:15px; align-items:flex-end; flex-wrap:wrap;">
-			<label class="lbl" style="flex:1; min-width:150px;"><span class="ttl">Data</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Data" value="'.date('Y-m-d').'" /></label>
-			<label class="lbl fp-daa-only-add" style="min-width:150px;"><span class="ttl">Seria DAA de la Nr.</span><input type="number" name="fp_daa_start" value="'.$fp_daa_start.'" title="Numărul de start DAA" /></label>
+			<label class="lbl" style="flex:1; min-width:150px;"><span class="ttl">Data</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Data" value="'.date('Y-m-d').'" required /></label>
+			<label class="lbl fp-daa-only-add" style="min-width:150px;"><span class="ttl">Seria DAA de la Nr.</span><input type="number" name="fp_daa_start" value="'.$fp_daa_start.'" title="Numărul de start DAA" required /></label>
 		</div>
 		
 		<div class="ttl">Șofer și Autovehicul</div>
 		<div style="display:flex; gap:10px;">
-			<label class="lbl" style="flex:1;"><span class="ttl">Numele și prenumele șoferului</span><select name="sofer" title="Șofer" class="need">
+			<label class="lbl" style="flex:1;"><span class="ttl">Numele și prenumele șoferului</span><select name="sofer" title="Șofer" class="need" required>
 				<option value="" class="def" disabled selected>- Selectează șoferul -</option>
 				<option value="Covalciuc Anatolie">Covalciuc Anatolie</option>
 				<option value="Mocanu Ion">Mocanu Ion</option>
 				<option value="Mocanu Igor">Mocanu Igor</option>
 				<option value="Bilic Anatolie">Bilic Anatolie</option>
 			</select></label>
-			<label class="lbl" style="flex:2;"><span class="ttl">Marca autovehiculului, remorcii</span><select name="autovehicul" title="Autovehicul" class="need">
+			<label class="lbl" style="flex:2;"><span class="ttl">Marca autovehiculului, remorcii</span><select name="autovehicul" title="Autovehicul" class="need" required>
 				<option value="" class="def" disabled selected>- Selectează autovehiculul -</option>
 				<option value="MERCEDES ACTROS - SMM149 | KASSBORHER - X239XC">MERCEDES ACTROS - SMM149 | KASSBORHER - X239XC</option>
 				<option value="MERCEDES ACTROS - MHD202 | KASSBORHER - B717BR">MERCEDES ACTROS - MHD202 | KASSBORHER - B717BR</option>
