@@ -31,11 +31,11 @@ if ( $t_mp[5]=='invoice' || isset($mixall) ){
 	
 	<div class="ttl">Auto</div>
 	<label class="lbl"><span class="ttl">Brand</span><select name="br" title="Brand" required>
-		<option value="x" class="def" disabled selected>-</option>
+		<option value="" class="def" disabled selected>-</option>
 		'.$br_html.'
 	</select></label>
 	<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model" required>
-		<option value="x" data-br="" class="def" disabled selected>-</option>
+		<option value="" data-br="" class="def" disabled selected>-</option>
 		'.$mo_html.'
 	</select></label>
 	<label class="lbl"><span class="ttl">VIN code</span><input type="text" name="vin" title="VIN code" value="'.(isset($_POST['vin']) ? htmlspecialchars($_POST['vin']) : '').'" /></label>
@@ -562,15 +562,15 @@ JAVASCRIPT;
 	if ( $t_mp[5]=='vinzare_proc' || isset($mixall) ){
 		$rtrn .= ( isset($mixall)?'<form class="menu_vinzare_proc">':'' ).'
 		<div class="ttl">Document</div>
-		<label class="lbl"><span class="ttl">Date</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Date" /></label>
+		<label class="lbl"><span class="ttl">Date</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Date" required /></label>
 		
 		<div class="ttl">Auto</div>
-		<label class="lbl"><span class="ttl">Brand</span><select name="br" title="Brand">
-			<option value="x" class="def" disabled selected>-</option>
+		<label class="lbl"><span class="ttl">Brand</span><select name="br" title="Brand" required>
+			<option value="" class="def" disabled selected>-</option>
 			'.$br_html.'
 		</select></label>
-		<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model">
-			<option value="x" data-br="" class="def" disabled selected>-</option>
+		<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model" required>
+			<option value="" data-br="" class="def" disabled selected>-</option>
 			'.$mo_html.'
 		</select></label>
 		<label class="lbl"><span class="ttl">Year</span><input class="need" type="text" name="yr" title="Year" /></label>
@@ -578,7 +578,7 @@ JAVASCRIPT;
 			<option value="" selected>-</option>
 			'.$clr_html.'
 		</select></label>
-		<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" /></label>';
+		<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" required /></label>';
 		//---LOCATION---
 		$rtrn .= '<label class="lbl"><span class="ttl">'.$lng['w']['address'].'</span><select class="need" name="loc" title="'.$lng['w']['address'].'" tabindex="12" title="Location">
 			<option value="" class="def" disabled selected>-</option>';
@@ -604,8 +604,8 @@ JAVASCRIPT;
 		
 		<div class="ttl">Cumparator</div>
 		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp"><option value="fiz">Fizic</option><option value="jur">Juridic</option></select></label>
-		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" /></label>
-		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" /></label>
+		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" required /></label>
+		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
 		<label class="lbl"><span class="ttl">Data nasterii</span><input class="need fj dt" type="text" name="u_tva_dt" min="1900-01-01" max="2099-12-31" title="Data nasterii" data-fiz="Data nasterii" data-jur="TVA" /></label> <!--onfocus=\'(this.type="date")\'-->
 		<label class="lbl"><span class="ttl">Data elibirat</span><input class="need fj dt" type="text" name="u_iban_dt_tk" min="1900-01-01" max="2099-12-31" title="Data elibirat" data-fiz="Data elibirat" data-jur="IBAN" /></label>
 		<label class="lbl"><span class="ttl">Adress</span><input class="need" type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" /></label>
@@ -711,15 +711,15 @@ JAVASCRIPT;
 	if ( $t_mp[5]=='vinzare_sauto' || isset($mixall) ){
 		$rtrn .= ( isset($mixall)?'<form class="menu_vinzare_sauto">':'' ).'
 		<div class="ttl">Document</div>
-		<label class="lbl"><span class="ttl">Date</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Date" /></label>
+		<label class="lbl"><span class="ttl">Date</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Date" required /></label>
 		
 		<div class="ttl">Auto</div>
-		<label class="lbl"><span class="ttl">Brand</span><select name="br" title="Brand">
-			<option value="x" class="def" disabled selected>-</option>
+		<label class="lbl"><span class="ttl">Brand</span><select name="br" title="Brand" required>
+			<option value="" class="def" disabled selected>-</option>
 			'.$br_html.'
 		</select></label>
-		<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model">
-			<option value="x" data-br="" class="def" disabled selected>-</option>
+		<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model" required>
+			<option value="" data-br="" class="def" disabled selected>-</option>
 			'.$mo_html.'
 		</select></label>
 		<label class="lbl"><span class="ttl">Year</span><input class="need" type="text" name="yr" title="Year" /></label>
@@ -727,7 +727,7 @@ JAVASCRIPT;
 			<option value="" selected>-</option>
 			'.$clr_html.'
 		</select></label>
-		<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" /></label>';
+		<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" required /></label>';
 		//---LOCATION---
 		$rtrn .= '<label class="lbl"><span class="ttl">'.$lng['w']['address'].'</span><select class="need" name="loc" title="'.$lng['w']['address'].'" tabindex="12" title="Location">
 			<option value="" class="def" disabled selected>-</option>';
@@ -739,8 +739,8 @@ JAVASCRIPT;
 		
 		<div class="ttl">Vinzator</div>
 		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp"><option value="fiz">Fizic</option><option value="jur">Juridic</option></select></label>
-		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" /></label>
-		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" /></label>
+		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" required /></label>
+		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
 		<label class="lbl"><span class="ttl">Data nasterii</span><input class="need fj dt" type="text" name="u_tva_dt" min="1900-01-01" max="2099-12-31" title="Data nasterii" data-fiz="Data nasterii" data-jur="TVA" /></label> <!--onfocus=\'(this.type="date")\'-->
 		<label class="lbl"><span class="ttl">Data elibirat</span><input class="need fj dt" type="text" name="u_iban_dt_tk" min="1900-01-01" max="2099-12-31" title="Data elibirat" data-fiz="Data elibirat" data-jur="IBAN" /></label>
 		<label class="lbl"><span class="ttl">Adress</span><input class="need" type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" /></label>
@@ -845,15 +845,15 @@ JAVASCRIPT;
 	if ( $t_mp[5]=='vinzare_avans' || isset($mixall) ){
 		$rtrn .= ( isset($mixall)?'<form class="menu_vinzare_avans">':'' ).'
 		<div class="ttl">Document</div>
-		<label class="lbl"><span class="ttl">Date</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Date" /></label>
+		<label class="lbl"><span class="ttl">Date</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Date" required /></label>
 		
 		<div class="ttl">Auto</div>
-		<label class="lbl"><span class="ttl">Brand</span><select name="br" title="Brand">
-			<option value="x" class="def" disabled selected>-</option>
+		<label class="lbl"><span class="ttl">Brand</span><select name="br" title="Brand" required>
+			<option value="" class="def" disabled selected>-</option>
 			'.$br_html.'
 		</select></label>
-		<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model">
-			<option value="x" data-br="" class="def" disabled selected>-</option>
+		<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model" required>
+			<option value="" data-br="" class="def" disabled selected>-</option>
 			'.$mo_html.'
 		</select></label>
 		<label class="lbl"><span class="ttl">Year</span><input class="need" type="text" name="yr" title="Year" required /></label>
@@ -1005,26 +1005,26 @@ JAVASCRIPT;
 	if ( $t_mp[5]=='con_arvon' || isset($mixall) ){
 		$rtrn .= ( isset($mixall)?'<form class="menu_con_arvon">':'' ).'
 		<div class="ttl">Document</div>
-		<label class="lbl"><span class="ttl">Date</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Date" /></label>
+		<label class="lbl"><span class="ttl">Date</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Date" required /></label>
 		
 		<div class="ttl">Auto</div>
-		<label class="lbl"><span class="ttl">Brand</span><select name="br" title="Brand">
-			<option value="x" class="def" disabled selected>-</option>
+		<label class="lbl"><span class="ttl">Brand</span><select name="br" title="Brand" required>
+			<option value="" class="def" disabled selected>-</option>
 			'.$br_html.'
 		</select></label>
-		<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model">
-			<option value="x" data-br="" class="def" disabled selected>-</option>
+		<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model" required>
+			<option value="" data-br="" class="def" disabled selected>-</option>
 			'.$mo_html.'
 		</select></label>
-		<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" /></label>
+		<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" required /></label>
 		
-		<label class="lbl"><span class="ttl">Price, EUR</span><input class="need" type="number" name="prc_eur" title="Price EUR" /></label>
-		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="number" name="prc" title="Price MDL" /></label>
+		<label class="lbl"><span class="ttl">Price, EUR</span><input class="need" type="number" name="prc_eur" title="Price EUR" required /></label>
+		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="number" name="prc" title="Price MDL" required /></label>
 		
 		<div class="ttl">Cumparator</div>
-		<label class="lbl none"><select name="u_tp"><option value="fiz" selected="selected">Fizic</option><option value="jur">Juridic</option></select></label>
-		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" /></label>
-		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" /></label>
+		<label class="lbl none"><select name="u_tp" required><option value="fiz" selected="selected">Fizic</option><option value="jur">Juridic</option></select></label>
+		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" required /></label>
+		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
 				
     <div class="kyc-questionnaire" style="display: block;">
 			
@@ -1124,26 +1124,26 @@ JAVASCRIPT;
 	if ( $t_mp[5]=='con_arvon_com' || isset($mixall) ){
 		$rtrn .= ( isset($mixall)?'<form class="menu_con_arvon_com">':'' ).'
 		<div class="ttl">Document</div>
-		<label class="lbl"><span class="ttl">Date</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Date" /></label>
+		<label class="lbl"><span class="ttl">Date</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Date" required /></label>
 		
 		<div class="ttl">Auto</div>
-		<label class="lbl"><span class="ttl">Brand</span><select name="br" title="Brand">
-			<option value="x" class="def" disabled selected>-</option>
+		<label class="lbl"><span class="ttl">Brand</span><select name="br" title="Brand" required>
+			<option value="" class="def" disabled selected>-</option>
 			'.$br_html.'
 		</select></label>
-		<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model">
-			<option value="x" data-br="" class="def" disabled selected>-</option>
+		<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model" required>
+			<option value="" data-br="" class="def" disabled selected>-</option>
 			'.$mo_html.'
 		</select></label>
-		<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" /></label>
+		<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" required /></label>
 		
-		<label class="lbl"><span class="ttl">Price, EUR</span><input class="need" type="number" name="prc_eur" title="Price EUR" /></label>
-		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="number" name="prc" title="Price MDL" /></label>
+		<label class="lbl"><span class="ttl">Price, EUR</span><input class="need" type="number" name="prc_eur" title="Price EUR" required /></label>
+		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="number" name="prc" title="Price MDL" required /></label>
 		
 		<div class="ttl">Cumparator</div>
-		<label class="lbl none"><select name="u_tp"><option value="fiz" selected="selected">Fizic</option><option value="jur">Juridic</option></select></label>
-		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" /></label>
-		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" /></label>
+		<label class="lbl none"><select name="u_tp" required><option value="fiz" selected="selected">Fizic</option><option value="jur">Juridic</option></select></label>
+		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" required /></label>
+		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
 				
     <div class="kyc-questionnaire" style="display: block;">
 			
@@ -1204,18 +1204,18 @@ JAVASCRIPT;
 	if ( $t_mp[5]=='com_transport' || isset($mixall) ){
 		$rtrn .= ( isset($mixall)?'<form class="menu_com_transport">':'' ).'
 		<div class="ttl">Document</div>
-		<label class="lbl"><span class="ttl">Date</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Date" /></label>
+		<label class="lbl"><span class="ttl">Date</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Date" required /></label>
 		
 		<div class="ttl">Auto</div>
 		<div id="its_bx" name="its" data-qu="1">
 			<div class="def none">
 				<div class="car_group" data-n="x">
 					<label class="lbl"><span class="ttl">Brand</span><select name="br[]" title="Brand" data-n="x" disabled>
-						<option value="x" class="def" disabled selected>-</option>
+						<option value="" class="def" disabled selected>-</option>
 						'.$br_html.'
 					</select></label>
 					<label class="lbl"><span class="ttl">Model</span><select name="mo[]" title="Model" data-n="x" disabled>
-						<option value="x" data-br="" class="def" disabled selected>-</option>
+						<option value="" data-br="" class="def" disabled selected>-</option>
 						'.$mo_html.'
 					</select></label>
 					<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin[]" title="VIN code" data-n="x" disabled /></label>
@@ -1225,11 +1225,11 @@ JAVASCRIPT;
 			
 			<div class="car_group" data-n="0">
 				<label class="lbl"><span class="ttl">Brand</span><select name="br[]" title="Brand" data-n="0">
-					<option value="x" class="def" disabled selected>-</option>
+					<option value="" class="def" disabled selected>-</option>
 					'.$br_html.'
 				</select></label>
 				<label class="lbl"><span class="ttl">Model</span><select name="mo[]" title="Model" data-n="0">
-					<option value="x" data-br="" class="def" disabled selected>-</option>
+					<option value="" data-br="" class="def" disabled selected>-</option>
 					'.$mo_html.'
 				</select></label>
 				<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin[]" title="VIN code" data-n="0" required /></label>
@@ -1337,11 +1337,11 @@ JAVASCRIPT;
 		
 		<div class="ttl">Auto</div>
 		<label class="lbl"><span class="ttl">Marca</span><select name="br" title="Marca">
-			<option value="x" class="def" disabled selected>-</option>
+			<option value="" class="def" disabled selected>-</option>
 			'.$br_html.'
 		</select></label>
-		<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model">
-			<option value="x" data-br="" class="def" disabled selected>-</option>
+		<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model" required>
+			<option value="" data-br="" class="def" disabled selected>-</option>
 			'.$mo_html.'
 		</select></label>
 		<label class="lbl"><span class="ttl">Nr. de înmatriculare</span><input class="need" type="text" name="plate" title="Nr. de înmatriculare" /></label>
@@ -1448,22 +1448,22 @@ JAVASCRIPT;
 		</script>
 		
 		<div class="ttl">Document</div>
-		<label class="lbl"><span class="ttl">Date</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Date" /></label>
+		<label class="lbl"><span class="ttl">Date</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Date" required /></label>
 		
 		<div class="ttl">Auto</div>
-		<label class="lbl"><span class="ttl">Brand</span><select name="br" title="Brand">
-			<option value="x" class="def" disabled selected>-</option>
+		<label class="lbl"><span class="ttl">Brand</span><select name="br" title="Brand" required>
+			<option value="" class="def" disabled selected>-</option>
 			'.$br_html.'
 		</select></label>
-		<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model">
-			<option value="x" data-br="" class="def" disabled selected>-</option>
+		<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model" required>
+			<option value="" data-br="" class="def" disabled selected>-</option>
 			'.$mo_html.'
 		</select></label>
 		<label class="lbl"><span class="ttl">Color</span><select name="clr" title="Color">
 			<option value="" selected>-</option>
 			'.$clr_html.'
 		</select></label>
-		<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" /></label>
+		<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" required /></label>
 		<label class="lbl"><span class="ttl">Price, EUR</span><input class="need" type="number" name="prc" title="Price" /></label>
 		
 		<label class="lbl"><span class="ttl">'.$lng['w']['address'].'</span><select class="need" name="loc" title="'.$lng['w']['address'].'" tabindex="12" title="Location">
@@ -1473,8 +1473,8 @@ JAVASCRIPT;
 		
 		<div class="ttl">Cumparator</div>
 		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp"><option value="fiz">Fizic</option><option value="jur">Juridic</option></select></label>
-		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" /></label>
-		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" /></label>
+		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" required /></label>
+		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
 		<label class="lbl"><span class="ttl">Data nasterii</span><input class="need fj dt" type="text" name="u_tva_dt" min="1900-01-01" max="2099-12-31" title="Data nasterii" data-fiz="Data nasterii" data-jur="TVA" /></label> <!--onfocus=\'(this.type="date")\'-->
 		<label class="lbl"><span class="ttl">Data elibirat</span><input class="need fj dt" type="text" name="u_iban_dt_tk" min="1900-01-01" max="2099-12-31" title="Data elibirat" data-fiz="Data elibirat" data-jur="IBAN" /></label>
 		<label class="lbl"><span class="ttl">Adress</span><input class="need" type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" /></label>
