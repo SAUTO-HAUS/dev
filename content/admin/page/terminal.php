@@ -153,6 +153,8 @@ body {
             addWhiteLine(content, '  Время отклика: ' + data.details.database.response_time);
         }
         addLine(content, '');
+        addGreenLine(content, '  ' + '-'.repeat(68));
+        addLine(content, '');
         
         // Cars
         addGreenLine(content, '[КАТАЛОГ АВТОМОБИЛЕЙ]');
@@ -164,6 +166,8 @@ body {
             addWhiteLine(content, '  Последняя машина: #' + data.details.cars.last_car.id + ' - ' + data.details.cars.last_car.brand + ' ' + data.details.cars.last_car.model);
             addWhiteLine(content, '  Добавлена: ' + data.details.cars.last_date + ' (' + data.details.cars.days_ago + ' дней назад)');
         }
+        addLine(content, '');
+        addGreenLine(content, '  ' + '-'.repeat(68));
         addLine(content, '');
         
         // Leads
@@ -177,6 +181,8 @@ body {
             addWhiteLine(content, '  Получен: ' + data.details.leads.last_date + ' (' + data.details.leads.hours_ago + ' часов назад)');
         }
         addLine(content, '');
+        addGreenLine(content, '  ' + '-'.repeat(68));
+        addLine(content, '');
         
         // Disk
         addGreenLine(content, '[МЕСТО НА ДИСКЕ]');
@@ -189,6 +195,8 @@ body {
             addWhiteLine(content, '  Использовано: ' + data.details.disk.used + ' (' + data.details.disk.percent_used + '%)');
             addWhiteLine(content, '  Свободно: ' + data.details.disk.free + ' (' + data.details.disk.percent_free + '%)');
         }
+        addLine(content, '');
+        addGreenLine(content, '  ' + '-'.repeat(68));
         addLine(content, '');
         
         // Publications
@@ -219,6 +227,8 @@ body {
             addWhiteLine(content, '  Всего ошибок: ' + data.details.publications.total_failed);
         }
         addLine(content, '');
+        addGreenLine(content, '  ' + '-'.repeat(68));
+        addLine(content, '');
         
         // Last error
         if (data.last_error && Array.isArray(data.last_error) && data.last_error.length > 0) {
@@ -226,6 +236,8 @@ body {
             var error = data.last_error[0];
             addWhiteLine(content, '  ' + error.message);
             addWhiteLine(content, '  Файл: ' + (error.file || 'N/A') + ' | Время: ' + (error.time || 'N/A'));
+            addLine(content, '');
+            addGreenLine(content, '  ' + '-'.repeat(68));
             addLine(content, '');
         }
         
