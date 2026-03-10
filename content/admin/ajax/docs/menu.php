@@ -589,7 +589,7 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Termen de livrare, zile</span><input class="need" type="text" name="term_livr" title="Termen de livrare" min="0" step="1" placeholder="35" required /></label>
 		<label class="lbl"><span class="ttl">Din ce surse</span>
 			<select name="orig" required>
-				<option value="0">-</option>
+				<option value="">-</option>
 				<option value="999">999.md</option>
 				<option value="ste">De pe sait SAUTO.MD</option>
 				<option value="poz">Pozitionare(de pe strada)</option>
@@ -609,7 +609,7 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Data nasterii</span><input class="need fj dt" type="text" name="u_tva_dt" min="1900-01-01" max="2099-12-31" title="Data nasterii" data-fiz="Data nasterii" data-jur="TVA" /></label> <!--onfocus=\'(this.type="date")\'-->
 		<label class="lbl"><span class="ttl">Data elibirat</span><input class="need fj dt" type="text" name="u_iban_dt_tk" min="1900-01-01" max="2099-12-31" title="Data elibirat" data-fiz="Data elibirat" data-jur="IBAN" /></label>
 		<label class="lbl"><span class="ttl">Adress</span><input class="need" type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" /></label>
-		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" /></label>
+		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" pattern=".{6,}" required /></label>
 		<label class="lbl"><span class="ttl">Email</span><input type="text" name="u_eml" title="Email" /></label>
 		
 		<div class="kyc-questionnaire" style="display: block;">
@@ -744,7 +744,7 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Data nasterii</span><input class="need fj dt" type="text" name="u_tva_dt" min="1900-01-01" max="2099-12-31" title="Data nasterii" data-fiz="Data nasterii" data-jur="TVA" /></label> <!--onfocus=\'(this.type="date")\'-->
 		<label class="lbl"><span class="ttl">Data elibirat</span><input class="need fj dt" type="text" name="u_iban_dt_tk" min="1900-01-01" max="2099-12-31" title="Data elibirat" data-fiz="Data elibirat" data-jur="IBAN" /></label>
 		<label class="lbl"><span class="ttl">Adress</span><input class="need" type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" /></label>
-		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" /></label>
+		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" pattern=".{6,}" required /></label>
 		<label class="lbl"><span class="ttl">Email</span><input type="text" name="u_eml" title="Email" /></label>
 		
     <div class="kyc-questionnaire" style="display: block;">
@@ -871,7 +871,7 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Termen de livrare, zile</span><input class="need" type="text" name="term_livr" title="Termen de livrare" min="0" step="1" placeholder="35" required /></label>
 		<label class="lbl"><span class="ttl">Din ce surse</span>
 			<select name="orig" required>
-				<option value="0">-</option>
+				<option value="">-</option>
 				<option value="999">999.md</option>
 				<option value="ste">De pe sait SAUTO.MD</option>
 				<option value="poz">Pozitionare(de pe strada)</option>
@@ -895,7 +895,7 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Data nasterii</span><input class="need fj dt" type="text" name="u_tva_dt" min="1900-01-01" max="2099-12-31" title="Data nasterii" data-fiz="Data nasterii" data-jur="TVA" required /></label> <!--onfocus=\'(this.type="date")\'-->
 		<label class="lbl"><span class="ttl">Data elibirat</span><input class="need fj dt" type="text" name="u_iban_dt_tk" min="1900-01-01" max="2099-12-31" title="Data elibirat" data-fiz="Data elibirat" data-jur="IBAN" required /></label>
 		<label class="lbl"><span class="ttl">Adress</span><input class="need" type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" required /></label>
-		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" required /></label>
+		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" pattern=".{6,}" required /></label>
 		<label class="lbl"><span class="ttl">Email</span><input type="text" name="u_eml" title="Email" required /></label>
 		
 		
@@ -1478,7 +1478,7 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Data nasterii</span><input class="need fj dt" type="text" name="u_tva_dt" min="1900-01-01" max="2099-12-31" title="Data nasterii" data-fiz="Data nasterii" data-jur="TVA" /></label> <!--onfocus=\'(this.type="date")\'-->
 		<label class="lbl"><span class="ttl">Data elibirat</span><input class="need fj dt" type="text" name="u_iban_dt_tk" min="1900-01-01" max="2099-12-31" title="Data elibirat" data-fiz="Data elibirat" data-jur="IBAN" /></label>
 		<label class="lbl"><span class="ttl">Adress</span><input class="need" type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" /></label>
-		<label class="lbl"><span class="ttl">Phone</span><input class="need" type="text" name="u_phn" value="+373" title="Phone" /></label>
+		<label class="lbl"><span class="ttl">Phone</span><input class="need" type="text" name="u_phn" value="+373" title="Phone" pattern=".{6,}" required /></label>
 		<label class="lbl"><span class="ttl">Email</span><input type="text" name="u_eml" title="Email" /></label>
 		
 		<div class="ttl">Damage</div>
