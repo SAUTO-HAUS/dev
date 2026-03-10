@@ -222,8 +222,8 @@ $rtrn = '
 	<div class="pg d2 p1 bg">
 		<div class="flx">
 			<div class="head">
-				<div class="nr">Anexa nr 1 la contractul de vânzare-cumpărare nr. '.$abr.$cont_y.$cont_q.'/'.$cont_n.'__din_'.$zdate.'</div>
-				<div class="ttl">ACT DE PREDARE - PRIMIRE<br/>DIN DATA DE '.$zdate.'</div>
+				<div class="nr">Anexa nr 1 la contractul de vânzare-cumpărare nr. '.$abr.$cont_y.$cont_q.'/'.$cont_n.'</div>
+				<div class="ttl">ACT DE PREDARE - PRIMIRE</div>
 			</div>
 			<div class="gr">
 				<p><b>SAUTO SRL</b>, reprezentat legal de dl Olăriță Veaceslav, în calitate de administrator, care reprezintă interesele Societăţii în baza Actului Constitutiv și normativelor interne, înregistrată la Camera Înregistrării de Stat cu Numarul de Identificare de Stat – 1017600006845, denunumit în continare <b>Vînzător</b></p>
