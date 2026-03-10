@@ -27,19 +27,19 @@ if ( isset($t_mp[5]) || isset($mixall) ){
 if ( $t_mp[5]=='invoice' || isset($mixall) ){
 	$rtrn .= ( isset($mixall)?'<form class="menu_invoice">':'' ).'
 	<div class="ttl">Document</div>
-	<label class="lbl"><span class="ttl">Date</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Date" /></label>
+	<label class="lbl"><span class="ttl">Date</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Date" required /></label>
 	
 	<div class="ttl">Auto</div>
-	<label class="lbl"><span class="ttl">Brand</span><select name="br" title="Brand">
+	<label class="lbl"><span class="ttl">Brand</span><select name="br" title="Brand" required>
 		<option value="x" class="def" disabled selected>-</option>
 		'.$br_html.'
 	</select></label>
-	<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model">
+	<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model" required>
 		<option value="x" data-br="" class="def" disabled selected>-</option>
 		'.$mo_html.'
 	</select></label>
 	<label class="lbl"><span class="ttl">VIN code</span><input type="text" name="vin" title="VIN code" value="'.(isset($_POST['vin']) ? htmlspecialchars($_POST['vin']) : '').'" /></label>
-	<label class="lbl"><span class="ttl">Price</span><input class="need" type="number" name="prc" title="Price" value="'.(isset($_POST['prc']) ? $_POST['prc'] : '').'" /></label>
+	<label class="lbl"><span class="ttl">Price</span><input class="need" type="number" name="prc" title="Price" value="'.(isset($_POST['prc']) ? $_POST['prc'] : '').'" required /></label>
 	<label class="lbl"><span class="ttl">Currency</span><select name="cur" title="Currency">
 		<option value="EUR"'.(isset($_POST['cur']) && $_POST['cur'] == 'EUR' ? ' selected' : (!isset($_POST['cur']) ? ' selected' : '')).'>EUR</option>
 		<option value="USD"'.(isset($_POST['cur']) && $_POST['cur'] == 'USD' ? ' selected' : '').'>USD</option>
@@ -440,19 +440,19 @@ JAVASCRIPT;
 	if ( $t_mp[5]=='con_plata' || isset($mixall) ){
 		$rtrn .= ( isset($mixall)?'<form class="menu_con_plata">':'' ).'
 		<div class="ttl">Document</div>
-		<label class="lbl"><span class="ttl">Date</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Date" /></label>
+		<label class="lbl"><span class="ttl">Date</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Date" required /></label>
 		
 		<div class="ttl">Auto</div>
-		<label class="lbl"><span class="ttl">Brand</span><select name="br" title="Brand">
+		<label class="lbl"><span class="ttl">Brand</span><select name="br" title="Brand" required>
 			<option value="x" class="def" disabled selected>-</option>
 			'.$br_html.'
 		</select></label>
-		<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model">
+		<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model" required>
 			<option value="x" data-br="" class="def" disabled selected>-</option>
 			'.$mo_html.'
 		</select></label>
 		<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" required /></label>
-		<label class="lbl"><span class="ttl">Price</span><input class="need" type="number" name="prc" title="Price" /></label>
+		<label class="lbl"><span class="ttl">Price</span><input class="need" type="number" name="prc" title="Price" required /></label>
 		<label class="lbl"><span class="ttl">Currency</span><select name="cur" title="Currency">
 			<option value="MDL" selected>MDL</option>
 			<option value="EUR">EUR</option>
