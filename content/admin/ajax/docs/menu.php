@@ -444,11 +444,11 @@ JAVASCRIPT;
 		
 		<div class="ttl">Auto</div>
 		<label class="lbl"><span class="ttl">Brand</span><select name="br" title="Brand" required>
-			<option value="x" class="def" disabled selected>-</option>
+			<option value="" class="def" disabled selected>-</option>
 			'.$br_html.'
 		</select></label>
 		<label class="lbl"><span class="ttl">Model</span><select name="mo" title="Model" required>
-			<option value="x" data-br="" class="def" disabled selected>-</option>
+			<option value="" data-br="" class="def" disabled selected>-</option>
 			'.$mo_html.'
 		</select></label>
 		<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" required /></label>
