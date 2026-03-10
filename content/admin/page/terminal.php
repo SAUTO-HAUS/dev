@@ -274,18 +274,24 @@ body {
                     addWhiteLine(content, '    - Car #' + err.car_id + ': ' + err.message + ' [' + err.time + ']');
                 });
             }
+            addWhiteLine(content, '  ' + '.'.repeat(66));
+            
             addWhiteLine(content, '  Facebook: Failed=' + data.details.publications.details.facebook.failed + ' Pending=' + data.details.publications.details.facebook.pending);
             if (data.details.publications.details.facebook.errors && data.details.publications.details.facebook.errors.length > 0) {
                 data.details.publications.details.facebook.errors.forEach(function(err) {
                     addWhiteLine(content, '    - Car #' + err.car_id + ': ' + err.message + ' [' + err.time + ']');
                 });
             }
+            addWhiteLine(content, '  ' + '.'.repeat(66));
+            
             addWhiteLine(content, '  Telegram: Failed=' + data.details.publications.details.telegram.failed + ' Pending=' + data.details.publications.details.telegram.pending);
             if (data.details.publications.details.telegram.errors && data.details.publications.details.telegram.errors.length > 0) {
                 data.details.publications.details.telegram.errors.forEach(function(err) {
                     addWhiteLine(content, '    - Car #' + err.car_id + ': ' + err.message + ' [' + err.time + ']');
                 });
             }
+            addWhiteLine(content, '  ' + '.'.repeat(66));
+            
             addWhiteLine(content, '  Всего ошибок: ' + data.details.publications.total_failed);
         }
         addLine(content, '');
