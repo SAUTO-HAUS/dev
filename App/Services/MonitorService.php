@@ -314,7 +314,7 @@ class MonitorService
                 $errors['999']['postponed'] = (int)$result999['postponed'];
             }
             
-            // Get last 3 error messages for 999.md
+            // Get last error message for 999.md
             $stmt = $this->db->query(
                 "SELECT error_message, created_at, car_id 
                 FROM gh3sp_sauto_personal_schedules
@@ -323,7 +323,7 @@ class MonitorService
                 AND error_message != ''
                 AND created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
                 ORDER BY created_at DESC
-                LIMIT 3"
+                LIMIT 1"
             );
             while ($row = $stmt->fetch()) {
                 $errors['999']['errors'][] = [
@@ -347,7 +347,7 @@ class MonitorService
                 $errors['facebook']['pending'] = (int)$resultFb['pending'];
             }
             
-            // Get last 3 error messages for Facebook
+            // Get last error message for Facebook
             $stmt = $this->db->query(
                 "SELECT error_message, created_at, car_id 
                 FROM " . $this->prefix . "_scheduled_facebook_posts
@@ -356,7 +356,7 @@ class MonitorService
                 AND error_message != ''
                 AND created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
                 ORDER BY created_at DESC
-                LIMIT 3"
+                LIMIT 1"
             );
             while ($row = $stmt->fetch()) {
                 $errors['facebook']['errors'][] = [
@@ -380,7 +380,7 @@ class MonitorService
                 $errors['telegram']['pending'] = (int)$resultTg['pending'];
             }
             
-            // Get last 3 error messages for Telegram
+            // Get last error message for Telegram
             $stmt = $this->db->query(
                 "SELECT error_message, created_at, car_id 
                 FROM " . $this->prefix . "_scheduled_telegram_posts
@@ -389,7 +389,7 @@ class MonitorService
                 AND error_message != ''
                 AND created_at >= DATE_SUB(NOW(), INTERVAL 24 HOUR)
                 ORDER BY created_at DESC
-                LIMIT 3"
+                LIMIT 1"
             );
             while ($row = $stmt->fetch()) {
                 $errors['telegram']['errors'][] = [

@@ -271,19 +271,19 @@ body {
             addWhiteLine(content, '  999.md: Failed=' + data.details.publications.details['999'].failed + ' Postponed=' + data.details.publications.details['999'].postponed);
             if (data.details.publications.details['999'].errors && data.details.publications.details['999'].errors.length > 0) {
                 data.details.publications.details['999'].errors.forEach(function(err) {
-                    addWhiteLine(content, '    - Car #' + err.car_id + ': ' + err.message.substring(0, 60) + '... [' + err.time + ']');
+                    addWhiteLine(content, '    - Car #' + err.car_id + ': ' + err.message + ' [' + err.time + ']');
                 });
             }
             addWhiteLine(content, '  Facebook: Failed=' + data.details.publications.details.facebook.failed + ' Pending=' + data.details.publications.details.facebook.pending);
             if (data.details.publications.details.facebook.errors && data.details.publications.details.facebook.errors.length > 0) {
                 data.details.publications.details.facebook.errors.forEach(function(err) {
-                    addWhiteLine(content, '    - Car #' + err.car_id + ': ' + err.message.substring(0, 60) + '... [' + err.time + ']');
+                    addWhiteLine(content, '    - Car #' + err.car_id + ': ' + err.message + ' [' + err.time + ']');
                 });
             }
             addWhiteLine(content, '  Telegram: Failed=' + data.details.publications.details.telegram.failed + ' Pending=' + data.details.publications.details.telegram.pending);
             if (data.details.publications.details.telegram.errors && data.details.publications.details.telegram.errors.length > 0) {
                 data.details.publications.details.telegram.errors.forEach(function(err) {
-                    addWhiteLine(content, '    - Car #' + err.car_id + ': ' + err.message.substring(0, 60) + '... [' + err.time + ']');
+                    addWhiteLine(content, '    - Car #' + err.car_id + ': ' + err.message + ' [' + err.time + ']');
                 });
             }
             addWhiteLine(content, '  Всего ошибок: ' + data.details.publications.total_failed);
