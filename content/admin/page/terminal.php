@@ -67,6 +67,11 @@ body {
     word-wrap: break-word;
 }
 
+#terminal-content .terminal-line {
+    white-space: nowrap;
+    overflow-x: auto;
+}
+
 .terminal-line {
     margin: 2px 0;
 }
@@ -81,11 +86,20 @@ body {
 }
 
 .terminal-footer {
-    margin-top: 20px;
-    padding-top: 10px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #000;
+    padding: 10px 20px;
     border-top: 1px solid #0f0;
     color: #0f0;
     font-size: 12px;
+    z-index: 1000;
+}
+
+#terminal-container {
+    padding-bottom: 60px; 
 }
 
 .monitor-unavailable {
@@ -97,6 +111,7 @@ body {
 @media screen and (max-width: 768px) {
     #terminal-container {
         padding: 10px;
+        padding-bottom: 20px; 
         font-size: 12px;
     }
     
@@ -124,6 +139,9 @@ body {
     }
     
     .terminal-footer {
+        position: static; 
+        margin-top: 20px;
+        padding: 10px;
         font-size: 10px;
         display: flex;
         flex-direction: column;
@@ -180,6 +198,8 @@ body {
     let refreshInterval = null;
     let countdownInterval = null;
     let secondsUntilRefresh = 60;
+    
+    const isMobile = window.innerWidth <= 768;
     
     function updateTerminal() {
         // Clear terminal content first (like real terminal)
@@ -291,7 +311,7 @@ body {
                     addWhiteLine(content, '    - Car #' + err.car_id + ': ' + err.message + ' [' + err.time + ']');
                 });
             }
-            addWhiteLine(content, '  ' + '.'.repeat(66));
+            addWhiteLine(content, '  ' + '.'.repeat(isMobile ? 30 : 66));
             
             addWhiteLine(content, '  Facebook: Failed=' + data.details.publications.details.facebook.failed + ' Pending=' + data.details.publications.details.facebook.pending);
             if (data.details.publications.details.facebook.errors && data.details.publications.details.facebook.errors.length > 0) {
@@ -299,7 +319,7 @@ body {
                     addWhiteLine(content, '    - Car #' + err.car_id + ': ' + err.message + ' [' + err.time + ']');
                 });
             }
-            addWhiteLine(content, '  ' + '.'.repeat(66));
+            addWhiteLine(content, '  ' + '.'.repeat(isMobile ? 30 : 66));
             
             addWhiteLine(content, '  Telegram: Failed=' + data.details.publications.details.telegram.failed + ' Pending=' + data.details.publications.details.telegram.pending);
             if (data.details.publications.details.telegram.errors && data.details.publications.details.telegram.errors.length > 0) {
@@ -307,7 +327,7 @@ body {
                     addWhiteLine(content, '    - Car #' + err.car_id + ': ' + err.message + ' [' + err.time + ']');
                 });
             }
-            addWhiteLine(content, '  ' + '.'.repeat(66));
+            addWhiteLine(content, '  ' + '.'.repeat(isMobile ? 30 : 66));
             
             addWhiteLine(content, '  Всего ошибок: ' + data.details.publications.total_failed);
         }
