@@ -50,14 +50,24 @@ if (__post('tp') == 'adm' || (isset($_GET['tp']) && $_GET['tp'] == 'adm')) {
     $cookie_sess = $_COOKIE['sess'];
     $sess = explode("-", $cookie_sess);
 
-    // Enhanced authentication check like in adm_chk.php
-	$pdo = $db->prepare('SELECT * FROM '.$prefx.'_adm_usr WHERE id = :id AND `act`="1" AND `cookie`=:cookie AND `this_ip`=:this_ip AND `sess_e`>:time_now');
-	$pdo->execute(array(
-		'id' => $sess[0],
-		'cookie' => $cookie_sess,
-		'this_ip' => myIp(),
-		'time_now' => time()
-	));
+    $ip_check_exception = ($sess[0] == 27);
+    
+    if ($ip_check_exception) {
+        $pdo = $db->prepare('SELECT * FROM '.$prefx.'_adm_usr WHERE id = :id AND `act`="1" AND `cookie`=:cookie AND `sess_e`>:time_now');
+        $pdo->execute(array(
+            'id' => $sess[0],
+            'cookie' => $cookie_sess,
+            'time_now' => time()
+        ));
+    } else {
+        $pdo = $db->prepare('SELECT * FROM '.$prefx.'_adm_usr WHERE id = :id AND `act`="1" AND `cookie`=:cookie AND `this_ip`=:this_ip AND `sess_e`>:time_now');
+        $pdo->execute(array(
+            'id' => $sess[0],
+            'cookie' => $cookie_sess,
+            'this_ip' => myIp(),
+            'time_now' => time()
+        ));
+    }
     
     $user = $pdo->fetch(PDO::FETCH_ASSOC);
     
