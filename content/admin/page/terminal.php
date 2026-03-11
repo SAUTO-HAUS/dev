@@ -1,14 +1,15 @@
 <?php defined('_DOIT') or die('Restricted access'); ?>
 
 <style>
-/* Hide left menu for terminal page */
-#menu {
-    display: none !important;
-}
+@media screen and (min-width: 769px) {
+    #menu {
+        display: none !important;
+    }
 
-#content {
-    margin-left: 0 !important;
-    width: 100% !important;
+    #content {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
 }
 
 body {
