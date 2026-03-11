@@ -1,6 +1,16 @@
 <?php defined('_DOIT') or die('Restricted access'); ?>
 
 <style>
+/* Hide left menu for terminal page */
+#menu {
+    display: none !important;
+}
+
+#content {
+    margin-left: 0 !important;
+    width: 100% !important;
+}
+
 body {
     background: #000;
     margin: 0;
@@ -161,7 +171,7 @@ body {
 
     <div class="terminal-footer">
         <div id="last-update">Последнее обновление: --:--:--</div>
-        <div id="next-refresh">Следующее обновление: 10 сек</div>
+        <div id="next-refresh">Следующее обновление: 60 сек</div>
     </div>
 </div>
 
@@ -169,9 +179,13 @@ body {
 (function() {
     let refreshInterval = null;
     let countdownInterval = null;
-    let secondsUntilRefresh = 10;
+    let secondsUntilRefresh = 60;
     
     function updateTerminal() {
+        // Clear terminal content first (like real terminal)
+        const content = document.getElementById('terminal-content');
+        content.innerHTML = '<div class="monitor-unavailable">&gt; Обновление данных...</div>';
+        
         fetch('/ajax.php?tp=adm&pg=monitor&fn=get_status', {
             method: 'GET',
             credentials: 'same-origin',
@@ -186,9 +200,12 @@ body {
             return response.json();
         })
         .then(data => {
-            renderTerminal(data);
-            updateLastRefreshTime();
-            secondsUntilRefresh = 10;
+            // Small delay to show clear effect
+            setTimeout(function() {
+                renderTerminal(data);
+                updateLastRefreshTime();
+                secondsUntilRefresh = 60;
+            }, 300);
         })
         .catch(error => {
             console.error('Monitor API Error:', error);
@@ -374,7 +391,7 @@ body {
         document.getElementById('next-refresh').textContent = 'Следующее обновление: ' + secondsUntilRefresh + ' сек';
         secondsUntilRefresh--;
         if (secondsUntilRefresh < 0) {
-            secondsUntilRefresh = 10;
+            secondsUntilRefresh = 60;
         }
     }
     
@@ -432,7 +449,7 @@ body {
     
     updateTerminal();
     
-    refreshInterval = setInterval(updateTerminal, 10000);
+    refreshInterval = setInterval(updateTerminal, 60000);
     
     countdownInterval = setInterval(updateCountdown, 1000);
     
