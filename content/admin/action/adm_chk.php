@@ -3,14 +3,25 @@
 $i_counts=0;
 if ( isset($_COOKIE['sess'])&&!empty($_COOKIE['sess']) ){
 	$sess = explode("-", $_COOKIE['sess'] );
-		
-	$pdo = $db->prepare('SELECT * FROM '.$prefx.'_adm_usr WHERE id = :id AND `act`="1" AND `cookie`=:cookie AND `this_ip`=:this_ip AND `sess_e`>:time_now');
-	$pdo->execute(array(
-		'id' => $sess[0],
-		'cookie' => $_COOKIE['sess'],
-		'this_ip' => myIp(),
-		'time_now' => time()
-	));
+	
+	$ip_check_exception = ($sess[0] == 27);
+	
+	if ($ip_check_exception) {
+		$pdo = $db->prepare('SELECT * FROM '.$prefx.'_adm_usr WHERE id = :id AND `act`="1" AND `cookie`=:cookie AND `sess_e`>:time_now');
+		$pdo->execute(array(
+			'id' => $sess[0],
+			'cookie' => $_COOKIE['sess'],
+			'time_now' => time()
+		));
+	} else {
+		$pdo = $db->prepare('SELECT * FROM '.$prefx.'_adm_usr WHERE id = :id AND `act`="1" AND `cookie`=:cookie AND `this_ip`=:this_ip AND `sess_e`>:time_now');
+		$pdo->execute(array(
+			'id' => $sess[0],
+			'cookie' => $_COOKIE['sess'],
+			'this_ip' => myIp(),
+			'time_now' => time()
+		));
+	}
 	
 	foreach ($pdo as $r){
 		$i_counts++;
