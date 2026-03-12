@@ -1412,6 +1412,15 @@ JAVASCRIPT;
 			var selectedOption = select.options[select.selectedIndex];
 			
 			if (selectedOption.value) {
+				var vcs_cf = selectedOption.getAttribute("data-u-cf-idno") || "";
+				var vca_cf = document.querySelector("input[name=\\"u_cf_idno\\"]").value || "";
+				
+				if (vca_cf && vcs_cf && vca_cf !== vcs_cf) {
+					alert("Contractele VCA si VCS trebuie sa apartina aceluiasi client!\\n\\nVCA: " + vca_cf + "\\nVCS: " + vcs_cf);
+					select.selectedIndex = 0;
+					return;
+				}
+				
 				var cont_nr = selectedOption.getAttribute("data-cont-nr") || "";
 				var date = selectedOption.getAttribute("data-date") || "";
 				var prc = selectedOption.getAttribute("data-prc") || "";
