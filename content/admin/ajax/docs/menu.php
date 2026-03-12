@@ -1332,7 +1332,8 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Data actului</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Data" value="'.date('Y-m-d').'" required /></label>
 		
 		<div class="ttl">Contract VCA (Client datorează SAUTO)</div>
-		<label class="lbl"><span class="ttl">Selectează contract VCA</span><select class="need" name="vca_contract_id" id="vca_contract_id" onchange="loadVCACompensareData()" required>
+		<input type="text" id="vca_contract_search" placeholder="Caută contract după nume, IDNP sau număr..." style="width:100%; padding:0.5rem; margin-bottom:0.5rem; border:1px solid #ddd; border-radius:4px;" />
+		<label class="lbl"><span class="ttl">Selectează contract VCA</span><select class="need" name="vca_contract_id" id="vca_contract_id" onchange="loadVCACompensareData()" size="10" style="height:auto; min-height:250px; font-size:14px; line-height:1.8; padding:8px;" required>
 			'.$contracts_html_vca.'
 		</select></label>
 		<label class="lbl"><span class="ttl">Nr. Contract VCA</span><input class="need" type="text" name="vca_contract_nr" title="Nr. Contract VCA" readonly required /></label>
@@ -1340,7 +1341,8 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Suma VCA (lei)</span><input class="need" type="number" name="vca_amount" title="Suma VCA" step="0.01" required /></label>
 		
 		<div class="ttl">Contract VCS (SAUTO datorează Client)</div>
-		<label class="lbl"><span class="ttl">Selectează contract VCS</span><select class="need" name="vcs_contract_id" id="vcs_contract_id" onchange="loadVCSCompensareData()" required>
+		<input type="text" id="vcs_contract_search" placeholder="Caută contract după nume, IDNP sau număr..." style="width:100%; padding:0.5rem; margin-bottom:0.5rem; border:1px solid #ddd; border-radius:4px;" />
+		<label class="lbl"><span class="ttl">Selectează contract VCS</span><select class="need" name="vcs_contract_id" id="vcs_contract_id" onchange="loadVCSCompensareData()" size="10" style="height:auto; min-height:250px; font-size:14px; line-height:1.8; padding:8px;" required>
 			'.$contracts_html_vcs.'
 		</select></label>
 		<label class="lbl"><span class="ttl">Nr. Contract VCS</span><input class="need" type="text" name="vcs_contract_nr" title="Nr. Contract VCS" readonly required /></label>
@@ -1397,6 +1399,41 @@ JAVASCRIPT;
 			}
 		}
 		
+		(function() {
+			var vcaSearch = document.getElementById("vca_contract_search");
+			var vcaSelect = document.getElementById("vca_contract_id");
+			var vcaAllOptions = Array.from(vcaSelect.options);
+			
+			if (vcaSearch && vcaSelect) {
+				vcaSearch.addEventListener("input", function() {
+					var searchText = this.value.toLowerCase();
+					vcaSelect.innerHTML = "";
+					vcaAllOptions.forEach(function(option) {
+						var optionText = option.textContent.toLowerCase();
+						if (searchText === "" || optionText.indexOf(searchText) !== -1) {
+							vcaSelect.appendChild(option.cloneNode(true));
+						}
+					});
+				});
+			}
+			
+			var vcsSearch = document.getElementById("vcs_contract_search");
+			var vcsSelect = document.getElementById("vcs_contract_id");
+			var vcsAllOptions = Array.from(vcsSelect.options);
+			
+			if (vcsSearch && vcsSelect) {
+				vcsSearch.addEventListener("input", function() {
+					var searchText = this.value.toLowerCase();
+					vcsSelect.innerHTML = "";
+					vcsAllOptions.forEach(function(option) {
+						var optionText = option.textContent.toLowerCase();
+						if (searchText === "" || optionText.indexOf(searchText) !== -1) {
+							vcsSelect.appendChild(option.cloneNode(true));
+						}
+					});
+				});
+			}
+		})();
 		</script>
 		
 		'.( isset($mixall)?'</form>':'' );
