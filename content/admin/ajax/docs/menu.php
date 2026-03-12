@@ -1285,7 +1285,141 @@ JAVASCRIPT;
 		'.( isset($mixall)?'</form>':'' );
 	}
 
-	//__________________________________________________________________________________________FOAIE DE PARCURS PENTRU AUTOCAMIOANE
+		//__________________________________________________________________________________________ACT DE COMPENSARE
+	if ( $t_mp[5]=='act_compensare' || isset($mixall) ){
+		// Get existing vinzare_avans contracts
+		$contracts_html_vca = '<option value="" class="def" disabled selected>Selectează contract VCA...</option>';
+		$contracts_html_vcs = '<option value="" class="def" disabled selected>Selectează contract VCS...</option>';
+		try {
+			$pdo_contracts = $db->prepare('
+				SELECT c.id, c.inf, c.date, c.abr, c.y, c.q, c.n,
+				       u.nm as u_nm, u.cf_idno as u_cf_idno, u.tp as u_tp
+				FROM '.$prefx.'_docs_ctlg c 
+				LEFT JOIN '.$prefx.'_docs_u u ON c.u = u.id 
+				WHERE c.f = ?
+				ORDER BY c.date DESC
+			');
+			$pdo_contracts->execute(['vinzare_avans']);
+			
+			foreach ($pdo_contracts as $contract) {
+				$cont_nr = $contract['abr'].$contract['y'].$contract['q'].'/'.$contract['n'];
+				$u_nm = !empty($contract['u_nm']) ? $contract['u_nm'] : '';
+				$u_cf_idno = $contract['u_cf_idno'] ?: '';
+				$u_tp = $contract['u_tp'] ?: 'fiz';
+				
+				$prc = '';
+				if (!empty($contract['inf'])) {
+					$pairs = explode('&&', $contract['inf']);
+					foreach ($pairs as $pair) {
+						if (strpos($pair, 'prc==') === 0) {
+							$prc = substr($pair, 5);
+							break;
+						}
+					}
+				}
+				
+				$option_html = '<option value="'.$contract['id'].'" data-cont-nr="'.htmlspecialchars($cont_nr).'" data-date="'.htmlspecialchars($contract['date']).'" data-u-nm="'.htmlspecialchars($u_nm).'" data-u-cf-idno="'.htmlspecialchars($u_cf_idno).'" data-u-tp="'.htmlspecialchars($u_tp).'" data-prc="'.htmlspecialchars($prc).'">'.htmlspecialchars($cont_nr).' | '.htmlspecialchars($u_nm).' | '.htmlspecialchars($u_cf_idno).'</option>';
+				$contracts_html_vca .= $option_html;
+				$contracts_html_vcs .= $option_html;
+			}
+		} catch (Exception $e) {
+			$contracts_html_vca .= '<option value="" disabled>Eroare la încărcarea contractelor</option>';
+			$contracts_html_vcs .= '<option value="" disabled>Eroare la încărcarea contractelor</option>';
+		}
+		
+		$rtrn .= ( isset($mixall)?'<form class="menu_act_compensare">':'' ).'
+		<div class="ttl">Document</div>
+		<label class="lbl"><span class="ttl">Data actului</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Data" value="'.date('Y-m-d').'" required /></label>
+		
+		<div class="ttl">Contract VCA (Client datorează SAUTO)</div>
+		<label class="lbl"><span class="ttl">Selectează contract VCA</span><select class="need" name="vca_contract_id" id="vca_contract_id" onchange="loadVCACompensareData()" required>
+			'.$contracts_html_vca.'
+		</select></label>
+		<label class="lbl"><span class="ttl">Nr. Contract VCA</span><input class="need" type="text" name="vca_contract_nr" title="Nr. Contract VCA" readonly required /></label>
+		<label class="lbl"><span class="ttl">Data Contract VCA</span><input class="need dt" type="date" name="vca_date" title="Data Contract VCA" readonly required /></label>
+		<label class="lbl"><span class="ttl">Suma VCA (lei)</span><input class="need" type="number" name="vca_amount" title="Suma VCA" step="0.01" required /></label>
+		
+		<div class="ttl">Contract VCS (SAUTO datorează Client)</div>
+		<label class="lbl"><span class="ttl">Selectează contract VCS</span><select class="need" name="vcs_contract_id" id="vcs_contract_id" onchange="loadVCSCompensareData()" required>
+			'.$contracts_html_vcs.'
+		</select></label>
+		<label class="lbl"><span class="ttl">Nr. Contract VCS</span><input class="need" type="text" name="vcs_contract_nr" title="Nr. Contract VCS" readonly required /></label>
+		<label class="lbl"><span class="ttl">Data Contract VCS</span><input class="need dt" type="date" name="vcs_date" title="Data Contract VCS" readonly required /></label>
+		<label class="lbl"><span class="ttl">Suma VCS (lei)</span><input class="need" type="number" name="vcs_amount" title="Suma VCS" step="0.01" required /></label>
+		
+		<label class="lbl"><span class="ttl">Suma stingere reciprocă (lei)</span><input class="need" type="number" name="compensation_amount" title="Suma compensare" step="0.01" required /></label>
+		
+		<input type="hidden" name="u_tp" value="fiz" />
+		<input type="hidden" name="u_cf_idno" value="" />
+		<input type="hidden" name="u_nm" value="" />
+		
+		<script>
+		function loadVCACompensareData() {
+			var select = document.getElementById("vca_contract_id");
+			var selectedOption = select.options[select.selectedIndex];
+			
+			if (selectedOption.value) {
+				var cont_nr = selectedOption.getAttribute("data-cont-nr") || "";
+				var date = selectedOption.getAttribute("data-date") || "";
+				var u_nm = selectedOption.getAttribute("data-u-nm") || "";
+				var u_cf_idno = selectedOption.getAttribute("data-u-cf-idno") || "";
+				var u_tp = selectedOption.getAttribute("data-u-tp") || "fiz";
+				var prc = selectedOption.getAttribute("data-prc") || "";
+				
+				document.querySelector("input[name=\\"vca_contract_nr\\"]").value = cont_nr;
+				document.querySelector("input[name=\\"vca_date\\"]").value = date;
+				document.querySelector("input[name=\\"u_nm\\"]").value = u_nm;
+				document.querySelector("input[name=\\"u_cf_idno\\"]").value = u_cf_idno;
+				document.querySelector("input[name=\\"u_tp\\"]").value = u_tp;
+				
+				if (prc) {
+					document.querySelector("input[name=\\"vca_amount\\"]").value = prc;
+					document.querySelector("input[name=\\"compensation_amount\\"]").value = prc;
+				}
+			}
+		}
+		
+		function loadVCSCompensareData() {
+			var select = document.getElementById("vcs_contract_id");
+			var selectedOption = select.options[select.selectedIndex];
+			
+			if (selectedOption.value) {
+				var cont_nr = selectedOption.getAttribute("data-cont-nr") || "";
+				var date = selectedOption.getAttribute("data-date") || "";
+				var prc = selectedOption.getAttribute("data-prc") || "";
+				
+				document.querySelector("input[name=\\"vcs_contract_nr\\"]").value = cont_nr;
+				document.querySelector("input[name=\\"vcs_date\\"]").value = date;
+				
+				if (prc) {
+					document.querySelector("input[name=\\"vcs_amount\\"]").value = prc;
+				}
+			}
+		}
+		
+		$(document).ready(function() {
+			var editData = $(".bx.act .values");
+			if (editData.length > 0) {
+				var vcaContractId = editData.attr("data-vca_contract_id");
+				var vcsContractId = editData.attr("data-vcs_contract_id");
+				
+				if (vcaContractId) {
+					$("#vca_contract_id").val(vcaContractId);
+					loadVCACompensareData();
+				}
+				
+				if (vcsContractId) {
+					$("#vcs_contract_id").val(vcsContractId);
+					loadVCSCompensareData();
+				}
+			}
+		});
+		</script>
+		
+		'.( isset($mixall)?'</form>':'' );
+	}
+
+		//__________________________________________________________________________________________FOAIE DE PARCURS PENTRU AUTOCAMIOANE
 	if ( $t_mp[5]=='foaie_parcurs' || isset($mixall) ){
 		$fp_daa_start = 40992842; 
 		$pdo_daa = $db->prepare('SELECT `value` FROM '.$prefx.'_info WHERE `name`=:name AND `x1`=:x1 AND `x2`=:x2 LIMIT 1');

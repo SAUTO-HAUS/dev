@@ -33,6 +33,7 @@ if ( isset($t_mp[4]) ){
 						,'cesionar'=>'Anexa<br>(Cesiune drept de plată)'
 						,'con_intermed'=>'Contract de intermediere'
 						,'foaie_parcurs_cars'=>'Foaie de parcurs pentru automobile'
+						,'act_compensare'=>'Act de compensare'
 						// ,'vinzare_proc'=>'Contract de vânzare-cumpărare'
 					]
 					,($lng['m']['doc_cat_comanda'] ?? 'Set de acte auto la comanda')=>[
@@ -40,6 +41,7 @@ if ( isset($t_mp[4]) ){
 						,'con_arvon_com'=>'Contract de arvună (la comanda)'
 						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
 						,'cesionar'=>'Anexa<br>(Cesiune drept de plată)'
+						,'act_compensare'=>'Act de compensare'
 					]
 					,($lng['m']['doc_cat_transport'] ?? 'Transport')=>[
 						'com_transport'=>'Comanda pentru transport'
@@ -67,6 +69,7 @@ if ( isset($t_mp[4]) ){
 					    ,'con_arvon'=>'Contract de arvună'
 						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
 						,'cesionar'=>'Anexa (Cesiune drept de plată)'
+						,'act_compensare'=>'Act de compensare'
 						,'con_intermed'=>'Contract de intermediere'
 						,'foaie_parcurs_cars'=>'Foaie de parcurs pentru automobile'
 						// ,'vinzare_proc'=>'Contract de vânzare-cumpărare'
@@ -76,6 +79,7 @@ if ( isset($t_mp[4]) ){
 						,'con_arvon_com'=>'Contract de arvună (la comanda)'
 						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
 						,'cesionar'=>'Anexa (Cesiune drept de plată)'
+						,'act_compensare'=>'Act de compensare'
 					]
 					,($lng['m']['doc_cat_transport'] ?? 'Transport')=>[
 						'com_transport'=>'Comanda pentru transport'
