@@ -1334,8 +1334,8 @@ JAVASCRIPT;
 		<div style="display:flex; gap:20px; flex-wrap:wrap;">
 		<div style="flex:1; min-width:280px; display:flex; flex-direction:column;">
 			<div class="ttl">Contract VCA (Client datorează SAUTO)</div>
-			<input type="text" id="vca_contract_search" placeholder="Caută contract după nume, IDNP sau număr..." style="width:100%; padding:0.5rem; margin-bottom:0.5rem; border:1px solid #ddd; border-radius:4px; box-sizing:border-box;" />
-			<label class="lbl" style="width:100%;"><span class="ttl">Selectează contract VCA</span><select class="need" name="vca_contract_id" id="vca_contract_id" onchange="loadVCACompensareData()" size="10" style="height:auto; min-height:250px; font-size:14px; line-height:1.8; padding:8px; width:100%; box-sizing:border-box;" required>
+			<label class="lbl" style="width:100%;"><input type="text" id="vca_contract_search" placeholder="Caută contract după nume, IDNP sau număr..." style="width:100%; box-sizing:border-box; padding:0.5rem 0.5rem; font-size:0.85rem;" /></label>
+			<label class="lbl" style="width:100%;"><span class="ttl">Selectează contract VCA</span><select class="need" name="vca_contract_id" id="vca_contract_id" onchange="loadVCACompensareData()" size="7" style="height:auto; max-height:250px; font-size:14px; line-height:1.8; padding:8px; width:100%; box-sizing:border-box;" required>
 				'.$contracts_html_vca.'
 			</select></label>
 			<label class="lbl" style="width:100%;"><span class="ttl">Nr. Contract VCA</span><input class="need" type="text" name="vca_contract_nr" title="Nr. Contract VCA" style="width:100%; box-sizing:border-box;" readonly required /></label>
@@ -1344,8 +1344,8 @@ JAVASCRIPT;
 		</div>
 		<div style="flex:1; min-width:280px; display:flex; flex-direction:column;">
 			<div class="ttl">Contract VCS (SAUTO datorează Client)</div>
-			<input type="text" id="vcs_contract_search" placeholder="Caută contract după nume, IDNP sau număr..." style="width:100%; padding:0.5rem; margin-bottom:0.5rem; border:1px solid #ddd; border-radius:4px; box-sizing:border-box;" />
-			<label class="lbl" style="width:100%;"><span class="ttl">Selectează contract VCS</span><select class="need" name="vcs_contract_id" id="vcs_contract_id" onchange="loadVCSCompensareData()" size="10" style="height:auto; min-height:250px; font-size:14px; line-height:1.8; padding:8px; width:100%; box-sizing:border-box;" required>
+			<label class="lbl" style="width:100%;"><input type="text" id="vcs_contract_search" placeholder="Caută contract după nume, IDNP sau număr..." style="width:100%; box-sizing:border-box; padding:0.5rem 0.5rem; font-size:0.85rem;" /></label>
+			<label class="lbl" style="width:100%;"><span class="ttl">Selectează contract VCS</span><select class="need" name="vcs_contract_id" id="vcs_contract_id" onchange="loadVCSCompensareData()" size="7" style="height:auto; max-height:250px; font-size:14px; line-height:1.8; padding:8px; width:100%; box-sizing:border-box;" required>
 				'.$contracts_html_vcs.'
 			</select></label>
 			<label class="lbl" style="width:100%;"><span class="ttl">Nr. Contract VCS</span><input class="need" type="text" name="vcs_contract_nr" title="Nr. Contract VCS" style="width:100%; box-sizing:border-box;" readonly required /></label>

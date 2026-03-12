@@ -38,7 +38,7 @@ $rtrn = '
 	.base {font-family:"def_l"; color:#000;}
 	.head {margin-top:45mm;}
 	.head > .nr {text-align:center; font-size:1.2rem; font-family:"def";}
-	.head > .ttl {text-align:center; font-size:1.1rem; font-weight:bold;}
+	.head > .ttl {text-align:center; font-size:1.3rem; font-weight:bold;}
 	.head > .inf {width:100%; display:inline-block;}
 	.head > .inf > .pos {float:left;}
 	.head > .inf > .date {float:left;}
@@ -80,23 +80,23 @@ $rtrn = '
 			</div>
 		</div>
 		<div class="gr">
-			<p>Prezentul act de compensare este întocmit în baza art. 651 din Codul Civil al Republicii Moldova și contractelor de vânzare-cumpărare la situația din '.$date_formatted.' între SAUTO SRL cf1017600006845 și <span class="txt_cpt">'.strtolower($u_nm).'</span> cp <span class="txt_up">'.$u_cf_idno.'</span>.</p>
+			<p>Prezentul act de compensare este întocmit în baza art. 651 din Codul Civil al Republicii Moldova și contractelor de vânzare-cumpărare la situația din '.$date_formatted.' între <b>SAUTO SRL</b> CF: <b>1017600006845</b> și <b><span class="txt_cpt">'.strtolower($u_nm).'</span></b> CP: <b><span class="txt_up">'.$u_cf_idno.'</span></b>.</p>
 		</div>
 		<div class="gr">
-			<p>La data de <b>'.$vca_date_formatted.'</b> în baza contractului <b>'.$vca_contract_nr.'</b> din <b>'.$vca_date_formatted.'</b> <span class="txt_cpt">'.strtolower($u_nm).'</span> are datorie față de SAUTO SRL în sumă de <b>'.$vca_amount_formatted.' lei</b>.</p>
+			<p>La data de '.$vca_date_formatted.' în baza contractului <b>'.$vca_contract_nr.'</b> din '.$vca_date_formatted.' <b><span class="txt_cpt">'.strtolower($u_nm).'</span></b> are datorie față de <b>SAUTO SRL</b> în sumă de '.$vca_amount_formatted.' lei.</p>
 		</div>
 		<div class="gr">
-			<p>La data de <b>'.$vcs_date_formatted.'</b> în baza contractului de vânzare procurare <b>'.$vcs_contract_nr.'</b> din <b>'.$vcs_date_formatted.'</b> SAUTO SRL are datorie față de <span class="txt_cpt">'.strtolower($u_nm).'</span> în sumă de <b>'.$vcs_amount_formatted.' lei</b>.</p>
+			<p>La data de '.$vcs_date_formatted.' în baza contractului de vânzare procurare <b>'.$vcs_contract_nr.'</b> din '.$vcs_date_formatted.' <b>SAUTO SRL</b> are datorie față de <b><span class="txt_cpt">'.strtolower($u_nm).'</span></b> în sumă de '.$vcs_amount_formatted.' lei.</p>
 		</div>
 		<div class="gr">
-			<p>Prin prezentul act ambele părți au convenit de a efectua stingerea reciprocă în sumă de <b>'.$compensation_amount_formatted.' lei</b>.</p>
+			<p>Prin prezentul act ambele părți au convenit de a efectua stingerea reciprocă în sumă de '.$compensation_amount_formatted.' lei.</p>
 		</div>
 		
 		<div class="flx">
 			<div class="ws"></div>
 			<div class="sign">
-				<div class="s1">SAUTO SRL<span style="position: absolute;bottom: -7mm;">Administrator</span><div class="ln"></div>'.(isset($_POST['stamp'])&&$_POST['stamp']==1?'<div class="stamp ghost"><div class="signature"></div></div>':'').'</div>
-				<div class="s2"><span class="txt_cpt">'.strtolower($u_nm).'</span><div class="ln"></div></div>
+				<div class="s1"><b>SAUTO SRL</b><span style="position: absolute;bottom: -7mm;">Administrator</span><div class="ln"></div>'.(isset($_POST['stamp'])&&$_POST['stamp']==1?'<div class="stamp ghost"><div class="signature"></div></div>':'').'</div>
+				<div class="s2"><b><span class="txt_cpt">'.strtolower($u_nm).'</span></b><div class="ln"></div></div>
 			</div>
 		</div>
 	</div>
