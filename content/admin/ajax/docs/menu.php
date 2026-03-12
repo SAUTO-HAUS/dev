@@ -1397,23 +1397,6 @@ JAVASCRIPT;
 			}
 		}
 		
-		$(document).ready(function() {
-			var editData = $(".bx.act .values");
-			if (editData.length > 0) {
-				var vcaContractId = editData.attr("data-vca_contract_id");
-				var vcsContractId = editData.attr("data-vcs_contract_id");
-				
-				if (vcaContractId) {
-					$("#vca_contract_id").val(vcaContractId);
-					loadVCACompensareData();
-				}
-				
-				if (vcsContractId) {
-					$("#vcs_contract_id").val(vcsContractId);
-					loadVCSCompensareData();
-				}
-			}
-		});
 		</script>
 		
 		'.( isset($mixall)?'</form>':'' );

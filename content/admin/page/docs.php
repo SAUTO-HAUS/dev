@@ -635,6 +635,30 @@ c/f 1017600006845, c/TVA 0609417</pre>
 								}
 							}
 							
+							// Handle act_compensare contract data loading in edit mode
+							if (vals.data("doc") == "act_compensare") {
+								setTimeout(function() {
+									var vcaContractId = vals.data("vca_contract_id");
+									var vcsContractId = vals.data("vcs_contract_id");
+									
+									if (vcaContractId) {
+										var vcaEl = base.find("#vca_contract_id")[0];
+										if (vcaEl) {
+											vcaEl.value = vcaContractId;
+											vcaEl.dispatchEvent(new Event("change"));
+										}
+									}
+									
+									if (vcsContractId) {
+										var vcsEl = base.find("#vcs_contract_id")[0];
+										if (vcsEl) {
+											vcsEl.value = vcsContractId;
+											vcsEl.dispatchEvent(new Event("change"));
+										}
+									}
+								}, 100);
+							}
+							
 							// After all fields are populated, trigger brand change and then set model value
 							setTimeout(function() {
 								var brandSelect = base.find("select[name=\"br\"]");
@@ -986,14 +1010,13 @@ c/f 1017600006845, c/TVA 0609417</pre>
 					//if ( $date != $r['date'] ){$date = $r['date']; $rtrn .= '<div class="sep">'.date( 'd.m.Y', strtotime( $r['date'] ) ).'</div>';}
 					
 					$inf = [];//if ( isset($inf) ){ unset($inf); }
-					if ( $r['inf']!='' ){
-						foreach ( explode('&&', $r['inf']) as $v){
-							$tmp = explode('==', $v);
-							if ( isset($tmp[1]) ){ $inf[ $tmp[0] ] = $tmp[1]; }
-						}
+				if ( $r['inf']!='' ){
+					foreach ( explode('&&', $r['inf']) as $v){
+						$tmp = explode('==', $v);
+						if ( isset($tmp[1]) ){ $inf[ $tmp[0] ] = $tmp[1]; }
 					}
-					
-					$br_mo_vin = '';
+				}
+				$br_mo_vin = '';
 					if ( isset($inf['br']) && strpos($inf['br'], '||') !== false && strpos($inf['mo'], '||') !== false ){
 						$br_ar = explode('||', $inf['br']); $mo_ar = explode('||', $inf['mo']); if ( strpos($inf['vin'], '||') !== false ){ $vin_ar = explode('||', $inf['vin']); }
 						foreach ($br_ar as $k => $v){
@@ -1056,7 +1079,9 @@ c/f 1017600006845, c/TVA 0609417</pre>
 							'.(isset($inf['buyer_name'])?'data-buyer_name="'.htmlspecialchars($inf['buyer_name']).'"':'').' '.(isset($inf['buyer_vat'])?'data-buyer_vat="'.htmlspecialchars($inf['buyer_vat']).'"':'').' '.(isset($inf['buyer_account'])?'data-buyer_account="'.htmlspecialchars($inf['buyer_account']).'"':'').'
 							'.(isset($inf['buyer_address'])?'data-buyer_address="'.htmlspecialchars($inf['buyer_address']).'"':'').' '.(isset($inf['buyer_country'])?'data-buyer_country="'.htmlspecialchars($inf['buyer_country']).'"':'').' '.(isset($inf['buyer_swift'])?'data-buyer_swift="'.htmlspecialchars($inf['buyer_swift']).'"':'').' 
 							'.(isset($inf['add_cesionar'])?'data-add_cesionar="'.$inf['add_cesionar'].'"':'').' '.(isset($inf['cesionar_account'])?'data-cesionar_account="'.htmlspecialchars($inf['cesionar_account']).'"':'').' '.(isset($inf['cesionar_nm'])?'data-cesionar_nm="'.htmlspecialchars($inf['cesionar_nm']).'"':'').' '.(isset($inf['cesionar_cf_idno'])?'data-cesionar_cf_idno="'.htmlspecialchars($inf['cesionar_cf_idno']).'"':'').' '.(isset($inf['cesionar_suma'])?'data-cesionar_suma="'.$inf['cesionar_suma'].'"':'').' '.(isset($inf['base_contract_id'])?'data-base_contract_id="'.$inf['base_contract_id'].'"':'').' 
-							'.(isset($inf['sofer'])?'data-sofer="'.htmlspecialchars($inf['sofer']).'"':'').' '.(isset($inf['autovehicul'])?'data-autovehicul="'.htmlspecialchars($inf['autovehicul']).'"':'').'
+						    '.(isset($inf['vca_contract_id'])?'data-vca_contract_id="'.$inf['vca_contract_id'].'"':'').' '.(isset($inf['vca_contract_nr'])?'data-vca_contract_nr="'.htmlspecialchars($inf['vca_contract_nr']).'"':'').' '.(isset($inf['vca_date'])?'data-vca_date="'.$inf['vca_date'].'"':'').' '.(isset($inf['vca_amount'])?'data-vca_amount="'.$inf['vca_amount'].'"':'').' 
+						    '.(isset($inf['vcs_contract_id'])?'data-vcs_contract_id="'.$inf['vcs_contract_id'].'"':'').' '.(isset($inf['vcs_contract_nr'])?'data-vcs_contract_nr="'.htmlspecialchars($inf['vcs_contract_nr']).'"':'').' '.(isset($inf['vcs_date'])?'data-vcs_date="'.$inf['vcs_date'].'"':'').' '.(isset($inf['vcs_amount'])?'data-vcs_amount="'.$inf['vcs_amount'].'"':'').' '.(isset($inf['compensation_amount'])?'data-compensation_amount="'.$inf['compensation_amount'].'"':'').' 
+						'.(isset($inf['sofer'])?'data-sofer="'.htmlspecialchars($inf['sofer']).'"':'').' '.(isset($inf['autovehicul'])?'data-autovehicul="'.htmlspecialchars($inf['autovehicul']).'"':'').'
 							'.(isset($inf['kyc_doc_buletin'])?'data-kyc_doc_buletin="'.$inf['kyc_doc_buletin'].'"':'').' '.(isset($inf['kyc_doc_permis'])?'data-kyc_doc_permis="'.$inf['kyc_doc_permis'].'"':'').' '.(isset($inf['kyc_doc_pasaport'])?'data-kyc_doc_pasaport="'.$inf['kyc_doc_pasaport'].'"':'').'
 							'.(isset($inf['kyc_occupation_angajat'])?'data-kyc_occupation_angajat="'.$inf['kyc_occupation_angajat'].'"':'').' '.(isset($inf['kyc_occupation_student'])?'data-kyc_occupation_student="'.$inf['kyc_occupation_student'].'"':'').' '.(isset($inf['kyc_occupation_antreprenor'])?'data-kyc_occupation_antreprenor="'.$inf['kyc_occupation_antreprenor'].'"':'').' '.(isset($inf['kyc_occupation_somer'])?'data-kyc_occupation_somer="'.$inf['kyc_occupation_somer'].'"':'').' '.(isset($inf['kyc_occupation_pensionar'])?'data-kyc_occupation_pensionar="'.$inf['kyc_occupation_pensionar'].'"':'').'
 							'.(isset($inf['kyc_no_public_function'])?'data-kyc_no_public_function="'.$inf['kyc_no_public_function'].'"':'').' '.(isset($inf['kyc_public_function_deputat'])?'data-kyc_public_function_deputat="'.$inf['kyc_public_function_deputat'].'"':'').' '.(isset($inf['kyc_public_function_judecator'])?'data-kyc_public_function_judecator="'.$inf['kyc_public_function_judecator'].'"':'').' '.(isset($inf['kyc_public_function_guvern'])?'data-kyc_public_function_guvern="'.$inf['kyc_public_function_guvern'].'"':'').' '.(isset($inf['kyc_public_function_primar'])?'data-kyc_public_function_primar="'.$inf['kyc_public_function_primar'].'"':'').' '.(isset($inf['kyc_public_function_partid'])?'data-kyc_public_function_partid="'.$inf['kyc_public_function_partid'].'"':'').' '.(isset($inf['kyc_public_function_consilier'])?'data-kyc_public_function_consilier="'.$inf['kyc_public_function_consilier'].'"':'').'

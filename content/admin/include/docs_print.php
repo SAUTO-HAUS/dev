@@ -267,8 +267,8 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 		include(__DIR__.'/docs/'.$_POST['doc_gr'].'/'.$_POST['doc_f'].'.php');
 		
 		echo '
-		</body>
-	</html>';
+	</body>
+</html>';
 	
 	if (isset($_POST['save_inf']) && $_POST['save_inf']=='1'){
 		if (in_array($_POST['doc_f'], ['foaie_parcurs','foaie_parcurs_cars']) && isset($_POST['fp_daa_start']) && $_POST['fp_daa_start'] != '' && (!isset($_POST['doc_view']) || $_POST['doc_view'] != '1')) {
