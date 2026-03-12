@@ -1287,26 +1287,27 @@ JAVASCRIPT;
 
 		//__________________________________________________________________________________________ACT DE COMPENSARE
 	if ( $t_mp[5]=='act_compensare' || isset($mixall) ){
-		// Get existing vinzare_avans contracts
+		// Get existing contracts for VCA (vinzare_avans) and VCS (vinzare_sauto)
 		$contracts_html_vca = '<option value="" class="def" disabled selected>Selectează contract VCA...</option>';
 		$contracts_html_vcs = '<option value="" class="def" disabled selected>Selectează contract VCS...</option>';
+		
+		$sql_contracts = '
+			SELECT c.id, c.inf, c.date, c.abr, c.y, c.q, c.n,
+			       u.nm as u_nm, u.cf_idno as u_cf_idno, u.tp as u_tp
+			FROM '.$prefx.'_docs_ctlg c 
+			LEFT JOIN '.$prefx.'_docs_u u ON c.u = u.id 
+			WHERE c.f = ?
+			ORDER BY c.date DESC
+		';
+		
 		try {
-			$pdo_contracts = $db->prepare('
-				SELECT c.id, c.inf, c.date, c.abr, c.y, c.q, c.n,
-				       u.nm as u_nm, u.cf_idno as u_cf_idno, u.tp as u_tp
-				FROM '.$prefx.'_docs_ctlg c 
-				LEFT JOIN '.$prefx.'_docs_u u ON c.u = u.id 
-				WHERE c.f = ?
-				ORDER BY c.date DESC
-			');
-			$pdo_contracts->execute(['vinzare_avans']);
-			
-			foreach ($pdo_contracts as $contract) {
+			$pdo_vca = $db->prepare($sql_contracts);
+			$pdo_vca->execute(['vinzare_avans']);
+			foreach ($pdo_vca as $contract) {
 				$cont_nr = $contract['abr'].$contract['y'].$contract['q'].'/'.$contract['n'];
 				$u_nm = !empty($contract['u_nm']) ? $contract['u_nm'] : '';
 				$u_cf_idno = $contract['u_cf_idno'] ?: '';
 				$u_tp = $contract['u_tp'] ?: 'fiz';
-				
 				$prc = '';
 				if (!empty($contract['inf'])) {
 					$pairs = explode('&&', $contract['inf']);
@@ -1317,14 +1318,34 @@ JAVASCRIPT;
 						}
 					}
 				}
-				
-				$option_html = '<option value="'.$contract['id'].'" data-cont-nr="'.htmlspecialchars($cont_nr).'" data-date="'.htmlspecialchars($contract['date']).'" data-u-nm="'.htmlspecialchars($u_nm).'" data-u-cf-idno="'.htmlspecialchars($u_cf_idno).'" data-u-tp="'.htmlspecialchars($u_tp).'" data-prc="'.htmlspecialchars($prc).'">'.htmlspecialchars($cont_nr).' | '.htmlspecialchars($u_nm).' | '.htmlspecialchars($u_cf_idno).'</option>';
-				$contracts_html_vca .= $option_html;
-				$contracts_html_vcs .= $option_html;
+				$contracts_html_vca .= '<option value="'.$contract['id'].'" data-cont-nr="'.htmlspecialchars($cont_nr).'" data-date="'.htmlspecialchars($contract['date']).'" data-u-nm="'.htmlspecialchars($u_nm).'" data-u-cf-idno="'.htmlspecialchars($u_cf_idno).'" data-u-tp="'.htmlspecialchars($u_tp).'" data-prc="'.htmlspecialchars($prc).'">'.htmlspecialchars($cont_nr).' | '.htmlspecialchars($u_nm).' | '.htmlspecialchars($u_cf_idno).'</option>';
 			}
 		} catch (Exception $e) {
-			$contracts_html_vca .= '<option value="" disabled>Eroare la încărcarea contractelor</option>';
-			$contracts_html_vcs .= '<option value="" disabled>Eroare la încărcarea contractelor</option>';
+			$contracts_html_vca .= '<option value="" disabled>Eroare la încărcarea contractelor VCA</option>';
+		}
+		
+		try {
+			$pdo_vcs = $db->prepare($sql_contracts);
+			$pdo_vcs->execute(['vinzare_sauto']);
+			foreach ($pdo_vcs as $contract) {
+				$cont_nr = $contract['abr'].$contract['y'].$contract['q'].'/'.$contract['n'];
+				$u_nm = !empty($contract['u_nm']) ? $contract['u_nm'] : '';
+				$u_cf_idno = $contract['u_cf_idno'] ?: '';
+				$u_tp = $contract['u_tp'] ?: 'fiz';
+				$prc = '';
+				if (!empty($contract['inf'])) {
+					$pairs = explode('&&', $contract['inf']);
+					foreach ($pairs as $pair) {
+						if (strpos($pair, 'prc==') === 0) {
+							$prc = substr($pair, 5);
+							break;
+						}
+					}
+				}
+				$contracts_html_vcs .= '<option value="'.$contract['id'].'" data-cont-nr="'.htmlspecialchars($cont_nr).'" data-date="'.htmlspecialchars($contract['date']).'" data-u-nm="'.htmlspecialchars($u_nm).'" data-u-cf-idno="'.htmlspecialchars($u_cf_idno).'" data-u-tp="'.htmlspecialchars($u_tp).'" data-prc="'.htmlspecialchars($prc).'">'.htmlspecialchars($cont_nr).' | '.htmlspecialchars($u_nm).' | '.htmlspecialchars($u_cf_idno).'</option>';
+			}
+		} catch (Exception $e) {
+			$contracts_html_vcs .= '<option value="" disabled>Eroare la încărcarea contractelor VCS</option>';
 		}
 		
 		$rtrn .= ( isset($mixall)?'<form class="menu_act_compensare">':'' ).'
