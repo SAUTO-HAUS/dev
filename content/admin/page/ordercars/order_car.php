@@ -510,10 +510,10 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                         <label style="position:relative;display:inline-block;width:50px;height:24px;flex-shrink:0;cursor:pointer;" title="VIN Check (CarVertical)">
                             <input type="checkbox" name="vin_check_enabled" style="opacity:0;width:0;height:0;"
                                    onchange="this.value=+this.checked;this.nextElementSibling.style.backgroundColor=this.checked?'#e2001a':'#ccc';this.nextElementSibling.nextElementSibling.style.left=this.checked?'29px':'3px';"
-                                   value="<?= ($car['vin_check_enabled'] ?? 1) == 1 ? '1' : '0' ?>"
-                                   <?= ($car['vin_check_enabled'] ?? 1) == 1 ? 'checked' : '' ?>>
-                            <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:<?= ($car['vin_check_enabled'] ?? 1) == 1 ? '#e2001a' : '#ccc' ?>;transition:.4s;border-radius:24px;"></span>
-                            <span style="position:absolute;height:18px;width:18px;left:<?= ($car['vin_check_enabled'] ?? 1) == 1 ? '29px' : '3px' ?>;bottom:3px;background-color:white;transition:.4s;border-radius:50%;pointer-events:none;"></span>
+                                   value="<?= ($car['vin_check_enabled'] ?? 0) == 1 ? '1' : '0' ?>"
+                                   <?= ($car['vin_check_enabled'] ?? 0) == 1 ? 'checked' : '' ?>>
+                            <span style="position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:<?= ($car['vin_check_enabled'] ?? 0) == 1 ? '#e2001a' : '#ccc' ?>;transition:.4s;border-radius:24px;"></span>
+                            <span style="position:absolute;height:18px;width:18px;left:<?= ($car['vin_check_enabled'] ?? 0) == 1 ? '29px' : '3px' ?>;bottom:3px;background-color:white;transition:.4s;border-radius:50%;pointer-events:none;"></span>
                         </label>
                         <span style="font-size:13px;color:#666;margin-left:5px;">
                             <?php 
