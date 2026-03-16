@@ -3,6 +3,18 @@
 ignore_user_abort(true);
 set_time_limit(180);
 
+// Simple logging function
+function logAI($message, $data = []) {
+    $logFile = $_SERVER['DOCUMENT_ROOT'] . '/logs/ai_descriptions.log';
+    $timestamp = date('Y-m-d H:i:s');
+    $logMessage = "[{$timestamp}] {$message}";
+    if (!empty($data)) {
+        $logMessage .= " | " . json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+    $logMessage .= "\n";
+    @file_put_contents($logFile, $logMessage, FILE_APPEND);
+}
+
 $isBackgroundRequest = ($_POST['save_to_db'] ?? $_GET['save_to_db'] ?? '') == '1';
 
 if ($isBackgroundRequest) {
@@ -34,6 +46,8 @@ $useOpenAI = !empty($openaiApiKey);
 $carImages = [];
 $carId = intval($_POST['car_id'] ?? $_GET['car_id'] ?? 0);
 
+logAI("AI Request", ['car_id' => $carId, 'save_to_db' => ($_POST['save_to_db'] ?? $_GET['save_to_db'] ?? '0')]);
+
 $saveToDbCheck = ($_POST['save_to_db'] ?? $_GET['save_to_db'] ?? '') == '1';
 if ($saveToDbCheck && $carId > 0) {
     $stmtType = $db->prepare("SELECT catalog_type FROM {$prefx}_car_ctlg WHERE id = ? LIMIT 1");
@@ -41,14 +55,23 @@ if ($saveToDbCheck && $carId > 0) {
     $typeRow = $stmtType->fetch(PDO::FETCH_ASSOC);
     $p1Value = ($typeRow && $typeRow['catalog_type'] === 'on_order') ? 'ordercars' : 'cars';
     
-    $stmtCheckExisting = $db->prepare("SELECT id FROM {$prefx}_seo2 WHERE it_id = ? AND tp = 'item' AND p1 = ? AND lng = 'ro' AND params_html IS NOT NULL AND params_html != '' LIMIT 1");
+    logAI("Check existing", ['car_id' => $carId, 'catalog_type' => $typeRow['catalog_type'] ?? 'unknown', 'p1' => $p1Value]);
+    
+    $stmtCheckExisting = $db->prepare("SELECT id, LENGTH(params_html) as html_length FROM {$prefx}_seo2 WHERE it_id = ? AND tp = 'item' AND p1 = ? AND lng = 'ro' LIMIT 1");
     $stmtCheckExisting->execute([$carId, $p1Value]);
     $existingDesc = $stmtCheckExisting->fetch(PDO::FETCH_ASSOC);
     
-    if ($existingDesc) {
+    if ($existingDesc && !empty($existingDesc['html_length']) && $existingDesc['html_length'] > 10) {
+        logAI("SKIPPED - has valid description", ['car_id' => $carId, 'html_length' => $existingDesc['html_length']]);
         $returnIt = ['success' => true, 'skipped' => true, 'reason' => 'Car already has AI description'];
         return;
     }
+    
+    if ($existingDesc && $existingDesc['html_length'] <= 10) {
+        logAI("Found empty description - will regenerate", ['car_id' => $carId, 'html_length' => $existingDesc['html_length']]);
+    }
+    
+    logAI("Proceeding with generation", ['car_id' => $carId]);
 }
 
 if ($fromForm) {
@@ -476,6 +499,8 @@ if ($saveToDb && $carIdForSave > 0) {
     $stmtType->execute([$carIdForSave]);
     $typeRow = $stmtType->fetch(PDO::FETCH_ASSOC);
     $p1Value = ($typeRow && $typeRow['catalog_type'] === 'on_order') ? 'ordercars' : 'cars';
+    
+    logAI("Saving to DB", ['car_id' => $carIdForSave, 'p1' => $p1Value]);
     
     foreach ($langs as $lng) {
         $htmlContent = $htmlData[$lng] ?? '';
