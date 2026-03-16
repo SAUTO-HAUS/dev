@@ -1640,8 +1640,6 @@ function handleDisplayLimitChange(newLimit) {
 	window.location.href = currentUrl.toString();
 }
 
-initializeDisplayLimit();
-
 // SAUTO Personal Calendar Scheduling - Global variables
 let currentDate = new Date();
 let selectedDate = null;
