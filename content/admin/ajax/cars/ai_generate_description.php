@@ -36,7 +36,11 @@ $carId = intval($_POST['car_id'] ?? $_GET['car_id'] ?? 0);
 
 $saveToDbCheck = ($_POST['save_to_db'] ?? $_GET['save_to_db'] ?? '') == '1';
 if ($saveToDbCheck && $carId > 0) {
-    $p1Value = 'cars';
+    $stmtType = $db->prepare("SELECT catalog_type FROM {$prefx}_car_ctlg WHERE id = ? LIMIT 1");
+    $stmtType->execute([$carId]);
+    $typeRow = $stmtType->fetch(PDO::FETCH_ASSOC);
+    $p1Value = ($typeRow && $typeRow['catalog_type'] === 'on_order') ? 'ordercars' : 'cars';
+    
     $stmtCheckExisting = $db->prepare("SELECT id FROM {$prefx}_seo2 WHERE it_id = ? AND tp = 'item' AND p1 = ? AND lng = 'ro' AND params_html IS NOT NULL AND params_html != '' LIMIT 1");
     $stmtCheckExisting->execute([$carId, $p1Value]);
     $existingDesc = $stmtCheckExisting->fetch(PDO::FETCH_ASSOC);
@@ -468,7 +472,10 @@ $carIdForSave = intval($_POST['car_id'] ?? $_GET['car_id'] ?? 0);
 
 if ($saveToDb && $carIdForSave > 0) {
     $langs = ['ro', 'ru', 'en'];
-    $p1Value = 'cars';
+    $stmtType = $db->prepare("SELECT catalog_type FROM {$prefx}_car_ctlg WHERE id = ? LIMIT 1");
+    $stmtType->execute([$carIdForSave]);
+    $typeRow = $stmtType->fetch(PDO::FETCH_ASSOC);
+    $p1Value = ($typeRow && $typeRow['catalog_type'] === 'on_order') ? 'ordercars' : 'cars';
     
     foreach ($langs as $lng) {
         $htmlContent = $htmlData[$lng] ?? '';
