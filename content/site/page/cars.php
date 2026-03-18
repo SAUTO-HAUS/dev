@@ -949,8 +949,9 @@ $iconTelegramParams = array(
                 $dynamicPhone = PhoneHelper::getCarPhone($r, 'car_page');
 
                 // webs25
-                $pdo = $db->prepare('SELECT * FROM ' . $prefx . '_seo2 WHERE `it_id`=:it_id AND lng = :lng LIMIT 1');
-                $pdo->execute(['it_id' => $r['id'], 'lng' => $_COOKIE['lang']]);
+                $p1Value = (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') ? 'ordercars' : 'cars';
+                $pdo = $db->prepare('SELECT * FROM ' . $prefx . '_seo2 WHERE `it_id`=:it_id AND `tp`="item" AND `p1`=:p1 AND lng = :lng LIMIT 1');
+                $pdo->execute(['it_id' => $r['id'], 'p1' => $p1Value, 'lng' => $_COOKIE['lang']]);
                 $rseo = $pdo->fetch();
                 // var_dump( $rseo);
                 $rseo['params_html'] = (html_entity_decode($rseo['params_html']));
