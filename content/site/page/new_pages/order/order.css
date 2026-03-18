@@ -1,0 +1,87 @@
+/* ========================================
+   ORDER PAGE STYLES
+   ======================================== */
+
+/* ========================================
+   1. HERO SECTION
+   ======================================== */
+
+.order-hero-section {
+    background: linear-gradient(to right, #6d6d6d 0%, #5c5c5c 100%);
+    color: white;
+    padding: 0;
+    height: 32.5rem;
+    position: relative;
+    overflow: visible;
+    width: 100vw;
+    left: 0;
+    right: 0;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    box-sizing: border-box;
+    margin-top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.order-hero-content {
+    position: relative;
+    width: 100%;
+    max-width: 90rem;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.order-hero-text h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    line-height: 1.2;
+}
+
+.order-hero-text p {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    max-width: 50rem;
+    margin: 0 auto;
+}
+
+/* ========================================
+   2. FORM SECTION
+   ======================================== */
+
+.order-form-section {
+    max-width: 90rem;
+    margin: 3rem auto;
+    padding: 0 2rem;
+}
+
+/* ========================================
+   3. RESPONSIVE STYLES
+   ======================================== */
+
+@media (max-width: 768px) {
+    .order-hero-section {
+        height: auto;
+        min-height: 20rem;
+        padding: 3rem 0;
+    }
+    
+    .order-hero-text h1 {
+        font-size: 2rem;
+    }
+    
+    .order-hero-text p {
+        font-size: 1rem;
+    }
+    
+    .order-form-section {
+        padding: 0 1rem;
+        margin: 2rem auto;
+    }
+}

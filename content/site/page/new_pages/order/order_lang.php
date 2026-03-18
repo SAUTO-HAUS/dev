@@ -1,28 +1,16 @@
 <?php defined('_DOIT') or die('Restricted access');
 
-return [
+$lng_order_page = [
     'ru' => [
-        'meta' => [
-            'title' => 'Заказ автомобиля под ключ в Sauto Haus',
-            'description' => 'Закажите автомобиль из Европы, США или Кореи. Полное сопровождение сделки от поиска до доставки.',
-            'keywords' => 'Sauto Haus, заказ авто, автомобиль под заказ, доставка авто',
-            'h1' => 'Заказ автомобиля под ключ',
-        ],
+        'hero_title' => 'Заказ автомобиля под ключ',
+        'hero_subtitle' => 'Найдем и доставим автомобиль вашей мечты из Европы, США или Кореи. Полное сопровождение сделки от поиска до регистрации.',
     ],
     'ro' => [
-        'meta' => [
-            'title' => 'Comandă auto la cheie la Sauto Haus',
-            'description' => 'Comandă un automobil din Europa, SUA sau Coreea. Asistență completă de la căutare până la livrare.',
-            'keywords' => 'Sauto Haus, comandă auto, automobil la comandă, livrare auto',
-            'h1' => 'Comandă auto la cheie',
-        ],
+        'hero_title' => 'Comandă auto la cheie',
+        'hero_subtitle' => 'Găsim și livrăm automobilul visurilor tale din Europa, SUA sau Coreea. Asistență completă de la căutare până la înmatriculare.',
     ],
     'en' => [
-        'meta' => [
-            'title' => 'Turnkey car order at Sauto Haus',
-            'description' => 'Order a car from Europe, USA or Korea. Full transaction support from search to delivery.',
-            'keywords' => 'Sauto Haus, car order, custom car order, car delivery',
-            'h1' => 'Turnkey car order',
-        ],
+        'hero_title' => 'Turnkey Car Order',
+        'hero_subtitle' => 'We find and deliver your dream car from Europe, USA or Korea. Full support from search to registration.',
     ],
 ];
