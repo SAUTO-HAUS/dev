@@ -44,9 +44,13 @@ if (file_exists($js_file_path)) {
     <div class="order-hero-content">
         <!-- Left side - Text and Contact -->
         <div class="order-hero-left">
-            <p class="order-hero-label"><?php echo get_order_translation('hero_label', $current_lang, $lng_order_page); ?></p>
             <h1 class="order-hero-title"><?php echo get_order_translation('hero_title', $current_lang, $lng_order_page); ?></h1>
             <p class="order-hero-subtitle"><?php echo get_order_translation('hero_subtitle', $current_lang, $lng_order_page); ?></p>
+            
+            <button class="order-hero-button">
+                <?php echo get_order_translation('hero_button', $current_lang, $lng_order_page); ?>
+                <img src="/content/site/page/new_pages/order/order-media/right.svg" alt="Arrow" class="order-hero-button-arrow">
+            </button>
             
             <div class="order-hero-contact">
                 <p class="order-contact-label"><?php echo get_order_translation('contact_label', $current_lang, $lng_order_page); ?></p>

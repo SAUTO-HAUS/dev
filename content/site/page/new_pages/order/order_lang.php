@@ -2,9 +2,9 @@
 
 $lng_order_page = [
     'ru' => [
-        'hero_label' => 'Контактные данные',
-        'hero_title' => 'Найдите свой идеальный автомобиль с нами',
+        'hero_title' => 'Автомобили из Европы, США и Кореи под заказ: экономия до 45%',
         'hero_subtitle' => 'Заполните форму, и мы свяжемся с вами с подходящим предложением.',
+        'hero_button' => 'Персонализированный поиск',
         'contact_label' => 'Свяжитесь с нами',
         'slider_title' => 'Реализованные проекты',
         'slider_subtitle' => '<strong>Более 1500 автомобилей,</strong> импортированных под заказ из Европы и Кореи',
@@ -16,9 +16,9 @@ $lng_order_page = [
         'choice_label' => 'Что выбрал',
     ],
     'ro' => [
-        'hero_label' => 'Date de contact',
-        'hero_title' => 'Găsește-ți mașina ideală<br>cu noi',
+        'hero_title' => 'Automobile din Europa, SUA și Coreea la comandă: economie până la 45%',
         'hero_subtitle' => 'Completează formularul iar noi revenin cu oferta potrivită pentru tine.',
+        'hero_button' => 'Căutare personalizată',
         'contact_label' => 'Contactați-ne',
         'slider_title' => 'Proiecte realizate',
         'slider_subtitle' => '<strong>Peste 1500 de automobile,</strong> importate la comandă din Europa și Coreea',
@@ -30,9 +30,9 @@ $lng_order_page = [
         'choice_label' => 'Ce a ales',
     ],
     'en' => [
-        'hero_label' => 'Contact details',
-        'hero_title' => 'Find your ideal car with us',
+        'hero_title' => 'Cars from Europe, USA and Korea to order: save up to 45%',
         'hero_subtitle' => 'Fill out the form and we will get back to you with the right offer.',
+        'hero_button' => 'Personalized search',
         'contact_label' => 'Contact us',
         'slider_title' => 'Completed projects',
         'slider_subtitle' => '<strong>More than 1500 cars,</strong> imported to order from Europe and Korea',
