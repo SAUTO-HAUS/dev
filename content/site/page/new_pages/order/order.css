@@ -234,28 +234,63 @@
 }
 
 .order-card-content {
-    padding: 1.5rem;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
 }
 
 .order-card-title {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
     font-weight: 700;
-    margin: 0 0 1rem 0;
+    margin: 0;
     color: #1a1a1a;
+    line-height: 1.3;
 }
 
-.order-card-details {
-    margin-bottom: 1.5rem;
+.order-card-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8125rem;
+    color: #1a1a1a;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e0e0e0;
 }
 
-.order-card-year {
-    font-size: 0.875rem;
-    color: #666666;
-    margin: 0 0 0.5rem 0;
+.order-card-year,
+.order-card-mileage {
+    margin: 0;
+}
+
+.order-card-description {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    flex: 1;
+}
+
+.order-card-desc-item {
+    font-size: 0.75rem;
+    line-height: 1.4;
+    color: #4a4a4a;
+    margin: 0;
+}
+
+.order-card-desc-item strong {
+    color: #000000;
+    font-weight: 600;
+}
+
+.order-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 0.75rem;
+    border-top: 1px solid #e0e0e0;
 }
 
 .order-card-price {
-    font-size: 1.5rem;
+    font-size: 1.375rem;
     font-weight: 700;
     color: #1a1a1a;
     margin: 0;
@@ -263,20 +298,17 @@
 
 .order-card-button {
     display: inline-block;
-    width: 100%;
-    padding: 0.75rem 1.5rem;
+    padding: 0.625rem 1.5rem;
     background: #dc143c;
     color: #ffffff;
     text-align: center;
-    border-radius: 0.5rem;
-    font-weight: 500;
+    border-radius: 1.25rem;
+    font-weight: 600;
+    font-size: 0.75rem;
     text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.order-card-button:hover {
-    background: #c41230;
-    transform: translateY(-2px);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: default;
 }
 
 /* ========================================

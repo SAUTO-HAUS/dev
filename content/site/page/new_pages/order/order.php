@@ -124,13 +124,17 @@ try {
                     $car_path = !empty($car['p_path']) ? $car['p_path'] : '';
                     $car_name = $car['br_nm'] . ' ' . $car['mo_nm'];
                     $car_year = $car['yr'];
-                    $car_price = number_format($car['prc'], 0, ',', ' ');
+                    $car_mileage = !empty($car['mlg']) ? number_format($car['mlg'], 0, ' ', ' ') : '0';
+                    $car_price = number_format($car['prc'], 0, ' ', ' ');
                     
                     if ($car_path && !empty($car['main_image'])) {
                         $car_image_url = "/media/images/upload/car/{$car_path}/{$car['id']}/med/{$car['main_image']}.jpg";
                     } else {
                         $car_image_url = "/media/images/site/v2/no_image.svg";
                     }
+                    
+                    // Get car descriptions
+                    $car_desc = isset($car_descriptions[$car['id']][$current_lang]) ? $car_descriptions[$car['id']][$current_lang] : null;
                 ?>
                 <div class="order-slider-card">
                     <div class="order-card-image">
@@ -140,13 +144,26 @@ try {
                     </div>
                     <div class="order-card-content">
                         <h3 class="order-card-title"><?php echo $car_name; ?></h3>
-                        <div class="order-card-details">
-                            <p class="order-card-year"><?php echo get_order_translation('year_label', $current_lang, $lng_order_page); ?>: <?php echo $car_year; ?></p>
-                            <p class="order-card-price"><?php echo $car_price; ?>€</p>
+                        <div class="order-card-meta">
+                            <span class="order-card-year"><?php echo get_order_translation('year_label', $current_lang, $lng_order_page); ?>: <?php echo $car_year; ?></span>
+                            <span class="order-card-mileage"><?php echo get_order_translation('mileage_label', $current_lang, $lng_order_page); ?>: <?php echo $car_mileage; ?></span>
                         </div>
-                        <a href="/<?php echo $current_lang; ?>/car/<?php echo $car['id']; ?>" class="order-card-button">
-                            <?php echo get_order_translation('view_button', $current_lang, $lng_order_page); ?>
-                        </a>
+                        <?php if ($car_desc): ?>
+                        <div class="order-card-description">
+                            <p class="order-card-desc-item"><strong><?php echo get_order_translation('request_label', $current_lang, $lng_order_page); ?>:</strong> <?php echo $car_desc['request']; ?></p>
+                            <p class="order-card-desc-item"><strong><?php echo get_order_translation('offer_label', $current_lang, $lng_order_page); ?>:</strong> <?php echo $car_desc['offer']; ?></p>
+                            <p class="order-card-desc-item"><strong><?php echo get_order_translation('choice_label', $current_lang, $lng_order_page); ?>:</strong> <?php echo $car_desc['choice']; ?></p>
+                        </div>
+                        <?php endif; ?>
+                        <div class="order-card-footer">
+                            <p class="order-card-price"><?php echo $car_price; ?>€</p>
+                            <span class="order-card-button">
+                                <?php echo get_order_translation('view_button', $current_lang, $lng_order_page); ?>
+                            </span>
+                            <?php /* <a href="/<?php echo $current_lang; ?>/car/<?php echo $car['id']; ?>" class="order-card-button">
+                                <?php echo get_order_translation('view_button', $current_lang, $lng_order_page); ?>
+                            </a> */ ?>
+                        </div>
                     </div>
                 </div>
                 <?php endforeach; ?>
