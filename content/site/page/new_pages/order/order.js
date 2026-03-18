@@ -6,22 +6,15 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (!sliderTrack || !prevBtn || !nextBtn || cards.length === 0) return;
     
-    const cardsToShow = 4;
     const totalCards = cards.length;
-    const firstClones = [];
-    const lastClones = [];
+    const clonedCards = [];
+    cards.forEach(card => {
+        const clone = card.cloneNode(true);
+        clonedCards.push(clone);
+        sliderTrack.appendChild(clone);
+    });
     
-    for (let i = 0; i < cardsToShow; i++) {
-        const firstClone = cards[i].cloneNode(true);
-        const lastClone = cards[totalCards - 1 - i].cloneNode(true);
-        firstClones.push(firstClone);
-        lastClones.unshift(lastClone);
-    }
-    
-    lastClones.forEach(clone => sliderTrack.insertBefore(clone, sliderTrack.firstChild));
-    firstClones.forEach(clone => sliderTrack.appendChild(clone));
-    
-    let currentIndex = cardsToShow;
+    let currentIndex = 0;
     let isTransitioning = false;
     
     function getCardWidth() {
@@ -38,18 +31,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function handleTransitionEnd() {
-        const cardWidth = getCardWidth();
-        
-        if (currentIndex >= totalCards + cardsToShow) {
+        if (currentIndex >= totalCards) {
             isTransitioning = true;
-            currentIndex = cardsToShow;
+            currentIndex = 0;
             updateSlider(false);
             setTimeout(() => { isTransitioning = false; }, 50);
         }
         
-        if (currentIndex < cardsToShow) {
+        if (currentIndex < 0) {
             isTransitioning = true;
-            currentIndex = totalCards + cardsToShow - 1;
+            currentIndex = totalCards - 1;
             updateSlider(false);
             setTimeout(() => { isTransitioning = false; }, 50);
         }
@@ -60,13 +51,31 @@ document.addEventListener('DOMContentLoaded', function() {
     prevBtn.addEventListener('click', function() {
         if (isTransitioning) return;
         currentIndex--;
-        updateSlider(true);
+        if (currentIndex < 0) {
+            currentIndex = totalCards - 1;
+            updateSlider(false);
+            setTimeout(() => {
+                currentIndex--;
+                updateSlider(true);
+            }, 50);
+        } else {
+            updateSlider(true);
+        }
     });
     
     nextBtn.addEventListener('click', function() {
         if (isTransitioning) return;
         currentIndex++;
-        updateSlider(true);
+        if (currentIndex >= totalCards) {
+            currentIndex = 0;
+            updateSlider(false);
+            setTimeout(() => {
+                currentIndex++;
+                updateSlider(true);
+            }, 50);
+        } else {
+            updateSlider(true);
+        }
     });
     
     let resizeTimer;
