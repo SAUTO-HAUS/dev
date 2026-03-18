@@ -49,7 +49,9 @@ if (file_exists($js_file_path)) {
             
             <button class="order-hero-button">
                 <?php echo get_order_translation('hero_button', $current_lang, $lng_order_page); ?>
-                <img src="/content/site/page/new_pages/order/order-media/icons/right.svg" alt="Arrow" class="order-hero-button-arrow">
+                <span class="order-hero-button-circle">
+                    <img src="/content/site/page/new_pages/order/order-media/icons/right.svg" alt="Arrow" class="order-hero-button-arrow">
+                </span>
             </button>
             
             <div class="order-hero-contact">
