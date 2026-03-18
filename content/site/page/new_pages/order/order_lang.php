@@ -9,7 +9,7 @@ $lng_order_page = [
     ],
     'ro' => [
         'hero_label' => 'Date de contact',
-        'hero_title' => 'Găsește-ți mașina ideală cu noi',
+        'hero_title' => 'Găsește-ți mașina ideală<br>cu noi',
         'hero_subtitle' => 'Completează formularul iar noi revenin cu oferta potrivită pentru tine.',
         'contact_label' => 'Contactați-ne',
     ],
