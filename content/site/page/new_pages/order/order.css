@@ -143,8 +143,8 @@
 .order-slider-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 3rem;
+    align-items: flex-end;
+    margin-bottom: 2rem;
 }
 
 .order-slider-title-wrapper {
