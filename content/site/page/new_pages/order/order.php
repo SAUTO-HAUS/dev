@@ -64,12 +64,6 @@ if (file_exists($js_file_path)) {
             </div>
         </div>
         
-        <!-- Right side - Car Image -->
-        <div class="order-hero-right">
-            <div class="order-hero-media">
-                <img src="/media/images/site/services/order-hero.jpg" alt="<?php echo get_order_translation('hero_title', $current_lang, $lng_order_page); ?>" loading="lazy">
-            </div>
-        </div>
     </div>
 </section>
 
