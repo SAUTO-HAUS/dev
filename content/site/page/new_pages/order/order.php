@@ -52,6 +52,8 @@ if (file_exists($js_file_path)) {
                     <img src="/content/site/page/new_pages/order/order-media/icons/right.svg" alt="Arrow" class="order-hero-button-arrow">
                 </span>
             </button>
+            
+            <p class="order-hero-description"><?php echo get_order_translation('hero_description', $current_lang, $lng_order_page); ?></p>
         </div>
         
         <!-- Right side - Contact -->

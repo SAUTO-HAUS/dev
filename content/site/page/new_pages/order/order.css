@@ -119,6 +119,15 @@
     filter: brightness(0) invert(1);
 }
 
+.order-hero-description {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #ffffff;
+    margin-top: 1.5rem;
+    max-width: 35rem;
+    opacity: 0.9;
+}
+
 .order-hero-contact {
     display: flex;
     flex-direction: column;
