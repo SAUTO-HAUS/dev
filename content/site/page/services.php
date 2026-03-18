@@ -505,7 +505,6 @@ if ($t_mp[3] == 'insurance') {
 	                        } elseif ($t_mp[3] == 'sale') {
 	                                include(_SITE_PAGE.'/new_pages/sale/sale.php');
 	                        } elseif ($t_mp[3] == 'order') {
-	                                include(_SITE_PAGE.'/new_pages/order/order.php');
 	                        } else {
 	                                $lang_code = isset($_COOKIE['lang']) ? $_COOKIE['lang'] : 'ro';
 	                            if ($t_mp[3] == 'testdrive' && $lang_code == 'ru') {
