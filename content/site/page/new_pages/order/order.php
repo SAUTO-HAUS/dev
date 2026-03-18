@@ -1,36 +1,9 @@
-<?php defined('_DOIT') or die('Restricted access');
+<?php defined('_DOIT') or die('Restricted access'); ?>
 
-$orderTranslationsPath = __DIR__ . '/order_lang.php';
-if (!is_file($orderTranslationsPath)) {
-    die('Translation file not found');
-}
+<img src="/media/images/site/services/bnr_order.jpg" style="width:100%; margin:3rem 0; padding:0 2rem;" />
 
-$orderTranslations = include $orderTranslationsPath;
-if (!is_array($orderTranslations)) {
-    die('Invalid translation file');
-}
-
-$currentLang = isset($_COOKIE['lang']) ? $_COOKIE['lang'] : 'ro';
-if (!isset($orderTranslations[$currentLang])) {
-    $currentLang = 'ro';
-}
-
-$orderTranslate = function($keys) use ($orderTranslations, $currentLang) {
-    $keys = is_array($keys) ? $keys : [$keys];
-    $value = $orderTranslations[$currentLang] ?? [];
-    foreach ($keys as $key) {
-        if (!isset($value[$key])) {
-            return '';
-        }
-        $value = $value[$key];
-    }
-    return $value;
-};
-
-$metaTitle = $orderTranslate(['meta', 'title']);
-$metaDescription = $orderTranslate(['meta', 'description']);
-$metaKeywords = $orderTranslate(['meta', 'keywords']);
-$h1 = $orderTranslate(['meta', 'h1']);
-?>
-
-<h1><?=htmlspecialchars($h1, ENT_QUOTES, 'UTF-8')?></h1>
+<script data-b24-form="inline/10/rh1qfd" data-skip-moving="true">
+    (function(w,d,u){
+        var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
+        var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
+    })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_10.js');

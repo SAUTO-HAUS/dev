@@ -1159,43 +1159,7 @@ HTML;
 		}
 		
 		if ($t_mp[3]=='order'){
-			$pdo = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg ORDER BY `br` ASC');
-			$pdo->execute();
-			foreach ($pdo as $r){	$c_brand[ $r['br'] ] = $r['br_nm']; }
-			
-			echo '
-			<img src="/media/images/site/services/bnr_'.$t_mp[3].'.jpg" style="width:100%; margin:3rem 0; padding:0 2rem;" />
-			
-			<div class="func" style="display: none">
-				<div class="ready"><b>'./*$gSdk3pF_sent.*/'</b></div>
-				<div class="line"></div>
-				<select name="brand" class="item brand need" tabindex="1"> <option value="">'.mb_strtoupper($lang_brand, "UTF-8").'</option>';
-					foreach ($c_brand as $k => $v){ echo '<option value="'.$k.'">'.$v.'</option>'; }
-				echo '
-				</select>
-				<select name="model" class="item model need" def_text="'.mb_strtoupper($lang_model, "UTF-8").'" tabindex="2"><option value="">'.mb_strtoupper($lang_model, "UTF-8").'</option></select>
-				<select name="fuel" class="item fuel need" tabindex="8"> <option value="">'.mb_strtoupper($lang_fuel, "UTF-8").'</option>';
-					foreach ($info_fuel as $k => $v){ echo '<option value="'.$k.'">'.$v.'</option>'; }
-				echo '
-				</select>
-				<input name="year" class="item numInput no_need" size="16" tabindex="3" placeholder="'.mb_strtoupper($lang_year, "UTF-8").'" type="number" min="1900" max="'.(date('Y')).'" title="'.mb_strtoupper($lang_year, "UTF-8").'">
-				<input name="engine" class="item numInput no_need" size="16" tabindex="7" placeholder="'.mb_strtoupper($lang_engine, "UTF-8").' cm³" type="number" min="1" max="10000" title="'.mb_strtoupper($lang_engine, "UTF-8").'">
-				<textarea tabindex="14" name="xtra_info" class="no_need" cols="84" rows="5" spellcheck="false" placeholder="'.$lang_offers_order_textarea.'"></textarea>
-				<input name="name" class="person need" size="16" tabindex="7" placeholder="'.mb_strtoupper($lang_your_name, "UTF-8").'" type="text" title="'.mb_strtoupper($lang_your_name, "UTF-8").'">
-				<input name="phone" class="person numInput no_need" size="16" tabindex="7" placeholder="'.mb_strtoupper($lang_your_phone, "UTF-8").'" type="text" title="'.mb_strtoupper($lang_your_phone, "UTF-8").'">
-				<input name="email" class="person need" size="16" tabindex="7" placeholder="EMAIL" type="text" title="EMAIL">
-				<input type="button" value="'.$lang_send.'" class="order_submit">
-				<input type="text" name="page" class="need" value="'.$_SERVER['REQUEST_URI'].'" style="display:none;" />
-				<div class="line"></div>
-			</div>';
-					?>
-            <script data-b24-form="inline/10/rh1qfd" data-skip-moving="true">
-                (function(w,d,u){
-                    var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
-                    var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-                })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_10.js');
-            </script>
-            <?php
+			include(_SITE_PAGE.'/new_pages/order/order.php');
 		}elseif ($t_mp[3]=='transportation'){
 
 			$transportPhone = \App\Helper\PhoneHelper::getGeneralPhone();
