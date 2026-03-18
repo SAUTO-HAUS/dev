@@ -125,7 +125,7 @@ try {
                     $car_name = $car['br_nm'] . ' ' . $car['mo_nm'];
                     $car_year = $car['yr'];
                     $car_mileage = !empty($car['mlg']) ? number_format($car['mlg'], 0, ' ', ' ') : '0';
-                    $car_price = number_format($car['prc'], 0, ' ', ' ');
+                    $car_price = number_format($car['prc'], 0, ' ', ' ') . ' ';
                     
                     if ($car_path && !empty($car['main_image'])) {
                         $car_image_url = "/media/images/upload/car/{$car_path}/{$car['id']}/med/{$car['main_image']}.jpg";

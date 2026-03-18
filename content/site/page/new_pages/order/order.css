@@ -160,9 +160,13 @@
 
 .order-slider-subtitle {
     font-size: 1rem;
-    font-weight: 400;
-    margin: 0;
     color: #666666;
+    margin: 0;
+}
+
+.order-slider-subtitle strong {
+    color: #1a1a1a;
+    font-weight: 400;
 }
 
 .order-slider-nav {
