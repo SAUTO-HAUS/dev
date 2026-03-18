@@ -1094,7 +1094,7 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
                     <div style="margin:20px 0;padding:20px 24px;background:linear-gradient(135deg,#8a8a8a,#5a5a5a);border-radius:0.5rem;text-align:center;">
                         <div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:4px;">'.$vt['title'].'</div>
                         <div style="font-size:14px;color:#ccc;margin-bottom:14px;">'.$vt['subtitle'].'</div>
-                        <a href="'.$cv_url.'" target="_blank" rel="noopener" class="vin-attention-btn" style="display:inline-block;padding:12px 36px;background:#e2001a;color:#fff;font-size:15px;font-weight:600;border-radius:0.5rem;text-decoration:none;">'.$vt['btn'].'</a>
+                        <a href="'.$cv_url.'" target="_blank" rel="noopener" class="vin-attention-btn" style="display:inline-block;padding:12px 36px;background:#e2001a;color:#fff;font-size:15px;font-weight:600;border-radius:0.5rem;text-decoration:none;" onclick="if(typeof gtag===\'function\'){gtag(\'event\',\'vin.check.click\',{event_category:\'VIN Check\',event_label:\'Car ID: '.$r['id'].'\',car_id:'.$r['id'].',vin:\''.$vin_val.'\'});}">'.$vt['btn'].'</a>
                     </div>
                     <style>
                         @keyframes vinAttention {
