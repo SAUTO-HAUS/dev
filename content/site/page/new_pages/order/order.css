@@ -44,7 +44,7 @@
     margin: 0 auto;
     padding: 0 2rem;
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: flex-start;
 }
 
@@ -64,7 +64,7 @@
 .order-hero-title {
     font-size: 3.5rem;
     font-weight: 700;
-    margin-bottom: 1.25rem;
+    margin-bottom: 1rem;
     line-height: 1.15;
     letter-spacing: -0.02em;
     text-transform: none;
@@ -91,7 +91,7 @@
     font-weight: 400;
     cursor: pointer;
     transition: all 0.3s ease;
-    margin-top: 2rem;
+    margin-top: 1rem;
 }
 
 .order-hero-button:hover {
@@ -120,7 +120,10 @@
 }
 
 .order-hero-contact {
-    margin-top: 4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    margin-left: auto;
 }
 
 .order-contact-label {
