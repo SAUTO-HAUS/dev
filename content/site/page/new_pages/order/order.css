@@ -120,7 +120,166 @@
 }
 
 /* ========================================
-   2. FORM SECTION
+   2. SLIDER SECTION
+   ======================================== */
+
+.order-slider-section {
+    padding: 5rem 0;
+    background: #f9f9f9;
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+}
+
+.order-slider-container {
+    max-width: 90rem;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.order-slider-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 3rem;
+}
+
+.order-slider-title-wrapper {
+    flex: 1;
+}
+
+.order-slider-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+    color: #1a1a1a;
+}
+
+.order-slider-subtitle {
+    font-size: 1rem;
+    font-weight: 400;
+    margin: 0;
+    color: #666666;
+}
+
+.order-slider-nav {
+    display: flex;
+    gap: 1rem;
+}
+
+.order-slider-arrow {
+    width: 3rem;
+    height: 3rem;
+    border: 1px solid #e0e0e0;
+    border-radius: 50%;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.order-slider-arrow:hover {
+    background: #f5f5f5;
+    border-color: #d0d0d0;
+}
+
+.order-slider-arrow svg {
+    width: 1.25rem;
+    height: 1.25rem;
+    color: #1a1a1a;
+}
+
+.order-slider-wrapper {
+    overflow: hidden;
+    position: relative;
+}
+
+.order-slider-track {
+    display: flex;
+    gap: 1.5rem;
+    transition: transform 0.5s ease;
+}
+
+.order-slider-card {
+    flex: 0 0 calc(25% - 1.125rem);
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 1rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.order-slider-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-4px);
+}
+
+.order-card-image {
+    width: 100%;
+    height: 12rem;
+    overflow: hidden;
+    background: #f5f5f5;
+}
+
+.order-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.order-card-content {
+    padding: 1.5rem;
+}
+
+.order-card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+    color: #1a1a1a;
+}
+
+.order-card-details {
+    margin-bottom: 1.5rem;
+}
+
+.order-card-year {
+    font-size: 0.875rem;
+    color: #666666;
+    margin: 0 0 0.5rem 0;
+}
+
+.order-card-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.order-card-button {
+    display: inline-block;
+    width: 100%;
+    padding: 0.75rem 1.5rem;
+    background: #dc143c;
+    color: #ffffff;
+    text-align: center;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.order-card-button:hover {
+    background: #c41230;
+    transform: translateY(-2px);
+}
+
+/* ========================================
+   3. FORM SECTION
    ======================================== */
 
 .order-form-section {
@@ -130,7 +289,7 @@
 }
 
 /* ========================================
-   3. RESPONSIVE STYLES
+   4. RESPONSIVE STYLES
    ======================================== */
 
 @media (max-width: 768px) {
@@ -165,8 +324,35 @@
         justify-content: center;
     }
     
+    .order-slider-section {
+        padding: 3rem 0;
+    }
+    
+    .order-slider-header {
+        flex-direction: column;
+        gap: 2rem;
+    }
+    
+    .order-slider-title {
+        font-size: 1.75rem;
+    }
+    
+    .order-slider-card {
+        flex: 0 0 calc(50% - 0.75rem);
+    }
+    
     .order-form-section {
         padding: 0 1rem;
         margin: 2rem auto;
+    }
+}
+
+@media (max-width: 480px) {
+    .order-slider-card {
+        flex: 0 0 100%;
+    }
+    
+    .order-card-image {
+        height: 10rem;
     }
 }

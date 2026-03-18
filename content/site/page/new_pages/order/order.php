@@ -67,6 +67,94 @@ if (file_exists($js_file_path)) {
     </div>
 </section>
 
+<!-- Slider Section - Completed Projects -->
+<?php
+global $db;
+$car_ids = [11760, 11759, 11758, 11756, 11753, 11747, 11744, 11705];
+$placeholders = implode(',', array_fill(0, count($car_ids), '?'));
+
+$cars = [];
+try {
+    $stmt = $db->prepare("SELECT * FROM gh3sp_car_ctlg WHERE id IN ($placeholders) ORDER BY FIELD(id, $placeholders)");
+    $stmt->execute(array_merge($car_ids, $car_ids));
+    $cars = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    foreach ($cars as &$car) {
+        try {
+            $img_stmt = $db->prepare("SELECT name FROM gh3sp_car_pht WHERE it_id = ? AND main = 1 LIMIT 1");
+            $img_stmt->execute([$car['id']]);
+            $img = $img_stmt->fetch(PDO::FETCH_ASSOC);
+            
+            if (!$img) {
+                $img_stmt = $db->prepare("SELECT name FROM gh3sp_car_pht WHERE it_id = ? LIMIT 1");
+                $img_stmt->execute([$car['id']]);
+                $img = $img_stmt->fetch(PDO::FETCH_ASSOC);
+            }
+            
+            $car['main_image'] = $img ? $img['name'] : null;
+        } catch (Exception $e) {
+            $car['main_image'] = null;
+        }
+    }
+} catch (Exception $e) {
+    $cars = [];
+}
+?>
+
+<section class="order-slider-section">
+    <div class="order-slider-container">
+        <div class="order-slider-header">
+            <div class="order-slider-title-wrapper">
+                <h2 class="order-slider-title"><?php echo get_order_translation('slider_title', $current_lang, $lng_order_page); ?></h2>
+                <p class="order-slider-subtitle"><?php echo get_order_translation('slider_subtitle', $current_lang, $lng_order_page); ?></p>
+            </div>
+            <div class="order-slider-nav">
+                <button class="order-slider-arrow order-slider-prev" aria-label="Previous">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                </button>
+                <button class="order-slider-arrow order-slider-next" aria-label="Next">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                </button>
+            </div>
+        </div>
+        
+        <div class="order-slider-wrapper">
+            <div class="order-slider-track">
+                <?php foreach ($cars as $car): 
+                    $car_path = !empty($car['p_path']) ? $car['p_path'] : '';
+                    $car_name = $car['br_nm'] . ' ' . $car['mo_nm'];
+                    $car_year = $car['yr'];
+                    $car_price = number_format($car['prc'], 0, ',', ' ');
+                    
+                    if ($car_path && !empty($car['main_image'])) {
+                        $car_image_url = "/media/images/upload/car/{$car_path}/{$car['id']}/med/{$car['main_image']}.jpg";
+                    } else {
+                        $car_image_url = "/media/images/site/v2/no_image.svg";
+                    }
+                ?>
+                <div class="order-slider-card">
+                    <div class="order-card-image">
+                        <?php if ($car_image_url): ?>
+                            <img src="<?php echo $car_image_url; ?>" alt="<?php echo $car_name; ?>" loading="lazy">
+                        <?php endif; ?>
+                    </div>
+                    <div class="order-card-content">
+                        <h3 class="order-card-title"><?php echo $car_name; ?></h3>
+                        <div class="order-card-details">
+                            <p class="order-card-year"><?php echo get_order_translation('year_label', $current_lang, $lng_order_page); ?>: <?php echo $car_year; ?></p>
+                            <p class="order-card-price"><?php echo $car_price; ?>€</p>
+                        </div>
+                        <a href="/<?php echo $current_lang; ?>/car/<?php echo $car['id']; ?>" class="order-card-button">
+                            <?php echo get_order_translation('view_button', $current_lang, $lng_order_page); ?>
+                        </a>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Bitrix24 Form Section -->
 <section class="order-form-section">
     <script data-b24-form="inline/10/rh1qfd" data-skip-moving="true">
