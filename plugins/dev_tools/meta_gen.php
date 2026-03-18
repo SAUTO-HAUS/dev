@@ -38,6 +38,12 @@ if (in_array($current_host, ['sauto.md', 'www.sauto.md'], true)) {
     $zrbt = 'index, follow';
 }
 
+// The base /{lang}/cars catalogue shows the most recently added cars and
+// should stay crawlable via links, but not be indexed as a standalone page.
+if ($z2 === 'cars' && $z3 === '' && !isset($q_mp[1])) {
+    $zrbt = 'noindex, follow';
+}
+
 $r['ttl']='';$r['h1']='';$r['dsc']='';$r['kwd']='';
 
 // Generate meta tags for credit page
