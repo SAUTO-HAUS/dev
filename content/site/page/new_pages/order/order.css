@@ -3,11 +3,12 @@
    ======================================== */
 
 .order-hero-section {
-    background-image: url('/content/site/page/new_pages/order/order-media/hero.ban.jpg');
+    background-image: url('/content/site/page/new_pages/order/order-media/hero.jpg');
     background-size: cover;
-    background-position: center bottom;
+    background-position: center center;
     background-repeat: no-repeat;
     background-attachment: scroll;
+    background-color: #000000;
     color: white;
     padding: 0;
     height: 32.5rem;
