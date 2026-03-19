@@ -764,6 +764,7 @@
     margin-right: calc(-50vw + 50%);
     box-sizing: border-box;
     margin-top: 0;
+    margin-bottom: -1rem;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -806,7 +807,7 @@
 }
 
 .order-hero2-description {
-    font-size: 0.95rem;
+    font-size: 1rem;
     line-height: 1.5;
     color: #ffffff;
     margin-top: 1.5rem;
