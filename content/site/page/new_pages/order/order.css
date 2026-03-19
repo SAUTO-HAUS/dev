@@ -502,66 +502,84 @@
 .order-buying-container {
     max-width: 90rem;
     margin: 0 auto;
-    display: flex;
-    gap: 4rem;
-    align-items: center;
-}
-
-.order-buying-content {
-    flex: 1;
 }
 
 .order-buying-title {
     font-size: 2.5rem;
     font-weight: 700;
     color: #1a1a1a;
-    margin: 0 0 1rem 0;
+    margin: 0 0 0.5rem 0;
     line-height: 1.2;
 }
 
 .order-buying-subtitle {
-    font-size: 1.125rem;
+    font-size: 1rem;
     color: #4a4a4a;
-    margin: 0 0 2rem 0;
     line-height: 1.6;
 }
 
-.order-buying-steps {
+.order-buying-content {
     display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
+    gap: 2rem;
 }
 
-.order-buying-step {
+.order-buying-cards {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
 }
 
-.order-buying-step-number {
+.order-buying-card {
+    background: #ebebeb;
+    border-radius: 1rem;
+    padding: 2rem;
+    position: relative;
+    min-height: 8rem;
+    display: flex;
+    align-items: center;
+    margin: 0;
+}
+
+.order-buying-card-number {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
     font-size: 0.875rem;
     font-weight: 600;
-    color: #dc143c;
+    color: #1a1a1a;
     text-transform: lowercase;
+    background: #ffffff;
+    padding: 0.5rem 2rem;
+    border-radius: 1rem;
 }
 
-.order-buying-step-text {
-    font-size: 1rem;
+.order-buying-card-text {
+    font-size: 1.25rem;
+    font-weight: 600;
     color: #1a1a1a;
-    margin: 0;
-    line-height: 1.6;
+    line-height: 1.4;
+    width: 100%;
 }
 
 .order-buying-image {
     flex: 1;
-    max-width: 45%;
+    position: relative;
+    overflow: hidden;
+    border-radius: 1rem;
 }
 
 .order-buying-image img {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
-    height: auto;
-    border-radius: 1rem;
+    height: 100%;
     object-fit: cover;
+    object-position: center;
+    display: block;
 }
 
 /* ========================================

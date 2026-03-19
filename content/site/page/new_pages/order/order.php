@@ -210,26 +210,28 @@ try {
 <!-- Buying Steps Section -->
 <section class="order-buying-section">
     <div class="order-buying-container">
-        <div class="order-buying-content">
+        <div class="order-buying-header">
             <h2 class="order-buying-title"><?php echo get_order_translation('buying_title', $current_lang, $lng_order_page); ?></h2>
             <p class="order-buying-subtitle"><?php echo get_order_translation('buying_subtitle', $current_lang, $lng_order_page); ?></p>
-            <div class="order-buying-steps">
-                <div class="order-buying-step">
-                    <span class="order-buying-step-number"><?php echo get_order_translation('buying_step_label_1', $current_lang, $lng_order_page); ?></span>
-                    <p class="order-buying-step-text"><?php echo get_order_translation('buying_step_1', $current_lang, $lng_order_page); ?></p>
+        </div>
+        <div class="order-buying-content">
+            <div class="order-buying-cards">
+                <div class="order-buying-card">
+                    <span class="order-buying-card-number"><?php echo get_order_translation('buying_step_label_1', $current_lang, $lng_order_page); ?></span>
+                    <p class="order-buying-card-text"><?php echo get_order_translation('buying_step_1', $current_lang, $lng_order_page); ?></p>
                 </div>
-                <div class="order-buying-step">
-                    <span class="order-buying-step-number"><?php echo get_order_translation('buying_step_label_2', $current_lang, $lng_order_page); ?></span>
-                    <p class="order-buying-step-text"><?php echo get_order_translation('buying_step_2', $current_lang, $lng_order_page); ?></p>
+                <div class="order-buying-card">
+                    <span class="order-buying-card-number"><?php echo get_order_translation('buying_step_label_2', $current_lang, $lng_order_page); ?></span>
+                    <p class="order-buying-card-text"><?php echo get_order_translation('buying_step_2', $current_lang, $lng_order_page); ?></p>
                 </div>
-                <div class="order-buying-step">
-                    <span class="order-buying-step-number"><?php echo get_order_translation('buying_step_label_3', $current_lang, $lng_order_page); ?></span>
-                    <p class="order-buying-step-text"><?php echo get_order_translation('buying_step_3', $current_lang, $lng_order_page); ?></p>
+                <div class="order-buying-card">
+                    <span class="order-buying-card-number"><?php echo get_order_translation('buying_step_label_3', $current_lang, $lng_order_page); ?></span>
+                    <p class="order-buying-card-text"><?php echo get_order_translation('buying_step_3', $current_lang, $lng_order_page); ?></p>
                 </div>
             </div>
-        </div>
-        <div class="order-buying-image">
-            <img src="/content/site/page/new_pages/order/order-media/section-5.jpg" alt="<?php echo get_order_translation('buying_title', $current_lang, $lng_order_page); ?>">
+            <div class="order-buying-image">
+                <img src="/content/site/page/new_pages/order/order-media/section-5.jpg" alt="<?php echo get_order_translation('buying_title', $current_lang, $lng_order_page); ?>">
+            </div>
         </div>
     </div>
 </section>
