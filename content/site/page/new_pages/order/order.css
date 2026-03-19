@@ -380,6 +380,12 @@
     margin-right: -50vw;
 }
 
+.order-process-header {
+    max-width: 90rem;
+    margin: 0 auto 1rem auto;
+    padding: 0;
+}
+
 .order-process-container {
     max-width: 90rem;
     margin: 0 auto;
@@ -387,11 +393,6 @@
     border: 1px solid #e0e0e0;
     border-radius: 0.5rem;
     position: relative;
-}
-
-.order-process-header {
-    padding: 1rem 2rem 1rem 2rem;
-    border-bottom: 1px solid #e0e0e0;
 }
 
 .order-process-title {

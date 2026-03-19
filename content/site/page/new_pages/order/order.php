@@ -181,10 +181,10 @@ try {
 
 <!-- Process Steps Section -->
 <section class="order-process-section">
+    <div class="order-process-header">
+        <h2 class="order-process-title"><?php echo get_order_translation('process_title', $current_lang, $lng_order_page); ?></h2>
+    </div>
     <div class="order-process-container">
-        <div class="order-process-header">
-            <h2 class="order-process-title"><?php echo get_order_translation('process_title', $current_lang, $lng_order_page); ?></h2>
-        </div>
         <div class="order-process-scroll-container">
             <div class="order-process-preview order-process-preview-prev" style="display: none;">
                 <h3 class="order-process-preview-title"></h3>
