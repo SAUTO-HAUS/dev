@@ -179,6 +179,24 @@ try {
     </div>
 </section>
 
+<!-- Process Steps Section -->
+<section class="order-process-section">
+    <div class="order-process-container">
+        <div class="order-process-header">
+            <h2 class="order-process-title"><?php echo get_order_translation('process_title', $current_lang, $lng_order_page); ?></h2>
+            <div class="order-process-number">01</div>
+        </div>
+        <div class="order-process-scroll-container">
+            <?php for ($i = 1; $i <= 6; $i++): ?>
+            <div class="order-process-step" data-step="<?php echo $i; ?>">
+                <h3 class="order-process-step-title"><?php echo get_order_translation("step_{$i}_title", $current_lang, $lng_order_page); ?></h3>
+                <p class="order-process-step-text"><?php echo get_order_translation("step_{$i}_text", $current_lang, $lng_order_page); ?></p>
+            </div>
+            <?php endfor; ?>
+        </div>
+    </div>
+</section>
+
 <!-- Bitrix24 Form Section -->
 <section class="order-form-section">
     <script data-b24-form="inline/10/rh1qfd" data-skip-moving="true">

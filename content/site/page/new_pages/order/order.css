@@ -174,7 +174,7 @@
    ======================================== */
 
 .order-slider-section {
-    padding: 2rem 0 2rem 0;
+    padding: 2rem 0 0 0;
     background: #f9f9f9;
     width: 100vw;
     position: relative;
@@ -187,7 +187,6 @@
 .order-slider-container {
     max-width: 90rem;
     margin: 0 auto;
-    padding: 0 2rem;
 }
 
 .order-slider-header {
@@ -367,7 +366,84 @@
 }
 
 /* ========================================
-   3. FORM SECTION
+   3. PROCESS STEPS SECTION
+   ======================================== */
+
+.order-process-section {
+    padding: 2rem 0 0 0;
+    background: #f9f9f9;
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+}
+
+.order-process-container {
+    max-width: 90rem;
+    margin: 0 auto;
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 0.5rem;
+    position: relative;
+}
+
+.order-process-header {
+    padding: 2rem 2rem 1.5rem 2rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.order-process-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.order-process-number {
+    position: absolute;
+    right: 4rem;
+    top: 12rem;
+    font-size: 8rem;
+    font-weight: 700;
+    color: rgba(220, 20, 60, 0.1);
+    line-height: 1;
+    user-select: none;
+    pointer-events: none;
+}
+
+.order-process-scroll-container {
+    padding: 1.5rem 2rem;
+    position: relative;
+    min-height: 15rem;
+}
+
+.order-process-step {
+    display: none;
+    padding: 0;
+}
+
+.order-process-step.active {
+    display: block;
+}
+
+.order-process-step-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 1rem 0;
+}
+
+.order-process-step-text {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #4a4a4a;
+    margin: 0;
+}
+
+/* ========================================
+   4. FORM SECTION
    ======================================== */
 
 .order-form-section {

@@ -88,3 +88,45 @@ document.addEventListener('DOMContentLoaded', function() {
     
     updateSlider(false);
 });
+
+// Process Steps - Change on Scroll
+document.addEventListener('DOMContentLoaded', function() {
+    const scrollContainer = document.querySelector('.order-process-scroll-container');
+    const numberElement = document.querySelector('.order-process-number');
+    const steps = document.querySelectorAll('.order-process-step');
+    
+    if (!scrollContainer || !numberElement || steps.length === 0) return;
+    
+    let currentStep = 0;
+    let isScrolling = false;
+    
+    function showStep(index) {
+        steps.forEach((step, i) => {
+            step.classList.toggle('active', i === index);
+        });
+        numberElement.textContent = String(index + 1).padStart(2, '0');
+    }
+    
+    showStep(0);
+    
+    scrollContainer.addEventListener('wheel', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        if (isScrolling) return;
+        
+        isScrolling = true;
+        
+        if (e.deltaY > 0 && currentStep < steps.length - 1) {
+            currentStep++;
+            showStep(currentStep);
+        } else if (e.deltaY < 0 && currentStep > 0) {
+            currentStep--;
+            showStep(currentStep);
+        }
+        
+        setTimeout(function() {
+            isScrolling = false;
+        }, 100);
+    }, { passive: false, capture: true });
+});
