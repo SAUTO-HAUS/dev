@@ -97,18 +97,34 @@ if ( $t_mp[5]=='invoice' || isset($mixall) ){
 		var buyerCountryField = document.querySelector(\'input[name="buyer_country"]\').closest(\'label\');
 		var buyerSwiftField = document.querySelector(\'input[name="buyer_swift"]\').closest(\'label\');
 		
+		// Get the input elements themselves
+		var sellerCountryInput = document.querySelector(\'input[name="seller_country"]\');
+		var sellerSwiftInput = document.querySelector(\'input[name="seller_swift"]\');
+		var buyerCountryInput = document.querySelector(\'input[name="buyer_country"]\');
+		var buyerSwiftInput = document.querySelector(\'input[name="buyer_swift"]\');
+		
 		if (sautoRole === \'seller\') {
 			// Hide seller fields (SAUTO), show buyer fields (client)
 			sellerCountryField.style.display = \'none\';
 			sellerSwiftField.style.display = \'none\';
+			sellerCountryInput.removeAttribute(\'required\');
+			sellerSwiftInput.removeAttribute(\'required\');
+			
 			buyerCountryField.style.display = \'block\';
 			buyerSwiftField.style.display = \'block\';
+			buyerCountryInput.setAttribute(\'required\', \'required\');
+			buyerSwiftInput.setAttribute(\'required\', \'required\');
 		} else if (sautoRole === \'buyer\') {
 			// Hide buyer fields (SAUTO), show seller fields (client)
 			buyerCountryField.style.display = \'none\';
 			buyerSwiftField.style.display = \'none\';
+			buyerCountryInput.removeAttribute(\'required\');
+			buyerSwiftInput.removeAttribute(\'required\');
+			
 			sellerCountryField.style.display = \'block\';
 			sellerSwiftField.style.display = \'block\';
+			sellerCountryInput.setAttribute(\'required\', \'required\');
+			sellerSwiftInput.setAttribute(\'required\', \'required\');
 		}
 	}
 
