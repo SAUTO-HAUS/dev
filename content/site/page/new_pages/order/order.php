@@ -292,3 +292,20 @@ try {
         })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_10.js');
     </script>
 </section>
+
+<!-- Second Hero Section -->
+<section class="order-hero2-section">
+    <div class="order-hero2-content">
+        <div class="order-hero2-left">
+            <h1 class="order-hero2-title"><?php echo get_order_translation('hero2_title', $current_lang, $lng_order_page); ?></h1>
+            <h2 class="order-hero2-subtitle"><?php echo get_order_translation('hero2_subtitle', $current_lang, $lng_order_page); ?></h2>
+            <p class="order-hero2-description"><?php echo get_order_translation('hero2_description', $current_lang, $lng_order_page); ?></p>
+            <a href="#" class="order-hero2-button">
+                <?php echo get_order_translation('hero_button', $current_lang, $lng_order_page); ?>
+                <span class="order-hero2-button-circle">
+                    <img src="/content/site/page/new_pages/order/order-media/arrow-right.svg" alt="Arrow" class="order-hero2-button-arrow">
+                </span>
+            </a>
+        </div>
+    </div>
+</section>

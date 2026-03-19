@@ -740,3 +740,127 @@
     max-width: 90rem;
     padding: 0 2rem;
 }
+
+/* ========================================
+   8. SECOND HERO SECTION
+   ======================================== */
+
+.order-hero2-section {
+    background-image: url('/content/site/page/new_pages/order/order-media/hero-img-2.jpg');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-color: #000000;
+    color: white;
+    padding: 0;
+    height: 32.5rem;
+    position: relative;
+    overflow: hidden;
+    width: 100vw;
+    left: 0;
+    right: 0;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    box-sizing: border-box;
+    margin-top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.order-hero2-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0);
+    z-index: 1;
+}
+
+.order-hero2-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 90rem;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+}
+
+.order-hero2-left {
+    max-width: 40rem;
+}
+
+.order-hero2-title {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    text-transform: none;
+}
+
+.order-hero2-subtitle {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    text-transform: none;
+}
+
+.order-hero2-description {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #ffffff;
+    margin-top: 1.5rem;
+    max-width: 35rem;
+    opacity: 0.9;
+}
+
+.order-hero2-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    padding: 0.625rem 0.625rem 0.625rem 1.75rem;
+    background: #ffffff;
+    color: #1a1a1a;
+    border: none;
+    border-radius: 2.5rem;
+    font-size: 1rem;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+    text-decoration: none;
+}
+
+.order-hero2-button:hover {
+    background: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.order-hero2-button-circle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    background: #dc143c;
+    border-radius: 50%;
+    margin-left: 1rem;
+    flex-shrink: 0;
+}
+
+.order-hero2-button-arrow {
+    width: 0.75rem;
+    height: auto;
+    display: block;
+    filter: brightness(0) invert(1);
+}

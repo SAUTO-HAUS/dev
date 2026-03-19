@@ -60,6 +60,9 @@ $lng_order_page = [
         'review_8_name' => 'Vasile Moraru',
         'review_8_car' => 'Am achiziționat Mazda CX-5',
         'review_8_text' => 'Am fost foarte mulțumit de rapiditatea procesului. Toate etapele au fost explicate clar, iar mașina a sosit exact când mi s-a promis. Calitatea serviciului a depășit așteptările. Foarte mulțumit.',
+        'hero2_title' => 'Мы найдем машину вашей мечты.',
+        'hero2_subtitle' => 'Доставим под ключ, без лишних хлопот.',
+        'hero2_description' => 'Превращаем покупку автомобиля в простой и комфортный процесс, чтобы вы могли по-настоящему наслаждаться своим новым автомобилем.',
     ],
     'ro' => [
         'hero_title' => 'Automobile din Europa, SUA și Coreea la comandă: economie până la 45%',
@@ -120,6 +123,9 @@ $lng_order_page = [
         'review_8_name' => 'Vasile Moraru',
         'review_8_car' => 'Am achiziționat Mazda CX-5',
         'review_8_text' => 'Am fost foarte mulțumit de rapiditatea procesului. Toate etapele au fost explicate clar, iar mașina a sosit exact când mi s-a promis. Calitatea serviciului a depășit așteptările. Foarte mulțumit.',
+        'hero2_title' => 'Îți găsim mașina la care visezi.',
+        'hero2_subtitle' => 'Ți-o aducem la cheie, fără bătăi de cap.',
+        'hero2_description' => 'Transformăm cumpărarea mașinii într-o experiență simplă și comodă, pentru ca tu să te bucuri cu adevărat de noul tău automobil.',
     ],
     'en' => [
         'hero_title' => 'Cars from Europe, USA and Korea to order: save up to 45%',
@@ -180,6 +186,9 @@ $lng_order_page = [
         'review_8_name' => 'Vasile Moraru',
         'review_8_car' => 'Purchased Mazda CX-5',
         'review_8_text' => 'I was very satisfied with the speed of the process. All stages were explained clearly, and the car arrived exactly when promised. Service quality exceeded expectations. Very satisfied.',
+        'hero2_title' => 'We find the car you dream of.',
+        'hero2_subtitle' => 'We bring it to you turnkey, hassle-free.',
+        'hero2_description' => 'We transform car buying into a simple and comfortable experience, so you can truly enjoy your new automobile.',
     ],
 ];
 
