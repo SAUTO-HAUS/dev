@@ -402,21 +402,33 @@
 }
 
 .order-process-number {
-    position: absolute;
-    right: 4rem;
-    top: 12rem;
     font-size: 8rem;
     font-weight: 700;
     color: rgba(220, 20, 60, 0.1);
     line-height: 1;
     user-select: none;
     pointer-events: none;
+    flex-shrink: 0;
 }
 
 .order-process-scroll-container {
-    padding: 1.5rem 2rem;
+    padding: 1rem;
     position: relative;
-    min-height: 15rem;
+    min-height: 12rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.order-process-main {
+    display: flex;
+    align-items: center;
+    gap: 3rem;
+    flex: 1;
+}
+
+.order-process-content {
+    flex: 1;
 }
 
 .order-process-step {
@@ -428,11 +440,31 @@
     display: block;
 }
 
+.order-process-preview {
+    padding-top: 1rem;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    align-items: center;
+}
+
+.order-process-preview-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    opacity: 0.25;
+    margin: 0;
+    max-width: 50rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .order-process-step-title {
     font-size: 1.5rem;
     font-weight: 700;
     color: #1a1a1a;
     margin: 0 0 1rem 0;
+    max-width: 70rem;
 }
 
 .order-process-step-text {
@@ -440,6 +472,7 @@
     line-height: 1.6;
     color: #4a4a4a;
     margin: 0;
+    max-width: 70rem;
 }
 
 /* ========================================

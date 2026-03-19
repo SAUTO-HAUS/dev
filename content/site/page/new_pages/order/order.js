@@ -94,6 +94,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const scrollContainer = document.querySelector('.order-process-scroll-container');
     const numberElement = document.querySelector('.order-process-number');
     const steps = document.querySelectorAll('.order-process-step');
+    const preview = document.querySelector('.order-process-preview');
+    const previewTitle = document.querySelector('.order-process-preview-title');
     
     if (!scrollContainer || !numberElement || steps.length === 0) return;
     
@@ -104,6 +106,15 @@ document.addEventListener('DOMContentLoaded', function() {
         steps.forEach((step, i) => {
             step.classList.toggle('active', i === index);
         });
+        
+        if (index < steps.length - 1) {
+            var nextTitle = steps[index + 1].querySelector('.order-process-step-title').textContent;
+            previewTitle.textContent = nextTitle;
+            preview.style.display = 'block';
+        } else {
+            preview.style.display = 'none';
+        }
+        
         numberElement.textContent = String(index + 1).padStart(2, '0');
     }
     
