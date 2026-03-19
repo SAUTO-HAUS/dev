@@ -302,7 +302,7 @@ try {
             <a href="#" class="order-hero2-button">
                 <?php echo get_order_translation('hero_button', $current_lang, $lng_order_page); ?>
                 <span class="order-hero2-button-circle">
-                    <img src="/content/site/page/new_pages/order/order-media/arrow-right.svg" alt="Arrow" class="order-hero2-button-arrow">
+                    <img src="/content/site/page/new_pages/order/order-media/icons/right.svg" alt="Arrow" class="order-hero2-button-arrow">
                 </span>
             </a>
         </div>
