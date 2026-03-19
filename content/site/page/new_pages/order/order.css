@@ -3,7 +3,7 @@
    ======================================== */
 
 .order-hero-section {
-    background-image: url('/content/site/page/new_pages/order/order-media/hero.jpg');
+    background-image: url('/content/site/page/new_pages/order/order-media/hero-img.jpg');
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -374,73 +374,4 @@
     max-width: 90rem;
     margin: 3rem auto;
     padding: 0 2rem;
-}
-
-/* ========================================
-   4. RESPONSIVE STYLES
-   ======================================== */
-
-@media (max-width: 768px) {
-    .order-hero-section {
-        height: auto;
-        min-height: 25rem;
-        padding: 3rem 0;
-    }
-    
-    .order-hero-content {
-        text-align: center;
-        justify-content: center;
-    }
-    
-    .order-hero-left {
-        max-width: 100%;
-    }
-    
-    .order-hero-title {
-        font-size: 2rem;
-    }
-    
-    .order-hero-subtitle {
-        font-size: 1rem;
-    }
-    
-    .order-hero-contact {
-        margin-top: 2rem;
-    }
-    
-    .order-social-icons {
-        justify-content: center;
-    }
-    
-    .order-slider-section {
-        padding: 3rem 0;
-    }
-    
-    .order-slider-header {
-        flex-direction: column;
-        gap: 2rem;
-    }
-    
-    .order-slider-title {
-        font-size: 1.75rem;
-    }
-    
-    .order-slider-card {
-        flex: 0 0 calc(50% - 0.75rem);
-    }
-    
-    .order-form-section {
-        padding: 0 1rem;
-        margin: 2rem auto;
-    }
-}
-
-@media (max-width: 480px) {
-    .order-slider-card {
-        flex: 0 0 100%;
-    }
-    
-    .order-card-image {
-        height: 10rem;
-    }
 }
