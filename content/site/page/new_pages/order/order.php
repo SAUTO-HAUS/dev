@@ -298,7 +298,6 @@ try {
     <div class="order-hero2-content">
         <div class="order-hero2-left">
             <h1 class="order-hero2-title"><?php echo get_order_translation('hero2_title', $current_lang, $lng_order_page); ?></h1>
-            <h2 class="order-hero2-subtitle"><?php echo get_order_translation('hero2_subtitle', $current_lang, $lng_order_page); ?></h2>
             <p class="order-hero2-description"><?php echo get_order_translation('hero2_description', $current_lang, $lng_order_page); ?></p>
             <a href="#" class="order-hero2-button">
                 <?php echo get_order_translation('hero_button', $current_lang, $lng_order_page); ?>

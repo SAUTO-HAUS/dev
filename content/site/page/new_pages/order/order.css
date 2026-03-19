@@ -793,22 +793,13 @@
 }
 
 .order-hero2-left {
-    max-width: 40rem;
+    max-width: 70rem;
 }
 
 .order-hero2-title {
     font-size: 3.5rem;
     font-weight: 700;
-    margin-bottom: 1rem;
-    line-height: 1.15;
-    letter-spacing: -0.02em;
-    text-transform: none;
-}
-
-.order-hero2-subtitle {
-    font-size: 3.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
+    margin-bottom: 0;
     line-height: 1.15;
     letter-spacing: -0.02em;
     text-transform: none;
