@@ -442,14 +442,22 @@
 }
 
 .order-process-preview {
-    padding-top: 1rem;
-    border-top: 1px solid #e0e0e0;
     display: flex;
     align-items: center;
 }
 
+.order-process-preview-prev {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.order-process-preview-next {
+    padding-top: 1rem;
+    border-top: 1px solid #e0e0e0;
+}
+
 .order-process-preview-title {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 700;
     color: #1a1a1a;
     opacity: 0.25;

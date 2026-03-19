@@ -186,6 +186,9 @@ try {
             <h2 class="order-process-title"><?php echo get_order_translation('process_title', $current_lang, $lng_order_page); ?></h2>
         </div>
         <div class="order-process-scroll-container">
+            <div class="order-process-preview order-process-preview-prev" style="display: none;">
+                <h3 class="order-process-preview-title"></h3>
+            </div>
             <div class="order-process-main">
                 <div class="order-process-content">
                     <?php for ($i = 1; $i <= 6; $i++): ?>
@@ -197,7 +200,7 @@ try {
                 </div>
                 <div class="order-process-number">01</div>
             </div>
-            <div class="order-process-preview">
+            <div class="order-process-preview order-process-preview-next">
                 <h3 class="order-process-preview-title"></h3>
             </div>
         </div>

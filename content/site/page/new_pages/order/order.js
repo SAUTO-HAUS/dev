@@ -94,8 +94,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const scrollContainer = document.querySelector('.order-process-scroll-container');
     const numberElement = document.querySelector('.order-process-number');
     const steps = document.querySelectorAll('.order-process-step');
-    const preview = document.querySelector('.order-process-preview');
-    const previewTitle = document.querySelector('.order-process-preview-title');
+    const previewPrev = document.querySelector('.order-process-preview-prev');
+    const previewNext = document.querySelector('.order-process-preview-next');
+    const previewPrevTitle = previewPrev ? previewPrev.querySelector('.order-process-preview-title') : null;
+    const previewNextTitle = previewNext ? previewNext.querySelector('.order-process-preview-title') : null;
     
     if (!scrollContainer || !numberElement || steps.length === 0) return;
     
@@ -107,12 +109,20 @@ document.addEventListener('DOMContentLoaded', function() {
             step.classList.toggle('active', i === index);
         });
         
-        if (index < steps.length - 1) {
+        if (index > 0 && previewPrev && previewPrevTitle) {
+            var prevTitle = steps[index - 1].querySelector('.order-process-step-title').textContent;
+            previewPrevTitle.textContent = prevTitle;
+            previewPrev.style.display = 'flex';
+        } else if (previewPrev) {
+            previewPrev.style.display = 'none';
+        }
+        
+        if (index < steps.length - 1 && previewNext && previewNextTitle) {
             var nextTitle = steps[index + 1].querySelector('.order-process-step-title').textContent;
-            previewTitle.textContent = nextTitle;
-            preview.style.display = 'block';
-        } else {
-            preview.style.display = 'none';
+            previewNextTitle.textContent = nextTitle;
+            previewNext.style.display = 'flex';
+        } else if (previewNext) {
+            previewNext.style.display = 'none';
         }
         
         numberElement.textContent = String(index + 1).padStart(2, '0');
