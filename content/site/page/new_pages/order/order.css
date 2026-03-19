@@ -485,7 +485,87 @@
 }
 
 /* ========================================
-   4. FORM SECTION
+   4. BUYING STEPS SECTION
+   ======================================== */
+
+.order-buying-section {
+    padding: 2rem 0 0 0;
+    background: #f9f9f9;
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+}
+
+.order-buying-container {
+    max-width: 90rem;
+    margin: 0 auto;
+    display: flex;
+    gap: 4rem;
+    align-items: center;
+}
+
+.order-buying-content {
+    flex: 1;
+}
+
+.order-buying-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 1rem 0;
+    line-height: 1.2;
+}
+
+.order-buying-subtitle {
+    font-size: 1.125rem;
+    color: #4a4a4a;
+    margin: 0 0 2rem 0;
+    line-height: 1.6;
+}
+
+.order-buying-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.order-buying-step {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.order-buying-step-number {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #dc143c;
+    text-transform: lowercase;
+}
+
+.order-buying-step-text {
+    font-size: 1rem;
+    color: #1a1a1a;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.order-buying-image {
+    flex: 1;
+    max-width: 45%;
+}
+
+.order-buying-image img {
+    width: 100%;
+    height: auto;
+    border-radius: 1rem;
+    object-fit: cover;
+}
+
+/* ========================================
+   5. FORM SECTION
    ======================================== */
 
 .order-form-section {
