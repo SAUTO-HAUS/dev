@@ -174,7 +174,7 @@
    ======================================== */
 
 .order-slider-section {
-    padding: 2rem 0 0 0;
+    padding: 1.5rem 0;
     background: #f9f9f9;
     width: 100vw;
     position: relative;
@@ -370,7 +370,7 @@
    ======================================== */
 
 .order-process-section {
-    padding: 2rem 0 0 0;
+    padding: 1.5rem 0;
     background: #f9f9f9;
     width: 100vw;
     position: relative;
@@ -490,7 +490,7 @@
    ======================================== */
 
 .order-buying-section {
-    padding: 2rem 0 0 0;
+    padding: 1.5rem 0;
     background: #f9f9f9;
     width: 100vw;
     position: relative;
@@ -589,7 +589,7 @@
    ======================================== */
 
 .order-reviews-section {
-    padding: 3rem 0;
+    padding: 1.5rem 0;
     background: #f9f9f9;
     width: 100vw;
     position: relative;
@@ -738,6 +738,5 @@
 
 .order-form-section {
     max-width: 90rem;
-    margin: 3rem auto;
     padding: 0 2rem;
 }
