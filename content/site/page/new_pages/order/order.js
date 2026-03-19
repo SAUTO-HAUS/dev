@@ -151,3 +151,44 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 100);
     }, { passive: false, capture: true });
 });
+
+// Reviews Slider
+document.addEventListener('DOMContentLoaded', function() {
+    const slider = document.querySelector('.order-reviews-slider');
+    const prevBtn = document.querySelector('.order-reviews-prev');
+    const nextBtn = document.querySelector('.order-reviews-next');
+    
+    if (!slider || !prevBtn || !nextBtn) return;
+    
+    const cards = slider.querySelectorAll('.order-review-card');
+    const totalCards = cards.length;
+    const visibleCards = 4;
+    let currentIndex = 0;
+    
+    function updateSlider() {
+        const cardWidth = cards[0].offsetWidth;
+        const gap = 24; 
+        const offset = currentIndex * (cardWidth + gap);
+        slider.style.transform = `translateX(-${offset}px)`;
+        
+        prevBtn.disabled = currentIndex === 0;
+        nextBtn.disabled = currentIndex >= totalCards - visibleCards;
+    }
+    
+    prevBtn.addEventListener('click', function() {
+        if (currentIndex > 0) {
+            currentIndex--;
+            updateSlider();
+        }
+    });
+    
+    nextBtn.addEventListener('click', function() {
+        if (currentIndex < totalCards - visibleCards) {
+            currentIndex++;
+            updateSlider();
+        }
+    });
+    
+    window.addEventListener('resize', updateSlider);
+    updateSlider();
+});

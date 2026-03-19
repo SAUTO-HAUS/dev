@@ -236,6 +236,53 @@ try {
     </div>
 </section>
 
+<!-- Reviews Section -->
+<section class="order-reviews-section">
+    <div class="order-reviews-container">
+        <div class="order-reviews-header">
+            <h2 class="order-reviews-title"><?php echo get_order_translation('reviews_title', $current_lang, $lng_order_page); ?></h2>
+            <div class="order-reviews-nav">
+                <button class="order-reviews-prev" aria-label="Previous">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 18l-6-6 6-6"/>
+                    </svg>
+                </button>
+                <button class="order-reviews-next" aria-label="Next">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 18l6-6-6-6"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div class="order-reviews-slider-wrapper">
+            <div class="order-reviews-slider">
+                <?php for ($i = 1; $i <= 8; $i++): ?>
+                <div class="order-review-card">
+                    <div class="order-review-header">
+                        <img src="/content/site/page/new_pages/order/order-media/avatar-<?php echo $i; ?>.jpg" alt="<?php echo get_order_translation("review_{$i}_name", $current_lang, $lng_order_page); ?>" class="order-review-avatar">
+                        <div class="order-review-info">
+                            <h3 class="order-review-name"><?php echo get_order_translation("review_{$i}_name", $current_lang, $lng_order_page); ?></h3>
+                            <p class="order-review-car"><?php echo get_order_translation("review_{$i}_car", $current_lang, $lng_order_page); ?></p>
+                        </div>
+                    </div>
+                    <p class="order-review-text"><?php echo get_order_translation("review_{$i}_text", $current_lang, $lng_order_page); ?></p>
+                    <div class="order-review-rating">
+                        <div class="order-review-stars">
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                            <span class="star">★</span>
+                        </div>
+                        <span class="order-review-score">5.0</span>
+                    </div>
+                </div>
+                <?php endfor; ?>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Bitrix24 Form Section -->
 <section class="order-form-section">
     <script data-b24-form="inline/10/rh1qfd" data-skip-moving="true">
