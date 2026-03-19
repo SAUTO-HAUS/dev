@@ -157,38 +157,76 @@ document.addEventListener('DOMContentLoaded', function() {
     const slider = document.querySelector('.order-reviews-slider');
     const prevBtn = document.querySelector('.order-reviews-prev');
     const nextBtn = document.querySelector('.order-reviews-next');
-    
-    if (!slider || !prevBtn || !nextBtn) return;
-    
     const cards = slider.querySelectorAll('.order-review-card');
-    const totalCards = cards.length;
-    const visibleCards = 4;
-    let currentIndex = 0;
     
-    function updateSlider() {
-        const cardWidth = cards[0].offsetWidth;
-        const gap = 24; 
-        const offset = currentIndex * (cardWidth + gap);
-        slider.style.transform = `translateX(-${offset}px)`;
-        
-        prevBtn.disabled = currentIndex === 0;
-        nextBtn.disabled = currentIndex >= totalCards - visibleCards;
+    if (!slider || !prevBtn || !nextBtn || cards.length === 0) return;
+    
+    const totalCards = cards.length;
+    const clonedCards = [];
+    cards.forEach(card => {
+        const clone = card.cloneNode(true);
+        clonedCards.push(clone);
+        slider.appendChild(clone);
+    });
+    
+    let currentIndex = 0;
+    let isTransitioning = false;
+    
+    function getCardWidth() {
+        return cards[0].offsetWidth;
     }
     
+    function updateSlider(smooth = true) {
+        const cardWidth = getCardWidth();
+        const gap = 24;
+        const offset = currentIndex * (cardWidth + gap);
+        
+        slider.style.transition = smooth ? 'transform 0.5s ease' : 'none';
+        slider.style.transform = `translateX(-${offset}px)`;
+    }
+    
+    function handleTransitionEnd() {
+        if (currentIndex >= totalCards) {
+            isTransitioning = true;
+            currentIndex = 0;
+            updateSlider(false);
+            setTimeout(() => { isTransitioning = false; }, 50);
+        }
+        
+        if (currentIndex < 0) {
+            isTransitioning = true;
+            currentIndex = totalCards - 1;
+            updateSlider(false);
+            setTimeout(() => { isTransitioning = false; }, 50);
+        }
+    }
+    
+    slider.addEventListener('transitionend', handleTransitionEnd);
+    
     prevBtn.addEventListener('click', function() {
-        if (currentIndex > 0) {
-            currentIndex--;
-            updateSlider();
+        if (isTransitioning) return;
+        currentIndex--;
+        if (currentIndex < 0) {
+            currentIndex = totalCards - 1;
+            updateSlider(false);
+            setTimeout(() => {
+                currentIndex--;
+                updateSlider(true);
+            }, 50);
+        } else {
+            updateSlider(true);
         }
     });
     
     nextBtn.addEventListener('click', function() {
-        if (currentIndex < totalCards - visibleCards) {
-            currentIndex++;
-            updateSlider();
-        }
+        if (isTransitioning) return;
+        currentIndex++;
+        updateSlider(true);
     });
     
-    window.addEventListener('resize', updateSlider);
-    updateSlider();
+    window.addEventListener('resize', function() {
+        updateSlider(false);
+    });
+    
+    updateSlider(false);
 });

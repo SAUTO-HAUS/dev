@@ -641,16 +641,11 @@
 
 .order-reviews-prev:hover,
 .order-reviews-next:hover {
-    background: #dc143c;
-    border-color: #dc143c;
-    color: #ffffff;
+    background: #f5f5f5;
+    border-color: #000000;
+    transform: scale(1.1);
 }
 
-.order-reviews-prev:disabled,
-.order-reviews-next:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-}
 
 .order-reviews-slider-wrapper {
     overflow: hidden;
