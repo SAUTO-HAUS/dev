@@ -415,7 +415,7 @@
 .order-process-scroll-container {
     padding: 1rem;
     position: relative;
-    min-height: 12rem;
+    height: 16rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
