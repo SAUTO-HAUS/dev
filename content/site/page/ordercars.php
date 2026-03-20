@@ -404,8 +404,9 @@ elseif (!isset($t_mp[3])) {
     $rtrn .= '<div class="gr">';
     $rtrn .= '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">';
     $rtrn .= '<h1 style="margin: 0;">'.$sa['meta']['h1'].'</h1>';
+    $rtrn .= '<style>@media (max-width: 767px) { .order-hero-button-circle { margin-left: 0.5rem !important; } }</style>';
     $rtrn .= '<link rel="stylesheet" type="text/css" href="/content/site/page/new_pages/order/order.css">';
-    $rtrn .= '<a href="/services/order" class="order-hero-button">';
+    $rtrn .= '<a href="/services/order" class="order-hero-button" style="white-space: nowrap;">';
     $rtrn .= $order_button_text;
     $rtrn .= '<span class="order-hero-button-circle">';
     $rtrn .= '<img src="/content/site/page/new_pages/order/order-media/icons/right.svg" alt="Arrow" class="order-hero-button-arrow">';
