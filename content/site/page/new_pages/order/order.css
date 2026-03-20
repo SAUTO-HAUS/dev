@@ -1453,10 +1453,10 @@
     
     .order-process-number-mobile {
         display: block !important;
-        font-size: 6rem;
+        font-size: 5.5rem;
         position: absolute;
-        top: 1.5rem;
-        right: 1.5rem;
+        top: 0.5rem;
+        right: 0.5rem;
         color: rgba(220, 20, 60, 0.15) !important;
         font-weight: 700;
         line-height: 1;
@@ -1476,6 +1476,7 @@
     
     .order-process-step-text {
         font-size: 0.95rem;
+        padding-right: 5rem;
     }
 }
 
@@ -1588,10 +1589,10 @@
     
     .order-process-number-mobile {
         display: block !important;
-        font-size: 5.5rem;
+        font-size: 4.5rem;
         position: absolute;
-        top: 0.5rem;
-        right: 0.5rem;
+        top: 0.25rem;
+        right: 0.25rem;
         color: rgba(220, 20, 60, 0.15) !important;
         font-weight: 700;
         line-height: 1;
@@ -1618,7 +1619,7 @@
         font-size: 0.85rem;
         line-height: 1.6;
         color: #666666;
-        padding-right: 0.5rem;
+        padding-right: 4rem;
         position: relative;
         z-index: 2;
     }
