@@ -4,6 +4,7 @@ $lng_order_page = [
     'ru' => [
         'hero_title' => 'Автомобили из Европы, США и Кореи под заказ:<br class="mobile-break"> экономия до 45%',
         'hero_button' => 'Персонализированный поиск',
+        'learn_more' => 'Узнать больше',
         'hero_description' => 'Сервис ПОД КЛЮЧ от подбора до оформления и поддержки, надежно, быстро и без сложных процедур.',
         'contact_label' => 'Свяжитесь с нами',
         'slider_title' => 'Реализованные проекты',
@@ -66,6 +67,7 @@ $lng_order_page = [
     'ro' => [
         'hero_title' => 'Automobile din Europa, SUA și Coreea la comandă:<br class="mobile-break"> economie până la 45%',
         'hero_button' => 'Căutare personalizată',
+        'learn_more' => 'Află mai mult',
         'hero_description' => 'Serviciu LA CHEIE de la selecție până la înregistrare și asistență, fiabil, rapid și fără proceduri complicate.',
         'contact_label' => 'Contactați-ne',
         'slider_title' => 'Proiecte realizate',
@@ -128,6 +130,7 @@ $lng_order_page = [
     'en' => [
         'hero_title' => 'Cars from Europe, USA and Korea to order:<br class="mobile-break"> save up to 45%',
         'hero_button' => 'Personalized search',
+        'learn_more' => 'Learn more',
         'hero_description' => 'TURNKEY SERVICE from selection to registration and support, reliable, fast and without complicated procedures.',
         'contact_label' => 'Contact us',
         'slider_title' => 'Completed projects',

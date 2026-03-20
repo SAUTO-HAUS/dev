@@ -46,12 +46,12 @@ if (file_exists($js_file_path)) {
         <div class="order-hero-left">
             <h1 class="order-hero-title"><?php echo get_order_translation('hero_title', $current_lang, $lng_order_page); ?></h1>
             
-            <button class="order-hero-button">
+            <a href="/ordercars" class="order-hero-button">
                 <?php echo get_order_translation('hero_button', $current_lang, $lng_order_page); ?>
                 <span class="order-hero-button-circle">
                     <img src="/content/site/page/new_pages/order/order-media/icons/right.svg" alt="Arrow" class="order-hero-button-arrow">
                 </span>
-            </button>
+            </a>
             
             <p class="order-hero-description"><?php echo get_order_translation('hero_description', $current_lang, $lng_order_page); ?></p>
         </div>
@@ -300,7 +300,7 @@ try {
         <div class="order-hero2-left">
             <h1 class="order-hero2-title"><?php echo get_order_translation('hero2_title', $current_lang, $lng_order_page); ?></h1>
             <p class="order-hero2-description"><?php echo get_order_translation('hero2_description', $current_lang, $lng_order_page); ?></p>
-            <a href="#" class="order-hero2-button">
+            <a href="/ordercars" class="order-hero2-button">
                 <?php echo get_order_translation('hero_button', $current_lang, $lng_order_page); ?>
                 <span class="order-hero2-button-circle">
                     <img src="/content/site/page/new_pages/order/order-media/icons/right.svg" alt="Arrow" class="order-hero2-button-arrow">
