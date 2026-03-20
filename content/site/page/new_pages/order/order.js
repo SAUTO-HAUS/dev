@@ -100,6 +100,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const previewNextTitle = previewNext ? previewNext.querySelector('.order-process-preview-title') : null;
     
     if (!scrollContainer || !numberElement || steps.length === 0) return;
+
+    if (window.innerWidth <= 1500) return;
     
     let currentStep = 0;
     let isScrolling = false;
