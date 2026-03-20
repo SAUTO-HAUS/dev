@@ -404,10 +404,11 @@ elseif (!isset($t_mp[3])) {
     $rtrn .= '<div class="gr">';
     $rtrn .= '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">';
     $rtrn .= '<h1 style="margin: 0;">'.$sa['meta']['h1'].'</h1>';
-    $rtrn .= '<a href="/services/order" style="display: inline-flex; align-items: center; gap: 0; padding: 0.625rem 0.625rem 0.625rem 1.75rem; background: #ffffff; color: #1a1a1a; border: 1px solid #e0e0e0; border-radius: 2.5rem; font-size: 1rem; font-weight: 400; text-decoration: none; transition: all 0.3s ease;">';
-    $rtrn .= '<span>'.$order_button_text.'</span>';
-    $rtrn .= '<span style="display: flex; align-items: center; justify-content: center; width: 2rem; height: 2rem; background: #dc143c; border-radius: 50%; margin-left: 1rem; flex-shrink: 0;">';
-    $rtrn .= '<svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: brightness(0) invert(1);"><path d="M1 6h10M7 2l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    $rtrn .= '<link rel="stylesheet" type="text/css" href="/content/site/page/new_pages/order/order.css">';
+    $rtrn .= '<a href="/services/order" class="order-hero-button">';
+    $rtrn .= $order_button_text;
+    $rtrn .= '<span class="order-hero-button-circle">';
+    $rtrn .= '<img src="/content/site/page/new_pages/order/order-media/icons/right.svg" alt="Arrow" class="order-hero-button-arrow">';
     $rtrn .= '</span>';
     $rtrn .= '</a>';
     $rtrn .= '</div>';
