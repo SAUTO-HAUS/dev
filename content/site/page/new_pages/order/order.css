@@ -1181,7 +1181,7 @@
     
     .order-slider-nav {
         position: absolute;
-        bottom: -4rem;
+        bottom: -2rem;
         right: 2rem;
         gap: 0.75rem;
         z-index: 10;
@@ -1219,10 +1219,18 @@
 @media (min-width: 768px) and (max-width: 1500px) and (orientation: landscape) {
     .order-slider-section {
         padding: 2rem 0;
+        position: relative;
     }
     
     .order-slider-container {
         padding: 0 2rem;
+    }
+    
+    .order-slider-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+        margin-bottom: 2rem;
     }
     
     .order-slider-title {
@@ -1231,6 +1239,32 @@
     
     .order-slider-subtitle {
         font-size: 0.95rem;
+    }
+    
+    .order-slider-nav {
+        position: absolute;
+        bottom: -2rem;
+        right: 2rem;
+        gap: 0.75rem;
+        z-index: 10;
+    }
+    
+    .order-slider-arrow {
+        width: 3.5rem;
+        height: 3.5rem;
+        background: #ffffff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        -webkit-tap-highlight-color: transparent;
+        outline: none;
+    }
+    
+    .order-slider-arrow:focus {
+        outline: none;
+    }
+    
+    .order-slider-arrow svg {
+        width: 1.25rem;
+        height: 1.25rem;
     }
     
     .order-slider-card {
@@ -1332,6 +1366,7 @@
 @media (max-width: 767px) and (orientation: landscape) {
     .order-slider-section {
         padding: 1.5rem 0;
+        position: relative;
     }
     
     .order-slider-container {
@@ -1339,8 +1374,9 @@
     }
     
     .order-slider-header {
-        flex-direction: row;
-        align-items: flex-end;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
         margin-bottom: 1.5rem;
     }
     
@@ -1353,14 +1389,30 @@
         font-size: 0.8rem;
     }
     
+    .order-slider-nav {
+        position: absolute;
+        bottom: -2rem;
+        right: 1.5rem;
+        gap: 0.75rem;
+        z-index: 10;
+    }
+    
     .order-slider-arrow {
-        width: 2.25rem;
-        height: 2.25rem;
+        width: 3.5rem;
+        height: 3.5rem;
+        background: #ffffff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        -webkit-tap-highlight-color: transparent;
+        outline: none;
+    }
+    
+    .order-slider-arrow:focus {
+        outline: none;
     }
     
     .order-slider-arrow svg {
-        width: 0.9rem;
-        height: 0.9rem;
+        width: 1.25rem;
+        height: 1.25rem;
     }
     
     .order-slider-card {
