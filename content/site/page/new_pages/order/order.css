@@ -1796,3 +1796,235 @@
         font-size: 1rem;
     }
 }
+
+/* ========================================
+   RESPONSIVE - BUYING STEPS SECTION 4
+   ======================================== */
+
+/* Tablet Portrait (768px - 1500px) */
+@media (min-width: 768px) and (max-width: 1500px) and (orientation: portrait) {
+    .order-buying-section {
+        padding: 2rem 0;
+    }
+    
+    .order-buying-container {
+        padding: 0 2rem;
+    }
+    
+    .order-buying-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .order-buying-subtitle {
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .order-buying-content {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .order-buying-cards {
+        gap: 1rem;
+    }
+    
+    .order-buying-card {
+        padding: 1.5rem 1rem;
+        min-height: auto;
+    }
+    
+    .order-buying-card-number {
+        font-size: 0.75rem;
+        padding: 0.4rem 1.5rem;
+        top: 0.75rem;
+        right: 0.75rem;
+    }
+    
+    .order-buying-card-text {
+        font-size: 1.1rem;
+        padding-right: 5rem;
+    }
+    
+    .order-buying-image {
+        width: 100%;
+        height: 300px;
+        border-radius: 1rem;
+    }
+    
+    .order-buying-image img {
+        position: relative;
+    }
+}
+
+/* Tablet Landscape (768px - 1500px) */
+@media (min-width: 768px) and (max-width: 1500px) and (orientation: landscape) {
+    .order-buying-section {
+        padding: 2rem 0;
+    }
+    
+    .order-buying-container {
+        padding: 0 2rem;
+    }
+    
+    .order-buying-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .order-buying-subtitle {
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .order-buying-content {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .order-buying-cards {
+        gap: 1rem;
+    }
+    
+    .order-buying-card {
+        padding: 1.5rem 1rem;
+        min-height: auto;
+    }
+    
+    .order-buying-card-number {
+        font-size: 0.75rem;
+        padding: 0.4rem 1.5rem;
+        top: 0.75rem;
+        right: 0.75rem;
+    }
+    
+    .order-buying-card-text {
+        font-size: 1.1rem;
+        padding-right: 5rem;
+    }
+    
+    .order-buying-image {
+        width: 100%;
+        height: 300px;
+        border-radius: 1rem;
+    }
+    
+    .order-buying-image img {
+        position: relative;
+    }
+}
+
+/* Mobile Portrait (up to 767px) */
+@media (max-width: 767px) and (orientation: portrait) {
+    .order-buying-section {
+        padding: 2rem 0;
+    }
+    
+    .order-buying-container {
+        padding: 0 1rem;
+    }
+    
+    .order-buying-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .order-buying-subtitle {
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .order-buying-content {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .order-buying-cards {
+        gap: 1rem;
+    }
+    
+    .order-buying-card {
+        padding: 1.5rem 1rem;
+        min-height: auto;
+    }
+    
+    .order-buying-card-number {
+        font-size: 0.75rem;
+        padding: 0.4rem 1.5rem;
+        top: 0.75rem;
+        right: 0.75rem;
+    }
+    
+    .order-buying-card-text {
+        font-size: 1.1rem;
+        padding-right: 5rem;
+    }
+    
+    .order-buying-image {
+        width: 100%;
+        height: 250px;
+        border-radius: 1rem;
+    }
+    
+    .order-buying-image img {
+        position: relative;
+    }
+}
+
+/* Mobile Landscape (up to 767px) */
+@media (max-width: 767px) and (orientation: landscape) {
+    .order-buying-section {
+        padding: 2rem 0;
+    }
+    
+    .order-buying-container {
+        padding: 0 1.5rem;
+    }
+    
+    .order-buying-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .order-buying-subtitle {
+        font-size: 0.85rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .order-buying-content {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    
+    .order-buying-cards {
+        gap: 1rem;
+    }
+    
+    .order-buying-card {
+        padding: 1.5rem 1rem;
+        min-height: auto;
+    }
+    
+    .order-buying-card-number {
+        font-size: 0.75rem;
+        padding: 0.4rem 1.5rem;
+        top: 0.75rem;
+        right: 0.75rem;
+    }
+    
+    .order-buying-card-text {
+        font-size: 1.1rem;
+        padding-right: 5rem;
+    }
+    
+    .order-buying-image {
+        width: 100%;
+        height: 250px;
+        border-radius: 1rem;
+    }
+    
+    .order-buying-image img {
+        position: relative;
+    }
+}
