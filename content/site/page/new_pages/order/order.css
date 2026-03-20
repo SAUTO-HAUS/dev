@@ -1272,8 +1272,9 @@
     }
     
     .order-slider-card {
-        flex: 0 0 calc(33.333% - 1rem);
-        min-width: calc(33.333% - 1rem);
+        flex: 0 0 48%;
+        min-width: 48%;
+        max-width: 48%;
     }
     
     .order-card-image {
