@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
 // Process Steps - Change on Scroll
 document.addEventListener('DOMContentLoaded', function() {
     const scrollContainer = document.querySelector('.order-process-scroll-container');
-    const numberElement = document.querySelector('.order-process-number');
+    const numberElement = document.querySelector('.order-process-main > .order-process-number:not(.order-process-number-mobile)');
     const steps = document.querySelectorAll('.order-process-step');
     const previewPrev = document.querySelector('.order-process-preview-prev');
     const previewNext = document.querySelector('.order-process-preview-next');

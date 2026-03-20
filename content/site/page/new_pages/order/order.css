@@ -406,11 +406,15 @@
 .order-process-number {
     font-size: 8rem;
     font-weight: 700;
-    color: rgba(220, 20, 60, 0.1);
+    color: rgba(220, 20, 60, 0.15);
     line-height: 1;
     user-select: none;
     pointer-events: none;
     flex-shrink: 0;
+}
+
+.order-process-number-mobile {
+    display: none;
 }
 
 .order-process-scroll-container {
@@ -1447,12 +1451,22 @@
         border-bottom: none;
     }
     
-    .order-process-number {
+    .order-process-number-mobile {
+        display: block !important;
         font-size: 6rem;
         position: absolute;
         top: 1.5rem;
         right: 1.5rem;
-        opacity: 0.15;
+        color: rgba(220, 20, 60, 0.15) !important;
+        font-weight: 700;
+        line-height: 1;
+        pointer-events: none;
+        user-select: none;
+        z-index: 1;
+    }
+    
+    .order-process-main > .order-process-number:not(.order-process-number-mobile) {
+        display: none !important;
     }
     
     .order-process-step-title {
@@ -1572,17 +1586,22 @@
         border-bottom: none;
     }
     
-    .order-process-number {
+    .order-process-number-mobile {
+        display: block !important;
         font-size: 5.5rem;
         position: absolute;
         top: 0.5rem;
         right: 0.5rem;
-        color: rgba(220, 20, 60, 0.1) !important;
+        color: rgba(220, 20, 60, 0.15) !important;
         font-weight: 700;
         line-height: 1;
         pointer-events: none;
         user-select: none;
         z-index: 1;
+    }
+    
+    .order-process-main > .order-process-number:not(.order-process-number-mobile) {
+        display: none !important;
     }
     
     .order-process-step-title {

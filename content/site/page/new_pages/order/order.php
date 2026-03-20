@@ -193,6 +193,7 @@ try {
                 <div class="order-process-content">
                     <?php for ($i = 1; $i <= 6; $i++): ?>
                     <div class="order-process-step" data-step="<?php echo $i; ?>">
+                        <div class="order-process-number order-process-number-mobile"><?php echo str_pad($i, 2, '0', STR_PAD_LEFT); ?></div>
                         <h3 class="order-process-step-title"><?php echo get_order_translation("step_{$i}_title", $current_lang, $lng_order_page); ?></h3>
                         <p class="order-process-step-text"><?php echo get_order_translation("step_{$i}_text", $current_lang, $lng_order_page); ?></p>
                     </div>
