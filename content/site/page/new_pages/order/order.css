@@ -2253,3 +2253,146 @@
         font-size: 0.85rem;
     }
 }
+
+/* ========================================
+   RESPONSIVE - SECOND HERO SECTION 8
+   ======================================== */
+
+/* Tablet Portrait (768px - 1500px) */
+@media (min-width: 768px) and (max-width: 1500px) and (orientation: portrait) {
+    .order-hero2-section {
+        height: auto;
+        min-height: 70vh;
+        padding: 3rem 0;
+    }
+    
+    .order-hero2-content {
+        padding: 0 2rem;
+    }
+    
+    .order-hero2-title {
+        font-size: 2.5rem;
+    }
+    
+    .order-hero2-description {
+        font-size: 0.95rem;
+        margin-top: 1.25rem;
+    }
+    
+    .order-hero2-button {
+        padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+        font-size: 0.95rem;
+        margin-top: 1.75rem;
+    }
+    
+    .order-hero2-button-circle {
+        width: 2rem;
+        height: 2rem;
+    }
+}
+
+/* Tablet Landscape (768px - 1500px) */
+@media (min-width: 768px) and (max-width: 1500px) and (orientation: landscape) {
+    .order-hero2-section {
+        height: auto;
+        min-height: 80vh;
+        padding: 2.5rem 0;
+    }
+    
+    .order-hero2-content {
+        padding: 0 2rem;
+    }
+    
+    .order-hero2-title {
+        font-size: 2.75rem;
+    }
+    
+    .order-hero2-description {
+        font-size: 0.95rem;
+        margin-top: 1.25rem;
+    }
+    
+    .order-hero2-button {
+        padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+        font-size: 0.95rem;
+        margin-top: 1.75rem;
+    }
+    
+    .order-hero2-button-circle {
+        width: 2rem;
+        height: 2rem;
+    }
+}
+
+/* Mobile Portrait (up to 767px) */
+@media (max-width: 767px) and (orientation: portrait) {
+    .order-hero2-section {
+        height: auto;
+        min-height: 60vh;
+        padding: 3rem 0;
+        background-image: url('/content/site/page/new_pages/order/order-media/hero-img-mob-2.jpg');
+        background-size: cover;
+        background-position: center center;
+    }
+    
+    .order-hero2-content {
+        padding: 0 1.5rem;
+    }
+    
+    .order-hero2-title {
+        font-size: 2rem;
+        line-height: 1.2;
+    }
+    
+    .order-hero2-description {
+        font-size: 0.9rem;
+        margin-top: 1rem;
+        max-width: 100%;
+    }
+    
+    .order-hero2-button {
+        padding: 0.5rem 0.5rem 0.5rem 1.25rem;
+        font-size: 0.9rem;
+        margin-top: 1.5rem;
+    }
+    
+    .order-hero2-button-circle {
+        width: 1.75rem;
+        height: 1.75rem;
+    }
+}
+
+/* Mobile Landscape (up to 767px) */
+@media (max-width: 767px) and (orientation: landscape) {
+    .order-hero2-section {
+        height: auto;
+        min-height: 100vh;
+        padding: 2rem 0;
+    }
+    
+    .order-hero2-content {
+        padding: 0 1.5rem;
+    }
+    
+    .order-hero2-title {
+        font-size: 1.8rem;
+        line-height: 1.2;
+    }
+    
+    .order-hero2-description {
+        font-size: 0.85rem;
+        margin-top: 0.75rem;
+        max-width: 100%;
+    }
+    
+    .order-hero2-button {
+        padding: 0.5rem 0.5rem 0.5rem 1.25rem;
+        font-size: 0.85rem;
+        margin-top: 1rem;
+    }
+    
+    .order-hero2-button-circle {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+}
