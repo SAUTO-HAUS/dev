@@ -855,3 +855,291 @@
     display: block;
     filter: brightness(0) invert(1);
 }
+
+/* ========================================
+   RESPONSIVE - HERO SECTION 1
+   ======================================== */
+
+/* Tablet Portrait (768px - 1500px) */
+@media (min-width: 768px) and (max-width: 1500px) and (orientation: portrait) {
+    .order-hero-section {
+        height: auto;
+        min-height: 50vh;
+        padding: 3rem 0;
+        background-image: url('/content/site/page/new_pages/order/order-media/hero-img-mob.jpg');
+        background-size: 100% 100%;
+        background-position: center center;
+    }
+    
+    .order-hero-section::before {
+        background: rgba(0, 0, 0, 0.35);
+    }
+    
+    .order-hero-content {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0 2rem;
+        gap: 2rem;
+        justify-content: center;
+    }
+    
+    .order-hero-left {
+        max-width: 100%;
+        padding-top: 0;
+    }
+    
+    .order-hero-title {
+        font-size: 2.5rem;
+        line-height: 1.2;
+        margin-bottom: 1rem;
+        margin-top: 0;
+        padding-top: 0;
+    }
+    
+    .order-hero-button {
+        padding: 0.5rem 0.5rem 0.5rem 1.25rem;
+        font-size: 1rem;
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .order-hero-button-circle {
+        width: 1.75rem;
+        height: 1.75rem;
+    }
+    
+    .order-hero-description {
+        font-size: 1rem;
+        line-height: 1.6;
+        max-width: 100%;
+        margin-top: 1rem;
+    }
+    
+    .order-hero-contact {
+        align-items: flex-start;
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .order-contact-label {
+        font-size: 1.1rem;
+    }
+    
+    .social-icon {
+        width: 2.75rem;
+        height: 2.75rem;
+    }
+}
+
+/* Tablet Landscape (768px - 1500px) */
+@media (min-width: 768px) and (max-width: 1500px) and (orientation: landscape) {
+    .order-hero-section {
+        height: auto;
+        min-height: 70vh;
+        padding: 2rem 0;
+        background-image: url('/content/site/page/new_pages/order/order-media/hero-img.jpg');
+        background-size: cover;
+        background-position: center center;
+    }
+    
+    .order-hero-section::before {
+        background: rgba(0, 0, 0, 0.35);
+    }
+    
+    .order-hero-content {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0 2rem;
+        gap: 1.5rem;
+        justify-content: center;
+    }
+    
+    .order-hero-left {
+        max-width: 100%;
+        padding-top: 0;
+    }
+    
+    .order-hero-title {
+        font-size: 2.2rem;
+        line-height: 1.2;
+        margin-bottom: 1rem;
+        margin-top: 0;
+        padding-top: 0;
+    }
+    
+    .order-hero-button {
+        padding: 0.5rem 0.5rem 0.5rem 1.25rem;
+        font-size: 0.95rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .order-hero-button-circle {
+        width: 1.75rem;
+        height: 1.75rem;
+    }
+    
+    .order-hero-description {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        max-width: 100%;
+        margin-top: 0.75rem;
+    }
+    
+    .order-hero-contact {
+        align-items: flex-start;
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .order-contact-label {
+        font-size: 1rem;
+    }
+    
+    .social-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+}
+
+/* Mobile Portrait (up to 767px) */
+@media (max-width: 767px) and (orientation: portrait) {
+    .order-hero-section {
+        height: auto;
+        min-height: 60vh;
+        padding: 3rem 0;
+        background-image: url('/content/site/page/new_pages/order/order-media/hero-img-mob.jpg');
+        background-size: 100% 100%;
+        background-position: center center;
+    }
+    
+    .order-hero-section::before {
+        background: rgba(0, 0, 0, 0.35);
+    }
+    
+    .order-hero-content {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0 1.5rem;
+        gap: 2rem;
+        justify-content: center;
+    }
+    
+    .order-hero-left {
+        max-width: 100%;
+        padding-top: 0;
+    }
+    
+    .order-hero-title {
+        font-size: 2rem;
+        line-height: 1.2;
+        margin-bottom: 1rem;
+        margin-top: 0;
+        padding-top: 0;
+    }
+    
+    .order-hero-button {
+        padding: 0.5rem 0.5rem 0.5rem 1.25rem;
+        font-size: 0.9rem;
+        margin-top: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .order-hero-button-circle {
+        width: 1.75rem;
+        height: 1.75rem;
+    }
+    
+    .order-hero-description {
+        font-size: 0.9rem;
+        line-height: 1.6;
+        max-width: 100%;
+        margin-top: 1rem;
+    }
+    
+    .order-hero-contact {
+        align-items: flex-start;
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .order-contact-label {
+        font-size: 1rem;
+    }
+    
+    .social-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+}
+
+/* Mobile Landscape (up to 767px) */
+@media (max-width: 767px) and (orientation: landscape) {
+    .order-hero-section {
+        height: auto;
+        min-height: 100vh;
+        padding: 2rem 0;
+        background-image: url('/content/site/page/new_pages/order/order-media/hero-img.jpg');
+        background-size: cover;
+        background-position: center center;
+    }
+    
+    .order-hero-section::before {
+        background: rgba(0, 0, 0, 0.35);
+    }
+    
+    .order-hero-content {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0 1.5rem;
+        gap: 1.5rem;
+        justify-content: center;
+    }
+    
+    .order-hero-left {
+        max-width: 100%;
+        padding-top: 0;
+    }
+    
+    .order-hero-title {
+        font-size: 1.8rem;
+        line-height: 1.2;
+        margin-bottom: 0.75rem;
+        margin-top: 0;
+        padding-top: 0;
+    }
+    
+    .order-hero-button {
+        padding: 0.5rem 0.5rem 0.5rem 1.25rem;
+        font-size: 0.85rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .order-hero-button-circle {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+    
+    .order-hero-description {
+        font-size: 0.85rem;
+        line-height: 1.5;
+        max-width: 100%;
+        margin-top: 0.75rem;
+    }
+    
+    .order-hero-contact {
+        align-items: flex-start;
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .order-contact-label {
+        font-size: 0.9rem;
+    }
+    
+    .social-icon {
+        width: 2.25rem;
+        height: 2.25rem;
+    }
+}
