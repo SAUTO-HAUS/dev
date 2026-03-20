@@ -1188,6 +1188,12 @@
         height: 3.5rem;
         background: #ffffff;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        -webkit-tap-highlight-color: transparent;
+        outline: none;
+    }
+    
+    .order-slider-arrow:focus {
+        outline: none;
     }
     
     .order-slider-arrow svg {
@@ -1273,6 +1279,12 @@
         height: 3.5rem;
         background: #ffffff;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        -webkit-tap-highlight-color: transparent;
+        outline: none;
+    }
+    
+    .order-slider-arrow:focus {
+        outline: none;
     }
     
     .order-slider-arrow svg {
