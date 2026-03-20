@@ -868,8 +868,8 @@
    RESPONSIVE - HERO SECTION 1
    ======================================== */
 
-/* Tablet Portrait (768px - 1500px) */
-@media (min-width: 768px) and (max-width: 1500px) and (orientation: portrait) {
+/* Tablet Portrait (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
     .order-hero-section {
         height: auto;
         min-height: 50vh;
@@ -939,8 +939,8 @@
     }
 }
 
-/* Tablet Landscape (768px - 1500px) */
-@media (min-width: 768px) and (max-width: 1500px) and (orientation: landscape) {
+/* Tablet Landscape (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
     .order-hero-section {
         height: auto;
         min-height: 70vh;
@@ -1156,8 +1156,8 @@
    RESPONSIVE - SLIDER SECTION 2
    ======================================== */
 
-/* Tablet Portrait (768px - 1500px) */
-@media (min-width: 768px) and (max-width: 1500px) and (orientation: portrait) {
+/* Tablet Portrait (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
     .order-slider-section {
         padding: 2rem 0;
         position: relative;
@@ -1219,8 +1219,8 @@
     }
 }
 
-/* Tablet Landscape (768px - 1500px) */
-@media (min-width: 768px) and (max-width: 1500px) and (orientation: landscape) {
+/* Tablet Landscape (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
     .order-slider-section {
         padding: 2rem 0;
         position: relative;
@@ -1455,8 +1455,8 @@
    RESPONSIVE - PROCESS STEPS SECTION 3
    ======================================== */
 
-/* Tablet Portrait (768px - 1500px) */
-@media (min-width: 768px) and (max-width: 1500px) and (orientation: portrait) {
+/* Tablet Portrait (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
     .order-process-section {
         padding: 2rem 0;
     }
@@ -1555,8 +1555,8 @@
     }
 }
 
-/* Tablet Landscape (768px - 1500px) */
-@media (min-width: 768px) and (max-width: 1500px) and (orientation: landscape) {
+/* Tablet Landscape (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
     .order-process-section {
         padding: 2rem 0;
     }
@@ -1806,8 +1806,8 @@
    RESPONSIVE - BUYING STEPS SECTION 4
    ======================================== */
 
-/* Tablet Portrait (768px - 1500px) */
-@media (min-width: 768px) and (max-width: 1500px) and (orientation: portrait) {
+/* Tablet Portrait (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
     .order-buying-section {
         padding: 2rem 0;
     }
@@ -1863,8 +1863,8 @@
     }
 }
 
-/* Tablet Landscape (768px - 1500px) */
-@media (min-width: 768px) and (max-width: 1500px) and (orientation: landscape) {
+/* Tablet Landscape (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
     .order-buying-section {
         padding: 2rem 0;
     }
@@ -2038,8 +2038,8 @@
    RESPONSIVE - REVIEWS SECTION 6
    ======================================== */
 
-/* Tablet Portrait (768px - 1500px) */
-@media (min-width: 768px) and (max-width: 1500px) and (orientation: portrait) {
+/* Tablet Portrait (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
     .order-reviews-section {
         padding: 2rem 0;
     }
@@ -2092,8 +2092,8 @@
     }
 }
 
-/* Tablet Landscape (768px - 1500px) */
-@media (min-width: 768px) and (max-width: 1500px) and (orientation: landscape) {
+/* Tablet Landscape (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
     .order-reviews-section {
         padding: 2rem 0;
     }
@@ -2258,8 +2258,8 @@
    RESPONSIVE - SECOND HERO SECTION 8
    ======================================== */
 
-/* Tablet Portrait (768px - 1500px) */
-@media (min-width: 768px) and (max-width: 1500px) and (orientation: portrait) {
+/* Tablet Portrait (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
     .order-hero2-section {
         height: auto;
         min-height: 70vh;
@@ -2291,8 +2291,8 @@
     }
 }
 
-/* Tablet Landscape (768px - 1500px) */
-@media (min-width: 768px) and (max-width: 1500px) and (orientation: landscape) {
+/* Tablet Landscape (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
     .order-hero2-section {
         height: auto;
         min-height: 80vh;
