@@ -1143,3 +1143,232 @@
         height: 2.25rem;
     }
 }
+
+/* ========================================
+   RESPONSIVE - SLIDER SECTION 2
+   ======================================== */
+
+/* Tablet Portrait (768px - 1500px) */
+@media (min-width: 768px) and (max-width: 1500px) and (orientation: portrait) {
+    .order-slider-section {
+        padding: 2rem 0;
+        position: relative;
+    }
+    
+    .order-slider-container {
+        padding: 0 2rem;
+    }
+    
+    .order-slider-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+        margin-bottom: 2rem;
+    }
+    
+    .order-slider-title {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .order-slider-subtitle {
+        font-size: 0.95rem;
+    }
+    
+    .order-slider-nav {
+        position: absolute;
+        bottom: -1rem;
+        right: 2rem;
+        gap: 0.75rem;
+        z-index: 10;
+    }
+    
+    .order-slider-arrow {
+        width: 2.75rem;
+        height: 2.75rem;
+        background: #ffffff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    .order-slider-card {
+        flex: 0 0 calc(50% - 0.75rem);
+        min-width: calc(50% - 0.75rem);
+    }
+    
+    .order-card-image {
+        height: 14rem;
+    }
+}
+
+/* Tablet Landscape (768px - 1500px) */
+@media (min-width: 768px) and (max-width: 1500px) and (orientation: landscape) {
+    .order-slider-section {
+        padding: 2rem 0;
+    }
+    
+    .order-slider-container {
+        padding: 0 2rem;
+    }
+    
+    .order-slider-title {
+        font-size: 2rem;
+    }
+    
+    .order-slider-subtitle {
+        font-size: 0.95rem;
+    }
+    
+    .order-slider-card {
+        flex: 0 0 calc(33.333% - 1rem);
+        min-width: calc(33.333% - 1rem);
+    }
+    
+    .order-card-image {
+        height: 12rem;
+    }
+}
+
+/* Mobile Portrait (up to 767px) */
+@media (max-width: 767px) and (orientation: portrait) {
+    .order-slider-section {
+        padding: 2rem 0;
+        position: relative;
+    }
+    
+    .order-slider-container {
+        padding: 0 1rem;
+    }
+    
+    .order-slider-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0;
+        margin-bottom: 1.5rem;
+    }
+    
+    .order-slider-title {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .order-slider-subtitle {
+        font-size: 0.85rem;
+    }
+    
+    .order-slider-nav {
+        position: absolute;
+        bottom: -1rem;
+        right: 1rem;
+        gap: 0.75rem;
+        z-index: 10;
+    }
+    
+    .order-slider-arrow {
+        width: 2.5rem;
+        height: 2.5rem;
+        background: #ffffff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    .order-slider-arrow svg {
+        width: 1rem;
+        height: 1rem;
+    }
+    
+    .order-slider-card {
+        flex: 0 0 100%;
+        min-width: 280px;
+        max-width: 400px;
+    }
+    
+    .order-card-image {
+        height: 16rem;
+    }
+    
+    .order-card-title {
+        font-size: 1.25rem;
+    }
+    
+    .order-card-meta {
+        font-size: 0.85rem;
+    }
+    
+    .order-card-desc-item {
+        font-size: 0.85rem;
+    }
+    
+    .order-card-price {
+        font-size: 1.5rem;
+    }
+    
+    .order-card-button {
+        font-size: 0.9rem;
+        padding: 0.75rem 1.5rem;
+    }
+}
+
+/* Mobile Landscape (up to 767px) */
+@media (max-width: 767px) and (orientation: landscape) {
+    .order-slider-section {
+        padding: 1.5rem 0;
+    }
+    
+    .order-slider-container {
+        padding: 0 1.5rem;
+    }
+    
+    .order-slider-header {
+        flex-direction: row;
+        align-items: flex-end;
+        margin-bottom: 1.5rem;
+    }
+    
+    .order-slider-title {
+        font-size: 1.4rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    .order-slider-subtitle {
+        font-size: 0.8rem;
+    }
+    
+    .order-slider-arrow {
+        width: 2.25rem;
+        height: 2.25rem;
+    }
+    
+    .order-slider-arrow svg {
+        width: 0.9rem;
+        height: 0.9rem;
+    }
+    
+    .order-slider-card {
+        flex: 0 0 calc(50% - 0.75rem);
+        min-width: calc(50% - 0.75rem);
+    }
+    
+    .order-card-image {
+        height: 10rem;
+    }
+    
+    .order-card-title {
+        font-size: 1.1rem;
+    }
+    
+    .order-card-meta {
+        font-size: 0.8rem;
+    }
+    
+    .order-card-desc-item {
+        font-size: 0.8rem;
+    }
+    
+    .order-card-price {
+        font-size: 1.3rem;
+    }
+    
+    .order-card-button {
+        font-size: 0.85rem;
+        padding: 0.6rem 1.25rem;
+    }
+}
