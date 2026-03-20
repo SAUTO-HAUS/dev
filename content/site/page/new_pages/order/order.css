@@ -71,6 +71,10 @@
     text-transform: none;
 }
 
+.order-hero-title .mobile-break {
+    display: none;
+}
+
 .order-hero-subtitle {
     font-size: 1.1rem;
     line-height: 1.5;
@@ -813,6 +817,10 @@
     text-transform: none;
 }
 
+.order-hero2-title .mobile-break {
+    display: none;
+}
+
 .order-hero2-description {
     font-size: 1rem;
     line-height: 1.5;
@@ -1046,6 +1054,10 @@
         padding-top: 0;
     }
     
+    .order-hero-title .mobile-break {
+        display: block;
+    }
+    
     .order-hero-button {
         padding: 0.5rem 0.5rem 0.5rem 1.25rem;
         font-size: 0.9rem;
@@ -1115,6 +1127,10 @@
         margin-bottom: 0.75rem;
         margin-top: 0;
         padding-top: 0;
+    }
+    
+    .order-hero-title .mobile-break {
+        display: block;
     }
     
     .order-hero-button {
@@ -2344,6 +2360,10 @@
         line-height: 1.2;
     }
     
+    .order-hero2-title .mobile-break {
+        display: block;
+    }
+    
     .order-hero2-description {
         font-size: 0.9rem;
         margin-top: 1rem;
@@ -2377,6 +2397,10 @@
     .order-hero2-title {
         font-size: 1.8rem;
         line-height: 1.2;
+    }
+    
+    .order-hero2-title .mobile-break {
+        display: block;
     }
     
     .order-hero2-description {

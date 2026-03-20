@@ -2,7 +2,7 @@
 
 $lng_order_page = [
     'ru' => [
-        'hero_title' => 'Автомобили из Европы, США и Кореи под заказ: экономия до 45%',
+        'hero_title' => 'Автомобили из Европы, США и Кореи под заказ:<br class="mobile-break"> экономия до 45%',
         'hero_button' => 'Персонализированный поиск',
         'hero_description' => 'Сервис ПОД КЛЮЧ от подбора до оформления и поддержки, надежно, быстро и без сложных процедур.',
         'contact_label' => 'Свяжитесь с нами',
@@ -60,11 +60,11 @@ $lng_order_page = [
         'review_8_name' => 'Vasile Moraru',
         'review_8_car' => 'Am achiziționat Mazda CX-5',
         'review_8_text' => 'Am fost foarte mulțumit de rapiditatea procesului. Toate etapele au fost explicate clar, iar mașina a sosit exact când mi s-a promis. Calitatea serviciului a depășit așteptările. Foarte mulțumit.',
-        'hero2_title' => 'Мы найдем машину вашей мечты.<br>Доставим под ключ, без лишних хлопот.',
+        'hero2_title' => 'Мы найдем машину вашей мечты.<br>Доставим под ключ,<br class="mobile-break"> без лишних хлопот.',
         'hero2_description' => 'Превращаем покупку автомобиля в простой и комфортный процесс, чтобы вы могли по-настоящему наслаждаться своим новым автомобилем.',
     ],
     'ro' => [
-        'hero_title' => 'Automobile din Europa, SUA și Coreea la comandă: economie până la 45%',
+        'hero_title' => 'Automobile din Europa, SUA și Coreea la comandă:<br class="mobile-break"> economie până la 45%',
         'hero_button' => 'Căutare personalizată',
         'hero_description' => 'Serviciu LA CHEIE de la selecție până la înregistrare și asistență, fiabil, rapid și fără proceduri complicate.',
         'contact_label' => 'Contactați-ne',
@@ -122,11 +122,11 @@ $lng_order_page = [
         'review_8_name' => 'Vasile Moraru',
         'review_8_car' => 'Am achiziționat Mazda CX-5',
         'review_8_text' => 'Am fost foarte mulțumit de rapiditatea procesului. Toate etapele au fost explicate clar, iar mașina a sosit exact când mi s-a promis. Calitatea serviciului a depășit așteptările. Foarte mulțumit.',
-        'hero2_title' => 'Îți găsim mașina la care visezi.<br>Ți-o aducem la cheie, fără bătăi de cap.',
+        'hero2_title' => 'Îți găsim mașina la care visezi.<br>Ți-o aducem la cheie,<br class="mobile-break"> fără bătăi de cap.',
         'hero2_description' => 'Transformăm cumpărarea mașinii într-o experiență simplă și comodă, pentru ca tu să te bucuri cu adevărat de noul tău automobil.',
     ],
     'en' => [
-        'hero_title' => 'Cars from Europe, USA and Korea to order: save up to 45%',
+        'hero_title' => 'Cars from Europe, USA and Korea to order:<br class="mobile-break"> save up to 45%',
         'hero_button' => 'Personalized search',
         'hero_description' => 'TURNKEY SERVICE from selection to registration and support, reliable, fast and without complicated procedures.',
         'contact_label' => 'Contact us',
@@ -184,7 +184,7 @@ $lng_order_page = [
         'review_8_name' => 'Vasile Moraru',
         'review_8_car' => 'Purchased Mazda CX-5',
         'review_8_text' => 'I was very satisfied with the speed of the process. All stages were explained clearly, and the car arrived exactly when promised. Service quality exceeded expectations. Very satisfied.',
-        'hero2_title' => 'We find the car you dream of.<br>We bring it to you turnkey, hassle-free.',
+        'hero2_title' => 'We find the car you dream of.<br>We bring it to you turnkey,<br class="mobile-break"> hassle-free.',
         'hero2_description' => 'We transform car buying into a simple and comfortable experience, so you can truly enjoy your new automobile.',
     ],
 ];
