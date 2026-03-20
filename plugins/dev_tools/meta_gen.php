@@ -75,6 +75,27 @@ if ($z2 === 'credit') {
     }
 }
 
+// order page
+if ($z2 === 'services' && $z3 === 'order') {
+    switch ($zlng) {
+        case 'ru':
+            $sa['meta']['ttl'] = 'Автомобили под заказ из Европы, США и Кореи | Sauto.md - Экономия до 45%';
+            $sa['meta']['dsc'] = 'Заказ автомобилей из Европы, США и Кореи под ключ. Более 1500 успешных проектов. Полное сопровождение от подбора до регистрации. Экономия до 45%. Надёжно и быстро.';
+            $sa['meta']['kwd'] = 'автомобили под заказ, заказ авто из европы, импорт автомобилей, sauto заказ, автомобили из сша, автомобили из кореи, Молдова';
+            break;
+        case 'en':
+            $sa['meta']['ttl'] = 'Order Cars from Europe, USA and Korea | Sauto.md - Save up to 45%';
+            $sa['meta']['dsc'] = 'Order cars from Europe, USA and Korea turnkey. Over 1500 completed projects. Full support from selection to registration. Save up to 45%. Reliable and fast.';
+            $sa['meta']['kwd'] = 'order cars, import cars, cars from europe, cars from usa, cars from korea, sauto order, Moldova';
+            break;
+        default: // ro
+            $sa['meta']['ttl'] = 'Automobile la comandă din Europa, SUA și Coreea | Sauto.md - Economie până la 45%';
+            $sa['meta']['dsc'] = 'Comandă automobile din Europa, SUA și Coreea la cheie. Peste 1500 de proiecte realizate. Asistență completă de la selecție până la înregistrare. Economie până la 45%. Fiabil și rapid.';
+            $sa['meta']['kwd'] = 'automobile la comanda, import auto, masini din europa, masini din sua, masini din coreea, sauto comanda, Moldova';
+            break;
+    }
+}
+
 // Set default title only if not already set (e.g., by credit page)
 if (!isset($sa['meta']['ttl']) || empty($sa['meta']['ttl'])) {
     $sa['meta']['ttl'] = 'Vînzarea autoturismelor și utilitarelor.';
