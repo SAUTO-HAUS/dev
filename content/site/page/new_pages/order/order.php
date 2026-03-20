@@ -103,6 +103,7 @@ try {
             $car['main_image'] = null;
         }
     }
+    unset($car);
 } catch (Exception $e) {
     $cars = [];
 }
