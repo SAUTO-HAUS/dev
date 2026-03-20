@@ -86,6 +86,57 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 250);
     });
     
+    // swipe functionality
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const sliderWrapper = document.querySelector('.order-slider-wrapper');
+    
+    if (sliderWrapper) {
+        sliderWrapper.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+        
+        sliderWrapper.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    if (isTransitioning) return;
+                    currentIndex++;
+                    if (currentIndex >= totalCards) {
+                        currentIndex = 0;
+                        updateSlider(false);
+                        setTimeout(() => {
+                            currentIndex++;
+                            updateSlider(true);
+                        }, 50);
+                    } else {
+                        updateSlider(true);
+                    }
+                } else {
+                    if (isTransitioning) return;
+                    currentIndex--;
+                    if (currentIndex < 0) {
+                        currentIndex = totalCards - 1;
+                        updateSlider(false);
+                        setTimeout(() => {
+                            currentIndex--;
+                            updateSlider(true);
+                        }, 50);
+                    } else {
+                        updateSlider(true);
+                    }
+                }
+            }
+        }
+    }
+    
     updateSlider(false);
 });
 
@@ -229,6 +280,48 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', function() {
         updateSlider(false);
     });
+    
+    //  swipe functionality
+    let touchStartX = 0;
+    let touchEndX = 0;
+    const sliderWrapper = document.querySelector('.order-reviews-slider-wrapper');
+    
+    if (sliderWrapper) {
+        sliderWrapper.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+        
+        sliderWrapper.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50;
+            const diff = touchStartX - touchEndX;
+            
+            if (Math.abs(diff) > swipeThreshold) {
+                if (diff > 0) {
+                    if (isTransitioning) return;
+                    currentIndex++;
+                    updateSlider(true);
+                } else {
+                    if (isTransitioning) return;
+                    currentIndex--;
+                    if (currentIndex < 0) {
+                        currentIndex = totalCards - 1;
+                        updateSlider(false);
+                        setTimeout(() => {
+                            currentIndex--;
+                            updateSlider(true);
+                        }, 50);
+                    } else {
+                        updateSlider(true);
+                    }
+                }
+            }
+        }
+    }
     
     updateSlider(false);
 });
