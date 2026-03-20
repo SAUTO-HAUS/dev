@@ -1188,8 +1188,8 @@
     }
     
     .order-slider-arrow {
-        width: 3.5rem;
-        height: 3.5rem;
+        width: 2.5rem;
+        height: 2.5rem;
         background: #ffffff;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         -webkit-tap-highlight-color: transparent;
@@ -1201,8 +1201,8 @@
     }
     
     .order-slider-arrow svg {
-        width: 1.25rem;
-        height: 1.25rem;
+        width: 1rem;
+        height: 1rem;
     }
     
     .order-slider-card {
@@ -1250,8 +1250,8 @@
     }
     
     .order-slider-arrow {
-        width: 3.5rem;
-        height: 3.5rem;
+        width: 2.5rem;
+        height: 2.5rem;
         background: #ffffff;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         -webkit-tap-highlight-color: transparent;
@@ -1263,8 +1263,8 @@
     }
     
     .order-slider-arrow svg {
-        width: 1.25rem;
-        height: 1.25rem;
+        width: 1rem;
+        height: 1rem;
     }
     
     .order-slider-card {
@@ -1313,8 +1313,8 @@
     }
     
     .order-slider-arrow {
-        width: 3.5rem;
-        height: 3.5rem;
+        width: 2.5rem;
+        height: 2.5rem;
         background: #ffffff;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         -webkit-tap-highlight-color: transparent;
@@ -1326,8 +1326,8 @@
     }
     
     .order-slider-arrow svg {
-        width: 1.25rem;
-        height: 1.25rem;
+        width: 1rem;
+        height: 1rem;
     }
     
     .order-slider-card {
@@ -1398,8 +1398,8 @@
     }
     
     .order-slider-arrow {
-        width: 3.5rem;
-        height: 3.5rem;
+        width: 2.5rem;
+        height: 2.5rem;
         background: #ffffff;
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         -webkit-tap-highlight-color: transparent;
@@ -1411,8 +1411,8 @@
     }
     
     .order-slider-arrow svg {
-        width: 1.25rem;
-        height: 1.25rem;
+        width: 1rem;
+        height: 1rem;
     }
     
     .order-slider-card {
@@ -2026,5 +2026,225 @@
     
     .order-buying-image img {
         position: relative;
+    }
+}
+
+/* ========================================
+   RESPONSIVE - REVIEWS SECTION 6
+   ======================================== */
+
+/* Tablet Portrait (768px - 1500px) */
+@media (min-width: 768px) and (max-width: 1500px) and (orientation: portrait) {
+    .order-reviews-section {
+        padding: 2rem 0;
+    }
+    
+    .order-reviews-container {
+        padding: 0 2rem;
+    }
+    
+    .order-reviews-header {
+        margin-bottom: 1.5rem;
+    }
+    
+    .order-reviews-title {
+        font-size: 1.5rem;
+    }
+    
+    .order-reviews-prev,
+    .order-reviews-next {
+        width: 2.5rem;
+        height: 2.5rem;
+        -webkit-tap-highlight-color: transparent;
+        outline: none;
+    }
+    
+    .order-reviews-prev:focus,
+    .order-reviews-next:focus {
+        outline: none;
+    }
+    
+    .order-review-card {
+        flex: 0 0 80%;
+        min-width: 80%;
+    }
+    
+    .order-review-avatar {
+        width: 3rem;
+        height: 3rem;
+    }
+    
+    .order-review-name {
+        font-size: 1rem;
+    }
+    
+    .order-review-car {
+        font-size: 0.7rem;
+    }
+    
+    .order-review-text {
+        font-size: 0.85rem;
+    }
+}
+
+/* Tablet Landscape (768px - 1500px) */
+@media (min-width: 768px) and (max-width: 1500px) and (orientation: landscape) {
+    .order-reviews-section {
+        padding: 2rem 0;
+    }
+    
+    .order-reviews-container {
+        padding: 0 2rem;
+    }
+    
+    .order-reviews-header {
+        margin-bottom: 1.5rem;
+    }
+    
+    .order-reviews-title {
+        font-size: 1.5rem;
+    }
+    
+    .order-reviews-prev,
+    .order-reviews-next {
+        width: 2.5rem;
+        height: 2.5rem;
+        -webkit-tap-highlight-color: transparent;
+        outline: none;
+    }
+    
+    .order-reviews-prev:focus,
+    .order-reviews-next:focus {
+        outline: none;
+    }
+    
+    .order-review-card {
+        flex: 0 0 80%;
+        min-width: 80%;
+    }
+    
+    .order-review-avatar {
+        width: 3rem;
+        height: 3rem;
+    }
+    
+    .order-review-name {
+        font-size: 1rem;
+    }
+    
+    .order-review-car {
+        font-size: 0.7rem;
+    }
+    
+    .order-review-text {
+        font-size: 0.85rem;
+    }
+}
+
+/* Mobile Portrait (up to 767px) */
+@media (max-width: 767px) and (orientation: portrait) {
+    .order-reviews-section {
+        padding: 2rem 0;
+    }
+    
+    .order-reviews-container {
+        padding: 0 1rem;
+    }
+    
+    .order-reviews-header {
+        margin-bottom: 1.5rem;
+    }
+    
+    .order-reviews-title {
+        font-size: 1.5rem;
+    }
+    
+    .order-reviews-prev,
+    .order-reviews-next {
+        width: 2.5rem;
+        height: 2.5rem;
+        -webkit-tap-highlight-color: transparent;
+        outline: none;
+    }
+    
+    .order-reviews-prev:focus,
+    .order-reviews-next:focus {
+        outline: none;
+    }
+    
+    .order-review-card {
+        flex: 0 0 80%;
+        min-width: 80%;
+    }
+    
+    .order-review-avatar {
+        width: 3rem;
+        height: 3rem;
+    }
+    
+    .order-review-name {
+        font-size: 1rem;
+    }
+    
+    .order-review-car {
+        font-size: 0.7rem;
+    }
+    
+    .order-review-text {
+        font-size: 0.85rem;
+    }
+}
+
+/* Mobile Landscape (up to 767px) */
+@media (max-width: 767px) and (orientation: landscape) {
+    .order-reviews-section {
+        padding: 2rem 0;
+    }
+    
+    .order-reviews-container {
+        padding: 0 1.5rem;
+    }
+    
+    .order-reviews-header {
+        margin-bottom: 1.5rem;
+    }
+    
+    .order-reviews-title {
+        font-size: 1.5rem;
+    }
+    
+    .order-reviews-prev,
+    .order-reviews-next {
+        width: 2.5rem;
+        height: 2.5rem;
+        -webkit-tap-highlight-color: transparent;
+        outline: none;
+    }
+    
+    .order-reviews-prev:focus,
+    .order-reviews-next:focus {
+        outline: none;
+    }
+    
+    .order-review-card {
+        flex: 0 0 80%;
+        min-width: 80%;
+    }
+    
+    .order-review-avatar {
+        width: 3rem;
+        height: 3rem;
+    }
+    
+    .order-review-name {
+        font-size: 1rem;
+    }
+    
+    .order-review-car {
+        font-size: 0.7rem;
+    }
+    
+    .order-review-text {
+        font-size: 0.85rem;
     }
 }
