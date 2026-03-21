@@ -3,7 +3,7 @@
    ======================================== */
 
 .order-hero-section {
-    background-image: url('/content/site/page/new_pages/order/order-media/hero1-land.jpg');
+    background-image: url('/content/site/page/new_pages/order/order-media/hero1-lands.jpg');
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -807,7 +807,7 @@
    ======================================== */
 
 .order-hero2-section {
-    background-image: url('/content/site/page/new_pages/order/order-media/hero-img-2.jpg');
+    background-image: url('/content/site/page/new_pages/order/order-media/hero2-lands.jpg');
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -932,7 +932,7 @@
         height: auto;
         min-height: 50vh;
         padding: 3rem 0;
-        background-image: url('/content/site/page/new_pages/order/order-media/hero1-port.jpg');
+        background-image: url('/content/site/page/new_pages/order/order-media/hero1-portr.jpg');
         background-size: 100% 100%;
         background-position: center center;
     }
@@ -1003,7 +1003,7 @@
         height: auto;
         min-height: 70vh;
         padding: 2rem 0;
-        background-image: url('/content/site/page/new_pages/order/order-media/hero1-land.jpg');
+        background-image: url('/content/site/page/new_pages/order/order-media/hero1-lands.jpg');
         background-size: cover;
         background-position: center center;
     }
@@ -1074,7 +1074,7 @@
         height: auto;
         min-height: 60vh;
         padding: 3rem 0;
-        background-image: url('/content/site/page/new_pages/order/order-media/hero1-port.jpg');
+        background-image: url('/content/site/page/new_pages/order/order-media/hero1-portr.jpg');
         background-size: 100% 100%;
         background-position: center center;
     }
@@ -1149,7 +1149,7 @@
         height: auto;
         min-height: 100vh;
         padding: 2rem 0;
-        background-image: url('/content/site/page/new_pages/order/order-media/hero1-land.jpg');
+        background-image: url('/content/site/page/new_pages/order/order-media/hero1-lands.jpg');
         background-size: cover;
         background-position: center center;
     }
@@ -2330,6 +2330,9 @@
         height: auto;
         min-height: 70vh;
         padding: 3rem 0;
+        background-image: url('/content/site/page/new_pages/order/order-media/hero2-portr.jpg');
+        background-size: 100% 100%;
+        background-position: center center;
     }
     
     .order-hero2-content {
@@ -2363,6 +2366,9 @@
         height: auto;
         min-height: 80vh;
         padding: 2.5rem 0;
+        background-image: url('/content/site/page/new_pages/order/order-media/hero2-lands.jpg');
+        background-size: cover;
+        background-position: center center;
     }
     
     .order-hero2-content {
@@ -2396,7 +2402,7 @@
         height: auto;
         min-height: 60vh;
         padding: 3rem 0;
-        background-image: url('/content/site/page/new_pages/order/order-media/hero-img-mob-2.jpg');
+        background-image: url('/content/site/page/new_pages/order/order-media/hero2-portr.jpg');
         background-size: cover;
         background-position: center center;
     }
@@ -2438,6 +2444,9 @@
         height: auto;
         min-height: 100vh;
         padding: 2rem 0;
+        background-image: url('/content/site/page/new_pages/order/order-media/hero2-lands.jpg');
+        background-size: cover;
+        background-position: center center;
     }
     
     .order-hero2-content {
