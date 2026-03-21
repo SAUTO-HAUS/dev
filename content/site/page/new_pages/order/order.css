@@ -929,8 +929,7 @@
 /* Tablet Portrait (768px - 1024px) */
 @media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
     .order-hero-section {
-        height: auto;
-        min-height: 50vh;
+        height: 32.5rem;
         padding: 3rem 0;
         background-image: url('/content/site/page/new_pages/order/order-media/hero1-portrait.jpg');
         background-size: cover;
@@ -1071,8 +1070,7 @@
 /* Mobile Portrait (up to 767px) */
 @media (max-width: 767px) and (orientation: portrait) {
     .order-hero-section {
-        height: auto;
-        min-height: 60vh;
+        height: 32.5rem;
         padding: 3rem 0;
         background-image: url('/content/site/page/new_pages/order/order-media/hero1-portrait.jpg');
         background-size: cover;
@@ -2327,8 +2325,7 @@
 /* Tablet Portrait (768px - 1024px) */
 @media (min-width: 768px) and (max-width: 1024px) and (orientation: portrait) {
     .order-hero2-section {
-        height: auto;
-        min-height: 70vh;
+        height: 32.5rem;
         padding: 3rem 0;
         background-image: url('/content/site/page/new_pages/order/order-media/hero2-portrait.jpg');
         background-size: cover;
@@ -2399,8 +2396,7 @@
 /* Mobile Portrait (up to 767px) */
 @media (max-width: 767px) and (orientation: portrait) {
     .order-hero2-section {
-        height: auto;
-        min-height: 60vh;
+        height: 32.5rem;
         padding: 3rem 0;
         background-image: url('/content/site/page/new_pages/order/order-media/hero2-portrait.jpg');
         background-size: cover;
