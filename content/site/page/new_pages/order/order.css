@@ -933,7 +933,7 @@
         min-height: 50vh;
         padding: 3rem 0;
         background-image: url('/content/site/page/new_pages/order/order-media/hero1-portrait.jpg');
-        background-size: 100% 100%;
+        background-size: cover;
         background-position: center center;
     }
     
@@ -1075,7 +1075,7 @@
         min-height: 60vh;
         padding: 3rem 0;
         background-image: url('/content/site/page/new_pages/order/order-media/hero1-portrait.jpg');
-        background-size: 100% 100%;
+        background-size: cover;
         background-position: center center;
     }
     
@@ -2331,7 +2331,7 @@
         min-height: 70vh;
         padding: 3rem 0;
         background-image: url('/content/site/page/new_pages/order/order-media/hero2-portrait.jpg');
-        background-size: 100% 100%;
+        background-size: cover;
         background-position: center center;
     }
     
