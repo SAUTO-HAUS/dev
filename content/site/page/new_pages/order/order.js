@@ -149,13 +149,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const previewNext = document.querySelector('.order-process-preview-next');
     const previewPrevTitle = previewPrev ? previewPrev.querySelector('.order-process-preview-title') : null;
     const previewNextTitle = previewNext ? previewNext.querySelector('.order-process-preview-title') : null;
+    const scrollbarThumb = document.querySelector('.order-process-scrollbar-thumb-vertical');
     
     if (!scrollContainer || !numberElement || steps.length === 0) return;
 
-    if (window.innerWidth <= 1500) return;
+    if (window.innerWidth <= 1024) return;
     
     let currentStep = 0;
     let isScrolling = false;
+    const totalSteps = steps.length;
     
     function showStep(index) {
         steps.forEach((step, i) => {
@@ -179,6 +181,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         numberElement.textContent = String(index + 1).padStart(2, '0');
+        
+        if (scrollbarThumb) {
+            const thumbHeight = 100 / totalSteps;
+            const thumbPosition = (index / (totalSteps - 1)) * (100 - thumbHeight);
+            scrollbarThumb.style.height = thumbHeight + '%';
+            scrollbarThumb.style.top = thumbPosition + '%';
+        }
     }
     
     showStep(0);

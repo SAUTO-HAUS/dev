@@ -403,6 +403,40 @@
     position: relative;
 }
 
+.order-process-scrollbar-vertical {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    z-index: 10;
+}
+
+.order-process-scrollbar-track-vertical {
+    width: 5px;
+    height: 8rem;
+    background: #e0e0e0;
+    border-radius: 2.5px;
+    position: relative;
+}
+
+.order-process-scrollbar-thumb-vertical {
+    width: 100%;
+    background: #dc143c;
+    border-radius: 2px;
+    transition: height 0.4s ease, top 0.4s ease;
+    height: 16.67%;
+    position: absolute;
+    top: 0;
+}
+
+@media (max-width: 1024px) {
+    .order-process-scrollbar-vertical {
+        display: none !important;
+    }
+}
+
 .order-process-title {
     font-size: 2.5rem;
     font-weight: 700;
