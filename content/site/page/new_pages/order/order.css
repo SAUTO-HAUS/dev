@@ -3,7 +3,7 @@
    ======================================== */
 
 .order-hero-section {
-    background-image: url('/content/site/page/new_pages/order/order-media/hero-img.jpg');
+    background-image: url('/content/site/page/new_pages/order/order-media/hero1-land.jpg');
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
@@ -932,7 +932,7 @@
         height: auto;
         min-height: 50vh;
         padding: 3rem 0;
-        background-image: url('/content/site/page/new_pages/order/order-media/hero-img-mob.jpg');
+        background-image: url('/content/site/page/new_pages/order/order-media/hero1-port.jpg');
         background-size: 100% 100%;
         background-position: center center;
     }
@@ -1003,7 +1003,7 @@
         height: auto;
         min-height: 70vh;
         padding: 2rem 0;
-        background-image: url('/content/site/page/new_pages/order/order-media/hero-img.jpg');
+        background-image: url('/content/site/page/new_pages/order/order-media/hero1-land.jpg');
         background-size: cover;
         background-position: center center;
     }
@@ -1074,7 +1074,7 @@
         height: auto;
         min-height: 60vh;
         padding: 3rem 0;
-        background-image: url('/content/site/page/new_pages/order/order-media/hero-img-mob.jpg');
+        background-image: url('/content/site/page/new_pages/order/order-media/hero1-port.jpg');
         background-size: 100% 100%;
         background-position: center center;
     }
@@ -1149,7 +1149,7 @@
         height: auto;
         min-height: 100vh;
         padding: 2rem 0;
-        background-image: url('/content/site/page/new_pages/order/order-media/hero-img.jpg');
+        background-image: url('/content/site/page/new_pages/order/order-media/hero1-land.jpg');
         background-size: cover;
         background-position: center center;
     }
