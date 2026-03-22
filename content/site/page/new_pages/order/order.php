@@ -77,7 +77,7 @@ if (file_exists($js_file_path)) {
 <!-- Slider Section - Completed Projects -->
 <?php
 global $db;
-$car_ids = [11760, 11759, 11758, 11756, 11753, 11747, 11744, 11705];
+$car_ids = [13964, 13940, 14008, 13911, 13902, 13871, 13842, 13825];
 $placeholders = implode(',', array_fill(0, count($car_ids), '?'));
 
 $cars = [];

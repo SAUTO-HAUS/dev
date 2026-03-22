@@ -194,7 +194,7 @@ $lng_order_page = [
 
 // Car descriptions for each car ID
 $car_descriptions = [
-    11760 => [ // Renault Megane
+    13964 => [ // Renault Megane
         'ru' => [
             'request' => 'надёжный автомобиль для города и редких загородных поездок.',
             'offer' => 'Мы рекомендовали Renault Megane, VW Golf и Mazda 3 — всё с пробегом до 150 000 км, в хорошем состоянии.',
@@ -211,7 +211,7 @@ $car_descriptions = [
             'choice' => 'Renault Megane — client chose for French style, comfort and optimal price-quality ratio.'
         ]
     ],
-    11759 => [ // BMW X5
+    13940 => [ // BMW X5
         'ru' => [
             'request' => 'просторный внедорожник для семьи с высоким уровнем комфорта.',
             'offer' => 'Мы рекомендовали BMW X5, Audi Q7 и Mercedes GLE — все с полным приводом и богатой комплектацией.',
@@ -228,7 +228,7 @@ $car_descriptions = [
             'choice' => 'BMW X5 — client chose for excellent combination of power, comfort and prestige.'
         ]
     ],
-    11758 => [ // BMW X3
+    14008 => [ // BMW X3
         'ru' => [
             'request' => 'компактный кроссовер с динамичным характером и премиальным качеством.',
             'offer' => 'Мы рекомендовали BMW X3, Audi Q5 и Mercedes GLC — все с современными технологиями безопасности.',
@@ -245,7 +245,7 @@ $car_descriptions = [
             'choice' => 'BMW X3 — client chose for sporty handling and elegant design.'
         ]
     ],
-    11756 => [ // Mercedes-Benz GLE
+    13911 => [ // Mercedes-Benz GLE
         'ru' => [
             'request' => 'роскошный внедорожник с передовыми технологиями и максимальным комфортом.',
             'offer' => 'Мы рекомендовали Mercedes GLE, BMW X5 и Audi Q7 — все с панорамной крышей и кожаным салоном.',
@@ -262,7 +262,7 @@ $car_descriptions = [
             'choice' => 'Mercedes-Benz GLE — client chose for unmatched comfort and status.'
         ]
     ],
-    11753 => [ // Toyota RAV4
+    13902 => [ // Toyota RAV4
         'ru' => [
             'request' => 'надёжный кроссовер для активного образа жизни с низкими расходами на обслуживание.',
             'offer' => 'Мы рекомендовали Toyota RAV4, Honda CR-V и Mazda CX-5 — все с полным приводом и экономичными двигателями.',
@@ -279,7 +279,7 @@ $car_descriptions = [
             'choice' => 'Toyota RAV4 — client chose for legendary reliability and practicality.'
         ]
     ],
-    11747 => [ // Volvo XC90
+    13871 => [ // Volvo XC90
         'ru' => [
             'request' => 'семейный автомобиль с высочайшим уровнем безопасности и комфорта для дальних поездок.',
             'offer' => 'Мы рекомендовали Volvo XC90, Audi Q7 и BMW X5 — все с семью местами и передовыми системами безопасности.',
@@ -296,7 +296,7 @@ $car_descriptions = [
             'choice' => 'Volvo XC90 — client chose for Scandinavian design and unmatched safety.'
         ]
     ],
-    11744 => [ // Volkswagen Transporter
+    13842 => [ // Volkswagen Transporter
         'ru' => [
             'request' => 'вместительный фургон для бизнеса с возможностью трансформации в пассажирский вариант.',
             'offer' => 'Мы рекомендовали VW Transporter, Mercedes Vito и Ford Transit — все с дизельными двигателями и большой грузоподъёмностью.',
@@ -313,7 +313,7 @@ $car_descriptions = [
             'choice' => 'Volkswagen Transporter — client chose for versatility and German quality.'
         ]
     ],
-    11705 => [ // Audi Q7
+    13825 => [ // Audi Q7
         'ru' => [
             'request' => 'премиальный внедорожник с просторным салоном и современными технологиями.',
             'offer' => 'Мы рекомендовали Audi Q7, BMW X5 и Mercedes GLE — все с кожаным салоном и адаптивной подвеской.',
