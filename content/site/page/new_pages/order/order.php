@@ -33,11 +33,11 @@ if (file_exists($js_file_path)) {
 
 ?>
 
-<!-- Include page-specific CSS with cache busting -->
+<!-- Include page-specific CSS normally -->
 <link rel="stylesheet" type="text/css" href="<?php echo $page_css . $css_version; ?>">
 
-<!-- Include page-specific JS with cache busting -->
-<script src="<?php echo $page_js . $js_version; ?>"></script>
+<!-- Include page-specific JS with defer -->
+<script src="<?php echo $page_js . $js_version; ?>" defer></script>
 
 <!-- Hero Section -->
 <section class="order-hero-section">
@@ -49,7 +49,7 @@ if (file_exists($js_file_path)) {
             <a href="/ordercars" class="order-hero-button">
                 <?php echo get_order_translation('hero_button', $current_lang, $lng_order_page); ?>
                 <span class="order-hero-button-circle">
-                    <img src="/content/site/page/new_pages/order/order-media/icons/right.svg" alt="Arrow" class="order-hero-button-arrow">
+                    <img src="/content/site/page/new_pages/order/order-media/icons/right.svg" alt="Arrow" class="order-hero-button-arrow" width="12" height="12" loading="eager">
                 </span>
             </a>
             
@@ -59,15 +59,15 @@ if (file_exists($js_file_path)) {
         <!-- Right side - Contact -->
         <div class="order-hero-contact">
             <p class="order-contact-label"><?php echo get_order_translation('contact_label', $current_lang, $lng_order_page); ?></p>
-            <div class="order-social-icons">
-                <a href="https://www.instagram.com/sauto.md/" target="_blank" rel="noopener" class="social-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+            <div class="order-social-icons" role="navigation" aria-label="Social media links">
+                <a href="https://www.instagram.com/sauto.md/" target="_blank" rel="noopener" class="social-icon" aria-label="Follow us on Instagram">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
                 </a>
-                <a href="https://www.facebook.com/sauto.md" target="_blank" rel="noopener" class="social-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
+                <a href="https://www.facebook.com/sauto.md" target="_blank" rel="noopener" class="social-icon" aria-label="Follow us on Facebook">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
                 </a>
-                <a href="https://t.me/sautostockextern" target="_blank" rel="noopener" class="social-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"></path><path d="M22 2l-7 20-4-9-9-4 20-7z"></path></svg>
+                <a href="https://t.me/sautostockextern" target="_blank" rel="noopener" class="social-icon" aria-label="Join our Telegram channel">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2L11 13"></path><path d="M22 2l-7 20-4-9-9-4 20-7z"></path></svg>
                 </a>
             </div>
         </div>
@@ -116,18 +116,18 @@ try {
                 <h2 class="order-slider-title"><?php echo get_order_translation('slider_title', $current_lang, $lng_order_page); ?></h2>
                 <p class="order-slider-subtitle"><?php echo get_order_translation('slider_subtitle', $current_lang, $lng_order_page); ?></p>
             </div>
-            <div class="order-slider-nav">
-                <button class="order-slider-arrow order-slider-prev" aria-label="Previous">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+            <div class="order-slider-nav" role="group" aria-label="Slider navigation">
+                <button class="order-slider-arrow order-slider-prev" aria-label="Previous slide" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>
                 </button>
-                <button class="order-slider-arrow order-slider-next" aria-label="Next">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                <button class="order-slider-arrow order-slider-next" aria-label="Next slide" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
                 </button>
             </div>
         </div>
         
-        <div class="order-slider-wrapper">
-            <div class="order-slider-track">
+        <div class="order-slider-wrapper" role="region" aria-label="Completed projects carousel">
+            <div class="order-slider-track" role="list">
                 <?php foreach ($cars as $car): 
                     $car_path = !empty($car['p_path']) ? $car['p_path'] : '';
                     $car_name = $car['br_nm'] . ' ' . $car['mo_nm'];
@@ -144,10 +144,10 @@ try {
                     // Get car descriptions
                     $car_desc = isset($car_descriptions[$car['id']][$current_lang]) ? $car_descriptions[$car['id']][$current_lang] : null;
                 ?>
-                <div class="order-slider-card">
+                <div class="order-slider-card" role="listitem">
                     <div class="order-card-image">
                         <?php if ($car_image_url): ?>
-                            <img src="<?php echo $car_image_url; ?>" alt="<?php echo $car_name; ?>" loading="lazy">
+                            <img src="<?php echo $car_image_url; ?>" alt="<?php echo $car_name; ?>" loading="lazy" width="400" height="300" decoding="async">
                         <?php endif; ?>
                     </div>
                     <div class="order-card-content">
@@ -237,7 +237,7 @@ try {
                 </div>
             </div>
             <div class="order-buying-image">
-                <img src="/content/site/page/new_pages/order/order-media/section-5.jpg" alt="<?php echo get_order_translation('buying_title', $current_lang, $lng_order_page); ?>">
+                <img src="/content/site/page/new_pages/order/order-media/section-5.jpg" alt="<?php echo get_order_translation('buying_title', $current_lang, $lng_order_page); ?>" loading="lazy" width="800" height="600" decoding="async">
             </div>
         </div>
     </div>
@@ -248,25 +248,25 @@ try {
     <div class="order-reviews-container">
         <div class="order-reviews-header">
             <h2 class="order-reviews-title"><?php echo get_order_translation('reviews_title', $current_lang, $lng_order_page); ?></h2>
-            <div class="order-reviews-nav">
-                <button class="order-reviews-prev" aria-label="Previous">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <div class="order-reviews-nav" role="group" aria-label="Reviews navigation">
+                <button class="order-reviews-prev" aria-label="Previous review" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                         <path d="M15 18l-6-6 6-6"/>
                     </svg>
                 </button>
-                <button class="order-reviews-next" aria-label="Next">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <button class="order-reviews-next" aria-label="Next review" type="button">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
                         <path d="M9 18l6-6-6-6"/>
                     </svg>
                 </button>
             </div>
         </div>
-        <div class="order-reviews-slider-wrapper">
-            <div class="order-reviews-slider">
+        <div class="order-reviews-slider-wrapper" role="region" aria-label="Customer reviews carousel">
+            <div class="order-reviews-slider" role="list">
                 <?php for ($i = 1; $i <= 8; $i++): ?>
-                <div class="order-review-card">
+                <div class="order-review-card" role="listitem">
                     <div class="order-review-header">
-                        <img src="/content/site/page/new_pages/order/order-media/avatar-<?php echo $i; ?>.jpg" alt="<?php echo get_order_translation("review_{$i}_name", $current_lang, $lng_order_page); ?>" class="order-review-avatar">
+                        <img src="/content/site/page/new_pages/order/order-media/avatar-<?php echo $i; ?>.jpg" alt="<?php echo get_order_translation("review_{$i}_name", $current_lang, $lng_order_page); ?>" class="order-review-avatar" loading="lazy" width="56" height="56" decoding="async">
                         <div class="order-review-info">
                             <h3 class="order-review-name"><?php echo get_order_translation("review_{$i}_name", $current_lang, $lng_order_page); ?></h3>
                             <p class="order-review-car"><?php echo get_order_translation("review_{$i}_car", $current_lang, $lng_order_page); ?></p>
@@ -274,14 +274,14 @@ try {
                     </div>
                     <p class="order-review-text"><?php echo get_order_translation("review_{$i}_text", $current_lang, $lng_order_page); ?></p>
                     <div class="order-review-rating">
-                        <div class="order-review-stars">
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
-                            <span class="star">★</span>
+                        <div class="order-review-stars" role="img" aria-label="5 out of 5 stars">
+                            <span class="star" aria-hidden="true">★</span>
+                            <span class="star" aria-hidden="true">★</span>
+                            <span class="star" aria-hidden="true">★</span>
+                            <span class="star" aria-hidden="true">★</span>
+                            <span class="star" aria-hidden="true">★</span>
                         </div>
-                        <span class="order-review-score">5.0</span>
+                        <span class="order-review-score" aria-label="Rating: 5.0">5.0</span>
                     </div>
                 </div>
                 <?php endfor; ?>
@@ -309,7 +309,7 @@ try {
             <a href="/ordercars" class="order-hero2-button">
                 <?php echo get_order_translation('hero_button', $current_lang, $lng_order_page); ?>
                 <span class="order-hero2-button-circle">
-                    <img src="/content/site/page/new_pages/order/order-media/icons/right.svg" alt="Arrow" class="order-hero2-button-arrow">
+                    <img src="/content/site/page/new_pages/order/order-media/icons/right.svg" alt="Arrow" class="order-hero2-button-arrow" width="12" height="12" loading="lazy">
                 </span>
             </a>
         </div>
