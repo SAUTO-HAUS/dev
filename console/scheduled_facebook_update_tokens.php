@@ -51,8 +51,8 @@ try {
 try {
     // location_1_facebook_token
     $manager = new FacebookTokenManager(array(
-        'app_id' => '1082088863732549',
-        'app_secret' => '77368f52ab263907ee1fe3ea72909289',
+        'app_id' => '1137294825141008',
+        'app_secret' => '7648486532d781f4e034f6392c7d9d11',
         'graph_version' => 'v22.0',
         'page_ids' => array(
             '725963964220309',
@@ -207,8 +207,8 @@ unset( $manager);
 try {
     // location_2_facebook_token
     $manager = new FacebookTokenManager(array(
-        'app_id' => '1082088863732549',
-        'app_secret' => '77368f52ab263907ee1fe3ea72909289',
+        'app_id' => '1137294825141008',
+        'app_secret' => '7648486532d781f4e034f6392c7d9d11',
         'graph_version' => 'v22.0',
         'page_ids' => array(
             '482777831588669',
