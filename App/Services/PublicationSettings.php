@@ -287,7 +287,7 @@ $rtrn .= '
                 
                 <label>' . ($lng[$_COOKIE['lang']]['w']['page_token'] ?? 'Page Token:') . '</label>
                 <div class="input-with-button">
-                    <input type="password" name="location_1_facebook_token" id="location_1_facebook_token" value="' . htmlspecialchars($current_settings['location_1_facebook_token'] ?? '') . '" autocomplete="new-password" data-form-type="other">
+                    <input type="text" name="location_1_facebook_token" id="location_1_facebook_token" value="' . htmlspecialchars($current_settings['location_1_facebook_token'] ?? '') . '" autocomplete="off" data-form-type="other" style="font-family: monospace; font-size: 12px;">
                     <button type="button" class="generate-btn" onclick="generateFacebookToken(&quot;regular&quot;)">🔐 Generează Token</button>
                 </div>
             </div>
@@ -302,7 +302,7 @@ $rtrn .= '
                 
                 <label>' . ($lng[$_COOKIE['lang']]['w']['page_token'] ?? 'Page Token:') . '</label>
                 <div class="input-with-button">
-                    <input type="password" name="location_2_facebook_token" id="location_2_facebook_token" value="' . htmlspecialchars($current_settings['location_2_facebook_token'] ?? '') . '" autocomplete="new-password" data-form-type="other">
+                    <input type="text" name="location_2_facebook_token" id="location_2_facebook_token" value="' . htmlspecialchars($current_settings['location_2_facebook_token'] ?? '') . '" autocomplete="off" data-form-type="other" style="font-family: monospace; font-size: 12px;">
                     <button type="button" class="generate-btn" onclick="generateFacebookToken(&quot;order&quot;)">🔐 Generează Token</button>
                 </div>
             </div>
