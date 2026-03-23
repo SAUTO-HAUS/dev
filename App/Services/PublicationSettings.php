@@ -219,13 +219,12 @@ if ($_POST) {
     
       // Save settings to database
     foreach ($settings as $key => $value) {
-        $stmt = $db->prepare("UPDATE {$prefx}_settings SET value = ? WHERE name = ?");
-        $stmt->execute([$value, $key]);
-        
-        if ($stmt->rowCount() == 0) {
-            $stmt = $db->prepare("INSERT INTO {$prefx}_settings (name, value) VALUES (?, ?)");
-            $stmt->execute([$key, $value]);
-        }
+        $stmt = $db->prepare("
+            INSERT INTO {$prefx}_settings (name, value) 
+            VALUES (?, ?) 
+            ON DUPLICATE KEY UPDATE value = VALUES(value)
+        ");
+        $stmt->execute([$key, $value]);
     }
     
     $rtrn .= '<div class="success">' . ($lng[$_COOKIE['lang']]['w']['publication_settings_saved'] ?? 'Настройки публикации сохранены!') . '</div>';
