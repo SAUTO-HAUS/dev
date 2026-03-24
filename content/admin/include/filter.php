@@ -3,6 +3,7 @@
 if ($t_mp[3]=='cars' || $t_mp[3]=='ordercars'){
 	$arr_types = array('br','mo','yr','fl','tra','author','act');
 
+	$it_ar = array();
 	$query_args = array();
 	$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE 1=1 ';
 	if ($t_mp[3]=='ordercars'){
@@ -32,6 +33,7 @@ if ($t_mp[3]=='cars' || $t_mp[3]=='ordercars'){
 
 	echo '<div id="search_content" active="0">';
 	echo '<div class="open_close"></div>';
+	echo '<div class="filter-inner">';
 	echo '<div class="filter-header">';
 	echo '<span class="filter-title">Filtre</span>';
 	echo '<a class="filter-reset" href="javascript:void(0)">'.($lng['w']['clear'] ?? 'Reset').'</a>';
@@ -83,7 +85,8 @@ if ($t_mp[3]=='cars' || $t_mp[3]=='ordercars'){
 		echo '</div>';
 		$i++;
 	}
-	echo '</div>';
+	echo '</div>'; // .filter-inner
+	echo '</div>'; // #search_content
 }
 if ($t_mp[3]=='tyres'){
 	$arr_types = array('br','w','h','d','c','ss','author','id','act');

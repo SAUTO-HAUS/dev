@@ -286,8 +286,9 @@
 	.vin-search-container label {width:100%; font-size:0.85rem;}
 	.vin-search-container input[type="text"] {flex:1 !important; width:auto !important; min-width:0 !important; padding:0.5rem !important; margin:0 !important; font-size:0.9rem;}
 	.vin-search-container button {padding:0.5rem 0.8rem !important; margin:0 !important; font-size:0.85rem;}
-	#search_content {padding-top:0 !important; width:85vw !important; max-width:300px !important;}
+	#search_content {width:85vw !important; max-width:300px !important;}
 	#search_content > .open_close {width:2.5rem; height:2.5rem; border-radius:3px 0 0 3px; top:4.5rem !important; left:-2.5rem !important; background-size:auto 45% !important;}
+	.filter-inner {height:100vh;}
 	.filter-group {padding:7px 10px 5px;}
 	.filter-label {font-size:.68rem;}
 	.filter-select, #search_content .search_select {font-size:.8rem; padding:6px 7px;}
