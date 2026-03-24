@@ -395,6 +395,16 @@ $(document).ready(function(){
 		ajaxIt(data);
 	})
 	
+	//-------------------------------FILTER RESET
+	$(document).on('click', '#search_content .filter-reset', function(){
+		$('#search_content .s_main').val('all');
+		var data = {}; data['tp'] = reqType; data['pg'] = getReqPage(); data['fn'] = 'search';
+		data['it_qu'] = $('#it_cnt').data('count');
+		data['it_pos'] = $('#it_cnt').data('pos');
+		$('#search_content .s_main').each(function(){ data[$(this).attr('name')] = 'all'; });
+		ajaxIt(data);
+	});
+
 	//-------------------------------FILTER SEARCH
 	$(document).on('click', '#search_content .search_select[clicked!="1"]', function(){
 	

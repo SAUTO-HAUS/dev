@@ -154,9 +154,9 @@ $(document).ready(function() {
 		}
 		// More button handler moved to cars.js to avoid conflicts
 		
-		$('#search_content > .s_main').on('change', function(){
+		$('#search_content .s_main').on('change', function(){
 			var fltrSel = {};
-			$('#search_content > .s_main').each(function(){
+			$('#search_content .s_main').each(function(){
 				fltrSel[ $(this).attr('type') ] = $(this).val();
 			})
 			localStorage.setItem( 'z_adm_pg_'+reqPage+'_fltr_sel', fltrSel );
