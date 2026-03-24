@@ -14,7 +14,7 @@
 	#adm_out_submit {width:auto; height:2rem; font-size:.75rem; padding:0 .75rem; line-height:2rem; float:none;}
 	#header .info > .home {margin:0 0 0 .5rem; white-space:nowrap; display:flex; align-items:center; line-height:1;}
 	
-	#header .lng {width:auto; float:none; display:flex; align-items:center; margin-right:36px;}
+	#header .lng {width:auto; float:none; display:flex; align-items:center; margin-right:.5rem;}
 	
 	#menu-overlay {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.5); z-index:4; display:none;}
 	#menu-overlay.active {display:block;}

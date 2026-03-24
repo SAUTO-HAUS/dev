@@ -76,7 +76,7 @@
   #header .info > .home {margin-left:2%;}
   #header .info > .home:hover {color:var(--clr);}
   
-  #header .lng {float:right; width:15%; text-align:center; margin-right:38px;}
+  #header .lng {float:right; width:15%; text-align:center;}
   #header .lng > a {margin:0 5px; color:#7e7e7e;}
   #header .lng > a:hover, #header .lng > a.act {color:var(--clr);}
   
