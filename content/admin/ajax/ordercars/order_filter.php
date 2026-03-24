@@ -58,12 +58,29 @@ foreach($fltr_ar as $tp => $ar){
 	}
 }
 
-// Build status options
+// Build status counts (separate query without status filter so all options are counted)
+$sql_sc = 'SELECT `act`, `n_a`, `is_at_client` FROM '.$prefx.'_car_ctlg WHERE 1=1 ';
+foreach($arr_types as $v){
+	if ( isset($_POST[$v.'_search'])&&$_POST[$v.'_search']!='all' ) { $sql_sc .= ' AND `'.$v.'` = :'.$v.''; }
+}
+$pdo_sc = $db->prepare($sql_sc);
+$pdo_sc->execute($query_args);
+$status_counts = ['active'=>0,'sterse'=>0,'nu_stoc'=>0,'la_client'=>0];
+foreach ($pdo_sc as $r){
+	if ($r['act']=='1')          $status_counts['active']++;
+	if ($r['act']=='0')          $status_counts['sterse']++;
+	if ($r['n_a']=='1')          $status_counts['nu_stoc']++;
+	if ($r['is_at_client']=='1') $status_counts['la_client']++;
+}
+
+// Build status options with dynamic counts
 $cur_st = $_POST['status_search'] ?? 'all';
-$status_map = ['all'=>($lang_all??'Toate'),'active'=>'Active','sterse'=>'Sterse','nu_stoc'=>'Nu e în stoc','la_client'=>'Mașina la client'];
-foreach ($status_map as $val => $lbl) {
+$status_labels = ['active'=>'Active','sterse'=>'Sterse','nu_stoc'=>'Nu e în stoc','la_client'=>'Mașina la client'];
+$its_status[] = '<option value="all">'.($lang_all??'Toate').'</option>';
+foreach ($status_labels as $val => $lbl) {
+	if ($status_counts[$val] == 0) continue;
 	$sel = ($cur_st==$val) ? ' selected="selected"' : '';
-	$its_status[] = '<option value="'.$val.'"'.$sel.'>'.$lbl.'</option>';
+	$its_status[] = '<option value="'.$val.'"'.$sel.'>'.$lbl.' ('.$status_counts[$val].')</option>';
 }
 
 $search = [

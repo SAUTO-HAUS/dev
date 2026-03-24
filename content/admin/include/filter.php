@@ -14,10 +14,15 @@ if ($t_mp[3]=='cars' || $t_mp[3]=='ordercars'){
 	$pdo = $db->prepare($sql);
 	$pdo->execute($query_args);
 
+	$status_counts = ['active'=>0,'sterse'=>0,'nu_stoc'=>0,'la_client'=>0];
 	foreach ($pdo as $r){
 		foreach($arr_types as $k){
 			if( isset($r[$k]) && $r[$k] !== '' ){ $it_ar[$k][] = $r[$k]; }
 		}
+		if ($r['act']=='1')          $status_counts['active']++;
+		if ($r['act']=='0')          $status_counts['sterse']++;
+		if ($r['n_a']=='1')          $status_counts['nu_stoc']++;
+		if ($r['is_at_client']=='1') $status_counts['la_client']++;
 	}
 
 	$filter_labels = array(
@@ -90,10 +95,9 @@ if ($t_mp[3]=='cars' || $t_mp[3]=='ordercars'){
 		echo '</div>';
 		$i++;
 	}
-	// Combined status filter (hardcoded options)
+	// Combined status filter with dynamic counts
 	$cur_st = $_GET['status_search'] ?? 'all';
-	$status_map = [
-		'all'      => $lang_all ?? 'Toate',
+	$status_labels = [
 		'active'   => 'Active',
 		'sterse'   => 'Sterse',
 		'nu_stoc'  => 'Nu e în stoc',
@@ -102,9 +106,11 @@ if ($t_mp[3]=='cars' || $t_mp[3]=='ordercars'){
 	echo '<div class="filter-group'.($cur_st!='all' ? ' active' : '').'">';
 	echo '<label class="filter-label">Stare</label>';
 	echo '<select type="status" id="filter_status" name="status_search" class="search_select s_main filter-select" tabindex="1">';
-	foreach ($status_map as $val => $lbl) {
+	echo '<option value="all">'.($lang_all ?? 'Toate').'</option>';
+	foreach ($status_labels as $val => $lbl) {
+		if ($status_counts[$val] == 0) continue;
 		$sel = ($cur_st == $val) ? ' selected="selected"' : '';
-		echo '<option value="'.$val.'"'.$sel.'>'.$lbl.'</option>';
+		echo '<option value="'.$val.'"'.$sel.'>'.$lbl.' ('.$status_counts[$val].')</option>';
 	}
 	echo '</select>';
 	echo '</div>';
