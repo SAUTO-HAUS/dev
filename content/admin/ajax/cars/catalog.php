@@ -21,7 +21,7 @@ if ($_POST['fn']=='more'){
 	$_POST["it_qu"]--;
 }
 
-$sql .= ' ORDER BY `vis` DESC, `id` DESC';
+$sql .= ' ORDER BY `act` DESC, `n_a` ASC, `is_at_client` ASC, `vis` DESC, `id` DESC';
 $sql .= ' LIMIT :it_qu';
 $query_args["it_qu"] = ($_POST["it_qu"]+1);
 
@@ -52,10 +52,10 @@ foreach ($pdo as $r){
 		else {$new_item = 1;}
 	}
 
+	$p_nm = '';
+	$p_ff = '';
 	$pdo = $db->prepare('SELECT * FROM '.$prefx.'_car_pht WHERE `it_id`= :it_id AND `main`="1"');
 	$pdo->execute([ 'it_id' => $r['id'] ]);
-	
-	
 	foreach ($pdo as $p){ $p_nm = $p['name']; $p_ff = $p['ff']; }
 	
 	$stts = ($r['vis']==0?' hided':'').($r['act']==0?' deleted':'');
@@ -246,7 +246,7 @@ foreach ($pdo as $r){
 	$htmlIndicator = '<div class="html-indicator" title="'.($hasHtml ? 'HTML описание есть' : 'HTML описание отсутствует').'" style="position:absolute;top:5px;left:5px;width:14px;height:14px;border-radius:3px;text-align:center;line-height:14px;font-size:9px;font-weight:bold;color:#fff;background:'.($hasHtml ? '#28a745' : '#dc3545').';z-index:10;">'.($hasHtml ? '✓' : '✗').'</div>';
 	
 	$rtrn .= '
-		<div class="img" style="background-image:url(/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/'.$p_nm.$img_frmt.'), url(/media/images/site/no_image.png);position:relative;">'.$htmlIndicator;
+		<div class="img" style="background-image:url(/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/'.$p_nm.( !empty($p_ff) ? ('.'.$p_ff) : $img_frmt ).'), url(/media/images/site/no_image.png);position:relative;">'.$htmlIndicator;
 			//if($r['top']){$rtrn .= '<div class="top-sales" title="Top Sales">'.$lng['l']['stat']['top1'].'</div>';}
 			if( $r['act'] == 0 ){$rtrn .= '<div class="remove_after" timer="'.( $r['del_t']-time() ).'" ra="'.$r['del_t'].'">**, **:**:**</div>';}
 			$rtrn .= '
