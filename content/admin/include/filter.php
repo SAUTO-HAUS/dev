@@ -44,7 +44,7 @@ if ($t_mp[3]=='cars' || $t_mp[3]=='ordercars'){
 	echo '<div class="open_close"></div>';
 	echo '<div class="filter-inner">';
 	echo '<div class="filter-header">';
-	echo '<span class="filter-title">Filtre</span>';
+	echo '<span class="filter-title">'.($lng['w']['filter'] ?? 'Filtre').'</span>';
 	echo '<a class="filter-reset" href="javascript:void(0)">'.($lng['w']['clear'] ?? 'Resetează').'</a>';
 	echo '<a class="filter-close" href="javascript:void(0)">&#x2715;</a>';
 	echo '</div>';
@@ -98,13 +98,13 @@ if ($t_mp[3]=='cars' || $t_mp[3]=='ordercars'){
 	// Combined status filter with dynamic counts
 	$cur_st = $_GET['status_search'] ?? 'all';
 	$status_labels = [
-		'active'   => 'Active',
-		'sterse'   => 'Sterse',
-		'nu_stoc'  => 'Nu e în stoc',
-		'la_client'=> 'Mașina la client',
+		'active'   => $lng['w']['st_active']    ?? 'Active',
+		'sterse'   => $lng['w']['st_sterse']    ?? 'Sterse',
+		'nu_stoc'  => $lng['w']['st_nu_stoc']   ?? 'Nu e în stoc',
+		'la_client'=> $lng['w']['st_la_client'] ?? 'Mașina la client',
 	];
 	echo '<div class="filter-group'.($cur_st!='all' ? ' active' : '').'">';
-	echo '<label class="filter-label">Stare</label>';
+	echo '<label class="filter-label">'.($lng['w']['status_label'] ?? 'Stare').'</label>';
 	echo '<select type="status" id="filter_status" name="status_search" class="search_select s_main filter-select" tabindex="1">';
 	echo '<option value="all">'.($lang_all ?? 'Toate').'</option>';
 	foreach ($status_labels as $val => $lbl) {

@@ -75,7 +75,12 @@ foreach ($pdo_sc as $r){
 
 // Build status options with dynamic counts
 $cur_st = $_POST['status_search'] ?? 'all';
-$status_labels = ['active'=>'Active','sterse'=>'Sterse','nu_stoc'=>'Nu e în stoc','la_client'=>'Mașina la client'];
+$status_labels = [
+	'active'   => $lng['w']['st_active']    ?? 'Active',
+	'sterse'   => $lng['w']['st_sterse']    ?? 'Sterse',
+	'nu_stoc'  => $lng['w']['st_nu_stoc']   ?? 'Nu e în stoc',
+	'la_client'=> $lng['w']['st_la_client'] ?? 'Mașina la client',
+];
 $its_status[] = '<option value="all">'.($lang_all??'Toate').'</option>';
 foreach ($status_labels as $val => $lbl) {
 	if ($status_counts[$val] == 0) continue;
