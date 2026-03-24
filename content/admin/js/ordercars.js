@@ -988,14 +988,13 @@ $(document).ready(function(){
 		if (radio.is(':checked')) {
 			$("#feature_13").val($(this).val());
 		}
-		const btn = $('#btn_update_text_999');
-		const sts = $('#update_text_status');
-		if (btn.length) {
-			wrapper.append(btn);
-			wrapper.append(sts);
-			btn.show();
-			sts.html('');
+		const container = $('#buttons_container');
+		if (container.length && !wrapper.find('#buttons_container').length) {
+			wrapper.append(container);
 		}
+		$('#btn_update_text_999').show();
+		$('#btn_save_default_text').show();
+		$('#update_text_status').html('');
 	}).on("click", "#btn_update_text_999", function () {
 		const btn = $(this);
 		const carId = $('#content_box').data('car-id');
@@ -1035,7 +1034,62 @@ $(document).ready(function(){
 				status.html('<span style="color:red;">Ошибка соединения</span>');
 			},
 			complete: function() {
-				btn.prop('disabled', false).text('обновить текст 999.md');
+				btn.prop('disabled', false).text('Actualizează textul 999.md');
+			}
+		});
+	}).on("click", "#btn_save_default_text", function () {
+		const btn = $(this);
+		const status = $('#update_text_status');
+		const selectedRadio = $('.text-option-radio.order-personal-radio:checked');
+		
+		if (!selectedRadio.length) {
+			status.html('<span style="color:red;">Selectați o opțiune de text</span>');
+			return;
+		}
+		
+		const textOption = selectedRadio.val();
+		const textTitle = selectedRadio.closest('label').find('span').text();
+		const text = selectedRadio.closest('.text-option-wrapper').find('.text-preview').val();
+		
+		if (!text) {
+			status.html('<span style="color:red;">Textul este gol</span>');
+			return;
+		}
+		
+		if (!confirm(`Sigur doriți să salvați acest text ca default global pentru "${textTitle}"?\n\nToate anunțurile viitoare vor folosi acest text.`)) {
+			return;
+		}
+
+		btn.prop('disabled', true).text('Salvare...');
+		status.html('');
+
+		$.ajax({
+			url: '/ajax.php',
+			method: 'POST',
+			data: {
+				tp: reqType,
+				pg: reqPage,
+				fn: '999_catalog',
+				sub: 'save_default_text',
+				textOption: textOption,
+				text: text
+			},
+			dataType: 'json',
+			success: function(response) {
+				if (response.rtrn?.success) {
+					status.html('<span style="color:green;">Text default salvat! Toate anunțurile viitoare vor folosi acest text.</span>');
+					btn.hide();
+					orderPersonalTexts['auto_company'][textOption].text = text;
+				} else {
+					const err = response.rtrn?.error || 'Eroare necunoscută';
+					status.html('<span style="color:red;">Eroare: ' + err + '</span>');
+				}
+			},
+			error: function() {
+				status.html('<span style="color:red;">Eroare de conexiune</span>');
+			},
+			complete: function() {
+				btn.prop('disabled', false).text('Salvează ca text default');
 			}
 		});
 	});
