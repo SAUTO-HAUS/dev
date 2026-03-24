@@ -14,7 +14,7 @@
 	#adm_out_submit {width:auto; height:2rem; font-size:.75rem; padding:0 .75rem; line-height:2rem; float:none;}
 	#header .info > .home {margin:0 0 0 .5rem; white-space:nowrap; display:flex; align-items:center; line-height:1;}
 	
-	#header .lng {width:auto; float:none; display:flex; align-items:center; margin-right:.5rem;}
+	#header .lng {width:auto; float:none; display:flex; align-items:center; margin-right:36px;}
 	
 	#menu-overlay {position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.5); z-index:4; display:none;}
 	#menu-overlay.active {display:block;}
@@ -286,9 +286,9 @@
 	.vin-search-container label {width:100%; font-size:0.85rem;}
 	.vin-search-container input[type="text"] {flex:1 !important; width:auto !important; min-width:0 !important; padding:0.5rem !important; margin:0 !important; font-size:0.9rem;}
 	.vin-search-container button {padding:0.5rem 0.8rem !important; margin:0 !important; font-size:0.85rem;}
-	#search_content {width:82vw !important; max-width:290px !important; right:-82vw !important;}
+	#search_content {width:min(82vw, 290px) !important; right:max(-82vw, -290px) !important;}
 	#search_content[style*="right: 0"] {right:0 !important;}
-	#search_content > .open_close {width:32px !important; height:40px !important; top:4.5rem !important; left:-32px !important;}
+	#search_content > .open_close {width:32px !important; height:3rem !important; top:0 !important; left:-32px !important; border-radius:0 0 0 5px !important;}
 	.filter-inner {height:100vh;}
 	.filter-group {padding:8px 11px 7px;}
 	.filter-label {font-size:9px; letter-spacing:.7px;}

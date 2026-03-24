@@ -76,7 +76,7 @@
   #header .info > .home {margin-left:2%;}
   #header .info > .home:hover {color:var(--clr);}
   
-  #header .lng {float:right; width:15%; text-align:center;}
+  #header .lng {float:right; width:15%; text-align:center; margin-right:38px;}
   #header .lng > a {margin:0 5px; color:#7e7e7e;}
   #header .lng > a:hover, #header .lng > a.act {color:var(--clr);}
   
@@ -162,8 +162,8 @@
 	    box-shadow:-6px 0 24px rgba(0,0,0,.1);
 	  }
 	  #search_content > .open_close {
-	    width:34px; height:44px; position:absolute; left:-34px; top:4rem;
-	    border-radius:6px 0 0 6px;
+	    width:34px; height:3rem; position:absolute; left:-34px; top:0;
+	    border-radius:0 0 0 6px;
 	    background:var(--clr) url('/media/images/site/magn.svg') no-repeat center/46%;
 	    cursor:pointer; z-index:13;
 	    box-shadow:-3px 0 10px rgba(191,64,64,.35);
@@ -181,12 +181,13 @@
 
 	  /* Header */
 	  .filter-header {
-	    display:flex; justify-content:space-between; align-items:center;
-	    padding:14px 14px 13px;
+	    display:flex; align-items:center;
+	    padding:11px 12px;
 	    background:#2b2b2d;
 	    position:sticky; top:0; z-index:5; flex-shrink:0;
 	  }
 	  .filter-title {
+	    flex:1;
 	    font-size:11px; font-weight:700; color:#fff;
 	    text-transform:uppercase; letter-spacing:1.5px;
 	  }
@@ -198,6 +199,13 @@
 	    display:inline-block;
 	  }
 	  .filter-reset:hover {background:#a83030; color:#fff; transform:scale(1.04);}
+	  .filter-close {
+	    flex:1; text-align:right;
+	    font-size:15px; font-weight:400; color:rgba(255,255,255,.55);
+	    cursor:pointer; text-decoration:none; line-height:1;
+	    transition:color .2s;
+	  }
+	  .filter-close:hover {color:#fff;}
 
 	  /* Filter groups */
 	  .filter-group {

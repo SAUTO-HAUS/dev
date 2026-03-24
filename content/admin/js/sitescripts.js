@@ -74,6 +74,11 @@ $(document).ready(function() {
 			$('#content .catalog_page').css({'width':'100%'});
 		}
 	})
+
+	$(document).on('click', '#search_content .filter-close', function(){
+		$('#search_content').css('right','-270px').attr('active','0');
+		$('#content .catalog_page').css({'width':'100%'});
+	})
 	
 	$(document).on('mouseover', '#exist_photos > .photo', function(e){
 		var thisImg = $(this).attr('this_img');

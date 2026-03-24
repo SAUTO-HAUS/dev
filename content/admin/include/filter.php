@@ -1,10 +1,12 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
 if ($t_mp[3]=='cars' || $t_mp[3]=='ordercars'){
-	$arr_types = array('br','mo','yr','fl','tra','bt','wd','catalog_type','author','act');
+	$arr_types = array('br','mo','yr','fl','tra','bt','wd','catalog_type','n_a','is_at_client','author','act');
 
 	// Translations for select fields
-	$info_catalog_type = array('in_stock'=>($lng['w']['in_stock'] ?? 'În stoc'), 'on_order'=>($lng['w']['on_order'] ?? 'La comandă'));
+	$info_catalog_type  = array('in_stock' => ($lng['w']['in_stock'] ?? 'În stoc'), 'on_order' => ($lng['w']['on_order'] ?? 'La comandă'));
+	$info_n_a           = array('0' => 'Disponibil', '1' => 'Nu e în stoc');
+	$info_is_at_client  = array('0' => 'Normal', '1' => 'La client');
 
 	$it_ar = array();
 	$query_args = array();
@@ -28,9 +30,11 @@ if ($t_mp[3]=='cars' || $t_mp[3]=='ordercars'){
 		'tra'          => $lng['l']['car']['spec']['tra'] ?? 'Cutie viteze',
 		'bt'           => $lng['l']['car']['spec']['bt']  ?? 'Caroserie',
 		'wd'           => $lng['l']['car']['spec']['wd']  ?? 'Tractiune',
-		'catalog_type' => $lng['w']['type'] ?? 'Tip',
+		'catalog_type' => 'Tip catalog',
+		'n_a'          => 'Disponibilitate',
+		'is_at_client' => 'Masina la client',
 		'author'       => $lang_author ?? 'Autor',
-		'act'          => $lang_act    ?? 'Status',
+		'act'          => 'Stare inregistrare',
 	);
 
 	// Default catalog_type selection based on current page
@@ -41,7 +45,8 @@ if ($t_mp[3]=='cars' || $t_mp[3]=='ordercars'){
 	echo '<div class="filter-inner">';
 	echo '<div class="filter-header">';
 	echo '<span class="filter-title">Filtre</span>';
-	echo '<a class="filter-reset" href="javascript:void(0)">'.($lng['w']['clear'] ?? 'Reset').'</a>';
+	echo '<a class="filter-reset" href="javascript:void(0)">'.($lng['w']['clear'] ?? 'Resetează').'</a>';
+	echo '<a class="filter-close" href="javascript:void(0)">&#x2715;</a>';
 	echo '</div>';
 
 	$i = 3;
@@ -66,8 +71,14 @@ if ($t_mp[3]=='cars' || $t_mp[3]=='ordercars'){
 			foreach($it_ar[$tp] as $k => $v){
 				$sel = '';
 				if(isset($_GET[$tp]) && $_GET[$tp]==$v){ $sel=' selected="selected"'; }
-				if($tp=='act' && $v=='1'){ $sel=' selected="selected"'; }
 				echo '<option value="'.$v.'"'.$sel.'>'.${'info_'.$tp}[$v].' ('.$countz[$v].')</option>';
+			}
+		} elseif( in_array($tp, array('n_a','is_at_client')) ){
+			foreach($it_ar[$tp] as $k => $v){
+				$sel = '';
+				if(isset($_GET[$tp]) && $_GET[$tp]==$v){ $sel=' selected="selected"'; }
+				$lbl = ${'info_'.$tp}[$v] ?? $v;
+				echo '<option value="'.$v.'"'.$sel.'>'.$lbl.' ('.$countz[$v].')</option>';
 			}
 		} elseif($tp == 'catalog_type'){
 			foreach($it_ar[$tp] as $k => $v){
@@ -89,7 +100,7 @@ if ($t_mp[3]=='cars' || $t_mp[3]=='ordercars'){
 				if(isset($tq_mp[$i]) && $tq_mp[$i]==$v){ $sel=' selected="selected"'; }
 				elseif(isset($tq_mp[$i-1]) && $tq_mp[$i-1]==$v){ $sel=' selected="selected"'; }
 				elseif(isset($_GET[$tp]) && $_GET[$tp]==$v){ $sel=' selected="selected"'; }
-				echo '<option value="'.$v.'"'.$sel.'>'.ucwords(str_replace('-',' ',$v)).' ('.$countz[$v].')</option>';
+				echo '<option value="'.$v.'"'.$sel.'>'.ucwords(str_replace(['-','_'],' ',$v)).' ('.$countz[$v].')</option>';
 			}
 		}
 
