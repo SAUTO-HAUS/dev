@@ -1,14 +1,22 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
 $info_catalog_type  = array('in_stock' => ($lng['w']['in_stock'] ?? 'În stoc'), 'on_order' => ($lng['w']['on_order'] ?? 'La comandă'));
-$info_n_a           = array('0' => 'Disponibil', '1' => 'Nu e în stoc');
-$info_is_at_client  = array('0' => 'Normal', '1' => 'La client');
 
 // No act="1" restriction — show all cars so deleted ones appear in act dropdown
 $sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE 1=1 ';
 
 foreach($arr_types as $v){
 	if ( isset($_POST[$v.'_search'])&&$_POST[$v.'_search']!='all' ) {$sql .= ' AND `'.$v.'` = :'.$v.''; $query_args[$v] = $_POST[$v.'_search'];}
+}
+
+// Combined status filter
+if (isset($_POST['status_search']) && $_POST['status_search'] != 'all') {
+	switch ($_POST['status_search']) {
+		case 'active':    $sql .= ' AND `act`="1"'; break;
+		case 'sterse':    $sql .= ' AND `act`="0"'; break;
+		case 'nu_stoc':   $sql .= ' AND `n_a`="1"'; break;
+		case 'la_client': $sql .= ' AND `is_at_client`="1"'; break;
+	}
 }
 
 $pdo = $db->prepare($sql);
@@ -36,12 +44,7 @@ foreach($fltr_ar as $tp => $ar){
 
 		$isSelected = (isset($_POST[$tp."_search"]) && (string)$v == (string)$_POST[$tp."_search"]) ? 'selected="selected"' : '';
 
-		if( in_array($tp, ['vis','act']) ){
-			${'its_'.$tp}[] = '<option value="'.$v.'" '.$isSelected.'>'.${'info_'.$tp}[$v].' ('.$countz[$v].')</option>';
-		} elseif( in_array($tp, ['n_a','is_at_client']) ){
-			$lbl = ${'info_'.$tp}[$v] ?? $v;
-			${'its_'.$tp}[] = '<option value="'.$v.'" '.$isSelected.'>'.$lbl.' ('.$countz[$v].')</option>';
-		} elseif($tp == 'catalog_type'){
+		if($tp == 'catalog_type'){
 			$lbl = $info_catalog_type[$v] ?? $v;
 			${'its_'.$tp}[] = '<option value="'.$v.'" '.$isSelected.'>'.$lbl.' ('.$countz[$v].')</option>';
 		} elseif( in_array($tp, ['fl','tra','bt','wd']) ){
@@ -55,6 +58,14 @@ foreach($fltr_ar as $tp => $ar){
 	}
 }
 
+// Build status options
+$cur_st = $_POST['status_search'] ?? 'all';
+$status_map = ['all'=>($lang_all??'Toate'),'active'=>'Active','sterse'=>'Sterse','nu_stoc'=>'Nu e în stoc','la_client'=>'Mașina la client'];
+foreach ($status_map as $val => $lbl) {
+	$sel = ($cur_st==$val) ? ' selected="selected"' : '';
+	$its_status[] = '<option value="'.$val.'"'.$sel.'>'.$lbl.'</option>';
+}
+
 $search = [
 	'br'           => $its_br           ?? [],
 	'mo'           => $its_mo           ?? [],
@@ -64,8 +75,6 @@ $search = [
 	'bt'           => $its_bt           ?? [],
 	'wd'           => $its_wd           ?? [],
 	'catalog_type' => $its_catalog_type ?? [],
-	'n_a'          => $its_n_a          ?? [],
-	'is_at_client' => $its_is_at_client ?? [],
 	'author'       => $its_author       ?? [],
-	'act'          => $its_act          ?? [],
+	'status'       => $its_status       ?? [],
 ];

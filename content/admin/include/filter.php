@@ -1,12 +1,10 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
 if ($t_mp[3]=='cars' || $t_mp[3]=='ordercars'){
-	$arr_types = array('br','mo','yr','fl','tra','bt','wd','catalog_type','n_a','is_at_client','author','act');
+	$arr_types = array('br','mo','yr','fl','tra','bt','wd','catalog_type','author');
 
 	// Translations for select fields
 	$info_catalog_type  = array('in_stock' => ($lng['w']['in_stock'] ?? 'În stoc'), 'on_order' => ($lng['w']['on_order'] ?? 'La comandă'));
-	$info_n_a           = array('0' => 'Disponibil', '1' => 'Nu e în stoc');
-	$info_is_at_client  = array('0' => 'Normal', '1' => 'La client');
 
 	$it_ar = array();
 	$query_args = array();
@@ -31,10 +29,7 @@ if ($t_mp[3]=='cars' || $t_mp[3]=='ordercars'){
 		'bt'           => $lng['l']['car']['spec']['bt']  ?? 'Caroserie',
 		'wd'           => $lng['l']['car']['spec']['wd']  ?? 'Tractiune',
 		'catalog_type' => 'Tip catalog',
-		'n_a'          => 'Disponibilitate',
-		'is_at_client' => 'Masina la client',
 		'author'       => $lang_author ?? 'Autor',
-		'act'          => 'Stare inregistrare',
 	);
 
 	// Default catalog_type selection based on current page
@@ -67,20 +62,7 @@ if ($t_mp[3]=='cars' || $t_mp[3]=='ordercars'){
 		echo '<select type="'.$tp.'" id="filter_'.$tp.'" name="'.$tp.'_search" class="search_select s_main filter-select" tabindex="1">';
 		echo '<option value="all">'.($lang_all ?? 'Toate').'</option>';
 
-		if( in_array($tp, array('vis','act')) ){
-			foreach($it_ar[$tp] as $k => $v){
-				$sel = '';
-				if(isset($_GET[$tp]) && $_GET[$tp]==$v){ $sel=' selected="selected"'; }
-				echo '<option value="'.$v.'"'.$sel.'>'.${'info_'.$tp}[$v].' ('.$countz[$v].')</option>';
-			}
-		} elseif( in_array($tp, array('n_a','is_at_client')) ){
-			foreach($it_ar[$tp] as $k => $v){
-				$sel = '';
-				if(isset($_GET[$tp]) && $_GET[$tp]==$v){ $sel=' selected="selected"'; }
-				$lbl = ${'info_'.$tp}[$v] ?? $v;
-				echo '<option value="'.$v.'"'.$sel.'>'.$lbl.' ('.$countz[$v].')</option>';
-			}
-		} elseif($tp == 'catalog_type'){
+		if($tp == 'catalog_type'){
 			foreach($it_ar[$tp] as $k => $v){
 				$sel = ($v == $default_catalog_type) ? ' selected="selected"' : '';
 				if(isset($_GET[$tp]) && $_GET[$tp]==$v){ $sel=' selected="selected"'; }
@@ -108,6 +90,25 @@ if ($t_mp[3]=='cars' || $t_mp[3]=='ordercars'){
 		echo '</div>';
 		$i++;
 	}
+	// Combined status filter (hardcoded options)
+	$cur_st = $_GET['status_search'] ?? 'all';
+	$status_map = [
+		'all'      => $lang_all ?? 'Toate',
+		'active'   => 'Active',
+		'sterse'   => 'Sterse',
+		'nu_stoc'  => 'Nu e în stoc',
+		'la_client'=> 'Mașina la client',
+	];
+	echo '<div class="filter-group'.($cur_st!='all' ? ' active' : '').'">';
+	echo '<label class="filter-label">Stare</label>';
+	echo '<select type="status" id="filter_status" name="status_search" class="search_select s_main filter-select" tabindex="1">';
+	foreach ($status_map as $val => $lbl) {
+		$sel = ($cur_st == $val) ? ' selected="selected"' : '';
+		echo '<option value="'.$val.'"'.$sel.'>'.$lbl.'</option>';
+	}
+	echo '</select>';
+	echo '</div>';
+
 	echo '</div>'; // .filter-inner
 	echo '</div>'; // #search_content
 }

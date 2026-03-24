@@ -6,6 +6,15 @@ $sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE 1=1 ';
 
 foreach($arr_types as $k){ if ( isset($_POST[$k.'_search'])&&$_POST[$k.'_search']!='all' ) {$sql .= ' AND `'.$k.'` = :'.$k.''; $query_args[$k] = $_POST[$k.'_search'];} }
 
+if (isset($_POST['status_search']) && $_POST['status_search'] != 'all') {
+	switch ($_POST['status_search']) {
+		case 'active':    $sql .= ' AND `act`="1"'; break;
+		case 'sterse':    $sql .= ' AND `act`="0"'; break;
+		case 'nu_stoc':   $sql .= ' AND `n_a`="1"'; break;
+		case 'la_client': $sql .= ' AND `is_at_client`="1"'; break;
+	}
+}
+
 //MORE ITEMS------------------------------------------------------------------
 if ($_POST['fn']=='more'){
 	$sql .= ' AND `id`<=:id ';
