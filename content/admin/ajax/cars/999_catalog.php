@@ -114,6 +114,36 @@ if (__post('sub') == 'get_subcategory') {
             }
         }
     }
+} elseif (__post('sub') == 'save_default_text') {
+    $textOption = __post('textOption');
+    $newText = __post('text');
+    
+    if (!isset($textOption) || $textOption === '' || empty($newText)) {
+        $rtrn = ['error' => 'Missing textOption or text'];
+    } else {
+        $jsonFilePath = $_SERVER['DOCUMENT_ROOT'] . '/api/stock_personal_texts.json';
+        
+        if (!file_exists($jsonFilePath)) {
+            $rtrn = ['error' => 'JSON file not found'];
+        } else {
+            $jsonContent = file_get_contents($jsonFilePath);
+            $data = json_decode($jsonContent, true);
+            $textOptionInt = (int)$textOption;
+            
+            if (!isset($data['auto_company'][$textOptionInt])) {
+                $rtrn = ['error' => 'Text option index not found'];
+            } else {
+                $data['auto_company'][$textOptionInt]['text'] = $newText;
+                $newJsonContent = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+                
+                if (file_put_contents($jsonFilePath, $newJsonContent) !== false) {
+                    $rtrn = ['success' => true, 'message' => 'Default text saved successfully'];
+                } else {
+                    $rtrn = ['error' => 'Failed to write to JSON file'];
+                }
+            }
+        }
+    }
 } elseif (__post('sub') == 'set_999') {
 
     // Validate form data

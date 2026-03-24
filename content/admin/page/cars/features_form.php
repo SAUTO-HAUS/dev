@@ -37,8 +37,11 @@ if (!isset($new999)) $new999 = true;
             </label>
             <div id="text_options" class="d-flex"></div>
             <?php if (!$new999 && !empty($car999['announcement_type']) && $car999['announcement_type'] == 'sauto_personal'): ?>
-            <button type="button" id="btn_update_text_999" class="btn btn-sm mt-2" style="display:none; background-color:#dc3545; color:#fff; border:none; padding: 8px 16px; font-size:14px;">обновить текст 999.md</button>
-            <span id="update_text_status" class="ml-2" style="font-size:12px;"></span>
+            <div id="buttons_container" style="display:flex; flex-direction:row; gap:10px; align-items:center; margin-top:8px; flex-wrap:wrap;">
+                <button type="button" id="btn_update_text_999" class="btn btn-sm" style="display:none; background-color:#dc3545; color:#fff; border:none; padding: 8px 16px; font-size:14px;">Actualizează textul 999.md</button>
+                <button type="button" id="btn_save_default_text" class="btn btn-sm" style="display:none; background-color:#28a745; color:#fff; border:none; padding: 8px 16px; font-size:14px;">Salvează ca text default</button>
+                <span id="update_text_status" style="font-size:12px;"></span>
+            </div>
             <?php endif; ?>
         </div>
     </fieldset>
