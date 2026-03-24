@@ -12,7 +12,7 @@ $rtrn = 'none';
 set_time_limit(0);
 
 if ( __post('fn')=='search'||__post('fn')=='more'||__post('fn')=='filter' ){
-	$arr_types = ['br','mo','yr','fl','tra','author','act'];
+	$arr_types = ['br','mo','yr','fl','tra','bt','wd','catalog_type','author','act'];
     $query_args = []; $all_search = []; $search = [];
 	require_once( $ajax_folder.'/order_filter.php' );
 	require_once( $ajax_folder.'/order_catalog.php' );

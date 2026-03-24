@@ -1,6 +1,8 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
-$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE `act`="1" AND catalog_type = "in_stock" ';
+$info_catalog_type = array('in_stock'=>($lng['w']['in_stock'] ?? 'În stoc'), 'on_order'=>($lng['w']['on_order'] ?? 'La comandă'));
+
+$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE `act`="1" ';
 
 foreach($arr_types as $v){
 	if ( isset($_POST[$v.'_search'])&&$_POST[$v.'_search']!='all' ) {$sql .= ' AND `'.$v.'` = :'.$v.''; $query_args[$v] = $_POST[$v.'_search'];}
@@ -27,13 +29,16 @@ foreach($fltr_ar as $tp => $ar){
 
 	$i=0;
 	foreach($fltr_ar[$tp] as $v){
-		if($i==0){ ${'its_'.$tp}[] = '<option value="all">'.$lang_all.'</option>'; }
+		if($i==0){ ${'its_'.$tp}[] = '<option value="all">'.($lang_all ?? 'Toate').'</option>'; }
 
 		$isSelected = (isset($_POST[$tp."_search"]) && (string)$v == (string)$_POST[$tp."_search"]) ? 'selected="selected"' : '';
 
-		if( in_array($tp, ['vis', 'act']) ){
+		if( in_array($tp, ['vis','act']) ){
 			${'its_'.$tp}[] = '<option value="'.$v.'" '.$isSelected.'>'.${'info_'.$tp}[$v].' ('.$countz[$v].')</option>';
-		} elseif( in_array($tp, ['fl','tra']) ){
+		} elseif($tp == 'catalog_type'){
+			$lbl = $info_catalog_type[$v] ?? $v;
+			${'its_'.$tp}[] = '<option value="'.$v.'" '.$isSelected.'>'.$lbl.' ('.$countz[$v].')</option>';
+		} elseif( in_array($tp, ['fl','tra','bt','wd']) ){
 			$lbl = $lng['l']['car'][$tp][$v] ?? ucwords(str_replace('-',' ',$v));
 			${'its_'.$tp}[] = '<option value="'.$v.'" '.$isSelected.'>'.$lbl.' ('.$countz[$v].')</option>';
 		} else {
@@ -45,11 +50,14 @@ foreach($fltr_ar as $tp => $ar){
 }
 
 $search = [
-	'br'     => $its_br     ?? [],
-	'mo'     => $its_mo     ?? [],
-	'yr'     => $its_yr     ?? [],
-	'fl'     => $its_fl     ?? [],
-	'tra'    => $its_tra    ?? [],
-	'author' => $its_author ?? [],
-	'act'    => $its_act    ?? [],
+	'br'           => $its_br           ?? [],
+	'mo'           => $its_mo           ?? [],
+	'yr'           => $its_yr           ?? [],
+	'fl'           => $its_fl           ?? [],
+	'tra'          => $its_tra          ?? [],
+	'bt'           => $its_bt           ?? [],
+	'wd'           => $its_wd           ?? [],
+	'catalog_type' => $its_catalog_type ?? [],
+	'author'       => $its_author       ?? [],
+	'act'          => $its_act          ?? [],
 ];

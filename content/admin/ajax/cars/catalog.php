@@ -1,6 +1,6 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
-$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE catalog_type = "in_stock" ';
+$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE 1=1 ';
 
 foreach($arr_types as $k){ if ( isset($_POST[$k.'_search'])&&$_POST[$k.'_search']!='all' ) {$sql .= ' AND `'.$k.'` = :'.$k.''; $query_args[$k] = $_POST[$k.'_search'];} }
 

@@ -407,6 +407,7 @@ $(document).ready(function(){
 	//-------------------------------FILTER RESET
 	$(document).on('click', '#search_content .filter-reset', function(){
 		$('#search_content .s_main').val('all');
+		$('#search_content .filter-group').removeClass('active');
 		var data = {}; data['tp'] = reqType; data['pg'] = getReqPage(); data['fn'] = 'search';
 		data['it_qu'] = $('#it_cnt').data('count');
 		data['it_pos'] = $('#it_cnt').data('pos');

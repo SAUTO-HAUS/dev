@@ -68,9 +68,9 @@ $(document).ready(function() {
 		var activeStatus = $(this).parent().attr('active');
 		if ( activeStatus == '0' ){
 			$(this).parent().css('right','0').attr('active', '1');
-			$('#content .catalog_page').css({'width':'calc(100% - 260px)'});
+			$('#content .catalog_page').css({'width':'calc(100% - 270px)'});
 		} else {
-			$(this).parent().css('right','-260px').attr('active', '0');
+			$(this).parent().css('right','-270px').attr('active', '0');
 			$('#content .catalog_page').css({'width':'100%'});
 		}
 	})
@@ -154,7 +154,21 @@ $(document).ready(function() {
 		}
 		// More button handler moved to cars.js to avoid conflicts
 		
+		// Mark filter groups as active when a value is selected
+		function updateFilterGroupStates(){
+			$('#search_content .filter-group').each(function(){
+				var sel = $(this).find('.s_main');
+				if(sel.length && sel.val() && sel.val() !== 'all'){
+					$(this).addClass('active');
+				} else {
+					$(this).removeClass('active');
+				}
+			});
+		}
+		updateFilterGroupStates();
+
 		$('#search_content .s_main').on('change', function(){
+			updateFilterGroupStates();
 			var fltrSel = {};
 			$('#search_content .s_main').each(function(){
 				fltrSel[ $(this).attr('type') ] = $(this).val();
