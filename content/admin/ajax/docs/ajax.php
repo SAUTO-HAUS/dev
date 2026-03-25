@@ -107,7 +107,15 @@ if ( $_POST['fn']=='edit_sbmt' ){
 	} else {
 		// User exists - get the ID and update
 		$u_id = $existing_user['id'];
-		$pdo = $db->prepare('UPDATE '.$prefx.'_docs_u SET 
+		// Preserve existing non-empty values when the form doesn't submit these fields
+		if ($u_tp == 'x' && !empty($existing_user['tp'])) $u_tp = $existing_user['tp'];
+		if ($u_nm == 'x' && !empty($existing_user['nm'])) $u_nm = $existing_user['nm'];
+		if (($u_tva_dt === 0 || $u_tva_dt === '0' || $u_tva_dt === '') && !empty($existing_user['tva_dt'])) $u_tva_dt = $existing_user['tva_dt'];
+		if (($u_iban_dt_tk === 0 || $u_iban_dt_tk === '0' || $u_iban_dt_tk === '') && !empty($existing_user['iban_dt_tk'])) $u_iban_dt_tk = $existing_user['iban_dt_tk'];
+		if ($u_adr === '' && !empty($existing_user['adr'])) $u_adr = $existing_user['adr'];
+		if ($u_phn === '' && !empty($existing_user['phn'])) $u_phn = $existing_user['phn'];
+		if ($u_eml === '' && !empty($existing_user['eml'])) $u_eml = $existing_user['eml'];
+		$pdo = $db->prepare('UPDATE '.$prefx.'_docs_u SET
 		`tp`=:tp, `nm`=:nm, `cf_idno`=:cf_idno, `tva_dt`=:tva_dt, `iban_dt_tk`=:iban_dt_tk, `adr`=:adr, `phn`=:phn, `eml`=:eml
 		WHERE `id`=:id');
 		$pdo->execute([ 'tp'=>$u_tp, 'nm'=>$u_nm, 'cf_idno'=>$u_cf_idno, 'tva_dt'=>$u_tva_dt, 'iban_dt_tk'=>$u_iban_dt_tk, 'adr'=>$u_adr, 'phn'=>$u_phn, 'eml'=>$u_eml, 'id'=>$u_id ]);
