@@ -19,11 +19,11 @@ if ($t_mp[3]=='cars' || $t_mp[3]=='ordercars'){
 		foreach($arr_types as $k){
 			if( isset($r[$k]) && $r[$k] !== '' ){ $it_ar[$k][] = $r[$k]; }
 		}
-		if ($r['act']=='1')          $status_counts['active']++;
-		if ($r['act']=='0')          $status_counts['deleted']++;
-		if ($r['n_a']=='1')          $status_counts['out_of_stock']++;
-		if ($r['is_at_client']=='1') $status_counts['at_client']++;
-		if ($r['vis']=='0')          $status_counts['hidden']++;
+		if ($r['act']=='1' && $r['n_a']=='0' && $r['is_at_client']=='0' && $r['vis']=='1') $status_counts['active']++;
+		if ($r['act']=='0')                                                                $status_counts['deleted']++;
+		if ($r['n_a']=='1'          && $r['act']=='1')                                    $status_counts['out_of_stock']++;
+		if ($r['is_at_client']=='1' && $r['act']=='1')                                    $status_counts['at_client']++;
+		if ($r['vis']=='0'          && $r['act']=='1')                                    $status_counts['hidden']++;
 	}
 
 	$filter_labels = array(

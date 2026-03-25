@@ -12,11 +12,11 @@ foreach($arr_types as $v){
 // Combined status filter
 if (isset($_POST['status_search']) && $_POST['status_search'] != 'all') {
 	switch ($_POST['status_search']) {
-		case 'active':    $sql .= ' AND `act`="1"'; break;
-		case 'deleted':    $sql .= ' AND `act`="0"'; break;
-		case 'out_of_stock':   $sql .= ' AND `n_a`="1"'; break;
-		case 'at_client': $sql .= ' AND `is_at_client`="1"'; break;
-		case 'hidden':   $sql .= ' AND `vis`="0"'; break;
+		case 'active':      $sql .= ' AND `act`="1" AND `n_a`="0" AND `is_at_client`="0" AND `vis`="1"'; break;
+		case 'deleted':      $sql .= ' AND `act`="0"'; break;
+		case 'out_of_stock': $sql .= ' AND `n_a`="1" AND `act`="1"'; break;
+		case 'at_client':    $sql .= ' AND `is_at_client`="1" AND `act`="1"'; break;
+		case 'hidden':       $sql .= ' AND `vis`="0" AND `act`="1"'; break;
 	}
 }
 
@@ -68,11 +68,11 @@ $pdo_sc = $db->prepare($sql_sc);
 $pdo_sc->execute($query_args);
 $status_counts = ['active'=>0,'deleted'=>0,'out_of_stock'=>0,'at_client'=>0,'hidden'=>0];
 foreach ($pdo_sc as $r){
-	if ($r['act']=='1')          $status_counts['active']++;
-	if ($r['act']=='0')          $status_counts['deleted']++;
-	if ($r['n_a']=='1')          $status_counts['out_of_stock']++;
-	if ($r['is_at_client']=='1') $status_counts['at_client']++;
-	if ($r['vis']=='0')          $status_counts['hidden']++;
+	if ($r['act']=='1' && $r['n_a']=='0' && $r['is_at_client']=='0' && $r['vis']=='1') $status_counts['active']++;
+	if ($r['act']=='0')                                                                $status_counts['deleted']++;
+	if ($r['n_a']=='1'          && $r['act']=='1')                                    $status_counts['out_of_stock']++;
+	if ($r['is_at_client']=='1' && $r['act']=='1')                                    $status_counts['at_client']++;
+	if ($r['vis']=='0'          && $r['act']=='1')                                    $status_counts['hidden']++;
 }
 
 // Build status options with dynamic counts
