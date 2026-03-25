@@ -597,6 +597,12 @@ $(document).ready(function(){
 			showError('An error occurred during form submission: ' + error.message);
 			finishProcess(confirmButton);
 		}
+	}).on('change', '#search_content .search_select', function(){
+		var data = {}; data['tp'] = reqType; data['pg'] = reqPage; data['fn'] = 'search';
+		data['it_qu'] = $('#it_cnt').data('count');
+		data['it_pos'] = $('#it_cnt').data('pos');
+		$('.s_main').each(function(){ data[$(this).attr('name')] = $(this).val(); })
+		ajaxIt(data);
 	}).on('change', '#content_box .category', function(){
 		let data = {
 			tp: reqType,
