@@ -14,15 +14,16 @@ if ($t_mp[3]=='cars' || $t_mp[3]=='ordercars'){
 	$pdo = $db->prepare($sql);
 	$pdo->execute($query_args);
 
-	$status_counts = ['active'=>0,'sterse'=>0,'nu_stoc'=>0,'la_client'=>0];
+	$status_counts = ['active'=>0,'deleted'=>0,'out_of_stock'=>0,'at_client'=>0,'hidden'=>0];
 	foreach ($pdo as $r){
 		foreach($arr_types as $k){
 			if( isset($r[$k]) && $r[$k] !== '' ){ $it_ar[$k][] = $r[$k]; }
 		}
 		if ($r['act']=='1')          $status_counts['active']++;
-		if ($r['act']=='0')          $status_counts['sterse']++;
-		if ($r['n_a']=='1')          $status_counts['nu_stoc']++;
-		if ($r['is_at_client']=='1') $status_counts['la_client']++;
+		if ($r['act']=='0')          $status_counts['deleted']++;
+		if ($r['n_a']=='1')          $status_counts['out_of_stock']++;
+		if ($r['is_at_client']=='1') $status_counts['at_client']++;
+		if ($r['vis']=='0')          $status_counts['hidden']++;
 	}
 
 	$filter_labels = array(
@@ -99,9 +100,10 @@ if ($t_mp[3]=='cars' || $t_mp[3]=='ordercars'){
 	$cur_st = $_GET['status_search'] ?? 'all';
 	$status_labels = [
 		'active'   => $lng['w']['st_active']    ?? 'Active',
-		'sterse'   => $lng['w']['st_sterse']    ?? 'Sterse',
-		'nu_stoc'  => $lng['w']['st_nu_stoc']   ?? 'Nu e în stoc',
-		'la_client'=> $lng['w']['st_la_client'] ?? 'Mașina la client',
+		'deleted'   => $lng['w']['st_deleted']    ?? 'Sterse',
+		'out_of_stock'  => $lng['w']['st_out_of_stock']   ?? 'Nu e în stoc',
+		'at_client'=> $lng['w']['st_at_client'] ?? 'Mașina la client',
+		'hidden'  => $lng['w']['st_hidden']   ?? 'Ascunse',
 	];
 	echo '<div class="filter-group'.($cur_st!='all' ? ' active' : '').'">';
 	echo '<label class="filter-label">'.($lng['w']['status_label'] ?? 'Stare').'</label>';
