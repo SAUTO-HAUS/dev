@@ -68,15 +68,15 @@ $(document).ready(function() {
 		var activeStatus = $(this).parent().attr('active');
 		if ( activeStatus == '0' ){
 			$(this).parent().css('right','0').attr('active', '1');
-			$('#content .catalog_page').css({'width':'calc(100% - 270px)'});
+			$('#content .catalog_page').css({'width':'calc(100% - 280px)'});
 		} else {
-			$(this).parent().css('right','-270px').attr('active', '0');
+			$(this).parent().css('right','-280px').attr('active', '0');
 			$('#content .catalog_page').css({'width':'100%'});
 		}
 	})
 
 	$(document).on('click', '#search_content .filter-close', function(){
-		$('#search_content').css('right','-270px').attr('active','0');
+		$('#search_content').css('right','-280px').attr('active','0');
 		$('#content .catalog_page').css({'width':'100%'});
 	})
 	
