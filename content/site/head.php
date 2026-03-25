@@ -312,37 +312,36 @@ function updateConsent(ad_cons, usr_dt_cons, pers_cons, ana_cons ) {
 			page_location: window.location.href
 		});
 	}
-	// Cookie version system - increment this number to force all users to see consent banner again
 	const CONSENT_VERSION = 5;
 	localStorage.setItem( 'z_cks_alwd', '{"ad":'+(ad_cons?'true':'false')+', "usrDt":'+(usr_dt_cons?'true':'false')+', "prsn":'+(pers_cons?'true':'false')+', "ana":'+(ana_cons?'true':'false')+', "version":'+CONSENT_VERSION+'}' );
 	localStorage.setItem( 'z_cks_alwd_t', unixTime() );
-	localStorage.setItem( 'z_cks_alwd_v', '20325' );
 }
 
 $(document).ready(function(){
-	
-	if ( localStorage.getItem('z_cks_alwd') !== null && (localStorage.getItem('z_cks_alwd_t') !== null && parseInt( localStorage.getItem('z_cks_alwd_t') )>=1719846403) && (localStorage.getItem('z_cks_alwd_v') !== null && localStorage.getItem('z_cks_alwd_v')=='20325') ){
-		const cksAlwdObj = JSON.parse( localStorage.getItem('z_cks_alwd') );
-		
-		// Check consent version - if version doesn't match, show banner again
-		const CURRENT_VERSION = 5;
+	const ONE_YEAR = 365 * 24 * 3600;
+	const CURRENT_VERSION = 5;
+	const stored = localStorage.getItem('z_cks_alwd');
+	const storedTime = parseInt( localStorage.getItem('z_cks_alwd_t') || '0' );
+
+	function clearConsent() {
+		localStorage.removeItem('z_cks_alwd');
+		localStorage.removeItem('z_cks_alwd_t');
+		localStorage.removeItem('z_cks_alwd_v');
+	}
+
+	if ( stored !== null && storedTime >= 1719846403 && (unixTime() - storedTime) < ONE_YEAR ) {
+		const cksAlwdObj = JSON.parse( stored );
 		const storedVersion = cksAlwdObj['version'] || 1;
-		
+
 		if (storedVersion >= CURRENT_VERSION) {
 			var adCks = cksAlwdObj['ad']?true:false; var usrDtCks = cksAlwdObj['usrDt']?true:false; var prsnCks = cksAlwdObj['prsn']?true:false; var anaCks = cksAlwdObj['ana']?true:false;
 			updateConsent(adCks, usrDtCks, prsnCks, anaCks);
 		} else {
-			// Version mismatch - clear old consent and show banner
-			localStorage.removeItem('z_cks_alwd');
-			localStorage.removeItem('z_cks_alwd_t');
-			localStorage.removeItem('z_cks_alwd_v');
+			clearConsent();
 			document.getElementById('cons_bx').style.display = 'flex';
 		}
-		//if ( unixTime() >= localStorage.getItem('z_cks_alwd_t') ){}
-	}else{
-		if (localStorage.getItem('z_cks_alwd') !== null){localStorage.removeItem( 'z_cks_alwd' );}
-		if (localStorage.getItem('z_cks_alwd_t') !== null){localStorage.removeItem( 'z_cks_alwd_t' );}
-		if (localStorage.getItem('z_cks_alwd_v') !== null){localStorage.removeItem( 'z_cks_alwd_v' );}
+	} else {
+		clearConsent();
 		document.getElementById('cons_bx').style.display = 'flex';
 	}
 })
