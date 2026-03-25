@@ -861,7 +861,7 @@ $(document).ready(function(){
 		texts = data;
 	});
 	
-		$.getJSON("/api/order_personal_texts.json", function (data) {
+		$.getJSON("/api/order_personal_texts.json?v=" + Date.now(), function (data) {
 		orderPersonalTexts = data;
 		
 		// Show text options on page load (for both new and existing ads)

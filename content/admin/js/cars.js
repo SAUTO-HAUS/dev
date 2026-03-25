@@ -867,7 +867,7 @@ $(document).ready(function(){
 		texts = data;
 	});
 	
-		$.getJSON("/api/stock_personal_texts.json", function (data) {
+		$.getJSON("/api/stock_personal_texts.json?v=" + Date.now(), function (data) {
 		stockPersonalTexts = data;
 		
 		const existingType = $("#announcement_type").val();
