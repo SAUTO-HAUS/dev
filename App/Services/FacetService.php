@@ -308,7 +308,7 @@ class FacetService
         }
         
         $cacheFile = $this->cacheDir . '/' . $key . '.cache';
-        @file_put_contents($cacheFile, serialize($data));
+        @file_put_contents($cacheFile, serialize($data), LOCK_EX);
     }
     
     public function clearCache(): void
