@@ -8,11 +8,11 @@ foreach($arr_types as $k){ if ( isset($_POST[$k.'_search'])&&$_POST[$k.'_search'
 
 if (isset($_POST['status_search']) && $_POST['status_search'] != 'all') {
 	switch ($_POST['status_search']) {
-		case 'active':    $sql .= ' AND `act`="1"'; break;
-		case 'deleted':    $sql .= ' AND `act`="0"'; break;
-		case 'out_of_stock':   $sql .= ' AND `n_a`="1"'; break;
-		case 'at_client': $sql .= ' AND `is_at_client`="1"'; break;
-		case 'hidden':   $sql .= ' AND `vis`="0"'; break;
+		case 'active':       $sql .= ' AND `act`="1" AND `n_a`="0" AND `is_at_client`="0" AND `vis`="1"'; break;
+		case 'deleted':      $sql .= ' AND `act`="0"'; break;
+		case 'out_of_stock': $sql .= ' AND `n_a`="1" AND `act`="1"'; break;
+		case 'at_client':    $sql .= ' AND `is_at_client`="1" AND `act`="1"'; break;
+		case 'hidden':       $sql .= ' AND `vis`="0" AND `act`="1"'; break;
 	}
 }
 
