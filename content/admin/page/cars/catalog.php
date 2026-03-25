@@ -325,13 +325,11 @@ $last_car_id = 0;
                     <?php if (isset($user_role) && $user_role === 'gordon'): ?>
                     <a class="btn" href="<?= '/'.$_COOKIE['lang'].'/'.$admin_dir.'/changelog/ctlg?car_id='.$r['id'] ?>" title="Log" style="text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;">LOG</a>
                     <?php endif; ?>
-                    <?php /* DISABLED: hide/reveal button
-                    if (rbac_has_permission($user_role, 'cars', 'update')): ?>
+                    <?php if (rbac_has_permission($user_role, 'cars', 'update')): ?>
                     <div class="btn fn_hr" data-fn="<?= ($r['vis']==0 ? 'reveal' : 'hide')?>" title="<?= $lng['adm'][($r['vis']==0 ? 'reveal' : 'hide')] ?>" data-alt="<?= $lng['adm'][($r['vis']==0?'hide':'reveal')] ?>">
                         <div></div>
                     </div>
-                    <?php endif;
-                    */ ?>
+                    <?php endif; ?>
                     <?php /* DISABLED: delete button
                     if (rbac_has_permission($user_role, 'cars', 'delete')): ?>
                     <div class="btn fn_dre" data-fn="delete" title="<?= $lng['adm']['delete'] ?>">
