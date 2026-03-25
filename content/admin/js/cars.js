@@ -1032,16 +1032,11 @@ $(document).ready(function(){
 	}).on("click", "#btn_save_default_text", function () {
 		const btn = $(this);
 		const status = $('#update_text_status');
-		const selectedRadio = $('.text-option-radio.sauto-personal-radio:checked');
-		
-		if (!selectedRadio.length) {
-			status.html('<span style="color:red;">Selectați o opțiune de text</span>');
-			return;
-		}
-		
-		const textOption = selectedRadio.val();
-		const textTitle = selectedRadio.closest('label').find('span').text();
-		const text = selectedRadio.closest('.text-option-wrapper').find('.text-preview').val();
+		const wrapper = btn.closest('.text-option-wrapper');
+		const radio = wrapper.find('.text-option-radio.sauto-personal-radio');
+		const textOption = radio.val();
+		const textTitle = wrapper.find('label span').text();
+		const text = wrapper.find('.text-preview').val();
 		
 		if (!text) {
 			status.html('<span style="color:red;">Textul este gol</span>');
