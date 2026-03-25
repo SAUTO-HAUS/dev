@@ -406,18 +406,6 @@ $(document).ready(function(){
 		ajaxIt(data);
 	});
 
-	//-------------------------------FILTER SEARCH
-	$(document).on('click', '#search_content .search_select[clicked!="1"]', function(){
-	
-		$('#search_content .search_select[clicked="1"]').attr('clicked',null);
-		var selectz = $(this).val();
-		var data = {}; data['tp'] = reqType; data['pg'] = getReqPage(); data['fn'] = 'filter';
-		
-		$('.s_main').not(this).each(function(){ data[$(this).attr('name')] = $(this).val(); })
-		$(this).attr({'clicked':'1', 'selectz':selectz});
-		ajaxIt(data);
-	});
-
 	//------------------------------ Submit cars forms
 	$(document).on('submit', '#sautoForm', async function (event) {
 		event.preventDefault();
