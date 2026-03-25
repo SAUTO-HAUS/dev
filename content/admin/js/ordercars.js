@@ -1454,7 +1454,7 @@ function ajaxSuccessCars(data){
 		if(data.fn=='filter'){
 			var need = $('#search_content .search_select[clicked="1"]').attr('type');
 			$('#search_content .search_select[clicked="1"]').html('');
-			$.each([need], function( index, value ) { $.each(data.search[value], function( index2, value2 ) { $('#filter_'+value).append(value2); }); });
+			$.each([need], function( index, value ) { if(data.search[value]){$('#filter_'+value).html('');$.each(data.search[value], function( index2, value2 ) { $('#filter_'+value).append(value2); });}; });
 			var selectz = $('#search_content .search_select[clicked="1"]').attr('selectz');
 			$('#search_content .search_select[clicked="1"] option[value='+selectz+']').attr('selected','selected')
 		}
@@ -1469,8 +1469,8 @@ function ajaxSuccessCars(data){
 				var add_new = $('#add_new').prop('outerHTML');
 				$('#content .ctlg').html('').append( add_new + data.rtrn );
 				
-				var filterArr = [ 'br', 'mo', 'author', 'id', 'vis' ];
-				$.each(filterArr, function( index, value ) { $.each(data.search[value], function( index2, value2 ) { $('#filter_'+value).append(value2); }); });
+				var filterArr = [ 'br', 'mo', 'yr', 'fl', 'tra', 'bt', 'wd', 'catalog_type', 'author', 'status' ];
+				$.each(filterArr, function( index, value ) { if(data.search[value]){$('#filter_'+value).html('');$.each(data.search[value], function( index2, value2 ) { $('#filter_'+value).append(value2); });}; });
 				$('#search_content .search_select[clicked="1"]').attr({'clicked':null});
 			}
 			
