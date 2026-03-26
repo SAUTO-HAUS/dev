@@ -863,20 +863,22 @@ $(document).ready(function(){
 	
 		$.getJSON("/api/order_personal_texts.json?v=" + Date.now(), function (data) {
 		orderPersonalTexts = data;
-		
+
 		// Show text options on page load (for both new and existing ads)
 		const existingType = $("#announcement_type").val();
 		if (existingType === "sauto_personal" && data['auto_company']) {
 			const textOptions = $("#text_options");
 			textOptions.empty();
 			data['auto_company'].forEach((item, index) => {
+				var sep = '\n\nDetalii despre automobil:\n';
+				var mainText = item.text.indexOf(sep) !== -1 ? item.text.substring(0, item.text.indexOf(sep)) : item.text;
 				const radioButton = `
 					<div class="text-option-wrapper" style="flex:1; margin-right: 20px; margin-bottom: 10px;">
 						<label style="display: inline-block; text-align: center;">
 							<input type="radio" name="text_option" value="${index}" class="text-option-radio order-personal-radio">
 							<span>${item.title}</span>
 						</label>
-						<textarea class="text-preview form-control" style="width: 100%; height: 400px; margin-top: 5px; font-size: 12px;" data-index="${index}">${item.text}</textarea>
+						<textarea class="text-preview form-control" style="width: 100%; height: 400px; margin-top: 5px; font-size: 12px;" data-index="${index}">${mainText}</textarea>
 					</div>
 				`;
 				textOptions.append(radioButton);
@@ -926,6 +928,8 @@ $(document).ready(function(){
 				const defaultIndex = (selectedAccount == '4') ? 1 : 0; // Index 1 = AUTO DIN COREEA, Index 0 = AUTO LA COMANDA
 				
 				orderPersonalTexts['auto_company'].forEach((item, index) => {
+					var sep = '\n\nDetalii despre automobil:\n';
+					var mainText = item.text.indexOf(sep) !== -1 ? item.text.substring(0, item.text.indexOf(sep)) : item.text;
 					const isChecked = index === defaultIndex ? 'checked' : '';
 					const radioButton = `
 							<div class="text-option-wrapper" style="flex:1; margin-right: 20px; margin-bottom: 10px;">
@@ -933,7 +937,7 @@ $(document).ready(function(){
 									<input type="radio" name="text_option" value="${index}" class="text-option-radio order-personal-radio" ${isChecked}>
 									<span>${item.title}</span>
 								</label>
-					<textarea class="text-preview form-control" style="width: 100%; height: 400px; margin-top: 5px; font-size: 12px;" data-index="${index}">${item.text}</textarea>
+								<textarea class="text-preview form-control" style="width: 100%; height: 400px; margin-top: 5px; font-size: 12px;" data-index="${index}">${mainText}</textarea>
 							</div>
 						`;
 					textOptions.append(radioButton);
@@ -947,7 +951,9 @@ $(document).ready(function(){
 				}
 				// Set default text based on selected account
 				if (orderPersonalTexts['auto_company'][defaultIndex]) {
-					$("#feature_13").val(orderPersonalTexts['auto_company'][defaultIndex].text);
+					var sep2 = '\n\nDetalii despre automobil:\n';
+					var defText = orderPersonalTexts['auto_company'][defaultIndex].text;
+					$("#feature_13").val(defText.indexOf(sep2) !== -1 ? defText.substring(0, defText.indexOf(sep2)) : defText);
 				}
 			}
 			textOptionsWrapper.show();
@@ -1705,7 +1711,9 @@ $(document).ready(function() {
 			}
 			var checkedRadio = $('.text-option-radio.order-personal-radio:checked');
 			if (checkedRadio.length) {
-				checkedRadio.closest('.text-option-wrapper').find('.text-preview').val(dbText);
+				var sep = '\n\nDetalii despre automobil:\n';
+				var mainText = dbText.indexOf(sep) !== -1 ? dbText.substring(0, dbText.indexOf(sep)) : dbText;
+				checkedRadio.closest('.text-option-wrapper').find('.text-preview').val(mainText);
 			}
 			$('#feature_13').val(dbText);
 		}

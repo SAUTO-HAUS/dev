@@ -79,8 +79,22 @@ if (__post('sub') == 'get_subcategory') {
             // Get current features from DB
             $advertFeatures = json_decode($advert['999'], true);
             $features = $advertFeatures['features'] ?? [];
+
+            $stmt = $pdo->prepare("SELECT br, mo FROM {$prefx}_car_ctlg WHERE id = ?");
+            $stmt->execute([$carId]);
+            $carInfo = $stmt->fetch(\PDO::FETCH_ASSOC);
+            if ($carInfo && !empty($carInfo['br']) && !empty($carInfo['mo'])) {
+                $stmtCarList = $pdo->prepare("SELECT br_nm, mo_nm FROM {$prefx}_car_list WHERE br = ? AND mo = ? LIMIT 1");
+                $stmtCarList->execute([$carInfo['br'], $carInfo['mo']]);
+                $carListInfo = $stmtCarList->fetch(\PDO::FETCH_ASSOC);
+                if ($carListInfo && !empty($carListInfo['br_nm']) && !empty($carListInfo['mo_nm'])) {
+                    $brandSlug = strtolower(str_replace('_', '-', $carInfo['br']));
+                    $modelSlug = strtolower(str_replace('_', '-', $carInfo['mo']));
+                    $newText .= "\n\nDetalii despre automobil:\nhttps://www.sauto.md/ro/ordercars/{$carId}\nToate automobilele modelului {$carListInfo['mo_nm']}:\nhttps://www.sauto.md/ro/ordercars/{$brandSlug}/{$modelSlug}\nToate automobilele mărcii {$carListInfo['br_nm']}:\nhttps://www.sauto.md/ro/ordercars/{$brandSlug}";
+                }
+            }
             
-            // Update feature 13 (description)
+
             $feature13Found = false;
             foreach ($features as $index => $feature) {
                 if ($feature['id'] === '13' || $feature['id'] === 13) {

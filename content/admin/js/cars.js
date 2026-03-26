@@ -869,19 +869,21 @@ $(document).ready(function(){
 	
 		$.getJSON("/api/stock_personal_texts.json?v=" + Date.now(), function (data) {
 		stockPersonalTexts = data;
-		
+
 		const existingType = $("#announcement_type").val();
 		if (existingType === "sauto_personal" && data['auto_company']) {
 			const textOptions = $("#text_options");
 			textOptions.empty();
 			data['auto_company'].forEach((item, index) => {
+				var sep = '\n\nDetalii despre automobil:\n';
+				var mainText = item.text.indexOf(sep) !== -1 ? item.text.substring(0, item.text.indexOf(sep)) : item.text;
 				const radioButton = `
 					<div class="text-option-wrapper" style="flex:1; margin-right: 20px; margin-bottom: 10px;">
 						<label style="display: inline-block; text-align: center;">
 							<input type="radio" name="text_option" value="${index}" class="text-option-radio sauto-personal-radio">
 							<span>${item.title}</span>
 						</label>
-						<textarea class="text-preview form-control" style="width: 100%; height: 400px; margin-top: 5px; font-size: 12px;" data-index="${index}">${item.text}</textarea>
+						<textarea class="text-preview form-control" style="width: 100%; height: 400px; margin-top: 5px; font-size: 12px;" data-index="${index}">${mainText}</textarea>
 					</div>
 				`;
 				textOptions.append(radioButton);
@@ -927,13 +929,15 @@ $(document).ready(function(){
 		if (type === "sauto_personal") {
 			if (stockPersonalTexts['auto_company']) {
 				stockPersonalTexts['auto_company'].forEach((item, index) => {
+					var sep = '\n\nDetalii despre automobil:\n';
+					var mainText = item.text.indexOf(sep) !== -1 ? item.text.substring(0, item.text.indexOf(sep)) : item.text;
 					const radioButton = `
 							<div class="text-option-wrapper" style="flex:1; margin-right: 20px; margin-bottom: 10px;">
 								<label style="display: inline-block; text-align: center;">
 									<input type="radio" name="text_option" value="${index}" class="text-option-radio sauto-personal-radio">
 									<span>${item.title}</span>
 								</label>
-																<textarea class="text-preview form-control" style="width: 100%; height: 400px; margin-top: 5px; font-size: 12px;" data-index="${index}">${item.text}</textarea>
+								<textarea class="text-preview form-control" style="width: 100%; height: 400px; margin-top: 5px; font-size: 12px;" data-index="${index}">${mainText}</textarea>
 							</div>
 						`;
 					textOptions.append(radioButton);
@@ -1709,7 +1713,9 @@ $(document).ready(function() {
 			}
 			var checkedRadio = $('.text-option-radio.sauto-personal-radio:checked');
 			if (checkedRadio.length) {
-				checkedRadio.closest('.text-option-wrapper').find('.text-preview').val(dbText);
+				var sep = '\n\nDetalii despre automobil:\n';
+				var mainText = dbText.indexOf(sep) !== -1 ? dbText.substring(0, dbText.indexOf(sep)) : dbText;
+				checkedRadio.closest('.text-option-wrapper').find('.text-preview').val(mainText);
 			}
 			$('#feature_13').val(dbText);
 		}

@@ -62,18 +62,32 @@ if (__post('sub') == 'get_subcategory') {
     $pdo = Container::get('db');
     $carId = __post('carId');
     $newText = __post('text');
-    
+
     if (empty($carId) || empty($newText)) {
         $rtrn = ['error' => 'Missing carId or text'];
     } else {
         $advert = (new Car())->getCarById($carId);
-        
+
         if (empty($advert['999_id'])) {
             $rtrn = ['error' => 'Car has no 999.md listing yet'];
         } else {
             $advertFeatures = json_decode($advert['999'], true);
             $features = $advertFeatures['features'] ?? [];
-            
+
+            $stmt = $pdo->prepare("SELECT br, mo FROM {$prefx}_car_ctlg WHERE id = ?");
+            $stmt->execute([$carId]);
+            $carInfo = $stmt->fetch(\PDO::FETCH_ASSOC);
+            if ($carInfo && !empty($carInfo['br']) && !empty($carInfo['mo'])) {
+                $stmtCarList = $pdo->prepare("SELECT br_nm, mo_nm FROM {$prefx}_car_list WHERE br = ? AND mo = ? LIMIT 1");
+                $stmtCarList->execute([$carInfo['br'], $carInfo['mo']]);
+                $carListInfo = $stmtCarList->fetch(\PDO::FETCH_ASSOC);
+                if ($carListInfo && !empty($carListInfo['br_nm']) && !empty($carListInfo['mo_nm'])) {
+                    $brandSlug = strtolower(str_replace('_', '-', $carInfo['br']));
+                    $modelSlug = strtolower(str_replace('_', '-', $carInfo['mo']));
+                    $newText .= "\n\nDetalii despre automobil:\nhttps://www.sauto.md/ro/cars/{$carId}\nToate automobilele modelului {$carListInfo['mo_nm']}:\nhttps://www.sauto.md/ro/cars/{$brandSlug}/{$modelSlug}\nToate automobilele mărcii {$carListInfo['br_nm']}:\nhttps://www.sauto.md/ro/cars/{$brandSlug}";
+                }
+            }
+
             $feature13Found = false;
             foreach ($features as $index => $feature) {
                 if ($feature['id'] === '13' || $feature['id'] === 13) {
