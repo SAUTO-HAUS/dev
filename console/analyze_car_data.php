@@ -24,7 +24,7 @@ $numericRules = [
 
 $enumRules = [
     'bt' => ['sdn', 'suv', 'hbk', 'unv', 'cup', 'crv', 'mnv', 'pkp', 'van', 'mbs', 'cbr', 'cmb', 'rod', 'frg', 'crr'],
-    'fl' => ['gsl', 'gmn', 'gpn', 'hbd', 'dsl', 'pih', 'elc', 'gas'],
+    'fl' => ['gsl', 'gmn', 'gpn', 'hbd', 'dsl', 'pih', 'pid', 'elc', 'gas'],
     'tra' => ['tpt', 'atm', 'mnl', 'rbt', 'vrr'],
     'wd' => ['44', 're', 'fr'],
     'clr' => ['l_grn', 'blu', 'brn', 'cmn', 'cml', 'bge', 'wht', 'vns', 'azr', 'ylw', 'grn', 'gld', 'red', 'orn', 'pnk', 'slv', 'gra', 'd_grn', 'prp', 'blk', 'wap', 'snd'],

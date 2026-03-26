@@ -21,7 +21,7 @@ class CarValidator
             'required' => true
         ],
         'fl' => [
-            'values' => ['gsl', 'gmn', 'gpn', 'hbd', 'dsl', 'pih', 'elc', 'gas'],
+            'values' => ['gsl', 'gmn', 'gpn', 'hbd', 'dsl', 'pih', 'pid', 'elc', 'gas'],
             'required' => true
         ],
         'tra' => [

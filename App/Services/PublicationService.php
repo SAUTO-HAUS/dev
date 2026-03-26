@@ -194,7 +194,7 @@ class PublicationService
         if (!empty($carData['fl'])) {
             $fuelTypes = [
                 'gsl' => 'Benzină', 'gmn' => 'Benzină / Gaz (metan)', 'gpn' => 'Benzină / Gaz (propan)', 
-                'hbd' => 'Hibrid', 'dsl' => 'Diesel', 'pih' => 'Plug-in Hibrid', 
+                'hbd' => 'Hibrid', 'dsl' => 'Diesel', 'pih' => 'Plug-in Hibrid', 'pid' => 'Plug-in Hibrid (diesel)', 
                 'elc' => 'Electricitate', 'gas' => 'Gaz'
             ];
             $fuel = $fuelTypes[$carData['fl']] ?? 'Necunoscut';
