@@ -2025,11 +2025,15 @@ $(document).ready(function() {
 		$('select[name="import_country_id"]').on('change', function() {
 			const countryId = $(this).val();
 			const account999Select = $('.account_999_id');
-			
+
 			if (countryId == '41') {
 				account999Select.val('4').trigger('change');
 			} else {
 				account999Select.val('3').trigger('change');
+			}
+
+			if ($('#announcement_type').val() === 'sauto_personal') {
+				$('#announcement_type').trigger('change');
 			}
 		});
 		
