@@ -69,7 +69,7 @@ if (!empty($car['999'])) {
             <select class="account_999_id form-control" <?php if (!$new999) : ?> disabled <?php endif; ?> name="999_api_id" def_text="<?= __('cars.select_subcategory_offer_types') ?>...">
                 <?php if (!empty(Api999Service::API_KEY)) : ?>
                     <?php foreach (Api999Service::API_KEY as $id => $api_key) : ?>
-                        <option value="<?= $id ?>" <?php if((!empty($car['gr']) && $car['gr'] == 'com' && $id == 2) || (empty($car['gr']) || $car['gr'] != 'com') && $id == 3) : ?> selected <?php endif; ?>><?= $api_key['name'] ?></option>
+                        <option value="<?= $id ?>" <?php if((!empty($car['999_api_id']) && $car['999_api_id'] == $id) || (empty($car['999_api_id']) && !empty($car['gr']) && $car['gr'] == 'com' && $id == 2) || (empty($car['999_api_id']) && (empty($car['gr']) || $car['gr'] != 'com') && $id == 3)) : ?> selected <?php endif; ?>><?= $api_key['name'] ?></option>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </select>
