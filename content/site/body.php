@@ -252,7 +252,7 @@ echo '
 </div>
 
 <?php
-$_show_links_pages = ['', 'cars', 'ordercars', 'credit', 'services'];
+$_show_links_pages = ['', 'cars', 'ordercars', 'services'];
 $_cur_page = isset($t_mp[2]) ? $t_mp[2] : '';
 $_on_services_main = ($_cur_page == 'services' && (!isset($t_mp[3]) || $t_mp[3] == ''));
 if ( in_array($_cur_page, $_show_links_pages) && ($_cur_page != 'services' || $_on_services_main) ):
