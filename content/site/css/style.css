@@ -2495,7 +2495,7 @@ footer .columns-wrapper .column-container.col-logo-container {
           padding-left: 0 !important;
           padding-right: 0 !important;
       }
-      #nav_links {gap:.4rem; padding:0 .4rem !important;}
+      #nav_links {gap:.4rem; padding:0 .4rem !important; margin-bottom:-60px !important;}
       #nav_links > a {aspect-ratio:640/427;}
       #nav_links > a > .ttl {font-size:.75rem; padding:.4rem .5rem;}
 
@@ -2508,7 +2508,7 @@ footer .columns-wrapper .column-container.col-logo-container {
       }
   
       header .def {
-          height: 30px !important;
+          height: 70px !important;
           padding: 0 5px !important;
           overflow: visible !important;
       }
