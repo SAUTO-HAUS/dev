@@ -96,7 +96,33 @@ echo '
 	
 	}else{
 		// Service slug provided (404 check already done in body.php)
-		if ($t_mp[3]!='transportation'){ // credit
+		if ($t_mp[3] == 'transportation') {
+
+			$transportPhone = \App\Helper\PhoneHelper::getGeneralPhone();
+			$formattedTransportPhone = \App\Helper\PhoneHelper::formatPhone($transportPhone, 'display');
+
+			echo '
+			<div class="transportation">
+				<h1>'.$lng['t']['services']['transportation']['name'].'</h1>
+				<a href="tel:'.$transportPhone.'" class="trnsprt_call" title="'.$lng['w']['call'].'">'.$formattedTransportPhone.'</a>
+				<img class="m_img" src="/media/images/site/v2/transportation_img.jpg" />
+				<h2>'.$lng['t']['services']['transportation']['ttl_1'].'</h2>
+				<div class="txt">'.$lng['t']['services']['transportation']['txt_1'].'</div>
+
+				<div class="ln"></div>
+
+				<div class="blk">
+					<h2>'.$lng['t']['services']['transportation']['ttl_2'].'</h2>
+					'.$lng['t']['services']['transportation']['txt_2'].'
+					<div class="abv">'.$lng['t']['services']['transportation']['txt_3'].'</div>
+				</div>
+				<div class="call_now">
+					<img src="/media/images/site/call_now.jpg" />
+					<h3>'.$lng['t']['services']['transportation']['txt_4'].'<br/><a href="tel:'.$transportPhone.'">'.$formattedTransportPhone.'</a></h3>
+				</div>
+			</div>';
+
+		} elseif ($t_mp[3]!='transportation'){ // credit
 
             $rtrnCalculatorBlock = "";
 		    if($t_mp[2]=='services' && $t_mp[3]=='credit'){ // credit calculator // called in body.php
@@ -180,32 +206,6 @@ if ($t_mp[3] == 'insurance') {
 			include(_SITE_PAGE.'/new_pages/sale/sale.php');
 		} elseif ($t_mp[3] == 'order') {
 			include(_SITE_PAGE.'/new_pages/order/order.php');
-		} elseif ($t_mp[3] == 'transportation') {
-
-			$transportPhone = \App\Helper\PhoneHelper::getGeneralPhone();
-			$formattedTransportPhone = \App\Helper\PhoneHelper::formatPhone($transportPhone, 'display');
-			
-			echo '
-			<div class="transportation">
-				<h1>'.$lng['t']['services']['transportation']['name'].'</h1>
-				<a href="tel:'.$transportPhone.'" class="trnsprt_call" title="'.$lng['w']['call'].'">'.$formattedTransportPhone.'</a>
-				<img class="m_img" src="/media/images/site/v2/transportation_img.jpg" />
-				<h2>'.$lng['t']['services']['transportation']['ttl_1'].'</h2>
-				<div class="txt">'.$lng['t']['services']['transportation']['txt_1'].'</div>
-				
-				<div class="ln"></div>
-				
-				<div class="blk">
-					<h2>'.$lng['t']['services']['transportation']['ttl_2'].'</h2>
-					'.$lng['t']['services']['transportation']['txt_2'].'
-					<div class="abv">'.$lng['t']['services']['transportation']['txt_3'].'</div>
-				</div>
-				<div class="call_now">
-					<img src="/media/images/site/call_now.jpg" />
-					<h3>'.$lng['t']['services']['transportation']['txt_4'].'<br/><a href="tel:'.$transportPhone.'">'.$formattedTransportPhone.'</a></h3>
-				</div>
-			</div>';
-
 		} else {
 			echo '
 			<img class="m_img" src="/media/images/site/v2/'.$serv_arr[ $t_mp[3] ]['img'].'" />
