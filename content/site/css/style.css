@@ -83,7 +83,7 @@
   #nav_links > a {flex:1; position:relative; border-radius:1rem; overflow:hidden; display:block; aspect-ratio:640/427; max-height:160px;}
   #nav_links > a > .img {position:absolute; inset:0; background-size:cover; background-position:center; background-repeat:no-repeat; transition:transform 0.3s;}
   #nav_links > a:hover > .img {transform:scale(1.05);}
-  #nav_links > a > .ttl {position:absolute; top:0; left:0; padding:1.4rem 1.4rem; color:#fff; font-size:1rem; font-weight:bold; text-shadow:1px 1px 4px rgba(0,0,0,.7); z-index:1;}
+  #nav_links > a > .ttl {position:absolute; top:0; left:0; padding:1.4rem 1.4rem; color:#fff; font-size:1.4rem; font-weight:bold; text-shadow:1px 1px 4px rgba(0,0,0,.7); z-index:1;}
   
   header {z-index:11;}
   
