@@ -14,16 +14,38 @@ $page_js  = '/content/site/page/new_pages/calculator/calculator.js';
 $css_version = file_exists($css_file_path) ? '?d=' . date("GYimsd", filemtime($css_file_path)) : '?d=' . date("GYimsd", time());
 $js_version  = file_exists($js_file_path)  ? '?d=' . date("GYimsd", filemtime($js_file_path))  : '?d=' . date("GYimsd", time());
 
-// Get EUR rate from DB (populated daily from BNM)
+// Get EUR rate live from BNM, fallback to DB cache
 $eur_rate = 19.50;
 try {
-    $stmt = $db->prepare('SELECT `value` FROM ' . $prefx . '_exchange WHERE `name` = "EUR" LIMIT 1');
-    $stmt->execute();
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    if ($row && floatval($row['value']) > 0) {
-        $eur_rate = floatval($row['value']);
+    $bnm_xml = @simplexml_load_file(
+        'https://bnm.md/ru/official_exchange_rates?get_xml=1&date=' . date('d.m.Y'),
+        'SimpleXMLElement',
+        LIBXML_NOCDATA
+    );
+    if ($bnm_xml) {
+        foreach ($bnm_xml->Valute as $valute) {
+            if ((string)$valute->CharCode === 'EUR') {
+                $rate = floatval(str_replace(',', '.', (string)$valute->Value));
+                if ($rate > 0) {
+                    $eur_rate = $rate;
+                }
+                break;
+            }
+        }
     }
 } catch (Exception $e) {}
+
+// Fallback to DB cache if BNM fetch failed
+if ($eur_rate === 19.50) {
+    try {
+        $stmt = $db->prepare('SELECT `value` FROM ' . $prefx . '_exchange WHERE `name` = "EUR" LIMIT 1');
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row && floatval($row['value']) > 0) {
+            $eur_rate = floatval($row['value']);
+        }
+    } catch (Exception $e) {}
+}
 
 // Get calculator settings from DB
 $settings = [];

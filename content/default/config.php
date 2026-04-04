@@ -101,7 +101,8 @@ $url_arr = [
     'telegram',
     'telegram_adv',
     'vin-redirect',
-    'vin-check'
+    'vin-check',
+    'calculator'
 ];
 $sub_urls = [
     '',
