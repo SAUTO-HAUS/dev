@@ -96,6 +96,27 @@ if ($z2 === 'services' && $z3 === 'order') {
     }
 }
 
+// calculator page
+if ($z2 === 'calculator') {
+    switch ($zlng) {
+        case 'ru':
+            $sa['meta']['ttl'] = 'Калькулятор растаможки авто в Молдове | Sauto.md';
+            $sa['meta']['dsc'] = 'Рассчитайте стоимость растаможки автомобиля в Молдове онлайн. Акцизы, налог за таможенные процедуры — всё в одном калькуляторе. Актуальный курс EUR от НБМ. Быстро и точно.';
+            $sa['meta']['kwd'] = 'калькулятор растаможки, растаможка авто молдова, акцизы авто, таможенный калькулятор, sauto растаможка';
+            break;
+        case 'en':
+            $sa['meta']['ttl'] = 'Car Customs Calculator Moldova | Sauto.md';
+            $sa['meta']['dsc'] = 'Calculate car customs costs in Moldova online. Excise duties, customs procedure tax — all in one calculator. Live EUR rate from NBM. Fast and accurate.';
+            $sa['meta']['kwd'] = 'customs calculator moldova, car import tax, excise duty calculator, vehicle customs moldova, sauto calculator';
+            break;
+        default: // ro
+            $sa['meta']['ttl'] = 'Calculator vămuire auto Moldova | Sauto.md';
+            $sa['meta']['dsc'] = 'Calculează costurile de vămuire a unui automobil în Moldova online. Accize, taxa pentru proceduri vamale — totul într-un singur calculator. Curs EUR live de la BNM. Rapid și precis.';
+            $sa['meta']['kwd'] = 'calculator vamuire auto, vamuire auto moldova, accize auto, calculator taxe vamale, sauto calculator';
+            break;
+    }
+}
+
 // Set default title only if not already set (e.g., by credit page)
 if (!isset($sa['meta']['ttl']) || empty($sa['meta']['ttl'])) {
     $sa['meta']['ttl'] = 'Vînzarea autoturismelor și utilitarelor.';
