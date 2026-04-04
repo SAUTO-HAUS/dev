@@ -470,18 +470,10 @@
 
 /* ── Promo block ─────────────────────────────────── */
 .calc-promo-block {
-    display: block;
     margin-top: 1.25rem;
     border-radius: 14px;
     overflow: hidden;
-    text-decoration: none;
     box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.calc-promo-block:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.14);
 }
 
 .calc-promo-image {
@@ -489,6 +481,14 @@
     height: 220px;
     background-size: cover;
     background-position: center;
+    background-color: #111;
+}
+
+.calc-promo-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.45) 0%, rgba(0,0,0,0.1) 100%);
 }
 
 .calc-promo-text {
@@ -496,6 +496,7 @@
     top: 1.25rem;
     left: 1.25rem;
     right: 1.25rem;
+    z-index: 1;
 }
 
 .calc-promo-title {
@@ -504,23 +505,34 @@
     color: #fff;
     margin: 0 0 0.35rem;
     line-height: 1.3;
-    text-shadow: 0 1px 4px rgba(0,0,0,0.4);
 }
 
 .calc-promo-subtitle {
     font-size: 0.9rem;
     color: rgba(255,255,255,0.85);
     margin: 0;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+
+.calc-promo-footer {
+    background: #fff;
+    padding: 1rem;
 }
 
 .calc-promo-btn {
+    display: block;
     background: #e2001a;
     color: #fff;
     text-align: center;
     font-size: 1rem;
     font-weight: 600;
-    padding: 1rem;
+    padding: 0.85rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.calc-promo-btn:hover {
+    background: #bf0016;
 }
 
 /* ── Bitrix form overrides ───────────────────────── */

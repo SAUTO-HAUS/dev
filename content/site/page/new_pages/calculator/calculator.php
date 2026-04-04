@@ -254,15 +254,17 @@ for ($y = $current_year; $y >= 1990; $y--) {
                 })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_10.js');
             </script>
 
-            <a href="/<?php echo $current_lang; ?>/ordercars" class="calc-promo-block">
+            <div class="calc-promo-block">
                 <div class="calc-promo-image" style="background-image:url('/content/site/page/new_pages/calculator/calculator-media/calc-img-1.jpg');">
                     <div class="calc-promo-text">
                         <h3 class="calc-promo-title"><?php echo $t['promo_title']; ?></h3>
                         <p class="calc-promo-subtitle"><?php echo $t['promo_subtitle']; ?></p>
                     </div>
                 </div>
-                <div class="calc-promo-btn"><?php echo $t['promo_btn']; ?></div>
-            </a>
+                <div class="calc-promo-footer">
+                    <a href="/<?php echo $current_lang; ?>/ordercars" class="calc-promo-btn"><?php echo $t['promo_btn']; ?></a>
+                </div>
+            </div>
         </div>
 
     </div>

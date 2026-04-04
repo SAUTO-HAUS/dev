@@ -47,6 +47,9 @@ $lng_calculator_page = [
         'promo_title'           => 'Nu ai găsit modelul dorit?',
         'promo_subtitle'        => 'Alege din catalog',
         'promo_btn'             => 'Caută Mașini la Comandă',
+        'order_title'           => 'Vămuim și aducem mașina la cheie',
+        'order_subtitle'        => 'Află cum funcționează procesul nostru transparent de import.',
+        'order_btn'             => 'Află mai multe',
     ],
     'ru' => [
         'page_title'            => 'Калькулятор растаможки авто',
