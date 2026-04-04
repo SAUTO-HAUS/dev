@@ -245,7 +245,7 @@ for ($y = $current_year; $y >= 1990; $y--) {
             </div>
         </div>
 
-        <!-- Right: Bitrix24 Form (30%) -->
+        <!-- Right: Bitrix24 Form + promo block (30%) -->
         <div class="calc-page-right">
             <script data-b24-form="inline/10/rh1qfd" data-skip-moving="true">
                 (function(w,d,u){
@@ -253,6 +253,16 @@ for ($y = $current_year; $y >= 1990; $y--) {
                     var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
                 })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_10.js');
             </script>
+
+            <a href="/<?php echo $current_lang; ?>/ordercars" class="calc-promo-block">
+                <div class="calc-promo-image" style="background-image:url('/content/site/page/new_pages/calculator/calculator-media/calc-1.jpg');">
+                    <div class="calc-promo-text">
+                        <h3 class="calc-promo-title">Nu ai găsit modelul dorit?</h3>
+                        <p class="calc-promo-subtitle">Alege din catalog</p>
+                    </div>
+                </div>
+                <div class="calc-promo-btn">Caută Mașini la Comandă</div>
+            </a>
         </div>
 
     </div>
