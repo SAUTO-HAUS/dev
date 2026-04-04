@@ -329,7 +329,7 @@
     transform: translateY(-1px);
 }
 
-/* ── Results box ─────────────────────────────────── */
+/* ── Results box (white outer card) ─────────────── */
 .calc-results-box {
     background: #fff;
     border-radius: 14px;
@@ -367,44 +367,46 @@
 }
 
 .calc-results-body {
-    padding: 0 1.75rem;
-    transition: max-height 0.3s ease;
+    padding: 0;
 }
 
 .calc-results-body.collapsed {
     display: none;
 }
 
-/* Summary rows (year / capacity / price) */
+/* Summary rows */
 .calc-summary-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem 0;
+    padding: 0.8rem 1.75rem;
     border-bottom: 1px solid #f0f0f0;
     font-size: 0.95rem;
 }
 
-.calc-summary-label {
-    color: #555;
+.calc-summary-label { color: #555; }
+.calc-summary-value { font-weight: 600; color: #111; }
+
+/* Red border tax box */
+.calc-tax-box {
+    border: 2px solid #e2001a;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 1rem 0 1.5rem;
 }
 
-.calc-summary-value {
-    font-weight: 600;
-    color: #111;
-}
-
-/* Tax block */
-.calc-tax-block {
-    padding: 0.5rem 0;
+/* Tax rows inside red box */
+.calc-tax-rows {
+    padding: 0.25rem 1.25rem;
     border-bottom: 1px solid #f0f0f0;
 }
 
 .calc-tax-row {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 0.6rem;
-    padding: 0.55rem 0;
+    padding: 0.65rem 0;
     font-size: 0.95rem;
 }
 
@@ -416,58 +418,32 @@
     flex-shrink: 0;
 }
 
-.calc-tax-label {
-    flex: 1;
-    color: #444;
-}
+.calc-tax-label { flex: 1; color: #333; }
+.calc-tax-value { font-weight: 600; color: #111; }
 
-.calc-tax-value {
-    font-weight: 600;
-    color: #111;
-}
-
-/* Total taxes */
-.calc-total-taxes-row {
+/* Total row inside red box */
+.calc-total-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1rem 0 0.5rem;
+    padding: 0.85rem 1.25rem;
     font-size: 0.95rem;
 }
 
-.calc-total-taxes-label {
-    color: #e2001a;
-    font-weight: 700;
-}
+.calc-total-label { color: #e2001a; font-weight: 700; }
+.calc-total-value { color: #e2001a; font-weight: 700; font-size: 1rem; }
 
-.calc-total-taxes-value {
-    color: #e2001a;
-    font-weight: 700;
-    font-size: 1rem;
-}
-
-/* Grand total */
-.calc-grand-total-row {
+/* Grand total — red background, bottom of red box */
+.calc-grand-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
     background: #e2001a;
-    margin: 0 -1.75rem;
-    padding: 1.1rem 1.75rem;
-    border-radius: 0 0 14px 14px;
+    padding: 1.1rem 1.25rem;
 }
 
-.calc-grand-total-label {
-    color: #fff;
-    font-size: 1.05rem;
-    font-weight: 600;
-}
-
-.calc-grand-total-value {
-    color: #fff;
-    font-size: 1.15rem;
-    font-weight: 700;
-}
+.calc-grand-label { color: #fff; font-size: 1.05rem; font-weight: 600; }
+.calc-grand-value { color: #fff; font-size: 1.2rem; font-weight: 700; }
 
 /* ── Promo block ─────────────────────────────────── */
 .calc-promo-block {
@@ -779,17 +755,27 @@
     }
 
     .calc-results-header {
-        padding: 1rem;
+        padding: 1rem 1.25rem;
     }
 
-    .calc-results-body {
-        padding: 0 1rem;
+    .calc-summary-row {
+        padding: 0.8rem 1.25rem;
     }
 
-    .calc-grand-total-row {
-        margin: 0 -1rem;
+    .calc-tax-box {
+        margin: 0.75rem 0 1rem;
+    }
+
+    .calc-tax-rows {
+        padding: 0.25rem 1rem;
+    }
+
+    .calc-total-row {
+        padding: 0.85rem 1rem;
+    }
+
+    .calc-grand-row {
         padding: 1rem;
-        border-radius: 0 0 14px 14px;
     }
 
     .calc-banner {

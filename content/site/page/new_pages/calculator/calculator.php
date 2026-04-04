@@ -211,35 +211,33 @@ for ($y = $current_year; $y >= 1990; $y--) {
                         <span class="calc-summary-value" id="res-price-display">—</span>
                     </div>
 
-                    <!-- Tax rows -->
-                    <div class="calc-tax-block">
-                        <div class="calc-tax-row" id="res-excise-row">
-                            <span class="calc-tax-dot"></span>
-                            <span class="calc-tax-label"><?php echo $t['excise']; ?></span>
-                            <span class="calc-tax-value" id="res-excise">—</span>
+                    <!-- Red border box: tax rows + totals -->
+                    <div class="calc-tax-box">
+                        <div class="calc-tax-rows">
+                            <div class="calc-tax-row" id="res-excise-row">
+                                <span class="calc-tax-dot"></span>
+                                <span class="calc-tax-label"><?php echo $t['excise']; ?></span>
+                                <span class="calc-tax-value" id="res-excise">—</span>
+                            </div>
+                            <div class="calc-tax-row" id="res-luxury-row" style="display:none;">
+                                <span class="calc-tax-dot"></span>
+                                <span class="calc-tax-label"><?php echo $t['luxury_excise']; ?></span>
+                                <span class="calc-tax-value" id="res-luxury">—</span>
+                            </div>
+                            <div class="calc-tax-row">
+                                <span class="calc-tax-dot"></span>
+                                <span class="calc-tax-label"><?php echo $t['customs_duty']; ?></span>
+                                <span class="calc-tax-value" id="res-customs">—</span>
+                            </div>
                         </div>
-                        <div class="calc-tax-row" id="res-luxury-row" style="display:none;">
-                            <span class="calc-tax-dot"></span>
-                            <span class="calc-tax-label"><?php echo $t['luxury_excise']; ?></span>
-                            <span class="calc-tax-value" id="res-luxury">—</span>
+                        <div class="calc-total-row">
+                            <span class="calc-total-label"><?php echo $t['total']; ?></span>
+                            <span class="calc-total-value" id="res-total">—</span>
                         </div>
-                        <div class="calc-tax-row">
-                            <span class="calc-tax-dot"></span>
-                            <span class="calc-tax-label"><?php echo $t['customs_duty']; ?></span>
-                            <span class="calc-tax-value" id="res-customs">—</span>
+                        <div class="calc-grand-row">
+                            <span class="calc-grand-label"><?php echo $t['vehicle_total']; ?></span>
+                            <span class="calc-grand-value" id="res-vehicle-total">—</span>
                         </div>
-                    </div>
-
-                    <!-- Total taxes -->
-                    <div class="calc-total-taxes-row">
-                        <span class="calc-total-taxes-label"><?php echo $t['total']; ?></span>
-                        <span class="calc-total-taxes-value" id="res-total">—</span>
-                    </div>
-
-                    <!-- Grand total -->
-                    <div class="calc-grand-total-row">
-                        <span class="calc-grand-total-label"><?php echo $t['vehicle_total']; ?></span>
-                        <span class="calc-grand-total-value" id="res-vehicle-total">—</span>
                     </div>
                 </div>
             </div>
