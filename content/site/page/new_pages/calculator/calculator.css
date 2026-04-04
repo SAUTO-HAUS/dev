@@ -537,13 +537,13 @@
 
 /* ── Banner ──────────────────────────────────────── */
 .calc-banner {
-    display: flex;
-    align-items: stretch;
+    position: relative;
+    display: block;
     margin-top: 1.5rem;
     border-radius: 14px;
     overflow: hidden;
     text-decoration: none;
-    height: 130px;
+    height: 260px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.12);
     transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -554,24 +554,32 @@
 }
 
 .calc-banner-image {
-    flex: 1;
+    position: absolute;
+    inset: 0;
     background-size: cover;
-    background-position: center right;
+    background-position: center;
+}
+
+.calc-banner-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.1) 100%);
 }
 
 .calc-banner-content {
-    flex: 0 0 45%;
-    background: #111;
+    position: relative;
+    z-index: 1;
+    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: center;
     gap: 1rem;
-    padding: 1.5rem;
-    order: -1;
+    padding: 2rem;
 }
 
 .calc-banner-title {
-    font-size: 1.1rem;
+    font-size: 1.4rem;
     font-weight: 700;
     color: #fff;
     margin: 0;
@@ -582,9 +590,9 @@
     display: inline-block;
     background: #e2001a;
     color: #fff;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 600;
-    padding: 0.55rem 1.1rem;
+    padding: 0.6rem 1.25rem;
     border-radius: 6px;
     width: fit-content;
 }

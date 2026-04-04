@@ -251,6 +251,7 @@ for ($y = $current_year; $y >= 1990; $y--) {
                     <span class="calc-banner-btn"><?php echo $t['banner_btn']; ?></span>
                 </div>
             </a>
+
         </div>
 
         <!-- Right: Bitrix24 Form + promo block (30%) -->
