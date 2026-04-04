@@ -807,4 +807,18 @@
     .calc-order-block {
         padding: 1.25rem;
     }
+
+    .calc-promo-title,
+    .calc-order-title {
+        font-size: 1.5rem;
+    }
+
+    .calc-promo-subtitle,
+    .calc-order-subtitle {
+        font-size: 1rem;
+    }
+
+    .calc-banner-title {
+        font-size: 1.6rem;
+    }
 }
