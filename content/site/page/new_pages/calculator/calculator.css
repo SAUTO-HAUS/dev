@@ -15,9 +15,9 @@
 }
 
 .calc-page-inner {
-    max-width: 90rem;
+    width: 80vw;
     margin: 0 auto;
-    padding: 0 2rem;
+    padding: 0;
     display: flex;
     gap: 2rem;
     align-items: flex-start;
