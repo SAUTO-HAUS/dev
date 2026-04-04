@@ -50,6 +50,8 @@ $lng_calculator_page = [
         'order_title'           => 'Vămuim și aducem mașina la cheie',
         'order_subtitle'        => 'Află cum funcționează procesul nostru transparent de import.',
         'order_btn'             => 'Află mai multe',
+        'banner_title'          => 'Mașina ta te așteaptă deja!',
+        'banner_btn'            => 'Vezi Stocul Curent',
     ],
     'ru' => [
         'page_title'            => 'Калькулятор растаможки авто',
@@ -100,6 +102,8 @@ $lng_calculator_page = [
         'order_title'           => 'Растамаживаем и доставляем авто под ключ',
         'order_subtitle'        => 'Узнайте как работает наш прозрачный процесс импорта.',
         'order_btn'             => 'Узнать больше',
+        'banner_title'          => 'Ваш автомобиль уже ждёт вас!',
+        'banner_btn'            => 'Смотреть текущий сток',
     ],
     'en' => [
         'page_title'            => 'Auto Customs Calculator',
@@ -150,5 +154,7 @@ $lng_calculator_page = [
         'order_title'           => 'We clear customs and deliver your car door to door',
         'order_subtitle'        => 'Find out how our transparent import process works.',
         'order_btn'             => 'Learn more',
+        'banner_title'          => 'Your car is already waiting for you!',
+        'banner_btn'            => 'View Current Stock',
     ],
 ];

@@ -535,6 +535,60 @@
     background: #bf0016;
 }
 
+/* ── Banner ──────────────────────────────────────── */
+.calc-banner {
+    display: flex;
+    align-items: stretch;
+    margin-top: 1.5rem;
+    border-radius: 14px;
+    overflow: hidden;
+    text-decoration: none;
+    height: 130px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.12);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.calc-banner:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+
+.calc-banner-image {
+    flex: 1;
+    background-size: cover;
+    background-position: center right;
+}
+
+.calc-banner-content {
+    flex: 0 0 45%;
+    background: #111;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    order: -1;
+}
+
+.calc-banner-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    margin: 0;
+    line-height: 1.3;
+}
+
+.calc-banner-btn {
+    display: inline-block;
+    background: #e2001a;
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    padding: 0.55rem 1.1rem;
+    border-radius: 6px;
+    width: fit-content;
+}
+
 /* ── Order block ─────────────────────────────────── */
 .calc-order-block {
     margin-top: 1.25rem;
