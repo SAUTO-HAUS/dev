@@ -136,7 +136,7 @@ for ($y = $current_year; $y >= 1990; $y--) {
                 <div class="calc-form-row">
                     <div class="calc-form-group">
                         <label><?php echo $t['transport_price']; ?></label>
-                        <input type="number" id="calc-transport-eur" placeholder="<?php echo $t['transport_placeholder']; ?>" min="0">
+                        <input type="text" id="calc-transport-eur" value="~ 1000" readonly>
                     </div>
                     <div class="calc-form-group calc-form-group--empty"></div>
                 </div>

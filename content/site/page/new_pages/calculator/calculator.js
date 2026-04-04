@@ -7,7 +7,7 @@ const HYBRID_DISCOUNT_PLUGIN = cfg.hybridDiscountPlugin || 50;
     const HYBRID_DISCOUNT_FULL = cfg.hybridDiscountFull || 25;
     const EXCISE_RATES = cfg.exciseRates || [];
 
-    // ── Fuel type buttons ──────────────────────────────────────────
+// ── Fuel type buttons ──────────────────────────────────────────
     document.querySelectorAll('.calc-fuel-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
             document.querySelectorAll('.calc-fuel-btn').forEach(function (b) {
@@ -40,7 +40,7 @@ const HYBRID_DISCOUNT_PLUGIN = cfg.hybridDiscountPlugin || 50;
         const year = parseInt(document.getElementById('calc-year').value);
         const capacity = parseInt(document.getElementById('calc-capacity').value) || 0;
         const priceEur = parseFloat(document.getElementById('calc-price-eur').value) || 0;
-        const transportEur = parseFloat(document.getElementById('calc-transport-eur').value) || 0;
+        const transportEur = 1000;
         const totalPriceEur = priceEur + transportEur;
 
         const activeFuelBtn = document.querySelector('.calc-fuel-btn.active');
