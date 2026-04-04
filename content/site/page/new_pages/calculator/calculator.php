@@ -98,7 +98,7 @@ for ($y = $current_year; $y >= 1990; $y--) {
             <div class="calc-form-box">
                 <!-- Row 1: vehicle type + year -->
                 <div class="calc-form-row">
-                    <div class="calc-form-group">
+                    <div class="calc-form-group" id="group-vehicle-type">
                         <label><?php echo $t['vehicle_type']; ?></label>
                         <select id="calc-vehicle-type">
                             <option value="autoturism"><?php echo $t['car']; ?></option>
@@ -108,7 +108,7 @@ for ($y = $current_year; $y >= 1990; $y--) {
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
                         </span>
                     </div>
-                    <div class="calc-form-group">
+                    <div class="calc-form-group" id="group-year">
                         <label><?php echo $t['year']; ?></label>
                         <select id="calc-year">
                             <?php echo $year_options; ?>
@@ -121,11 +121,11 @@ for ($y = $current_year; $y >= 1990; $y--) {
 
                 <!-- Row 2: capacity + price -->
                 <div class="calc-form-row">
-                    <div class="calc-form-group">
+                    <div class="calc-form-group" id="group-capacity">
                         <label><?php echo $t['capacity']; ?></label>
                         <input type="number" id="calc-capacity" placeholder="<?php echo $t['capacity_placeholder']; ?>" min="0" max="10000">
                     </div>
-                    <div class="calc-form-group">
+                    <div class="calc-form-group" id="group-price">
                         <label><?php echo $t['price_eur']; ?></label>
                         <input type="number" id="calc-price-eur" placeholder="<?php echo $t['price_placeholder']; ?>" min="0">
                     </div>
@@ -133,7 +133,7 @@ for ($y = $current_year; $y >= 1990; $y--) {
 
                 <!-- Row 3: transport price (left aligned) -->
                 <div class="calc-form-row">
-                    <div class="calc-form-group">
+                    <div class="calc-form-group" id="group-transport">
                         <label><?php echo $t['transport_price']; ?></label>
                         <input type="text" id="calc-transport-eur" value="~ 1000" readonly>
                     </div>

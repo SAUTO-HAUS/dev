@@ -658,6 +658,8 @@
 @media (max-width: 1024px) {
     .calc-page-inner {
         flex-direction: column;
+        width: 100%;
+        padding: 0 1rem;
     }
 
     .calc-page-left,
@@ -670,57 +672,125 @@
     .calc-page-right {
         position: static;
     }
+
+    .calc-bitrix-wrap {
+        margin-top: 0;
+    }
 }
 
 @media (max-width: 640px) {
     .calc-page-section {
-        padding: 1.5rem 0 2rem;
+        padding: 1.25rem 0 0;
     }
 
     .calc-page-inner {
         padding: 0 1rem;
+        gap: 1rem;
     }
 
     .calc-page-title {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
+    }
+
+    .calc-eur-rate {
+        font-size: 0.85rem;
     }
 
     .calc-form-box {
-        padding: 1.25rem;
+        padding: 1rem;
+    }
+
+    .calc-form-box {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
     }
 
     .calc-form-row {
-        flex-direction: column;
-        gap: 1rem;
-        margin-bottom: 1rem;
+        display: contents;
+    }
+
+    .calc-form-group {
+        margin-bottom: 0;
     }
 
     .calc-form-group--empty {
         display: none;
     }
 
+    /* Reorder: vehicle type, capacity, transport, year, price, fuel */
+    #group-vehicle-type { order: 1; }
+    #group-capacity     { order: 2; }
+    #group-transport    { order: 3; }
+    #group-year         { order: 4; }
+    #group-price        { order: 5; }
+    .calc-fuel-row      { order: 6; }
+    .calc-hybrid-options{ order: 7; }
+    .calc-electric-notice { order: 8; }
+    .calc-submit-btn    { order: 9; }
+
+    .calc-form-group--empty {
+        display: none;
+    }
+
+    .calc-fuel-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
     .calc-fuel-btn {
-        min-width: 70px;
-        font-size: 0.82rem;
-        padding: 0.6rem 0.5rem;
+        min-width: 0;
+        font-size: 0.9rem;
+        padding: 0.75rem;
+    }
+
+    .calc-hybrid-type-row {
+        display: grid;
+        grid-template-columns: 1fr;
     }
 
     .calc-hybrid-type-btn {
-        min-width: 100px;
-        font-size: 0.8rem;
+        min-width: 0;
+        font-size: 0.9rem;
+        padding: 0.75rem;
+    }
+
+    .calc-hybrid-badge {
+        font-size: 0.7rem;
+        padding: 0.2rem 0.4rem;
+    }
+
+    .calc-results-box {
+        margin-top: 1rem;
     }
 
     .calc-results-header {
-        padding: 1rem 1.25rem;
+        padding: 1rem;
     }
 
     .calc-results-body {
-        padding: 0 1.25rem;
+        padding: 0 1rem;
     }
 
     .calc-grand-total-row {
-        margin: 0 -1.25rem;
-        padding: 1rem 1.25rem;
+        margin: 0 -1rem;
+        padding: 1rem;
         border-radius: 0 0 14px 14px;
+    }
+
+    .calc-banner {
+        height: 160px;
+    }
+
+    .calc-banner-title {
+        font-size: 1rem;
+    }
+
+    .calc-promo-image {
+        height: 180px;
+    }
+
+    .calc-order-block {
+        padding: 1.25rem;
     }
 }
