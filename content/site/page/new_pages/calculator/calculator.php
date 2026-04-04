@@ -91,7 +91,7 @@ for ($y = $current_year; $y >= 1990; $y--) {
                 <div class="calc-eur-rate">
                     <?php echo $t['eur_rate_label']; ?>
                     <span class="calc-eur-value" id="eur-rate-display"><?php echo number_format($eur_rate, 2, ',', ' '); ?></span>
-                    MDL
+                    MDL <span class="calc-eur-source">(BNM)</span>
                 </div>
             </div>
 

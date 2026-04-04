@@ -70,6 +70,12 @@
     font-size: 1rem;
 }
 
+.calc-eur-source {
+    font-size: 0.8rem;
+    color: #aaa;
+    font-weight: 400;
+}
+
 /* ── Form box ────────────────────────────────────── */
 .calc-form-box {
     background: #fff;
@@ -218,7 +224,7 @@
 .calc-hybrid-type-btn {
     flex: 1;
     min-width: 120px;
-    padding: 0.65rem 0.75rem;
+    padding: 1rem 0.75rem;
     border: 1.5px solid #ddd;
     border-radius: 8px;
     background: #fff;
@@ -245,8 +251,8 @@
 }
 
 .calc-hybrid-type-btn.active .calc-hybrid-badge {
-    background: rgba(255,255,255,0.25);
-    color: #fff;
+    background: #fff;
+    color: #e2001a;
 }
 
 .calc-hybrid-badge {
