@@ -392,7 +392,7 @@
     border: 2px solid #e2001a;
     border-radius: 10px;
     overflow: hidden;
-    margin: 1rem 0 1.5rem;
+    margin: 1rem 0 0;
 }
 
 /* Tax rows inside red box */
@@ -763,7 +763,7 @@
     }
 
     .calc-tax-box {
-        margin: 0.75rem 0 1rem;
+        margin: 0.75rem 0 0;
     }
 
     .calc-tax-rows {
