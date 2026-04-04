@@ -102,7 +102,6 @@ for ($y = $current_year; $y >= 1990; $y--) {
                         <label><?php echo $t['vehicle_type']; ?></label>
                         <select id="calc-vehicle-type">
                             <option value="autoturism"><?php echo $t['car']; ?></option>
-                            <option value="motocicleta"><?php echo $t['motorcycle']; ?></option>
                             <option value="camion"><?php echo $t['truck']; ?></option>
                         </select>
                         <span class="calc-select-arrow">
