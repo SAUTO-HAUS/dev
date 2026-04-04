@@ -255,13 +255,13 @@ for ($y = $current_year; $y >= 1990; $y--) {
             </script>
 
             <a href="/<?php echo $current_lang; ?>/ordercars" class="calc-promo-block">
-                <div class="calc-promo-image" style="background-image:url('/content/site/page/new_pages/calculator/calculator-media/calc-1.jpg');">
+                <div class="calc-promo-image" style="background-image:url('/content/site/page/new_pages/calculator/calculator-media/calc-img-1.jpg');">
                     <div class="calc-promo-text">
-                        <h3 class="calc-promo-title">Nu ai găsit modelul dorit?</h3>
-                        <p class="calc-promo-subtitle">Alege din catalog</p>
+                        <h3 class="calc-promo-title"><?php echo $t['promo_title']; ?></h3>
+                        <p class="calc-promo-subtitle"><?php echo $t['promo_subtitle']; ?></p>
                     </div>
                 </div>
-                <div class="calc-promo-btn">Caută Mașini la Comandă</div>
+                <div class="calc-promo-btn"><?php echo $t['promo_btn']; ?></div>
             </a>
         </div>
 

@@ -44,6 +44,9 @@ $lng_calculator_page = [
         'electric_notice_sub'   => 'Se achită doar TVA la valoarea în vamă.',
         'form_title'            => 'Solicită o ofertă',
         'form_subtitle'         => 'Completează formularul și te contactăm',
+        'promo_title'           => 'Nu ai găsit modelul dorit?',
+        'promo_subtitle'        => 'Alege din catalog',
+        'promo_btn'             => 'Caută Mașini la Comandă',
     ],
     'ru' => [
         'page_title'            => 'Калькулятор растаможки авто',
@@ -88,6 +91,9 @@ $lng_calculator_page = [
         'electric_notice_sub'   => 'Оплачивается только НДС от таможенной стоимости.',
         'form_title'            => 'Запросить предложение',
         'form_subtitle'         => 'Заполните форму и мы свяжемся с вами',
+        'promo_title'           => 'Не нашли нужную модель?',
+        'promo_subtitle'        => 'Выберите из каталога',
+        'promo_btn'             => 'Найти машины на заказ',
     ],
     'en' => [
         'page_title'            => 'Auto Customs Calculator',
@@ -132,5 +138,8 @@ $lng_calculator_page = [
         'electric_notice_sub'   => 'Only VAT on customs value is paid.',
         'form_title'            => 'Request an offer',
         'form_subtitle'         => 'Fill in the form and we will contact you',
+        'promo_title'           => 'Didn\'t find the model you wanted?',
+        'promo_subtitle'        => 'Browse the catalog',
+        'promo_btn'             => 'Find Cars on Order',
     ],
 ];
