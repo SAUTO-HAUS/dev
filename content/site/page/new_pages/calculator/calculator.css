@@ -1,0 +1,534 @@
+/* ================================================
+   CALCULATOR PAGE — full-width like /services/order
+   ================================================ */
+
+.calc-page-section {
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    background: #f5f5f5;
+    padding: 2.5rem 0 3rem;
+    box-sizing: border-box;
+}
+
+.calc-page-inner {
+    max-width: 90rem;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start;
+}
+
+/* ── Left column: 70% ───────────────────────────── */
+.calc-page-left {
+    flex: 0 0 70%;
+    max-width: 70%;
+}
+
+/* ── Right column: 30% (Bitrix form) ────────────── */
+.calc-page-right {
+    flex: 0 0 calc(30% - 2rem);
+    max-width: calc(30% - 2rem);
+    position: sticky;
+    top: 6rem;
+}
+
+/* ── Page header ─────────────────────────────────── */
+.calc-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.calc-page-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #111;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.calc-eur-rate {
+    font-size: 0.95rem;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    white-space: nowrap;
+}
+
+.calc-eur-value {
+    font-weight: 700;
+    color: #111;
+    font-size: 1rem;
+}
+
+/* ── Form box ────────────────────────────────────── */
+.calc-form-box {
+    background: #fff;
+    border-radius: 14px;
+    padding: 2rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.calc-form-row {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.calc-form-group {
+    flex: 1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.calc-form-group--empty {
+    visibility: hidden;
+}
+
+.calc-form-group label {
+    font-size: 0.85rem;
+    color: #555;
+    font-weight: 500;
+}
+
+.calc-form-group select,
+.calc-form-group input[type="number"] {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #111;
+    background: #fff;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.calc-form-group select:focus,
+.calc-form-group input[type="number"]:focus {
+    outline: none;
+    border-color: #e2001a;
+}
+
+.calc-form-group input[type="number"]::placeholder {
+    color: #bbb;
+}
+
+.calc-select-arrow {
+    position: absolute;
+    right: 0.75rem;
+    bottom: 0.7rem;
+    pointer-events: none;
+    color: #888;
+    display: flex;
+    align-items: center;
+}
+
+/* ── Fuel type buttons ───────────────────────────── */
+.calc-fuel-row {
+    display: flex;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.calc-fuel-btn {
+    flex: 1;
+    min-width: 90px;
+    padding: 0.7rem 1rem;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fff;
+    color: #333;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.calc-fuel-btn:hover {
+    border-color: #e2001a;
+}
+
+.calc-fuel-btn.active {
+    background: #e2001a;
+    border-color: #e2001a;
+    color: #fff;
+}
+
+/* ── Hybrid options ──────────────────────────────── */
+.calc-hybrid-options {
+    background: #f9f9f9;
+    border-radius: 10px;
+    padding: 1rem 1.25rem 0.75rem;
+    margin-bottom: 1rem;
+    display: none;
+}
+
+.calc-hybrid-options.show {
+    display: block;
+}
+
+.calc-hybrid-fuel-row {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.calc-radio-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #333;
+    cursor: pointer;
+    font-weight: 400;
+}
+
+.calc-radio-label input[type="radio"] {
+    accent-color: #e2001a;
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+}
+
+.calc-hybrid-type-row {
+    display: flex;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+}
+
+.calc-hybrid-type-btn {
+    flex: 1;
+    min-width: 120px;
+    padding: 0.65rem 0.75rem;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    color: #333;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.calc-hybrid-type-btn:hover {
+    border-color: #e2001a;
+}
+
+.calc-hybrid-type-btn.active {
+    background: #e2001a;
+    border-color: #e2001a;
+    color: #fff;
+}
+
+.calc-hybrid-type-btn.active .calc-hybrid-badge {
+    background: rgba(255,255,255,0.25);
+    color: #fff;
+}
+
+.calc-hybrid-badge {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: #ffe5e5;
+    color: #e2001a;
+    border-radius: 20px;
+    padding: 0.1rem 0.5rem;
+    white-space: nowrap;
+}
+
+.calc-hybrid-badge--none {
+    background: #f0f0f0;
+    color: #888;
+}
+
+.calc-hybrid-type-btn.active .calc-hybrid-badge--none {
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+}
+
+.calc-hybrid-note {
+    font-size: 0.78rem;
+    color: #aaa;
+    margin: 0;
+}
+
+/* ── Electric notice ─────────────────────────────── */
+.calc-electric-notice {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border-radius: 8px;
+    padding: 0.85rem 1rem;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    display: none;
+    line-height: 1.5;
+}
+
+.calc-electric-notice.show {
+    display: block;
+}
+
+/* ── Calculate button ────────────────────────────── */
+.calc-submit-btn {
+    width: 100%;
+    padding: 1rem 2rem;
+    background: #e2001a;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background 0.2s, transform 0.15s;
+}
+
+.calc-submit-btn:hover {
+    background: #bf0016;
+    transform: translateY(-1px);
+}
+
+/* ── Results box ─────────────────────────────────── */
+.calc-results-box {
+    background: #fff;
+    border-radius: 14px;
+    margin-top: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    overflow: hidden;
+}
+
+.calc-results-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.25rem 1.75rem;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    user-select: none;
+}
+
+.calc-results-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111;
+    margin: 0;
+}
+
+.calc-results-chevron {
+    color: #888;
+    display: flex;
+    align-items: center;
+    transition: transform 0.25s;
+}
+
+.calc-results-chevron.rotated {
+    transform: rotate(180deg);
+}
+
+.calc-results-body {
+    padding: 0 1.75rem;
+    transition: max-height 0.3s ease;
+}
+
+.calc-results-body.collapsed {
+    display: none;
+}
+
+/* Summary rows (year / capacity / price) */
+.calc-summary-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.95rem;
+}
+
+.calc-summary-label {
+    color: #555;
+}
+
+.calc-summary-value {
+    font-weight: 600;
+    color: #111;
+}
+
+/* Tax block */
+.calc-tax-block {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.calc-tax-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0;
+    font-size: 0.95rem;
+}
+
+.calc-tax-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #e2001a;
+    flex-shrink: 0;
+}
+
+.calc-tax-label {
+    flex: 1;
+    color: #444;
+}
+
+.calc-tax-value {
+    font-weight: 600;
+    color: #111;
+}
+
+/* Total taxes */
+.calc-total-taxes-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 0 0.5rem;
+    font-size: 0.95rem;
+}
+
+.calc-total-taxes-label {
+    color: #e2001a;
+    font-weight: 700;
+}
+
+.calc-total-taxes-value {
+    color: #e2001a;
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+/* Grand total */
+.calc-grand-total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #e2001a;
+    margin: 0 -1.75rem;
+    padding: 1.1rem 1.75rem;
+    border-radius: 0 0 14px 14px;
+}
+
+.calc-grand-total-label {
+    color: #fff;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.calc-grand-total-value {
+    color: #fff;
+    font-size: 1.15rem;
+    font-weight: 700;
+}
+
+/* ── Bitrix form overrides ───────────────────────── */
+.calc-page-right .b24-form-content,
+.calc-page-right .b24-form-padding-side {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* ================================================
+   RESPONSIVE
+   ================================================ */
+
+@media (max-width: 1024px) {
+    .calc-page-inner {
+        flex-direction: column;
+    }
+
+    .calc-page-left,
+    .calc-page-right {
+        flex: none;
+        max-width: 100%;
+        width: 100%;
+    }
+
+    .calc-page-right {
+        position: static;
+    }
+}
+
+@media (max-width: 640px) {
+    .calc-page-section {
+        padding: 1.5rem 0 2rem;
+    }
+
+    .calc-page-inner {
+        padding: 0 1rem;
+    }
+
+    .calc-page-title {
+        font-size: 1.5rem;
+    }
+
+    .calc-form-box {
+        padding: 1.25rem;
+    }
+
+    .calc-form-row {
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .calc-form-group--empty {
+        display: none;
+    }
+
+    .calc-fuel-btn {
+        min-width: 70px;
+        font-size: 0.82rem;
+        padding: 0.6rem 0.5rem;
+    }
+
+    .calc-hybrid-type-btn {
+        min-width: 100px;
+        font-size: 0.8rem;
+    }
+
+    .calc-results-header {
+        padding: 1rem 1.25rem;
+    }
+
+    .calc-results-body {
+        padding: 0 1.25rem;
+    }
+
+    .calc-grand-total-row {
+        margin: 0 -1.25rem;
+        padding: 1rem 1.25rem;
+        border-radius: 0 0 14px 14px;
+    }
+}
