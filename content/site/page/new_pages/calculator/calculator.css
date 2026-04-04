@@ -676,6 +676,20 @@
     .calc-bitrix-wrap {
         margin-top: 0;
     }
+
+    /* Mobile order */
+    .calc-page-left        { order: 1; display: contents; }
+    .calc-results-box      { order: 1; }
+    .calc-form-box         { order: 1; }
+    .calc-page-header      { order: 1; }
+    .calc-promo-block      { order: 2; }
+    .calc-order-block      { order: 3; }
+    .calc-bitrix-wrap      { order: 4; }
+    .calc-banner           { order: 5; }
+
+    .calc-page-right {
+        display: contents;
+    }
 }
 
 @media (max-width: 640px) {
@@ -727,7 +741,7 @@
     .calc-fuel-row      { order: 6; }
     .calc-hybrid-options{ order: 7; }
     .calc-electric-notice { order: 8; }
-    .calc-submit-btn    { order: 9; }
+    .calc-submit-btn    { order: 9; margin-top: 0; }
 
     .calc-form-group--empty {
         display: none;
