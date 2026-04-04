@@ -265,6 +265,12 @@ for ($y = $current_year; $y >= 1990; $y--) {
                     <a href="/<?php echo $current_lang; ?>/ordercars" class="calc-promo-btn"><?php echo $t['promo_btn']; ?></a>
                 </div>
             </div>
+
+            <div class="calc-order-block">
+                <h3 class="calc-order-title"><?php echo $t['order_title']; ?></h3>
+                <p class="calc-order-subtitle"><?php echo $t['order_subtitle']; ?></p>
+                <a href="/<?php echo $current_lang; ?>/services/order" class="calc-order-btn"><?php echo $t['order_btn']; ?></a>
+            </div>
         </div>
 
     </div>

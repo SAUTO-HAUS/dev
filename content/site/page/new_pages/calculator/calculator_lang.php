@@ -97,6 +97,9 @@ $lng_calculator_page = [
         'promo_title'           => 'Не нашли нужную модель?',
         'promo_subtitle'        => 'Выберите из каталога',
         'promo_btn'             => 'Найти машины на заказ',
+        'order_title'           => 'Растамаживаем и доставляем авто под ключ',
+        'order_subtitle'        => 'Узнайте как работает наш прозрачный процесс импорта.',
+        'order_btn'             => 'Узнать больше',
     ],
     'en' => [
         'page_title'            => 'Auto Customs Calculator',
@@ -144,5 +147,8 @@ $lng_calculator_page = [
         'promo_title'           => 'Didn\'t find the model you wanted?',
         'promo_subtitle'        => 'Browse the catalog',
         'promo_btn'             => 'Find Cars on Order',
+        'order_title'           => 'We clear customs and deliver your car door to door',
+        'order_subtitle'        => 'Find out how our transparent import process works.',
+        'order_btn'             => 'Learn more',
     ],
 ];

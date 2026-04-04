@@ -535,6 +535,48 @@
     background: #bf0016;
 }
 
+/* ── Order block ─────────────────────────────────── */
+.calc-order-block {
+    margin-top: 1.25rem;
+    background: #fff;
+    border-radius: 14px;
+    border: 2px solid #e2001a;
+    padding: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+
+.calc-order-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #111;
+    margin: 0 0 0.6rem;
+    line-height: 1.3;
+}
+
+.calc-order-subtitle {
+    font-size: 0.9rem;
+    color: #888;
+    margin: 0 0 1.25rem;
+    line-height: 1.5;
+}
+
+.calc-order-btn {
+    display: block;
+    background: #e2001a;
+    color: #fff;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 0.85rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+
+.calc-order-btn:hover {
+    background: #bf0016;
+}
+
 /* ── Bitrix form overrides ───────────────────────── */
 .calc-page-right .b24-form-content,
 .calc-page-right .b24-form-padding-side {
