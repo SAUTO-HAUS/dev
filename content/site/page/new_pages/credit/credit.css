@@ -296,9 +296,9 @@
 }
 
 .credit-categories-section .container {
-    width: 100%;
+    width: 80vw;
     margin: 0 auto;
-    padding: 0 1.25rem;
+    padding: 0;
     display: block;
 }
 
