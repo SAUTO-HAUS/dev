@@ -189,7 +189,7 @@
 }
 
 .order-slider-container {
-    max-width: 90rem;
+    width: 80vw;
     margin: 0 auto;
 }
 
@@ -389,13 +389,13 @@
 }
 
 .order-process-header {
-    max-width: 90rem;
+    width: 80vw;
     margin: 0 auto 1rem auto;
     padding: 0;
 }
 
 .order-process-container {
-    max-width: 90rem;
+    width: 80vw;
     margin: 0 auto;
     background: #ffffff;
     border: 1px solid #e0e0e0;
@@ -547,7 +547,7 @@
 }
 
 .order-buying-container {
-    max-width: 90rem;
+    width: 80vw;
     margin: 0 auto;
 }
 
@@ -654,7 +654,7 @@
 }
 
 .order-reviews-container {
-    max-width: 90rem;
+    width: 80vw;
     margin: 0 auto;
 }
 
@@ -798,8 +798,9 @@
    ======================================== */
 
 .order-form-section {
-    max-width: 90rem;
-    padding: 0 2rem;
+    width: 80vw;
+    margin: 0 auto;
+    padding: 0;
 }
 
 /* ========================================
