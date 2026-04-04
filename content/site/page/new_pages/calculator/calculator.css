@@ -639,6 +639,10 @@
     background: #bf0016;
 }
 
+.calc-bitrix-wrap {
+    margin-top: 1.8rem;
+}
+
 /* ── Bitrix form overrides ───────────────────────── */
 .calc-page-right .b24-form-content,
 .calc-page-right .b24-form-padding-side {
