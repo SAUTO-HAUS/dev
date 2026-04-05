@@ -65,7 +65,7 @@
 								foreach ($ar as $v){
 									if ( isset($restrict_admin_menu[$user_id]['page'][$k][$v]) ){continue;}
 									
-									$menu_name = isset($adm_lang[$v]) ? $adm_lang[$v] : ucfirst($v);
+									$menu_name = isset($adm_lang[$k.'_'.$v]) ? $adm_lang[$k.'_'.$v] : (isset($adm_lang[$v]) ? $adm_lang[$v] : ucfirst($v));
 									echo '
 									<a href="/'.$_COOKIE['lang'].'/'.$admin_dir.($k=='sett'&&$v=='info'?'':'/'.$k.'/'.$v).'" class="'.$k.' '.$v.' btn '.((isset($t_mp[4])&&$t_mp[3]==$k&&$t_mp[4]==$v)||(!isset($t_mp[3])&&$v=='info')?'act':'').'">'; 
 										$qu = 0; $qu_x = 0;

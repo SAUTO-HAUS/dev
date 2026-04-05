@@ -20,7 +20,7 @@ try {
         mlg,
         offer_timer_end
     FROM {$prefx}_car_ctlg 
-    WHERE act = 1 AND n_a = 0 AND catalog_type = 'on_order'
+    WHERE act = 1 AND n_a = 0 AND loc IN ('1', '2') AND catalog_type = 'on_order'
     ORDER BY br_nm ASC, mo_nm ASC, yr DESC, id DESC";
     
     $stmt = $db->prepare($sql);
@@ -120,11 +120,11 @@ try {
             <span class="summary-value summary-clickable" data-category="all" style="cursor: pointer;"><?= $totals['total'] ?></span>
         </div>
         <div class="summary-item">
-            <span class="summary-label"><?= $stock_lang['main_active'] ?>:</span>
+            <span class="summary-label"><?= $stock_lang['extern_active'] ?>:</span>
             <span class="summary-value summary-clickable" data-category="active" style="cursor: pointer;"><?= $totals['main_active'] ?></span>
         </div>
         <div class="summary-item">
-            <span class="summary-label"><?= $stock_lang['main_inactive'] ?>:</span>
+            <span class="summary-label"><?= $stock_lang['extern_inactive'] ?>:</span>
             <span class="summary-value summary-clickable" data-category="inactive" style="cursor: pointer;"><?= $totals['main_inactive'] ?></span>
         </div>
     </div>
@@ -143,8 +143,8 @@ try {
     <thead>
         <tr>
             <th class="brand-column"><?= $stock_lang['table_brand'] ?></th>
-            <th><?= $stock_lang['main_active'] ?></th>
-            <th><?= $stock_lang['main_inactive'] ?></th>
+            <th><?= $stock_lang['extern_active'] ?></th>
+            <th><?= $stock_lang['extern_inactive'] ?></th>
             <th><?= $stock_lang['table_total'] ?></th>
         </tr>
     </thead>
@@ -464,9 +464,9 @@ document.addEventListener('DOMContentLoaded', function() {
             if (category === 'all') {
                 title = lang === 'ro' ? 'Toate automobilele' : (lang === 'ru' ? 'Все автомобили' : 'All cars');
             } else if (category === 'active') {
-                title = lang === 'ro' ? 'Fil.1 active' : (lang === 'ru' ? 'Фил.1 активные' : 'Branch 1 active');
+                title = lang === 'ro' ? 'Timer activ' : (lang === 'ru' ? 'Таймер активен' : 'Timer active');
             } else if (category === 'inactive') {
-                title = lang === 'ro' ? 'Fil.1 neactive' : (lang === 'ru' ? 'Фил.1 неактивные' : 'Branch 1 inactive');
+                title = lang === 'ro' ? 'Timer expirat' : (lang === 'ru' ? 'Таймер истёк' : 'Timer expired');
             }
             
             carListTitle.textContent = title + ' (' + cars.length + ')';
