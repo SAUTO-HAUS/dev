@@ -423,6 +423,19 @@ if ( isset($t_mp[4]) ){
 	elseif ( $t_mp[4]=='ai_prompt' ){
 		include dirname(__FILE__) . '/sett/ai_prompt.php';
 	}
+	elseif ( $t_mp[4]=='changelog' ){
+		// Shift t_mp so changelog.php sees its action at [4]
+		$t_mp_orig = $t_mp;
+		$t_mp[4] = isset($t_mp[5]) ? $t_mp[5] : 'ctlg';
+		include dirname(__FILE__) . '/changelog.php';
+		$t_mp = $t_mp_orig;
+	}
+	elseif ( $t_mp[4]=='analytics' ){
+		include dirname(__FILE__) . '/analytics.php';
+	}
+	elseif ( $t_mp[4]=='terminal' ){
+		include dirname(__FILE__) . '/terminal.php';
+	}
 	elseif ( $t_mp[4]=='annc' ){
 		if ( isset($t_mp[5]) ){
 			$link_back = ''; $count = count($t_mp);

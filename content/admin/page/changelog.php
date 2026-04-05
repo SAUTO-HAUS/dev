@@ -153,7 +153,7 @@ $filter_qs = http_build_query(array_filter([
     'date_to' => $filter_date_to
 ], function($v) { return $v !== ''; }));
 
-$base_url = '/'.$_COOKIE['lang'].'/'.$admin_dir.'/changelog/ctlg';
+$base_url = '/'.$_COOKIE['lang'].'/'.$admin_dir.'/sett/changelog';
 ?>
 
 <style>
