@@ -494,13 +494,13 @@ document.addEventListener('DOMContentLoaded', function() {
             if (category === 'all') {
                 title = lang === 'ro' ? 'Toate automobilele' : (lang === 'ru' ? 'Все автомобили' : 'All cars');
             } else if (category === 'main_active') {
-                title = lang === 'ro' ? 'Fil.1 active' : (lang === 'ru' ? 'Фил.1 активные' : 'Branch 1 active');
+                title = 'Calea Moșilor 11 active';
             } else if (category === 'main_inactive') {
-                title = lang === 'ro' ? 'Fil.1 neactive' : (lang === 'ru' ? 'Фил.1 неактивные' : 'Branch 1 inactive');
+                title = 'Calea Moșilor 11 ' + (lang === 'ru' ? 'неактивные' : 'neactive');
             } else if (category === 'branch_active') {
-                title = lang === 'ro' ? 'Fil.2 active' : (lang === 'ru' ? 'Фил.2 активные' : 'Branch 2 active');
+                title = 'Pietrăriei 3 active';
             } else if (category === 'branch_inactive') {
-                title = lang === 'ro' ? 'Fil.2 neactive' : (lang === 'ru' ? 'Фил.2 неактивные' : 'Branch 2 inactive');
+                title = 'Pietrăriei 3 ' + (lang === 'ru' ? 'неактивные' : 'neactive');
             }
             
             carListTitle.textContent = title + ' (' + cars.length + ')';
