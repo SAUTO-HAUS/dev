@@ -467,13 +467,13 @@ JAVASCRIPT;
 			<option value="" data-br="" class="def" disabled selected>-</option>
 			'.$mo_html.'
 		</select></label>
-		<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" required /></label>
+		<!-- <label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" required /></label> -->
 		<label class="lbl"><span class="ttl">Price</span><input class="need" type="number" name="prc" title="Price" required /></label>
 		<label class="lbl"><span class="ttl">Currency</span><select name="cur" title="Currency" required>
 			<option value="MDL" selected>MDL</option>
 			<option value="EUR">EUR</option>
 		</select></label>
-		
+
 		<div class="ttl">Cumparator</div>
 		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp" required><option value="fiz">Fizic</option><option value="jur">Juridic</option></select></label>
 		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" required /></label>
@@ -1141,7 +1141,7 @@ JAVASCRIPT;
 		$rtrn .= ( isset($mixall)?'<form class="menu_con_arvon_com">':'' ).'
 		<div class="ttl">Document</div>
 		<label class="lbl"><span class="ttl">Date</span><input class="need dt" type="date" name="date" min="1900-01-01" max="2099-12-31" title="Date" required /></label>
-		
+
 		<div class="ttl">Auto</div>
 		<label class="lbl"><span class="ttl">Brand</span><select name="br" title="Brand" required>
 			<option value="" class="def" disabled selected>-</option>
@@ -1151,8 +1151,8 @@ JAVASCRIPT;
 			<option value="" data-br="" class="def" disabled selected>-</option>
 			'.$mo_html.'
 		</select></label>
-		<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" required /></label>
-		
+		<!-- <label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" required /></label> -->
+
 		<label class="lbl"><span class="ttl">Price, EUR</span><input class="need" type="number" name="prc_eur" title="Price EUR" required /></label>
 		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="number" name="prc" title="Price MDL" required /></label>
 		
