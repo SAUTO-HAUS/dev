@@ -259,15 +259,15 @@ if ( in_array($_cur_page, $_show_links_pages) && ($_cur_page != 'services' || $_
 ?>
 <div id="nav_links">
     <a href="/<?php echo $_COOKIE['lang']; ?>/calculator">
-        <div class="img" style="background-image:url(/media/images/links/link-c-1.jpg);"></div>
+        <div class="img" style="background-image:url(/media/images/links/link-c.jpg);"></div>
         <span class="ttl"><?php echo $lng['p']['services']['calc_customs']['name']; ?></span>
     </a>
     <a href="/<?php echo $_COOKIE['lang']; ?>/tradein">
-        <div class="img" style="background-image:url(/media/images/links/link-t-2.jpg);"></div>
+        <div class="img" style="background-image:url(/media/images/links/link-t.jpg);"></div>
         <span class="ttl"><?php echo $lng['p']['services']['tradein']['name']; ?></span>
     </a>
     <a href="/<?php echo $_COOKIE['lang']; ?>/services/order">
-        <div class="img" style="background-image:url(/media/images/links/link-o-3.jpg);"></div>
+        <div class="img" style="background-image:url(/media/images/links/link-o.jpg);"></div>
         <span class="ttl"><?php echo $lng['p']['services']['order']['name']; ?></span>
     </a>
 </div>
