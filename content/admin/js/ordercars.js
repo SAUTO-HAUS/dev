@@ -2021,13 +2021,16 @@ $(document).ready(function() {
 			}
 		}, 100);
 		
-		// Auto-select 999.md account based on import country
+		// Auto-select 999.md account based on import country and car group
 		$('select[name="import_country_id"]').on('change', function() {
 			const countryId = $(this).val();
 			const account999Select = $('.account_999_id');
+			const isCom = $('select[name="gr"]').val() === 'com';
 
 			if (countryId == '41') {
 				account999Select.val('4').trigger('change');
+			} else if (isCom) {
+				account999Select.val('2').trigger('change');
 			} else {
 				account999Select.val('3').trigger('change');
 			}
@@ -2036,7 +2039,7 @@ $(document).ready(function() {
 				$('#announcement_type').trigger('change');
 			}
 		});
-		
+
 		if ($('select[name="import_country_id"]').val() == '41') {
 			$('.account_999_id').val('4').trigger('change');
 		}
