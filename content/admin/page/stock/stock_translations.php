@@ -4,7 +4,7 @@
 
 // Romanian translations
 $stock_lang_ro = array(
-    'stock' => 'Stoc Sauto',
+    'stock' => 'Automobile în parcare',
     'stock_report' => 'Distribuție pe mărci',
     'stock_summary' => 'Rezumat pe depozit',
     'location' => 'Locație',
@@ -29,7 +29,7 @@ $stock_lang_ro = array(
     'branch_active' => 'Pietrăriei 3 active',
     'branch_inactive' => 'Pietrăriei 3 neactive',
     'show_all_ads' => 'Arată toate anunțurile',
-    'stock_extern' => 'Stock extern',
+    'stock_extern' => 'Automobile la comandă',
     'extern_active' => 'Timer activ',
     'extern_inactive' => 'Timer expirat',
     'expand_brand' => 'Extinde marca pentru a vedea modelele',
@@ -39,7 +39,7 @@ $stock_lang_ro = array(
 
 // Russian translations
 $stock_lang_ru = array(
-    'stock' => 'Склад Sauto',
+    'stock' => 'Автомобили на стоянке',
     'stock_report' => 'Распределение по брендам',
     'stock_summary' => 'Сводка по складу',
     'location' => 'Местоположение',
@@ -64,7 +64,7 @@ $stock_lang_ru = array(
     'branch_active' => 'Pietrăriei 3 активные',
     'branch_inactive' => 'Pietrăriei 3 неактивные',
     'show_all_ads' => 'Показать все объявления',
-    'stock_extern' => 'Stock extern',
+    'stock_extern' => 'Автомобили на заказ',
     'extern_active' => 'Таймер активен',
     'extern_inactive' => 'Таймер истёк',
     'expand_brand' => 'Развернуть марку для просмотра моделей',
@@ -74,7 +74,7 @@ $stock_lang_ru = array(
 
 // English translations
 $stock_lang_en = array(
-    'stock' => 'Stock Sauto',
+    'stock' => 'Cars in parking',
     'stock_report' => 'Brand Distribution',
     'stock_summary' => 'Warehouse Summary',
     'location' => 'Location',
@@ -99,7 +99,7 @@ $stock_lang_en = array(
     'branch_active' => 'Pietrăriei 3 active',
     'branch_inactive' => 'Pietrăriei 3 inactive',
     'show_all_ads' => 'Show All Ads',
-    'stock_extern' => 'Stock extern',
+    'stock_extern' => 'Cars on order',
     'extern_active' => 'Timer active',
     'extern_inactive' => 'Timer expired',
     'expand_brand' => 'Expand brand to view models',
