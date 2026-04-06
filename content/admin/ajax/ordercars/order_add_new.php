@@ -136,7 +136,7 @@ if (__post('sub') == 'mo_search') {
             }
             
             // Convert offer_timer from DD:HH:MM:SS to timestamp
-            $offer_timer_str = __post('offer_timer', '30:00:00:00');
+            $offer_timer_str = __post('offer_timer', '60:00:00:00');
             $original_offer_timer_end = __post('original_offer_timer_end', 0);
             
             // Calculate what the current remaining time would be if timer wasn't changed
@@ -376,7 +376,7 @@ if (__post('sub') == 'mo_search') {
 
         } else {
             // Convert offer_timer from DD:HH:MM:SS to timestamp for new car
-            $offer_timer_str = __post('offer_timer', '30:00:00:00');
+            $offer_timer_str = __post('offer_timer', '60:00:00:00');
             $timer_parts = explode(':', $offer_timer_str);
             $timer_seconds = 0;
             if (count($timer_parts) == 4) {

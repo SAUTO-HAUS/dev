@@ -592,7 +592,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                         ?></div>
                     <?php
                     // Calculate remaining time from offer_timer_end if it exists
-                    $timer_display_value = '30:00:00:00';
+                    $timer_display_value = '60:00:00:00';
                     if (!empty($car['offer_timer_end']) && $car['offer_timer_end'] > time()) {
                         $time_remaining = $car['offer_timer_end'] - time();
                         $days = floor($time_remaining / 86400);
@@ -607,12 +607,12 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                     <input class="offer_timer nmb form-control" type="text" name="offer_timer" tabindex="19"
                            value="<?= $timer_display_value ?>"
                            data-original-value="<?= $timer_display_value ?>"
-                           placeholder="30:00:00:00"
+                           placeholder="60:00:00:00"
                            pattern="\d{1,3}:\d{2}:\d{2}:\d{2}"
                            title="<?php 
-                               if ($_COOKIE['lang'] == 'ro') echo 'Format: Zile:Ore:Minute:Secunde (ex: 30:00:00:00)';
-                               elseif ($_COOKIE['lang'] == 'ru') echo 'Формат: Дни:Часы:Минуты:Секунды (пример: 30:00:00:00)';
-                               else echo 'Format: Days:Hours:Minutes:Seconds (ex: 30:00:00:00)';
+                               if ($_COOKIE['lang'] == 'ro') echo 'Format: Zile:Ore:Minute:Secunde (ex: 60:00:00:00)';
+                               elseif ($_COOKIE['lang'] == 'ru') echo 'Формат: Дни:Часы:Минуты:Секунды (пример: 60:00:00:00)';
+                               else echo 'Format: Days:Hours:Minutes:Seconds (ex: 60:00:00:00)';
                            ?>">
                     <!-- Hidden field to store the original offer_timer_end -->
                     <input type="hidden" name="original_offer_timer_end" value="<?= $car['offer_timer_end'] ?? '' ?>">
