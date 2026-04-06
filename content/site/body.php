@@ -285,7 +285,7 @@ if ( !isset($t_mp[2]) || $t_mp[2]==''){
 		</div>';
 }
 
-if ( !isset($t_mp[2]) || $t_mp[2]=='' || ( ($t_mp[2]=='cars' || $t_mp[2]=='tyres' || $t_mp[2]=='rent') && (!isset($t_mp[3]) || $t_mp[3]=='' || ($t_mp[2]=='cars' && isset($t_mp[3]))) ) ){ include(_SITE_INCL.'/filter.php'); }
+if ( !isset($t_mp[2]) || $t_mp[2]=='' || ( ($t_mp[2]=='cars' || $t_mp[2]=='tyres' || $t_mp[2]=='rent') && (!isset($t_mp[3]) || $t_mp[3]=='' || ($t_mp[2]=='cars' && isset($t_mp[3]) && !is_numeric($t_mp[3]))) ) ){ include(_SITE_INCL.'/filter.php'); }
 elseif ( $t_mp[2]=='ordercars' && (!isset($t_mp[3]) || $t_mp[3]=='' || !is_numeric($t_mp[3])) ){ include(_SITE_INCL.'/order_filter.php'); }
 ?>
 
