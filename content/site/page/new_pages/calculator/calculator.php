@@ -243,7 +243,7 @@ for ($y = $current_year; $y >= 1990; $y--) {
             </div>
             <!-- Banner under calculator -->
             <a href="/<?php echo $current_lang; ?>/ordercars" class="calc-banner">
-                <div class="calc-banner-image" style="background-image:url('/content/site/page/new_pages/calculator/calculator-media/calc-img-2.jpg');"></div>
+                <div class="calc-banner-image" style="background-image:url('/content/site/page/new_pages/calculator/calculator-media/calc-img-f-2.jpg');"></div>
                 <div class="calc-banner-content">
                     <h3 class="calc-banner-title"><?php echo $t['banner_title']; ?></h3>
                     <span class="calc-banner-btn"><?php echo $t['banner_btn']; ?></span>
