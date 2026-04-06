@@ -943,13 +943,42 @@ $(".numInput").keydown(function (e) {
 //$("img").on("contextmenu",function(){ return false; }); Block context for imgs
 
 $(document).keyup(function (e) {
-    if(!e) e = window.event; 
-    var keyCode = e.which || e.keyCode 
-    
+    if(!e) e = window.event;
+    var keyCode = e.which || e.keyCode
+
     if (keyCode  == 44) {
 		//$('body').css('display','none');
 		//location.reload();
 		// window.location.replace("http://sauto.md?blip");
+    }
+
+    if (keyCode == 37 || keyCode == 39) {
+        var it = $("main > .pht_bx > .list > .phts > .item");
+        var bP = $('main > .pht_bx > .big_pht');
+        if (it.length === 0 || bP.length === 0) return;
+
+        var dataPos = bP.data("pos");
+        var dataCnt = bP.data("cnt");
+        if (!dataCnt || dataCnt < 2) return;
+
+        if (keyCode == 37) {
+            dataPos = dataPos > 1 ? dataPos - 1 : dataCnt;
+        } else {
+            dataPos = dataPos < dataCnt ? dataPos + 1 : 1;
+        }
+
+        var newIt = $("main > .pht_bx > .list > .phts > .item[data-pos='" + dataPos + "']");
+        var dataSrc = newIt.attr("src").replace("/med/", "/high/");
+
+        it.removeClass("act"); newIt.addClass("act");
+        bP.css("background-image", "url(" + dataSrc + ")").data({"pos": dataPos, "src": dataSrc});
+
+        if ($('#show_img').hasClass('act')) {
+            $('#show_img').css('background-image', 'url(' + dataSrc + ')');
+            $('#show_img > .status').text(dataPos + ' / ' + dataCnt);
+        }
+
+        resizer();
     }
 });
 
