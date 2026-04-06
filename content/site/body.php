@@ -259,7 +259,7 @@ if ( in_array($_cur_page, $_show_links_pages) && ($_cur_page != 'services' || $_
 ?>
 <div id="nav_links">
     <a href="/<?php echo $_COOKIE['lang']; ?>/calculator">
-        <div class="img" style="background-image:url(/media/images/links/link-calc.jpg);"></div>
+        <div class="img" style="background-image:url(/media/images/links/link-calc2.jpg);"></div>
         <span class="ttl"><?php echo $lng['p']['services']['calc_customs']['name']; ?></span>
     </a>
     <a href="/<?php echo $_COOKIE['lang']; ?>/tradein">
