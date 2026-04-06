@@ -255,7 +255,8 @@ echo '
 $_show_links_pages = ['', 'cars', 'ordercars', 'services', 'calculator'];
 $_cur_page = isset($t_mp[2]) ? $t_mp[2] : '';
 $_on_services_main = ($_cur_page == 'services' && (!isset($t_mp[3]) || $t_mp[3] == ''));
-if ( in_array($_cur_page, $_show_links_pages) && ($_cur_page != 'services' || $_on_services_main) ):
+$_hide_nav_on_mobile = $isMobile == '1' && in_array($_cur_page, ['cars', 'ordercars', 'services']);
+if ( in_array($_cur_page, $_show_links_pages) && ($_cur_page != 'services' || $_on_services_main) && !$_hide_nav_on_mobile ):
 ?>
 <div id="nav_links">
     <a href="/<?php echo $_COOKIE['lang']; ?>/calculator">
@@ -283,6 +284,18 @@ if ( !isset($t_mp[2]) || $t_mp[2]==''){
     }
     echo '
 		</div>';
+}
+
+if ($isMobile == '1') {
+    $_m_cur_page = isset($t_mp[2]) ? $t_mp[2] : '';
+    $_m_show_nav = in_array($_m_cur_page, ['cars', 'ordercars', 'services']) && (!isset($t_mp[3]) || $t_mp[3] == '');
+    if ($_m_show_nav) {
+        echo '<div id="mob_nav_links">';
+        echo '<a href="/'.$_COOKIE['lang'].'/calculator">'.$lng['p']['services']['calc_customs']['name'].'</a>';
+        echo '<a href="/'.$_COOKIE['lang'].'/tradein">'.$lng['p']['services']['tradein']['name'].'</a>';
+        echo '<a href="/'.$_COOKIE['lang'].'/services/order">'.$lng['p']['services']['order']['name'].'</a>';
+        echo '</div>';
+    }
 }
 
 if ( !isset($t_mp[2]) || $t_mp[2]=='' || ( ($t_mp[2]=='cars' || $t_mp[2]=='tyres' || $t_mp[2]=='rent') && (!isset($t_mp[3]) || $t_mp[3]=='' || ($t_mp[2]=='cars' && isset($t_mp[3]) && !is_numeric($t_mp[3]))) ) ){ include(_SITE_INCL.'/filter.php'); }

@@ -80,6 +80,8 @@
 
   #nav_links {display:flex; flex-flow:row nowrap; gap:1rem; margin-top:1.5rem; margin-bottom: 0; z-index:1;}
   body > .fltr.f_car {margin-top:0;}
+
+  #mob_nav_links {display:none;}
   #nav_links > a {flex:1; position:relative; border-radius:1rem; overflow:hidden; display:block; aspect-ratio:640/427; max-height:160px;}
   #nav_links > a > .img {position:absolute; inset:0; background-size:cover; background-position:center; background-repeat:no-repeat; transition:transform 0.3s;}
   #nav_links > a:hover > .img {transform:scale(1.05);}
@@ -2498,6 +2500,10 @@ footer .columns-wrapper .column-container.col-logo-container {
       #nav_links {gap:.75rem; padding:0 .8rem !important; flex-direction:column; }
       #nav_links > a {aspect-ratio:16/4; max-height:none;}
       #nav_links > a > .ttl {font-size:1.3rem; padding:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; text-align:center;}
+
+      #mob_nav_links {display:flex; flex-direction:column; gap:.6rem; padding:.8rem .8rem 0; width:100%; box-sizing:border-box;}
+      #mob_nav_links > a {display:flex; align-items:center; justify-content:center; background:#e2001a; color:#fff; font-size:1rem; font-weight:600; text-align:center; padding:.85rem 1rem; border-radius:.5rem; text-decoration:none; transition:background .2s;}
+      #mob_nav_links > a:hover {background:#c40017;}
 
 
       #crumbs {
