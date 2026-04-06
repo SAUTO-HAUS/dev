@@ -252,17 +252,8 @@ for ($y = $current_year; $y >= 1990; $y--) {
 
         </div>
 
-        <!-- Right: Bitrix24 Form + promo block (30%) -->
+        <!-- Right: promo block + order block + Bitrix24 Form (30%) -->
         <div class="calc-page-right">
-            <div class="calc-bitrix-wrap">
-            <script data-b24-form="inline/10/rh1qfd" data-skip-moving="true">
-                (function(w,d,u){
-                    var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
-                    var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-                })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_10.js');
-            </script>
-            </div>
-
             <div class="calc-promo-block">
                 <div class="calc-promo-image" style="background-image:url('/content/site/page/new_pages/calculator/calculator-media/calc-img-1.jpg');">
                     <div class="calc-promo-text">
@@ -279,6 +270,15 @@ for ($y = $current_year; $y >= 1990; $y--) {
                 <h3 class="calc-order-title"><?php echo $t['order_title']; ?></h3>
                 <p class="calc-order-subtitle"><?php echo $t['order_subtitle']; ?></p>
                 <a href="/<?php echo $current_lang; ?>/services/order" class="calc-order-btn"><?php echo $t['order_btn']; ?></a>
+            </div>
+
+            <div class="calc-bitrix-wrap">
+            <script data-b24-form="inline/10/rh1qfd" data-skip-moving="true">
+                (function(w,d,u){
+                    var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
+                    var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
+                })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_10.js');
+            </script>
             </div>
         </div>
 

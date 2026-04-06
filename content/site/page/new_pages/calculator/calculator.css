@@ -447,7 +447,7 @@
 
 /* ── Promo block ─────────────────────────────────── */
 .calc-promo-block {
-    margin-top: 1.25rem;
+    margin-top: 3.8rem;
     border-radius: 14px;
     overflow: hidden;
     box-shadow: 0 2px 12px rgba(0,0,0,0.08);
@@ -617,7 +617,7 @@
 }
 
 .calc-bitrix-wrap {
-    margin-top: 1.8rem;
+    margin-top: 0;
 }
 
 /* ── Bitrix form overrides ───────────────────────── */
