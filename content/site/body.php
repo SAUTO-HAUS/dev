@@ -316,7 +316,7 @@ elseif ( $t_mp[2]=='ordercars' && (!isset($t_mp[3]) || $t_mp[3]=='' || !is_numer
     elseif ($t_mp[2]=='rent'&&(!isset($t_mp[3])&&!isset($q_mp[1]))) {include (_SITE_PAGE.'/rent.php');}
     elseif ( in_array( $t_mp[2], $info_arr ) ) {include (_SITE_PAGE.'/information.php');}
     elseif ($t_mp[2]=='contacts') {include (_SITE_PAGE.'/contacts.php');}
-    elseif ($t_mp[2]=='calculator') {include (_SITE_PAGE.'/new_pages/calculator1/calculator.php');}
+    elseif ($t_mp[2]=='calculator') {include (_SITE_PAGE.'/new_pages/calculator/calculator.php');}
     elseif ($t_mp[2]=='telegram') {include (_SITE_PAGE.'/new_pages/telegram/telegram.php');}
 
     elseif ($t_mp[2]=='dev_tools'){
