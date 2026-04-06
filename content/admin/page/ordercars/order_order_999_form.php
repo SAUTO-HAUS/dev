@@ -13,6 +13,14 @@ if (!empty($car['999'])) {
     $offer_types = (new Api999Service())->getSubcategoryOfferTypes(DefaultText::CATEGORY_AUTO, $defaultSubcategory);
 }
 
+if ($new999) {
+    $is_korea = !empty($car['import_country_id']) && $car['import_country_id'] == 41;
+    $is_com = !empty($car['gr']) && $car['gr'] == 'com';
+    $default999AccountId = $is_korea ? 4 : ($is_com ? 2 : 3);
+} else {
+    $default999AccountId = null;
+}
+
 ?>
 
 <form class="main_info" id="main_form_999">
@@ -69,12 +77,7 @@ if (!empty($car['999'])) {
             <select class="account_999_id form-control" <?php if (!$new999) : ?> disabled <?php endif; ?> name="999_api_id" def_text="<?= __('cars.select_subcategory_offer_types') ?>...">
                 <?php if (!empty(Api999Service::API_KEY)) : ?>
                     <?php foreach (Api999Service::API_KEY as $id => $api_key) : ?>
-                        <option value="<?= $id ?>" <?php
-                            $has_saved_id = !empty($car['999_api_id']);
-                            $is_korea = !empty($car['import_country_id']) && $car['import_country_id'] == 41;
-                            $is_com = !empty($car['gr']) && $car['gr'] == 'com';
-                            $default = $is_korea ? 4 : ($is_com ? 2 : 3);
-                            if($has_saved_id && $car['999_api_id'] == $id) : ?> selected <?php elseif(!$has_saved_id && $id == $default) : ?> selected <?php endif; ?>><?= $api_key['name'] ?></option>
+                        <option value="<?= $id ?>" <?php if(($new999 && $id == $default999AccountId) || (!$new999 && !empty($car['999_api_id']) && $car['999_api_id'] == $id)) : ?> selected <?php endif; ?>><?= $api_key['name'] ?></option>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </select>
