@@ -13,8 +13,8 @@ spl_autoload_register(function ($class) {
     }
 });
 
-define('_DOIT', 1);
-define('_DEFAULT', $_SERVER["DOCUMENT_ROOT"].'/content/default');
+defined('_DOIT') or define('_DOIT', 1);
+defined('_DEFAULT') or define('_DEFAULT', $_SERVER["DOCUMENT_ROOT"].'/content/default');
 
 require_once (_DEFAULT.'/defines.php');
 require_once (_DEFAULT.'/functions.php');
@@ -65,6 +65,7 @@ if (__post('tp') == 'adm' || (isset($_GET['tp']) && $_GET['tp'] == 'adm')) {
 
     $user_id = $user['id'];
     $user_login = $user['login'];
+    $user_name = $user['name'];
     $user_type = $user['type'];
     $user_role = $user['role'] ?? $user['type'];
     $user_active = $user['act'];
@@ -81,6 +82,8 @@ if (__post('tp') == 'adm' || (isset($_GET['tp']) && $_GET['tp'] == 'adm')) {
     // Gordon (superadmin) always has access
     if ($user_role === 'gordon') {
         // Allow full access for gordon
+    } elseif ($pg === 'crm' && in_array($_POST['fn'] ?? '', ['get_notifications', 'mark_notifications_read'])) {
+        // Notification endpoints accessible to all logged-in users
     } elseif (in_array($user_role, ['publisher', 'publisher_limited']) && in_array($pg, ['docs', 'cars', 'ordercars', 'tyres', 'calculator'])) {
         // Allow access for publisher roles to their permitted modules
     } elseif (!rbac_has_permission($user_role, $pg, 'read')) {
@@ -90,13 +93,16 @@ if (__post('tp') == 'adm' || (isset($_GET['tp']) && $_GET['tp'] == 'adm')) {
     // Special handling for ordercars to use separate ajax folder
     if ($pg === 'ordercars') {
         $ajaxFile = _ADM_AJAX . '/ordercars/order_ajax.php';
+    } elseif ($pg === 'crm' && isset($_GET['section'])) {
+        require _ADM_AJAX . '/crm/analytics_section.php';
+        exit;
     } else {
         $ajaxFile = _ADM_AJAX . '/' . $pg . '/ajax.php';
     }
     if (file_exists($ajaxFile)) {
-        require_once $ajaxFile;
+        require $ajaxFile;
     } else {
-        die('Page not found');
+        die(json_encode(['error'=>'File not found', 'path'=>$ajaxFile]));
     }
 }
 elseif ($_POST['tp']=='ste') {

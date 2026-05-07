@@ -56,12 +56,17 @@ foreach ($pdo as $row){
 	$c_img = mb_strtolower(str_replace("-","_",$c_id.'_'.$c_brand.'_'.$c_model.'_1'));
 	$c_img_folder = str_replace("-","_",mb_strtolower($c_brand));
 	
-	$pdo = $db->prepare('SELECT * FROM '.$prefx.'_photo WHERE `id`= :id AND `main`="1"');
-	$pdo->execute(array( 'id' => $c_id ));
-
-	foreach ($pdo as $row2){
+	$c_photo_name = '';
+	$c_photo_ff = 'jpg';
+	$c_photo_path = $c_path;
+	$pdo2 = $db->prepare('SELECT `name`, `ff`, `path` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id AND `main`="1" LIMIT 1');
+	$pdo2->execute(array( 'it_id' => $c_id ));
+	$row2 = $pdo2->fetch(PDO::FETCH_ASSOC);
+	if ($row2) {
 		$c_photo_name = $row2['name'];
-	;}
+		$c_photo_ff   = !empty($row2['ff']) ? $row2['ff'] : 'jpg';
+		$c_photo_path = $row2['path'];
+	}
 	
 	if($c_hp!='0'){$c_hp = $c_hp.' '.$lang_hp.'<br /><span>'.round($c_hp*0.735,0).' '.$lang_kw.'</span>';}
 	$top_sales = $row['top_sales'] ? '<div class="top-sales" title="Top Sales">'.$lang_top_sales.'</div>' : '';
@@ -75,7 +80,7 @@ foreach ($pdo as $row){
 	<a class="car_box" href="/'.$_COOKIE['lang'].'/'.$page_type.'/'.$c_id.'" title="'.$c_brand_name.' '.$c_model_name.'">
 		<div class="img_container">
 			'.$top_sales.'
-			<img src="/'._CAR_IMG.'/'.$c_path.'/'.$c_id.'/med/'.$c_photo_name.'.jpg" alt="'.$c_brand_name.' '.$c_model_name.'" />
+			<img src="/'._CAR_IMG.'/'.$c_photo_path.'/'.$c_id.'/med/'.$c_photo_name.'.'.$c_photo_ff.'" alt="'.$c_brand_name.' '.$c_model_name.'" />
 			'.$not_av.$soon_text.'
 		</div>
 		

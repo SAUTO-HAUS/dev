@@ -201,15 +201,17 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
             <?php if (!empty($car)) : ?>
                 <input type="hidden" name="id" value="<?= $car['id'] ?>" />
                 <div class="prv imgs ready">
-                    <div class="its bx">
+                    <div class="its bx" data-bx_id="<?= $car['id'] ?>">
                         <?php $photos = (new \App\Db\CarPhoto())->getPhotosByCarId($_GET['id']); ?>
                         <?php foreach ($photos as $i => $p) :
                             $i++; ?>
-                            <div class="it '<?= $p['id'] ?>' f_img ext" data-id="<?= $p['id'] ?>" this_img="/<?= $photo_folder ?>/<?= $p['path'] ?>/<?= $p['it_id'] ?>/high/<?= $p['name'] ?>.jpg" data-n="<?= $i ?>" data-pos="<?= $p['pos'] ?>" style="order:<?= $i ?>;">
+                            <?php $p_ext = !empty($p['ff']) ? '.'.$p['ff'] : '.jpg'; ?>
+                            <div class="it <?= $p['id'] ?> f_img ext" data-id="<?= $p['id'] ?>" this_img="/<?= $photo_folder ?>/<?= $p['path'] ?>/<?= $p['it_id'] ?>/high/<?= $p['name'] . $p_ext ?>" data-n="<?= $i ?>" data-pos="<?= $p['pos'] ?>">
+                                <div class="drag_handle" title="Mută">⠿</div>
                                 <input id="main_img_<?= $p['id'] ?>" type="radio" class="use main_img ext none" name="main_img" value="<?= $p['id'] ?>" data-id="<?= $p['id'] ?>" <?= ($p['main']=='1'?'checked="checked"':'') ?> />
                                 <input id="del_img_<?= $p['id'] ?>" type="checkbox" class="use del_img ext none" name="del_img[]" value="<?= $p['id'] ?>" data-id="<?= $p['id'] ?>" />
                                 <div class="ico ghost"></div>
-                                <img class="img" src="/<?= $photo_folder ?>/<?= $p['path'] ?>/<?= $p['it_id'] ?>/med/<?= $p['name'] ?>.jpg" />
+                                <img class="img" src="/<?= $photo_folder ?>/<?= $p['path'] ?>/<?= $p['it_id'] ?>/med/<?= $p['name'] . $p_ext ?>" />
                                 <div class="nm"><?= $i ?></div>
                                 <label for="main_img_<?= $p['id'] ?>" class="btn do_main photo_action" title="<?= $adm_lang['main_photo'] ?>"></label>
                                 <label for="del_img_<?= $p['id'] ?>" class="btn delete photo_action" title="<?= $adm_lang['delete'] ?>"></label>
@@ -218,12 +220,6 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                     </div>
                     <div class="action">
                         <div class="it download_zip" title="Download ZIP" data-it_id="<?= $car['id'] ?>">ZIP</div>
-                        <!--<div class="it chng_pos" title="'.$lng['w']['chng_pos'].'" data-ttl="'.$lng['w']['acpt_chng'].'" data-txt="'.$lng['w']['acpt'].'" data-it_id="'.$_POST['id'].'">'.$lng['w']['chng_pos'].'</div>-->
-
-                        <div class="it chng_pos" data-it_id="<?= $car['id'] ?>">
-                            <div class="off" title="<?= $lng['w']['chng_pos'] ?>"><?= $lng['w']['chng_pos'] ?></div>
-                            <div class="on" title="<?= $lng['w']['acpt_chng'] ?>"><?= $lng['w']['acpt'] ?></div>
-                        </div>
                     </div>
                 </div>
             <?php endif; ?>

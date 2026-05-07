@@ -1,6 +1,6 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
-
+require_once($_SERVER['DOCUMENT_ROOT'] . '/content/default/includes/contact_form.php');
 include_once('tradein_lang.php');
 
 $current_lang = isset($_COOKIE['lang']) ? $_COOKIE['lang'] : 'ro';
@@ -21,8 +21,8 @@ $current_lang = isset($_COOKIE['lang']) ? $_COOKIE['lang'] : 'ro';
                     <?php echo get_translation('banner_desc', $current_lang, $lng); ?>
                 </div>
             </div>
-            <div class="trade-in__form">
-                <?php echo get_translation('form', $current_lang, $lng); ?>
+            <div class="trade-in__form" style="background:#fff;border-radius:10px;padding:1.5rem;">
+                <?php sauto_contact_form(['lang' => $current_lang, 'source' => 'tradein']); ?>
             </div>
             <div class="trade-in__pic">
                 <img src="/content/site/page/new_pages/tradein/tradein-media/tradein_car.png" alt="Trade In">
@@ -261,8 +261,8 @@ $current_lang = isset($_COOKIE['lang']) ? $_COOKIE['lang'] : 'ro';
                 <?php echo get_translation('form_desc2', $current_lang, $lng); ?>
             </div>
         </div>
-        <div class="trade-in__form">
-            <?php echo get_translation('form', $current_lang, $lng); ?>
+        <div class="trade-in__form" style="background:#fafafa;border-radius:10px;padding:1.5rem;">
+            <?php sauto_contact_form(['lang' => $current_lang, 'source' => 'tradein']); ?>
         </div>
     </div>
 </div>

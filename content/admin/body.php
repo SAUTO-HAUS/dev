@@ -1,13 +1,34 @@
-<?php defined( '_DOIT' ) or die( 'Restricted access' ); ?>
+<?php defined( '_DOIT' ) or die( 'Restricted access' );
+
+// Embed mode: serve only the page content, no admin layout
+if (!empty($_GET['embed']) && isset($i_counts) && $i_counts == 1) {
+    require_once(_ADM_INCL.'/rbac.php');
+    require_once(_ADM_INCL.'/rbac_config.php');
+    $rbac = new RBAC($db, $prefx, $user_id);
+    require_once(_ADM_INCL.'/crm/crm_core.php');
+    echo '<!DOCTYPE html><html lang="'.($_COOKIE['lang']??'ro').'"><head>';
+    echo '<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
+    echo '<link rel="stylesheet" href="/content/default/css/default.css">';
+    echo '<link rel="stylesheet" href="/content/admin/css/style.css">';
+    echo '<link rel="stylesheet" href="/content/admin/include/crm/crm.css">';
+    echo '<style>body{margin:0;padding:0;background:#fff;font-family:"def",sans-serif;}</style>';
+    echo '</head><body>';
+    if (isset($t_mp[3]) && file_exists(_ADM.'/page/'.$t_mp[3].'.php')) {
+        include(_ADM.'/page/'.$t_mp[3].'.php');
+    }
+    echo '</body></html>';
+    exit;
+}
+?>
 
 <head>
 	<?php include(_ADM.'/head.php'); ?>
 </head>
 <body class="ffd">
-	<?php 
+	<?php
 	//alertIt(bin2hex(openssl_random_pseudo_bytes(9)));
 	echo '<div id="to_top" title="'.$lang_to_top.'"></div>';
-	
+
 	if ( isset($i_counts) && $i_counts==1 ){
 		echo '
 		<div id="prev_w_pos">'.$lng['w']['prev_pos'].'</div>
@@ -30,8 +51,13 @@
 					</form>
 					<a class="home" href="'.$site_url.'/'.$_COOKIE['lang'].'" target="_blank">'.$lng['w']['home_page'].'</a>
 				</div>
-				<div class="lng">';
-					foreach($language as $k => $v){ 
+				<div class="lng" style="display:inline-flex;align-items:center;gap:0.3rem;">
+				<div id="crm-bell-wrap" style="position:relative;display:inline-flex;align-items:center;margin-right:0.4rem;cursor:pointer;" onclick="crmBellToggle()">
+					<img src="/content/admin/include/crm/icons/bell.svg" width="20" height="20" style="opacity:0.7;display:block;">
+					<span id="crm-bell-badge" style="display:none;position:absolute;top:-6px;right:-8px;background:#E61E2D;color:#fff;font-size:0.62rem;font-weight:700;border-radius:50%;min-width:18px;height:18px;line-height:18px;text-align:center;padding:0 3px;box-shadow:0 1px 4px rgba(0,0,0,.25);"></span>
+					<div id="crm-bell-dropdown" style="display:none;position:absolute;top:32px;right:0;left:auto;width:340px;max-height:400px;overflow-y:auto;background:#fff;border:1px solid #e8e8e8;border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,.13);z-index:9999;" onclick="event.stopPropagation()"></div>
+				</div>';
+					foreach($language as $k => $v){
 						echo '<a href="/'.$k.$lang_mp.'" class="'.$k.' btn '.($t_mp[1]==$k?'act':'').'" title="'.$v.'">'.strtoupper($k).'</a>';
 					}
 				echo '
@@ -42,7 +68,7 @@
 			<div id="menu-overlay"></div>
 			<div id="menu" class="dev1">';
 				// Use RBAC menu system
-				$current_menu = rbac_update_admin_menu($user_type, $user_role ?? null);
+				$current_menu = rbac_update_admin_menu($user_type, $user_role ?? null, $user_id ?? null);
 				
 				if (!empty($current_menu)) {
 					foreach($current_menu as $k => $ar){

@@ -67,9 +67,9 @@ function car_card_with_slider($v1='', $lmt='4', $zreq=null, $stts='av', $enable_
     foreach ($results as $r) {
         // Get all images for slider (limited to 7 for performance)
         if ($enable_slider) {
-            $pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `main` DESC, `pos` ASC LIMIT 7'); 
+            $pdo2 = $db->prepare('SELECT `name`, `ff` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `main` DESC, `pos` ASC LIMIT 7');
         } else {
-            $pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id AND `main`="1" LIMIT 1'); 
+            $pdo2 = $db->prepare('SELECT `name`, `ff` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id AND `main`="1" LIMIT 1');
         }
         $pdo2->execute([ 'it_id'=>$r['id'] ]); 
         $images = $pdo2->fetchAll(PDO::FETCH_ASSOC);
@@ -212,8 +212,6 @@ function car_card_with_slider($v1='', $lmt='4', $zreq=null, $stts='av', $enable_
  * @return string - HTML for image slider
  */
 function generateImageSliderHTML($images, $car_data, $enable_slider = true) {
-    global $img_frmt;
-    
     if (empty($images)) {
         // No images - show placeholder
         return '<img src="/'._SITE_IMG.'/v2/no_image.svg" alt="car '.$car_data['br_nm'].' '.$car_data['mo_nm'].' id'.$car_data['id'].' no photo" />';
@@ -223,21 +221,19 @@ function generateImageSliderHTML($images, $car_data, $enable_slider = true) {
         // Single image - no slider needed
         $image = $images[0];
         $p_src = '/'._CAR_IMG.'/'.$car_data['p_path'].'/'.$car_data['id'].'/med/';
-        // For order cars (catalog_type = 'on_order'), use .jpg extension instead of $img_frmt
-        $image_extension = (isset($car_data['catalog_type']) && $car_data['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
+        $image_extension = '.'.(!empty($image['ff']) ? $image['ff'] : 'jpg');
         $p_name = $image['name'].$image_extension;
         return '<img src="'.$p_src.$p_name.'" loading="lazy" alt="car '.$car_data['br_nm'].' '.$car_data['mo_nm'].' id'.$car_data['id'].' main photo" />';
     }
-    
+
     // Multiple images - generate slider
     $html = '<div class="product-card-slider" data-lazy-load="pending">';
     $html .= '<div class="product-card-slider__container">';
     $html .= '<div class="product-card-slider__track">';
-    
+
     foreach ($images as $index => $image) {
         $p_src = '/'._CAR_IMG.'/'.$car_data['p_path'].'/'.$car_data['id'].'/med/';
-        // For order cars (catalog_type = 'on_order'), use .jpg extension instead of $img_frmt
-        $image_extension = (isset($car_data['catalog_type']) && $car_data['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
+        $image_extension = '.'.(!empty($image['ff']) ? $image['ff'] : 'jpg');
         $p_name = $image['name'].$image_extension;
         $html .= '<div class="product-card-slider__slide">';
         

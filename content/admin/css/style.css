@@ -409,6 +409,16 @@
   #content_box .prv .it .use.del_img:checked ~ .nm {background-color:var(--clr); color:#fff; animation:blinker 2s infinite;}
   
   #content_box .prv > .action {width:100%; display:flex; flex-flow:row wrap; justify-content:center; margin:1rem 0;}
+
+  #content_box .prv .it .drag_handle {position:absolute; left:50%; transform:translateX(-50%); z-index:4; width:36px; height:36px; background:rgba(0,0,0,0.55); color:#fff; font-size:30px; line-height:44px; text-align:center; border-radius:4px; cursor:move; user-select:none; opacity:0; transition:opacity .15s; pointer-events:none;}
+  #content_box .prv .its.sorting .it:hover .drag_handle {opacity:1; pointer-events:auto;}
+  #content_box .prv .its.sorting .it:hover .drag_handle:hover {background:#FFBD38; color:#000;}
+  body.is-dragging #content_box .prv .its .drag_handle {opacity:0 !important; pointer-events:none !important;}
+  #content_box .prv .it .drag_handle:active {cursor:move; background:#ffaa00; color:#000;}
+  #content_box .prv > .its.sorting {display:flex; flex-flow:row wrap; overflow:hidden;}
+  /* SortableJS states */
+  #content_box .prv .its .sortable-ghost {opacity:0;}
+  #content_box .prv .its .sortable-drag {box-shadow:0 8px 24px rgba(0,0,0,0.5); transform:scale(1.04);}
   
   #zoom_box {width:300px; height:200px; background-color:#000; position:absolute; display:none; z-index:999; background-size:cover; background-repeat:no-repeat; background-position:center; box-sizing:border-box; border:2px solid #aaa;}
   

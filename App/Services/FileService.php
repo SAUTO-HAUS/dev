@@ -16,40 +16,63 @@ class FileService
      */
     public function createImage($tmp_f, $path, $n_nm, $size_cr, $frmt_cr): bool
     {
-        list($w, $h) = getimagesize($tmp_f);
-        $ratio = $h / $w; // Get original photo dimensions
+        $info = @getimagesize($tmp_f);
+        if (!$info) { @unlink($tmp_f); return false; }
+        list($w, $h) = $info;
 
-        foreach ($frmt_cr as $frmt) { // Format loop
-            foreach ($size_cr as $k => $v) { // Size loop
-                $full_path = $path.'/'.$k.'/'.$n_nm.'.'.$frmt; // Create output photo path
-                // Set dimensions for output photo
-                if ( $w > $h ) {
-                    $img_w = $v['sz'];
-                    $img_h = (int)($img_w * $ratio);
-                } elseif ( $w < $h ) {
-                    $img_h = $v['sz'];
-                    $img_w = (int)($img_h / $ratio);
-                } else {
-                    $img_w = $v['sz'];
-                    $img_h = $v['sz'];
-                }
+        // Sort sizes descending so largest is first — we use it as the resize source
+        uasort($size_cr, fn($a, $b) => $b['sz'] <=> $a['sz']);
 
-                $img_new = imagecreatetruecolor($img_w, $img_h); // Create output photo with dimensions above
-                $img_old = imagecreatefromjpeg($tmp_f); // Source photo
-                imagecopyresampled($img_new, $img_old, 0, 0, 0, 0, $img_w, $img_h, $w, $h); // Apply source to output photo
+        $img_src = null;  // loaded lazily, reused for all sizes
+        $src_w = $w;
+        $src_h = $h;
 
-                // Save output photo
-                if ( $frmt == 'jpg' || $frmt == 'jpeg' ) {
-                    imagejpeg($img_new, $full_path, $v['ql']);
-                } elseif ($frmt == 'webp') {
-                    imagewebp($img_new, $full_path, $v['ql']);
-                }
-
-                imagedestroy($img_new);
-                imagedestroy($img_old); // Clear memory
+        foreach ($size_cr as $k => $v) {
+            $dir_path = $path.'/'.$k;
+            if (!file_exists($dir_path)) {
+                mkdir($dir_path, 0755, true);
+                if (file_exists('tmp/index.html')) copy('tmp/index.html', $dir_path.'/index.html');
             }
+
+            $max_dim = max($src_w, $src_h);
+
+            // Source fits in this slot — save directly without resize
+            if ($max_dim <= $v['sz']) {
+                if ($img_src === null) {
+                    $img_src = @imagecreatefromjpeg($tmp_f);
+                    if (!$img_src) { @unlink($tmp_f); return false; }
+                }
+                foreach ($frmt_cr as $frmt) {
+                    $full_path = $dir_path.'/'.$n_nm.'.'.$frmt;
+                    if ($frmt === 'jpg' || $frmt === 'jpeg') imagejpeg($img_src, $full_path, $v['ql']);
+                    elseif ($frmt === 'webp') imagewebp($img_src, $full_path, $v['ql']);
+                }
+                continue;
+            }
+
+            // Need resize
+            if ($img_src === null) {
+                $img_src = @imagecreatefromjpeg($tmp_f);
+                if (!$img_src) { @unlink($tmp_f); return false; }
+            }
+
+            if ($src_w >= $src_h) {
+                $img_new = imagescale($img_src, $v['sz'], -1, IMG_BILINEAR_FIXED);
+            } else {
+                $img_new = imagescale($img_src, -1, $v['sz'], IMG_BILINEAR_FIXED);
+            }
+
+            foreach ($frmt_cr as $frmt) {
+                $full_path = $dir_path.'/'.$n_nm.'.'.$frmt;
+                if ($frmt === 'jpg' || $frmt === 'jpeg') imagejpeg($img_new, $full_path, $v['ql']);
+                elseif ($frmt === 'webp') imagewebp($img_new, $full_path, $v['ql']);
+            }
+
+            imagedestroy($img_new);
         }
-        unlink($tmp_f); // Delete source photo
+
+        if ($img_src) imagedestroy($img_src);
+        unlink($tmp_f);
         return true;
     }
 
@@ -69,70 +92,47 @@ class FileService
         if ($imageInfo === false) {
             return false;
         }
-        
+
         list($w, $h) = $imageInfo;
-        $ratio = $h / $w; // Get original photo dimensions
+        $ratio = $h / $w;
 
-        // Only JPEG format for order cars
-        $frmt_cr = ['jpg'];
+        // Load source ONCE
+        $img_old = @imagecreatefromjpeg($tmp_f);
+        if (!$img_old) {
+            @unlink($tmp_f);
+            return false;
+        }
 
-        foreach ($frmt_cr as $frmt) { // Format loop
-            foreach ($size_cr as $k => $v) { // Size loop
-                $dir_path = $path.'/'.$k;
-                // Create directory if not exists
-                if (!file_exists($dir_path)) {
-                    $mkdir_result = mkdir($dir_path, 0755, true);
-                    error_log("Creating directory: {$dir_path} - " . ($mkdir_result ? 'SUCCESS' : 'FAILED'));
-                    if ($mkdir_result) {
-                        copy('tmp/index.html', $dir_path.'/index.html');
-                    }
-                } else {
-                    error_log("Directory already exists: {$dir_path}");
-                }
-                
-                $full_path = $dir_path.'/'.$n_nm.'.'.$frmt; // Create output photo path
-                
-                // Set dimensions for output photo
-                if ( $w > $h ) {
-                    $img_w = $v['sz'];
-                    $img_h = (int)($img_w * $ratio);
-                } elseif ( $w < $h ) {
-                    $img_h = $v['sz'];
-                    $img_w = (int)($img_h / $ratio);
-                } else {
-                    $img_w = $v['sz'];
-                    $img_h = $v['sz'];
-                }
-
-                $img_new = imagecreatetruecolor($img_w, $img_h); // Create output photo with dimensions above
-                $img_old = imagecreatefromjpeg($tmp_f); // Source photo
-                
-                if ($img_old === false) {
-                    return false;
-                }
-                
-                imagecopyresampled($img_new, $img_old, 0, 0, 0, 0, $img_w, $img_h, $w, $h); // Apply source to output photo
-
-                // Save output photo in JPEG only
-                error_log("Saving JPEG to: {$full_path} with quality: {$v['ql']}");
-                $result = imagejpeg($img_new, $full_path, $v['ql']);
-                error_log("JPEG save result: " . ($result ? 'SUCCESS' : 'FAILED'));
-                
-                if ($result && file_exists($full_path)) {
-                    error_log("File created successfully: {$full_path} (size: " . filesize($full_path) . " bytes)");
-                } else {
-                    error_log("File creation FAILED: {$full_path}");
-                }
-                
-                imagedestroy($img_new);
-                imagedestroy($img_old); // Clear memory
-                
-                if (!$result) {
-                    return false;
+        foreach ($size_cr as $k => $v) {
+            $dir_path = $path.'/'.$k;
+            if (!file_exists($dir_path)) {
+                mkdir($dir_path, 0755, true);
+                if (file_exists('tmp/index.html')) {
+                    copy('tmp/index.html', $dir_path.'/index.html');
                 }
             }
+
+            $full_path = $dir_path.'/'.$n_nm.'.jpg';
+
+            if ($w > $h) {
+                $img_w = $v['sz'];
+                $img_h = (int)($img_w * $ratio);
+            } elseif ($w < $h) {
+                $img_h = $v['sz'];
+                $img_w = (int)($img_h / $ratio);
+            } else {
+                $img_w = $v['sz'];
+                $img_h = $v['sz'];
+            }
+
+            $img_new = imagecreatetruecolor($img_w, $img_h);
+            imagecopyresampled($img_new, $img_old, 0, 0, 0, 0, $img_w, $img_h, $w, $h);
+            imagejpeg($img_new, $full_path, $v['ql']);
+            imagedestroy($img_new);
         }
-        unlink($tmp_f); // Delete source photo
+
+        imagedestroy($img_old);
+        unlink($tmp_f);
         return true;
     }
 }

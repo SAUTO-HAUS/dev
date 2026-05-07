@@ -1,6 +1,8 @@
 <?php defined('_DOIT') or die('Restricted access'); ?>
 
 <?php
+require_once($_SERVER['DOCUMENT_ROOT'] . '/content/default/includes/contact_form.php');
+
 // Include language file
 include_once('order_lang.php');
 
@@ -290,14 +292,12 @@ try {
     </div>
 </section>
 
-<!-- Bitrix24 Form Section -->
+<!-- Contact Form Section -->
 <section class="order-form-section">
-    <script data-b24-form="inline/10/rh1qfd" data-skip-moving="true">
-        (function(w,d,u){
-            var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
-            var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-        })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_10.js');
-    </script>
+    <!-- BITRIX disabled: inline/10/rh1qfd -->
+    <div style="max-width:540px;margin:1rem auto;background:#f0f0f0;border-radius:10px;padding:1.5rem;width:100%;box-sizing:border-box;">
+        <?php sauto_contact_form(['lang' => $current_lang, 'source' => 'order']); ?>
+    </div>
 </section>
 
 <!-- Second Hero Section -->

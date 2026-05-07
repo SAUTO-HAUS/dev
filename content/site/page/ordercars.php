@@ -3,6 +3,8 @@ defined( '_DOIT' ) or die( 'Restricted access' );
 
 use App\Helper\PhoneHelper;
 
+require_once($_SERVER['DOCUMENT_ROOT'] . '/content/default/includes/contact_form.php');
+
 // If this is a 404 page, show 404 content and exit
 if (isset($GLOBALS['page_is_404']) && $GLOBALS['page_is_404'] === true) {
     include(_DEFAULT.'/404.php');
@@ -112,12 +114,6 @@ function getImportCountryName($countryId, $language = 'ro') {
 
 <?php
 
-// Debug log disabled for production
-// file_put_contents('filter_debug.log', "\n\nNew request at: " . date('Y-m-d H:i:s') . "\n", FILE_APPEND);
-// file_put_contents('filter_debug.log', "URL: {$_SERVER['REQUEST_URI']}\n", FILE_APPEND);
-// file_put_contents('filter_debug.log', "Query string: {$_SERVER['QUERY_STRING']}\n", FILE_APPEND);
-// file_put_contents('filter_debug.log', "GET params: " . print_r($_GET, true) . "\n", FILE_APPEND);
-
 // Initialize variables
 $rtrn = '';
 $card = '';
@@ -155,7 +151,7 @@ if (isset($_SERVER['QUERY_STRING'])) {
 
         // Rebuild clean query string
         $query_string = http_build_query($all_params);
-        // file_put_contents('filter_debug.log', "Fixed malformed query string to: {$query_string}\n", FILE_APPEND);
+
     }
 
     // Now parse the cleaned query string
@@ -165,7 +161,7 @@ if (isset($_SERVER['QUERY_STRING'])) {
     }
 
     // Log the corrected parameters
-    // file_put_contents('filter_debug.log', "Corrected GET params: " . print_r($_GET, true) . "\n", FILE_APPEND);
+
 }
 
 // Then handle clean URLs for car filters and single car pages
@@ -507,16 +503,16 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 $chkr_av = 1;
 
                 //Collect photos
-                $pdo = $db->prepare('SELECT `name`, `main` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `pos` ASC');
+                $pdo = $db->prepare('SELECT `name`, `main`, `ff` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `pos` ASC');
                 $pdo->execute(['it_id'=>$r['id']]);
-                $img = [];
-                $i=2;
+                $img = ['all'=>[], 'main'=>'', 'main_ff'=>''];
+                $ii = 1;
                 foreach($pdo as $r2){
-                    if ($r2['main']=='1'){ $img['main'] = $r2['name']; $ii = 1;}else{$ii = $i; $i++;}
-                    $img['all'][$ii] = ['name'=>$r2['name'], 'main'=>$r2['main']];
+                    if ($r2['main']=='1'){ $img['main'] = $r2['name']; $img['main_ff'] = $r2['ff']; }
+                    $img['all'][$ii] = ['name'=>$r2['name'], 'main'=>$r2['main'], 'ff'=>$r2['ff']];
+                    $ii++;
                 }
                 unset($r2, $ii);
-                //if (isset($img['all'])){ ksort($img['all']); }else{ $img = ['all'=>[], 'main'=>'unknown']; }
 
                 $z_stat = '';
                 if ( $r['n_a']==0 && $r['act']==1 ){
@@ -630,17 +626,16 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 foreach($img['all'] as $k => $v){
                     $img_cnt++;
                     $act = ($v['main']=='1') ? 'act' : '';
-                    // For order cars, use .jpg extension instead of $img_frmt
-                    $image_extension = (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
-                    $z_src = '/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/med/'.$v['name'].$image_extension;
-                    $rtrn .= '<img class="item '.$act.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' photo #'.$img_cnt.'" data-pos="'.$k.'" src="'.$z_src.'" width="100%" height="auto" />';
+                    $v_ext = !empty($v['ff']) ? '.'.$v['ff'] : $img_frmt;
+                    $z_src_med  = '/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/med/'.$v['name'].$v_ext;
+                    $z_src_high = '/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/high/'.$v['name'].$v_ext;
+                    $rtrn .= '<img class="item '.$act.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' photo #'.$img_cnt.'" data-pos="'.$k.'" data-high="'.$z_src_high.'" src="'.$z_src_med.'" width="100%" height="auto" />';
                 }
                 $rtrn .= '
                                 </div>
                             </div>';
-                // For order cars, use .jpg extension instead of $img_frmt
-                $image_extension = (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
-                $z_src = isset($img['main'])?'/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/high/'.$img['main'].$image_extension:'';
+                $main_ext = !empty($img['main_ff']) ? '.'.$img['main_ff'] : $img_frmt;
+                $z_src = isset($img['main'])?'/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/high/'.$img['main'].$main_ext:'';
                 //$z_src = (@getimagesize($site_url.$z_src)?$z_src:'');
                 $rtrn .= '<div class="big_pht" role="img" aria-label="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' large photo" data-pos="1" data-cnt="'.$img_cnt.'" style="background-image:url('.$z_src.');" data-src="'.$z_src.'"></div>';
                 $rtrn .= '</div>';
@@ -1016,9 +1011,8 @@ $iconTelegramParams = array(
                 $p1Value = (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') ? 'ordercars' : 'cars';
                 $pdo = $db->prepare('SELECT * FROM ' . $prefx . '_seo2 WHERE `it_id`=:it_id AND `tp`="item" AND `p1`=:p1 AND lng = :lng LIMIT 1');
                 $pdo->execute(['it_id' => $r['id'], 'p1' => $p1Value, 'lng' => $_COOKIE['lang']]);
-                $rseo = $pdo->fetch();
-                // var_dump( $rseo);
-                $rseo['params_html'] = (html_entity_decode($rseo['params_html']));
+                $rseo = $pdo->fetch() ?: [];
+                $rseo['params_html'] = isset($rseo['params_html']) ? html_entity_decode($rseo['params_html']) : '';
 
                 $bnt_params_mobile = '  ';
                 $bnt_params_desktop = '  ';
@@ -1040,52 +1034,7 @@ $iconTelegramParams = array(
                                 
                                 <a class="btn call" href="tel:'.$dynamicPhone.'">'.$lng['w']['call'].'</a>
                                 
-                                <div class="btn msg2" onclick="openBitrixFormPopup()" style="line-height:3rem; padding-top:0; padding-bottom:0;">'.$lng['w']['message'].'</div>
-                                
-                                <!-- Bitrix Form Popup -->
-                                <div id="bitrix-form-popup" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:9999; align-items:center; justify-content:center;">
-                                    <div style="position:relative; background:#fff; padding:2rem; border-radius:1rem; max-width:600px; width:90%; max-height:90vh; overflow-y:auto;">
-                                        <button onclick="closeBitrixFormPopup()" style="position:absolute; top:0.2rem; right:0.2rem; background:#e2001a; color:#fff; border:none; width:30px; height:30px; border-radius:50%; cursor:pointer; font-size:20px; line-height:1;">×</button>
-                                        <div id="bitrix-form-container">
-                                            ';
-                                // Determine which form to use based on language
-                                if ($_COOKIE['lang'] == 'ro') {
-                                    $formId = 'inline/26/8tdsm4';
-                                    $loaderId = '26';
-                                } elseif ($_COOKIE['lang'] == 'en') {
-                                    $formId = 'inline/16/h3xj6k';
-                                    $loaderId = '16';
-                                } else { // ru (default)
-                                    $formId = 'inline/10/rh1qfd';
-                                    $loaderId = '10';
-                                }
-                                $rtrn .= '
-                                            <script data-b24-form="'.$formId.'" data-skip-moving="true">
-(function(w,d,u){
-var s=d.createElement(\'script\');s.async=true;s.src=u+\'?\'+(Date.now()/180000|0);
-var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
-})(window,document,\'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_'.$loaderId.'.js\');
-</script>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <script>
-                                function openBitrixFormPopup() {
-                                    document.getElementById(\'bitrix-form-popup\').style.display = \'flex\';
-                                    document.body.style.overflow = \'hidden\';
-                                }
-                                function closeBitrixFormPopup() {
-                                    document.getElementById(\'bitrix-form-popup\').style.display = \'none\';
-                                    document.body.style.overflow = \'auto\';
-                                }
-                                // Close on outside click
-                                document.getElementById(\'bitrix-form-popup\').addEventListener(\'click\', function(e) {
-                                    if (e.target.id === \'bitrix-form-popup\') {
-                                        closeBitrixFormPopup();
-                                    }
-                                });
-                                </script>
+                                <div class="btn msg2" onclick="openOrdercarContactModal()" style="line-height:3rem; padding-top:0; padding-bottom:0;">'.$lng['w']['message'].'</div>
  
                                 
 
@@ -1759,3 +1708,21 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
 }
 
 echo $rtrn;
+
+// Ordercar contact modal
+$_oc_lang = $_COOKIE['lang'] ?? 'ro';
+ob_start();
+sauto_contact_form(['lang' => $_oc_lang, 'source' => 'ordercars']);
+$_oc_form = ob_get_clean();
+echo '
+<div id="ordercar-contact-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center;" onclick="if(event.target===this)closeOrdercarContactModal()">
+    <div style="position:relative;background:#fff;padding:2rem;border-radius:12px;max-width:520px;width:90%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+        <button onclick="closeOrdercarContactModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;color:#aaa;padding:6px;line-height:1;border-radius:50%;transition:color 0.15s,background 0.15s;" onmouseover="this.style.color=\'#E61E2D\';this.style.background=\'#fff0f0\'" onmouseout="this.style.color=\'#aaa\';this.style.background=\'none\'"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        '.$_oc_form.'
+    </div>
+</div>
+<script>
+function openOrdercarContactModal(){document.getElementById("ordercar-contact-modal").style.display="flex";document.body.style.overflow="hidden";}
+function closeOrdercarContactModal(){document.getElementById("ordercar-contact-modal").style.display="none";document.body.style.overflow="";}
+</script>
+';

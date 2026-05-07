@@ -106,6 +106,13 @@ if ( isset($_COOKIE['lang']) ){ // if lang cookie exists that is responsible for
                 exit();
         }
 
+        // Ajax requests — route to ajax.php and exit before HTML output
+        if (isset($t_mp[3]) && $t_mp[3] === 'ajax') {
+            require_once('ajax.php');
+            $db->connection = null;
+            exit();
+        }
+
         echo '
 <!DOCTYPE html>';
         echo '

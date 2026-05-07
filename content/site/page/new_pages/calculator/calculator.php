@@ -1,6 +1,7 @@
 <?php defined('_DOIT') or die('Restricted access'); ?>
 
 <?php
+require_once($_SERVER['DOCUMENT_ROOT'] . '/content/default/includes/contact_form.php');
 include_once('calculator_lang.php');
 
 $current_lang = isset($_COOKIE['lang']) ? $_COOKIE['lang'] : 'ro';
@@ -272,13 +273,9 @@ for ($y = $current_year; $y >= 1990; $y--) {
                 <a href="/<?php echo $current_lang; ?>/services/order" class="calc-order-btn"><?php echo $t['order_btn']; ?></a>
             </div>
 
-            <div class="calc-bitrix-wrap">
-            <script data-b24-form="inline/10/rh1qfd" data-skip-moving="true">
-                (function(w,d,u){
-                    var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
-                    var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-                })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_10.js');
-            </script>
+            <div class="calc-bitrix-wrap" style="margin-top:1rem;background:#f0f0f0;border-radius:10px;padding:1.5rem;box-sizing:border-box;">
+                <!-- BITRIX disabled: inline/10/rh1qfd -->
+                <?php sauto_contact_form(['lang' => $current_lang, 'source' => 'calculator']); ?>
             </div>
         </div>
 

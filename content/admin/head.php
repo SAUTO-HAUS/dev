@@ -21,9 +21,12 @@
 <link rel="stylesheet" type="text/css" href="/<?php e(_ADM)?>/css/style.css?d=<?php echo date("GYimsd", filemtime(_ADM.'/css/style.css')); ?>">
 <link rel="stylesheet" type="text/css" href="/<?php e(_ADM)?>/css/media.css?d=<?php echo date("GYimsd", filemtime(_ADM.'/css/media.css')); ?>">
 <link rel="stylesheet" type="text/css" href="/<?php e(_ADM)?>/css/cars-display-controls.css?d=<?php echo date("GYimsd", filemtime(_ADM.'/css/cars-display-controls.css')); ?>">
+<link rel="stylesheet" type="text/css" href="/<?php e(_ADM_INCL)?>/crm/crm.css?d=<?php echo date("GYimsd", filemtime(_ADM_INCL.'/crm/crm.css')); ?>">
+<link rel="stylesheet" type="text/css" href="/<?php e(_ADM_INCL)?>/crm/crm_media.css?d=<?php echo date("GYimsd", filemtime(_ADM_INCL.'/crm/crm_media.css')); ?>">
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 <script src="/<?php e(_DEFAULT)?>/js/js.cookie.min.js"></script>
 <!--<script type="application/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>-->
 
@@ -54,3 +57,59 @@ if (strpos($current_url, '/mail/') !== false) {
 ?>
 
 <title>Admin</title>
+<script>
+(function() {
+    function crmBellFetch() {
+        fetch('/ajax.php', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:'tp=adm&pg=crm&fn=get_notifications'})
+        .then(r=>r.json()).then(d=>{
+            if (!d.ok) return;
+            var badge = document.getElementById('crm-bell-badge');
+            if (!badge) return;
+            if (d.unread > 0) {
+                badge.textContent = d.unread > 99 ? '99+' : d.unread;
+                badge.style.display = 'block';
+            } else {
+                badge.style.display = 'none';
+            }
+            window._crmNotifItems = d.items || [];
+        }).catch(()=>{});
+    }
+    window.crmBellToggle = function() {
+        var dd = document.getElementById('crm-bell-dropdown');
+        if (!dd) return;
+        if (dd.style.display === 'none' || !dd.style.display) {
+            dd.style.display = 'block';
+            crmBellRender();
+            fetch('/ajax.php', {method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body:'tp=adm&pg=crm&fn=mark_notifications_read'});
+            document.getElementById('crm-bell-badge').style.display = 'none';
+        } else {
+            dd.style.display = 'none';
+        }
+    };
+    window.crmBellRender = function() {
+        var dd = document.getElementById('crm-bell-dropdown');
+        if (!dd) return;
+        var items = window._crmNotifItems || [];
+        if (!items.length) {
+            dd.innerHTML = '<div style="padding:1.2rem;text-align:center;color:#888;font-size:0.85rem;">Nicio notificare</div>';
+            return;
+        }
+        dd.innerHTML = items.map(function(n) {
+            var time = n.created_at ? n.created_at.substring(11,16) + ' ' + n.created_at.substring(0,10) : '';
+            var bg = n.is_read == 1 ? '#fff' : '#fff8f8';
+            var link = n.lead_id ? ' onclick="window.location=\'/ro/adminsauto/crm/lead?id='+n.lead_id+'\'"' : '';
+            return '<div style="padding:0.85rem 1rem;border-bottom:1px solid #f0f0f0;background:'+bg+';cursor:'+(n.lead_id?'pointer':'default')+';font-size:0.82rem;"'+link+'>'
+                + '<div style="color:#191919;margin-bottom:0.25rem;">'+n.message+'</div>'
+                + '<div style="color:#aaa;font-size:0.72rem;">'+time+'</div>'
+                + '</div>';
+        }).join('');
+    };
+    document.addEventListener('click', function(e) {
+        var wrap = document.getElementById('crm-bell-wrap');
+        var dd = document.getElementById('crm-bell-dropdown');
+        if (dd && wrap && !wrap.contains(e.target)) dd.style.display = 'none';
+    });
+    setTimeout(crmBellFetch, 2000);
+    setInterval(crmBellFetch, 60000);
+})();
+</script>

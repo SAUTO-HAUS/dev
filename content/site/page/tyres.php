@@ -2,6 +2,8 @@
 
 use App\Helper\PhoneHelper;
 
+require_once($_SERVER['DOCUMENT_ROOT'] . '/content/default/includes/contact_form.php');
+
 // If this is a 404 page, show 404 content and exit
 if (isset($GLOBALS['page_is_404']) && $GLOBALS['page_is_404'] === true) {
     include(_DEFAULT.'/404.php');
@@ -137,29 +139,8 @@ if ( !isset($t_mp[3]) ){
 						$o_prc_bl = '';
 					}
 
-                    $form = '<script data-b24-form="click/8/v38vrz" data-skip-moving="true">
-                                (function(w,d,u){
-                                var s=d.createElement(\'script\');s.async=true;s.src=u+\'?\'+(Date.now()/180000|0);
-                                var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
-                                })(window,document,\'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_8.js\');
-                            </script>';
-                    if(! empty($_COOKIE['lang'])){
-                        if($_COOKIE['lang']=='en'){
-                            $form = '<script data-b24-form="click/18/pelh05" data-skip-moving="true">
-                                        (function(w,d,u){
-                                        var s=d.createElement(\'script\');s.async=true;s.src=u+\'?\'+(Date.now()/180000|0);
-                                        var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
-                                        })(window,document,\'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_18.js\');
-                                    </script>';
-                        }elseif($_COOKIE['lang']=='ro'){
-                            $form = '<script data-b24-form="click/28/4qgfkc" data-skip-moving="true">
-                                        (function(w,d,u){
-                                        var s=d.createElement(\'script\');s.async=true;s.src=u+\'?\'+(Date.now()/180000|0);
-                                        var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
-                                        })(window,document,\'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_28.js\');
-                                    </script>';
-                        }
-                    }
+                    // BITRIX disabled: click/8/v38vrz, click/18/pelh05, click/28/4qgfkc
+                    $form = '';
 					
 					$rtrn .= '
 					<div class="prc">
@@ -174,8 +155,8 @@ if ( !isset($t_mp[3]) ){
 					<div class="doit">
 						<a class="btn call" href="tel:'.PhoneHelper::getGeneralPhone().'" title="'.PhoneHelper::formatPhone(PhoneHelper::getGeneralPhone(), 'display').'">'.$lng['w']['call'].'</a>
 						
-						<div class="btn msg2" >
-						'.$form.'
+						<div class="btn msg2" onclick="openTyreContactModal()" style="cursor:pointer;padding-top:0;padding-bottom:0;line-height:3rem;">
+							'.$lng['w']['message'].'
                         </div>
 						
 						<div class="btn msg" style="display: none">
@@ -243,4 +224,22 @@ if ( !isset($t_mp[3]) ){
 }
 
 echo $rtrn;
+
+// Tyre contact modal
+$_tyre_lang = $_COOKIE['lang'] ?? 'ro';
+ob_start();
+sauto_contact_form(['lang' => $_tyre_lang, 'source' => 'tyres']);
+$_tyre_form = ob_get_clean();
+echo '
+<div id="tyre-contact-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center;" onclick="if(event.target===this)closeTyreContactModal()">
+    <div style="position:relative;background:#fff;padding:2rem;border-radius:12px;max-width:520px;width:90%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+        <button onclick="closeTyreContactModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;color:#aaa;padding:6px;line-height:1;border-radius:50%;transition:color 0.15s,background 0.15s;" onmouseover="this.style.color=\'#E61E2D\';this.style.background=\'#fff0f0\'" onmouseout="this.style.color=\'#aaa\';this.style.background=\'none\'"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        '.$_tyre_form.'
+    </div>
+</div>
+<script>
+function openTyreContactModal(){document.getElementById("tyre-contact-modal").style.display="flex";document.body.style.overflow="hidden";}
+function closeTyreContactModal(){document.getElementById("tyre-contact-modal").style.display="none";document.body.style.overflow="";}
+</script>
+';
 ?>

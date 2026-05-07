@@ -15,8 +15,8 @@ $RESPONSE_TIMEOUT   = 10;
 $MAX_RESPONSE_TIME  = 5;        
 $MIN_EXPECTED_CARS  = 10;        
 $ALERT_COOLDOWN_MIN = 30;       
-$LOG_FILE           = $docRoot . '/console/logs/filter_monitor.log';
-$COOLDOWN_FILE      = $docRoot . '/console/logs/filter_monitor_cooldown.txt';
+$LOG_FILE           = $docRoot . '/logs/filter_monitor.log';
+$COOLDOWN_FILE      = $docRoot . '/logs/filter_monitor_cooldown.txt';
 
 $ALERT_EMAILS       = ['vlad@sauto.md', 'botnarenco1996@mail.com'];
 $ALERT_FROM_EMAIL   = 'monitor@sauto.md';

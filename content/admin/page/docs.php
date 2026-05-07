@@ -15,6 +15,7 @@ if (file_exists($cars_translations_file)) {
 	$lng['m']['doc_cat_comanda'] = $cars_translations['doc_cat_comanda'] ?? 'Set de acte auto la comanda';
 	$lng['m']['doc_cat_transport'] = $cars_translations['doc_cat_transport'] ?? 'Transport';
 	$lng['m']['doc_cat_sauto_buyer'] = $cars_translations['doc_cat_sauto_buyer'] ?? 'Sauto cumparator';
+	$lng['m']['doc_owner_manager']  = $cars_translations['doc_owner_manager']  ?? 'Aparține managerului';
 }
 
 //$admin_menu_dev1[$user_type]['docs']
@@ -26,7 +27,7 @@ if ( isset($t_mp[4]) ){
 		if ($user_type=='dev'){
 			$docs_ar = [
 				'cars'=>[
-					($lng['m']['doc_cat_parcare'] ?? 'Set de acte parcare')=>[ 
+					($lng['m']['doc_cat_parcare'] ?? 'Set de acte parcare')=>[
 						'con_plata'=>'Cont de plata'
 					    ,'con_arvon'=>'Contract de arvună'
 						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
@@ -36,14 +37,18 @@ if ( isset($t_mp[4]) ){
 						,'act_compensare'=>'Act de compensare'
 						// ,'vinzare_proc'=>'Contract de vânzare-cumpărare'
 					]
-					,($lng['m']['doc_cat_comanda'] ?? 'Set de acte auto la comanda')=>[
+				]
+				,'ordercars'=>[
+					($lng['m']['doc_cat_comanda'] ?? 'Set de acte auto la comanda')=>[
 						'con_plata'=>'Cont de plata'
 						,'con_arvon_com'=>'Contract de arvună (la comanda)'
 						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
 						,'cesionar'=>'Anexa<br>(Cesiune drept de plată)'
 						,'act_compensare'=>'Act de compensare'
 					]
-					,($lng['m']['doc_cat_transport'] ?? 'Transport')=>[
+				]
+				,'cars_extra'=>[
+					($lng['m']['doc_cat_transport'] ?? 'Transport')=>[
 						'com_transport'=>'Comanda pentru transport'
 						,'invoice'=>'Invoice'
 						,'foaie_parcurs'=>'Foaie de parcurs pentru autocamioane'
@@ -56,41 +61,54 @@ if ( isset($t_mp[4]) ){
 		} elseif ($user_type=='x1'){
 			$docs_ar = [
 				'cars'=>[
-					'sell'=>[ 
+					'sell'=>[
 						'con_intermed'=>'Contract de intermediere'
 					]
 				]
 			];
 		} else {
-			$docs_ar = [
-				'cars'=>[
-					($lng['m']['doc_cat_parcare'] ?? 'Set de acte parcare')=>[ 
-						'con_plata'=>'Cont de plata'
-					    ,'con_arvon'=>'Contract de arvună'
-						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
-						,'cesionar'=>'Anexa (Cesiune drept de plată)'
-						,'act_compensare'=>'Act de compensare'
-						,'con_intermed'=>'Contract de intermediere'
-						,'foaie_parcurs_cars'=>'Foaie de parcurs pentru automobile'
-						// ,'vinzare_proc'=>'Contract de vânzare-cumpărare'
-					]
-					,($lng['m']['doc_cat_comanda'] ?? 'Set de acte auto la comanda')=>[
-						'con_plata'=>'Cont de plata'
-						,'con_arvon_com'=>'Contract de arvună (la comanda)'
-						,'vinzare_avans'=>'Contract de vânzare-cumpărare ( avans )'
-						,'cesionar'=>'Anexa (Cesiune drept de plată)'
-						,'act_compensare'=>'Act de compensare'
-					]
-					,($lng['m']['doc_cat_transport'] ?? 'Transport')=>[
-						'com_transport'=>'Comanda pentru transport'
-						,'invoice'=>'Invoice'
-						,'foaie_parcurs'=>'Foaie de parcurs pentru autocamioane'
-					]
-					,($lng['m']['doc_cat_sauto_buyer'] ?? 'Sauto cumparator')=>[
-						'vinzare_sauto'=>'Contract de vânzare-cumpărare<br>( Sauto cumparator )'
-					]
+			$_docs_crm_stmt = $db->prepare("SELECT crm_access FROM {$prefx}_adm_usr WHERE id=? LIMIT 1");
+			$_docs_crm_stmt->execute([(int)$user_id]);
+			$_docs_crm_access = $_docs_crm_stmt->fetchColumn() ?: null;
+
+			$_docs_cars = [
+				($lng['m']['doc_cat_parcare'] ?? 'Set de acte parcare') => [
+					'con_plata'         => 'Cont de plata',
+					'con_arvon'         => 'Contract de arvună',
+					'vinzare_avans'     => 'Contract de vânzare-cumpărare ( avans )',
+					'cesionar'          => 'Anexa (Cesiune drept de plată)',
+					'act_compensare'    => 'Act de compensare',
+					'con_intermed'      => 'Contract de intermediere',
+					'foaie_parcurs_cars'=> 'Foaie de parcurs pentru automobile',
 				]
 			];
+			$_docs_ordercars = [
+				($lng['m']['doc_cat_comanda'] ?? 'Set de acte auto la comanda') => [
+					'con_plata'     => 'Cont de plata',
+					'con_arvon_com' => 'Contract de arvună (la comanda)',
+					'vinzare_avans' => 'Contract de vânzare-cumpărare ( avans )',
+					'cesionar'      => 'Anexa (Cesiune drept de plată)',
+					'act_compensare'=> 'Act de compensare',
+				]
+			];
+			$_docs_extra = [
+				($lng['m']['doc_cat_transport'] ?? 'Transport') => [
+					'com_transport' => 'Comanda pentru transport',
+					'invoice'       => 'Invoice',
+					'foaie_parcurs' => 'Foaie de parcurs pentru autocamioane',
+				],
+				($lng['m']['doc_cat_sauto_buyer'] ?? 'Sauto cumparator') => [
+					'vinzare_sauto' => 'Contract de vânzare-cumpărare<br>( Sauto cumparator )',
+				],
+			];
+
+			if ($_docs_crm_access === 'order') {
+				$docs_ar = ['ordercars' => $_docs_ordercars, 'cars_extra' => $_docs_extra];
+			} elseif ($_docs_crm_access === 'stock' || $_docs_crm_access === 'pruncul') {
+				$docs_ar = ['cars' => $_docs_cars, 'cars_extra' => $_docs_extra];
+			} else {
+				$docs_ar = ['cars' => $_docs_cars, 'ordercars' => $_docs_ordercars, 'cars_extra' => $_docs_extra];
+			}
 		}
 		
 		
@@ -128,11 +146,10 @@ if ( isset($t_mp[4]) ){
 				#docs > .gr > .categories-row > .tp {min-width:100%;}
 			}
 		</style>
-		<div id="docs">';
-			foreach($docs_ar as $gr => $ar){$rtrn .= '
-				<div class="gr">
-					<div class="gr-title">'.strtoupper($gr).'</div>
-					<div class="categories-row">';
+		<div id="docs">
+			<div class="gr">
+				<div class="categories-row">';
+				foreach($docs_ar as $gr => $ar){
 					foreach($ar as $tp => $ar2){$rtrn .= '
 						<div class="tp collapsed">
 							<div class="tp-header" onclick="this.parentElement.classList.toggle(\'collapsed\')">
@@ -147,10 +164,10 @@ if ( isset($t_mp[4]) ){
 							</div>
 						</div>';
 					}
-				$rtrn .= '
-					</div>
-				</div>';
-			}
+				}
+			$rtrn .= '
+				</div>
+			</div>';
 		$rtrn .= '
 		</div>';
 		
@@ -393,10 +410,58 @@ c/f 1017600006845, c/TVA 0609417</pre>
 			}
 		</style>
 		<script>
+			function crmShowTransactionConfirmInline(docId, onDone) {
+				var _lang = (document.cookie.match(/(?:^|; )lang=([^;]*)/) || [])[1] || "ro";
+				var _tx = {
+					ro: {title: "Tranzacția a fost finalizată?", yes: "Da",  no: "Nu"},
+					ru: {title: "Сделка завершена?",            yes: "Да",  no: "Нет"},
+					en: {title: "Transaction completed?",       yes: "Yes", no: "No"}
+				};
+				var _t = _tx[_lang] || _tx.ro;
+				var overlay = document.createElement("div");
+				overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:99999;display:flex;align-items:center;justify-content:center;";
+				overlay.innerHTML = "<div style=\"background:#fff;border-radius:14px;padding:2rem 2rem 1.5rem;max-width:360px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.22);text-align:center;\">" +
+					"<div style=\"font-size:1.05rem;font-weight:700;color:#191919;margin-bottom:1.2rem;\">" + _t.title + "</div>" +
+					"<div style=\"display:flex;gap:1rem;justify-content:center;\">" +
+					"<button id=\"crm-tc-no\" style=\"flex:1;padding:0.75rem;border:1.5px solid #e5e7eb;background:#fff;border-radius:8px;font-size:0.95rem;font-weight:600;color:#555;cursor:pointer;transition:transform 0.15s;\">" + _t.no + "</button>" +
+					"<button id=\"crm-tc-yes\" style=\"flex:1;padding:0.75rem;background:#E61E2D;border:none;border-radius:8px;font-size:0.95rem;font-weight:700;color:#fff;cursor:pointer;transition:transform 0.15s;\">" + _t.yes + "</button>" +
+					"</div></div>";
+				document.body.appendChild(overlay);
+				overlay.querySelectorAll("button").forEach(function(b){
+					b.addEventListener("mouseenter", function(){ this.style.transform = "scale(1.05)"; });
+					b.addEventListener("mouseleave", function(){ this.style.transform = ""; });
+				});
+				function doChoice(txStatus) {
+					document.getElementById("crm-tc-yes").disabled = true;
+					document.getElementById("crm-tc-no").disabled  = true;
+					fetch("/ajax.php", {
+						method: "POST",
+						headers: {"Content-Type": "application/x-www-form-urlencoded"},
+						body: "tp=adm&pg=crm&fn=set_doc_tx_status&id=" + docId + "&tx_status=" + txStatus
+					}).then(function(){ document.body.removeChild(overlay); if (onDone) onDone(); });
+				}
+				document.getElementById("crm-tc-yes").addEventListener("click", function(){ doChoice("closed"); });
+				document.getElementById("crm-tc-no").addEventListener("click",  function(){ doChoice("transaction"); });
+			}
+		</script>
+		<script>
 			$(document).ready(function(){
 				var reqType = "adm";
 				var reqPage = "docs";
-				
+
+				// Show transaction confirm popup after document creation (crm_confirm=docId in URL)
+				(function(){
+					var urlParams = new URLSearchParams(window.location.search);
+					var confirmId = parseInt(urlParams.get("crm_confirm") || 0);
+					if (confirmId) {
+						// Clean URL without reload
+						history.replaceState(null, "", window.location.pathname);
+						crmShowTransactionConfirmInline(confirmId, function() {
+							window.location.reload();
+						});
+					}
+				})();
+
 				// Check if we need to keep buttons visible after reload
 				var keepVisible = localStorage.getItem("keepButtonsVisible");
 				var scrollPosition = localStorage.getItem("docsScrollPosition");
@@ -435,6 +500,10 @@ c/f 1017600006845, c/TVA 0609417</pre>
 				})
 				
 				$(".docs > .find.user input[type=\"submit\"]").on("click", function(){})
+
+				$(document).on("click", ".docs > .list > .bx > .btns > .btn input[type=\"checkbox\"]", function(e){
+					e.stopPropagation();
+				});
 				
 				$(document).on("input", ".docs > .find input.srch", function(){
 					var srchV = $(this).val().toLowerCase().replace("ă","a").replace("â","a").replace("î","i").replace("ș","s").replace("ț","t").replace("_"," ");
@@ -459,7 +528,6 @@ c/f 1017600006845, c/TVA 0609417</pre>
 						else if ( $.inArray( fn, ["show_it", "save_pdf", "print_it", "edit_it"] ) !== -1 ){ //other button pressed
 							
 							if ( fn=="show_it" || fn=="print_it" || fn=="save_pdf" ){
-								if (e.target !== this){ return; }
 								if ( $("#content > .tmp_form").length ){ $("#content > .tmp_form").remove(); } //remove old one form
 								$("#content").prepend("<form class=\"tmp_form none\" target=\"_blank\" method=\"POST\" action=\"/'._ADM_INCL.'/docs_print.php\" novalidate></form>"); //add new one form to html
 								$("#content > .tmp_form").html("" //add html to the form
@@ -682,7 +750,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 							if ( fn=="show_it" || fn=="print_it" || fn=="save_pdf" ){
 								if ( $(this).find("input[name=\"stamp\"]").is(":checked") ){ base.find("input[name=\"stamp\"]").prop("checked", true); }
 								if ( $(this).find("input[name=\"usr_stamp\"]").is(":checked") ){ base.find("input[name=\"usr_stamp\"]").prop("checked", true); }
-								base.find("input[type=\"submit\"]").trigger("click");
+								base[0].submit();
 							}
 						}
 						
@@ -748,21 +816,32 @@ c/f 1017600006845, c/TVA 0609417</pre>
 							
 							// Close the overlay
 							$("#overlay").hide();
-							
+
+							// Popup for vinzare_avans on edit
+							var _editDocF  = data["inp"]["doc_f"]  || "";
+							var _editDocGr = data["inp"]["doc_gr"] || "";
+							var _editDocId = parseInt(data["inp"]["id"] || 0);
+							var _editTxStatus = $(".docs > .list > .bx[data-id=\""+_editDocId+"\"] .values").data("tx_status") || "";
+							if (_editDocF === "vinzare_avans" && (_editDocGr === "cars" || _editDocGr === "ordercars") && _editDocId && _editTxStatus !== "closed") {
+								crmShowTransactionConfirmInline(_editDocId, function() {
+									if (dateChanged && newYear) { window.location.href = window.location.pathname + "?year=" + newYear; return; }
+									window.location.reload();
+								});
+								return;
+							}
+
 							// If date changed, always redirect to the new year
 							if (dateChanged && newYear) {
 								var currentUrl = window.location.search;
 								if (currentUrl.indexOf("date_from=") !== -1 || currentUrl.indexOf("date_to=") !== -1) {
-									// On date range filter - redirect to new year
 									window.location.href = window.location.pathname + "?year=" + newYear;
 									return;
 								} else {
-									// Always redirect to the new year filter when date changes
 									window.location.href = window.location.pathname + "?year=" + newYear;
 									return;
 								}
 							}
-							
+
 							// Normal reload if date did not change
 							window.location.reload();
 						}
@@ -1017,7 +1096,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 					}
 				}
 				$br_mo_vin = '';
-					if ( isset($inf['br']) && strpos($inf['br'], '||') !== false && strpos($inf['mo'], '||') !== false ){
+					if ( isset($inf['br']) && isset($inf['mo']) && strpos($inf['br'], '||') !== false && strpos($inf['mo'], '||') !== false ){
 						$br_ar = explode('||', $inf['br']); $mo_ar = explode('||', $inf['mo']); if ( strpos($inf['vin'], '||') !== false ){ $vin_ar = explode('||', $inf['vin']); }
 						foreach ($br_ar as $k => $v){
 							if ( isset($mo_ar[$k]) ){
@@ -1087,8 +1166,9 @@ c/f 1017600006845, c/TVA 0609417</pre>
 							'.(isset($inf['kyc_no_public_function'])?'data-kyc_no_public_function="'.$inf['kyc_no_public_function'].'"':'').' '.(isset($inf['kyc_public_function_deputat'])?'data-kyc_public_function_deputat="'.$inf['kyc_public_function_deputat'].'"':'').' '.(isset($inf['kyc_public_function_judecator'])?'data-kyc_public_function_judecator="'.$inf['kyc_public_function_judecator'].'"':'').' '.(isset($inf['kyc_public_function_guvern'])?'data-kyc_public_function_guvern="'.$inf['kyc_public_function_guvern'].'"':'').' '.(isset($inf['kyc_public_function_primar'])?'data-kyc_public_function_primar="'.$inf['kyc_public_function_primar'].'"':'').' '.(isset($inf['kyc_public_function_partid'])?'data-kyc_public_function_partid="'.$inf['kyc_public_function_partid'].'"':'').' '.(isset($inf['kyc_public_function_consilier'])?'data-kyc_public_function_consilier="'.$inf['kyc_public_function_consilier'].'"':'').'
 							'.(isset($inf['kyc_transaction_personal'])?'data-kyc_transaction_personal="'.$inf['kyc_transaction_personal'].'"':'').' '.(isset($inf['kyc_transaction_family'])?'data-kyc_transaction_family="'.$inf['kyc_transaction_family'].'"':'').' '.(isset($inf['kyc_transaction_company'])?'data-kyc_transaction_company="'.$inf['kyc_transaction_company'].'"':'').' '.(isset($inf['kyc_transaction_resale'])?'data-kyc_transaction_resale="'.$inf['kyc_transaction_resale'].'"':'').' '.(isset($inf['kyc_transaction_commercial'])?'data-kyc_transaction_commercial="'.$inf['kyc_transaction_commercial'].'"':'').' '.(isset($inf['kyc_transaction_transfer'])?'data-kyc_transaction_transfer="'.$inf['kyc_transaction_transfer'].'"':'').'
 							'.(isset($inf['kyc_funds_salary'])?'data-kyc_funds_salary="'.$inf['kyc_funds_salary'].'"':'').' '.(isset($inf['kyc_funds_dividends'])?'data-kyc_funds_dividends="'.$inf['kyc_funds_dividends'].'"':'').' '.(isset($inf['kyc_funds_loan'])?'data-kyc_funds_loan="'.$inf['kyc_funds_loan'].'"':'').' '.(isset($inf['kyc_funds_business'])?'data-kyc_funds_business="'.$inf['kyc_funds_business'].'"':'').' '.(isset($inf['kyc_funds_inheritance'])?'data-kyc_funds_inheritance="'.$inf['kyc_funds_inheritance'].'"':'').' '.(isset($inf['kyc_funds_donations'])?'data-kyc_funds_donations="'.$inf['kyc_funds_donations'].'"':'').'
-							data-u_tp="'.$r['u_tp'].'" 
+							data-u_tp="'.$r['u_tp'].'"
 							data-adm="'.$r['adm'].'" data-last_edited_by="'.($r['last_edited_by'] ?? $r['adm']).'"
+							data-tx_status="'.($r['tx_status'] ?? '').'"
 						></div>
 						<div class="rowz info">
 							<div class="col"><span class="date">'.date( 'd.m.y', strtotime( $r['date'] ) ).'</span></div>
@@ -1098,7 +1178,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 							<div class="col"><span class="prc">'.( isset($inf['prc'])?$inf['prc']:'-' ).'</span></div>
 							<div class="col">'.( $r['f']=='foaie_parcurs' ? (isset($inf['autovehicul'])?$inf['autovehicul']:'') : ($r['f']=='foaie_parcurs_cars' ? $br_mo_vin.( isset($inf['plate'])?' ['.$inf['plate'].']':'' ) : $br_mo_vin) ).'</div>
 							<div class="col">'.($r['f']=='foaie_parcurs' ? (isset($inf['sofer'])?$inf['sofer']:'').', '.(isset($inf['autovehicul'])?$inf['autovehicul']:'') : ($r['f']=='foaie_parcurs_cars' ? (isset($inf['sofer'])?$inf['sofer']:'').', '.(isset($inf['plate'])?$inf['plate']:'') : $br_mo_vin)).'</div>
-							<div class="col">'.( isset($adm_ar[ $r['adm'] ])?$adm_ar[ $r['adm'] ]:$r['adm'] ).'</div>
+							<div class="col">'.( !empty($r['owner_adm']) ? (isset($adm_ar[$r['owner_adm']]) ? $adm_ar[$r['owner_adm']] : $r['owner_adm']) : (isset($adm_ar[$r['adm']]) ? $adm_ar[$r['adm']] : $r['adm']) ).'</div>
 						</div>
 						<input type="radio" name="btns_act" class="none">
 						<div class="btns">
@@ -1367,7 +1447,12 @@ c/f 1017600006845, c/TVA 0609417</pre>
 	});
 	</script>';
 }elseif ( isset($t_mp[5]) ){
-		if ( file_exists(_ADM_INCL.'/docs/'.$t_mp[4].'/'.$t_mp[5].'.php') ){
+		$_doc_gr_val  = $t_mp[4];
+		$_doc_gr_path = in_array($t_mp[4], ['ordercars','cars_extra']) ? 'cars' : $t_mp[4];
+		$_doc_admins_stmt = $db->prepare("SELECT id, name FROM {$prefx}_adm_usr ORDER BY name ASC");
+		$_doc_admins_stmt->execute();
+		$_doc_admins = $_doc_admins_stmt->fetchAll(PDO::FETCH_ASSOC);
+		if ( file_exists(_ADM_INCL.'/docs/'.$_doc_gr_path.'/'.$t_mp[5].'.php') ){
 			$rtrn .= '
 			<style>
 				::placeholder, ::-webkit-input-placeholder {text-align:center;}
@@ -1417,11 +1502,12 @@ c/f 1017600006845, c/TVA 0609417</pre>
 					addressField.focus();
 					return false;
 				}
-				
-				if (form.checkValidity()) {
-					setTimeout(function (){
-						window.location.href = "/"+ Cookies.get("lang") +"/adminsauto/docs/ctlg";
-					}, 1000);
+
+				// For vinzare_avans (cars/ordercars): use _self so PHP redirect with crm_confirm works in main window
+				var docF  = (form.querySelector("input[name=\"doc_f\"]") || {}).value || "";
+				var docGr = (form.querySelector("input[name=\"doc_gr\"]") || {}).value || "";
+				if (docF === "vinzare_avans" && (docGr === "cars" || docGr === "ordercars")) {
+					form.target = "_self";
 				}
 			}
 		});
@@ -1610,6 +1696,66 @@ c/f 1017600006845, c/TVA 0609417</pre>
 					$("#lbl_iban_dt_tk").text("IBAN");
 				}
 			}
+
+			(function(){
+				var params = new URLSearchParams(window.location.search);
+				var crmLeadId = params.get("crm_lead_id") || "";
+				var crmPhone  = params.get("crm_phone") || "";
+				var crmNm     = params.get("crm_nm")    || "";
+				var crmBr     = params.get("crm_br")    || "";
+				var crmMo     = params.get("crm_mo")    || "";
+				if (!crmLeadId && !crmPhone && !crmNm && !crmBr && !crmMo) return;
+				if (crmLeadId) {
+					$(".doc_pg form").append("<input type=\"hidden\" name=\"crm_lead_id\" value=\"" + parseInt(crmLeadId) + "\">");
+				}
+
+				if (crmPhone) {
+					var phnField = $("input[name=\"u_phn\"]");
+					if (phnField.length) phnField.val(crmPhone);
+				}
+				if (crmNm) {
+					var nmField = $("input[name=\"u_nm\"]");
+					if (nmField.length) nmField.val(crmNm);
+				}
+				if (crmBr) {
+					var brSel = $("select[name=\"br\"]");
+					if (brSel.length) {
+						// try match by value (case-insensitive)
+						var brLow = crmBr.toLowerCase();
+						brSel.find("option").each(function(){
+							if ($(this).val().toLowerCase() === brLow || $(this).text().toLowerCase() === brLow) {
+								brSel.val($(this).val()).trigger("change");
+								return false;
+							}
+						});
+						// after brand change, set model
+						if (crmMo) {
+							setTimeout(function(){
+								var moSel = $("select[name=\"mo\"]");
+								var moLow = crmMo.split(" ")[0].toLowerCase();
+								var matched = moSel.find("option").filter(function(){
+									if (!$(this).val()) return false;
+									var v = $(this).val().toLowerCase().split("_").join(" ");
+									var t = $(this).text().toLowerCase().split("_").join(" ");
+									return v === moLow || t === moLow || v.indexOf(moLow) === 0 || t.indexOf(moLow) === 0;
+								}).first();
+								if (matched.length) {
+									moSel.val(matched.val()).trigger("change");
+								}
+							}, 200);
+						}
+					}
+				}
+
+				$(".doc_pg form").prepend(
+					"<div style=\"background:#e8f4fd;border-left:4px solid #2563eb;padding:0.6rem 1rem;margin-bottom:1rem;font-size:0.82rem;border-radius:0 4px 4px 0;\">" +
+					"📋 <strong>Date precompletate din CRM</strong>" +
+					(crmNm           ? " · Client: <strong>" + $("<span>").text(crmNm).html() + "</strong>" : "") +
+					(crmPhone        ? " · Telefon: <strong>" + $("<span>").text(crmPhone).html() + "</strong>" : "") +
+					((crmBr||crmMo)  ? " · Mașina: <strong>" + $("<span>").text((crmBr+" "+crmMo).trim()).html() + "</strong>" : "") +
+					"</div>"
+				);
+			})();
 			});
 			</script>
 			
@@ -1630,9 +1776,9 @@ c/f 1017600006845, c/TVA 0609417</pre>
 				<form target="_blank" method="POST" action="/'._ADM_INCL.'/docs_print.php">
 					<div class="doc_f" style="text-align:center;">'.strtoupper( strtr($t_mp[4].', '.$t_mp[5], '_', ' ') ).'</div>
 					
-					<input type="hidden" name="doc_gr" value="'.$t_mp[4].'" />
+					<input type="hidden" name="doc_gr" value="'.$_doc_gr_val.'" />
 					<input type="hidden" name="doc_f" value="'.$t_mp[5].'" />';
-					
+
 					include(__DIR__.'/../ajax/docs/menu.php');
 					
 					$rtrn .= '
@@ -1642,7 +1788,19 @@ c/f 1017600006845, c/TVA 0609417</pre>
 					<label style="margin:0 0 0 1rem;">Print<input type="checkbox" name="fn" value="print_it" checked="checked" style="accent-color:#e2001a;" /></label>
 					<label style="margin:0 0 0 1rem;">Stampila<input type="checkbox" name="stamp" value="1" style="accent-color:#e2001a;" /></label> <!--checked="checked"-->
 					<label style="margin:0 0 0 1rem;">Stampila client<input type="checkbox" name="usr_stamp" value="1" style="accent-color:#e2001a;" /></label>
-					
+
+					<div style="margin-top:1rem; padding:0.75rem 1rem; background:#f8f8f8; border:1px solid #eee; border-radius:6px;">
+						<div style="font-size:1rem; color:#e2001a; margin-bottom:0.4rem;">'.($lng['m']['doc_owner_manager'] ?? 'Aparține managerului').':</div>
+						<select name="owner_adm" style="width:100% !important; float:none !important; padding:0.4rem 0.75rem; font-size:0.9rem; box-sizing:border-box;">
+							<option value="">— '.htmlspecialchars($user_name ?? 'utilizatorul logat').' (implicit) —</option>';
+							foreach ($_doc_admins as $_da) {
+								$_da_sel = ((int)$_da['id'] === (int)$user_id) ? ' selected' : '';
+								$rtrn .= '<option value="'.htmlspecialchars($_da['id']).'"'.$_da_sel.'>'.htmlspecialchars($_da['name']).'</option>';
+							}
+							$rtrn .= '
+						</select>
+					</div>
+
 					<input type="submit" style="width:100%; margin:1rem 0; padding:1rem; cursor:pointer;" value="Creați fișier" />
 				</form>
 			</div>';

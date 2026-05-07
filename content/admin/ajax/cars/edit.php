@@ -49,10 +49,11 @@ if ( $_POST['sub']=='start' ){//************************************************
 					$i=1;
 					foreach ($pdo as $p){
 						$rtrn .= '
-						<div class="it '.$p['id'].' f_img ext" data-id="'.$p['id'].'" this_img="/'.$photo_folder.'/'.$c_path.'/'.$p['it_id'].'/high/'.$p['name'].(!empty($p['ff'])?'.'.$p['ff']:$img_frmt).'" data-n="'.$i.'" data-pos="'.$p['pos'].'" style="order:'.$i.';">
+						<div class="it '.$p['id'].' f_img ext" data-id="'.$p['id'].'" this_img="/'.$photo_folder.'/'.$c_path.'/'.$p['it_id'].'/high/'.$p['name'].(!empty($p['ff'])?'.'.$p['ff']:$img_frmt).'" data-n="'.$i.'" data-pos="'.$p['pos'].'">
 							<input id="main_img_'.$p['id'].'" type="radio" class="use main_img ext none" name="main_img" value="'.$p['id'].'" data-id="'.$p['id'].'" '.($p['main']=='1'?'checked="checked"':'').' />
 							<input id="del_img_'.$p['id'].'" type="checkbox" class="use del_img ext none" name="del_img[]" value="'.$p['id'].'" data-id="'.$p['id'].'" />
 							<div class="ico ghost"></div>
+							<div class="drag_handle" title="Mută">⠿</div>
 							<img class="img" src="/'.$photo_folder.'/'.$c_path.'/'.$p['it_id'].'/med/'.$p['name'].(!empty($p['ff'])?'.'.$p['ff']:$img_frmt).'" />
 							<div class="nm">'.$i.'</div>
 							<label for="main_img_'.$p['id'].'" class="btn do_main photo_action" title="'.$adm_lang['main_photo'].'"></label>
@@ -64,12 +65,6 @@ if ( $_POST['sub']=='start' ){//************************************************
 				</div>
 				<div class="action">
 					<div class="it download_zip" title="Download ZIP" data-it_id="'.$_POST['id'].'">ZIP</div>
-					<!--<div class="it chng_pos" title="'.$lng['w']['chng_pos'].'" data-ttl="'.$lng['w']['acpt_chng'].'" data-txt="'.$lng['w']['acpt'].'" data-it_id="'.$_POST['id'].'">'.$lng['w']['chng_pos'].'</div>-->
-					
-					<div class="it chng_pos" data-it_id="'.$_POST['id'].'">
-						<div class="off" title="'.$lng['w']['chng_pos'].'">'.$lng['w']['chng_pos'].'</div>
-						<div class="on" title="'.$lng['w']['acpt_chng'].'">'.$lng['w']['acpt'].'</div>
-					</div>
 					
 				</div>
 			</div>

@@ -501,24 +501,23 @@ if ($saveToDb && $carIdForSave > 0) {
     $p1Value = ($typeRow && $typeRow['catalog_type'] === 'on_order') ? 'ordercars' : 'cars';
     
     logAI("Saving to DB", ['car_id' => $carIdForSave, 'p1' => $p1Value]);
-    
+
     foreach ($langs as $lng) {
         $htmlContent = $htmlData[$lng] ?? '';
         if (!empty($htmlContent)) {
-            // Check if record exists
             $stmtCheck = $db->prepare("SELECT id FROM {$prefx}_seo2 WHERE it_id = ? AND tp = 'item' AND p1 = ? AND lng = ? LIMIT 1");
             $stmtCheck->execute([$carIdForSave, $p1Value, $lng]);
             $existingRecord = $stmtCheck->fetch(PDO::FETCH_ASSOC);
-            
+
             if ($existingRecord) {
-                // Update existing record
                 $stmtUpdate = $db->prepare("UPDATE {$prefx}_seo2 SET params_html = ? WHERE id = ?");
                 $stmtUpdate->execute([$htmlContent, $existingRecord['id']]);
             } else {
-                // Insert new record
-                $stmtInsert = $db->prepare("INSERT INTO {$prefx}_seo2 (it_id, tp, p1, lng, params_html) VALUES (?, 'item', ?, ?, ?)");
+                $stmtInsert = $db->prepare("INSERT INTO {$prefx}_seo2 (it_id, tp, p1, p2, qr, lng, ttl, h1, dsc, kwd, txt, params_html) VALUES (?, 'item', ?, '', '', ?, '', '', '', '', '', ?)");
                 $stmtInsert->execute([$carIdForSave, $p1Value, $lng, $htmlContent]);
             }
+        } else {
+            logAI("Skipped $lng - empty content");
         }
     }
 }

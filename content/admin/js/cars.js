@@ -184,7 +184,47 @@ window.addEventListener('load', function() {
 	}
 });
 
+function enablePhotoSortable($bx){
+	if ($bx.data('sortable-instance')) {
+		$bx.data('sortable-instance').destroy();
+	}
+	$bx.addClass('sorting');
+	var instance = Sortable.create($bx[0], {
+		handle: '.drag_handle',
+		draggable: '.it.f_img',
+		animation: 150,
+		ghostClass: 'sortable-ghost',
+		chosenClass: 'sortable-chosen',
+		dragClass: 'sortable-drag',
+		onStart: function(evt){
+			$('body').addClass('is-dragging');
+		},
+		onEnd: function(evt){
+			$('body').removeClass('is-dragging');
+			var pos_img = {};
+			$bx.find('.it.f_img').each(function(i){
+				var n = i + 1;
+				$(this).data('n', n).attr('data-n', n).find('.nm').html(n);
+				pos_img[n] = $(this).data('id');
+			});
+			var data = {};
+			data['tp'] = reqType; data['pg'] = reqPage;
+			data['fn'] = 'edit'; data['sub'] = 'pos_img';
+			data['bx_id'] = $bx.closest('[data-bx_id]').data('bx_id') || $bx.data('bx_id');
+			data['pos_img'] = pos_img;
+			ajaxIt(data);
+		}
+	});
+	$bx.data('sortable-instance', instance);
+}
+function initPhotoSortable(){
+	$('#content_box .prv.ready .its.bx').each(function(){ enablePhotoSortable($(this)); });
+}
+
 $(document).ready(function(){
+	// Initialize sortable on static detail page (car.php)
+	initPhotoSortable();
+
 	// Initialize display limit from localStorage after a short delay
 	setTimeout(function() {
 		initializeDisplayLimit();
@@ -322,63 +362,6 @@ $(document).ready(function(){
 			ajaxIt(data);
 		}
 	})
-	//-----------CHANGE IMG POSITION
-	$(document).on('click', '#content_box .chng_pos:not(".done")', function(){
-		var confirmation = confirm( $(this).children('.off').attr('title')+'?' );
-		if (confirmation){
-			$(this).addClass('done');
-			var bx = $('#content_box .prv > .its.bx'); bx.css({'height':bx.height()});
-			
-			$('.prv.ready .it.f_img').each(function(){ var pos = $(this).position(); $(this).data({'posL':pos.left, 'posT':pos.top}).css({'left':pos.left, 'top':pos.top});}) //.offset()
-				.promise().done(function(){ $('.prv.ready .it.f_img').css('position','absolute').addClass('posing'); })
-			
-			$('#content_box .prv.ready .it.f_img.posing')
-				.draggable({ start:function(){$(this).addClass('dragging');}, revert:'invalid', revertDuration:100, drag:function(){}, stop:function(){$(this).removeClass('dragging');} })
-				.droppable({
-					accept: '.dragging', //accept: function(elem){ return elem.hasClass($(this).attr('title')); }, hoverClass: 'highlight',
-					drop: function(e, ui){
-						var drg = $(ui.draggable), drgN = drg.data('n'), drgL = drg.data('posL'), drgT = drg.data('posT'), drp = $(this), drpN = drp.data('n'), drpL = drp.data('posL'), drpT = drp.data('posT');
-						
-						for(n=1;n<=$('.it.f_img.posing').length;n++){
-							if ( (n>=drpN && n<drgN) || (n>drgN && n<=drpN) ){
-								var el = $('.prv.ready .it.f_img.posing[data-n="'+n+'"]');
-								var s = $('.prv.ready .it.f_img.posing[data-n="'+( drgN>drpN?n+1:n-1 )+'"]'), sN = s.data('n'), sL = s.data('posL'), sT = s.data('posT');
-								el.addClass('chng').data({'xN':sN, 'xL':sL, 'xT':sT}).animate({'left':sL, 'top':sT}, 400);
-								el.children('.nm').html(sN);
-							}
-							
-							if ( (drgN>drpN && n==drgN) || (drgN<drpN && n==drpN) ){
-								$('.it.f_img.posing.chng').each(function(){var el = $(this); el.data({'n':el.data('xN'), 'posL':el.data('xL'), 'posT':el.data('xT')}).attr('data-n', el.data('xN')).css('order', el.data('xN')).removeClass('chng'); })
-								drg.data({'n':drpN, 'posL':drpL, 'posT':drpT}).css({'order':drpN}).attr('data-n',drpN).animate({'left':drpL, 'top':drpT}, 200)
-								drg.children('.nm').html(drpN);
-								return false;
-							}
-						}
-					}
-				})
-				.droppable( 'option', 'tolerance', 'intersect' )
-				.draggable( 'enable' );
-		}
-	}).on('click', '#content_box .chng_pos.done', function(){
-		var confirmation = confirm( $(this).children('.on').attr('title')+'?' );
-		if (confirmation){
-			$(this).removeClass('done');
-			$('.prv > .its.bx').css({'height':'auto'});
-			$('.it.f_img.posing').draggable( 'disable' ).css({'position':'unset'}).removeClass('posing');
-
-			var data = {};
-			data['tp'] = reqType;
-			data['pg'] = reqPage;
-			data['fn'] = 'edit';
-			data['sub'] = 'pos_img';
-			data['bx_id'] = $(this).data('it_id');
-			data['pos_img'] = {};
-			$('#content_box .prv.ready .it.f_img').each(function(){
-				data['pos_img'][$(this).data('n')] = $(this).data('id');
-			})
-			ajaxIt(data);
-		}
-	})
 	
 	//-----------------------------MORE_BUTTON
 	$(document).on('click', '#more_it', function(){
@@ -410,14 +393,14 @@ $(document).ready(function(){
 	$(document).on('submit', '#sautoForm', async function (event) {
 		event.preventDefault();
 
-		let bx_id = $(this).closest('.bx').data('bx_id');
+		let bx_id = $('#content_box > .bx').data('bx_id');
 
-		let contentBox = $('.id_' + bx_id);
+		let contentBox = $('#content_box > .bx');
 		let $form = $('#sautoForm');
 
-		let main_img = $('#content_box > .id_'+bx_id+' input.main_img:checked').val();
+		let main_img = $('#content_box > .bx input.main_img:checked').val();
 		let del_img = [];
-		$('#content_box > .id_'+bx_id+' .del_img:checked').each(function(){
+		$('#content_box > .bx .del_img:checked').each(function(){
 			del_img.push($(this).val());
 		});
 
@@ -433,17 +416,21 @@ $(document).ready(function(){
 			data.append('del_img', del_img);
 
 			let carId = await ajaxCarImg(fileInput, data);
-			
-			// Always trigger AI generation - PHP will skip if car already has description
-			if (carId) {
-				localStorage.setItem('pending_ai_generation', JSON.stringify({
-					car_id: carId,
-					pg: 'cars',
-					timestamp: Date.now()
-				}));
-				console.log('AI generation scheduled for car ID:', carId);
+
+			if (!carId) {
+				console.error('ajaxCarImg failed, staying on page');
+				$(confirmButton).removeClass('disabled').removeAttr('disabled').text($(confirmButton).data('origin'));
+				$('body').removeClass('ajx');
+				return false;
 			}
-			
+
+			// Always trigger AI generation - PHP will skip if car already has description
+			localStorage.setItem('pending_ai_generation', JSON.stringify({
+				car_id: carId,
+				pg: 'cars',
+				timestamp: Date.now()
+			}));
+
 			finishProcess(confirmButton);
 		}
 	}).on('submit', '#main_form_999', async function (event) {
@@ -853,7 +840,6 @@ $(document).ready(function(){
 	setInterval(function() {
 		if ($('#confirm_rules').length && !$('#confirm_rules').is(':checked')) {
 			$('#confirm_rules').prop('checked', true);
-			console.log(' Forțat confirm_rules să rămână bifat');
 		}
 	}, 100);
 	
@@ -1390,6 +1376,7 @@ function ajaxSuccessCars(data){
 			$('#status_bar').css('width','0');
 			$('#content_box').prepend(data.rtrn).addClass('act');
 			$('#main_admin').addClass('no_active');
+			initPhotoSortable();
 		}
 	
 		//------------------------------------- ADD NEW
@@ -1633,12 +1620,8 @@ $(document).on('change', 'select[name="br"], select[name="br_search"]', function
 
 // Display limit functionality
 function initializeDisplayLimit() {
-	console.log('Initializing display limit...');
-	
 	// Check if dropdown exists
 	if ($('#cars-display-limit').length === 0) {
-		console.log('Dropdown not found, retrying in 200ms...');
-		setTimeout(initializeDisplayLimit, 200);
 		return;
 	}
 	

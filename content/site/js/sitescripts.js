@@ -848,64 +848,68 @@ $(window).resize(function() {
 	resizer();
 });
 
-$("main > .pht_bx > .list > .phts > .item").on("click", function(){
-	var it = $("main > .pht_bx > .list > .phts > .item");
-	var dataPos = $(this).data("pos"); var dataSrc = $(this).attr("src").replace("/med/", "/high/");
-	
+$(document).on("click", "main > .pht_bx > .list > .phts > .item", function(){
+	var $phtBx = $(this).closest('.pht_bx');
+	var it = $phtBx.find('.list .phts .item');
+	var dataPos = $(this).data("pos");
+	var dataSrc = $(this).data("high") || $(this).attr("src").replace("/med/", "/high/");
+
 	it.removeClass("act");
 	$(this).addClass("act");
-	
-	$("main > .pht_bx > .big_pht").css("background-image", "url("+dataSrc+")").data({"pos" : dataPos, "src" : dataSrc});
+
+	$phtBx.find('.big_pht').css("background-image", "url("+dataSrc+")").data({"pos": dataPos, "src": dataSrc});
 })
 
-$('main > .pht_bx > .big_pht').on('click', function(){
-	var it = $("main > .pht_bx > .list > .phts > .item");
+var $activePhtBx = null;
+
+$(document).on('click', 'main > .pht_bx > .big_pht', function(){
+	$activePhtBx = $(this).closest('.pht_bx');
 	var dataPos = $(this).data("pos"); var dataCnt = $(this).data("cnt"); var dataSrc = $(this).data("src");
-	
+
 	$('#show_img').addClass('act').css('background-image','url('+dataSrc+')');
 	$('#show_img > .status').text(dataPos+' / '+dataCnt);
-	
+
 	resizer();
 });
 
 $('#show_img > .left').click(function(){
-	var it = $("main > .pht_bx > .list > .phts > .item");
-	var bP = $('main > .pht_bx > .big_pht');
+	var $phtBx = $activePhtBx || $('main > .pht_bx').first();
+	var it = $phtBx.find('.list .phts .item');
+	var bP = $phtBx.find('.big_pht');
 	var dataPos = bP.data("pos"); var dataCnt = bP.data("cnt");
-	
+
 	if (dataCnt>1){
 		if (dataPos > 1){dataPos--;}else{dataPos=dataCnt;}
-		var newIt = $("main > .pht_bx > .list > .phts > .item[data-pos='"+dataPos+"']");
-		
-		var dataSrc = newIt.attr("src").replace("/med/", "/high/");
-		
+		var newIt = it.filter("[data-pos='"+dataPos+"']");
+		var dataSrc = newIt.data("high") || newIt.attr("src").replace("/med/", "/high/");
+
 		$('#show_img').css('background-image','url('+dataSrc+')');
 		$('#show_img > .status').text(dataPos+' / '+dataCnt);
-		
+
 		it.removeClass("act"); newIt.addClass("act");
-		$("main > .pht_bx > .big_pht").css("background-image", "url("+dataSrc+")").data({"pos" : dataPos, "src" : dataSrc});
-		
+		bP.css("background-image", "url("+dataSrc+")").data({"pos": dataPos, "src": dataSrc});
+
 		resizer();
 	}
 })
 
 $('#show_img > .right').click(function(){
-	var it = $("main > .pht_bx > .list > .phts > .item");
-	var bP = $('main > .pht_bx > .big_pht');
+	var $phtBx = $activePhtBx || $('main > .pht_bx').first();
+	var it = $phtBx.find('.list .phts .item');
+	var bP = $phtBx.find('.big_pht');
 	var dataPos = bP.data("pos"); var dataCnt = bP.data("cnt");
-	
+
 	if (dataCnt>1){
 		if (dataPos < dataCnt){dataPos++;}else{dataPos=1;}
-		var newIt = $("main > .pht_bx > .list > .phts > .item[data-pos='"+dataPos+"']");
-		
-		var dataSrc = newIt.attr("src").replace("/med/", "/high/");
-		
+		var newIt = it.filter("[data-pos='"+dataPos+"']");
+		var dataSrc = newIt.data("high") || newIt.attr("src").replace("/med/", "/high/");
+
 		$('#show_img').css('background-image','url('+dataSrc+')');
 		$('#show_img > .status').text(dataPos+' / '+dataCnt);
-		
+
 		it.removeClass("act"); newIt.addClass("act");
-		$("main > .pht_bx > .big_pht").css("background-image", "url("+dataSrc+")").data({"pos" : dataPos, "src" : dataSrc});
-		
+		bP.css("background-image", "url("+dataSrc+")").data({"pos": dataPos, "src": dataSrc});
+
 		resizer();
 	}
 })
@@ -953,8 +957,9 @@ $(document).keyup(function (e) {
     }
 
     if (keyCode == 37 || keyCode == 39) {
-        var it = $("main > .pht_bx > .list > .phts > .item");
-        var bP = $('main > .pht_bx > .big_pht');
+        var $phtBx = $activePhtBx || $('main > .pht_bx').first();
+        var it = $phtBx.find('.list .phts .item');
+        var bP = $phtBx.find('.big_pht');
         if (it.length === 0 || bP.length === 0) return;
 
         var dataPos = bP.data("pos");
@@ -967,8 +972,8 @@ $(document).keyup(function (e) {
             dataPos = dataPos < dataCnt ? dataPos + 1 : 1;
         }
 
-        var newIt = $("main > .pht_bx > .list > .phts > .item[data-pos='" + dataPos + "']");
-        var dataSrc = newIt.attr("src").replace("/med/", "/high/");
+        var newIt = it.filter("[data-pos='" + dataPos + "']");
+        var dataSrc = newIt.data("high") || newIt.attr("src").replace("/med/", "/high/");
 
         it.removeClass("act"); newIt.addClass("act");
         bP.css("background-image", "url(" + dataSrc + ")").data({"pos": dataPos, "src": dataSrc});
@@ -1263,5 +1268,62 @@ setInterval(initPredatorCanvas, 1000);
 
 	updateButtonVisibility();
 })();
+
+// Helper: extract brand/model path from current URL
+function _srtGetExtraPath(){
+	var pathParts = window.location.pathname.split('/').filter(function(p){ return p !== ''; });
+	// pathParts[0] = lang, pathParts[1] = cars/ordercars, pathParts[2] = brand, pathParts[3] = model
+	var extraPath = '';
+	if (pathParts.length >= 3 && !/^\d+$/.test(pathParts[2])) {
+		extraPath += '/' + pathParts[2];
+		if (pathParts.length >= 4 && !/^\d+$/.test(pathParts[3])) {
+			extraPath += '/' + pathParts[3];
+		}
+	}
+	return extraPath;
+}
+
+function _srtGetLang(){
+	return (document.cookie.match(/(?:^|;\s*)lang=([^;]+)/) || [])[1] || 'ro';
+}
+
+// Single sort dropdown: handles both catalog switch (cat:in_stock / cat:on_order) and sort criteria
+$(document).on('change', '.srt_wrap > .srt_sel', function(){
+	var val = $(this).val();
+	var page = $(this).closest('.srt_wrap').data('page');
+	var params = new URLSearchParams(window.location.search);
+
+	// Catalog switch: prefix "cat:" means change between /cars and /ordercars, preserve existing srt
+	if (val.indexOf('cat:') === 0) {
+		var cat = val.substring(4); // 'in_stock' or 'on_order'
+		// If selection matches the current page, no action needed
+		if ((cat === 'in_stock' && page === 'cars') || (cat === 'on_order' && page === 'ordercars')) {
+			return;
+		}
+		var target = (cat === 'on_order') ? 'ordercars' : 'cars';
+		var lang = _srtGetLang();
+		var extraPath = _srtGetExtraPath();
+		// If srt is active, ensure tg=fltr so the target page routes through filtered listing
+		if (params.has('srt') && !params.has('tg')) {
+			params.set('tg', 'fltr');
+		}
+		var qs = params.toString();
+		window.location.href = '/' + lang + '/' + target + extraPath + (qs ? ('?' + qs) : '');
+		return;
+	}
+
+	// Sort criteria: update srt query param, stay on current page
+	if (val === '') {
+		params.delete('srt');
+	} else {
+		params.set('srt', val);
+		// Ensure tg=fltr so the page routes through the filtered listing (which honors srt)
+		if (!params.has('tg')) {
+			params.set('tg', 'fltr');
+		}
+	}
+	var qs = params.toString();
+	window.location.href = window.location.pathname + (qs ? ('?' + qs) : '');
+});
 
 })

@@ -2946,5 +2946,20 @@ footer .columns-wrapper .column-container.col-logo-container {
           border-radius: 8px;
       }
   }
-  
-  
+
+  /* Sort dropdown - placed below filter, aligned right */
+  body > .srt_wrap {width:80vw; margin:10px 10vw 0; position:relative; float:left; z-index:2; display:flex; justify-content:flex-end; align-items:center; gap:10px;}
+  body > .srt_wrap > .srt_cat_badge {padding:.5rem 1rem; background-color:#e2001a; color:#fff; border-radius:.5rem; font-family:"def_l"; font-size:.9rem; font-weight:700; white-space:nowrap; line-height:1;}
+  body > .srt_wrap > .srt_lbl {display:flex; align-items:center; gap:8px; color:#333; font-family:"def_l"; font-size:.95rem; white-space:nowrap;}
+  body > .srt_wrap > .srt_lbl > img {width:18px; height:18px; display:block;}
+  body > .srt_wrap > .srt_sel {min-width:200px; padding:.6rem 2rem .6rem 1rem; border:1px solid #ddd; border-radius:.5rem; background:#fff url(/media/images/site/v2/arw_b_def.svg) no-repeat right .8rem center / 12px; appearance:none; -webkit-appearance:none; -moz-appearance:none; font-family:"def_l"; font-size:.95rem; color:#333; cursor:pointer; outline:none; transition:border-color .2s;}
+  body > .srt_wrap > .srt_sel:hover, body > .srt_wrap > .srt_sel:focus {border-color:#e2001a;}
+  body > .srt_wrap > .srt_sel > option[value^="cat:"] {font-weight:700; color:#000;}
+
+  @media (max-width:760px){
+      body > .srt_wrap {width:90vw; margin:10px 5vw 0; justify-content:space-between; flex-wrap:wrap;}
+      body > .srt_wrap > .srt_cat_badge {order:-1; flex-basis:100%; text-align:center; margin-bottom:5px;}
+      body > .srt_wrap > .srt_sel {min-width:0; flex:1; max-width:60%;}
+  }
+
+

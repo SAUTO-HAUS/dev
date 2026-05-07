@@ -192,19 +192,21 @@ $(document).ready(function() {
 		function bCalc(v){var x=v/1024>1?(v/(Math.pow(1024,2))>1?(v/(Math.pow(1024,3))>1?(v/(Math.pow(1024,4))>1?'>1GB':(v/(Math.pow(1024,3))).toFixed(2)+' GB'):(v/(Math.pow(1024,2))).toFixed(1)+' MB'):(v/1024).toFixed(0)+' KB'):v+' B'; return x;}
 		function fTp(v){var x=v=='application/pdf'?'pdf':(v=='text/plain'?'txt':($.inArray(v, ['image/jpg','image/png','image/jpeg','image/gif','image/webp']) !== -1)?'img':(v=='application/msword'?'doc':(v=='application/vnd.ms-excel'?'xls':(v=='text/xml'?'xml':(v=='application/json'?'json':($.inArray(v, ['application/vnd.oasis.opendocument.formula','application/vnd.oasis.opendocument.text','application/vnd.oasis.opendocument.spreadsheet','application/vnd.oasis.opendocument.charts','application/vnd.oasis.opendocument.presentations']) !== -1?'odf':'uknown')))))); return x;}
 		
+		var originalFiles = this.files;
 		for (var i = 0; i < cnt; i++){
 			file = window.URL.createObjectURL(this.files[i]);
 			tp = fTp(this.files[i].type); sz = this.files[i].size;
 			szSum += sz; bg = tp=='img'?file:bgSrc+'/'+tp+'.svg';
 			//var nm = (this.files[i].name).length>20?(this.files[i].name).replace(/(.{20})/g,"$1 "):'--'+this.files[i].name;
-			
+
 			var el = tp=='img'?$('#content_box .id_'+bx_id+' .prv.imgs:not(.ready) > .its'):$('#content_box .id_'+bx_id+' .prv.docs:not(.ready) > .its');
 			el.append(''
-				+ '<label class="it '+i+' f_'+tp+' new h" data-id="'+i+'" title="'+this.files[i].type+'">'
-					+ '<input type="radio" class="use main_img new none" name="main_img" value="'+i+'" data-id="'+i+'" '+(i===0 && !$('#content_box').data('car-id')?'checked="checked"':'')+' />'
+				+ '<div class="it '+i+' f_'+tp+' new h" data-id="'+i+'" data-file-index="'+i+'" title="'+this.files[i].type+'">'
+					+ '<div class="drag_handle" title="Mută">⠿</div>'
+					+ '<input id="main_img_'+i+'" type="radio" class="use main_img new none" name="main_img" value="'+i+'" data-id="'+i+'" '+(i===0 && !$('#content_box').data('car-id')?'checked="checked"':'')+' />'
 					+ '<div class="ico ghost"></div>'
 					+ '<img class="img" src="'+bg+'" /><div class="nm">'+this.files[i].name+'</div><div class="sz">'+bCalc(sz)+'</div>'
-				+ '</label>'
+					+ '<label for="main_img_'+i+'" class="btn do_main photo_action" title="Main photo"></label>'				+ '<div class="btn delete photo_action" title="Delete image"></div>'				+ '</div>'
 			)
 			$('#content_box .id_'+bx_id+' .prv:not(.ready) .it.h.'+i).delay(100).queue(function(){$(this).removeClass('h'); $(this).dequeue();})
 		}
@@ -212,11 +214,65 @@ $(document).ready(function() {
 		$.each($('#content_box .id_'+bx_id+' .prv:not(.ready) .its'), function(){
 			if ($(this).children('.it').length==0){$(this).closest('.prv').addClass('h');}
 		})
+
+		// Init sortable on preview container
+		var $previewIts = $('#content_box .id_'+bx_id+' .prv.imgs:not(.ready) > .its');
+		if ($previewIts.length) {
+			var existingInstance = $previewIts.data('sortable-instance');
+			if (existingInstance) existingInstance.destroy();
+			$previewIts.addClass('sorting');
+			var previewInstance = Sortable.create($previewIts[0], {
+				handle: '.drag_handle',
+				draggable: '.it.f_img',
+				animation: 150,
+				ghostClass: 'sortable-ghost',
+				chosenClass: 'sortable-chosen',
+				dragClass: 'sortable-drag',
+				onStart: function(){ $('body').addClass('is-dragging'); },
+				onEnd: function(){ $('body').removeClass('is-dragging'); }
+			});
+			$previewIts.data('sortable-instance', previewInstance);
+		}
 	})
-	
-	var counter = 0;
-	$(document)
-		.on('dragenter', '#content_box', function(e){//e.stopPropagation();
+
+	function formatFileSize(v){
+		return v/1024>1?(v/(Math.pow(1024,2))>1?(v/(Math.pow(1024,3))>1?(v/(Math.pow(1024,4))>1?'>1GB':(v/(Math.pow(1024,3))).toFixed(2)+' GB'):(v/(Math.pow(1024,2)).toFixed(1)+' MB')):(v/1024).toFixed(0)+' KB'):v+' B';
+	}
+
+	function recalcNewUploadStats($preview){
+		var $bx = $preview.closest('.bx');
+		var $input = $bx.find('.dd_plc > input[type="file"]');
+		if (!$input.length || !$input[0].files) return;
+		var originalFiles = $input[0].files;
+		var count = 0;
+		var total = 0;
+		$preview.find('.it[data-file-index]').each(function(){
+			var idx = parseInt($(this).data('file-index'));
+			if (!isNaN(idx) && originalFiles[idx]){
+				count++;
+				total += originalFiles[idx].size;
+			}
+		});
+		$bx.find('.inf > .c').text(count);
+		$bx.find('.inf > .s').text(formatFileSize(total));
+		if (count === 0){ $preview.closest('.prv').addClass('h'); }
+	}
+
+	$(document).on('click', '#content_box .prv.imgs:not(.ready) .it .btn.delete', function(e){
+		e.preventDefault();
+		e.stopPropagation();
+		var $it = $(this).closest('.it');
+		var $preview = $it.closest('.prv.imgs');
+		var wasMain = $it.find('input.main_img').is(':checked');
+		$it.remove();
+		recalcNewUploadStats($preview);
+		if (wasMain){
+			var $next = $preview.find('input.main_img').first();
+			if ($next.length){ $next.prop('checked', true); }
+		}
+	});
+
+	$(document).on('dragenter', '#content_box', function(e){//e.stopPropagation();
 			counter++;
 			e.preventDefault();
 			$(this).find('.dd_plc').addClass('drag');
@@ -390,12 +446,36 @@ function uploadIt(filesX, dataX=[]){
 	}
 }
 
+function compressCarImage(file) {
+	return new Promise(function(resolve) {
+		if (!file.type.startsWith('image/')) { resolve(file); return; }
+		var maxSize = 1600;
+		var quality = 0.75;
+		var url = URL.createObjectURL(file);
+		var img = new Image();
+		img.onload = function() {
+			URL.revokeObjectURL(url);
+			var w = img.width, h = img.height;
+			if (w <= maxSize && h <= maxSize) { resolve(file); return; }
+			if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
+			else { w = Math.round(w * maxSize / h); h = maxSize; }
+			var canvas = document.createElement('canvas');
+			canvas.width = w; canvas.height = h;
+			canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+			canvas.toBlob(function(blob) {
+				resolve(new File([blob], file.name.replace(/\.[^.]+$/, '.jpg'), {type: 'image/jpeg'}));
+			}, 'image/jpeg', quality);
+		};
+		img.onerror = function() { URL.revokeObjectURL(url); resolve(file); };
+		img.src = url;
+	});
+}
+
 async function ajaxCarImg(filesX, dataX) {
-	console.log('ajaxCarImg started with:', { filesX, dataX });
 	$('#stts_bar > .txt > .el').html('Adding to DB');
 
 	try {
-		console.log('Making initial AJAX request...');
+		// Step 1: save car data, get last_id
 		const initialResponse = await $.ajax({
 			url: '/ajax.php',
 			method: 'POST',
@@ -403,20 +483,11 @@ async function ajaxCarImg(filesX, dataX) {
 			dataType: 'json',
 			processData: false,
 			contentType: false,
-			statusCode: {
-				0: () => { console.error('No internet connection'); alert('No internet connection'); },
-				403: () => { console.error('Forbidden'); alert('Forbidden'); },
-				404: () => { console.error('Page not found'); alert('Page not found'); },
-				500: () => { console.error('Internal server error'); alert('Internal server error'); }
-			},
 		});
-		
-		console.log('Initial response received:', initialResponse);
 
 		const last_id = initialResponse?.rtrn?.last_id;
-
 		if (!last_id) {
-			console.error('Error: last_id not received', initialResponse);
+			console.error('last_id missing', initialResponse);
 			return null;
 		}
 
@@ -424,69 +495,67 @@ async function ajaxCarImg(filesX, dataX) {
 			$('#content_box').attr('data-car-id', last_id);
 		}
 
-		// Create FormData for sending all files at once
-		const fd = new FormData();
-
-		if (dataX instanceof FormData) {
-			for (let [key, value] of dataX.entries()) {
-				fd.append(key, value);
-			}
-		} else {
-			$.each(dataX, (key, value) => {
-				fd.append(key, value);
-			});
-		}
-
-		fd.append('sub', 'file_load');
-		fd.append('last_id', last_id);
-
-		// Add files to FormData
+		// Step 2: upload files in batches of 5
 		if (filesX[0].files && filesX[0].files.length > 0) {
-			console.log('Adding files to FormData:', filesX[0].files.length, 'files');
-			$.each(filesX[0].files, (index, file) => {
-				fd.append(filesX.attr('name') + '[]', file);
-			});
-			fd.append('img_qu', filesX[0].files.length);
-		} else {
-			console.warn('No files selected for upload.');
-		}
-
-		// Send all files in one request
-		console.log('Making file upload AJAX request...');
-		const fileUploadResponse = await $.ajax({
-			url: '/ajax.php',
-			method: 'POST',
-			data: fd,
-			dataType: 'json',
-			cache: false,
-			contentType: false,
-			processData: false,
-			xhr: function () {
-				var xhr = $.ajaxSettings.xhr();
-				if (xhr.upload) {
-					xhr.upload.addEventListener('progress', progress, false);
+			var tp = dataX instanceof FormData ? dataX.get('tp') : dataX.tp;
+			var pg = dataX instanceof FormData ? dataX.get('pg') : dataX.pg;
+			var inputName = filesX.attr('name').replace(/\[\]$/, '');
+			var originalFiles = filesX[0].files;
+			// Read files in DOM order (respects drag reorder in preview)
+			var $previewItems = filesX.closest('.bx').find('.prv.imgs:not(.ready) > .its > .it[data-file-index]');
+			var files = [];
+			if ($previewItems.length > 0) {
+				files = $previewItems.toArray().map(function(el){
+					var idx = parseInt(el.dataset.fileIndex, 10);
+					return !isNaN(idx) ? originalFiles[idx] : null;
+				}).filter(function(file){ return file; });
+			}
+			if (files.length === 0) {
+				files = Array.from(originalFiles);
+			}
+			// Calculate main image index
+			var mainImgIndex = -1;
+			var selectedValue = $('input[name="main_img"]:checked').val();
+			if (selectedValue !== undefined) {
+				var selectedIndex = parseInt(selectedValue);
+				if ($previewItems.length > 0) {
+					var validIndices = $previewItems.toArray().map(function(el){
+						return parseInt(el.dataset.fileIndex, 10);
+					});
+					mainImgIndex = validIndices.indexOf(selectedIndex);
+				} else {
+					mainImgIndex = selectedIndex;
 				}
-				return xhr;
-			},
-			statusCode: {
-				0: () => { console.error('No internet connection'); alert('No internet connection'); },
-				403: () => { console.error('Forbidden'); alert('Forbidden'); },
-				404: () => { console.error('Page not found'); alert('Page not found'); },
-				500: () => { console.error('Internal server error'); alert('Internal server error'); }
-			},
-		});
-		
-		console.log('File upload response received:', fileUploadResponse);
+			}
+			var total = files.length;
+			$('#stts_bar > .txt > .el').html('0/' + total);
+			var compressed = await Promise.all(files.map(compressCarImage));
 
-		if (fileUploadResponse?.rtrn?.last_id) {
-			console.log('Successfully completed ajaxCarImg with ID:', fileUploadResponse.rtrn.last_id);
-			return fileUploadResponse.rtrn.last_id;
-		} else {
-			console.error('Error during file upload:', fileUploadResponse);
-			return null;
+			// Upload all files in parallel, each with explicit pos_start so PHP doesn't race on MAX(pos)
+			var done = 0;
+			var uploadRequests = compressed.map(function(file, globalIdx) {
+				var fd = new FormData();
+				fd.append('tp', tp); fd.append('pg', pg);
+				fd.append('fn', 'add_new'); fd.append('sub', 'file_load');
+				fd.append('last_id', last_id); fd.append('img_qu', total);
+				fd.append('pos_start', globalIdx + 1);
+				fd.append(inputName + '[]', file);
+				if (globalIdx === mainImgIndex) {
+					fd.append('main_img', 0);
+				}
+				return $.ajax({ url: '/ajax.php', method: 'POST', data: fd, cache: false, contentType: false, processData: false })
+					.then(function() {
+						done++;
+						$('#stts_bar > .txt > .el').html(done + '/' + total);
+					});
+			});
+			await Promise.all(uploadRequests);
+			$('#stts_bar > .txt > .el').html(total + '/' + total + ' done');
 		}
+
+		return last_id;
 	} catch (error) {
-		console.error('Exception in ajaxCarImg:', error);
+		console.error('ajaxCarImg error:', error.status, error.responseText);
 		return null;
 	}
 }

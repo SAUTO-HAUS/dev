@@ -280,9 +280,10 @@ if (__post('sub') == 'mo_search') {
 
                 $pdo = $db->prepare('UPDATE ' . $prefx . '_car_pht SET `main`="0" WHERE `it_id`=:it_id AND `main`="1"');
                 $pdo->execute(['it_id' => __post('id')]);
-                if (__post('main_img') * 1 > 10000) {
+                $main_img = __post('main_img');
+                if (is_numeric($main_img) && (int)$main_img > 10000) {
                     $pdo = $db->prepare('UPDATE ' . $prefx . '_car_pht SET `main`="1" WHERE `id`=:id AND `it_id`=:it_id');
-                    $pdo->execute(['id' => __post('main_img'), 'it_id' => __post('id')]);
+                    $pdo->execute(['id' => $main_img, 'it_id' => __post('id')]);
                 }
                 // --- CHANGELOG: log main photo change only if it actually changed ---
                 if ($old_main_id != __post('main_img')) {
@@ -388,8 +389,8 @@ if (__post('sub') == 'mo_search') {
             }
             $offer_timer_end = time() + $timer_seconds;
 
-            $pdo = $db->prepare('INSERT INTO ' . $prefx . '_car_ctlg (`gr`, `br`, `mo`, `br_nm`, `mo_nm`, `yr`, `vin`, `vin_check_enabled`, `bt`, `sts`, `mlg`, `unit`, `vol`, `hp`, `fl`, `tra`, `wd`, `clr`, `loc`, `txt`, `prc`, `cur`, `soon`, `n_a`, `top`, `tva`, `gift`, `is_at_client`, `import_country_id`, `catalog_type`, `delivery_time`, `advance_amount`, `offer_timer`, `offer_timer_end`, `p_path`, `date`, `author`, `vis`) 
-                VALUES (:gr, :br, :mo, :br_nm, :mo_nm, :yr, :vin, :vin_check_enabled, :bt, :sts, :mlg, :unit, :vol, :hp, :fl, :tra, :wd, :clr, :loc, :txt, :prc, :cur, :soon, :n_a, :top, :tva, :gift, :is_at_client, :import_country_id, :catalog_type, :delivery_time, :advance_amount, :offer_timer, :offer_timer_end, :p_path, :date, :author, "1")');
+            $pdo = $db->prepare('INSERT INTO ' . $prefx . '_car_ctlg (`gr`, `br`, `mo`, `br_nm`, `mo_nm`, `yr`, `vin`, `vin_check_enabled`, `bt`, `sts`, `mlg`, `unit`, `vol`, `hp`, `fl`, `tra`, `wd`, `clr`, `loc`, `txt`, `prc`, `cur`, `soon`, `n_a`, `top`, `tva`, `gift`, `is_at_client`, `import_country_id`, `catalog_type`, `delivery_time`, `advance_amount`, `offer_timer`, `offer_timer_end`, `p_path`, `date`, `author`, `vis`, `inf`, `telegram_published`, `facebook_published`)
+                VALUES (:gr, :br, :mo, :br_nm, :mo_nm, :yr, :vin, :vin_check_enabled, :bt, :sts, :mlg, :unit, :vol, :hp, :fl, :tra, :wd, :clr, :loc, :txt, :prc, :cur, :soon, :n_a, :top, :tva, :gift, :is_at_client, :import_country_id, :catalog_type, :delivery_time, :advance_amount, :offer_timer, :offer_timer_end, :p_path, :date, :author, "1", "", 0, 0)');
 
             $pdo->execute([
                 'gr' => __post('gr'),
@@ -428,7 +429,7 @@ if (__post('sub') == 'mo_search') {
                 'offer_timer_end' => $offer_timer_end,
                 'p_path' => $zY . '/' . $zM,
                 'date' => time(),
-                'author' => __post('author')
+                'author' => __post('author') ?: ($_SESSION['user_name'] ?? '')
             ]);
 
             $last_id = $db->lastInsertId();

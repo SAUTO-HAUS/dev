@@ -175,15 +175,15 @@ if (!isset($t_mp[2]) || $t_mp[2]=='' || $t_mp[2]=='ordercars'){
 						<span class="cls">'.$lng['w']['simplified'].'</span>
 					</span>
 				</div>
-				<a class="btn sbmt" href="/'.$_COOKIE['lang'].'/ordercars'.$q_uri.'" data-gr="'.(isset($_GET['gr'])?$_GET['gr']:'').'" data-br="'.(isset($_GET['br'])?str_replace('_','-',$_GET['br']):'').'" data-mo="'.(isset($_GET['mo'])?str_replace('_','-',$_GET['mo']):'').'" data-bt="'.(isset($_GET['bt'])?$_GET['bt']:'').'"';
-				
+				<a class="btn sbmt" href="/'.$_COOKIE['lang'].'/ordercars'.$q_uri.'" data-gr="'.(isset($_GET['gr'])?$_GET['gr']:'').'" data-br="'.(isset($_GET['br'])?str_replace('_','-',$_GET['br']):'').'" data-mo="'.(isset($_GET['mo'])?str_replace('_','-',$_GET['mo']):'').'" data-bt="'.(isset($_GET['bt'])?$_GET['bt']:'').'" data-srt="'.(isset($_GET['srt'])?$_GET['srt']:'').'"';
+
 				// Add all detailed filter parameters as data attributes
 				foreach($f_it_xtd_arr['car'] as $k => $v){
 					if(isset($_GET[$k])) {
 						echo ' data-'.$k.'="'.$_GET[$k].'"';
 					}
 				}
-				
+
 				echo '>
 					<div class="img"></div>
 					<span class="txt">'.$lng['w']['find'].' '.$lng['w']['auto'].'</span>
@@ -191,7 +191,36 @@ if (!isset($t_mp[2]) || $t_mp[2]=='' || $t_mp[2]=='ordercars'){
 			</div>
 		</div>
 	</form>';
-	
+
+	// Sort dropdown for ordercars page (catalog + sort criteria in one select)
+	$srtCur = isset($_GET['srt']) ? $_GET['srt'] : '';
+	$srtSortOpts = [
+		'prc-asc' => $lng['w']['sort_prc_asc'],
+		'prc-desc' => $lng['w']['sort_prc_desc'],
+		'yr-desc' => $lng['w']['sort_yr_desc'],
+		'yr-asc' => $lng['w']['sort_yr_asc'],
+		'mlg-asc' => $lng['w']['sort_mlg_asc'],
+		'mlg-desc' => $lng['w']['sort_mlg_desc'],
+	];
+	// If no sort active, show current catalog (on_order on /ordercars) as selected
+	$srtSelectedHasValue = ($srtCur !== '' && isset($srtSortOpts[$srtCur]));
+	echo '
+	<div class="srt_wrap" data-page="ordercars">
+		<div class="srt_cat_badge" data-cat="on_order">'.$lng['w']['sort_on_order'].'</div>
+		<div class="srt_lbl">
+			<img src="/'._SITE_IMG.'/v2/sort.svg" alt="sort" />
+			<span>'.$lng['w']['sort_by'].'</span>
+		</div>
+		<select class="srt_sel" name="srt">
+			<option value="cat:in_stock" data-cat="in_stock">'.$lng['w']['sort_in_stock'].'</option>
+			<option value="cat:on_order" data-cat="on_order"'.(!$srtSelectedHasValue?' selected="selected"':'').'>'.$lng['w']['sort_on_order'].'</option>';
+			foreach ($srtSortOpts as $sk => $sv){
+				echo '<option value="'.$sk.'"'.($srtCur===$sk?' selected="selected"':'').'>'.$sv.'</option>';
+			}
+	echo '
+		</select>
+	</div>';
+
 //----------------------------------------------------------------------------------------------TYRES
 }elseif ($t_mp[2]=='tyres'){
 	$f_arr = array();

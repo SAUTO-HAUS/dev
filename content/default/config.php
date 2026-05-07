@@ -1,7 +1,7 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
 $is_https = 1;
-$is_www = 0;
+$is_www = 1;
 $default_lang = 'ro';
 
 //Maintenance work
@@ -150,7 +150,8 @@ $n_row = '&#013;';
 $img_frmt = (usr_agent()==='IOS'||usr_agent()==='MAC') ? '.jpg' : '.webp';
 
 // AI API Key (Groq) - loaded from .env
-$envFile = $_SERVER['DOCUMENT_ROOT'] . '/.env';
+$_doc_root = !empty($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : dirname(__DIR__, 2);
+$envFile = $_doc_root . '/.env';
 if (file_exists($envFile)) {
     $envContent = file_get_contents($envFile);
     if (preg_match('/GROQ_API_KEY=(.+)/', $envContent, $matches)) {

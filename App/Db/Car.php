@@ -39,25 +39,25 @@ class Car
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function getCarsCtlg($limit, $user_role = null, $user_branch_id = null, $vin_search = null, $catalog_type = 'in_stock')
+    public function getCarsCtlg($limit, $user_role = null, $user_branch_id = null, $vin_search = null, $catalog_type = 'in_stock', $user_type = null)
     {
         $sql = 'SELECT * FROM ' . $this->prefix . '_car_ctlg WHERE `act`="1" AND `catalog_type`="' . $catalog_type . '"';
         $params = [];
-        
+
         // Add VIN search filter
         if (!empty($vin_search)) {
             $sql .= ' AND vin LIKE ?';
             $params[] = '%' . $vin_search . '%';
         }
-        
-        // Add branch filtering for publisher_limited users
-        if ($user_role && $user_branch_id !== null) {
-            // Apply branch filtering for publisher_limited role
+
+        // x2 users see only loc=2
+        if ($user_type === 'x2') {
+            $sql .= ' AND loc = 2';
+        } elseif ($user_role && $user_branch_id !== null) {
             if ($user_role === 'publisher_limited') {
                 $sql .= ' AND loc = ?';
                 $params[] = (int)$user_branch_id;
             }
-            // Publisher and other roles with all_branches access see everything (no filter)
         }
         
         $sql .= ' ORDER BY `n_a` ASC, `vis` DESC, `id` DESC LIMIT ' . ($limit+1);

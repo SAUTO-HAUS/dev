@@ -369,13 +369,13 @@ class PublicationService
             
             // Add link to website page
             if (!empty($carData['id'])) {
-                $caption_lines[] = '🔗 https://www.sauto.md/ru/ordercars/' . $carData['id'];
+                $caption_lines[] = '🔗 https://www.sauto.md/ro/ordercars/' . $carData['id'];
             }
             
             $caption_lines[] = '';
-            $caption_lines[] = '📞 Pentru detalii: +37379600352';
+            $caption_lines[] = '📞 <a href="tel:+37379600352">Pentru detalii: +37379600352</a>';
             $caption_lines[] = '';
-            $caption_lines[] = '<a href="https://t.me/Sauto_B24_bot">👉 Sauto la comandă – deschideți chatul pentru întrebări! 👈</a>';
+            $caption_lines[] = '<a href="https://t.me/on_order_chat_bot?start=' . str_replace(' ', '_', $carData['br_nm']) . '_' . str_replace(' ', '_', $carData['mo_nm']) . '_' . $carData['prc'] . '_' . $carData['yr'] . '">📩 Întreabă despre această mașină</a>';
             
         } else {
             // In stock cars format
@@ -419,7 +419,13 @@ class PublicationService
             
             $marka_auto = str_replace(" ", "", $carData['br_nm']);
             $model_auto = str_replace(" ", "", $carData['mo_nm']);
-            $caption_lines[] = '<a href="https://t.me/Sauto_B24_bot?start=' . $marka_auto . '_' . $model_auto . '_' . $prc . '_' . $carData['yr'] . '">👉 Comentariile le citim și răspundem imediat 👈</a>';
+            if (!empty($carData['id'])) {
+                $caption_lines[] = '🔗 https://www.sauto.md/ro/cars/' . $carData['id'];
+                $caption_lines[] = '';
+            }
+            $caption_lines[] = '📞 <a href="tel:+37379500645">Pentru detalii: +37379500645</a>';
+            $caption_lines[] = '';
+            $caption_lines[] = '<a href="https://t.me/in_stock_chat_bot?start=' . $marka_auto . '_' . $model_auto . '_' . $prc . '_' . $carData['yr'] . '">📩 Întreabă despre această mașină</a>';
         }
         
         return implode("\n", $caption_lines);

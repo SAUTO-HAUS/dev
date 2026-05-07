@@ -1,5 +1,7 @@
 <?php defined('_DOIT') or die('Restricted access');
 
+require_once($_SERVER['DOCUMENT_ROOT'] . '/content/default/includes/contact_form.php');
+
 // Load translations
 $saleTranslations = require __DIR__ . '/sale_lang.php';
 
@@ -435,13 +437,14 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="sale-background"></div>
         <div class="sale-container">
             <div class="sale-intro__form">
-                <div class="sale-form">
+                <div class="sale-form" style="background:#fff;border-radius:10px;padding:1.5rem;">
+                    <!--
+                    BITRIX disabled:
                     <script data-b24-form="inline/42/u65756" data-skip-moving="true">
-                    (function(w,d,u){
-                    var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
-                    var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-                    })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_42.js');
+                    (function(w,d,u){var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);})(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_42.js');
                     </script>
+                    -->
+                    <?php sauto_contact_form(['lang' => $requestedLang, 'source' => 'sale']); ?>
                 </div>
             </div>
             <div class="sale-intro__content">
@@ -668,13 +671,14 @@ document.addEventListener('DOMContentLoaded', function() {
             <div class="sale-cta__content copy-block">
                 <p><?=htmlspecialchars($saleTranslate(['cta', 'line1']), ENT_QUOTES, 'UTF-8')?><br><?=htmlspecialchars($saleTranslate(['cta', 'line2']), ENT_QUOTES, 'UTF-8')?></p>
             </div>
-            <div class="sale-form sale-form--bottom">
+            <div class="sale-form sale-form--bottom" style="background:#fafafa;border-radius:10px;padding:1.5rem;">
+                <!--
+                BITRIX disabled:
                 <script data-b24-form="inline/42/u65756" data-skip-moving="true">
-                (function(w,d,u){
-                var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
-                var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-                })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_42.js?'+(Date.now()/180000|0));
+                (function(w,d,u){var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);})(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_42.js?'+(Date.now()/180000|0));
                 </script>
+                -->
+                <?php sauto_contact_form(['lang' => $requestedLang, 'source' => 'sale']); ?>
             </div>
         </div>
          <div style="margin-top: 10px; position: relative; z-index: 10; width: 100vw; margin-left: calc(-50vw + 50%); margin-right: calc(-50vw + 50%);">
@@ -682,5 +686,6 @@ document.addEventListener('DOMContentLoaded', function() {
     </div>
     </section>
 
-   
+
 </div>
+

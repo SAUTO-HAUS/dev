@@ -609,139 +609,57 @@ switch($current_lang) {
 <!-- Include page-specific JS with cache busting and defer -->
 <script src="<?php echo $page_js . $js_version; ?>" defer></script>
 
-<!-- Modal for Bitrix Forms -->
-<div id="bitrix-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); z-index:10000;">
-    <div style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
-        <div style="width:90%; max-width:600px; max-height:80%; background:white; border-radius:8px; overflow:auto; padding:20px; position:relative;">
-            <!-- Close button inside container -->
-            <button id="close-modal" style="position:absolute; top:10px; right:15px; background:#e74c3c; border:none; color:white; font-size:20px; font-weight:normal; cursor:pointer; z-index:2; width:34px; height:34px; display:flex; align-items:center; justify-content:center; border-radius:50%; line-height:1;" onmouseover="this.style.backgroundColor='#d62c1a'; this.style.transform='scale(1.1)'" onmouseout="this.style.backgroundColor='#e74c3c'; this.style.transform='scale(1)'">&times;</button>
-            <!-- Container for Bitrix Forms -->
-            <div id="bitrix-form-container">
-                <!-- Forms will be loaded here dynamically -->
-            </div>
+<?php require_once($_SERVER['DOCUMENT_ROOT'] . '/content/default/includes/contact_form.php'); ?>
+
+<!-- Modal cu formularul nostru -->
+<div id="contact-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:10000; backdrop-filter:blur(3px);">
+    <div id="contact-modal-overlay" style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center; padding:1rem;" onclick="if(event.target===this)closeContactModal()">
+        <div style="width:100%; max-width:540px; background:#fff; border-radius:12px; padding:2rem; position:relative; max-height:90vh; overflow-y:auto; box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+            <button onclick="closeContactModal()" style="position:absolute; top:12px; right:12px; background:none; border:none; cursor:pointer; color:#aaa; padding:6px; line-height:1; border-radius:50%; transition:color 0.15s, background 0.15s;" onmouseover="this.style.color='#E61E2D';this.style.background='#fff0f0'" onmouseout="this.style.color='#aaa';this.style.background='none'">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <?php sauto_contact_form(['lang' => $current_lang, 'title' => get_translation('submit_application', $current_lang, $lng), 'source' => 'credit']); ?>
         </div>
     </div>
 </div>
 
-<!-- Hidden Bitrix24 Forms (will be moved to modal when needed) -->
+<!--
+BITRIX FORMS — disabled, replaced with internal contact form
 <div style="position: absolute; left: -9999px; top: -9999px;">
-    <!-- RO Form -->
     <div id="bitrix-form-ro">
         <script data-b24-form="inline/40/ieagmu" data-skip-moving="true">
-        (function(w,d,u){
-        var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
-        var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-        })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_40.js');
+        (function(w,d,u){var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);})(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_40.js');
         </script>
     </div>
-    
-    <!-- EN Form -->
     <div id="bitrix-form-en">
         <script data-b24-form="inline/38/w39a70" data-skip-moving="true">
-        (function(w,d,u){
-        var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
-        var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-        })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_38.js');
+        (function(w,d,u){var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);})(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_38.js');
         </script>
     </div>
-    
-    <!-- RU Form -->
     <div id="bitrix-form-ru">
         <script data-b24-form="inline/36/gurnp4" data-skip-moving="true">
-        (function(w,d,u){
-        var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
-        var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-        })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_36.js');
+        (function(w,d,u){var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);})(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_36.js');
         </script>
     </div>
 </div>
+-->
 
-<!-- Simple JavaScript for Bitrix24 Forms (native approach) -->
 <script>
-$(document).ready(function() {
-    // Get current language from PHP
-    var currentLang = '<?php echo $current_lang; ?>';
-    console.log('Current language:', currentLang);
-    
-    // Simple form trigger function - show Bitrix form in modal
-    function showBitrixForm() {
-        console.log('Showing Bitrix form for language:', currentLang);
-        
-        // Get the appropriate form element based on language
-        var formElement = document.getElementById('bitrix-form-' + currentLang);
-        if (!formElement) {
-            console.log('Language not found, falling back to Romanian');
-            formElement = document.getElementById('bitrix-form-ro');
-        }
-        
-        if (formElement) {
-            console.log('Moving form to modal container...');
-            
-            // Clear the modal container
-            var container = document.getElementById('bitrix-form-container');
-            container.innerHTML = '';
-            
-            // Clone the form element and move it to the modal
-            var formClone = formElement.cloneNode(true);
-            container.appendChild(formClone);
-            
-            // Show the modal and block page scroll
-            document.getElementById('bitrix-modal').style.display = 'block';
-            document.body.style.overflow = 'hidden';
-            document.documentElement.style.overflow = 'hidden';
-            
-            // Execute the script in the cloned form
-            var scriptElement = formClone.querySelector('script');
-            if (scriptElement) {
-                console.log('Executing Bitrix script in modal...');
-                try {
-                    // Create a new script element and execute it
-                    var newScript = document.createElement('script');
-                    newScript.innerHTML = scriptElement.innerHTML;
-                    // Copy attributes
-                    Array.from(scriptElement.attributes).forEach(attr => {
-                        newScript.setAttribute(attr.name, attr.value);
-                    });
-                    container.appendChild(newScript);
-                } catch(e) {
-                    console.log('Error executing script:', e);
-                }
-            }
-        } else {
-            console.log('No form element found!');
-        }
-    }
-    
-    // Close modal function
-    function closeBitrixModal() {
-        document.getElementById('bitrix-modal').style.display = 'none';
-        document.getElementById('bitrix-form-container').innerHTML = '';
-        // Restore page scroll
-        document.body.style.overflow = '';
-        document.documentElement.style.overflow = '';
-    }
-    
-    // Setup modal close events
-    document.getElementById('close-modal').onclick = closeBitrixModal;
-    document.getElementById('bitrix-modal').onclick = function(e) {
-        if (e.target === this) closeBitrixModal();
-    };
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') closeBitrixModal();
-    });
-    
-    // Attach click events to both apply buttons
-    $('#apply-button-categories, #apply-button-partners').on('click', function(e) {
-        e.preventDefault();
-        console.log('Apply button clicked, showing form for language:', currentLang);
-        showBitrixForm();
-    });
-    
-    // Debug: Check if buttons and forms exist
-    console.log('Categories button exists:', $('#apply-button-categories').length > 0);
-    console.log('Partners button exists:', $('#apply-button-partners').length > 0);
-    console.log('RO form exists:', document.getElementById('bitrix-form-ro') !== null);
-    console.log('EN form exists:', document.getElementById('bitrix-form-en') !== null);
-    console.log('RU form exists:', document.getElementById('bitrix-form-ru') !== null);
+function openContactModal() {
+    document.getElementById('contact-modal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+function closeContactModal() {
+    document.getElementById('contact-modal').style.display = 'none';
+    document.body.style.overflow = '';
+}
+document.getElementById('contact-modal').addEventListener('click', function(e) {
+    if (e.target === this || e.target === document.getElementById('contact-modal-overlay')) closeContactModal();
 });
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeContactModal();
+});
+
+document.getElementById('apply-button-categories').addEventListener('click', openContactModal);
+document.getElementById('apply-button-partners').addEventListener('click', openContactModal);
 </script>

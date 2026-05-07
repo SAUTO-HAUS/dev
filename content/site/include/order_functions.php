@@ -15,9 +15,9 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 	$query_args = ['lmt'=>$lmt];
 	$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE catalog_type = "on_order"';
 	
-	// For filter searches, show all cars regardless of catalog_type
+	// For filter searches on /ordercars, restrict to on_order catalog (sort dropdown can switch via redirect on the page level)
 	if ($v1=='fltr') {
-		$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE 1=1';
+		$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE catalog_type = "on_order"';
 	}
 	
 	// For similar cars, show both in_stock and on_order cars
@@ -252,26 +252,8 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 
 			// Add visibility conditions
 			$sql .= ' AND `vis`="1" AND `act`="1"';
-			
-			// Add ORDER BY and LIMIT - prioritize on_order cars first, then in_stock (for ordercars page)
-			$sql .= ' ORDER BY CASE WHEN catalog_type = "on_order" THEN 1 WHEN catalog_type = "in_stock" THEN 2 ELSE 3 END, `n_a` ASC, `id` DESC LIMIT :lmt';
-			
-			// Log final SQL and parameters
-			// file_put_contents('debug_sql.log', "\nFinal SQL: {$sql}\n", FILE_APPEND);
-			// file_put_contents('debug_sql.log', "Final parameters: " . print_r($query_args, true) . "\n", FILE_APPEND);
-			
-			// Execute query and log results
-			try {
-				$stmt = $db->prepare($sql);
-				$stmt->execute($query_args);
-				$results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-				// file_put_contents('debug_sql.log', "\nQuery returned " . count($results) . " results\n", FILE_APPEND);
-				if (count($results) > 0) {
-					// file_put_contents('debug_sql.log', "First result: " . print_r($results[0], true) . "\n", FILE_APPEND);
-				}
-			} catch (PDOException $e) {
-				// file_put_contents('debug_sql.log', "\nSQL Error: " . $e->getMessage() . "\n", FILE_APPEND);
-			}
+
+			// NOTE: ORDER BY / LIMIT are added later (after all filters) so they honor the srt parameter
 
 			// Initialize counter
 			$i = 0;
@@ -434,11 +416,24 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 	}
 
 	if ($v1=='fltr') {
+		// Sort dropdown handling
+		$srt_val = (isset($zreq['srt']) && is_string($zreq['srt'])) ? $zreq['srt'] : '';
+		$order_clause = '';
+		switch ($srt_val) {
+			case 'prc-asc':  $order_clause = '`n_a` ASC, `prc` ASC, `id` DESC'; break;
+			case 'prc-desc': $order_clause = '`n_a` ASC, `prc` DESC, `id` DESC'; break;
+			case 'yr-desc':  $order_clause = '`n_a` ASC, `yr` DESC, `id` DESC'; break;
+			case 'yr-asc':   $order_clause = '`n_a` ASC, `yr` ASC, `id` DESC'; break;
+			case 'mlg-asc':  $order_clause = '`n_a` ASC, `mlg` ASC, `id` DESC'; break;
+			case 'mlg-desc': $order_clause = '`n_a` ASC, `mlg` DESC, `id` DESC'; break;
+			default:
+				$order_clause = 'CASE WHEN catalog_type = "on_order" THEN 1 WHEN catalog_type = "in_stock" THEN 2 ELSE 3 END, `n_a` ASC, `id` DESC';
+		}
 		if ($offset > 0) {
-			$sql .= ' ORDER BY CASE WHEN catalog_type = "on_order" THEN 1 WHEN catalog_type = "in_stock" THEN 2 ELSE 3 END, `n_a` ASC, `id` DESC LIMIT :offset, :lmt ';
+			$sql .= ' ORDER BY '.$order_clause.' LIMIT :offset, :lmt ';
 			$query_args['offset'] = (int)$offset;
 		} else {
-			$sql .= ' ORDER BY CASE WHEN catalog_type = "on_order" THEN 1 WHEN catalog_type = "in_stock" THEN 2 ELSE 3 END, `n_a` ASC, `id` DESC LIMIT :lmt ';
+			$sql .= ' ORDER BY '.$order_clause.' LIMIT :lmt ';
 		}
 	} elseif ($v1!='smlr') {
 		$sql .= ' ORDER BY `n_a` ASC, `id` DESC LIMIT :lmt ';
@@ -535,21 +530,20 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 		
 		if ($is_mobile) {
 			// Mobile: Get images for slider (limited to 5 for better mobile performance)
-			$pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `main` DESC, `pos` ASC LIMIT 5'); 
-			$pdo2->execute([ 'it_id'=>$r['id'] ]); 
+			$pdo2 = $db->prepare('SELECT `name`, `ff` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `main` DESC, `pos` ASC LIMIT 5');
+			$pdo2->execute([ 'it_id'=>$r['id'] ]);
 			$all_images = $pdo2->fetchAll(PDO::FETCH_ASSOC);
-			
+
 			// Ensure maximum 5 images for mobile performance
 			if (count($all_images) > 5) {
 				$all_images = array_slice($all_images, 0, 5);
 			}
-			
+
 			if (count($all_images) > 1) {
 				// Multiple images - create slider HTML with timer overlay and lazy loading
 				$image_html = '<div class="mobile-card-slider" data-lazy-load="pending" style="position: relative;"><div class="mobile-card-slider__container"><div class="mobile-card-slider__track">';
 				foreach ($all_images as $idx => $img) {
-					// For order cars (catalog_type = 'on_order'), use .jpg extension instead of $img_frmt
-					$image_extension = (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
+					$image_extension = '.'.(!empty($img['ff']) ? $img['ff'] : 'jpg');
 					$img_src = '/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/'.$img['name'].$image_extension;
 					// First image: load immediately with lazy loading
 					// Other images: use data-src for deferred loading
@@ -566,20 +560,18 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 				// Single image - normal display with timer
 				$p = $all_images[0] ?? null;
 				$p_src = isset($p['name']) ? '/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/' : '/'._SITE_IMG.'/v2/';
-				// For order cars (catalog_type = 'on_order'), use .jpg extension instead of $img_frmt
-				$image_extension = (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
+				$image_extension = isset($p['ff']) ? '.'.($p['ff'] ?: 'jpg') : '.jpg';
 				$p_name = isset($p['name']) ? $p['name'].$image_extension : 'no_image.svg';
 				$image_html = '<div style="position: relative;"><img src="'.$p_src.$p_name.'" loading="lazy" width="300" height="200" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' main photo" />'.$timer_html_for_image.'</div>';
 			}
 		} else {
 			// Desktop: Single image without wrapper (timer will be in .prc section)
-			$pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id AND `main`="1" LIMIT 1'); 
-			$pdo2->execute([ 'it_id'=>$r['id'] ]); 
+			$pdo2 = $db->prepare('SELECT `name`, `ff` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id AND `main`="1" LIMIT 1');
+			$pdo2->execute([ 'it_id'=>$r['id'] ]);
 			$p = $pdo2->fetch();
-			
+
 			$p_src = isset($p['name']) ? '/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/' : '/'._SITE_IMG.'/v2/';
-			// For order cars (catalog_type = 'on_order'), use .jpg extension instead of $img_frmt
-			$image_extension = (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
+			$image_extension = isset($p['ff']) ? '.'.($p['ff'] ?: 'jpg') : '.jpg';
 			$p_name = isset($p['name']) ? $p['name'].$image_extension : 'no_image.svg';
 			$image_html = '<img src="'.$p_src.$p_name.'" loading="lazy" width="300" height="200" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' main photo" />';
 		}
@@ -930,22 +922,18 @@ function generateProductCardSliderHTML($images, $car_data, $img_frmt) {
         // Single image - no slider needed
         $image = $images[0];
         $p_src = '/'._CAR_IMG.'/'.$car_data['p_path'].'/'.$car_data['id'].'/med/';
-        // For order cars (catalog_type = 'on_order'), use .jpg extension instead of $img_frmt
-        $image_extension = (isset($car_data['catalog_type']) && $car_data['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
-        $p_name = $image['name'].$image_extension;
+        $p_name = $image['name'].'.'.(!empty($image['ff']) ? $image['ff'] : 'jpg');
         return '<img src="'.$p_src.$p_name.'" alt="car '.$car_data['br_nm'].' '.$car_data['mo_nm'].' id'.$car_data['id'].' main photo" />';
     }
-    
+
     // Multiple images - generate slider
     $html = '<div class="product-card-slider">';
     $html .= '<div class="product-card-slider__container">';
     $html .= '<div class="product-card-slider__track">';
-    
+
     foreach ($images as $index => $image) {
         $p_src = '/'._CAR_IMG.'/'.$car_data['p_path'].'/'.$car_data['id'].'/med/';
-        // For order cars (catalog_type = 'on_order'), use .jpg extension instead of $img_frmt
-        $image_extension = (isset($car_data['catalog_type']) && $car_data['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
-        $p_name = $image['name'].$image_extension;
+        $p_name = $image['name'].'.'.(!empty($image['ff']) ? $image['ff'] : 'jpg');
         $html .= '<div class="product-card-slider__slide">';
         $html .= '<img src="'.$p_src.$p_name.'" alt="car '.$car_data['br_nm'].' '.$car_data['mo_nm'].' id'.$car_data['id'].' photo '.($index+1).'" />';
         $html .= '</div>';
@@ -994,22 +982,18 @@ function generateMobileSliderHTML($images, $car_data, $img_frmt) {
         // Single image - no slider needed
         $image = $images[0];
         $p_src = '/'._CAR_IMG.'/'.$car_data['p_path'].'/'.$car_data['id'].'/med/';
-        // For order cars (catalog_type = 'on_order'), use .jpg extension instead of $img_frmt
-        $image_extension = (isset($car_data['catalog_type']) && $car_data['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
-        $p_name = $image['name'].$image_extension;
+        $p_name = $image['name'].'.'.(!empty($image['ff']) ? $image['ff'] : 'jpg');
         return '<img src="'.$p_src.$p_name.'" alt="car '.$car_data['br_nm'].' '.$car_data['mo_nm'].' id'.$car_data['id'].' main photo" />';
     }
-    
+
     // Multiple images - generate mobile slider
     $html = '<div class="mobile-card-slider">';
     $html .= '<div class="mobile-card-slider__container">';
     $html .= '<div class="mobile-card-slider__track">';
-    
+
     foreach ($images as $index => $image) {
         $p_src = '/'._CAR_IMG.'/'.$car_data['p_path'].'/'.$car_data['id'].'/med/';
-        // For order cars (catalog_type = 'on_order'), use .jpg extension instead of $img_frmt
-        $image_extension = (isset($car_data['catalog_type']) && $car_data['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
-        $p_name = $image['name'].$image_extension;
+        $p_name = $image['name'].'.'.(!empty($image['ff']) ? $image['ff'] : 'jpg');
         $html .= '<div class="mobile-card-slider__slide">';
         $html .= '<img src="'.$p_src.$p_name.'" alt="car '.$car_data['br_nm'].' '.$car_data['mo_nm'].' id'.$car_data['id'].' photo '.($index+1).'" />';
         $html .= '</div>';

@@ -3,6 +3,8 @@ defined( '_DOIT' ) or die( 'Restricted access' );
 
 use App\Helper\PhoneHelper;
 
+require_once($_SERVER['DOCUMENT_ROOT'] . '/content/default/includes/contact_form.php');
+
 // Include car description functions
 require_once(__DIR__ . '/../include/car_description.php');
 
@@ -107,12 +109,6 @@ function getImportCountryName($countryId, $language = 'ro') {
 
 <?php
 
-// Debug log for all parameters
-// file_put_contents('filter_debug.log', "\n\nNew request at: " . date('Y-m-d H:i:s') . "\n", FILE_APPEND);
-// file_put_contents('filter_debug.log', "URL: {$_SERVER['REQUEST_URI']}\n", FILE_APPEND);
-// file_put_contents('filter_debug.log', "Query string: {$_SERVER['QUERY_STRING']}\n", FILE_APPEND);
-// file_put_contents('filter_debug.log', "GET params: " . print_r($_GET, true) . "\n", FILE_APPEND);
-
 // Initialize variables
 $rtrn = '';
 $card = '';
@@ -150,7 +146,7 @@ if (isset($_SERVER['QUERY_STRING'])) {
 
         // Rebuild clean query string
         $query_string = http_build_query($all_params);
-        // file_put_contents('filter_debug.log', "Fixed malformed query string to: {$query_string}\n", FILE_APPEND);
+
     }
 
     // Now parse the cleaned query string
@@ -160,7 +156,7 @@ if (isset($_SERVER['QUERY_STRING'])) {
     }
 
     // Log the corrected parameters
-    // file_put_contents('filter_debug.log', "Corrected GET params: " . print_r($_GET, true) . "\n", FILE_APPEND);
+
 }
 
 // Then handle clean URLs for car filters and single car pages
@@ -517,16 +513,16 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 $chkr_av = 1;
 
                 //Collect photos
-                $pdo = $db->prepare('SELECT `name`, `main` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `pos` ASC');
+                $pdo = $db->prepare('SELECT `name`, `main`, `ff` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `pos` ASC');
                 $pdo->execute(['it_id'=>$r['id']]);
-                $img = [];
-                $i=2;
+                $img = ['all'=>[], 'main'=>'', 'main_ff'=>''];
+                $ii = 1;
                 foreach($pdo as $r2){
-                    if ($r2['main']=='1'){ $img['main'] = $r2['name']; $ii = 1;}else{$ii = $i; $i++;}
-                    $img['all'][$ii] = ['name'=>$r2['name'], 'main'=>$r2['main']];
+                    if ($r2['main']=='1'){ $img['main'] = $r2['name']; $img['main_ff'] = $r2['ff']; }
+                    $img['all'][$ii] = ['name'=>$r2['name'], 'main'=>$r2['main'], 'ff'=>$r2['ff']];
+                    $ii++;
                 }
                 unset($r2, $ii);
-                //if (isset($img['all'])){ ksort($img['all']); }else{ $img = ['all'=>[], 'main'=>'unknown']; }
 
                 $z_stat = '';
                 if ( $r['n_a']==0 && $r['act']==1 ){
@@ -606,13 +602,15 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 foreach($img['all'] as $k => $v){
                     $img_cnt++;
                     $act = ($v['main']=='1') ? 'act' : '';
-                    $z_src = '/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/med/'.$v['name'].$img_frmt;
-                    $rtrn .= '<img class="item '.$act.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' photo #'.$img_cnt.'" data-pos="'.$k.'" src="'.$z_src.'" width="100%" height="auto" />';
+                    $v_ext = !empty($v['ff']) ? '.'.$v['ff'] : $img_frmt;
+                    $z_src_med  = '/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/med/'.$v['name'].$v_ext;
+                    $z_src_high = '/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/high/'.$v['name'].$v_ext;
+                    $rtrn .= '<img class="item '.$act.'" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' photo #'.$img_cnt.'" data-pos="'.$k.'" data-high="'.$z_src_high.'" src="'.$z_src_med.'" width="100%" height="auto" />';
                 }
                 $rtrn .= '
                                 </div>
                             </div>';
-                $z_src = isset($img['main'])?'/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/high/'.$img['main'].$img_frmt:'';
+                $z_src = isset($img['main'])?'/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/high/'.$img['main'].(!empty($img['main_ff'])?'.'.$img['main_ff']:$img_frmt):'';
                 //$z_src = (@getimagesize($site_url.$z_src)?$z_src:'');
                 $rtrn .= '<div class="big_pht" role="img" aria-label="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' large photo" data-pos="1" data-cnt="'.$img_cnt.'" style="background-image:url('.$z_src.');" data-src="'.$z_src.'"></div>';
                 $rtrn .= '</div>';
@@ -635,7 +633,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                     <div class="f-carousel" id="heroCarousel">
 
                         <?
-                        if(empty($img) || !$img['main'] ) {
+                        if(empty($img) || empty($img['main']) ) {
                             ?>
                             <div class="f-carousel__slide">
                                 <a href="/media/images/placeholder_car.png" data-fancybox="product" data-id="p<?=$img_cnt?>"
@@ -651,9 +649,10 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                             $img_cnt = 0;
                             foreach($img['all'] as $k => $v){
                                 $img_cnt++;
-                                $z_src = '/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/med/'.$v['name'].$img_frmt;
+                                $v_ext = !empty($v['ff']) ? '.'.$v['ff'] : $img_frmt;
+                                $z_src = '/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/med/'.$v['name'].$v_ext;
 
-                                $z_src2 = isset($img['main'])?'/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/high/'.$v['name'].$img_frmt:'';
+                                $z_src2 = '/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/high/'.$v['name'].$v_ext;
                                 ?>
                                 <div class="f-carousel__slide">
                                     <a href="<?=$z_src2?>" data-fancybox="product" data-id="p<?=$img_cnt?>"
@@ -974,13 +973,8 @@ $iconTelegramParams = array(
                                 
                                 <a class="btn call" href="tel:'.$dynamicPhone.'">'.$lng['w']['call'].'</a>
                                 
-                                 <div class="btn msg2">
-                                  <script data-b24-form="click/6/ijhsqr" data-skip-moving="true">
-(function(w,d,u){
-var s=d.createElement(\'script\');s.async=true;s.src=u+\'?\'+(Date.now()/180000|0);
-var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
-})(window,document,\'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_6.js\');
-</script>
+                                 <div class="btn msg2" onclick="openCarContactModal()" style="cursor:pointer;padding-top:0;padding-bottom:0;line-height:3rem;">
+                                    '.$lng['w']['message'].'
                                 </div>
                                 
                                 <div class="btn msg" style="display: none" >
@@ -1396,3 +1390,21 @@ var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
 }
 
 echo $rtrn;
+
+// Car contact modal
+$_car_lang = $_COOKIE['lang'] ?? 'ro';
+ob_start();
+sauto_contact_form(['lang' => $_car_lang, 'source' => 'cars']);
+$_car_form = ob_get_clean();
+echo '
+<div id="car-contact-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center;" onclick="if(event.target===this)closeCarContactModal()">
+    <div style="position:relative;background:#fff;padding:2rem;border-radius:12px;max-width:520px;width:90%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.3);">
+        <button onclick="closeCarContactModal()" style="position:absolute;top:12px;right:12px;background:none;border:none;cursor:pointer;color:#aaa;padding:6px;line-height:1;border-radius:50%;transition:color 0.15s,background 0.15s;" onmouseover="this.style.color=\'#E61E2D\';this.style.background=\'#fff0f0\'" onmouseout="this.style.color=\'#aaa\';this.style.background=\'none\'"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        '.$_car_form.'
+    </div>
+</div>
+<script>
+function openCarContactModal(){document.getElementById("car-contact-modal").style.display="flex";document.body.style.overflow="hidden";}
+function closeCarContactModal(){document.getElementById("car-contact-modal").style.display="none";document.body.style.overflow="";}
+</script>
+';

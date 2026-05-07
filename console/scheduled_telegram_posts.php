@@ -176,7 +176,16 @@ try {
             }
             
             $telegramMessageId = $response['result'][0]['message_id'] ?? null;
-            
+
+            // Send inline button "Scrie-ne" linking to the chat bot
+            $chat_bot_username = ($post['catalog_type'] === 'order') ? 'on_order_chat_bot' : 'in_stock_chat_bot';
+            $keyboard = [
+                'inline_keyboard' => [[
+                    ['text' => '💬 Scrie-ne', 'url' => 'https://t.me/' . $chat_bot_username],
+                ]]
+            ];
+            $bot->send_caption_with_button('', $keyboard);
+
             // Update post as published
             $stmt = $db->prepare("
                 UPDATE {$prefx}_scheduled_telegram_posts 

@@ -72,26 +72,6 @@ if (__post('sub') == 'mo_search') {
             $extracted_price = __post('prc', 0);
             $extracted_currency = __post('cur');
             
-            // Debug: log all POST data to see what's being sent
-            error_log("POST data keys: " . implode(', ', array_keys($_POST)));
-            error_log("=== DETAILED PRICE DEBUG ===");
-            $post_prc = __post('prc');
-            $post_cur = __post('cur');
-            error_log("Raw POST prc value: " . var_export($post_prc, true) . " (type: " . gettype($post_prc) . ")");
-            error_log("Raw POST cur value: " . var_export($post_cur, true) . " (type: " . gettype($post_cur) . ")");
-            
-            // Check if there's any conversion happening
-            $original_prc = $post_prc;
-            $converted_prc = (float)$post_prc;
-            $int_prc = (int)$post_prc;
-            
-            error_log("Original prc: " . var_export($original_prc, true));
-            error_log("Float converted prc: " . var_export($converted_prc, true));
-            error_log("Int converted prc: " . var_export($int_prc, true));
-            error_log("=== END DETAILED PRICE DEBUG ===");
-			error_log("Direct prc value from POST: " . __post('prc', 'NOT SET'));
-            error_log("Direct cur value from POST: " . __post('cur', 'NOT SET'));
-            
             // Try to extract price from various possible POST fields
             if (!empty($_POST['feature'])) {
 
@@ -133,10 +113,6 @@ if (__post('sub') == 'mo_search') {
                 }
             }
 
-            error_log("FINAL VALUES BEFORE DATABASE UPDATE:");
-            error_log("Final extracted_price: $extracted_price");
-            error_log("Final extracted_currency: $extracted_currency");
-            
             // Update 999 JSON data with new price
             $updated_999_data = null;
             if (!empty($r['999'])) {
@@ -262,7 +238,7 @@ if (__post('sub') == 'mo_search') {
 
                 $pdo = $db->prepare('UPDATE ' . $prefx . '_car_pht SET `main`="0" WHERE `it_id`=:it_id AND `main`="1"');
                 $pdo->execute(['it_id' => __post('id')]);
-                if (__post('main_img') * 1 > 10000) {
+                if (is_numeric(__post('main_img')) && (int)__post('main_img') > 10000) {
                     $pdo = $db->prepare('UPDATE ' . $prefx . '_car_pht SET `main`="1" WHERE `id`=:id AND `it_id`=:it_id');
                     $pdo->execute(['id' => __post('main_img'), 'it_id' => __post('id')]);
                 }
@@ -358,8 +334,8 @@ if (__post('sub') == 'mo_search') {
 
         } else {
 
-            $pdo = $db->prepare('INSERT INTO ' . $prefx . '_car_ctlg (`gr`, `br`, `mo`, `br_nm`, `mo_nm`, `yr`, `vin`, `vin_check_enabled`, `bt`, `sts`, `mlg`, `unit`, `vol`, `hp`, `fl`, `tra`, `wd`, `clr`, `loc`, `txt`, `prc`, `cur`, `soon`, `n_a`, `top`, `tva`, `gift`, `is_at_client`, `import_country_id`, `p_path`, `date`, `author`, `vis`, `catalog_type`) 
-                VALUES (:gr, :br, :mo, :br_nm, :mo_nm, :yr, :vin, :vin_check_enabled, :bt, :sts, :mlg, :unit, :vol, :hp, :fl, :tra, :wd, :clr, :loc, :txt, :prc, :cur, :soon, :n_a, :top, :tva, :gift, :is_at_client, :import_country_id, :p_path, :date, :author, "1", "in_stock")');
+            $pdo = $db->prepare('INSERT INTO ' . $prefx . '_car_ctlg (`gr`, `br`, `mo`, `br_nm`, `mo_nm`, `yr`, `vin`, `vin_check_enabled`, `bt`, `sts`, `mlg`, `unit`, `vol`, `hp`, `fl`, `tra`, `wd`, `clr`, `loc`, `txt`, `prc`, `cur`, `soon`, `n_a`, `top`, `tva`, `gift`, `is_at_client`, `import_country_id`, `p_path`, `date`, `author`, `vis`, `catalog_type`, `inf`, `telegram_published`, `facebook_published`)
+                VALUES (:gr, :br, :mo, :br_nm, :mo_nm, :yr, :vin, :vin_check_enabled, :bt, :sts, :mlg, :unit, :vol, :hp, :fl, :tra, :wd, :clr, :loc, :txt, :prc, :cur, :soon, :n_a, :top, :tva, :gift, :is_at_client, :import_country_id, :p_path, :date, :author, "1", "in_stock", "", 0, 0)');
 
             $pdo->execute([
                 'gr' => __post('gr'),
@@ -393,7 +369,7 @@ if (__post('sub') == 'mo_search') {
                 'import_country_id' => __post('import_country_id', 0),
                 'p_path' => $zY . '/' . $zM,
                 'date' => time(),
-                'author' => __post('author')
+                'author' => __post('author') ?: ($_SESSION['user_name'] ?? '')
             ]);
 
             $last_id = $db->lastInsertId();
@@ -435,22 +411,19 @@ if (__post('sub') == 'mo_search') {
             'id' => $_POST['bx_id'],
             'last_id' => $last_id
         ];
-        error_log("Returning response for 'end': " . json_encode($rtrn));
     } catch (PDOException $e) {
-        error_log("SQL Error in add_new.php: " . $e->getMessage());
         dd("SQL Error: " . $e->getMessage());
     } catch (Exception $e) {
-        error_log("General Error in add_new.php: " . $e->getMessage());
         dd("General Error: " . $e->getMessage());
     }
 } elseif (__post('sub') == 'file_load'){
-    $last_id = __post('last_id'); // Get the last_id from POST data
-    
+    $last_id = __post('last_id');
+
     if (!empty($_FILES)) {
         //**********   FILE UPLOAD
         require_once($ajax_folder . '/file_upload.php');
     }
-    
+
     $rtrn = [
         'img_qu' => __post('img_qu'),
         'bx_id' => __post('bx_id'),

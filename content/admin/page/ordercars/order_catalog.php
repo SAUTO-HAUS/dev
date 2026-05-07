@@ -31,7 +31,7 @@ $user_role = $_SESSION['user_role'] ?? $user_role ?? null;
 $user_branch_id = $_SESSION['user_branch_id'] ?? $user_branch_id ?? null;
 
 // Get cars with catalog_type = 'on_order'
-$pdo = (new \App\Db\OrderCar())->getCarsCtlg($i_max, $user_role, $user_branch_id, $vin_search);
+$pdo = (new \App\Db\OrderCar())->getCarsCtlg($i_max, $user_role, $user_branch_id, $vin_search, 'on_order', $user_type ?? null);
 $total_cars_fetched = count($pdo);
 $has_more_cars = $total_cars_fetched > $i_max;
 $i = 0;

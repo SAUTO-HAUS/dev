@@ -267,6 +267,13 @@ if (!isset($new999)) $new999 = true;
                                         <option value="3"><?= __('cars.3x_month') ?></option>
                                         <option value="4"><?= __('cars.4x_month') ?></option>
                                         <option value="5"><?= __('cars.5x_month') ?></option>
+                                        <option value="6"><?= __('cars.6x_month') ?></option>
+                                        <option value="7"><?= __('cars.7x_month') ?></option>
+                                        <option value="8"><?= __('cars.8x_month') ?></option>
+                                        <option value="9"><?= __('cars.9x_month') ?></option>
+                                        <option value="10"><?= __('cars.10x_month') ?></option>
+                                        <option value="11"><?= __('cars.11x_month') ?></option>
+                                        <option value="12"><?= __('cars.12x_month') ?></option>
                                     </select>
                                 </div>
                                 <div>
@@ -277,6 +284,13 @@ if (!isset($new999)) $new999 = true;
                                         <option value="3" selected><?= __('cars.3_months') ?></option>
                                         <option value="4"><?= __('cars.4_months') ?></option>
                                         <option value="5"><?= __('cars.5_months') ?></option>
+                                        <option value="6"><?= __('cars.6_months') ?></option>
+                                        <option value="7"><?= __('cars.7_months') ?></option>
+                                        <option value="8"><?= __('cars.8_months') ?></option>
+                                        <option value="9"><?= __('cars.9_months') ?></option>
+                                        <option value="10"><?= __('cars.10_months') ?></option>
+                                        <option value="11"><?= __('cars.11_months') ?></option>
+                                        <option value="12"><?= __('cars.12_months') ?></option>
                                     </select>
                                 </div>
                             </div>

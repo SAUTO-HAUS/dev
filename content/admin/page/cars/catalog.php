@@ -30,7 +30,7 @@ $i_max = $display_limit;
 $user_role = $_SESSION['user_role'] ?? $user_role ?? null;
 $user_branch_id = $_SESSION['user_branch_id'] ?? $user_branch_id ?? null;
 
-$pdo = (new \App\Db\Car())->getCarsCtlg($i_max, $user_role, $user_branch_id, $vin_search);
+$pdo = (new \App\Db\Car())->getCarsCtlg($i_max, $user_role, $user_branch_id, $vin_search, 'in_stock', $user_type ?? null);
 $total_cars_fetched = count($pdo);
 $has_more_cars = $total_cars_fetched > $i_max;
 $i = 0;
@@ -92,6 +92,8 @@ $last_car_id = 0;
         $pdo = $db->prepare('SELECT * FROM '.$prefx.'_car_pht WHERE `it_id`= :it_id AND `main`="1"');
         $pdo->execute([ 'it_id' => $r['id'] ]);
 
+        $p_nm = '';
+        $p_ff = '';
         foreach ($pdo as $p) {
             $p_nm = $p['name'];
             $p_ff = $p['ff'];
@@ -367,7 +369,7 @@ $last_car_id = 0;
             $seoRow = $stmtHtml->fetch(PDO::FETCH_ASSOC);
             $hasHtml = !empty($seoRow['params_html']) && strlen(trim($seoRow['params_html'])) > 10;
             ?>
-            <div class="img" style="background-image:url(/<?=_CAR_IMG?>/<?=$r['p_path']?>/<?=$r['id']?>/med/<?=$p_nm . $img_frmt?>), url(/media/images/site/no_image.png);position:relative;">
+            <div class="img" style="background-image:url(/<?=_CAR_IMG?>/<?=$r['p_path']?>/<?=$r['id']?>/med/<?=$p_nm.(!empty($p_ff)?'.'.$p_ff:$img_frmt)?>), url(/media/images/site/no_image.png);position:relative;">
                 <div class="html-indicator" title="<?= $hasHtml ? 'HTML описание есть' : 'HTML описание отсутствует' ?>" style="position:absolute;top:10px;left:10px;width:16px;height:16px;border-radius:3px;text-align:center;line-height:16px;font-size:10px;font-weight:bold;color:#fff;background:<?= $hasHtml ? '#28a745' : '#dc3545' ?>;"><?= $hasHtml ? '✓' : '✗' ?></div>
                 <?php if( $r['act'] == 0 ) : ?>
                     <div class="remove_after" timer="<?= ( $r['del_t']-time() ) ?>" ra="<?= $r['del_t'] ?>">**, **:**:**</div>

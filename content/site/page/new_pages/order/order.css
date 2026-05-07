@@ -1525,22 +1525,25 @@
     .order-process-section {
         padding: 2rem 0;
     }
-    
+
     .order-process-header {
         padding: 0 2rem;
         margin-bottom: 1.5rem;
         max-width: none;
+        width: 100%;
+        box-sizing: border-box;
     }
-    
+
     .order-process-container {
-        margin: 0 2rem;
+        margin: 0;
         max-width: none;
         display: block;
-        padding: 0;
+        padding: 0 2rem;
         max-height: none;
         overflow-y: visible;
         border-left: none;
         border-right: none;
+        box-sizing: border-box;
     }
     
     .order-process-title {
@@ -1625,22 +1628,25 @@
     .order-process-section {
         padding: 2rem 0;
     }
-    
+
     .order-process-header {
         padding: 0 2rem;
         margin-bottom: 1.5rem;
         max-width: none;
+        width: 100%;
+        box-sizing: border-box;
     }
-    
+
     .order-process-container {
-        margin: 0 2rem;
+        margin: 0;
         max-width: none;
         display: block;
-        padding: 0;
+        padding: 0 2rem;
         max-height: none;
         overflow-y: visible;
         border-left: none;
         border-right: none;
+        box-sizing: border-box;
     }
     
     .order-process-title {
@@ -1725,15 +1731,19 @@
     .order-process-section {
         padding: 2rem 0;
     }
-    
+
     .order-process-header {
-        padding: 0 1rem;
+        padding: 0;
         margin-bottom: 1.5rem;
-        max-width: none;
+        margin-left: auto;
+        margin-right: auto;
+        width: calc(100% - 2rem);
+        box-sizing: border-box;
     }
-    
+
     .order-process-container {
-        margin: 0 1rem;
+        margin: 0 auto;
+        width: calc(100% - 2rem);
         max-width: none;
         display: block;
         padding: 0;
@@ -1741,8 +1751,9 @@
         overflow-y: visible;
         border-left: none;
         border-right: none;
+        box-sizing: border-box;
     }
-    
+
     .order-process-title {
         font-size: 1.5rem;
         margin-bottom: 0;
@@ -2474,5 +2485,26 @@
     .order-hero2-button-circle {
         width: 1.5rem;
         height: 1.5rem;
+    }
+}
+
+/* ========================================
+   RESPONSIVE - CONTAINER WIDTH FIX
+   ======================================== */
+
+@media (max-width: 1024px) {
+    .order-slider-container,
+    .order-buying-container,
+    .order-reviews-container,
+    .order-form-section {
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .order-process-header,
+    .order-process-container {
+        width: calc(100% - 2rem);
+        margin: 0 auto;
+        box-sizing: border-box;
     }
 }

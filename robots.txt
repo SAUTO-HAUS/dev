@@ -1,5 +1,12 @@
 User-agent: *
-Disallow: /
+Allow: /*.css?*
+Allow: /*.js?*
+Disallow: /content/admin/
+Disallow: /cache/
+Disallow: /logs/
+Disallow: /tmp/
+Disallow: /*?
 
+Sitemap: https://www.sauto.md/sitemap.xml
 
 

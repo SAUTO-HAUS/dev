@@ -17,7 +17,8 @@ $rbac_permissions = [
         'stock' => ['read' => true],
         'sett' => ['read' => true, 'update' => true],
         'analytics' => ['read' => true],
-        'terminal' => ['read' => true]
+        'terminal' => ['read' => true],
+        'crm' => ['read' => true, 'update' => true, 'delete' => true, 'settings' => true, 'analytics' => true]
     ],
     'admin' => [
         'user_management' => false,
@@ -30,7 +31,8 @@ $rbac_permissions = [
         'seo' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'mail' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true, 'restore' => true],
-        'calculator' => ['read' => true]
+        'calculator' => ['read' => true],
+        'crm' => ['read' => true, 'update' => true, 'analytics' => true]
     ],
     'publisher' => [
         'user_management' => false,
@@ -43,7 +45,8 @@ $rbac_permissions = [
         'seo' => ['read' => false],
         'mail' => ['read' => false],
         'docs' => ['create' => true, 'read' => true, 'update' => true, 'delete' => true],
-        'calculator' => ['read' => true]
+        'calculator' => ['read' => true],
+        'crm' => ['read' => true, 'update' => true]
     ],
     'publisher_limited' => [
         'user_management' => false,
@@ -149,35 +152,39 @@ $rbac_admin_menu = [
     'gordon' => [
         'cars' => ['add', 'ctlg'],
         'ordercars' => ['add', 'ctlg'],
+        'docs' => ['add', 'ctlg'],
+        'crm' => ['calls', 'inbox', 'leads', 'my_leads', 'transaction', 'closed', 'analytics', 'settings'],
         'calculator' => ['calc', 'ctlg', 'usage', 'rates'],
         'tyres' => ['ctlg'],
         'seo' => ['ctlg'],
         'brands_seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
-        'docs' => ['add', 'ctlg'],
         'stock' => ['ctlg', 'extern'],
         'sett' => ['info', 'adm_usr', 'roles', 'phone_config', 'publication_settings', 'monitoring', 'ai_prompt', '404_stats', 'changelog', 'analytics', 'terminal']
     ],
     'admin' => [
         'cars' => ['add', 'ctlg'],
         'ordercars' => ['add', 'ctlg'],
+        'docs' => ['add', 'ctlg'],
+        'crm' => ['calls', 'inbox', 'leads', 'my_leads', 'transaction', 'closed'],
         'calculator' => ['calc', 'ctlg'],
         'tyres' => ['ctlg'],
         'seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
-        'docs' => ['add', 'ctlg']
     ],
     'publisher' => [
         'cars' => ['add', 'ctlg'],
         'ordercars' => ['add', 'ctlg'],
+        'docs' => ['add', 'ctlg'],
+        'crm' => ['calls', 'inbox', 'leads', 'my_leads', 'transaction', 'closed'],
         'calculator' => ['calc', 'ctlg'],
-        'docs' => ['add', 'ctlg']
     ],
     'publisher_limited' => [
         'cars' => ['add', 'ctlg'],
         'ordercars' => ['add', 'ctlg'],
+        'docs' => ['add', 'ctlg'],
+        'crm' => ['calls', 'inbox', 'leads', 'my_leads', 'transaction', 'closed'],
         'calculator' => ['calc', 'ctlg'],
-        'docs' => ['add', 'ctlg']
     ]
 ];
 
@@ -193,6 +200,7 @@ $rbac_internal_actions = [
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['add', 'create', 'detail', 'ctlg'],
         'stock' => ['ctlg'],
+		'crm' => ['calls', 'leads', 'my_leads', 'lead', 'inbox', 'inbox_chat', 'analytics', 'transaction', 'closed', 'junk', 'settings'],
         'sett' => ['info', 'adm_usr', 'roles', 'phone_config', 'publication_settings', 'ai_prompt', '404_stats', 'changelog', 'analytics', 'terminal']
     ],
     'admin' => [
@@ -202,19 +210,22 @@ $rbac_internal_actions = [
         'tyres' => ['add', 'create', 'detail', 'ctlg'],
         'seo' => ['add', 'create', 'detail', 'ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
-        'docs' => ['add', 'create', 'detail', 'ctlg']
+        'docs' => ['add', 'create', 'detail', 'ctlg'],
+		'crm' => ['calls', 'leads', 'my_leads', 'lead', 'inbox', 'inbox_chat', 'analytics', 'transaction', 'closed', 'junk']
     ],
     'publisher' => [
         'cars' => ['add', 'create', 'detail', 'ctlg'],
         'ordercars' => ['add', 'create', 'detail', 'ctlg'],
         'calculator' => ['calc', 'ctlg'],
-        'docs' => ['add', 'create', 'detail', 'ctlg']
+        'docs' => ['add', 'create', 'detail', 'ctlg'],
+		'crm' => ['calls', 'leads', 'my_leads', 'lead', 'inbox', 'inbox_chat', 'transaction', 'closed', 'junk']
     ],
     'publisher_limited' => [
         'cars' => ['add', 'create', 'detail', 'ctlg'],
         'ordercars' => ['add', 'create', 'detail', 'ctlg'],
         'calculator' => ['calc', 'ctlg'],
-        'docs' => ['add', 'create', 'detail', 'ctlg']
+        'docs' => ['add', 'create', 'detail', 'ctlg'],
+        'crm' => ['leads', 'my_leads', 'lead', 'calls', 'inbox', 'inbox_chat']
     ]
 ];
 
@@ -273,19 +284,20 @@ function rbac_get_admin_menu($user_role) {
 /**
  * Update existing admin menu to use RBAC if new role is set
  */
-function rbac_update_admin_menu($user_type, $user_role = null) {
+function rbac_update_admin_menu($user_type, $user_role = null, $user_id = null) {
     global $admin_menu_dev1, $rbac_admin_menu;
-    
+
     // If user has new role, use RBAC menu
     if ($user_role && isset($rbac_admin_menu[$user_role])) {
-        return $rbac_admin_menu[$user_role];
+        $menu = $rbac_admin_menu[$user_role];
+        return $menu;
     }
-    
+
     // Fallback to old system
     if (isset($admin_menu_dev1[$user_type])) {
         return $admin_menu_dev1[$user_type];
     }
-    
+
     return [];
 }
 

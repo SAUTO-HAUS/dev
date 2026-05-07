@@ -2,33 +2,17 @@
 
 use App\Helper\PhoneHelper;
 
+require_once($_SERVER['DOCUMENT_ROOT'] . '/content/default/includes/contact_form.php');
+
 // Get phone number for contacts page
 $generalPhone = PhoneHelper::getGeneralPhone();
 $formattedPhone = PhoneHelper::formatPhone($generalPhone, 'display');
 
-$form = '<script data-b24-form="inline/4/nj2ojp" data-skip-moving="true">
-            (function(w,d,u){
-            var s=d.createElement(\'script\');s.async=true;s.src=u+\'?\'+(Date.now()/180000|0);
-            var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
-            })(window,document,\'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_4.js\');
-        </script>';
-if(! empty($_COOKIE['lang'])){
-    if($_COOKIE['lang']=='en'){
-        $form = '<script data-b24-form="inline/22/wwqx7u" data-skip-moving="true">
-                                                    (function(w,d,u){
-                                                    var s=d.createElement(\'script\');s.async=true;s.src=u+\'?\'+(Date.now()/180000|0);
-                                                    var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
-                                                    })(window,document,\'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_22.js\');
-                                                </script>';
-    }elseif($_COOKIE['lang']=='ro'){
-        $form = '<script data-b24-form="inline/32/wvx2ou" data-skip-moving="true">
-                                                    (function(w,d,u){
-                                                    var s=d.createElement(\'script\');s.async=true;s.src=u+\'?\'+(Date.now()/180000|0);
-                                                    var h=d.getElementsByTagName(\'script\')[0];h.parentNode.insertBefore(s,h);
-                                                    })(window,document,\'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_32.js\');
-                                                </script>';
-    }
-}
+// BITRIX disabled: inline/4/nj2ojp, inline/22/wwqx7u, inline/32/wvx2ou
+$current_lang = $_COOKIE['lang'] ?? 'ro';
+ob_start();
+sauto_contact_form(['lang' => $current_lang, 'source' => 'contacts']);
+$form = ob_get_clean();
 echo '
 <script>
 	$(document).ready(function(){

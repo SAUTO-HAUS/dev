@@ -194,7 +194,7 @@ $(document).ready(function(){
 		}
 	})
 	//-----------CHANGE IMG POSITION
-	$(document).on('click', '#content_box .chng_pos:not(".done")', function(){
+	$(document).on('click', '#content_box .chng_pos:not(.done)', function(){
 		var confirmation = confirm( $(this).children('.off').attr('title')+'?' );
 		if (confirmation){
 			$(this).addClass('done');

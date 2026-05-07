@@ -633,9 +633,14 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
     //$caption_lines[] = "\n\n" . $phone;
     // Add order-specific information
     $caption_lines[] = '📌 Apasă pe hashtag pentru a vedea alte mașini similare';
-
-    // $caption_lines[] = "\n 🔽 Comentariile le citim și răspundem imediat";
-    $caption_lines[] = "\n <a href='https://t.me/Sauto_B24_bot?start=".$marka_auto."_".$model_auto."_".$price_auto."_".$year_auto."'>👉 Comentariile le citim și răspundem imediat 👈</a>";
+    $caption_lines[] = '';
+    if (!empty($r['id'])) {
+        $caption_lines[] = "🔗 https://www.sauto.md/ro/ordercars/" . $r['id'];
+        $caption_lines[] = '';
+    }
+    $caption_lines[] = "📞 <a href='tel:+37379600352'>Pentru detalii: +37379600352</a>";
+    $caption_lines[] = '';
+    $caption_lines[] = "<a href='https://t.me/on_order_chat_bot?start=".$marka_auto."_".$model_auto."_".$price_auto."_".$year_auto."'>📩 Întreabă despre această mașină</a>";
 
     include_once "order_CTelegram.php";
 
@@ -713,8 +718,11 @@ elseif (__post('fn') == 'delete_schedule') {
     }
 }
 elseif (__post('fn') == 'ai_generate' || (isset($_GET['fn']) && $_GET['fn'] == 'ai_generate')) {
+    $_POST['save_to_db'] = $_GET['save_to_db'] ?? $_POST['save_to_db'] ?? '';
+    $_POST['car_id'] = $_GET['car_id'] ?? $_POST['car_id'] ?? '';
+    unset($_GET['save_to_db']);
     $ajax_folder = _ADM_AJAX.'/cars';
-    require_once($ajax_folder . '/ai_generate_description.php');
+    require($ajax_folder . '/ai_generate_description.php');
     echo json_encode($returnIt);
     exit;
 }

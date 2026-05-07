@@ -2,6 +2,7 @@
 if ( $_POST ){
 	if ($_POST['src']=='adm'){
 		define('_DOIT', 1); define('_DEFAULT', $_SERVER['DOCUMENT_ROOT'].'/content/default');
+		$n_row = '&#013;';
 		require_once (_DEFAULT.'/language.php');
 		$z_site = 'https://www.sauto.md';
 		$pCur = mb_strtoupper($_POST['cur'], "utf-8");

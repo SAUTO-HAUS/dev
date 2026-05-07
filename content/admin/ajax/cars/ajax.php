@@ -11,6 +11,7 @@ $rtrn = 'none';
 
 set_time_limit(0);
 
+
 if ( __post('fn')=='search'||__post('fn')=='more'||__post('fn')=='filter' ){
 	$arr_types = ['br','mo','yr','fl','tra','bt','wd','catalog_type','author'];
     $query_args = []; $all_search = []; $search = [];
@@ -635,9 +636,14 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
     //$caption_lines[] = "\n\n" . $phone;
     // строка с хэштег-комментарием
     $caption_lines[] = '📌 Apasă pe hashtag pentru a vedea alte mașini similare';
-
-    // $caption_lines[] = "\n 🔽 Comentariile le citim și răspundem imediat";
-    $caption_lines[] = "\n <a href='https://t.me/Sauto_B24_bot?start=".$marka_auto."_".$model_auto."_".$price_auto."_".$year_auto."'>👉 Comentariile le citim și răspundem imediat 👈</a>";
+    $caption_lines[] = '';
+    if (!empty($r['id'])) {
+        $caption_lines[] = "🔗 https://www.sauto.md/ro/cars/" . $r['id'];
+        $caption_lines[] = '';
+    }
+    $caption_lines[] = "📞 <a href='tel:+37379500645'>Pentru detalii: +37379500645</a>";
+    $caption_lines[] = '';
+    $caption_lines[] = "<a href='https://t.me/in_stock_chat_bot?start=".$marka_auto."_".$model_auto."_".$price_auto."_".$year_auto."'>📩 Întreabă despre această mașină</a>";
 
 
     // Use PublicationService for cars

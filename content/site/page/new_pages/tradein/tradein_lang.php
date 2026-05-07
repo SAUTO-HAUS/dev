@@ -16,26 +16,19 @@ $lng_credit_page = array(
             'ru' => 'Обменяйте свой автомобиль на новый за <span class="text-red">1 день</span> с Trade-In от Sauto',
             'en' => 'Exchange your car in <span class="text-red">1 day</span> with Trade-In from Sauto',
         ),
+        /* BITRIX disabled — replaced with internal sauto_contact_form()
         'form' => array(
             'ro' => "<script data-b24-form='inline/46/sa0e3j' data-skip-moving=\"true\">
-                    (function(w,d,u){
-                        var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
-                        var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-                        })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_46.js');
+                    (function(w,d,u){var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);})(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_46.js');
                 </script>",
             'ru' => "<script data-b24-form='inline/42/u65756' data-skip-moving=\"true\">
-                    (function(w,d,u){
-                        var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
-                        var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-                    })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_42.js');
+                    (function(w,d,u){var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);})(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_42.js');
                 </script>",
             'en' => "<script data-b24-form='inline/44/ull2lk' data-skip-moving=\"true\">
-                    (function(w,d,u){
-                        var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
-                        var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
-                        })(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_44.js');
+                    (function(w,d,u){var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);})(window,document,'https://cdn-ru.bitrix24.ru/b33145896/crm/form/loader_44.js');
                 </script>",
         ),
+        */
         'advantages_title' => array(
             'ro' => 'Avantajele serviciului Trade-In la Sauto',
             'ru' => 'Преимущества Trade-In в Sauto',

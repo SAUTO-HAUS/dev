@@ -10,6 +10,31 @@ if (isset($t_mp[2]) && $t_mp[2] == 'ordercars') {
     include(_SITE_INCL.'/functions.php');
 }
 
+// Catalog redirect fallback: handle legacy ?srt=in_stock / ?srt=on_order URLs (current UI uses ?cat=...)
+if (isset($_GET['srt']) && in_array($_GET['srt'], ['in_stock','on_order'], true) && isset($t_mp[2]) && in_array($t_mp[2], ['cars','ordercars'], true)) {
+    $_srt_target = $_GET['srt'] === 'on_order' ? 'ordercars' : 'cars';
+    if ($t_mp[2] !== $_srt_target) {
+        $_srt_qs = $_GET;
+        unset($_srt_qs['srt']);
+        // Preserve brand/model from URL path (e.g. /cars/bmw/x5 -> /ordercars/bmw/x5)
+        $_srt_path = '';
+        if (isset($t_mp[3]) && $t_mp[3] !== '' && !is_numeric($t_mp[3])) {
+            $_srt_brand = explode('?', $t_mp[3])[0];
+            $_srt_path .= '/'.$_srt_brand;
+            if (isset($t_mp[4]) && $t_mp[4] !== '' && !is_numeric($t_mp[4])) {
+                $_srt_model = explode('?', $t_mp[4])[0];
+                $_srt_path .= '/'.$_srt_model;
+            }
+        }
+        $_srt_url = '/'.$_COOKIE['lang'].'/'.$_srt_target.$_srt_path;
+        if (!empty($_srt_qs)) {
+            $_srt_url .= '?'.http_build_query($_srt_qs);
+        }
+        header('Location: '.$_srt_url, true, 302);
+        exit;
+    }
+}
+
 $GLOBALS['page_is_404'] = false;
 
 
@@ -318,7 +343,14 @@ elseif ( $t_mp[2]=='ordercars' && (!isset($t_mp[3]) || $t_mp[3]=='' || !is_numer
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js"></script>
     <?php }
 
-    if ( !isset($t_mp[2]) || $t_mp[2]=='') {include (_SITE_PAGE.'/home.php');}
+    if ( !isset($t_mp[2]) || $t_mp[2]=='') {
+        // On home, if a filter/sort is active, render the cars listing instead of the home landing page
+        if (isset($_GET['tg']) && $_GET['tg']=='fltr') {
+            include (_SITE_PAGE.'/cars.php');
+        } else {
+            include (_SITE_PAGE.'/home.php');
+        }
+    }
 
     elseif ($t_mp[2]=='cars') {include (_SITE_PAGE.'/cars.php');}
     elseif ($t_mp[2]=='ordercars') {include (_SITE_PAGE.'/ordercars.php');}
@@ -623,6 +655,7 @@ if (isset($t_mp[2])) {
 </noscript>
 <!-- End Google AdWords -->
  
+<!-- BITRIX site_button disabled
 <?php if (empty($_COOKIE['lang']) || ($_COOKIE['lang'] == 'ru')):?>
     <script>
         // Delay chat widget loading to improve mobile CWV
@@ -679,6 +712,7 @@ if (isset($t_mp[2])) {
         }
     </script>
 <?php endif;?>
+-->
 </body>
 
 <?php

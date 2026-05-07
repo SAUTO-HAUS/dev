@@ -72,7 +72,7 @@ elseif ($_POST['fn']=='load_more_brand_cars'){
 	}
 
 	// Get additional filter params if any
-	$filter_params = ['bt', 'fl', 'tra', 'wd', 'clr', 'yr', 'mlg', 'vol', 'prc', 'sts', 'loc', 'gr'];
+	$filter_params = ['bt', 'fl', 'tra', 'wd', 'clr', 'yr', 'mlg', 'vol', 'prc', 'sts', 'loc', 'gr', 'srt'];
 	foreach ($filter_params as $param) {
 		if (isset($_POST[$param]) && !empty($_POST[$param])) {
 			$filter_req[$param] = $_POST[$param];

@@ -265,11 +265,10 @@ try {
                 if ($catalogType === 'in_stock') {
                     $accountIdForApi = $apiAccountId ?? 2;
                 } elseif ($catalogType === 'on_order') {
-                    $accountIdForApi = $apiAccountId ?? 3;
+                    $accountIdForApi = ($apiAccountId == 4) ? 4 : 3; 
                 } else {
                     $accountIdForApi = 3;
                 }
-                echo "[" . date('Y-m-d H:i:s') . "] Using API account ID: {$accountIdForApi} (car 999_api_id: {$apiAccountId}, catalog_type: {$catalogType})\n";
                 $api999Service = new \App\Services\Api999Service($accountIdForApi);
 
                 $carStmt = $db->prepare("SELECT * FROM {$prefx}_car_ctlg WHERE id = :car_id");
@@ -479,11 +478,10 @@ try {
                     if ($catalogType === 'in_stock') {
                         $accountIdForApi = $apiAccountId ?? 2;
                     } elseif ($catalogType === 'on_order') {
-                        $accountIdForApi = $apiAccountId ?? 3;
+                        $accountIdForApi = ($apiAccountId == 4) ? 4 : 3;
                     } else {
                         $accountIdForApi = 3;
                     }
-                    echo "[" . date('Y-m-d H:i:s') . "] Using API account ID: {$accountIdForApi} (car 999_api_id: {$apiAccountId}, catalog_type: {$catalogType})\n";
                     $api999Service = new \App\Services\Api999Service($accountIdForApi);
                     $result = $api999Service->setAdvert(
                         $featuresData['category_id'],

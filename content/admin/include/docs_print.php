@@ -1,7 +1,9 @@
 <?php 
 include_once($_SERVER['DOCUMENT_ROOT'].'/environment.php');
 
-if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'.$_POST['doc_f'].'.php') ){
+$_doc_gr_raw    = $_POST['doc_gr'] ?? '';
+$_doc_gr_folder = in_array($_doc_gr_raw, ['ordercars','cars_extra']) ? 'cars' : $_doc_gr_raw;
+if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_doc_gr_folder.'/'.$_POST['doc_f'].'.php') && $_doc_gr_raw !== '' ){
 	define('_DOIT', 1); define('_DEFAULT', $_SERVER['DOCUMENT_ROOT'].'/content/default');
 
 	require_once (_DEFAULT.'/defines.php');
@@ -66,11 +68,7 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 	}
 	
 	if ( isset($_POST['doc_view']) && $_POST['doc_view']=='1' ){
-		$cont_y = $_POST['cont_y'];
-		$cont_q = $_POST['cont_q'];
-		$cont_n = $_POST['cont_n'];
-		
-		// Retrieve existing document data from database
+		// Retrieve existing document data from database first so we can fall back to DB values
 		if ( isset($_POST['id']) && $_POST['id'] != '' ) {
 			$pdo = $db->prepare('SELECT * FROM '.$prefx.'_docs_ctlg WHERE `id`=:id LIMIT 1');
 			$pdo->execute(['id' => $_POST['id']]);
@@ -127,9 +125,34 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 					}
 				}
 			}
+			// Fill cont_y/q/n and u_id from DB if not in POST
+			if ( $doc_data ) {
+				if ( !isset($_POST['cont_y']) || $_POST['cont_y'] === '' ) $_POST['cont_y'] = $doc_data['y'] ?? '';
+				if ( !isset($_POST['cont_q']) || $_POST['cont_q'] === '' ) $_POST['cont_q'] = $doc_data['q'] ?? '';
+				if ( !isset($_POST['cont_n']) || $_POST['cont_n'] === '' ) $_POST['cont_n'] = $doc_data['n'] ?? '';
+				if ( !isset($_POST['u_id'])   || $_POST['u_id']   == 0  ) $_POST['u_id']   = $doc_data['u']      ?? '';
+			}
+			// Fill client fields from docs_u
+			$_u_id = (int)($_POST['u_id'] ?? 0);
+			if ( $_u_id > 0 ) {
+				$_u_stmt = $db->prepare('SELECT * FROM '.$prefx.'_docs_u WHERE id=? LIMIT 1');
+				$_u_stmt->execute([$_u_id]);
+				$_u_row = $_u_stmt->fetch(PDO::FETCH_ASSOC);
+				if ( $_u_row ) {
+					foreach ( $_u_row as $_uk => $_uv ) {
+						if ( !isset($_POST['u_'.$_uk]) || $_POST['u_'.$_uk] === '' ) {
+							$_POST['u_'.$_uk] = $_uv;
+						}
+					}
+				}
+			}
 		}
+		$cont_y = $_POST['cont_y'] ?? '';
+		$cont_q = $_POST['cont_q'] ?? '';
+		$cont_n = $_POST['cont_n'] ?? '';
 	}
-	
+
+	ob_start();
 	echo '
 	<!DOCTYPE html>
 	<html>
@@ -142,6 +165,38 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 			<title>Print</title>
 			
 			<link rel="stylesheet" type="text/css" href="/content/default/css/default.css" />
+			<script>
+			function crmShowTransactionConfirm(docId) {
+				var _lang = (document.cookie.match(/(?:^|; )lang=([^;]*)/) || [])[1] || "ro";
+				var _tx = {
+					ro: {title: "Tranzacția a fost finalizată?", yes: "Da",  no: "Nu"},
+					ru: {title: "Сделка завершена?",  yes: "Да", no: "Нет"},
+					en: {title: "Transaction completed?", yes: "Yes", no: "No"}
+				};
+				var _t = _tx[_lang] || _tx.ro;
+				var overlay = document.createElement("div");
+				overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:99999;display:flex;align-items:center;justify-content:center;";
+				overlay.innerHTML = \'<div style="background:#fff;border-radius:14px;padding:2rem 2rem 1.5rem;max-width:360px;width:90%;box-shadow:0 8px 32px rgba(0,0,0,.22);text-align:center;">\'+
+					\'<div style="font-size:1.05rem;font-weight:700;color:#191919;margin-bottom:1.2rem;">\' + _t.title + \'</div>\'+
+					\'<div style="display:flex;gap:1rem;justify-content:center;">\'+
+					\'<button id="crm-tc-no" class="crm-tc-btn" style="flex:1;padding:0.75rem;border:1.5px solid #e5e7eb;background:#fff;border-radius:8px;font-size:0.95rem;font-weight:600;color:#555;cursor:pointer;">\' + _t.no + \'</button>\'+
+					\'<button id="crm-tc-yes" class="crm-tc-btn" style="flex:1;padding:0.75rem;background:#E61E2D;border:none;border-radius:8px;font-size:0.95rem;font-weight:700;color:#fff;cursor:pointer;">\' + _t.yes + \'</button>\'+
+					\'<style>.crm-tc-btn{transition:transform 0.15s;}.crm-tc-btn:hover{transform:scale(1.05);}</style>\'+
+					\'</div></div>\';
+				document.body.appendChild(overlay);
+				function doChoice(txStatus) {
+					document.getElementById("crm-tc-yes").disabled = true;
+					document.getElementById("crm-tc-no").disabled  = true;
+					fetch("/ajax.php", {
+						method: "POST",
+						headers: {"Content-Type": "application/x-www-form-urlencoded"},
+						body: "tp=adm&pg=crm&fn=set_doc_tx_status&id=" + docId + "&tx_status=" + txStatus
+					}).then(function(){ window.close(); }).catch(function(){ window.close(); });
+				}
+				document.getElementById("crm-tc-yes").addEventListener("click", function(){ doChoice("closed"); });
+				document.getElementById("crm-tc-no").addEventListener("click",  function(){ doChoice("transaction"); });
+			}
+			</script>
 			<style>
 				@media print {
 					@page {size:auto; size: A4 '.(isset($_POST['doc_f']) && in_array($_POST['doc_f'], ['foaie_parcurs','foaie_parcurs_cars']) ? 'landscape' : 'portrait').'; margin:0;}
@@ -228,35 +283,85 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 					//px2cm(100);
 					//alert(px2cm(1000));';
 					
-					if ( isset($_POST['fn']) ){
-						if ( $_POST['fn']=='save_pdf' ){
-							echo '
-							$(".sep").remove();
-							$("body").addClass("pdf-export");
-							$(".fp_page").css({"min-height":"auto"});
-							if(window.innerWidth < 768){ $(".fp-footer").remove(); $(".fp_page").css({"padding":"3mm","min-height":"auto"}); $(".fp-tables").css("margin-top","3mm"); }
-							
-							setTimeout(function(){
-								var element = document.getElementById("p_cont");
-								var opt = {
-									margin:       0,
-									filename:     "sauto_doc.pdf",
-									image:        { type: "jpeg", quality: 0.98 },
-									html2canvas:  { scale: 2, ignoreElements : (".sep"), useCORS: true },
-									jsPDF:        { orientation: "'.(isset($_POST['doc_f']) && in_array($_POST['doc_f'], ['foaie_parcurs','foaie_parcurs_cars']) ? 'landscape' : 'portrait').'", unit: "mm", format: "a4" },
-									pagebreak:    { mode: "avoid-all" }
-								};
-								html2pdf().set(opt).from(element).save().then(function(){
-									$("body").removeClass("pdf-export");
-								});
-							}, 100);';
-						} elseif ( $_POST['fn']=='print_it' ){
-							echo ' 
-							window.print(); ';
+					$_doc_f_check  = $_POST['doc_f'] ?? '';
+					$_doc_fn       = $_POST['fn'] ?? '';
+					$_doc_gr_check = $_POST['doc_gr'] ?? '';
+
+					if ( $_doc_fn === 'save_pdf' ){
+						echo '
+						$(".sep").remove();
+						$("body").addClass("pdf-export");
+						$(".fp_page").css({"min-height":"auto"});
+						if(window.innerWidth < 768){ $(".fp-footer").remove(); $(".fp_page").css({"padding":"3mm","min-height":"auto"}); $(".fp-tables").css("margin-top","3mm"); }
+
+						setTimeout(function(){
+							var element = document.getElementById("p_cont");
+							var opt = {
+								margin:       0,
+								filename:     "sauto_doc.pdf",
+								image:        { type: "jpeg", quality: 0.98 },
+								html2canvas:  { scale: 2, ignoreElements : (".sep"), useCORS: true },
+								jsPDF:        { orientation: "'.(isset($_POST['doc_f']) && in_array($_POST['doc_f'], ['foaie_parcurs','foaie_parcurs_cars']) ? 'landscape' : 'portrait').'", unit: "mm", format: "a4" },
+								pagebreak:    { mode: "avoid-all" }
+							};
+							html2pdf().set(opt).from(element).save().then(function(){
+								$("body").removeClass("pdf-export");
+							});
+						}, 100);';
+					} elseif ( $_doc_fn === 'print_it' ){
+						// New document (no id in POST) — crm_tracked will be set after this HTML is buffered
+						$_is_new_doc = empty($_POST['id']) && !empty($_POST['save_inf']);
+						if (!$_is_new_doc) {
+							$_doc_db_p = $doc_data ?? null;
+							if (!$_doc_db_p && !empty($_POST['id'])) {
+								$_s2 = $db->prepare('SELECT tx_status, crm_tracked FROM '.$prefx.'_docs_ctlg WHERE id=? LIMIT 1');
+								$_s2->execute([(int)$_POST['id']]);
+								$_doc_db_p = $_s2->fetch(PDO::FETCH_ASSOC) ?: null;
+							}
+							$_show_confirm_print = in_array($_doc_f_check, ['vinzare_avans'])
+								&& (int)($_doc_db_p['crm_tracked'] ?? 0) === 1
+								&& ($_doc_db_p['tx_status'] ?? '') !== 'closed'
+								&& $_doc_gr_check === 'cars';
+						} else {
+							// Creation: we know crm_tracked=1 will be set for these doc types
+							$_crm_doc_types_check = ['con_plata','con_arvon','con_arvon_com','vinzare_avans','cesionar','act_compensare'];
+							$_show_confirm_print = in_array($_doc_f_check, ['vinzare_avans'])
+								&& in_array($_doc_f_check, $_crm_doc_types_check)
+								&& $_doc_gr_check === 'cars';
 						}
-					}else{
-						echo ' 
-						window.close(); ';
+						if ($_show_confirm_print) {
+							echo '
+							window.print();
+							crmShowTransactionConfirm(__CRM_DOC_ID__);';
+						} else {
+							echo '
+							window.print();';
+						}
+					} else {
+						$_doc_db = $doc_data ?? null;
+						if (!$_doc_db && !empty($_POST['id'])) {
+							$_s = $db->prepare('SELECT tx_status, crm_tracked FROM '.$prefx.'_docs_ctlg WHERE id=? LIMIT 1');
+							$_s->execute([(int)$_POST['id']]);
+							$_doc_db = $_s->fetch(PDO::FETCH_ASSOC) ?: null;
+						}
+						$_tx_status_check   = $_doc_db['tx_status']   ?? '';
+						$_crm_tracked_check = (int)($_doc_db['crm_tracked'] ?? 0);
+						$_show_confirm = in_array($_doc_f_check, ['vinzare_avans'])
+							&& $_crm_tracked_check === 1
+							&& in_array($_doc_fn, ['show_it', 'edit_sbmt'])
+							&& $_tx_status_check !== 'closed'
+							&& ($_POST['doc_view'] ?? '') !== '1'
+							&& (
+								$_doc_gr_check === 'cars' ||
+								($_doc_gr_check === 'ordercars' && $_doc_fn === 'edit_sbmt')
+							);
+						if ($_show_confirm) {
+							echo '
+							crmShowTransactionConfirm(__CRM_DOC_ID__);';
+						} elseif ($_doc_fn !== "show_it") {
+							echo '
+							window.close();';
+						}
 					}
 				echo '
 				})
@@ -264,7 +369,7 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 		</head>
 		<body>';
 		
-		include(__DIR__.'/docs/'.$_POST['doc_gr'].'/'.$_POST['doc_f'].'.php');
+		include(__DIR__.'/docs/'.$_doc_gr_folder.'/'.$_POST['doc_f'].'.php');
 		
 		echo '
 	</body>
@@ -388,21 +493,80 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_POST['doc_gr'].'/'
 				}
 			}
 			$pdo = $db->prepare('
-				INSERT INTO '.$prefx.'_docs_ctlg (`gr`, `f`, `abr`, `y`, `q`, `n`, `cd`, `inf`, `u`, `date`, `adm`, `crtd`)
-				VALUES (:gr, :f, :abr, :y, :q, :n, :cd, :inf, :u, :date, :adm, :crtd)
+				INSERT INTO '.$prefx.'_docs_ctlg (`gr`, `f`, `abr`, `y`, `q`, `n`, `cd`, `inf`, `u`, `date`, `adm`, `owner_adm`, `crtd`)
+				VALUES (:gr, :f, :abr, :y, :q, :n, :cd, :inf, :u, :date, :adm, :owner_adm, :crtd)
 			');
 			// Determine creator (adm) from session primarily; fallback to cookie if necessary
 			$adm_creator = isset($_SESSION) && isset($_SESSION['user_id']) && $_SESSION['user_id'] !== '' ? $_SESSION['user_id'] : ( $_COOKIE['usr_id'] ?? 0 );
-			$pdo->execute([ 'gr'=>$_POST['doc_gr'], 'f'=>$_POST['doc_f'], 'abr'=>$abr, 'y'=>$cont_y, 'q'=>$cont_q, 'n'=>$cont_n, 'cd'=>$it_cd, 'inf'=>$inf, 'u'=>$u_id, 'date'=>$doc_date, 'adm'=>$adm_creator, 'crtd'=>date('Y-m-d') ]);
+			$owner_adm_val = !empty($_POST['owner_adm']) ? (int)$_POST['owner_adm'] : null;
+			$pdo->execute([ 'gr'=>$_POST['doc_gr'], 'f'=>$_POST['doc_f'], 'abr'=>$abr, 'y'=>$cont_y, 'q'=>$cont_q, 'n'=>$cont_n, 'cd'=>$it_cd, 'inf'=>$inf, 'u'=>$u_id, 'date'=>$doc_date, 'adm'=>$adm_creator, 'owner_adm'=>$owner_adm_val, 'crtd'=>date('Y-m-d') ]);
+		$_saved_doc_id = (int)$db->lastInsertId();
 
-			if ($info_exist == 1){
-				$pdo = $db->prepare('UPDATE '.$prefx.'_info SET `value`=`value`+1 WHERE `name`=:name AND `x1`=:x1 AND `x2`=:x2 ');
-				$pdo->execute([ 'name'=>'docs', 'x1'=>$_POST['doc_gr'], 'x2'=>$_POST['doc_f'] ]);
+		if ($info_exist == 1){
+			$pdo = $db->prepare('UPDATE '.$prefx.'_info SET `value`=`value`+1 WHERE `name`=:name AND `x1`=:x1 AND `x2`=:x2 ');
+			$pdo->execute([ 'name'=>'docs', 'x1'=>$_POST['doc_gr'], 'x2'=>$_POST['doc_f'] ]);
+		} else {
+			$pdo = $db->prepare('INSERT INTO '.$prefx.'_info (`name`, `xtr`, `x1`, `x2`, `x3`, `value`) VALUES (:name, :xtr, :x1, :x2, :x3, :value)');
+			$pdo->execute([ 'name'=>'docs', 'xtr'=>'', 'x1'=>$_POST['doc_gr'], 'x2'=>$_POST['doc_f'], 'x3'=>'', 'value'=>1 ]);
+		}
+
+		$crm_bridge = __DIR__ . '/crm/crm_docs_bridge.php';
+		$crm_core   = __DIR__ . '/crm/crm_core.php';
+		if (file_exists($crm_bridge) && file_exists($crm_core)) {
+			if (!defined('_CRM_CORE_LOADED')) {
+				require_once($crm_core);
+				define('_CRM_CORE_LOADED', 1);
+			}
+			require_once($crm_bridge);
+			$_new_doc_id  = $_saved_doc_id ?? 0;
+			$_doc_phone   = $u_phn ?? '';
+			$_doc_f       = $_POST['doc_f'] ?? '';
+			$_doc_gr      = $_POST['doc_gr'] ?? '';
+			$_doc_adm     = (int)($adm_creator ?? 0);
+			$_crm_lead_id = (int)($_POST['crm_lead_id'] ?? 0);
+			if ($_doc_gr === 'ordercars') {
+				$_doc_dept = 'order';
+			} elseif ($_doc_adm) {
+				$_adm_row = $db->prepare("SELECT crm_access, department FROM {$prefx}_adm_usr WHERE id=? LIMIT 1");
+				$_adm_row->execute([$_doc_adm]);
+				$_adm_data = $_adm_row->fetch(PDO::FETCH_ASSOC);
+				$_doc_dept = ($_adm_data && in_array($_adm_data['crm_access'], ['stock','order','pruncul']))
+					? $_adm_data['crm_access']
+					: 'stock';
 			} else {
-				$pdo = $db->prepare('INSERT INTO '.$prefx.'_info (`name`, `xtr`, `x1`, `x2`, `x3`, `value`) VALUES (:name, :xtr, :x1, :x2, :x3, :value)');
-				$pdo->execute([ 'name'=>'docs', 'xtr'=>'', 'x1'=>$_POST['doc_gr'], 'x2'=>$_POST['doc_f'], 'x3'=>'', 'value'=>1 ]);
+				$_doc_dept = 'stock';
+			}
+			$_crm_doc_types = ['con_plata','con_arvon','con_arvon_com','vinzare_avans','cesionar','act_compensare'];
+			if ($_new_doc_id && in_array($_doc_f, $_crm_doc_types)) {
+				$db->prepare("UPDATE {$prefx}_docs_ctlg SET crm_tracked=1 WHERE id=:id")
+				   ->execute([':id' => $_new_doc_id]);
+			}
+			if ($_new_doc_id && $_doc_f) {
+				if ($_doc_phone) {
+					$_bridge_result = docs_bridge_link($db, $prefx, $_new_doc_id, $_doc_f, $_doc_phone, $_doc_adm, $_doc_dept);
+				} elseif ($_crm_lead_id) {
+					$_bridge_result = docs_bridge_link_by_lead($db, $prefx, $_new_doc_id, $_doc_f, $_crm_lead_id, $_doc_adm, $_doc_dept);
+				}
 			}
 		}
 	}
+}
+
+$_html_output  = ob_get_clean();
+$_final_doc_id = (int)($_saved_doc_id ?? 0);
+if (!$_final_doc_id) $_final_doc_id = (int)($_POST['id'] ?? 0);
+
+// At creation of vinzare_avans (cars/ordercars): redirect to catalog with confirm param instead of print window
+$_is_creation     = !empty($_saved_doc_id);
+$_needs_redirect  = $_is_creation
+    && in_array(($_POST['doc_f'] ?? ''), ['vinzare_avans'])
+    && in_array(($_POST['doc_gr'] ?? ''), ['cars', 'ordercars']);
+if ($_needs_redirect && $_final_doc_id) {
+    $lang = $_COOKIE['lang'] ?? 'ro';
+    header('Location: /' . $lang . '/adminsauto/docs/ctlg?crm_confirm=' . $_final_doc_id);
+    exit;
+}
+
+echo str_replace('__CRM_DOC_ID__', $_final_doc_id, $_html_output);
 }
 ?>
