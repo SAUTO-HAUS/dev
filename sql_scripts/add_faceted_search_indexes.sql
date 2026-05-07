@@ -16,3 +16,4 @@ ALTER TABLE gh3sp_car_ctlg ADD INDEX idx_car_ctlg_vol (vol);
 ALTER TABLE gh3sp_car_ctlg ADD INDEX idx_car_ctlg_sts (sts);
 ALTER TABLE gh3sp_car_ctlg ADD INDEX idx_car_ctlg_facet_base (vis, act, catalog_type, br, mo);
 
+-- test deployment
