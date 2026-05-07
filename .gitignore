@@ -14,7 +14,6 @@ ssl/
 uploads/
 sitemap_backup/
 environment.php
-.htaccess
 dev-tools/
 sitemap.xml
 sitemap-*.xml
