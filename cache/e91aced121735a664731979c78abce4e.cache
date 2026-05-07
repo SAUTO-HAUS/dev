@@ -1,1 +1,0 @@
-{"error":{"errors":[{"field":"boosterSettings.Booster","message":"is nil","value":null}],"reason":"server_error","code":500,"message":"Internal error"}}

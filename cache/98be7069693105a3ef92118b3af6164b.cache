@@ -1,1 +1,0 @@
-{"error":{"errors":[{"field":"get_features","message":"input: rpc error: code = Unknown desc = GetOptionsList: feature_not_found","value":null}],"reason":"internal_error","code":500,"message":"Internal error"}}
