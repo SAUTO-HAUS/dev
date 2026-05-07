@@ -467,7 +467,7 @@ JAVASCRIPT;
 			<option value="" data-br="" class="def" disabled selected>-</option>
 			'.$mo_html.'
 		</select></label>
-		<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" required /></label>
+		<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" /></label>
 		<label class="lbl"><span class="ttl">Price</span><input class="need" type="number" name="prc" title="Price" required /></label>
 		<label class="lbl"><span class="ttl">Currency</span><select name="cur" title="Currency" required>
 			<option value="MDL" selected>MDL</option>
@@ -1151,7 +1151,7 @@ JAVASCRIPT;
 			<option value="" data-br="" class="def" disabled selected>-</option>
 			'.$mo_html.'
 		</select></label>
-		<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" required /></label>
+		<label class="lbl"><span class="ttl">VIN code</span><input class="need" type="text" name="vin" title="VIN code" /></label>
 
 		<label class="lbl"><span class="ttl">Price, EUR</span><input class="need" type="number" name="prc_eur" title="Price EUR" required /></label>
 		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="number" name="prc" title="Price MDL" required /></label>

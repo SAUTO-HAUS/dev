@@ -74,7 +74,7 @@ if ($new999) {
                 <span class="text-danger">*</span>
             </label>
 
-            <select class="account_999_id form-control" <?php if (!$new999) : ?> disabled <?php endif; ?> name="999_api_id" def_text="<?= __('cars.select_subcategory_offer_types') ?>...">
+            <select class="account_999_id form-control" name="999_api_id" def_text="<?= __('cars.select_subcategory_offer_types') ?>...">
                 <?php if (!empty(Api999Service::API_KEY)) : ?>
                     <?php foreach (Api999Service::API_KEY as $id => $api_key) : ?>
                         <option value="<?= $id ?>" <?php if(($new999 && $id == $default999AccountId) || (!$new999 && !empty($car['999_api_id']) && $car['999_api_id'] == $id)) : ?> selected <?php endif; ?>><?= $api_key['name'] ?></option>

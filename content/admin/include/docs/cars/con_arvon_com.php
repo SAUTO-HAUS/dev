@@ -65,7 +65,7 @@ $rtrn = '
 			</p>
 		</div>
 		<div class="gr">
-			<p><b>1.</b> Părțile au încheiat de comun acord prezentul contract în vederea participării la licitație pentru procurarea autovehiculului brand <span class="txtln">&nbsp;&nbsp;<span class="txt_cpt">'.(isset($_POST['br']) ? ucwords(strtolower(str_replace('_', ' ', $_POST['br']))) : '').'</span>&nbsp;&nbsp;</span>, model <span class="txtln">&nbsp;&nbsp;<span class="txt_cpt">'.(isset($_POST['mo']) ? ucwords(str_replace('_', ' ', $_POST['mo'])) : '').'</span>&nbsp;&nbsp;</span>, VIN COD nr.<span class="txtln">&nbsp;&nbsp;<span class="txt_cpt">'.$_POST['vin'].'</span>&nbsp;&nbsp;</span>, conform datelor prezentate în ofertă. Suma arvunei va fi inclusă în suma prețului total al autovehiculului.</p> 
+			<p><b>1.</b> Părțile au încheiat de comun acord prezentul contract în vederea participării la licitație pentru procurarea autovehiculului brand <span class="txtln">&nbsp;&nbsp;<span class="txt_cpt">'.(isset($_POST['br']) ? ucwords(strtolower(str_replace('_', ' ', $_POST['br']))) : '').'</span>&nbsp;&nbsp;</span>, model <span class="txtln">&nbsp;&nbsp;<span class="txt_cpt">'.(isset($_POST['mo']) ? ucwords(str_replace('_', ' ', $_POST['mo'])) : '').'</span>&nbsp;&nbsp;</span>'.(isset($_POST['vin']) && $_POST['vin'] !== '' ? ', VIN COD nr.<span class="txtln">&nbsp;&nbsp;<span class="txt_cpt">'.$_POST['vin'].'</span>&nbsp;&nbsp;</span>' : '').',  conform datelor prezentate în ofertă. Suma arvunei va fi inclusă în suma prețului total al autovehiculului.</p> 
 		</div>
 		<div class="gr">
 			<p><b>2.</b> Vânzătorul se obligă:</p>
@@ -78,7 +78,7 @@ $rtrn = '
 			<p><b>3.</b> Cumpărătorul se obligă:</p>
 			<ul>
 				<li><b>a.</b> Să achite arvuna.</li>
-				<li><b>b.</b> Să încheie contractul de vânzare-cumpărare a autovehiculului după ce s-a câștigat licitația pentru autovehiculul brand <span class="txtln">&nbsp;&nbsp;<span class="txt_cpt">'.(isset($_POST['br']) ? ucwords(strtolower(str_replace('_', ' ', $_POST['br']))) : '').'</span>&nbsp;&nbsp;</span>, model <span class="txtln">&nbsp;&nbsp;<span class="txt_cpt">'.(isset($_POST['mo']) ? ucwords(str_replace('_', ' ', $_POST['mo'])) : '').'</span>&nbsp;&nbsp;</span>,VIN nr.<span class="txtln">&nbsp;&nbsp;<span class="txt_cpt">'.$_POST['vin'].'</span>&nbsp;&nbsp;</span>.  După încheierea contractului de vânzare-cumpărare, să achite suma necesară pentru procurarea autovehiculului.</li>
+				<li><b>b.</b> Să încheie contractul de vânzare-cumpărare a autovehiculului după ce s-a câștigat licitația pentru autovehiculul brand <span class="txtln">&nbsp;&nbsp;<span class="txt_cpt">'.(isset($_POST['br']) ? ucwords(strtolower(str_replace('_', ' ', $_POST['br']))) : '').'</span>&nbsp;&nbsp;</span>, model <span class="txtln">&nbsp;&nbsp;<span class="txt_cpt">'.(isset($_POST['mo']) ? ucwords(str_replace('_', ' ', $_POST['mo'])) : '').'</span>&nbsp;&nbsp;</span>'.(isset($_POST['vin']) && $_POST['vin'] !== '' ? ',VIN nr.<span class="txtln">&nbsp;&nbsp;<span class="txt_cpt">'.$_POST['vin'].'</span>&nbsp;&nbsp;</span>.' : '').' După încheierea contractului de vânzare-cumpărare, să achite suma necesară pentru procurarea autovehiculului.</li>
 				<li><b>c.</b> Să achite testarea tehnică a autovehiculului după importul acestuia.</li>
 				<li><b>d.</b> Să achite înregistrarea autovehiculului pe numele cumpărătorului.</li>
 			</ul>

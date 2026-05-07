@@ -1,0 +1,918 @@
+@media (max-width: 1024px) {
+
+    /* ============================================================
+       CALLS (/crm/calls)
+    ============================================================ */
+
+    #crm-calls-wrap { padding: 0 12px 0.5rem; max-width: 100%; }
+
+    /* --- Tabs --- */
+    .calls-tabs {
+        flex-wrap: wrap;
+        gap: 6px;
+        border-bottom: none;
+        padding: 0 4px;
+        margin-bottom: 0.75rem;
+        justify-content: center;
+    }
+    .calls-tabs-spacer { display: none; }
+
+    .calls-tab {
+        padding: 0.45rem 0.85rem;
+        font-size: 0.82rem;
+        border-bottom: none;
+        border-radius: 8px;
+        margin: 0;
+        background: #f5f5f5;
+        border: 1px solid #e8e8e8;
+        flex: 0 0 calc(50% - 3px);
+        justify-content: center;
+        box-sizing: border-box;
+    }
+    .calls-tab.active {
+        background: #E61E2D;
+        color: #fff;
+        border-color: #E61E2D;
+        border-bottom-color: #E61E2D;
+    }
+    .calls-tab.active .calls-tab-count {
+        background: rgba(255,255,255,0.25);
+        color: #fff;
+    }
+
+    .calls-tabs-period {
+        width: 100%;
+        box-sizing: border-box;
+        border-left: none;
+        border-top: 1px solid #f0f0f0;
+        padding: 6px 0 0 0;
+        margin: 4px 0 0 0;
+    }
+    .calls-period-select { width: 100%; box-sizing: border-box; }
+
+    .calls-search-wrap { width: 100%; box-sizing: border-box; margin-top: 6px; }
+    #calls-search { width: 100%; box-sizing: border-box; }
+
+    /* --- Table → Cards --- */
+    .calls-tbl thead { display: none; }
+    .calls-table-wrap { overflow-x: visible; border: none; border-radius: 0; background: transparent; }
+
+    .calls-tbl,
+    .calls-tbl tbody { display: block; width: 100%; box-sizing: border-box; }
+    .calls-tbl tr:not(.crm-calls-day-sep):not(.crm-leads-row) td { box-sizing: border-box; padding: 0; margin: 0; }
+
+    .calls-tbl tbody tr.crm-calls-day-sep { display: flex !important; width: 100%; justify-content: center; margin-bottom: 6px; }
+    .calls-tbl tbody tr.crm-calls-day-sep td { display: block !important; background: transparent !important; padding: 0.5rem 0 0.25rem !important; text-align: center; border: none !important; }
+    .calls-tbl tbody tr.crm-calls-day-sep .day-label { background: transparent; }
+
+    /* Card:
+       col1(22px) = icon
+       col2(1fr)  = phone/name
+       col3(auto) = ora + icons
+       ─────────────────────────
+       row1: icon | phone+viber+wa | ora
+       row2:  —  | manager        | audio+status
+    */
+    .calls-tbl tr:not(.crm-calls-day-sep):not(.crm-leads-row) {
+        display: grid;
+        grid-template-columns: 22px minmax(0,1fr) minmax(0,1fr) auto;
+        grid-template-rows: auto auto auto;
+        background: #fff;
+        border: 1px solid #eaeaea;
+        border-radius: 10px;
+        margin: 0 0 6px 0;
+        padding: 6px 8px;
+        column-gap: 6px;
+        row-gap: 14px;
+        box-sizing: border-box;
+    }
+    .calls-tbl tr.row-missed { border-left: 3px solid #ef4444; }
+    .calls-tbl tr.row-dimmed { opacity: 0.65; }
+
+    /* td5: timp & durată — row 1, stânga */
+    .calls-tbl tr:not(.crm-calls-day-sep):not(.crm-leads-row) td:nth-child(5) {
+        grid-column: 1 / 3; grid-row: 1;
+        display: flex; flex-direction: column; justify-content: center; gap: 0;
+        font-size: 0.75rem; color: #888;
+        padding-bottom: 3px !important;
+    }
+    .calls-tbl tr:not(.crm-calls-day-sep):not(.crm-leads-row) td:nth-child(5) .calls-time-date { display: block !important; }
+    .calls-time-date { display: block !important; font-size: 0.8rem; color: #aaa; margin-top: 0.1rem; }
+
+    /* td7: status — row 1, dreapta, centrat în coloana sa */
+    .calls-tbl tr:not(.crm-calls-day-sep):not(.crm-leads-row) td:nth-child(7) {
+        grid-column: 3 / 5; grid-row: 1;
+        display: flex; align-items: center; justify-content: flex-end;
+        font-size: 0.85rem; font-weight: 600;
+        padding-bottom: 3px !important;
+    }
+
+    /* td1: icon — row 2, col 1 */
+    #crm-calls-wrap .calls-tbl tr:not(.crm-calls-day-sep) td:nth-child(1) {
+        grid-column: 1; grid-row: 2;
+        display: flex; align-items: center; justify-content: center;
+        width: 22px;
+    }
+
+    /* td2: name / phone + viber + wa — row 2, col 2-3 */
+    #crm-calls-wrap .calls-tbl tr:not(.crm-calls-day-sep) td:nth-child(2) {
+        grid-column: 2 / 4; grid-row: 2;
+        display: flex; flex-direction: column; justify-content: center; gap: 2px; min-width: 0;
+    }
+    .calls-client-phone { font-size: 0.9rem; font-weight: 600; color: #222; white-space: nowrap; flex-shrink: 0; }
+    .calls-client-name  { display: block; font-size: 0.78rem; color: #888; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* td6: audio — row 2, col 4 */
+    #crm-calls-wrap .calls-tbl tr:not(.crm-calls-day-sep) td:nth-child(6) {
+        grid-column: 4; grid-row: 2;
+        display: flex; align-items: center; justify-content: flex-end; gap: 4px;
+        padding-left: 8px !important;
+    }
+
+    /* td3: manager — row 3, col 1-2 */
+    #crm-calls-wrap .calls-tbl tr:not(.crm-calls-day-sep) td:nth-child(3) {
+        grid-column: 1 / 3; grid-row: 3; min-width: 0;
+        font-size: 0.75rem; color: #555;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        padding-top: 2px !important;
+    }
+
+    /* td4: sursă — row 3, col 3-5 */
+    #crm-calls-wrap .calls-tbl tr:not(.crm-calls-day-sep) td:nth-child(4) {
+        grid-column: 3 / 5; grid-row: 3; min-width: 0;
+        font-size: 0.75rem; color: #888;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        display: block; text-align: right;
+        padding-top: 2px !important;
+    }
+
+
+    .calls-search-reset { width: 28px !important; height: 28px !important; font-size: 1rem !important; }
+
+    /* Viber/WhatsApp + play/text — aceeași familie, aceeași mărime 34px */
+    .calls-tbl .crm-contact-icon { display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px; flex-shrink: 0; opacity: 1 !important; }
+    .calls-tbl .crm-contact-icon img { width: 34px !important; height: 34px !important; }
+    .calls-tbl .crm-contact-icon + .crm-contact-icon { margin-left: 12px; }
+    .calls-play-btn { width: 38px; height: 38px; flex-shrink: 0; }
+    .calls-play-btn img { width: 38px !important; height: 38px !important; }
+    .calls-txt-btn { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; flex-shrink: 0; }
+    .calls-txt-icon { width: 38px !important; height: 38px !important; display: block; }
+
+    .calls-audio-cell { gap: 5px; }
+    .calls-audio-sep { display: none; }
+    .calls-speed-wrap { display: none !important; }
+    .calls-speed-wrap-mobile { display: inline-flex !important; }
+    .calls-settings-btn { display: none; }
+    .calls-settings-btn-mobile { display: inline-flex !important; margin-left: 8px; vertical-align: middle; }
+    .calls-settings-btn-mobile img { width: 32px !important; height: 32px !important; }
+
+    /* ============================================================
+       INBOX (/crm/inbox)
+    ============================================================ */
+
+    #crm-inbox-wrap { padding: 0 12px 0.5rem; max-width: 100%; }
+
+    /* Filtre canale — centrat */
+    #crm-inbox-wrap .inbox-channels-bar { justify-content: center; padding-left: 0 !important; padding-right: 0 !important; margin-left: 0 !important; margin-right: 0 !important; }
+    #crm-inbox-wrap .crm-filters { padding-left: 0; padding-right: 0; width: 100%; box-sizing: border-box; }
+    #crm-inbox-wrap .inbox-channels-bar a[style*="width:38px"] { width: 44px !important; height: 44px !important; }
+    #crm-inbox-wrap .inbox-channels-bar img { width: 28px !important; height: 28px !important; }
+
+    /* Table → Cards */
+    #crm-inbox-wrap .calls-tbl { display: block !important; width: 100% !important; box-sizing: border-box !important; }
+    #crm-inbox-wrap .calls-tbl thead { display: none !important; }
+    #crm-inbox-wrap .calls-tbl tbody { display: block !important; width: 100% !important; box-sizing: border-box !important; }
+    #crm-inbox-wrap .calls-tbl tr:not(.crm-inbox-day-sep) td { box-sizing: border-box !important; padding: 0 !important; margin: 0 !important; }
+
+    /* Day separator */
+    #crm-inbox-wrap .calls-tbl tbody tr.crm-inbox-day-sep { display: flex !important; width: 100%; justify-content: center; margin-bottom: 6px; background: #bbb !important; border-radius: 6px; }
+    #crm-inbox-wrap .calls-tbl tbody tr.crm-inbox-day-sep td { display: flex !important; flex: 1; width: 100%; justify-content: center; background: #bbb !important; padding: 0.25rem 0.5rem !important; text-align: center; border: none !important; font-size: 0.78rem !important; color: #fff !important; border-radius: 6px; }
+    #crm-inbox-wrap .calls-tbl tbody tr.crm-inbox-day-sep td * { color: #fff !important; background: transparent !important; }
+    #crm-inbox-wrap .calls-tbl tbody tr.crm-inbox-day-sep:hover td { background: #bbb !important; }
+    #crm-inbox-wrap .calls-tbl tbody tr.crm-inbox-day-sep .day-label { background: transparent !important; color: #fff !important; padding: 0 !important; border-radius: 0 !important; }
+
+    /* Card layout:
+       row1: canal(col1) | sender(col2) | dată(col3)
+       row2: mesaj(col1-3)
+       row3: status(col1-3)
+    */
+    #crm-inbox-wrap .calls-tbl tr:not(.crm-inbox-day-sep) {
+        display: grid !important;
+        grid-template-columns: auto 1fr auto !important;
+        grid-template-rows: auto auto auto !important;
+        background: #fff !important;
+        border: 1px solid #eaeaea !important;
+        border-radius: 10px !important;
+        margin: 0 0 6px 0 !important;
+        padding: 8px 10px !important;
+        column-gap: 8px !important;
+        row-gap: 4px !important;
+        box-sizing: border-box !important;
+        cursor: pointer !important;
+    }
+
+    /* td1: canal — row 1, col 1 */
+    #crm-inbox-wrap .calls-tbl tr:not(.crm-inbox-day-sep) td:nth-child(1) {
+        grid-column: 1 !important; grid-row: 1 !important;
+        display: flex !important; align-items: center !important; justify-content: flex-start !important;
+        width: 28px !important;
+    }
+    /* ascunde label canal principal, păstrează sub-label */
+    #crm-inbox-wrap .calls-tbl tr:not(.crm-inbox-day-sep) td:nth-child(1) > div > div { display: none !important; }
+    #crm-inbox-wrap .calls-tbl tr:not(.crm-inbox-day-sep) td:nth-child(1) > div > div:last-child { display: block !important; font-size: 0.65rem; color: #aaa; }
+    /* iconița canal 28px */
+    #crm-inbox-wrap .calls-tbl tr:not(.crm-inbox-day-sep) td:nth-child(1) > div > span { width: 28px !important; height: 28px !important; min-width: 28px !important; }
+
+    /* td2: sender — row 1, col 2, centrat */
+    #crm-inbox-wrap .calls-tbl tr:not(.crm-inbox-day-sep) td:nth-child(2) {
+        grid-column: 2 !important; grid-row: 1 !important;
+        display: flex !important; align-items: center !important; justify-content: center !important; gap: 6px !important; min-width: 0 !important;
+    }
+    #crm-inbox-wrap .calls-tbl tr:not(.crm-inbox-day-sep) td:nth-child(2) .calls-client-phone {
+        background: #f0f0f0 !important; border-radius: 6px !important; padding: 2px 8px !important;
+    }
+
+    /* td5: status — row 2, col 1, aliniat cu iconița canal */
+    #crm-inbox-wrap .calls-tbl tr:not(.crm-inbox-day-sep) td:nth-child(5) {
+        grid-column: 1 !important; grid-row: 2 !important;
+        display: flex !important; align-items: center !important; justify-content: flex-start !important;
+        width: 28px !important;
+    }
+    /* status — doar icon, fără text; dacă nu e img (closed) arată text mic */
+    #crm-inbox-wrap .calls-tbl tr:not(.crm-inbox-day-sep) td:nth-child(5) span { display: inline-flex !important; align-items: center !important; justify-content: center !important; width: 28px !important; height: 28px !important; min-width: 28px !important; max-width: 28px !important; font-size: 0 !important; padding: 0 !important; gap: 0 !important; border-radius: 50% !important; overflow: hidden !important; }
+    #crm-inbox-wrap .calls-tbl tr:not(.crm-inbox-day-sep) td:nth-child(5) span img { width: 14px !important; height: 14px !important; display: block !important; object-fit: contain !important; flex-shrink: 0 !important; }
+
+    /* td3: mesaj — row 2, col 2-3 */
+    #crm-inbox-wrap .calls-tbl tr:not(.crm-inbox-day-sep) td:nth-child(3) {
+        grid-column: 2 / 4 !important; grid-row: 2 !important;
+        display: flex !important; align-items: center !important; min-width: 0; font-size: 0.78rem; color: #666;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    #crm-inbox-wrap .calls-tbl tr:not(.crm-inbox-day-sep) td:nth-child(3) div:last-child { display: none !important; }
+
+    /* td4: dată — row 1, col 3 */
+    #crm-inbox-wrap .calls-tbl tr:not(.crm-inbox-day-sep) td:nth-child(4) {
+        grid-column: 3 !important; grid-row: 1 !important;
+        display: flex !important; flex-direction: column !important; align-items: flex-end !important; justify-content: center !important;
+        font-size: 0.75rem; color: #888;
+    }
+
+    /* td6, td7 — ascunse */
+    #crm-inbox-wrap .calls-tbl tr:not(.crm-inbox-day-sep) td:nth-child(6) { display: none !important; }
+    #crm-inbox-wrap .calls-tbl tr:not(.crm-inbox-day-sep) td:nth-child(7) { display: none !important; }
+
+    /* ============================================================
+       LEADS (/crm/leads)
+    ============================================================ */
+
+    #crm-leads-wrap { padding: 0 12px 0.5rem; max-width: 100%; }
+
+    /* Header: titlu rând 1, arhivă + navigator luni rând 2 */
+    #crm-leads-wrap .calls-header { flex-wrap: wrap; gap: 0.5rem; }
+    #crm-leads-wrap .calls-header-title { flex: 0 0 auto; order: 0; }
+    #crm-leads-wrap .calls-header::after { content: ''; flex-basis: 100%; height: 0; order: 1; }
+    #crm-leads-wrap #leads-header-right { order: 2; flex: 1 1 100%; margin-left: 0 !important; width: 100%; }
+    #crm-leads-wrap #leads-header-right .crm-btn { flex: 1 1 0 !important; min-width: 0 !important; width: 0 !important; height: 36px !important; padding: 0 !important; box-sizing: border-box !important; justify-content: center !important; overflow: hidden !important; margin: 0 !important; }
+    #crm-leads-wrap #leads-month-nav { flex: 1 1 0 !important; min-width: 0 !important; width: 0 !important; height: 36px !important; box-sizing: border-box !important; margin: 0 !important; }
+
+    /* Tabs */
+    #crm-leads-wrap .calls-tabs { flex-wrap: wrap; gap: 6px; border-bottom: none; justify-content: center; margin-bottom: 0.75rem; }
+    #crm-leads-wrap .calls-tabs-spacer { display: none; }
+    #crm-leads-wrap .calls-tab { padding: 0.45rem 0.85rem; font-size: 0.82rem; border-bottom: none; border-radius: 8px; margin: 0; background: #f5f5f5; border: 1px solid #e8e8e8; flex: 0 0 calc(50% - 3px); justify-content: center; box-sizing: border-box; }
+    #crm-leads-wrap .calls-tab.active { background: #E61E2D; color: #fff; border-color: #E61E2D; }
+    #crm-leads-wrap .calls-tab.active .calls-tab-count { background: rgba(255,255,255,0.25); color: #fff; }
+    /* Rândul filtru+select+search */
+    #crm-leads-wrap .calls-tabs > div[style*="margin-left:auto"] {
+        width: 100% !important; margin-left: 0 !important;
+        display: flex !important; align-items: center !important;
+        flex-wrap: nowrap !important; gap: 6px !important;
+        order: -1 !important;
+    }
+    /* navigator luni + Filtru + Surse — pe același rând, 3 coloane egale */
+    #crm-leads-wrap .calls-tabs > div[style*="margin-left:auto"] > button,
+    #crm-leads-wrap .calls-tabs > div[style*="margin-left:auto"] > div {
+        flex: 1 1 0 !important; min-width: 0 !important; height: 36px !important;
+        box-sizing: border-box !important; padding: 0 !important;
+        margin: 0 !important;
+    }
+    #crm-leads-wrap .calls-tabs > div[style*="margin-left:auto"] > button {
+        justify-content: center !important;
+    }
+    #crm-leads-wrap .calls-tabs > div[style*="margin-left:auto"] > div[style*="border:1px solid #e0e0e0"] {
+        justify-content: center !important; flex: 1 1 0 !important;
+    }
+    #src-multiselect-btn { width: 100% !important; height: 36px !important; box-sizing: border-box !important; padding: 0 0.75rem !important; justify-content: center !important; }
+    #crm-leads-wrap .calls-tabs-period { flex: 1 1 0 !important; min-width: 0 !important; width: 0 !important; box-sizing: border-box !important; border-left: none !important; border-top: none !important; padding: 0 !important; margin: 0 !important; height: 36px !important; }
+    #crm-leads-wrap .calls-period-select { width: 100% !important; height: 36px !important; box-sizing: border-box !important; margin: 0 !important; padding: 0 6px !important; }
+    #crm-leads-wrap .calls-search-wrap { flex-basis: 100% !important; width: 100% !important; box-sizing: border-box !important; margin-top: 0 !important; order: 99 !important; }
+
+    /* Table → Cards */
+    #crm-leads-wrap .calls-table-wrap { border: none !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; }
+    #crm-leads-wrap .crm-leads-row td { background: transparent !important; }
+    #crm-leads-wrap .crm-leads-row:hover td { background: transparent !important; }
+    #crm-leads-wrap .calls-tbl { display: block !important; width: 100% !important; box-sizing: border-box !important; }
+    #crm-leads-wrap .calls-tbl thead { display: none !important; }
+    #crm-leads-wrap .calls-tbl tbody { display: block !important; width: 100% !important; }
+    #crm-leads-wrap .calls-tbl:not(.crm-tx-tbl) tr.crm-leads-row td { box-sizing: border-box !important; padding: 0 !important; margin: 0 !important; border: none !important; vertical-align: middle !important; }
+
+    /* Day separator */
+    #crm-leads-wrap .calls-tbl:not(.crm-tx-tbl) tr.crm-leads-day-sep { display: flex !important; width: 100%; justify-content: center; margin-bottom: 6px; background: #bbb !important; border-radius: 6px; }
+    #crm-leads-wrap .calls-tbl:not(.crm-tx-tbl) tr.crm-leads-day-sep td { display: flex !important; flex: 1; width: 100%; justify-content: center; background: #bbb !important; padding: 0.25rem 0.5rem !important; text-align: center; border: none !important; font-size: 0.78rem !important; color: #fff !important; border-radius: 6px; }
+    #crm-leads-wrap .calls-tbl:not(.crm-tx-tbl) tr.crm-leads-day-sep td * { color: #fff !important; background: transparent !important; }
+
+    /* Card — 3 coloane: auto | 1fr | auto */
+    #crm-leads-wrap .calls-tbl:not(.crm-tx-tbl) tr.crm-leads-row {
+        display: grid !important;
+        grid-template-columns: max-content minmax(0,1fr) 56px !important;
+        grid-template-rows: auto auto auto !important;
+        background: #fff !important;
+        border: 1px solid #eaeaea !important;
+        border-radius: 10px !important;
+        margin: 0 0 6px 0 !important;
+        padding: 10px !important;
+        column-gap: 8px !important;
+        row-gap: 4px !important;
+        box-sizing: border-box !important;
+        cursor: pointer !important;
+        width: 100% !important;
+    }
+    #crm-leads-wrap .calls-tbl:not(.crm-tx-tbl) tr.crm-leads-row.rot-warn { border-left: 3px solid #f59e0b !important; }
+    #crm-leads-wrap .calls-tbl:not(.crm-tx-tbl) tr.crm-leads-row.rot-max  { border-left: 3px solid #ef4444 !important; }
+
+    /* td1: dată/oră — row 1, col 1 */
+    #crm-leads-wrap .calls-tbl:not(.crm-tx-tbl) tr.crm-leads-row td:nth-child(1) {
+        grid-column: 1 !important; grid-row: 1 !important;
+        display: flex !important; flex-direction: column !important; justify-content: center !important;
+        font-size: 0.75rem !important; white-space: nowrap !important;
+    }
+    #crm-leads-wrap .leads-dt-desktop { display: none !important; }
+    #crm-leads-wrap .leads-dt-mobile  { display: flex !important; align-items: center !important; gap: 4px !important; white-space: nowrap !important; }
+
+    /* td2: status — row 1, col 2 */
+    #crm-leads-wrap .calls-tbl:not(.crm-tx-tbl) tr.crm-leads-row td:nth-child(2) {
+        grid-column: 2 !important; grid-row: 1 !important;
+        display: flex !important; align-items: center !important; justify-content: center !important;
+        justify-self: stretch !important; align-self: center !important;
+    }
+    #crm-leads-wrap .calls-tbl:not(.crm-tx-tbl) tr.crm-leads-row td:nth-child(2) > div {
+        display: flex !important; justify-content: center !important; align-items: center !important; width: 100% !important;
+    }
+    #crm-leads-wrap .calls-tbl:not(.crm-tx-tbl) tr.crm-leads-row td:nth-child(2) .crm-contact-icon { display: none !important; }
+    #crm-leads-wrap .leads-contact-icon-mobile { display: inline-flex !important; align-items: center !important; opacity: 1 !important; margin-left: 8px !important; }
+    #crm-leads-wrap .leads-contact-icon-mobile img { width: 28px !important; height: 28px !important; }
+    #crm-leads-wrap .leads-contact-icon-mobile img { width: 34px !important; height: 34px !important; }
+
+    /* td8: more+archive — row 1, col 3 */
+    #crm-leads-wrap .calls-tbl:not(.crm-tx-tbl) tr.crm-leads-row td:nth-child(8) {
+        grid-column: 3 !important; grid-row: 1 !important;
+        display: flex !important; align-items: center !important; justify-content: flex-end !important; gap: 24px !important;
+        padding: 0 !important;
+    }
+    #crm-leads-wrap .calls-tbl:not(.crm-tx-tbl) tr.crm-leads-row td:nth-child(8) > div { display: flex !important; align-items: center !important; justify-content: flex-end !important; gap: 24px !important; padding: 0 4px 0 0 !important; }
+    #crm-leads-wrap .calls-tbl:not(.crm-tx-tbl) tr.crm-leads-row td:nth-child(8) img { width: 26px !important; height: 26px !important; }
+
+    /* td4: telefon+conținut — row 2, col 1-3 */
+    #crm-leads-wrap .calls-tbl:not(.crm-tx-tbl) tr.crm-leads-row td:nth-child(4) {
+        grid-column: 1 / 4 !important; grid-row: 2 !important;
+        display: flex !important; align-items: center !important; min-width: 0 !important;
+        overflow: hidden !important;
+    }
+    #crm-leads-wrap .calls-tbl:not(.crm-tx-tbl) tr.crm-leads-row td:nth-child(4) > div {
+        min-width: 0 !important; overflow: hidden !important;
+    }
+    #crm-leads-wrap .calls-tbl:not(.crm-tx-tbl) tr.crm-leads-row td:nth-child(4) span:first-child {
+        overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important;
+    }
+
+    /* td3: sursă — row 3, col 1-2 */
+    #crm-leads-wrap .calls-tbl:not(.crm-tx-tbl) tr.crm-leads-row td:nth-child(3) {
+        grid-column: 1 / 3 !important; grid-row: 3 !important;
+        display: flex !important; align-items: center !important;
+    }
+
+    /* td7: manager — row 3, col 3 */
+    #crm-leads-wrap .calls-tbl:not(.crm-tx-tbl) tr.crm-leads-row td:nth-child(7) {
+        grid-column: 3 !important; grid-row: 3 !important;
+        display: flex !important; align-items: center !important; justify-content: flex-end !important;
+        font-size: 0.72rem !important;
+    }
+
+    /* td5: mașină — ascuns */
+    #crm-leads-wrap .calls-tbl:not(.crm-tx-tbl) tr.crm-leads-row td:nth-child(5) { display: none !important; }
+
+    /* td6: transcriere — ascuns */
+    #crm-leads-wrap .calls-tbl:not(.crm-tx-tbl) tr.crm-leads-row td:nth-child(6) { display: none !important; }
+
+    /* arhiva btn + txt desktop — ascunse pe mobile */
+    .leads-archive-btn-desktop { display: none !important; }
+    .leads-txt-desktop { display: none !important; }
+
+    /* more btn — background pe mobile */
+    #crm-leads-wrap .leads-more-btn-junk { display: none !important; }
+
+    #crm-leads-wrap .leads-more-btn {
+        background: #222 !important;
+        border-radius: 8px !important;
+        padding: 6px !important;
+        margin-right: 4px !important;
+    }
+    #crm-leads-wrap .leads-more-btn img {
+        filter: brightness(0) invert(1) !important;
+    }
+    #crm-leads-wrap .leads-more-btn:hover {
+        background: #222 !important;
+        transform: none !important;
+        opacity: 1 !important;
+    }
+
+    /* ============================================================
+       TRANSACTIONS (/crm/transaction, /crm/closed)
+    ============================================================ */
+
+    /* Tabs — origin filter + search pe linie noua */
+    #crm-leads-wrap .calls-tabs > div[style*="margin-left:auto"] {
+        width: 100% !important; margin-left: 0 !important;
+        display: flex !important; flex-wrap: wrap !important; gap: 6px !important; align-items: center !important;
+    }
+    #crm-leads-wrap .tx-origin-filter {
+        width: 100% !important; flex: 1 1 100% !important; box-sizing: border-box !important;
+    }
+    #crm-leads-wrap .tx-origin-filter a {
+        flex: 1 !important; text-align: center !important; justify-content: center !important;
+    }
+    #crm-leads-wrap .calls-tabs > div[style*="margin-left:auto"] .calls-search-wrap {
+        flex: 1 1 100% !important; width: 100% !important; box-sizing: border-box !important; margin-top: 0 !important;
+    }
+
+    /* Table → Cards */
+    #crm-leads-wrap .crm-tx-tbl { display: block !important; width: 100% !important; box-sizing: border-box !important; }
+    #crm-leads-wrap .crm-tx-tbl thead { display: none !important; }
+    #crm-leads-wrap .crm-tx-tbl tbody { display: block !important; width: 100% !important; }
+    #crm-leads-wrap .crm-tx-tbl tr.crm-leads-day-sep { display: flex !important; width: 100%; justify-content: center; margin-bottom: 6px; background: #bbb !important; border-radius: 6px; }
+    #crm-leads-wrap .crm-tx-tbl tr.crm-leads-day-sep td { display: flex !important; flex: 1; width: 100%; justify-content: center; background: #bbb !important; padding: 0.25rem 0.5rem !important; text-align: center; border: none !important; font-size: 0.78rem !important; color: #fff !important; border-radius: 6px; }
+    #crm-leads-wrap .crm-tx-tbl tr.crm-leads-day-sep td * { color: #fff !important; background: transparent !important; }
+
+    /* Card: 3 rânduri
+       row1: data | client+viber+wa | archive-btn
+       row2: marcă/model | tip doc
+       row3: manager
+    */
+    #crm-leads-wrap .crm-tx-tbl tr.crm-leads-row {
+        display: grid !important;
+        grid-template-columns: 58px 1fr 58px !important;
+        grid-template-rows: auto auto auto !important;
+        background: #fff !important;
+        border-radius: 10px !important;
+        border: 1px solid #ebebeb !important;
+        margin-bottom: 8px !important;
+        padding: 10px 10px 8px !important;
+        gap: 2px 0 !important;
+        cursor: pointer !important;
+        width: 100% !important; box-sizing: border-box !important;
+    }
+    #crm-leads-wrap .crm-tx-tbl tr.crm-leads-row td { box-sizing: border-box !important; padding: 0 !important; margin: 0 !important; border: none !important; vertical-align: middle !important; background: transparent !important; }
+
+    /* td1: dată — row1, col1, stânga */
+    #crm-leads-wrap .crm-tx-tbl tr.crm-leads-row td:nth-child(1) {
+        grid-column: 1 !important; grid-row: 1 !important;
+        display: flex !important; align-items: center !important; justify-content: flex-start !important;
+        font-size: 0.75rem !important; font-weight: 500 !important; color: #aaa !important;
+        white-space: nowrap !important;
+    }
+
+    /* td2: client+viber+wa — row1, col2, centrat */
+    #crm-leads-wrap .crm-tx-tbl tr.crm-leads-row td:nth-child(2) {
+        grid-column: 2 !important; grid-row: 1 !important;
+        display: flex !important; align-items: center !important; justify-content: center !important; gap: 6px !important; min-width: 0 !important;
+    }
+    #crm-leads-wrap .crm-tx-tbl tr.crm-leads-row td:nth-child(2) span { font-size: 0.9rem !important; font-weight: 700 !important; color: #111 !important; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; }
+    #crm-leads-wrap .crm-tx-tbl tr.crm-leads-row td:nth-child(2) .crm-contact-icon { width: 32px !important; height: 32px !important; flex-shrink: 0 !important; }
+    #crm-leads-wrap .crm-tx-tbl tr.crm-leads-row td:nth-child(2) .crm-contact-icon img { width: 32px !important; height: 32px !important; }
+
+    /* td5: marcă/model — row2, col2-3 */
+    #crm-leads-wrap .crm-tx-tbl tr.crm-leads-row td:nth-child(5) {
+        grid-column: 2 / 4 !important; grid-row: 2 !important;
+        display: flex !important; align-items: center !important; justify-content: flex-end !important;
+        font-size: 0.85rem !important; font-weight: 600 !important; color: #222 !important;
+    }
+
+    /* td8: archive btn — ascuns pe mobile (swipe) */
+    #crm-leads-wrap .crm-tx-tbl tr.crm-leads-row td:nth-child(8) { display: none !important; }
+
+    /* td6: tip doc + CRM badge — row3, col1-2 */
+    #crm-leads-wrap .crm-tx-tbl tr.crm-leads-row td:nth-child(6) {
+        grid-column: 1 / 3 !important; grid-row: 3 !important;
+        display: flex !important; align-items: center !important; gap: 4px !important;
+    }
+    #crm-leads-wrap .crm-tx-tbl tr.crm-leads-row td:nth-child(6) .crm-source-badge { font-size: 0.68rem !important; padding: 2px 6px !important; white-space: nowrap !important; }
+    #crm-leads-wrap .crm-tx-tbl tr.crm-leads-row td:nth-child(6) a[style*="E61E2D"] { font-size: 0.68rem !important; padding: 2px 5px !important; }
+    .tx-doc-full { display: none !important; }
+    .tx-doc-short { display: inline !important; }
+
+    /* td7: manager — row3, col3 */
+    #crm-leads-wrap .crm-tx-tbl tr.crm-leads-row td:nth-child(7) {
+        grid-column: 3 !important; grid-row: 3 !important;
+        display: flex !important; align-items: center !important; justify-content: flex-end !important;
+        font-size: 0.72rem !important; color: #888 !important;
+    }
+
+    /* td3: telefon — ascuns */
+    #crm-leads-wrap .crm-tx-tbl tr.crm-leads-row td:nth-child(3) { display: none !important; }
+    /* td4: CP/CF — ascuns */
+    #crm-leads-wrap .crm-tx-tbl tr.crm-leads-row td:nth-child(4) { display: none !important; }
+
+    /* ============================================================
+       LEAD DETAIL (/crm/lead?id=)
+    ============================================================ */
+
+    /* Wrapper — coloană, scroll normal pe pagină */
+    #crm-lead-wrap {
+        flex-direction: column !important;
+        height: auto !important;
+        overflow: visible !important;
+        margin-top: 0 !important;
+        background: #f5f6fa !important;
+    }
+
+    /* Tab bar mobil fix în sus */
+    #ld-mobile-tabs {
+        display: flex !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 50 !important;
+        background: #fff !important;
+        border-bottom: 2px solid #f0f0f0 !important;
+        overflow-x: auto !important;
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+    }
+    #ld-mobile-tabs::-webkit-scrollbar { display: none; }
+    #ld-mobile-tabs .ld-tab {
+        flex-shrink: 0 !important;
+        font-size: 0.8rem !important;
+        padding: 0.65rem 0.7rem !important;
+        white-space: nowrap !important;
+    }
+    #ld-mobile-tabs .ld-tab .ld-tab-count { margin-left: 2px !important; }
+
+    /* Ascunde tabs bar original și left header */
+    #crm-lead-wrap .ld-tabs-bar { display: none !important; }
+    #crm-lead-wrap .ld-left-header { display: none !important; }
+
+    /* Left panel — ascuns implicit, arătat când tab "despre" e activ */
+    #crm-lead-wrap .ld-left {
+        width: 100% !important;
+        flex-shrink: 0 !important;
+        border-right: none !important;
+        border-bottom: none !important;
+        overflow-y: visible !important;
+        display: none !important;
+    }
+    #crm-lead-wrap .ld-left.ld-mobile-active {
+        display: flex !important;
+    }
+
+    /* Right panel — full width */
+    #crm-lead-wrap .ld-right {
+        width: 100% !important;
+        overflow: visible !important;
+        display: none !important;
+    }
+    #crm-lead-wrap .ld-right.ld-mobile-active {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    /* Panels scroll */
+    #crm-lead-wrap .ld-panel.active {
+        overflow-y: visible !important;
+    }
+
+    /* Chat iframe */
+    #crm-lead-wrap #ldpanel-chat {
+        overflow: hidden !important;
+    }
+    #crm-lead-wrap #ldpanel-chat iframe {
+        width: 100% !important;
+        border: none !important;
+        display: block !important;
+    }
+
+    /* Audio full width */
+    #crm-lead-wrap audio {
+        width: 100% !important;
+        height: 32px !important;
+    }
+
+    /* Task undo btn — mai mare pe mobile */
+    #crm-lead-wrap .ld-task-undo-btn { width: 44px !important; height: 44px !important; font-size: 2.4rem !important; padding: 0 !important; }
+
+    /* Comment form + Task form — column pe mobile */
+    #crm-lead-wrap .ld-comment-form,
+    #crm-lead-wrap .ld-task-form {
+        flex-direction: column !important;
+        padding: 0.75rem !important;
+        gap: 0.5rem !important;
+    }
+    #crm-lead-wrap .ld-comment-form textarea,
+    #crm-lead-wrap .ld-task-form input {
+        width: 100% !important;
+        height: 40px !important;
+        min-height: 40px !important;
+        max-height: 40px !important;
+        box-sizing: border-box !important;
+    }
+    #crm-lead-wrap .ld-send-btn,
+    #crm-lead-wrap .ld-task-add {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+
+    /* Reducere gap între câmpuri și separatoare */
+    #crm-lead-wrap .ld-field { margin-bottom: 0.4rem !important; }
+    #crm-lead-wrap .ld-sep { margin: 0.4rem 0 !important; }
+    #crm-lead-wrap .ld-body { padding: 0.75rem !important; }
+
+    /* Phone row pe mobile — număr | sună | editează pe același rând */
+    #crm-lead-wrap .ld-phone-row {
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        gap: 0 !important;
+        justify-content: flex-start !important;
+    }
+    #crm-lead-wrap .ld-phone { margin-right: 8px !important; }
+    #crm-lead-wrap .ld-call-btn-mobile { margin-right: auto !important; }
+    .ld-call-btn-mobile {
+        display: flex !important;
+        flex-shrink: 0 !important;
+    }
+
+    /* Viber/WA în tabs bar original — ascuns (e în mobile tabs) */
+    #crm-lead-wrap .ld-tabs-bar > div[style*="position:absolute"] {
+        display: none !important;
+    }
+
+    /* ============================================================
+       INBOX CHAT (/crm/inbox_chat)
+    ============================================================ */
+
+    #crm-inbox-chat-wrap {
+        position: fixed !important;
+        top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+        height: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        z-index: 100 !important;
+        background: #fff !important;
+    }
+
+    /* Header — compact pe mobile */
+    .inbox-chat-header {
+        padding: 0.5rem 0.75rem !important;
+        gap: 0.4rem !important;
+        overflow-x: auto !important;
+    }
+
+    /* Buton înapoi — doar săgeata */
+    .inbox-back-btn {
+        padding: 0 0.5rem !important;
+        font-size: 0 !important;
+        min-width: 34px !important;
+    }
+    .inbox-back-btn svg { display: block !important; }
+
+    /* Nume sender */
+    .inbox-sender-name { font-size: 0.75rem !important; }
+    .inbox-sender-sub  { font-size: 0.62rem !important; }
+
+    /* Butoane header — doar icon, fără text */
+    .inbox-hdr-btn {
+        padding: 0 0.55rem !important;
+        height: 30px !important;
+        font-size: 0 !important;
+        gap: 0 !important;
+    }
+    .inbox-hdr-btn .inbox-icon { display: inline-flex !important; }
+    .inbox-hdr-btn svg { width: 16px !important; height: 16px !important; }
+
+    /* Butonul Lead — păstrează textul */
+    a.inbox-hdr-btn.inbox-hdr-btn-outline {
+        font-size: 0.72rem !important;
+        gap: 0.3rem !important;
+        padding: 0 0.55rem !important;
+    }
+
+    /* Status badge — doar icon (except closed care arată text) */
+    .inbox-status-badge:not(.inbox-status-closed) { font-size: 0 !important; padding: 0 0.4rem !important; gap: 0 !important; }
+    .inbox-status-badge:not(.inbox-status-closed) svg { width: 16px !important; height: 16px !important; display: block !important; }
+    .inbox-status-closed { font-size: 0.72rem !important; padding: 0 0.65rem !important; gap: 0.3rem !important; }
+    .inbox-status-closed img { display: none !important; }
+    .inbox-reopen-btn { padding: 0.5rem 1rem !important; margin-left: 0.5rem !important; }
+    .inbox-reopen-icon { font-size: 1.6rem !important; line-height: 1 !important; }
+    .inbox-create-lead-full { display: none !important; }
+    .inbox-create-lead-short { display: inline !important; font-size: 0.82rem !important; }
+    .inbox-ai-notice-full { display: none !important; }
+    .inbox-ai-notice-short { display: inline !important; }
+    .inbox-manager-btn-txt { font-size: 0.82rem !important; }
+
+    /* Chat body */
+    .inbox-chat-body { padding: 0.75rem 0.6rem !important; gap: 0.5rem !important; }
+
+    /* Mesaje */
+    .msg-bubble { max-width: 85% !important; font-size: 0.84rem !important; }
+    .msg-bubble-photo { max-width: 85% !important; }
+    .msg-photo-grid img { width: 80px !important; height: 80px !important; }
+
+    /* Footer */
+    .inbox-chat-footer { padding: 0.6rem 0.75rem !important; }
+    .inbox-send-hint { display: none !important; }
+    .inbox-internal-toggle { font-size: 0.72rem !important; }
+    .inbox-textarea { min-height: 52px !important; max-height: 120px !important; font-size: 0.84rem !important; }
+    .inbox-footer-actions { margin-top: 0.35rem !important; justify-content: space-between !important; align-items: center !important; position: relative !important; }
+    /* foto — centrat absolut */
+    .inbox-footer-actions > div > label { position: absolute !important; left: 50% !important; transform: translateX(-50%) !important; }
+    /* send — rămâne dreapta */
+    .inbox-footer-actions > div { display: flex !important; justify-content: flex-end !important; }
+    .inbox-send-btn { height: 36px !important; width: 108px !important; padding: 0 !important; font-size: 0 !important; justify-content: center !important; border-radius: 8px !important; border: 1px solid #e5e7eb !important; }
+    .inbox-send-btn .inbox-icon svg { width: 16px !important; height: 16px !important; }
+
+    /* ============================================================
+       ANALYTICS (/crm/analytics)
+    ============================================================ */
+
+    #ana-wrap { padding: 0 12px 2rem !important; box-sizing: border-box !important; }
+
+    .ana-topbar { margin-bottom: 1rem; gap: 0.5rem; }
+    .ana-title { font-size: 1.1rem !important; }
+    .ana-updated { display: none !important; }
+    .ana-topbar > div:last-child { width: 100%; justify-content: flex-end; }
+
+    .ana-filter-bar { gap: 0.4rem; margin-bottom: 1rem; }
+    .ana-filter-bar select { font-size: 0.78rem !important; padding: 0.3rem 0.5rem !important; }
+    .ana-month-nav .ana-month-label { font-size: 0.78rem !important; }
+    .ana-month-nav a { width: 36px !important; height: 36px !important; font-size: 1.1rem !important; }
+    .ana-month-nav .ana-month-label { width: auto !important; height: 36px !important; }
+    .ana-sec-nav button { width: 30px !important; height: 30px !important; font-size: 1rem !important; }
+
+    .ana-kpi-grid { grid-template-columns: repeat(2,1fr) !important; gap: 0.6rem; margin-bottom: 0.75rem; }
+    .ana-kpi-card { padding: 0.75rem 0.85rem !important; border-radius: 10px !important; }
+    .ana-kpi-label { font-size: 0.72rem !important; margin-bottom: 0.25rem !important; }
+    .ana-kpi-val { font-size: 1.5rem !important; }
+    .ana-kpi-sub { font-size: 0.68rem !important; }
+
+    .ana-row-3, .ana-row-2 { grid-template-columns: 1fr !important; gap: 0.6rem; margin-bottom: 0.6rem; }
+
+    .ana-card { padding: 0.9rem 0.75rem !important; border-radius: 10px !important; }
+    .ana-card-title { font-size: 0.8rem !important; margin-bottom: 0.75rem !important; }
+
+    /* Sources table — ascunde bara, mai compact */
+    .ana-src-table th, .ana-src-table td { padding: 0.35rem 0.35rem !important; font-size: 0.75rem !important; }
+    .ana-src-bar-wrap { min-width: 40px !important; }
+
+    /* ============================================================
+       SETTINGS (/crm/settings)
+    ============================================================ */
+
+    .crm-settings { padding: 0 12px; }
+    .crm-settings-section { border-radius: 10px !important; margin-bottom: 1rem !important; }
+    .crm-settings-section h3 { padding: 0.7rem 1rem !important; font-size: 0.78rem !important; }
+    .crm-settings-section > table { padding-left: 0 !important; padding-right: 0 !important; }
+    .crm-settings-section > .crm-settings-save { padding-left: 1rem !important; padding-right: 1rem !important; }
+
+    /* Field rows — label deasupra, input dedesubt */
+    .crm-field-row {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 0.3rem !important;
+        padding: 0.6rem 1rem !important;
+    }
+    .crm-field-row label {
+        min-width: unset !important;
+        font-size: 0.78rem !important;
+        color: #6b7280 !important;
+        font-weight: 600 !important;
+    }
+    .crm-field-row input[type="text"],
+    .crm-field-row input[type="number"],
+    .crm-field-row input[type="time"],
+    .crm-field-row select {
+        width: 100% !important;
+        min-width: unset !important;
+        box-sizing: border-box !important;
+        font-size: 0.88rem !important;
+    }
+    /* Inputuri cu width inline fix (viber, webhooks) */
+    .crm-settings-section input[type="text"],
+    .crm-settings-section input[type="number"] {
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .crm-settings-save {
+        padding: 0.75rem 1rem !important;
+        flex-wrap: wrap !important;
+        gap: 0.5rem !important;
+    }
+
+    /* Sources + Agents table → card per rând */
+    .crm-sources-table { display: block !important; }
+    .crm-sources-table thead { display: none !important; }
+    .crm-sources-table tbody {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 0.6rem !important;
+        padding: 0.75rem !important;
+    }
+    /* Fiecare rând = card */
+    .crm-sources-table tbody tr {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        align-items: center !important;
+        gap: 0.4rem !important;
+        padding: 0.6rem 0.75rem !important;
+        border: 1px solid #e8e8eb !important;
+        border-radius: 8px !important;
+        background: #f9f9fb !important;
+    }
+    .crm-sources-table td {
+        padding: 0 !important;
+        border: none !important;
+    }
+    /* Telefon — lățime fixă */
+    .crm-sources-table td:nth-child(1) { flex: 0 0 120px !important; }
+    /* Nume — ocupă restul */
+    .crm-sources-table td:nth-child(2) { flex: 1 1 100px !important; min-width: 80px !important; }
+    /* Departament */
+    .crm-sources-table td:nth-child(3) { flex: 0 0 100px !important; }
+    /* Culoare */
+    .crm-sources-table td:nth-child(4) { flex: 0 0 40px !important; }
+    /* Activ checkbox */
+    .crm-sources-table td:nth-child(5) { flex: 0 0 30px !important; display: flex !important; align-items: center !important; justify-content: center !important; }
+    /* Delete btn */
+    .crm-sources-table td:nth-child(6) { flex: 0 0 30px !important; display: flex !important; align-items: center !important; }
+    .crm-sources-table input[type="text"],
+    .crm-sources-table select {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        font-size: 0.8rem !important;
+        padding: 0.3rem 0.4rem !important;
+    }
+    .crm-sources-table input[type="color"] {
+        width: 34px !important;
+        height: 30px !important;
+        padding: 0.1rem !important;
+    }
+
+    /* Agents table — card per agent: 2 rânduri */
+    .crm-agents-table tbody tr {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.4rem !important;
+    }
+    /* Nume — rând 1, col 1 */
+    .crm-agents-table td:nth-child(1) { grid-column: 1 !important; flex: unset !important; }
+    /* Dept — rând 1, col 2 */
+    .crm-agents-table td:nth-child(2) { grid-column: 2 !important; flex: unset !important; }
+    /* PBX login — rând 2, col 1 */
+    .crm-agents-table td:nth-child(3) { grid-column: 1 !important; flex: unset !important; }
+    /* Telefon — rând 2, col 2 */
+    .crm-agents-table td:nth-child(4) { grid-column: 2 !important; flex: unset !important; }
+    .crm-agents-table input[type="text"],
+    .crm-agents-table select {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        font-size: 0.8rem !important;
+        padding: 0.3rem 0.4rem !important;
+    }
+
+    /* Webhooks — code overflow */
+    .crm-settings-section code {
+        word-break: break-all !important;
+        font-size: 0.7rem !important;
+        display: inline-block !important;
+        max-width: 100% !important;
+    }
+    .crm-settings-desc { padding: 0.6rem 1rem 0 !important; }
+
+    /* Empty state — toate paginile CRM */
+    .calls-empty {
+        display: block !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        text-align: center !important;
+        padding: 2rem 1rem !important;
+    }
+    tr:has(.calls-empty) {
+        display: block !important;
+        width: 100% !important;
+    }
+
+}
+
+/* Desktop: ascunde versiunea scurtă a tipului de document */
+.tx-doc-short { display: none; }
+.tx-doc-full  { display: inline; }
+.inbox-create-lead-short { display: none; }
+.inbox-create-lead-full  { display: inline; }
+.inbox-ai-notice-short { display: none; }
+.inbox-ai-notice-full  { display: inline; }

@@ -6,6 +6,13 @@ deploy.php
 filter_debug.log
 *.zip
 *.log
+cache/
+error_log
+*/error_log
+tmp/
+ssl/
+uploads/
+sitemap_backup/
 environment.php
 dev-tools/
 sitemap.xml
