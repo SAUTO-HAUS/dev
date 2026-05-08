@@ -1454,7 +1454,7 @@ function ajaxSuccessCars(data){
 				var add_new = $('#add_new').prop('outerHTML');
 				$('#content .ctlg').html('').append( add_new + data.rtrn );
 				
-				var filterArr = [ 'br', 'mo', 'yr', 'fl', 'tra', 'bt', 'wd', 'catalog_type', 'author', 'status' ];
+				var filterArr = [ 'br', 'mo', 'yr', 'fl', 'tra', 'bt', 'wd', 'catalog_type', 'loc', 'author', 'status' ];
 				$.each(filterArr, function( index, value ) { if(data.search[value]){$('#filter_'+value).html('');$.each(data.search[value], function( index2, value2 ) { $('#filter_'+value).append(value2); });}; });
 				$('#search_content .search_select[clicked="1"]').attr({'clicked':null});
 			}

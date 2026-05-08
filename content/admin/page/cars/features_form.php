@@ -223,9 +223,16 @@ if (!isset($new999)) $new999 = true;
                                                 $statusColor = '#6c757d';
                                                 break;
                                             case 'postponed':
-                                                $statusIcon = '⏸️';
                                                 $retryInfo = !empty($schedule['retry_count']) ? " (retry {$schedule['retry_count']}/72)" : '';
-                                                $statusText = (__('cars.status_postponed') ?? 'Postponed') . $retryInfo;
+                                                $errMsg = strtolower($schedule['error_message'] ?? '');
+                                                $isBalanceErr = (strpos($errMsg, 'balance') !== false || strpos($errMsg, 'недостаточно') !== false || strpos($errMsg, 'sold') !== false || strpos($errMsg, 'insufficient') !== false);
+                                                if ($isBalanceErr) {
+                                                    $statusIcon = '💰';
+                                                    $statusText = (__('cars.status_postponed_balance') ?? 'Sold insuficient pe 999.md') . $retryInfo;
+                                                } else {
+                                                    $statusIcon = '⏸️';
+                                                    $statusText = (__('cars.status_postponed') ?? 'Amânat (timer expirat)') . $retryInfo;
+                                                }
                                                 $statusColor = '#ff9800';
                                                 break;
                                         }

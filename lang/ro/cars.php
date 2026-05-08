@@ -66,6 +66,7 @@ return [
     'status_failed' => 'Eșuat',
     'status_cancelled' => 'Anulat',
     'status_postponed' => 'Amânat (timer expirat)',
+    'status_postponed_balance' => 'Sold insuficient pe 999.md',
     
     // Document categories
     'doc_cat_parcare' => 'Acte parcare',

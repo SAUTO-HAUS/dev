@@ -66,6 +66,7 @@ return [
     'status_failed' => 'Failed',
     'status_cancelled' => 'Cancelled',
     'status_postponed' => 'Postponed (timer expired)',
+    'status_postponed_balance' => 'Insufficient balance on 999.md',
     
     // Document categories
     'doc_cat_parcare' => 'Parking documents',

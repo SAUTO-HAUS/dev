@@ -231,6 +231,17 @@ c/f 1017600006845, c/TVA 0609417</pre>
 		}
 		</script>';
 	}elseif ( $t_mp[4]=='ctlg' ){
+		// Admins list for owner_adm select in edit modal
+		if (empty($_doc_admins)) {
+			$_doc_admins_stmt = $db->prepare("SELECT id, name FROM {$prefx}_adm_usr ORDER BY name ASC");
+			$_doc_admins_stmt->execute();
+			$_doc_admins = $_doc_admins_stmt->fetchAll(PDO::FETCH_ASSOC);
+		}
+		// Pre-build JS-safe options HTML (single string, no PHP inside JS string)
+		$_doc_admins_opts_js = '';
+		foreach ($_doc_admins as $_da_x) {
+			$_doc_admins_opts_js .= '<option value=\"'.(int)$_da_x['id'].'\">'.str_replace(['"', "'"], ['', ''], $_da_x['name']).'</option>';
+		}
 		$rtrn .= '
 		<style>
 			.lbl {position:relative; display:inline-block;}
@@ -561,16 +572,27 @@ c/f 1017600006845, c/TVA 0609417</pre>
 									+"<div class=\"doc_info\" style=\"margin-bottom: 1.5rem; padding: 1rem; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border-radius: 8px; border-left: 4px solid #e2001a; box-shadow: 0 2px 4px rgba(0,0,0,0.1);\">"
 									+"<div style=\"display: flex; align-items: center; gap: 2rem; font-size: 0.85rem;\">"
 									+"<div style=\"display: flex; align-items: center; gap: 0.5rem;\">"
-									+"<span style=\"color: #6c757d; font-weight: 500;\">📝 Created by:</span>"
+									+"<span style=\"color: #6c757d; font-weight: 500;\">📝 '.addslashes($lng['w']['doc_created_by'] ?? 'Created by').':</span>"
 									+"<span style=\"color: #e2001a; font-weight: 600; background-color: rgba(226,0,26,0.1); padding: 0.25rem 0.5rem; border-radius: 4px;\">"+createdBy+"</span>"
 									+"</div>"
 									+"<div style=\"display: flex; align-items: center; gap: 0.5rem;\">"
-									+"<span style=\"color: #6c757d; font-weight: 500;\">✏️ Last edited by:</span>"
+									+"<span style=\"color: #6c757d; font-weight: 500;\">✏️ '.addslashes($lng['w']['doc_last_edited_by'] ?? 'Last edited by').':</span>"
 									+"<span style=\"color: #495057; font-weight: 600; background-color: rgba(73,80,87,0.1); padding: 0.25rem 0.5rem; border-radius: 4px;\">"+lastEditedBy+"</span>"
 									+"</div>"
+									+"<div style=\"display:flex; align-items:center; gap:0.5rem;\">"
+									+"<span style=\"color:#e2001a; font-weight:600;\">'.addslashes($lng['m']['doc_owner_manager'] ?? 'Aparține managerului').':</span>"
+									+"<select name=\"owner_adm\" style=\"padding:0.25rem 0.5rem; font-size:0.85rem; border:1px solid #ddd; border-radius:4px; box-sizing:border-box;\">"
+									+"<option value=\"\">— "+createdBy+" —</option>"
+									+"'.($_doc_admins_opts_js ?? '').'"
+									+"</select>"
 									+"</div>"
 									+"</div>"
 								);
+								// Pre-select current owner_adm
+								var _cur_owner = vals.data("owner_adm") || "";
+								if (_cur_owner) {
+									$("#overlay select[name=\"owner_adm\"]").val(String(_cur_owner));
+								}
 
 								$("#overlay > .content > form").append(""
 									+"<input type=\"hidden\" name=\"doc_gr\" value=\""+vals.data("gr")+"\" />"
@@ -1167,7 +1189,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 							'.(isset($inf['kyc_transaction_personal'])?'data-kyc_transaction_personal="'.$inf['kyc_transaction_personal'].'"':'').' '.(isset($inf['kyc_transaction_family'])?'data-kyc_transaction_family="'.$inf['kyc_transaction_family'].'"':'').' '.(isset($inf['kyc_transaction_company'])?'data-kyc_transaction_company="'.$inf['kyc_transaction_company'].'"':'').' '.(isset($inf['kyc_transaction_resale'])?'data-kyc_transaction_resale="'.$inf['kyc_transaction_resale'].'"':'').' '.(isset($inf['kyc_transaction_commercial'])?'data-kyc_transaction_commercial="'.$inf['kyc_transaction_commercial'].'"':'').' '.(isset($inf['kyc_transaction_transfer'])?'data-kyc_transaction_transfer="'.$inf['kyc_transaction_transfer'].'"':'').'
 							'.(isset($inf['kyc_funds_salary'])?'data-kyc_funds_salary="'.$inf['kyc_funds_salary'].'"':'').' '.(isset($inf['kyc_funds_dividends'])?'data-kyc_funds_dividends="'.$inf['kyc_funds_dividends'].'"':'').' '.(isset($inf['kyc_funds_loan'])?'data-kyc_funds_loan="'.$inf['kyc_funds_loan'].'"':'').' '.(isset($inf['kyc_funds_business'])?'data-kyc_funds_business="'.$inf['kyc_funds_business'].'"':'').' '.(isset($inf['kyc_funds_inheritance'])?'data-kyc_funds_inheritance="'.$inf['kyc_funds_inheritance'].'"':'').' '.(isset($inf['kyc_funds_donations'])?'data-kyc_funds_donations="'.$inf['kyc_funds_donations'].'"':'').'
 							data-u_tp="'.$r['u_tp'].'"
-							data-adm="'.$r['adm'].'" data-last_edited_by="'.($r['last_edited_by'] ?? $r['adm']).'"
+							data-adm="'.$r['adm'].'" data-last_edited_by="'.($r['last_edited_by'] ?? $r['adm']).'" data-owner_adm="'.($r['owner_adm'] ?? '').'"
 							data-tx_status="'.($r['tx_status'] ?? '').'"
 						></div>
 						<div class="rowz info">

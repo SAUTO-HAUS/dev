@@ -247,9 +247,11 @@ class PublicationService
         $address = $addresses[$carData['loc'] ?? 1] ?? 'Chișinău';
         $message .= "\n📍 Adresă: " . $address;
         
-        // Phone number (different for on_order cars)
+        // Phone number — depends on catalog type and location
         if ($catalogType === 'on_order') {
             $message .= "\n📞 Telefon: +37379600352";
+        } elseif (($carData['loc'] ?? 1) == 2) {
+            $message .= "\n📞 Telefon: +373 692 12 895";
         } else {
             $message .= "\n📞 Telefon: +373 796 00 361";
         }

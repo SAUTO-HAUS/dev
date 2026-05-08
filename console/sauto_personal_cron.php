@@ -245,12 +245,18 @@ try {
                     echo "[" . date('Y-m-d H:i:s') . "] Using STOCK account: {$apiAccount} (Default)\n";
                 }
             } elseif ($catalogType === 'on_order') {
-                // Check if this is a Korean car (account 4 = Encars-MD)
+                // Korean cars → Encars-MD
                 if ($apiAccountId == 4) {
                     $apiAccount = $settings['korea_999md_account'] ?? 'Encars-MD';
                     $apiToken = $settings['korea_999md_token'];
                     echo "[" . date('Y-m-d H:i:s') . "] Using ORDER account: {$apiAccount} (Korean cars - Account ID: 4)\n";
+                } elseif ($apiAccountId == 2) {
+                    // Commercial cars → Sauto-auto-comerciale (regular_999md_token)
+                    $apiAccount = $settings['regular_999md_account'] ?? 'Sauto-auto-comerciale';
+                    $apiToken = $settings['regular_999md_token'];
+                    echo "[" . date('Y-m-d H:i:s') . "] Using ORDER account: {$apiAccount} (Commercial - Account ID: 2)\n";
                 } else {
+                    // Default order → Sauto-stock-extern
                     $apiAccount = $settings['order_999md_account']; // Sauto-stock-extern
                     $apiToken = $settings['order_999md_token'];
                     echo "[" . date('Y-m-d H:i:s') . "] Using ORDER account: {$apiAccount} (Account ID: 3)\n";
@@ -265,7 +271,9 @@ try {
                 if ($catalogType === 'in_stock') {
                     $accountIdForApi = $apiAccountId ?? 2;
                 } elseif ($catalogType === 'on_order') {
-                    $accountIdForApi = ($apiAccountId == 4) ? 4 : 3; 
+                    if ($apiAccountId == 4) $accountIdForApi = 4;
+                    elseif ($apiAccountId == 2) $accountIdForApi = 2;
+                    else $accountIdForApi = 3;
                 } else {
                     $accountIdForApi = 3;
                 }
@@ -478,7 +486,9 @@ try {
                     if ($catalogType === 'in_stock') {
                         $accountIdForApi = $apiAccountId ?? 2;
                     } elseif ($catalogType === 'on_order') {
-                        $accountIdForApi = ($apiAccountId == 4) ? 4 : 3;
+                        if ($apiAccountId == 4) $accountIdForApi = 4;
+                        elseif ($apiAccountId == 2) $accountIdForApi = 2;
+                        else $accountIdForApi = 3;
                     } else {
                         $accountIdForApi = 3;
                     }
@@ -514,11 +524,15 @@ try {
                         
                         echo "[" . date('Y-m-d H:i:s') . "] ✅ Successfully created new 999.md listing {$new999Id} for car {$schedule['car_id']}\n";
                     } else {
-                        $errorMsg = isset($result['error']) ? $result['error'] : 'Failed to create 999.md listing';
-                        if (is_array($errorMsg)) {
-                            $errorMsg = json_encode($errorMsg, JSON_UNESCAPED_UNICODE);
+                        // Capture full API response — could be {"code":400,"errors":[...],"message":"...","reason":"..."} or other shape
+                        if (isset($result['error'])) {
+                            $errorMsg = is_array($result['error']) ? json_encode($result['error'], JSON_UNESCAPED_UNICODE) : (string)$result['error'];
+                        } elseif (isset($result['message']) || isset($result['errors']) || isset($result['reason'])) {
+                            $errorMsg = json_encode($result, JSON_UNESCAPED_UNICODE);
+                        } else {
+                            $errorMsg = 'Failed to create 999.md listing | raw: ' . json_encode($result, JSON_UNESCAPED_UNICODE);
                         }
-                        
+
                         $isInsufficientBalance = (stripos($errorMsg, 'insufficient balance') !== false || stripos($errorMsg, 'insufficient funds') !== false || stripos($errorMsg, 'баланс') !== false);
                         $currentRetryCount = isset($schedule['retry_count']) ? (int)$schedule['retry_count'] : 0;
                         

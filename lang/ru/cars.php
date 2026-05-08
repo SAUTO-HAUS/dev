@@ -102,6 +102,7 @@ return [
     'status_failed' => 'Неудачно',
     'status_cancelled' => 'Отменено',
     'status_postponed' => 'Отложено (таймер истёк)',
+    'status_postponed_balance' => 'Недостаточно средств на 999.md',
     
     // Document categories
     'doc_cat_parcare' => 'Документы парковка',

@@ -781,7 +781,7 @@ if (!empty($status_filter)) {
                 <!-- Col 2: Status -->
                 <td>
                     <div style="display:flex;align-items:center;gap:0.4rem;flex-wrap:nowrap;">
-                        <?php $is_rot = ($rot_cls !== 'crm-rot-0' && $lead->status !== 'missed'); ?>
+                        <?php $is_rot = ($view === 'junk') ? (bool)$lead->is_rot : ($rot_cls !== 'crm-rot-0' && $lead->status !== 'missed'); ?>
                         <span class="crm-status <?= $is_rot ? 'rot' : $lead->status ?>"><?= $is_rot ? strtoupper($cL['filter_rot'] ?? 'PUTREZIT') : crm_status_label($lead->status, $crm_lang) ?></span>
                         <?php if ($lead->phone): $clean_phone = preg_replace('/\D/', '', $lead->phone); ?>
                         <a href="viber://chat?number=+<?= $clean_phone ?>" title="Viber" class="crm-contact-icon">

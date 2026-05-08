@@ -1287,43 +1287,53 @@ function _srtGetLang(){
 	return (document.cookie.match(/(?:^|;\s*)lang=([^;]+)/) || [])[1] || 'ro';
 }
 
-// Single sort dropdown: handles both catalog switch (cat:in_stock / cat:on_order) and sort criteria
-$(document).on('change', '.srt_wrap > .srt_sel', function(){
-	var val = $(this).val();
+// Catalog switch badge — click navigates to the other catalog (preserves filters)
+$(document).on('click', '.srt_wrap > .srt_cat_badge', function(){
+	var cat = $(this).data('cat'); // 'in_stock' or 'on_order' — target catalog
 	var page = $(this).closest('.srt_wrap').data('page');
-	var params = new URLSearchParams(window.location.search);
-
-	// Catalog switch: prefix "cat:" means change between /cars and /ordercars, preserve existing srt
-	if (val.indexOf('cat:') === 0) {
-		var cat = val.substring(4); // 'in_stock' or 'on_order'
-		// If selection matches the current page, no action needed
-		if ((cat === 'in_stock' && page === 'cars') || (cat === 'on_order' && page === 'ordercars')) {
-			return;
-		}
-		var target = (cat === 'on_order') ? 'ordercars' : 'cars';
-		var lang = _srtGetLang();
-		var extraPath = _srtGetExtraPath();
-		// If srt is active, ensure tg=fltr so the target page routes through filtered listing
-		if (params.has('srt') && !params.has('tg')) {
-			params.set('tg', 'fltr');
-		}
-		var qs = params.toString();
-		window.location.href = '/' + lang + '/' + target + extraPath + (qs ? ('?' + qs) : '');
+	if ((cat === 'in_stock' && page === 'cars') || (cat === 'on_order' && page === 'ordercars')) {
 		return;
 	}
+	var target = (cat === 'on_order') ? 'ordercars' : 'cars';
+	var lang = _srtGetLang();
+	var extraPath = _srtGetExtraPath();
+	var params = new URLSearchParams(window.location.search);
+	if (params.has('srt') && !params.has('tg')) {
+		params.set('tg', 'fltr');
+	}
+	var qs = params.toString();
+	window.location.href = '/' + lang + '/' + target + extraPath + (qs ? ('?' + qs) : '');
+});
 
-	// Sort criteria: update srt query param, stay on current page
-	if (val === '') {
+// Custom sort dropdown — click on button toggles list, click on item navigates
+$(document).on('click', '.srt_wrap > .srt_drop .srt_drop_btn', function(e){
+	e.stopPropagation();
+	var $drop = $(this).parent();
+	$('.srt_drop.open').not($drop).removeClass('open');
+	$drop.toggleClass('open');
+});
+$(document).on('click', '.srt_wrap > .srt_drop .srt_drop_list > li', function(){
+	var val = $(this).data('val');
+	var $wrap = $(this).closest('.srt_wrap');
+	var $drop = $wrap.find('.srt_drop');
+	var $btn = $drop.find('.srt_drop_btn');
+	$btn.contents().filter(function(){return this.nodeType===3;}).remove();
+	$btn.find('.srt_drop_ico').after(document.createTextNode(' ' + $(this).text()));
+	$wrap.addClass('has_value');
+	$drop.removeClass('open');
+
+	var params = new URLSearchParams(window.location.search);
+	if (val === '' || val == null) {
 		params.delete('srt');
 	} else {
 		params.set('srt', val);
-		// Ensure tg=fltr so the page routes through the filtered listing (which honors srt)
-		if (!params.has('tg')) {
-			params.set('tg', 'fltr');
-		}
+		if (!params.has('tg')) params.set('tg', 'fltr');
 	}
 	var qs = params.toString();
 	window.location.href = window.location.pathname + (qs ? ('?' + qs) : '');
+});
+$(document).on('click', function(){
+	$('.srt_drop.open').removeClass('open');
 });
 
 })

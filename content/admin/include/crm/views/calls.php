@@ -228,7 +228,7 @@ $calls = $calls_stmt->fetchAll(PDO::FETCH_OBJ);
                 $dur_str   = $dur_min > 0 ? "{$dur_min} min" : ($c->duration > 0 ? "{$c->duration} sec" : '—');
                 $phone_fmt = crm_format_phone($c->phone);
                 $src_color = $c->source_color ?: '#888';
-                $src_name  = $c->type === 'out' ? '—' : ($c->source_name ?: ($cL['source_unknown'] ?? 'Sursă Necunoscută'));
+                $src_name  = $c->source_name ?: ($cL['source_unknown'] ?? 'Apel direct');
                 $row_class = ($is_missed || $is_cancel) ? 'row-missed' : ($is_busy ? 'row-dimmed' : '');
                 $call_day = date('Y-m-d', strtotime($c->start_at));
                 if ($call_day !== $calls_last_day) {

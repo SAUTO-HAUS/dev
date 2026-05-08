@@ -83,7 +83,10 @@ if ($new999) {
     </div>
     <div class="features">
         <?php if (!empty($car999)) :
-            $types = (new Api999Service())->getSubcategoryFeatures($car999['category_id'], $car999['subcategory_id'], $car999['offer_type']); ?>
+            $_cat = !empty($car999['category_id']) ? (int)$car999['category_id'] : DefaultText::CATEGORY_AUTO;
+            $_sub = !empty($car999['subcategory_id']) ? (int)$car999['subcategory_id'] : (int)$defaultSubcategory;
+            $_oft = !empty($car999['offer_type']) ? (int)$car999['offer_type'] : 776;
+            $types = (new Api999Service())->getSubcategoryFeatures($_cat, $_sub, $_oft); ?>
             <?php include('features_form.php') ?>
         <?php else : 
             $types = (new Api999Service())->getSubcategoryFeatures(DefaultText::CATEGORY_AUTO, $defaultSubcategory, '776'); ?>

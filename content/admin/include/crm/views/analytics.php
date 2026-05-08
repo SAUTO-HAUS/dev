@@ -189,11 +189,11 @@ $top_mgr = $top_stmt->fetchAll(PDO::FETCH_OBJ);
 
 // Lead sources: classic sources + inbox sources grouped by channel/page_id
 $bw_src2 = str_replace([':df',':dt',':uid'], [':df2',':dt2',':uid2'], $bw);
-$bp_src2 = [':df2' => $date_from, ':dt2' => $date_to];
+$bp_src2 = [':df2' => $date_from, ':dt2' => $date_to, ':src_unknown' => ($cL['source_unknown'] ?? 'Apel direct')];
 if ($user_f) $bp_src2[':uid2'] = $user_f;
 $src_stmt = $db->prepare("
     SELECT name, color, SUM(total) AS total, SUM(closed) AS closed FROM (
-        SELECT COALESCE(s.name,'Necunoscută') AS name,
+        SELECT COALESCE(s.name, :src_unknown) AS name,
                COALESCE(s.color,'#9ca3af') AS color,
                COUNT(l.id) AS total,
                SUM(l.status IN ('transaction','closed')) AS closed

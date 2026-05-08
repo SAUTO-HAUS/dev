@@ -152,10 +152,11 @@ function pbx_handle_history(array $payload, PDO $db, string $prefx): void {
         $call_log_id = (int)$r->fetchColumn();
     }
 
-    // ── 2. Duration threshold — skip lead creation but still show in /calls ──
+    // ── 2. Duration threshold — skip lead creation only for short ANSWERED calls
+    //    Missed calls always create a lead (client tried to reach us, regardless of duration)
     $min_dur = (int)crm_get_setting($db, $prefx, 'call_min_duration', 10);
-    if ($duration < $min_dur) {
-        // Still link to existing lead if phone matches
+    if ($duration < $min_dur && $is_answered) {
+        // Short answered call (likely misdial) — link to existing lead if any, but don't create new
         if ($call_log_id) {
             $existing = crm_find_lead_by_phone($db, $prefx, $phone);
             if ($existing) {
@@ -199,7 +200,12 @@ function pbx_handle_history(array $payload, PDO $db, string $prefx): void {
                 crm_notify($db, $prefx, (int)$old_owner, 'notif_takeover', 'takeover', $lid, ['phone' => $lead_phone, 'name' => $new_name]);
             }
 
-            if ($check && in_array($check->status, ['active','missed','unprocessed'])) {
+            if ($check && in_array($check->status, ['missed','unprocessed'])) {
+                // Manager called back missed/unprocessed lead and reached client → becomes active
+                $db->prepare("UPDATE {$prefx}_crm_leads SET status='active', last_action_at=NOW() WHERE id=:id")->execute([':id'=>$lid]);
+                crm_audit($db, $prefx, 'auto_active', 'lead', $lid, $check->status, 'active');
+            } elseif ($check && $check->status === 'active') {
+                // Already active → mark as processed (manager continues working with client)
                 $db->prepare("UPDATE {$prefx}_crm_leads SET status='processed', last_action_at=NOW() WHERE id=:id")->execute([':id'=>$lid]);
                 crm_audit($db, $prefx, 'auto_processed', 'lead', $lid, $check->status, 'processed');
             }

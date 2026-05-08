@@ -202,8 +202,9 @@ if ( $_POST['fn']=='edit_sbmt' ){
 		}
 	}
 
-	$pdo = $db->prepare('UPDATE '.$prefx.'_docs_ctlg SET `cd`=:cd, `inf`=:inf, `u`=:u, `date`=:date, `last_edited_by`=:last_edited_by WHERE `id`=:id');
-	$pdo->execute([ 'cd'=>$it_cd, 'inf'=>$inf, 'u'=>$u_id, 'date'=>$doc_date, 'last_edited_by'=>$last_edited_by, 'id'=>$it_id ]);
+	$_owner_adm_val = isset($_POST['inp']['owner_adm']) && $_POST['inp']['owner_adm'] !== '' ? (int)$_POST['inp']['owner_adm'] : null;
+	$pdo = $db->prepare('UPDATE '.$prefx.'_docs_ctlg SET `cd`=:cd, `inf`=:inf, `u`=:u, `date`=:date, `last_edited_by`=:last_edited_by, `owner_adm`=:owner_adm WHERE `id`=:id');
+	$pdo->execute([ 'cd'=>$it_cd, 'inf'=>$inf, 'u'=>$u_id, 'date'=>$doc_date, 'last_edited_by'=>$last_edited_by, 'owner_adm'=>$_owner_adm_val, 'id'=>$it_id ]);
 	
 	$returnIt = [ 'fn'=>$_POST['fn'], 'rtrn'=>$rtrn ];
 }

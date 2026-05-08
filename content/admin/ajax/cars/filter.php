@@ -1,6 +1,7 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
 $info_catalog_type = array('in_stock' => ($lng['w']['in_stock'] ?? 'În stoc'), 'on_order' => ($lng['w']['on_order'] ?? 'La comandă'));
+$info_loc          = array('1' => ($lng['w']['loc_1'] ?? 'str. Calea Moșilor 11'), '2' => ($lng['w']['loc_2'] ?? 'str. Pietrăriei 3'));
 
 foreach($arr_types as $v){
 	if ( isset($_POST[$v.'_search']) && $_POST[$v.'_search'] != 'all' ){
@@ -53,6 +54,9 @@ foreach($fltr_ar as $tp => $ar){
 		if($tp == 'catalog_type'){
 			$lbl = $info_catalog_type[$v] ?? $v;
 			${'its_'.$tp}[] = '<option value="'.$v.'" '.$isSelected.'>'.$lbl.' ('.$countz[$v].')</option>';
+		} elseif($tp == 'loc'){
+			$lbl = $info_loc[$v] ?? $v;
+			${'its_'.$tp}[] = '<option value="'.$v.'" '.$isSelected.'>'.$lbl.' ('.$countz[$v].')</option>';
 		} elseif( in_array($tp, ['fl','tra','bt','wd']) ){
 			$lbl = $lng['l']['car'][$tp][$v] ?? ucwords(str_replace('-',' ',$v));
 			${'its_'.$tp}[] = '<option value="'.$v.'" '.$isSelected.'>'.$lbl.' ('.$countz[$v].')</option>';
@@ -103,6 +107,7 @@ $search = [
 	'bt'           => $its_bt           ?? [],
 	'wd'           => $its_wd           ?? [],
 	'catalog_type' => $its_catalog_type ?? [],
+	'loc'          => $its_loc          ?? [],
 	'author'       => $its_author       ?? [],
 	'status'       => $its_status       ?? [],
 ];

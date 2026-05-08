@@ -1,10 +1,11 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
 if ($t_mp[3]=='cars' || $t_mp[3]=='ordercars'){
-	$arr_types = array('br','mo','yr','fl','tra','bt','wd','catalog_type','author');
+	$arr_types = array('br','mo','yr','fl','tra','bt','wd','catalog_type','loc','author');
 
 	// Translations for select fields
 	$info_catalog_type  = array('in_stock' => ($lng['w']['in_stock'] ?? 'În stoc'), 'on_order' => ($lng['w']['on_order'] ?? 'La comandă'));
+	$info_loc           = array('1' => ($lng['w']['loc_1'] ?? 'str. Calea Moșilor 11'), '2' => ($lng['w']['loc_2'] ?? 'str. Pietrăriei 3'));
 
 	$it_ar = array();
 	$query_args = array();
@@ -35,6 +36,7 @@ if ($t_mp[3]=='cars' || $t_mp[3]=='ordercars'){
 		'bt'           => $lng['l']['car']['spec']['bt']  ?? 'Caroserie',
 		'wd'           => $lng['l']['car']['spec']['wd']  ?? 'Tractiune',
 		'catalog_type' => 'Tip catalog',
+		'loc'          => $lng['w']['filter_loc'] ?? 'Locație',
 		'author'       => $lang_author ?? 'Autor',
 	);
 
@@ -73,6 +75,13 @@ if ($t_mp[3]=='cars' || $t_mp[3]=='ordercars'){
 				$sel = ($v == $default_catalog_type) ? ' selected="selected"' : '';
 				if(isset($_GET[$tp]) && $_GET[$tp]==$v){ $sel=' selected="selected"'; }
 				$lbl = $info_catalog_type[$v] ?? $v;
+				echo '<option value="'.$v.'"'.$sel.'>'.$lbl.' ('.$countz[$v].')</option>';
+			}
+		} elseif($tp == 'loc'){
+			foreach($it_ar[$tp] as $k => $v){
+				$sel = '';
+				if(isset($_GET[$tp]) && $_GET[$tp]==$v){ $sel=' selected="selected"'; }
+				$lbl = $info_loc[$v] ?? $v;
 				echo '<option value="'.$v.'"'.$sel.'>'.$lbl.' ('.$countz[$v].')</option>';
 			}
 		} elseif( in_array($tp, array('fl','tra','bt','wd')) ){

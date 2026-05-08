@@ -210,20 +210,21 @@ if (!isset($t_mp[2]) || $t_mp[2]=='' || $t_mp[2]=='cars'){
 	// If no sort active, show current catalog (in_stock on /cars) as selected
 	$srtSelectedHasValue = ($srtCur !== '' && isset($srtSortOpts[$srtCur]));
 	echo '
-	<div class="srt_wrap" data-page="cars">
-		<div class="srt_cat_badge" data-cat="in_stock">'.$lng['w']['sort_in_stock'].'</div>
+	<div class="srt_wrap'.($srtSelectedHasValue?' has_value':'').'" data-page="cars">
+		<div class="srt_cat_badge" data-cat="on_order" title="'.$lng['w']['sort_on_order'].'">'.$lng['w']['sort_on_order'].' →</div>
 		<div class="srt_lbl">
 			<img src="/'._SITE_IMG.'/v2/sort.svg" alt="sort" />
 			<span>'.$lng['w']['sort_by'].'</span>
 		</div>
-		<select class="srt_sel" name="srt">
-			<option value="cat:in_stock" data-cat="in_stock"'.(!$srtSelectedHasValue?' selected="selected"':'').'>'.$lng['w']['sort_in_stock'].'</option>
-			<option value="cat:on_order" data-cat="on_order">'.$lng['w']['sort_on_order'].'</option>';
-			foreach ($srtSortOpts as $sk => $sv){
-				echo '<option value="'.$sk.'"'.($srtCur===$sk?' selected="selected"':'').'>'.$sv.'</option>';
-			}
+		<div class="srt_drop" tabindex="0">
+			<div class="srt_drop_btn"><img class="srt_drop_ico" src="/'._SITE_IMG.'/v2/sort.svg" alt="sort" /> '.($srtSelectedHasValue?$srtSortOpts[$srtCur]:$lng['w']['sort_by']).'<span class="srt_drop_arr"></span></div>
+			<ul class="srt_drop_list">';
+				foreach ($srtSortOpts as $sk => $sv){
+					echo '<li data-val="'.$sk.'"'.($srtCur===$sk?' class="active"':'').'>'.$sv.'</li>';
+				}
 	echo '
-		</select>
+			</ul>
+		</div>
 	</div>';
 
 //----------------------------------------------------------------------------------------------TYRES

@@ -1,12 +1,27 @@
 <?php
 use App\Helper\DefaultText;
-$account_id = __post('account_id', 3);
+$account_id = __post('account_id');
+if (empty($account_id)) {
+    if (!empty($car['999_api_id'])) {
+        $account_id = $car['999_api_id'];
+    } elseif (!empty($default999AccountId)) {
+        $account_id = $default999AccountId;
+    } elseif (!empty($car['gr']) && $car['gr'] === 'com') {
+        $account_id = 2;
+    } else {
+        $account_id = 3;
+    }
+}
 
 // Set contact based on account_id
 if ($account_id == 4) {
     // Encars-MD (Korean cars)
     $contacts = ['37379603161'];
     $defaultPhone = '37379603161';
+} elseif ($account_id == 2) {
+    // Sauto-auto-comerciale
+    $contacts = ['37379600616'];
+    $defaultPhone = '37379600616';
 } else {
     // Sauto-stock-extern (default)
     $contacts = ['37379600326'];
