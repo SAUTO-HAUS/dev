@@ -358,7 +358,7 @@ if (!isset($new999)) $new999 = true;
         </div>
     </fieldset>
 
-    <?php foreach ($types['features_groups'] as $group): ?>
+    <?php foreach (($types['features_groups'] ?? []) as $group): ?>
         <fieldset class="row" class="features">
             <?php if (empty($group['title'])) : ?>
                 <legend><?= __('cars.other') ?></legend>
