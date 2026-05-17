@@ -29,28 +29,6 @@ $defaultCarTypeOrder = 'This is a CAR TO ORDER (not in stock). The car will be i
 $defaultCarTypeStock = 'This is a CAR IN STOCK (available immediately). The car is already imported and ready for viewing/purchase.';
 $defaultImagePrompt = 'I\'m showing you photos of this car. Analyze them to identify VISIBLE features like: wheel type (alloy/steel), headlight type (LED/xenon/halogen), interior material (leather/cloth), infotainment screen, sunroof, parking sensors, etc. Use ONLY what you can clearly see in the photos for the \'Dotări\' section.';
 
-// Handle form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['save_ai_settings'])) {
-    $prompt = $_POST['ai_prompt'] ?? '';
-    $carTypeOrder = $_POST['car_type_order'] ?? '';
-    $carTypeStock = $_POST['car_type_stock'] ?? '';
-    $imagePrompt = $_POST['image_prompt'] ?? '';
-    $analyzePhotos = isset($_POST['analyze_photos']) ? '1' : '0';
-    $openaiModel = $_POST['openai_model'] ?? 'gpt-4o-mini';
-    
-    // Save settings
-    $stmt = $db->prepare("INSERT INTO {$prefx}_ai_settings (setting_key, setting_value) VALUES (:key, :value) ON DUPLICATE KEY UPDATE setting_value = :value2");
-    
-    $stmt->execute(['key' => 'ai_prompt', 'value' => $prompt, 'value2' => $prompt]);
-    $stmt->execute(['key' => 'car_type_order', 'value' => $carTypeOrder, 'value2' => $carTypeOrder]);
-    $stmt->execute(['key' => 'car_type_stock', 'value' => $carTypeStock, 'value2' => $carTypeStock]);
-    $stmt->execute(['key' => 'image_prompt', 'value' => $imagePrompt, 'value2' => $imagePrompt]);
-    $stmt->execute(['key' => 'analyze_photos', 'value' => $analyzePhotos, 'value2' => $analyzePhotos]);
-    $stmt->execute(['key' => 'openai_model', 'value' => $openaiModel, 'value2' => $openaiModel]);
-    
-    $saved = true;
-}
-
 // Load current settings
 $settings = [];
 $stmtLoad = $db->query("SELECT setting_key, setting_value FROM {$prefx}_ai_settings");
@@ -103,9 +81,8 @@ $rtrn = '
         <strong>Текущий AI:</strong> '.($currentAiProvider === 'openai' ? 'OpenAI / '.$currentOpenaiModel : 'Groq / '.$currentGroqModel).' | 
         <strong>Фото:</strong> '.($currentAiProvider === 'openai' ? ($currentAnalyzePhotos === '1' ? '✅ ВКЛ' : '❌ ВЫКЛ') : '⛔ не поддерживается').'
     </div>
-    '.(!empty($saved) ? '<div class="success-msg">✅ Настройки сохранены успешно!</div>' : '').'
-    
-    <form method="POST">
+
+    <form onsubmit="return false;">
         <div class="model-select">
             <label>AI Provider:</label>
             <select name="ai_provider" onchange="toggleProvider()">
@@ -117,10 +94,14 @@ $rtrn = '
         <div class="model-select" id="openai-models" style="'.($currentAiProvider !== 'openai' ? 'display:none;' : '').'">
             <label>OpenAI Model:</label>
             <select name="openai_model">
-                <option value="gpt-4o-mini" '.($currentOpenaiModel === 'gpt-4o-mini' ? 'selected' : '').'>GPT-4o Mini (быстрый, дешёвый)</option>
-                <option value="gpt-4o" '.($currentOpenaiModel === 'gpt-4o' ? 'selected' : '').'>GPT-4o (качественный)</option>
-                <option value="gpt-4-turbo" '.($currentOpenaiModel === 'gpt-4-turbo' ? 'selected' : '').'>GPT-4 Turbo (мощный)</option>
-                <option value="gpt-5.2" '.($currentOpenaiModel === 'gpt-5.2' ? 'selected' : '').'>GPT-5.2 (самый мощный)</option>
+                <option value="gpt-4.1-mini" '.($currentOpenaiModel === 'gpt-4.1-mini' ? 'selected' : '').'>⭐ GPT-4.1 Mini (рекомендуется — дёшево + качество)</option>
+                <option value="gpt-4.1-nano" '.($currentOpenaiModel === 'gpt-4.1-nano' ? 'selected' : '').'>GPT-4.1 Nano (самый дешёвый)</option>
+                <option value="gpt-5-mini" '.($currentOpenaiModel === 'gpt-5-mini' ? 'selected' : '').'>GPT-5 Mini (новый, высокое качество)</option>
+                <option value="gpt-5-nano" '.($currentOpenaiModel === 'gpt-5-nano' ? 'selected' : '').'>GPT-5 Nano (новый, очень дёшево)</option>
+                <option value="gpt-4o-mini" '.($currentOpenaiModel === 'gpt-4o-mini' ? 'selected' : '').'>GPT-4o Mini (старый, дёшево)</option>
+                <option value="gpt-4o" '.($currentOpenaiModel === 'gpt-4o' ? 'selected' : '').'>GPT-4o (дорогой, качественный)</option>
+                <option value="gpt-4.1" '.($currentOpenaiModel === 'gpt-4.1' ? 'selected' : '').'>GPT-4.1 (мощный, дорогой)</option>
+                <option value="gpt-5.1" '.($currentOpenaiModel === 'gpt-5.1' ? 'selected' : '').'>GPT-5.1 (самый мощный, очень дорогой)</option>
             </select>
         </div>
         
