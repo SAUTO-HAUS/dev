@@ -80,16 +80,26 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 <noscript><div><img src="https://mc.yandex.ru/watch/100579107" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
 <!-- /Yandex.Metrika counter -->
 
-<?php //<link rel="alternate" href="http://www.example.com/" hreflang="x-default">
-	
-$uri_x = (isset($t_mp[2])) ? str_replace('/'.$_COOKIE['lang'].'/', '/', $uri) : str_replace('/'.$_COOKIE['lang'], '', $uri);
+<?php
+// Resolve current language safely — Googlebot does not send cookies, so falling back to
+// $_COOKIE['lang'] alone produces "/" canonical/hreflang URLs for the crawler.
+$lang_for_url = $_COOKIE['lang'] ?? $zlng ?? 'ro';
 
-//echo '<link rel="alternate" hreflang="x-default" href="'.$protocol.'://'.$http_host.''.$uri_x.'" />';
-echo '<link rel="canonical" href="'.$protocol.'://'.$http_host.'/'.$_COOKIE['lang'].''.$uri_x.'" />';
+$uri_x = (isset($t_mp[2])) ? str_replace('/'.$lang_for_url.'/', '/', $uri) : str_replace('/'.$lang_for_url, '', $uri);
+
+// Strip query string from canonical to avoid duplicate content (filters/sorting indexed as same page)
+// Exception: catalog pages already use clean URLs for brand/model paths
+$canonical_uri = strpos($uri_x, '?') !== false ? substr($uri_x, 0, strpos($uri_x, '?')) : $uri_x;
+$canonical_url = $protocol.'://'.$http_host.'/'.$lang_for_url.$canonical_uri;
+
+echo '<link rel="canonical" href="'.$canonical_url.'" />';
 
 foreach ($lang_arr as $lang){
-	echo '<link rel="alternate" hreflang="'.$lang.'" href="'.$protocol.'://'.$http_host.'/'.$lang.''.$uri_x.'" />';
+	echo '<link rel="alternate" hreflang="'.$lang.'" href="'.$protocol.'://'.$http_host.'/'.$lang.$canonical_uri.'" />';
 }
+// x-default points to the Romanian version as the site's default — used by Google when
+// the visitor's language does not match any of the declared hreflang variants.
+echo '<link rel="alternate" hreflang="x-default" href="'.$protocol.'://'.$http_host.'/ro'.$canonical_uri.'" />';
 ?>
 
 <link rel="apple-touch-icon" sizes="180x180" href="/<?php e(_SITE_IMG)?>/favicon/apple-touch-icon.png">
@@ -135,130 +145,181 @@ include('plugins/dev_tools/meta_gen.php');
 <meta name="yandex-verification" content="61bf9aa380a8610d" />
 
 <?php
-        if (isset($t_mp[2])&&$t_mp[2]=='cars') {
-	
-	/*
-	$pdo = $db->prepare('SELECT * FROM '.$prefx.'_catalog WHERE `id`= :id AND `visible`="1" AND `active`="1"');
-	$pdo->execute(array( 'id' => $url_id ));
+// =====================================================================
+// STRUCTURED DATA (Schema.org JSON-LD)
+// =====================================================================
 
-	foreach ($pdo as $row){
-		
-		$pdo = $db->prepare('SELECT * FROM '.$prefx.'_photo WHERE `id`= :id AND main=1');
-		$pdo->execute(array( 'id' => $url_id ));
-		foreach ($pdo as $row2){
-			$c_photo_name = $row2['name'];
-		}
-		
-		echo '
-		<script type="application/ld+json">
-		{
-			"@context": "https://schema.org/",
-			"@type": "Vehicle",
-			"name": "'.$row['brand_name'].' '.$row['model_name'].'",
-			"image": "https://www.sauto.md/media/images/upload/car/'.$row['photo_path'].'/'.$row['id'].'/med/'.$c_photo_name.'.jpg",
-			"productionDate": "'.$row['year'].'",
-			"bodyType": "'.$row['bodytype'].'",
-			"mileageFromOdometer": "'.$row['mileage'].' km",
-			"vehicleEngine" : {
-				"@type": "EngineSpecification",
-				"name": "'.$row['engine'].' cc"
-			},
-			"description": "'.$row['bodytype'].' '.$row['year'].' '.$row['brand_name'].' '.$row['model_name'].' ('.$row['price'].' EUR) id:'.$row['id'].'",
-			"offers":{
-				"@type":"Offer",
-				"price":"'.$row['price'].'.00",
-				"priceCurrency":"EUR",
-				"seller":{
-					"@type":"Organization",
-					"address":{
-						"@type":"PostalAddress",
-						"addressCountry":"MD",
-						"streetAddress":"Calea Mosilor 11",
-						"postalCode":"MD2024",
-						"addressLocality":"Chisinau"
-					},
-					"telephone":"<?php echo PhoneHelper::getGeneralPhone(); ?>",
-					"name":"Sauto SRL"
-				}
-			}
-		}
-		</script>
-		';
-		
-	;}
-	*/	
-		/*echo '
-		<script type="application/ld+json">
-		{
-			"@context": "https://schema.org/",
-			"@type": "Vehicle",
-			"name": "Ford C-MAX",
-			"image": "https://www.sauto.md/media/images/upload/car/05a5/751d/9bf3/6977/med/0aa3d4ceac7d2e5f90eb96c8921270a6.jpg",
-			"productionDate": "2013",
-			"bodyType": "Universal",
-			"mileageFromOdometer": "167000 km",
-			"vehicleEngine" : {
-				"@type": "EngineSpecification",
-				"name": "998 cc"
-			},
-			"description": "Universal 2013 Ford C-MAX (7200 EUR)",
-			"offers":{
-				"@type":"Offer",
-				"price":"7200.00",
-				"priceCurrency":"EUR",
-				"availabilityStarts":"2017-05-29",
-				"seller":{
-					"@type":"Organization",
-					"address":{
-						"@type":"PostalAddress",
-						"addressCountry":"MD",
-						"streetAddress":"Calea Mosilor 11",
-						"postalCode":"MD2024",
-						"addressLocality":"Chisinau"
-					},
-					"telephone":"<?php echo PhoneHelper::getGeneralPhone(); ?>",
-					"name":"Sauto SRL"
-				}
-			}
-		}
-		</script>
-		';
-		
-		echo '
-		<script type="application/ld+json">
-		{
-			"@context": "https://schema.org/",
-			"@type": "AutoDealer",
-			"name": "Sauto.md",
-			"image": "https://www.sauto.md/media/images/site/sauto_new_logo.png",
-			"legalName": "Sauto SRL",
-			"telephone": "<?php echo PhoneHelper::getGeneralPhone(); ?>",
-			"address": "Moldova, Chisinau, Str. Calea Mosilor 11, MD2024",
-			"makesOffer" : {
-				"@type": "Offer",
-				"priceSpecification": {
-					"@type": "UnitPriceSpecification",
-					"priceCurrency": "EUR",
-					"price": "7200"
-				},
-				"itemOffered" : {
-					"@type": "Car",
-					"name": "Ford C-MAX",
-					"image": "https://www.sauto.md/media/images/upload/car/05a5/751d/9bf3/6977/high/0aa3d4ceac7d2e5f90eb96c8921270a6.jpg",
-					"modelDate": "2013",
-					"bodyType": "Universal",
-					"mileageFromOdometer": "167000 km",
-					"vehicleEngine" : {
-						"@type": "EngineSpecification",
-						"name": "998 cc"
-					},
-					"description": "Universal 2013 Ford C-MAX (7200 EUR)"
-				}
-				
-			}
-		}
-		</script>
-		';*/
+$_z2 = $t_mp[2] ?? '';
+$_z3 = $t_mp[3] ?? '';
+
+// ----- AutoDealer schema pe HOME (pagina principala) -----
+if ($_z2 === '' || $_z2 === 'home') {
+    $dealerPhone = PhoneHelper::getGeneralPhone();
+    echo '
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "AutoDealer",
+        "name": "Sauto.md",
+        "legalName": "Sauto SRL",
+        "url": "https://www.sauto.md/",
+        "logo": "https://www.sauto.md/media/images/site/sauto_new_logo_black.png",
+        "image": "https://www.sauto.md/media/images/site/sauto_new_logo_black.png",
+        "telephone": "'.$dealerPhone.'",
+        "email": "info@sauto.md",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Calea Moșilor 11",
+            "addressLocality": "Chișinău",
+            "postalCode": "MD2024",
+            "addressCountry": "MD"
+        },
+        "areaServed": {
+            "@type": "Country",
+            "name": "Moldova"
+        },
+        "sameAs": [
+            "https://www.facebook.com/sauto.md",
+            "https://www.instagram.com/sauto.md/",
+            "https://www.tiktok.com/@sauto.md",
+            "https://t.me/sautohaus"
+        ]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Sauto.md",
+        "url": "https://www.sauto.md/",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://www.sauto.md/'.$_COOKIE['lang'].'/cars?tg=fltr&q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+    ';
+}
+
+// ----- Vehicle schema pe paginile detaliu (cars/15234, ordercars/15234) -----
+if (in_array($_z2, ['cars', 'ordercars'], true) && is_numeric($_z3)) {
+    $car_id = (int)$_z3;
+    $car_cond = ($_z2 === 'cars') ? 'in_stock' : 'on_order';
+
+    $pdo_car = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg WHERE `id`=:id AND `vis`="1" AND `act`="1" AND `catalog_type`=:ct LIMIT 1');
+    $pdo_car->execute(['id' => $car_id, 'ct' => $car_cond]);
+    $car_row = $pdo_car->fetch(PDO::FETCH_ASSOC);
+
+    if ($car_row) {
+        $pdo_pht = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:id AND `main`="1" LIMIT 1');
+        $pdo_pht->execute(['id' => $car_id]);
+        $pht_row = $pdo_pht->fetch(PDO::FETCH_ASSOC);
+        $car_img = $pht_row
+            ? 'https://www.sauto.md/media/images/upload/car/'.$car_row['p_path'].'/'.$car_row['id'].'/high/'.$pht_row['name'].'.jpg'
+            : 'https://www.sauto.md/media/images/site/sauto_new_logo_black.png';
+
+        $car_name      = trim(($car_row['br_nm'] ?? '').' '.($car_row['mo_nm'] ?? ''));
+        $car_year      = $car_row['yr'] ?? '';
+        $car_mileage   = $car_row['mlg'] ?? '';
+        $car_engine_cc = $car_row['vol'] ?? '';
+        $car_price     = $car_row['prc'] ?? '';
+        $car_currency  = $car_row['cur'] ?? 'EUR';
+        $car_currency  = strtoupper($car_currency) === 'EUR' ? 'EUR' : (strtoupper($car_currency) === 'USD' ? 'USD' : 'EUR');
+        $car_color     = $car_row['clr'] ?? '';
+        $car_bodytype  = $car_row['bt'] ?? '';
+        $car_fuel      = $car_row['fl'] ?? '';
+        $car_trans     = $car_row['tra'] ?? '';
+        $car_vin       = $car_row['vin'] ?? '';
+
+        $dealerPhone = PhoneHelper::getGeneralPhone();
+        $availability = ($_z2 === 'cars') ? 'InStock' : 'PreOrder';
+
+        $vehicle = [
+            '@context' => 'https://schema.org',
+            '@type'    => 'Vehicle',
+            'name'     => $car_name,
+            'image'    => $car_img,
+            'url'      => 'https://www.sauto.md/'.$_COOKIE['lang'].'/'.$_z2.'/'.$car_id,
+            'brand'    => [
+                '@type' => 'Brand',
+                'name'  => $car_row['br_nm'] ?? '',
+            ],
+            'model'              => $car_row['mo_nm'] ?? '',
+            'vehicleIdentificationNumber' => $car_vin ?: null,
+            'modelDate'          => $car_year ? (string)$car_year : null,
+            'productionDate'     => $car_year ? (string)$car_year : null,
+            'mileageFromOdometer'=> $car_mileage ? ['@type'=>'QuantitativeValue','value'=>(int)$car_mileage,'unitCode'=>'KMT'] : null,
+            'vehicleEngine'      => $car_engine_cc ? ['@type'=>'EngineSpecification','engineDisplacement'=>['@type'=>'QuantitativeValue','value'=>(int)$car_engine_cc,'unitCode'=>'CMQ']] : null,
+            'color'              => $car_color ? ($lng['l']['car']['clr'][$car_color] ?? $car_color) : null,
+            'bodyType'           => $car_bodytype ? ($lng['l']['car']['bt'][$car_bodytype] ?? $car_bodytype) : null,
+            'fuelType'           => $car_fuel ? ($lng['l']['car']['fl'][$car_fuel] ?? $car_fuel) : null,
+            'vehicleTransmission'=> $car_trans ? ($lng['l']['car']['tra'][$car_trans] ?? $car_trans) : null,
+            'offers'             => [
+                '@type'         => 'Offer',
+                'price'         => $car_price ? (string)$car_price : '0',
+                'priceCurrency' => $car_currency,
+                'availability'  => 'https://schema.org/'.$availability,
+                'itemCondition' => 'https://schema.org/UsedCondition',
+                'url'           => 'https://www.sauto.md/'.$_COOKIE['lang'].'/'.$_z2.'/'.$car_id,
+                'seller'        => [
+                    '@type'    => 'AutoDealer',
+                    'name'     => 'Sauto.md',
+                    'telephone'=> $dealerPhone,
+                    'address'  => [
+                        '@type'           => 'PostalAddress',
+                        'streetAddress'   => 'Calea Moșilor 11',
+                        'addressLocality' => 'Chișinău',
+                        'postalCode'      => 'MD2024',
+                        'addressCountry'  => 'MD',
+                    ],
+                ],
+            ],
+        ];
+
+        // Strip null fields for clean JSON
+        $vehicle = array_filter($vehicle, function($v) { return $v !== null; });
+
+        echo '
+        <script type="application/ld+json">'.json_encode($vehicle, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT).'</script>
+        ';
+    }
+    unset($pdo_car, $car_row, $pdo_pht, $pht_row);
+}
+
+// ----- BreadcrumbList pe paginile catalog cu brand/model -----
+if (in_array($_z2, ['cars', 'ordercars'], true) && isset($t_mp[3]) && !is_numeric($t_mp[3]) && !empty($t_mp[3])) {
+    $brand_code = str_replace('-', '_', $t_mp[3]);
+    $brand_name = '';
+    $pdo_b = $db->prepare('SELECT `br_nm` FROM '.$prefx.'_car_list WHERE `br`=:br LIMIT 1');
+    $pdo_b->execute(['br' => $brand_code]);
+    foreach ($pdo_b as $row) { $brand_name = $row['br_nm']; }
+
+    if (!empty($brand_name)) {
+        $crumbs = [
+            ['@type'=>'ListItem','position'=>1,'name'=>'Sauto','item'=>'https://www.sauto.md/'.$_COOKIE['lang'].'/'],
+            ['@type'=>'ListItem','position'=>2,'name'=>($_z2==='cars'?'Catalog':'La comandă'),'item'=>'https://www.sauto.md/'.$_COOKIE['lang'].'/'.$_z2],
+            ['@type'=>'ListItem','position'=>3,'name'=>$brand_name,'item'=>'https://www.sauto.md/'.$_COOKIE['lang'].'/'.$_z2.'/'.$t_mp[3]],
+        ];
+        if (isset($t_mp[4]) && !empty($t_mp[4])) {
+            $model_code = str_replace('-', '_', $t_mp[4]);
+            $model_name = '';
+            $pdo_m = $db->prepare('SELECT `mo_nm` FROM '.$prefx.'_car_list WHERE `br`=:br AND `mo`=:mo LIMIT 1');
+            $pdo_m->execute(['br' => $brand_code, 'mo' => $model_code]);
+            foreach ($pdo_m as $row) { $model_name = $row['mo_nm']; }
+            if (!empty($model_name)) {
+                $crumbs[] = ['@type'=>'ListItem','position'=>4,'name'=>$model_name,'item'=>'https://www.sauto.md/'.$_COOKIE['lang'].'/'.$_z2.'/'.$t_mp[3].'/'.$t_mp[4]];
+            }
+        }
+        echo '
+        <script type="application/ld+json">'.json_encode([
+            '@context'        => 'https://schema.org',
+            '@type'           => 'BreadcrumbList',
+            'itemListElement' => $crumbs,
+        ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES).'</script>
+        ';
+    }
 }
 ?>
 
@@ -348,4 +409,3 @@ $(document).ready(function(){
 </script>
 
 <!-- AMP removed - site is not AMP, was loading unnecessary ~100KB -->
-

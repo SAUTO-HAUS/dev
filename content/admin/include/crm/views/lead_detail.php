@@ -687,6 +687,20 @@ audio { height:26px; margin-top:0.3rem; }
                         if ($old_v) $old_v=crm_status_label($old_v,$crm_lang);
                         if ($new_v) $new_v=crm_status_label($new_v,$crm_lang);
                     }
+                    if (in_array($a->action, ['doc_status_change','doc_linked'])) {
+                        // parse "doc_f=con_plata doc_id=5618 active→transaction"
+                        preg_match('/doc_f=(\S+)/', $old_v, $mf);
+                        preg_match('/doc_id=(\d+)/', $old_v, $mid);
+                        $parsed_doc_f  = isset($mf[1])  ? docs_bridge_doc_label($mf[1])  : '';
+                        $parsed_doc_id = isset($mid[1]) ? (int)$mid[1] : 0;
+                        if ($a->action === 'doc_status_change') {
+                            $old_v = $parsed_doc_f ? $parsed_doc_f.($parsed_doc_id ? ' #'.$parsed_doc_id : '') : '';
+                            $new_v = $new_v ? crm_status_label($new_v, $crm_lang) : '';
+                        } else {
+                            $old_v = '';
+                            $new_v = $parsed_doc_f ? $parsed_doc_f.($parsed_doc_id ? ' #'.$parsed_doc_id : '') : $new_v;
+                        }
+                    }
                 ?>
                 <div class="ld-tl-item">
                     <div class="ld-tl-dot" style="background:#94a3b8;font-size:0.55rem;"><?= $cL['label_system']??'SYS' ?></div>

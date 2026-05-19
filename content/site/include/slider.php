@@ -25,7 +25,7 @@ $slide_arr = [
 		[ 'img'=>'cnn1uc6hu0', 'txt'=>$lang_slider_text['comerciale']['main_txt'], 'xtr'=>$lang_slider_text['comerciale']['xtra_txt'] ],
 		[ 'img'=>'nph6bq92k2', 'txt'=>$lang_slider_text['platforma']['main_txt'], 'url'=>'/'.$_COOKIE['lang'].'/services/transportation' ],
 		[ 'img'=>'3cizv9l0zw' ],
-		[ 'img'=>'i0nub22a5h', 'txt'=>$lang_slider_text['order']['main_txt'], 'url'=>'/'.$_COOKIE['lang'].'/services/order' ],
+		[ 'img'=>'i0nub22a5h', 'txt'=>$lang_slider_text['order']['main_txt'], 'url'=>'/'.$_COOKIE['lang'].'/order' ],
 		[ 'img'=>'50s9cyld8x', 'txt'=>$lang_slider_text['message']['main_txt'], 'xtr'=>$lang_slider_text['message']['xtra_txt'] ]
 	]
 	

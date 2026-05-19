@@ -23,7 +23,12 @@ if ($new999) {
 
 ?>
 
-<form class="main_info" id="main_form_999">
+<form class="main_info" id="main_form_999"
+    data-category-id="<?= htmlspecialchars($car999['category_id'] ?? DefaultText::CATEGORY_AUTO) ?>"
+    data-subcategory-id="<?= htmlspecialchars($car999['subcategory_id'] ?? $defaultSubcategory) ?>"
+    data-offer-type="<?= htmlspecialchars($car999['offer_type'] ?? '776') ?>"
+    data-api-id="<?= htmlspecialchars($car['999_api_id'] ?? '') ?>"
+    data-announcement-type="<?= htmlspecialchars($car999['announcement_type'] ?? 'sauto_personal') ?>">
     <div class="row">
         <div class="form-group col-md-3">
             <label class="form-label">

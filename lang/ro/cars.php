@@ -59,6 +59,10 @@ return [
     // Schedule History
     'schedule_history' => 'Istoricul programărilor',
     'no_schedules' => 'Nu există programări',
+    'delete_schedule' => 'Șterge',
+    'delete_all' => 'Șterge toate',
+    'delete_all_pending_schedules' => 'Șterge toate programările neapărute',
+    'delete_all_confirm' => 'Sigur ștergi toate {n} programări neapărute?',
     
     // Schedule Status
     'status_pending' => 'În așteptare',

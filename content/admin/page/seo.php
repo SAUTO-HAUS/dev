@@ -164,10 +164,10 @@ $content .= '
 									<label class="lng_cnt '.$v2.'" data-changed="0" data-lang="'.$v2.'">
 										<div class="lang_txt">'.mb_strtoupper($v2, "UTF-8").'</div>
 										<input class="change_checker" name="seo_changed_'.$v2.'" type="hidden" value="0">
-										<textarea class="new_title collect" name="new_title_'.$v2.'" tabindex="1" placeholder="Title" title="Title" data-lang="'.$v2.'" data-name="title">'.$v[$v2]['title'].'</textarea>
-										<textarea class="new_meta_desc collect" name="new_meta_desc_'.$v2.'" tabindex="1" placeholder="Description" title="Description" data-lang="'.$v2.'" data-name="description">'.$v[$v2]['description'].'</textarea>
-										<textarea class="new_h1 collect" name="new_h1_'.$v2.'" tabindex="1" placeholder="H1" title="H1" data-lang="'.$v2.'" data-name="h1">'.$v[$v2]['h1'].'</textarea>
-										<textarea class="new_txt collect" name="new_txt_'.$v2.'" tabindex="1" placeholder="Text" title="Text" data-lang="'.$v2.'" data-name="text">'.$v[$v2]['text'].'</textarea>
+										<textarea class="new_title collect" name="new_title_'.$v2.'" tabindex="1" placeholder="Title" title="Title" data-lang="'.$v2.'" data-name="title">'.($v[$v2]['title'] ?? '').'</textarea>
+										<textarea class="new_meta_desc collect" name="new_meta_desc_'.$v2.'" tabindex="1" placeholder="Description" title="Description" data-lang="'.$v2.'" data-name="description">'.($v[$v2]['description'] ?? '').'</textarea>
+										<textarea class="new_h1 collect" name="new_h1_'.$v2.'" tabindex="1" placeholder="H1" title="H1" data-lang="'.$v2.'" data-name="h1">'.($v[$v2]['h1'] ?? '').'</textarea>
+										<textarea class="new_txt collect" name="new_txt_'.$v2.'" tabindex="1" placeholder="Text" title="Text" data-lang="'.$v2.'" data-name="text">'.($v[$v2]['text'] ?? '').'</textarea>
 									</label>';
 								}
 								$content .= '

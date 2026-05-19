@@ -59,6 +59,10 @@ return [
     // Schedule History
     'schedule_history' => 'Schedule History',
     'no_schedules' => 'No schedules',
+    'delete_schedule' => 'Delete',
+    'delete_all' => 'Delete all',
+    'delete_all_pending_schedules' => 'Delete all unpublished schedules',
+    'delete_all_confirm' => 'Are you sure you want to delete all {n} unpublished schedules?',
     
     // Schedule Status
     'status_pending' => 'Pending',

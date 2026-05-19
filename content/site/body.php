@@ -10,6 +10,13 @@ if (isset($t_mp[2]) && $t_mp[2] == 'ordercars') {
     include(_SITE_INCL.'/functions.php');
 }
 
+// Legacy redirect: /services/order -> /order (301)
+if (isset($t_mp[2]) && $t_mp[2] === 'services' && isset($t_mp[3]) && $t_mp[3] === 'order') {
+    $_lang = $_COOKIE['lang'] ?? 'ro';
+    header('Location: /'.$_lang.'/order', true, 301);
+    exit;
+}
+
 // Catalog redirect fallback: handle legacy ?srt=in_stock / ?srt=on_order URLs (current UI uses ?cat=...)
 if (isset($_GET['srt']) && in_array($_GET['srt'], ['in_stock','on_order'], true) && isset($t_mp[2]) && in_array($t_mp[2], ['cars','ordercars'], true)) {
     $_srt_target = $_GET['srt'] === 'on_order' ? 'ordercars' : 'cars';
@@ -292,7 +299,7 @@ if ( in_array($_cur_page, $_show_links_pages) && ($_cur_page != 'services' || $_
         <div class="img" style="background-image:url(/media/images/links/link-trade.jpg);"></div>
         <span class="ttl"><?php echo $lng['p']['services']['tradein']['name']; ?></span>
     </a>
-    <a href="/<?php echo $_COOKIE['lang']; ?>/services/order">
+    <a href="/<?php echo $_COOKIE['lang']; ?>/order">
         <div class="img" style="background-image:url(/media/images/links/link-order.jpg);"></div>
         <span class="ttl"><?php echo $lng['p']['services']['order']['name']; ?></span>
     </a>
@@ -318,7 +325,7 @@ if ($isMobile == '1') {
         echo '<div id="mob_nav_links">';
         echo '<a href="/'.$_COOKIE['lang'].'/calculator">'.$lng['p']['services']['calc_customs']['name'].'</a>';
         echo '<a href="/'.$_COOKIE['lang'].'/tradein">'.$lng['p']['services']['tradein']['name'].'</a>';
-        echo '<a href="/'.$_COOKIE['lang'].'/services/order">'.$lng['p']['services']['order']['name'].'</a>';
+        echo '<a href="/'.$_COOKIE['lang'].'/order">'.$lng['p']['services']['order']['name'].'</a>';
         echo '</div>';
     }
 }
@@ -358,6 +365,7 @@ elseif ( $t_mp[2]=='ordercars' && (!isset($t_mp[3]) || $t_mp[3]=='' || !is_numer
     elseif ($t_mp[2]=='tyres') {include (_SITE_PAGE.'/tyres.php');}
     elseif ($t_mp[2]=='credit') {include (_SITE_PAGE.'/new_pages/credit/credit.php');}
     elseif ($t_mp[2]=='tradein') {include (_SITE_PAGE.'/new_pages/tradein/tradein.php');}
+    elseif ($t_mp[2]=='order') {include (_SITE_PAGE.'/new_pages/order/order.php');}
     elseif ($t_mp[2]=='rent'&&(!isset($t_mp[3])&&!isset($q_mp[1]))) {include (_SITE_PAGE.'/rent.php');}
     elseif ( in_array( $t_mp[2], $info_arr ) ) {include (_SITE_PAGE.'/information.php');}
     elseif ($t_mp[2]=='contacts') {include (_SITE_PAGE.'/contacts.php');}
@@ -470,7 +478,7 @@ if (!isset($t_mp[2]) || $t_mp[2]=='') {
                                 <div class="section">
                                     <a href="/<?php echo $_COOKIE['lang']; ?>/services/testdrive"><?php echo $lng['p']['services']['testdrive']['name']; ?></a>
                                     <a href="/<?php echo $_COOKIE['lang']; ?>/services/insurance"><?php echo $lng['p']['services']['insurance']['name']; ?></a>
-                                    <a href="/<?php echo $_COOKIE['lang']; ?>/services/order"><?php echo $lng['p']['services']['order']['name']; ?></a>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/order"><?php echo $lng['p']['services']['order']['name']; ?></a>
                                 </div>
                             </div>
                         </div>

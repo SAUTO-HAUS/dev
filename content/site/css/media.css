@@ -1,6 +1,10 @@
 @media (max-width:999px), (orientation: portrait) {
 	
-	header, #crumbs, #ann, body > .fltr, main, footer {width:96vw; margin:20px 2vw 0;}
+	header, #crumbs, #ann, body > .fltr, body > .srt_row, main, footer {width:96vw; margin:20px 2vw 0;}
+	body > .srt_row > .srt_wrap {width:100%; padding:6px; box-sizing:border-box;}
+	body > .srt_row > .srt_wrap > .srt_cat_badge {flex:0 0 calc(50% - 3px); text-align:center; justify-content:center; padding:0 .5rem; box-sizing:border-box;}
+	body > .srt_row > .srt_wrap > .srt_drop {min-width:0; flex:0 0 calc(50% - 3px);}
+	body > .srt_row > .srt_wrap > .srt_drop .srt_drop_btn {width:100%; box-sizing:border-box; padding:0 .5rem;}
 	
 	#slider {width:100%; height:40vw;}
 	

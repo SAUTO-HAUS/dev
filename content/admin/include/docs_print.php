@@ -556,14 +556,16 @@ $_html_output  = ob_get_clean();
 $_final_doc_id = (int)($_saved_doc_id ?? 0);
 if (!$_final_doc_id) $_final_doc_id = (int)($_POST['id'] ?? 0);
 
-// At creation of vinzare_avans (cars/ordercars): redirect to catalog with confirm param instead of print window
-$_is_creation     = !empty($_saved_doc_id);
-$_needs_redirect  = $_is_creation
-    && in_array(($_POST['doc_f'] ?? ''), ['vinzare_avans'])
-    && in_array(($_POST['doc_gr'] ?? ''), ['cars', 'ordercars']);
+// At creation: redirect to catalog
+$_is_creation    = !empty($_saved_doc_id);
+$_needs_redirect = $_is_creation && !empty($_POST['doc_gr']);
 if ($_needs_redirect && $_final_doc_id) {
     $lang = $_COOKIE['lang'] ?? 'ro';
-    header('Location: /' . $lang . '/adminsauto/docs/ctlg?crm_confirm=' . $_final_doc_id);
+    $_is_vinzare_avans = ($_POST['doc_f'] ?? '') === 'vinzare_avans'
+        && ($_POST['doc_gr'] ?? '') === 'cars';
+    $redirect_url = '/' . $lang . '/adminsauto/docs/ctlg'
+        . ($_is_vinzare_avans ? '?crm_confirm=' . $_final_doc_id : '');
+    header('Location: ' . $redirect_url);
     exit;
 }
 

@@ -98,6 +98,7 @@ $url_arr = [
     'dev_tools',
     'credit',
     'tradein',
+    'order',
     'telegram',
     'telegram_adv',
     'vin-redirect',

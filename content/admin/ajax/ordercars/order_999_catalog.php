@@ -416,6 +416,22 @@ if (__post('sub') == 'get_subcategory') {
             ':carId' => $carId,
             ':n_a_new' => $isChecked
         ]);
+
+        // SAUTO Personal: save scheduled publications even when republishing an already-published car
+        if (($input['announcement_type'] ?? null) === 'sauto_personal' && !empty($input['sauto_schedules'])) {
+            __log("SAUTO Personal scheduling (existing 999_id branch) for on_order car {$carId}");
+            $schedulesData = json_decode($input['sauto_schedules'], true);
+            if ($schedulesData && is_array($schedulesData)) {
+                $catalogType = 'on_order';
+                $ctStmt = $pdo->prepare("SELECT catalog_type FROM gh3sp_car_ctlg WHERE id = ?");
+                $ctStmt->execute([$carId]);
+                $ctRow = $ctStmt->fetch(\PDO::FETCH_ASSOC);
+                if (!empty($ctRow['catalog_type'])) $catalogType = $ctRow['catalog_type'];
+                $sautoSchedulingService = new \App\Services\SautoPersonalSchedulingService();
+                $result = $sautoSchedulingService->saveSchedules($carId, $catalogType, $schedulesData);
+                __log("Save schedules result (existing branch): " . ($result ? 'SUCCESS' : 'FAILED'));
+            }
+        }
     } else {
         $imgs0 = (new Car())->getCarsImg($carId);
 

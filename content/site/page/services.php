@@ -204,8 +204,6 @@ if ($t_mp[3] == 'insurance') {
 			exit;
 		} elseif ($t_mp[3] == 'sale') {
 			include(_SITE_PAGE.'/new_pages/sale/sale.php');
-		} elseif ($t_mp[3] == 'order') {
-			include(_SITE_PAGE.'/new_pages/order/order.php');
 		} else {
 			echo '
 			<img class="m_img" src="/media/images/site/v2/'.$serv_arr[ $t_mp[3] ]['img'].'" />

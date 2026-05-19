@@ -95,6 +95,10 @@ return [
     // Schedule History
     'schedule_history' => 'История расписаний',
     'no_schedules' => 'Нет расписаний',
+    'delete_schedule' => 'Удалить',
+    'delete_all' => 'Удалить все',
+    'delete_all_pending_schedules' => 'Удалить все неопубликованные расписания',
+    'delete_all_confirm' => 'Точно удалить все {n} неопубликованных расписаний?',
     
     // Schedule Status
     'status_pending' => 'В ожидании',

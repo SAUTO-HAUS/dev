@@ -119,7 +119,10 @@ $trnslt_ar = [
     'fl' => 'fuel_type',
     'wd' => 'drivetrain'
 ];
-$cr_lmt = $isMobile=='1' ? 960 : 960;
+$cr_lmt = 32; // Cars per page (pagination 1, 2, 3...)
+$per_page = 32;
+$current_page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+$page_offset = ($current_page - 1) * $per_page;
 
 // Process query parameters first
 if (isset($_SERVER['QUERY_STRING'])) {
@@ -192,15 +195,11 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
     // Log SQL parameters for debugging
     // file_put_contents('debug_sql.log', "Processing filtered catalog with params: " . print_r($_GET, true) . "\n", FILE_APPEND);
 
-    // Check if this is a brand page (has brand filter, no other complex filters)
-    $is_brand_page = isset($_GET['br']) && !isset($_GET['bt']) && !isset($_GET['fl']) && !isset($_GET['tra']) && !isset($_GET['wd']) && !isset($_GET['clr']) && !isset($_GET['yr']) && !isset($_GET['mlg']) && !isset($_GET['vol']) && !isset($_GET['prc']) && !isset($_GET['sts']);
+    // Pagination active on all filtered pages (was previously brand-only)
+    $is_brand_page = true;
 
-    // For brand pages: show 16 cars initially with pagination support
-    // For other filtered pages: show all cars up to limit
-    $initial_limit = $is_brand_page ? 16 : $cr_lmt;
-
-    // This is a filtered catalogue page
-    $card = $car_card('fltr', $initial_limit, $_GET, 'av', 0, $is_brand_page);
+    // This is a filtered catalogue page with pagination
+    $card = $car_card('fltr', $per_page, $_GET, 'av', $page_offset, true);
 
     // Handle body type filter - set appropriate H1 or hide it
     if(isset($_GET['bt']) && !isset($_GET['br'])) {
@@ -309,30 +308,12 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
         $rtrn .= '<h1 style="font-size: inherit;">'.$sa['meta']['h1'].'</h1>';
     }
 
-    // For brand pages, add data attributes for JS load more functionality
-    $brand_data_attr = '';
-    if ($is_brand_page) {
-        $brand_data_attr = ' data-brand="'.htmlspecialchars($_GET['br'] ?? '').'"';
-        $brand_data_attr .= ' data-model="'.htmlspecialchars($_GET['mo'] ?? '').'"';
-        $brand_data_attr .= ' data-total="'.(int)($card['total'] ?? 0).'"';
-        $brand_data_attr .= ' data-loaded="'.(int)$card['qu'].'"';
-    }
-
-    $rtrn .= '<div class="cnt list" id="brand-cars-container"'.$brand_data_attr.'>';
+    $rtrn .= '<div class="cnt list" id="brand-cars-container" data-total="'.(int)($card['total'] ?? 0).'" data-loaded="'.(int)$card['qu'].'">';
     $rtrn .= $card['txt'];
     $rtrn .= '</div>';
 
-    // For brand pages: Show "Load more" button if there are more cars to load
-    if ($is_brand_page && isset($card['total']) && $card['total'] > $card['qu']) {
-        $rtrn .= '<div class="load-more-container" style="width: 100%; text-align: center; margin: 30px 0 20px 0;">';
-        $rtrn .= '<button id="load-more-btn" class="load-more-btn">';
-        $rtrn .= $lng['w']['load_more'];
-        $rtrn .= '</button>';
-        $rtrn .= '<div class="load-more-spinner" style="display: none; margin-top: 15px;">';
-        $rtrn .= '<div style="width: 30px; height: 30px; border: 3px solid #f3f3f3; border-top: 3px solid #ff0000; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;"></div>';
-        $rtrn .= '</div>';
-        $rtrn .= '</div>';
-    }
+    // Numbered pagination (1, 2, 3 ... N)
+    $rtrn .= render_pagination($current_page, $per_page, (int)($card['total'] ?? 0), $_GET);
 
     // SEO description now appears right after the "Load more" button (or after cars if no button)
     if(isset($_GET['br']) && !isset($_GET['mo'])) {
@@ -388,19 +369,26 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
 }
 // Base catalogue page
 elseif (!isset($t_mp[3])) {
+    // Use filtered mode with empty filters so pagination works
+    $is_brand_page = true;
+    $card = $car_card('fltr', $per_page, [], 'av', $page_offset, true);
+
     $rtrn .= '<div class="gr">';
     $rtrn .= '<h1>'.$sa['meta']['h1'].'</h1>';
-    
+
     $intro_text = $lng['w']['in_stock_intro'];
-    
+
     $rtrn .= '<div style="margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-left: 4px solid #ff0000; border-radius: 4px;">';
     $rtrn .= '<p style="margin: 0; color: #333; font-size: 16px;">'.$intro_text.'</p>';
     $rtrn .= '</div>';
-    
-    $rtrn .= '<div class="cnt list">';
-    $card = $car_card('new', $cr_lmt, null);
+
+    $rtrn .= '<div class="cnt list" id="brand-cars-container" data-total="'.(int)($card['total'] ?? 0).'" data-loaded="'.(int)$card['qu'].'">';
     $rtrn .= $card['txt'];
     $rtrn .= '</div>';
+
+    // Pagination UI
+    $rtrn .= render_pagination($current_page, $per_page, (int)($card['total'] ?? 0), $_GET);
+
     $rtrn .= '</div>';
 }
 // Sample filter page

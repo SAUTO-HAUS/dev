@@ -139,15 +139,19 @@
         const filters = getCurrentFilters();
         
         let pageType = 'all';
+        let catalogType = 'all';
         if (window.location.pathname.includes('/ordercars')) {
-            pageType = 'on_order';
+            pageType = 'ordercars';
+            catalogType = 'on_order';
         } else if (window.location.pathname.includes('/cars')) {
-            pageType = 'in_stock';
+            pageType = 'cars';
+            catalogType = 'in_stock';
         }
 
         const requestData = {
             ...filters,
             page: pageType,
+            catalog_type: catalogType,
             lang: getCookie('lang') || 'ro'
         };
 

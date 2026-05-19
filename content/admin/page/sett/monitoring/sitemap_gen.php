@@ -163,7 +163,9 @@
             </div>
 
 <?php
-define('_DOIT', true);
+if (!defined('_DOIT')) {
+    define('_DOIT', true);
+}
 
 echo "<div class='output'>";
 echo "=== SAUTO SITEMAP MANUAL GENERATOR ===\n";

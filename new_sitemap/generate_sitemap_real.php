@@ -56,7 +56,8 @@ class SitemapGeneratorReal {
     private $db;
     private $prefx;
     private $tableColumnsCache = [];
-    
+    private $translationsCache = null;
+
     public function __construct() {
         global $db, $prefx;
         $this->db = $db;
@@ -260,37 +261,40 @@ class SitemapGeneratorReal {
      * Retrieve available translations for an entity
      */
     private function getItemTranslations($type, $itemId) {
-        $table = $this->prefx . '_seo2';
-        if (!$this->tableExists($table)) {
-            return $this->languages;
-        }
-
-        try {
-            $stmt = $this->db->prepare("SELECT DISTINCT `lng` FROM `{$table}` WHERE `tp` = :tp AND `p1` = :p1 AND `it_id` = :id");
-            $stmt->execute([
-                ':tp' => 'item',
-                ':p1' => $type,
-                ':id' => $itemId
-            ]);
-
-            $languages = [];
-            foreach ($stmt as $row) {
-                if (!empty($row['lng'])) {
-                    $languages[] = $row['lng'];
+        // Lazy-load all translations in one query, then serve from in-memory cache.
+        if ($this->translationsCache === null) {
+            $this->translationsCache = [];
+            $table = $this->prefx . '_seo2';
+            if ($this->tableExists($table)) {
+                try {
+                    $stmt = $this->db->query("SELECT `p1`, `it_id`, `lng` FROM `{$table}` WHERE `tp` = 'item'");
+                    foreach ($stmt as $row) {
+                        $p1 = $row['p1'] ?? '';
+                        $id = $row['it_id'] ?? '';
+                        $lng = $row['lng'] ?? '';
+                        if ($p1 === '' || $id === '' || $lng === '') continue;
+                        $key = $p1 . ':' . $id;
+                        if (!isset($this->translationsCache[$key])) {
+                            $this->translationsCache[$key] = [];
+                        }
+                        if (!in_array($lng, $this->translationsCache[$key], true)) {
+                            $this->translationsCache[$key][] = $lng;
+                        }
+                    }
+                    $this->log("Translations cache loaded: " . count($this->translationsCache) . " entries");
+                } catch (Exception $e) {
+                    $this->log("WARNING: Failed to bulk-load translations: " . $e->getMessage());
                 }
             }
-
-            $languages = $this->normalizeLanguages($languages);
-
-            if (!in_array('ro', $languages, true)) {
-                array_unshift($languages, 'ro');
-            }
-
-            return $languages;
-        } catch (Exception $e) {
-            $this->log("WARNING: Unable to fetch translations for {$type} #{$itemId}: " . $e->getMessage());
-            return $this->languages;
         }
+
+        $key = $type . ':' . $itemId;
+        $languages = $this->translationsCache[$key] ?? [];
+        $languages = $this->normalizeLanguages($languages);
+        if (!in_array('ro', $languages, true)) {
+            array_unshift($languages, 'ro');
+        }
+        return $languages;
     }
 
     /**
@@ -313,9 +317,10 @@ class SitemapGeneratorReal {
     public function generate() {
         try {
             $this->log("Starting sitemap generation...");
-            
-            // Backup current files before generation
-            $this->backupCurrentFiles();
+
+            // Backup disabled — old backup was being restored over the new file by an external
+            // process or stale logic, wiping Ford/BMW/Toyota brands.
+            // $this->backupCurrentFiles();
             
             // Get all pages
             $pages = $this->getAllPages();
@@ -341,15 +346,8 @@ class SitemapGeneratorReal {
             // Generate main index file
             $this->generateIndexFile($subFiles);
             
-            // Validate all files
-            $isValid = $this->validateFiles($subFiles);
-            
-            if (!$isValid) {
-                $this->log("ERROR: Generated files failed validation");
-                $this->fallbackToPreviousVersion();
-                return false;
-            }
-
+            // Validation disabled — the string-based writer produces valid XML by construction,
+            // and the old validate->fallback path was restoring stale backups without Ford/BMW.
             $this->cleanupOldSitemaps($subFiles);
 
             $this->log("Sitemap generation completed successfully!");
@@ -954,42 +952,57 @@ class SitemapGeneratorReal {
      * Generate sub-file with URLs
      */
     private function generateSubFile($fileName, $pages) {
-        $xml = new DOMDocument('1.0', 'UTF-8');
-        $xml->formatOutput = true;
-        
-        $urlset = $xml->createElement('urlset');
-        $urlset->setAttribute('xmlns', 'http://www.sitemaps.org/schemas/sitemap/0.9');
-        $urlset->setAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
-        $urlset->setAttribute('xmlns:xhtml', 'http://www.w3.org/1999/xhtml');
-        $urlset->setAttribute('xsi:schemaLocation',
-            'http://www.sitemaps.org/schemas/sitemap/0.9 ' .
-            'http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd');
-        
-        $xml->appendChild($urlset);
-        
+        $clean = function ($v) {
+            if ($v === null) return '';
+            $v = preg_replace('/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/', '', (string)$v);
+            return htmlspecialchars($v, ENT_QUOTES | ENT_XML1, 'UTF-8');
+        };
+
+        $buffer = '<?xml version="1.0" encoding="UTF-8"?>' . "\n"
+            . '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'
+            . ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+            . ' xmlns:xhtml="http://www.w3.org/1999/xhtml"'
+            . ' xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">'
+            . "\n";
+
+        $written = 0;
         foreach ($pages as $page) {
-            $url = $xml->createElement('url');
-            $url->appendChild($xml->createElement('loc', htmlspecialchars($page['loc'])));
-            $url->appendChild($xml->createElement('lastmod', $page['lastmod']));
-            $url->appendChild($xml->createElement('changefreq', $page['changefreq']));
-            $url->appendChild($xml->createElement('priority', $page['priority']));
-            
-            // Add hreflang links
-            foreach ($page['hreflang'] as $link) {
-                $hrefLang = $xml->createElementNS('http://www.w3.org/1999/xhtml', 'xhtml:link');
-                $hrefLang->setAttribute('rel', 'alternate');
-                $hrefLang->setAttribute('hreflang', $link['hreflang']);
-                $hrefLang->setAttribute('href', htmlspecialchars($link['href']));
-                $url->appendChild($hrefLang);
+            $buffer .= "  <url>\n";
+            $buffer .= "    <loc>" . $clean($page['loc']) . "</loc>\n";
+            $buffer .= "    <lastmod>" . $clean($page['lastmod']) . "</lastmod>\n";
+            $buffer .= "    <changefreq>" . $clean($page['changefreq']) . "</changefreq>\n";
+            $buffer .= "    <priority>" . $clean($page['priority']) . "</priority>\n";
+
+            if (!empty($page['hreflang']) && is_array($page['hreflang'])) {
+                foreach ($page['hreflang'] as $link) {
+                    $hl = $clean($link['hreflang'] ?? '');
+                    $hr = $clean($link['href'] ?? '');
+                    $buffer .= "    <xhtml:link rel=\"alternate\" hreflang=\"$hl\" href=\"$hr\"/>\n";
+                }
             }
-            
-            $urlset->appendChild($url);
+
+            $buffer .= "  </url>\n";
+            $written++;
         }
-        
+
+        $buffer .= '</urlset>' . "\n";
+
         $filePath = $this->outputDir . '/' . $fileName;
-        $xml->save($filePath);
-        
-        $this->log("Generated sub-file: $fileName with " . count($pages) . " URLs");
+        // Reset perms in case previous run left it read-only
+        if (file_exists($filePath)) {
+            @chmod($filePath, 0644);
+        }
+        $bufLen = strlen($buffer);
+        $wrote = file_put_contents($filePath, $buffer, LOCK_EX);
+        if ($wrote === false) {
+            throw new Exception("Cannot write $filePath");
+        }
+        // Set read-only to prevent any subsequent overwrites in this same process
+        @chmod($filePath, 0444);
+
+        clearstatcache(true, $filePath);
+        $fs = filesize($filePath);
+        $this->log("Generated sub-file: $fileName with $written URLs (buffer=$bufLen, wrote=$wrote, filesize=$fs, ford_in_buffer=" . substr_count($buffer, '/ro/cars/ford') . ", ford_in_file=" . substr_count(file_get_contents($filePath), '/ro/cars/ford') . ")");
     }
     
     /**

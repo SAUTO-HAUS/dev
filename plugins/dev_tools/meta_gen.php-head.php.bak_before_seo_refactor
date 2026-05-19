@@ -1,0 +1,983 @@
+<?php defined( '_DOIT' ) or die( 'Restricted access' );
+
+require_once(dirname(dirname(dirname(__FILE__))) . '/content/default/language.php');
+
+$sa = array();
+
+// Check if this is a 404 page - set by detail pages before head.php is included
+if (isset($GLOBALS['page_is_404']) && $GLOBALS['page_is_404'] === true) {
+    http_response_code(404);
+    echo '<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />';
+    echo '<meta name="description" content="Page not found. Error 404.">';
+    echo '<meta name="keywords" content="Error, 404">';
+    echo '<meta name="robots" content="noindex, nofollow">';
+    echo '<meta name="viewport" content="width=800"/>';
+    echo '<title>404 - '.$lang_404.'</title>';
+    return; // Stop processing meta generation
+}
+
+if ( isset($t_mp[1]) ){
+	if ( in_array($t_mp[1], $lang_arr, true) ){ $zlng = $t_mp[1]; }
+	else{ $zlng = 'ro'; }
+}else{ $zlng = 'ro'; }
+
+$z2 = isset($t_mp[2]) ? $t_mp[2] : '';
+//$z3 = isset($t_mp[3]) ? $t_mp[3] : '';
+$z3 = !isset($t_mp[3])?'':(in_array($z2, ['cars', 'ordercars', 'tyres'])?( toNumber($t_mp[3])>0?toNumber($t_mp[3]):'' ):$t_mp[3]);
+
+$zrbt = 'noindex, nofollow';
+
+// Only allow indexing on the primary sauto.md domain in production
+$current_host = strtolower($_SERVER['HTTP_HOST'] ?? '');
+if ($current_host !== '') {
+    // Strip an optional port suffix (e.g. sauto.md:8080)
+    $current_host = preg_replace('/:\d+$/', '', $current_host);
+}
+
+if (in_array($current_host, ['sauto.md', 'www.sauto.md'], true)) {
+    $zrbt = 'index, follow';
+}
+
+// The base /{lang}/cars catalogue shows the most recently added cars and
+// should stay crawlable via links, but not be indexed as a standalone page.
+if ($z2 === 'cars' && $z3 === '' && !isset($q_mp[1])) {
+    $zrbt = 'noindex, follow';
+}
+
+$r['ttl']='';$r['h1']='';$r['dsc']='';$r['kwd']='';
+
+// Generate meta tags for credit page
+if ($z2 === 'credit') {
+    // Get page title and description from credit page variables if they exist
+    if (isset($page_title) && isset($page_description)) {
+        $sa['meta']['ttl'] = $page_title;
+        $sa['meta']['dsc'] = $page_description;
+        $sa['meta']['kwd'] = 'credit auto, finantare auto, credit masina, leasing auto, credit personal auto, credit business auto, sauto credit, Moldova';
+    } else {
+        // Fallback to default credit page meta
+        switch ($zlng) {
+            case 'ru':
+                $sa['meta']['ttl'] = 'Автокредит в Молдове — Кредит на покупку автомобиля | Sauto.md';
+                $sa['meta']['dsc'] = 'Оформите автокредит на выгодных условиях с Sauto.md. Быстрое одобрение, минимальный пакет документов, автомобили в наличии и под заказ. Консультации и сопровождение на всех этапах.';
+                $sa['meta']['kwd'] = 'автокредит, кредит на авто, финансирование авто, лизинг авто, кредит на машину, sauto кредит, Молдова';
+                break;
+            case 'en':
+                $sa['meta']['ttl'] = 'Car Loan in Moldova — Auto Financing Made Easy | Sauto.md';
+                $sa['meta']['dsc'] = 'Get your car financed quickly and easily with Sauto.md. Fast approvals, minimal paperwork, cars available in stock or by order. Expert guidance every step of the way.';
+                $sa['meta']['kwd'] = 'car loan, auto financing, car credit, auto leasing, vehicle financing, sauto credit, Moldova';
+                break;
+            default: // ro
+                $sa['meta']['ttl'] = 'Credit auto în Moldova — Finanțare pentru achiziția unei mașini | Sauto.md';
+                $sa['meta']['dsc'] = 'Obține un credit auto rapid și avantajos cu Sauto.md. Aprobări rapide, documente minime, mașini în stoc sau la comandă. Consultanță gratuită și suport complet.';
+                $sa['meta']['kwd'] = 'credit auto, finantare auto, credit masina, leasing auto, credit personal auto, credit business auto, sauto credit, Moldova';
+                break;
+        }
+    }
+}
+
+// order page
+if ($z2 === 'order') {
+    switch ($zlng) {
+        case 'ru':
+            $sa['meta']['ttl'] = 'Автомобили под заказ из Европы, США и Кореи | Sauto.md - Экономия до 45%';
+            $sa['meta']['dsc'] = 'Заказ автомобилей из Европы, США и Кореи под ключ. Более 1500 успешных проектов. Полное сопровождение от подбора до регистрации. Экономия до 45%. Надёжно и быстро.';
+            $sa['meta']['kwd'] = 'автомобили под заказ, заказ авто из европы, импорт автомобилей, sauto заказ, автомобили из сша, автомобили из кореи, Молдова';
+            break;
+        case 'en':
+            $sa['meta']['ttl'] = 'Order Cars from Europe, USA and Korea | Sauto.md - Save up to 45%';
+            $sa['meta']['dsc'] = 'Order cars from Europe, USA and Korea turnkey. Over 1500 completed projects. Full support from selection to registration. Save up to 45%. Reliable and fast.';
+            $sa['meta']['kwd'] = 'order cars, import cars, cars from europe, cars from usa, cars from korea, sauto order, Moldova';
+            break;
+        default: // ro
+            $sa['meta']['ttl'] = 'Automobile la comandă din Europa, SUA și Coreea | Sauto.md - Economie până la 45%';
+            $sa['meta']['dsc'] = 'Comandă automobile din Europa, SUA și Coreea la cheie. Peste 1500 de proiecte realizate. Asistență completă de la selecție până la înregistrare. Economie până la 45%. Fiabil și rapid.';
+            $sa['meta']['kwd'] = 'automobile la comanda, import auto, masini din europa, masini din sua, masini din coreea, sauto comanda, Moldova';
+            break;
+    }
+}
+
+// calculator page
+if ($z2 === 'calculator') {
+    switch ($zlng) {
+        case 'ru':
+            $sa['meta']['ttl'] = 'Калькулятор растаможки авто в Молдове | Sauto.md';
+            $sa['meta']['dsc'] = 'Рассчитайте стоимость растаможки автомобиля в Молдове онлайн. Акцизы, налог за таможенные процедуры — всё в одном калькуляторе. Актуальный курс EUR от НБМ. Быстро и точно.';
+            $sa['meta']['kwd'] = 'калькулятор растаможки, растаможка авто молдова, акцизы авто, таможенный калькулятор, sauto растаможка';
+            break;
+        case 'en':
+            $sa['meta']['ttl'] = 'Car Customs Calculator Moldova | Sauto.md';
+            $sa['meta']['dsc'] = 'Calculate car customs costs in Moldova online. Excise duties, customs procedure tax — all in one calculator. Live EUR rate from NBM. Fast and accurate.';
+            $sa['meta']['kwd'] = 'customs calculator moldova, car import tax, excise duty calculator, vehicle customs moldova, sauto calculator';
+            break;
+        default: // ro
+            $sa['meta']['ttl'] = 'Calculator vămuire auto Moldova | Sauto.md';
+            $sa['meta']['dsc'] = 'Calculează costurile de vămuire a unui automobil în Moldova online. Accize, taxa pentru proceduri vamale — totul într-un singur calculator. Curs EUR live de la BNM. Rapid și precis.';
+            $sa['meta']['kwd'] = 'calculator vamuire auto, vamuire auto moldova, accize auto, calculator taxe vamale, sauto calculator';
+            break;
+    }
+}
+
+// Set default title only if not already set (e.g., by credit page)
+if (!isset($sa['meta']['ttl']) || empty($sa['meta']['ttl'])) {
+    $sa['meta']['ttl'] = 'Vînzarea autoturismelor și utilitarelor.';
+}
+$current_lang = isset($_COOKIE['lang']) ? $_COOKIE['lang'] : 'ro';
+
+// Set language-dependent default H1 title
+if ($current_lang == 'ru') {
+    $sa['meta']['h1'] = 'Продажа автомобилей в Кишиневе';
+} elseif ($current_lang == 'en') {
+    $sa['meta']['h1'] = 'Cars for Sale in Chișinău';
+} else { 
+    $sa['meta']['h1'] = 'Vânzări auto în Chișinău';
+}
+
+// Set default description and keywords only if not already set (e.g., by credit page)
+if (!isset($sa['meta']['dsc']) || empty($sa['meta']['dsc'])) {
+    $sa['meta']['dsc'] = 'Sauto - Vânzare de mașini, pagina auto, vă oferim o gamă largă de mașini.';
+}
+if (!isset($sa['meta']['kwd']) || empty($sa['meta']['kwd'])) {
+    $sa['meta']['kwd'] = 'sauto, md, Renault Megane, Renault Kadjar, Renault Clio, Nissan Qashqai, Nissan Juke, Nissan X Trail, Ford Focus, Opel Astra, Ford Transit, Ford Fiesta, Ford Fusion, VW Passat, VW Golf';
+}
+
+if ($z2 === 'tradein') {
+    switch ($current_lang) {
+        case 'ru':
+            $sa['meta']['ttl'] = 'Обмен авто за 1 день в Кишиневе | Trade-in Sauto — выгодно и без хлопот';
+            $sa['meta']['dsc'] = 'Trade-in Sauto в Кишиневе: оценка автомобиля по рыночной цене, подбор новой машины, оформление и выплата разницы за 1 день без скрытых комиссий. Быстрый и безопасный обмен авто.';
+            $sa['meta']['kwd'] = 'trade-in авто Кишинев, обмен авто Sauto, trade in Молдова, обменять машину, оценка авто, покупка авто с доплатой, автосалон trade in, быстрый обмен авто, Sauto trade-in';
+            break;
+        case 'en':
+            $sa['meta']['ttl'] = 'Trade in Your Car in 1 Day in Chișinău | Sauto Trade-In — Smart & Easy';
+            $sa['meta']['dsc'] = 'Sauto Trade-In in Chișinău: fair car valuation, choice of new or used vehicles, paperwork and payment handled in one day with no hidden fees. Fast, secure car exchange.';
+            $sa['meta']['kwd'] = 'trade-in Chisinau, car trade-in Moldova, swap my car, Sauto trade in, car valuation, exchange car with cash top-up, buy car with trade-in, fast car exchange, dealership trade in service';
+            break;
+        default:
+            $sa['meta']['ttl'] = 'Schimbă-ți mașina în 1 zi la Chișinău | Trade-In Sauto — avantajos și fără griji';
+            $sa['meta']['dsc'] = 'Trade-In Sauto în Chișinău: evaluare corectă a mașinii, ofertă pentru vehicule noi sau rulate, acte și plată într-o singură zi, fără comisioane ascunse. Schimb rapid și sigur.';
+            $sa['meta']['kwd'] = 'trade-in auto Chisinau, schimb auto Sauto, evaluare masina, trade in Moldova, cumpara masina cu avans, schimb masina cu diferenta, autoturisme noi si rulate, servicii trade-in, schimb rapid auto';
+            break;
+    }
+}
+
+// Direct check for car filter URLs - apply SEO titles immediately 
+if ($z2 == 'cars' && !is_numeric($z3) && isset($t_mp[3]) && !empty($t_mp[3])) {
+    // This could be a brand in a clean URL
+    $brand_code = str_replace('-', '_', $z3);
+    $brand_name = '';
+    $model_name = '';
+    
+    // Get brand name directly from URL segment
+    $pdo_brand = $db->prepare('SELECT `br_nm` FROM '.$prefx.'_car_list WHERE `br`=:br LIMIT 1');
+    $pdo_brand->execute(['br' => $brand_code]);
+    foreach ($pdo_brand as $brand_row) {
+        $brand_name = $brand_row['br_nm'];
+    }
+    
+    // If we have a brand and a model segment
+    if (!empty($brand_name) && isset($t_mp[4]) && !empty($t_mp[4])) {
+        $model_code = str_replace('-', '_', $t_mp[4]);
+        
+        $pdo_model = $db->prepare('SELECT `mo_nm` FROM '.$prefx.'_car_list WHERE `br`=:br AND `mo`=:mo LIMIT 1');
+        $pdo_model->execute(['br' => $brand_code, 'mo' => $model_code]);
+        foreach ($pdo_model as $model_row) {
+            $model_name = $model_row['mo_nm'];
+        }
+        
+        // Apply SEO titles if we have both brand and model
+        if (!empty($model_name)) {
+            $sa['meta']['ttl'] = "Cumpără {$brand_name} {$model_name} în Moldova";
+            $sa['meta']['h1'] = "Cumpără {$brand_name} {$model_name} în Chișinău";
+            $sa['meta']['dsc'] = "Automobile {$brand_name} {$model_name} în stoc și la comandă. Prețuri și oferte actuale.";
+        }
+    }
+}
+
+$sa['it']['img'] = 'https://www.sauto.md/media/images/site/sauto_new_logo_black.png';
+	
+//SELECT p.pid, p.cid, p.pname, c1.name1, c2.name2 FROM product p LEFT JOIN customer1 c1 ON p.cid = c1.cid
+//'SELECT * FROM '.$prefx.'_car_ctlg c LEFT JOIN '.$prefx.'_car_pht p WHERE `id`=:id'
+
+if ( in_array($z2, $url_arr) ){//if t_mp[2] is allowed part of url
+	$z2=$z2==''?'home':$z2;
+	
+	//------------------------------------------------------------------------------- CTLG ROWS TAKE
+	if( in_array($z2, ['cars', 'ordercars', 'tyres']) && is_numeric($z3) && !isset($q_mp[1]) ){//if t_mp[2] has an item info, t_mp[3] is number
+		$zl='';
+		$p_type = $z2=='cars' ? 'car' : $z2;
+		$p_type = $z2=='ordercars' ? 'car' : $p_type;
+		
+		if ($z2=='cars' || $z2=='ordercars'){$pdo = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg WHERE `id`=:id'); $pdo2 = $db->prepare('SELECT `name`, `main` FROM '.$prefx.'_car_pht WHERE `it_id`=:id AND `main`="1"'); $zl='car';}
+		elseif ($z2=='tyres'){$pdo = $db->prepare('SELECT * FROM '.$prefx.'_tyre_ctlg WHERE `id`=:id'); $pdo2 = $db->prepare('SELECT `name`, `main` FROM '.$prefx.'_tyre_pht WHERE `it_id`=:id AND `main`="1"'); $zl='tyre';}
+		
+		$pdo->execute( array('id'=>$z3) );
+		$ir=0;
+		foreach ($pdo as $r){ foreach ($r as $k => $v){ $sa['it']['r'][$k] = $v; } $ir=1;}
+		
+		if ($ir==1){
+                        // Always allow indexing for car catalog pages regardless of stock status
+                        // Previously we set noindex when the car was unavailable, but business rules now
+                        // require indexing for all car detail pages.
+			
+			$pdo2->execute(array('id'=>$r['id']));
+			foreach ($pdo2 as $r2){ $sa['it']['img']='https://www.sauto.md/media/images/upload/'.$p_type.'/'.$sa['it']['r']['p_path'].'/'.$sa['it']['r']['id'].'/high/'.$r2['name'].'.jpg'; }
+			unset($pdo2, $r2);
+		}
+	}
+	//------------------------------------------------------------------------------- META START
+	if ($z2 == 'cars' && !is_numeric($z3) && isset($t_mp[3])) {
+		$brand_code = str_replace('-', '_', $z3);
+		$brand_name = '';
+		$model_name = '';
+		
+		// Get brand name directly from URL segment
+		$pdo_brand = $db->prepare('SELECT `br_nm` FROM '.$prefx.'_car_list WHERE `br`=:br LIMIT 1');
+		$pdo_brand->execute(['br' => $brand_code]);
+		foreach ($pdo_brand as $brand_row) {
+			$brand_name = $brand_row['br_nm'];
+		}
+		
+		// If we have a brand and a model segment
+		if (!empty($brand_name) && isset($t_mp[4])) {
+			$model_code = str_replace('-', '_', $t_mp[4]);
+			
+			$pdo_model = $db->prepare('SELECT `mo_nm` FROM '.$prefx.'_car_list WHERE `br`=:br AND `mo`=:mo LIMIT 1');
+			$pdo_model->execute(['br' => $brand_code, 'mo' => $model_code]);
+			foreach ($pdo_model as $model_row) {
+				$model_name = $model_row['mo_nm'];
+			}
+			
+			// Apply SEO titles if we have both brand and model
+			if (!empty($model_name)) {
+				$sa['meta']['ttl'] = "Cumpără {$brand_name} {$model_name} în Moldova";
+				$sa['meta']['h1'] = "Cumpără {$brand_name} {$model_name} în Chișinău";
+				$sa['meta']['dsc'] = "Automobile {$brand_name} {$model_name} în stoc și la comandă. Prețuri și oferte actuale.";
+				goto skip_all_meta;
+			}
+		}
+	}
+	
+	if( $z3=='' && !isset($q_mp[1]) ){//z2 any, no z3, no qr
+		$pdo = $db->prepare('SELECT `ttl`, `h1`, `dsc`, `kwd` FROM '.$prefx.'_seo2 USE INDEX (altp) WHERE `lng`=:lng AND `tp`="main" AND `p1`=:p1 ');
+		$pdo->execute(array( 'lng'=>$zlng, 'p1'=>$z2 ));
+		$ir=0;
+		foreach ($pdo as $r){$ir=1;}
+		if ($ir==1){
+			$sa['meta']['ttl'] = ($r['ttl']!='') ? $r['ttl'] : $sa['meta']['ttl'];
+			$sa['meta']['h1'] = ($r['h1']!='') ? $r['h1'] : $sa['meta']['h1'];
+			$sa['meta']['dsc'] = ($r['dsc']!='') ? $r['dsc'] : $sa['meta']['dsc'];
+			$sa['meta']['kwd'] = ($r['kwd']!='') ? $r['kwd'] : $sa['meta']['kwd'];
+		}
+	}
+	elseif ( $z3!='' && !isset($q_mp[1]) ){//z2 any, z3 isset, no qr
+		// Debug information - log key values
+		file_put_contents('debug_meta.log', "Clean URL Meta Debug:\n", FILE_APPEND);
+		file_put_contents('debug_meta.log', "z2: {$z2}, z3: {$z3}\n", FILE_APPEND);
+		file_put_contents('debug_meta.log', "GET params: " . print_r($_GET, true) . "\n", FILE_APPEND);
+		file_put_contents('debug_meta.log', "t_mp: " . print_r($t_mp, true) . "\n\n", FILE_APPEND);
+		
+		// Try direct SEO for all brand/model combinations
+		if ($z2 == 'cars' && !is_numeric($z3)) {
+			// This could be a brand in a clean URL
+			$brand_code = $z3;
+			$brand_code = str_replace('-', '_', $brand_code);
+			$brand_name = '';
+			$model_name = '';
+			
+			// Get brand name directly from URL segment
+			$pdo_brand = $db->prepare('SELECT `br_nm` FROM '.$prefx.'_car_list WHERE `br`=:br LIMIT 1');
+			$pdo_brand->execute(['br' => $brand_code]);
+			foreach ($pdo_brand as $brand_row) {
+				$brand_name = $brand_row['br_nm'];
+			}
+			
+			// If we have a brand and a model segment
+			if (!empty($brand_name) && isset($t_mp[4])) {
+				$model_code = $t_mp[4]; 
+				$model_code = str_replace('-', '_', $model_code);
+				
+				$pdo_model = $db->prepare('SELECT `mo_nm` FROM '.$prefx.'_car_list WHERE `br`=:br AND `mo`=:mo LIMIT 1');
+				$pdo_model->execute(['br' => $brand_code, 'mo' => $model_code]);
+				foreach ($pdo_model as $model_row) {
+					$model_name = $model_row['mo_nm'];
+				}
+				
+				// Log what we found
+				file_put_contents('debug_meta.log', "Direct URL parsing: brand_name={$brand_name}, model_name={$model_name}\n\n", FILE_APPEND);
+				
+				// Apply SEO titles if we have both brand and model
+				if (!empty($model_name)) {
+					$sa['meta']['ttl'] = "Cumpără {$brand_name} {$model_name} în Moldova";
+					$sa['meta']['h1'] = "Cumpără {$brand_name} {$model_name} în Chișinău";
+					$sa['meta']['dsc'] = "Automobile {$brand_name} {$model_name} în stoc și la comandă. Prețuri și oferte actuale.";
+					// Skip the rest of this section
+					goto skip_regular_meta;
+				}
+			}
+		}
+		
+		// Check if this is a clean URL for car filters (z3 is not numeric and is a brand name)
+		if ($z2 == 'cars' && !is_numeric($z3) && isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
+			$brand_name = '';
+			$model_name = '';
+			
+			// Get brand name
+			if (isset($_GET['br'])) {
+				$brand_code = $_GET['br'];
+				$brand_code = str_replace('-', '_', $brand_code);
+				
+				$pdo_brand = $db->prepare('SELECT `br_nm` FROM '.$prefx.'_car_list WHERE `br`=:br LIMIT 1');
+				$pdo_brand->execute(['br' => $brand_code]);
+				foreach ($pdo_brand as $brand_row) {
+					$brand_name = $brand_row['br_nm'];
+				}
+			}
+			
+			// Get model name
+			if (isset($_GET['mo']) && !empty($brand_name)) {
+				$model_code = $_GET['mo'];
+				$model_code = str_replace('-', '_', $model_code);
+				
+				$pdo_model = $db->prepare('SELECT `mo_nm` FROM '.$prefx.'_car_list WHERE `br`=:br AND `mo`=:mo LIMIT 1');
+				$pdo_model->execute(['br' => $brand_code, 'mo' => $model_code]);
+				foreach ($pdo_model as $model_row) {
+					$model_name = $model_row['mo_nm'];
+				}
+			}
+			
+			// Apply SEO titles if we have both brand and model
+			if (!empty($brand_name) && !empty($model_name)) {
+				$sa['meta']['ttl'] = "Cumpără {$brand_name} {$model_name} în Moldova";
+				$sa['meta']['h1'] = "Cumpără {$brand_name} {$model_name} în Chișinău";
+				$sa['meta']['dsc'] = "Automobile {$brand_name} {$model_name} în stoc și la comandă. Prețuri și oferte actuale.";
+				// Skip the rest of this section
+				goto skip_regular_meta;
+			}
+		}
+		
+		$pdo = $db->prepare('SELECT `ttl`, `h1`, `dsc`, `kwd` FROM '.$prefx.'_seo2 USE INDEX (altp) WHERE `lng`=:lng AND `tp`="item" AND `p1`=:p1 AND `p2`=:p2 ');
+		$pdo->execute(array( 'lng'=>$zlng, 'p1'=>$z2, 'p2'=>$z3 ));
+		$ir=0;
+		foreach ($pdo as $r){$ir=1;}
+		
+		if ($z2 == 'cars' || $z2 == 'ordercars'){
+			if ($z2 == 'cars'){
+				// Build title with year and color for uniqueness
+				$title_parts = array();
+				$title_parts[] = $sa['it']['r']['br_nm'];
+				$title_parts[] = $sa['it']['r']['mo_nm'];
+				if (!empty($sa['it']['r']['yr'])) $title_parts[] = $sa['it']['r']['yr'];
+				if (!empty($sa['it']['r']['bt']) && isset($lng['l']['car']['bt'][$sa['it']['r']['bt']])) $title_parts[] = $lng['l']['car']['bt'][$sa['it']['r']['bt']];
+				if (!empty($sa['it']['r']['tra']) && isset($lng['l']['car']['tra'][$sa['it']['r']['tra']])) $title_parts[] = $lng['l']['car']['tra'][$sa['it']['r']['tra']];
+				if (!empty($sa['it']['r']['clr']) && isset($lng['l']['car']['clr'][$sa['it']['r']['clr']])) $title_parts[] = $lng['l']['car']['clr'][$sa['it']['r']['clr']];
+				if (!empty($sa['it']['r']['prc'])) $title_parts[] = $sa['it']['r']['prc'].$lng['l']['cur'][$sa['it']['r']['cur']];
+				$title_parts[] = $lng['t']['seo']['car_inf_ttl'];
+				
+				$sa['meta']['ttl'] = ($ir==1 && $r['ttl']!='') ? $r['ttl'] : implode(' ', $title_parts);
+				$sa['meta']['h1'] = ($ir==1 && $r['h1']!='') ? $r['h1'] : $sa['it']['r']['br_nm'].' '.$sa['it']['r']['mo_nm'].', id-'.$sa['it']['r']['id'];
+				
+				// Build description with year and color
+				$desc_parts = array();
+				$desc_parts[] = $lng['w']['used_car'];
+				$desc_parts[] = $sa['it']['r']['br_nm'];
+				$desc_parts[] = $sa['it']['r']['mo_nm'];
+				if (!empty($sa['it']['r']['yr'])) $desc_parts[] = $sa['it']['r']['yr'];
+				if (!empty($sa['it']['r']['clr']) && isset($lng['l']['car']['clr'][$sa['it']['r']['clr']])) $desc_parts[] = $lng['l']['car']['clr'][$sa['it']['r']['clr']];
+				$desc_parts[] = $lng['t']['seo']['car_inf_dsc'];
+				
+				$sa['meta']['dsc'] = ($ir==1 && $r['dsc']!='') ? $r['dsc'] : implode(' ', $desc_parts);
+				$sa['meta']['kwd'] = ($ir==1 && $r['kwd']!='') ? $r['kwd'] : mb_strtolower('md,'.$lng['w']['moldova'].','.$lng['w']['chisinau'].','.$lng['w']['sale'].','.$lng['w']['auto'].','.$lng['w']['buy'].','.$sa['it']['r']['br'].','.$sa['it']['r']['mo'].','.$lng['l'][$zl]['bt'][$sa['it']['r']['bt']].','.$lng['l'][$zl]['tra'][$sa['it']['r']['tra']].','.$lng['l'][$zl]['fl'][$sa['it']['r']['fl']].','.$lng['l'][$zl]['clr'][$sa['it']['r']['clr']].',id'.$sa['it']['r']['id'], "UTF-8");
+			}elseif ($z2 == 'ordercars'){
+				// Build title for order cars with "La comanda:" prefix
+				$title_parts = array();
+				$title_parts[] = $lng['t']['seo']['order_car_prefix'];
+				$title_parts[] = $sa['it']['r']['br_nm'];
+				$title_parts[] = $sa['it']['r']['mo_nm'];
+				if (!empty($sa['it']['r']['yr'])) $title_parts[] = $sa['it']['r']['yr'];
+				if (!empty($sa['it']['r']['bt']) && isset($lng['l']['car']['bt'][$sa['it']['r']['bt']])) $title_parts[] = $lng['l']['car']['bt'][$sa['it']['r']['bt']];
+				if (!empty($sa['it']['r']['tra']) && isset($lng['l']['car']['tra'][$sa['it']['r']['tra']])) $title_parts[] = $lng['l']['car']['tra'][$sa['it']['r']['tra']];
+				if (!empty($sa['it']['r']['clr']) && isset($lng['l']['car']['clr'][$sa['it']['r']['clr']])) $title_parts[] = $lng['l']['car']['clr'][$sa['it']['r']['clr']];
+				if (!empty($sa['it']['r']['prc'])) $title_parts[] = $sa['it']['r']['prc'].$lng['l']['cur'][$sa['it']['r']['cur']];
+				$title_parts[] = $lng['t']['seo']['order_car_ttl'];
+				
+				$sa['meta']['ttl'] = ($ir==1 && $r['ttl']!='') ? $r['ttl'] : implode(' ', $title_parts);
+				$sa['meta']['h1'] = ($ir==1 && $r['h1']!='') ? $r['h1'] : $sa['it']['r']['br_nm'].' '.$sa['it']['r']['mo_nm'].', id-'.$sa['it']['r']['id'];
+				
+				// Build description for order cars
+				$desc_parts = array();
+				$desc_parts[] = $lng['t']['seo']['order_car_dsc'];
+				$desc_parts[] = $sa['it']['r']['br_nm'];
+				$desc_parts[] = $sa['it']['r']['mo_nm'];
+				if (!empty($sa['it']['r']['yr'])) $desc_parts[] = $sa['it']['r']['yr'];
+				if (!empty($sa['it']['r']['clr']) && isset($lng['l']['car']['clr'][$sa['it']['r']['clr']])) $desc_parts[] = $lng['l']['car']['clr'][$sa['it']['r']['clr']];
+				$desc_parts[] = $lng['t']['seo']['order_car_dsc_end'];
+				
+				$sa['meta']['dsc'] = ($ir==1 && $r['dsc']!='') ? $r['dsc'] : implode(' ', $desc_parts);
+				$sa['meta']['kwd'] = ($ir==1 && $r['kwd']!='') ? $r['kwd'] : mb_strtolower('md,'.$lng['w']['moldova'].','.$lng['w']['chisinau'].','.$lng['w']['sale'].','.$lng['w']['auto'].','.$lng['w']['buy'].','.$sa['it']['r']['br'].','.$sa['it']['r']['mo'].','.$lng['l'][$zl]['bt'][$sa['it']['r']['bt']].','.$lng['l'][$zl]['tra'][$sa['it']['r']['tra']].','.$lng['l'][$zl]['fl'][$sa['it']['r']['fl']].','.$lng['l'][$zl]['clr'][$sa['it']['r']['clr']].',id'.$sa['it']['r']['id'], "UTF-8");
+			}elseif ($ir==1 && $z2 == 'tyres'){
+				$sa['meta']['ttl'] = ($r['ttl']!='') ? $r['ttl'] : ( $sa['it']['r']['br'].' | '.$sa['it']['r']['w'].'/'.$sa['it']['r']['h'].' R'.$sa['it']['r']['d'].($sa['it']['r']['c']==1?'C':'').' | '.$lng['l']['tyre']['ss'][$sa['it']['r']['ss']].' | '.$sa['it']['r']['prc'].' '.$sa['it']['r']['cur'] );
+				$sa['meta']['h1'] = ($r['h1']!='') ? $r['h1'] : ( $sa['it']['r']['br'].' '.$sa['it']['r']['w'].'/'.$sa['it']['r']['h'].' R'.$sa['it']['r']['d'].($sa['it']['r']['c']==1?'C':'').', id-'.$sa['it']['r']['id'] );
+				$sa['meta']['dsc'] = ($r['dsc']!='') ? $r['dsc'] : ( $lng['w']['sale'].' '.(mb_strtolower($lng['w']['tyres'], "UTF-8")).' '.$sa['it']['r']['br'].' '.$sa['it']['r']['w'].'/'.$sa['it']['r']['h'].' R'.$sa['it']['r']['d'].($sa['it']['r']['c']==1?'C':'').' [ID-'.$sa['it']['r']['id'].'] '.$lng['u']['for'].' '.$sa['it']['r']['prc'].$sa['it']['r']['cur'].' '.$lng['u']['in'].' '.$lng['w']['chisinau'].'/'.$lng['w']['moldova'].'(MD)' );
+				$sa['meta']['kwd'] = ($r['kwd']!='') ? $r['kwd'] : mb_strtolower('md,'.$lng['w']['moldova'].','.$lng['w']['chisinau'].','.$lng['w']['sale'].','.$lng['w']['tyres'].','.$lng['w']['buy'].','.$sa['it']['r']['br'].','.$sa['it']['r']['w'].','.$sa['it']['r']['h'].',r'.$sa['it']['r']['d'].($sa['it']['r']['c']==1?'c':'').','.$lng['l']['tyre']['ss'][$sa['it']['r']['ss']].',id'.$sa['it']['r']['id'], "UTF-8");
+			}elseif ($z2 == 'services'){
+				$sa['meta']['ttl'] = ($ir==1 && $r['ttl']!='') ? $r['ttl'] : $sa['meta']['ttl'];
+				$sa['meta']['h1'] = ($ir==1 && $r['h1']!='') ? $r['h1'] : $sa['meta']['h1'];
+				$sa['meta']['dsc'] = ($ir==1 && $r['dsc']!='') ? $r['dsc'] : $sa['meta']['dsc'];
+				$sa['meta']['kwd'] = ($ir==1 && $r['kwd']!='') ? $r['kwd'] : $sa['meta']['kwd'];
+				$sa['meta']['h1'] = ($r['h1']!='') ? $r['h1'] : $sa['meta']['h1'];
+				$sa['meta']['dsc'] = ($r['dsc']!='') ? $r['dsc'] : $sa['meta']['dsc'];
+				$sa['meta']['kwd'] = ($r['kwd']!='') ? $r['kwd'] : $sa['meta']['kwd'];
+			}
+		}
+		
+		skip_regular_meta:
+	}
+	elseif ( in_array($z2, array('cars', 'tyres')) && $z3=='' && isset($q_mp[1]) ){//z2 cars/tyres, no z3, qr isset
+		$p_type = $z2=='cars' ? 'car' : $z2;
+		$p_type = $z2=='tyres' ? 'tyre' : $p_type;
+		$zqr = str_replace('tg=fltr&', '', $q_mp[1]);
+		$zttl='';$zh1='';$zdsc='';$zkwd='';
+		$pdo = $db->prepare('SELECT `ttl`, `h1`, `dsc`, `kwd` FROM '.$prefx.'_seo2 USE INDEX (altp) WHERE `lng`=:lng AND `tp`="fltr" AND `p1`=:p1 AND `qr`=:qr ');
+		$pdo->execute(array( 'lng'=>$zlng, 'p1'=>$z2, 'qr'=>$zqr ));
+		$ir=0;
+		foreach ($pdo as $r){$ir=1;}
+		
+		// Check if we have brand and model parameters for cars (from GET params or URL segments)
+		$has_brand = isset($_GET['br']);
+		$has_model = isset($_GET['mo']);
+		$brand_name = '';
+		$model_name = '';
+		
+		// Get brand and model names if they exist
+		if ($z2 == 'cars' && $has_brand) {
+			$brand_code = $_GET['br'];
+			// Fix for brand names with dashes
+			$brand_code = str_replace('-', '_', $brand_code);
+			
+			$pdo_brand = $db->prepare('SELECT `br_nm` FROM '.$prefx.'_car_list WHERE `br`=:br LIMIT 1');
+			$pdo_brand->execute(['br' => $brand_code]);
+			foreach ($pdo_brand as $brand_row) {
+				$brand_name = $brand_row['br_nm'];
+			}
+			
+			if ($has_model && !empty($brand_name)) {
+				$model_code = $_GET['mo'];
+				// Fix for model names with dashes
+				$model_code = str_replace('-', '_', $model_code);
+				
+				$pdo_model = $db->prepare('SELECT `mo_nm` FROM '.$prefx.'_car_list WHERE `br`=:br AND `mo`=:mo LIMIT 1');
+				$pdo_model->execute(['br' => $brand_code, 'mo' => $model_code]);
+				foreach ($pdo_model as $model_row) {
+					$model_name = $model_row['mo_nm'];
+				}
+			}
+		}
+		
+		$i=0;
+		foreach ($_GET as $k => $v){
+			if($k=='tg'){continue;}
+			$v = explode('-', $v);
+			
+			$zttl .= (isset($lng['l'][$p_type]['spec'][$k])) ? ', '.$lng['l'][$p_type]['spec'][$k].': ' : $k;
+			$zh1 .= ($i==0) ? ' '.$lng['u']['where'] : ', '; $zh1 .= (isset($lng['l'][$p_type]['spec'][$k])) ? mb_strtolower(' '.$lng['l'][$p_type]['spec'][$k].': ', "UTF-8") : mb_strtolower(' '.$k.': ', "UTF-8");
+			$zdsc .= ($i==0) ? ' '.$lng['u']['where'] : ','; $zdsc .= (isset($lng['l'][$p_type]['spec'][$k])) ? ' '.$lng['l'][$p_type]['spec'][$k].':' : ' '.$k.':';
+			$zkwd .= (isset($lng['l'][$p_type]['spec'][$k])) ? ','.$lng['l'][$p_type]['spec'][$k] : ','.$k;
+			$i2=0;
+			foreach ($v as $it){
+				$zttl .= ($i2==0) ? '' : '-'; $zttl .= (isset($lng['l'][$p_type][$k][$it])) ? $lng['l'][$p_type][$k][$it] : $it;
+				$zh1 .= ($i2==0) ? '' : '-'; $zh1 .= (isset($lng['l'][$p_type][$k][$it])) ? mb_strtolower($lng['l'][$p_type][$k][$it], "UTF-8") : mb_strtolower($it, "UTF-8");
+				$zdsc .= ($i2==0) ? '' : '-'; $zdsc .= (isset($lng['l'][$p_type][$k][$it])) ? $lng['l'][$p_type][$k][$it] : $it;
+				$zkwd .= (isset($lng['l'][$p_type][$k][$it])) ? ','.$lng['l'][$p_type][$k][$it] : ','.$it;
+				$i2++;
+				if($i2>1){$zrbt = 'noindex, follow';}
+			}
+			$i++;
+		}
+		if ($ir==1 || ($has_brand && $has_model && !empty($brand_name) && !empty($model_name))){
+			if ($z2 == 'cars'){
+				if ($has_brand && $has_model && !empty($brand_name) && !empty($model_name)) {
+					// SEO-formatted title and description for brand+model filters
+					$sa['meta']['ttl'] = ($r['ttl']!='') ? $r['ttl'] : "Cumpără {$brand_name} {$model_name} în Moldova";
+					$sa['meta']['h1'] = ($r['h1']!='') ? $r['h1'] : "Cumpără {$brand_name} {$model_name} în Chișinău";
+					$sa['meta']['dsc'] = ($r['dsc']!='') ? $r['dsc'] : "Automobile {$brand_name} {$model_name} în stoc și la comandă. Prețuri și oferte actuale.";
+				} else {
+					// Default format for other car filters
+					$sa['meta']['ttl'] = ($r['ttl']!='') ? $r['ttl'] : $lng['w']['search'].' | '.$lng['w']['vehicles'].$zttl.' | Sauto Haus';
+					$sa['meta']['h1'] = ($r['h1']!='') ? $r['h1'] : 'Sauto Haus. '.$lng['w']['vehicles'].$zh1;
+					$sa['meta']['dsc'] = ($r['dsc']!='') ? $r['dsc'] : $lng['w']['ctlg'].$zdsc.'. '.$lng['t']['seo']['dsc1'];
+				}
+				$sa['meta']['kwd'] = ($r['kwd']!='') ? $r['kwd'] :  mb_strtolower('md,'.$lng['w']['moldova'].','.$lng['w']['chisinau'].','.$lng['w']['sale'].','.$lng['w']['auto'].','.$lng['w']['buy'].$zkwd, "UTF-8");
+			}elseif ($z2 == 'tyres'){
+				$sa['meta']['ttl'] = ($r['ttl']!='') ? $r['ttl'] : $lng['w']['search'].' | '.$lng['w']['tyres'].$zttl.' | Sauto Haus';
+				$sa['meta']['h1'] = ($r['h1']!='') ? $r['h1'] : 'Sauto Haus. '.$lng['w']['tyres'].$zh1;
+				$sa['meta']['dsc'] = ($r['dsc']!='') ? $r['dsc'] : $lng['w']['ctlg'].$zdsc.'. '.$lng['t']['seo']['dsc2'];
+				$sa['meta']['kwd'] = ($r['kwd']!='') ? $r['kwd'] : mb_strtolower('md,'.$lng['w']['moldova'].','.$lng['w']['chisinau'].','.$lng['w']['sale'].','.$lng['w']['tyres'].','.$lng['w']['buy'].$zkwd, "UTF-8");
+			}
+		}
+		unset($zqr, $zttl, $zh1, $zdsc, $zkwd);
+	}
+}
+
+skip_all_meta:
+//--------------------------------ECHO_META, TITLE, OG
+
+// Set the meta information
+echo '
+<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
+<meta name="robots" content="'.$zrbt.'" />
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" id="mobile_viewport" />
+
+';
+
+// Force standardized titles for brand/model pages - FINAL OVERRIDE before output
+if ($z2 == 'cars' && !is_numeric($z3) && isset($t_mp[3]) && !empty($t_mp[3]) && isset($t_mp[4]) && !empty($t_mp[4])) {
+    $brand_code = str_replace('-', '_', $t_mp[3]);
+    $model_code = str_replace('-', '_', $t_mp[4]);
+    
+    $brand_name = '';
+    $model_name = '';
+    
+    $pdo_brand = $db->prepare('SELECT `br_nm` FROM '.$prefx.'_car_list WHERE `br`=:br LIMIT 1');
+    $pdo_brand->execute(['br' => $brand_code]);
+    foreach ($pdo_brand as $row) {
+        $brand_name = $row['br_nm'];
+    }
+    
+    if (!empty($brand_name)) {
+        $pdo_model = $db->prepare('SELECT `mo_nm` FROM '.$prefx.'_car_list WHERE `br`=:br AND `mo`=:mo LIMIT 1');
+        $pdo_model->execute(['br' => $brand_code, 'mo' => $model_code]);
+        foreach ($pdo_model as $row) {
+            $model_name = $row['mo_nm'];
+        }
+        
+        if (!empty($model_name)) {
+            if ($zlng == 'ro') {
+                $title_to_show = "Cumpără {$brand_name} {$model_name} în Moldova | Sauto Haus";
+            } elseif ($zlng == 'ru') {
+                $title_to_show = "Купить {$brand_name} {$model_name} в Молдове | Sauto Haus";
+            } else {
+                $title_to_show = "Buy {$brand_name} {$model_name} in Moldova | Sauto Haus";
+            }
+            
+            // Log the title that will be shown
+            file_put_contents('debug_title_final.log', "Page: /cars/{$brand_code}/{$model_code}, Title: {$title_to_show}\n", FILE_APPEND);
+            
+            // Use this title instead of the one from $sa['meta']['ttl']
+            echo '<title>'.$title_to_show.'</title>';
+            echo '<meta property="og:title" content="'.$title_to_show.'">
+<meta property="og:description" content="'.$sa['meta']['dsc'].'">
+<meta property="og:type" content="website">
+<meta property="og:image" content="'.$sa['it']['img'].'">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:site_name" content="Sauto.md">
+<meta property="og:url" content="'.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'].'">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="'.$sa['it']['img'].'">
+
+<meta name="description" content="'.$sa['meta']['dsc'].'" />
+<meta name="keywords" content="'.$sa['meta']['kwd'].'" />
+';
+            // Skip the normal title output
+            goto skip_regular_title;
+        }
+    }
+}
+
+if ($z2 === 'services' && $z3 === 'sale') {
+    $saleTranslationsPath = dirname(__DIR__, 2) . '/content/site/page/new_pages/sale/sale_lang.php';
+    if (is_file($saleTranslationsPath)) {
+        $saleTranslations = include $saleTranslationsPath;
+        if (is_array($saleTranslations)) {
+            $metaLocale = $saleTranslations[$zlng]['meta'] ?? $saleTranslations['ru']['meta'] ?? [];
+            if (!empty($metaLocale['title'])) {
+                $sa['meta']['ttl'] = $metaLocale['title'];
+            }
+            if (!empty($metaLocale['h1'])) {
+                $sa['meta']['h1'] = $metaLocale['h1'];
+            }
+            if (!empty($metaLocale['description'])) {
+                $sa['meta']['dsc'] = $metaLocale['description'];
+            }
+            if (!empty($metaLocale['keywords'])) {
+                $sa['meta']['kwd'] = $metaLocale['keywords'];
+            }
+        }
+    }
+}
+
+// Regular title output if we didn't use our forced title
+echo '<title>'.$sa['meta']['ttl'].'</title>
+<meta property="og:title" content="'.$sa['meta']['ttl'].'">
+<meta property="og:description" content="'.$sa['meta']['dsc'].'">
+<meta property="og:type" content="website">
+<meta property="og:image" content="'.$sa['it']['img'].'">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:site_name" content="Sauto.md">
+<meta property="og:url" content="'.$_SERVER['REQUEST_SCHEME'].'://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'].'">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="'.$sa['it']['img'].'">
+
+<meta name="description" content="'.$sa['meta']['dsc'].'" />
+<meta name="keywords" content="'.$sa['meta']['kwd'].'" />
+';
+
+skip_regular_title:
+unset($zrbt);
+
+HEAD////////////////////////////////////////////////////////////////////////////////////////////////
+
+<?php defined( '_DOIT' ) or die( 'Restricted access' );
+
+use App\Helper\PhoneHelper;?>
+
+<link rel="preconnect" href="https://code.jquery.com" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+<link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<script data-cfasync="false" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script data-cfasync="false" src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js" defer></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css"></noscript>
+
+<script src="/<?php e(_DEFAULT)?>/js/js.cookie.min.js" defer></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js" defer></script>
+
+<script src="/<?php e(_DEFAULT)?>/js/sitescripts.js?d=<?php echo date("GYimsd", filemtime(_DEFAULT.'/js/sitescripts.js')); ?>" defer></script>
+<script src="/<?php e(_SITE)?>/js/sitescripts.js?d=<?php echo date("GYimsd", filemtime(_SITE.'/js/sitescripts.js')); ?>" defer></script>
+<script src="/<?php e(_SITE)?>/js/faceted-filter.js?d=<?php echo date("GYimsd", filemtime(_SITE.'/js/faceted-filter.js')); ?>" defer></script>
+
+<!-- Product Card Slider Assets -->
+<link rel="stylesheet" href="/content/site/components/product-card-slider/product-card-slider.css?v=<?php echo date('GYimsd', filemtime(_SITE . '/components/product-card-slider/product-card-slider.css')); ?>">
+<script src="/content/site/components/product-card-slider/product-card-slider.js?v=<?php echo date('GYimsd', filemtime(_SITE . '/components/product-card-slider/product-card-slider.js')); ?>" defer></script>
+
+<link rel="stylesheet" href="/content/site/css/brand_seo.css?v=<?php echo date('GYimsd', filemtime(_SITE . '/css/brand_seo.css')); ?>">
+
+<!-- Facebook Pixel Code -->
+<script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '701415057290990');
+  fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=701415057290990&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Facebook Pixel Code -->
+ 
+<!-- Google Tag Manager -->
+<script data-cfasync="false">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-KRRLB4X');</script>
+<!-- End Google Tag Manager -->
+
+<!-- Google tag (gtag.js) -->
+<script data-cfasync="false" async src="https://www.googletagmanager.com/gtag/js?id=G-TP4GJ51GSL"></script>
+<script data-cfasync="false">
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-TP4GJ51GSL');
+  gtag('config', 'AW-964347386');
+</script>
+
+<!-- Yandex.Metrika counter -->
+<script type="text/javascript">
+   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
+   m[i].l=1*new Date();
+   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
+   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
+   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
+
+   ym(100579107, "init", {
+        clickmap:true,
+        trackLinks:true,
+        accurateTrackBounce:true,
+        webvisor:true
+   });
+</script>
+<noscript><div><img src="https://mc.yandex.ru/watch/100579107" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
+<!-- /Yandex.Metrika counter -->
+
+<?php //<link rel="alternate" href="http://www.example.com/" hreflang="x-default">
+	
+$uri_x = (isset($t_mp[2])) ? str_replace('/'.$_COOKIE['lang'].'/', '/', $uri) : str_replace('/'.$_COOKIE['lang'], '', $uri);
+
+//echo '<link rel="alternate" hreflang="x-default" href="'.$protocol.'://'.$http_host.''.$uri_x.'" />';
+echo '<link rel="canonical" href="'.$protocol.'://'.$http_host.'/'.$_COOKIE['lang'].''.$uri_x.'" />';
+
+foreach ($lang_arr as $lang){
+	echo '<link rel="alternate" hreflang="'.$lang.'" href="'.$protocol.'://'.$http_host.'/'.$lang.''.$uri_x.'" />';
+}
+?>
+
+<link rel="apple-touch-icon" sizes="180x180" href="/<?php e(_SITE_IMG)?>/favicon/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/<?php e(_SITE_IMG)?>/favicon/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/<?php e(_SITE_IMG)?>/favicon/favicon-16x16.png">
+<link rel="manifest" href="/<?php e(_SITE_IMG)?>/favicon/manifest.json">
+<link rel="mask-icon" href="/<?php e(_SITE_IMG)?>/favicon/safari-pinned-tab.svg" color="#d3a6a9">
+<link rel="shortcut icon" href="/<?php e(_SITE_IMG)?>/favicon/favicon.ico">
+<meta name="apple-mobile-web-app-title" content="<?php e($site_name);?>">
+<meta name="application-name" content="<?php e($site_name);?>">
+<meta name="msapplication-config" content="/<?php e(_SITE_IMG)?>/favicon/browserconfig.xml">
+<meta name="theme-color" content="#ffffff">
+
+<link rel="stylesheet" type="text/css" href="/<?php e(_DEFAULT)?>/css/default.css?d=<?php echo date("GYimsd", filemtime(_DEFAULT.'/css/default.css')); ?>">
+<link rel="stylesheet" type="text/css" href="/<?php e(_SITE)?>/css/style.css?d=<?php echo date("GYimsd", filemtime(_SITE.'/css/style.css')); ?>">
+<link rel="stylesheet" type="text/css" href="/<?php e(_SITE)?>/css/mobile-call-button.css?d=<?php echo date("GYimsd", filemtime(_SITE.'/css/mobile-call-button.css')); ?>">
+<link rel="stylesheet" type="text/css" href="/<?php e(_SITE)?>/css/media.css?d=<?php echo date("GYimsd", filemtime(_SITE.'/css/media.css')); ?>">
+<link rel="stylesheet" href="/<?php e(_SITE)?>/css/consent-modal-v2.css?d=<?php echo date("GYimsd", filemtime(_SITE.'/css/consent-modal-v2.css')); ?>">
+<!--
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300&display=swap" rel="stylesheet">
+-->
+<!-- Font Awesome - load asynchronously to not block render -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'" />
+<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
+
+<?php 
+include('plugins/dev_tools/meta_gen.php');
+?>
+
+<?php /*if (isset($t_mp[2])&&$t_mp[2]=='tyres'){ ?>
+	<!-- Event snippet for tyre conversion page -->
+	<script>
+		gtag('event', 'conversion', {
+			'send_to': 'AW-964347386/nOiUCITNz4sBEPqL68sD',
+			'transaction_id': ''
+		});
+	</script>
+<?php } */ ?>
+
+<meta name="google-site-verification" content="xi-sPfXyALsoFfQj2jpMiB2bHLkIsxbEM7tPoq9vlRQ" />
+<meta name="yandex-verification" content="61bf9aa380a8610d" />
+
+<?php
+        if (isset($t_mp[2])&&$t_mp[2]=='cars') {
+	
+	/*
+	$pdo = $db->prepare('SELECT * FROM '.$prefx.'_catalog WHERE `id`= :id AND `visible`="1" AND `active`="1"');
+	$pdo->execute(array( 'id' => $url_id ));
+
+	foreach ($pdo as $row){
+		
+		$pdo = $db->prepare('SELECT * FROM '.$prefx.'_photo WHERE `id`= :id AND main=1');
+		$pdo->execute(array( 'id' => $url_id ));
+		foreach ($pdo as $row2){
+			$c_photo_name = $row2['name'];
+		}
+		
+		echo '
+		<script type="application/ld+json">
+		{
+			"@context": "https://schema.org/",
+			"@type": "Vehicle",
+			"name": "'.$row['brand_name'].' '.$row['model_name'].'",
+			"image": "https://www.sauto.md/media/images/upload/car/'.$row['photo_path'].'/'.$row['id'].'/med/'.$c_photo_name.'.jpg",
+			"productionDate": "'.$row['year'].'",
+			"bodyType": "'.$row['bodytype'].'",
+			"mileageFromOdometer": "'.$row['mileage'].' km",
+			"vehicleEngine" : {
+				"@type": "EngineSpecification",
+				"name": "'.$row['engine'].' cc"
+			},
+			"description": "'.$row['bodytype'].' '.$row['year'].' '.$row['brand_name'].' '.$row['model_name'].' ('.$row['price'].' EUR) id:'.$row['id'].'",
+			"offers":{
+				"@type":"Offer",
+				"price":"'.$row['price'].'.00",
+				"priceCurrency":"EUR",
+				"seller":{
+					"@type":"Organization",
+					"address":{
+						"@type":"PostalAddress",
+						"addressCountry":"MD",
+						"streetAddress":"Calea Mosilor 11",
+						"postalCode":"MD2024",
+						"addressLocality":"Chisinau"
+					},
+					"telephone":"<?php echo PhoneHelper::getGeneralPhone(); ?>",
+					"name":"Sauto SRL"
+				}
+			}
+		}
+		</script>
+		';
+		
+	;}
+	*/	
+		/*echo '
+		<script type="application/ld+json">
+		{
+			"@context": "https://schema.org/",
+			"@type": "Vehicle",
+			"name": "Ford C-MAX",
+			"image": "https://www.sauto.md/media/images/upload/car/05a5/751d/9bf3/6977/med/0aa3d4ceac7d2e5f90eb96c8921270a6.jpg",
+			"productionDate": "2013",
+			"bodyType": "Universal",
+			"mileageFromOdometer": "167000 km",
+			"vehicleEngine" : {
+				"@type": "EngineSpecification",
+				"name": "998 cc"
+			},
+			"description": "Universal 2013 Ford C-MAX (7200 EUR)",
+			"offers":{
+				"@type":"Offer",
+				"price":"7200.00",
+				"priceCurrency":"EUR",
+				"availabilityStarts":"2017-05-29",
+				"seller":{
+					"@type":"Organization",
+					"address":{
+						"@type":"PostalAddress",
+						"addressCountry":"MD",
+						"streetAddress":"Calea Mosilor 11",
+						"postalCode":"MD2024",
+						"addressLocality":"Chisinau"
+					},
+					"telephone":"<?php echo PhoneHelper::getGeneralPhone(); ?>",
+					"name":"Sauto SRL"
+				}
+			}
+		}
+		</script>
+		';
+		
+		echo '
+		<script type="application/ld+json">
+		{
+			"@context": "https://schema.org/",
+			"@type": "AutoDealer",
+			"name": "Sauto.md",
+			"image": "https://www.sauto.md/media/images/site/sauto_new_logo.png",
+			"legalName": "Sauto SRL",
+			"telephone": "<?php echo PhoneHelper::getGeneralPhone(); ?>",
+			"address": "Moldova, Chisinau, Str. Calea Mosilor 11, MD2024",
+			"makesOffer" : {
+				"@type": "Offer",
+				"priceSpecification": {
+					"@type": "UnitPriceSpecification",
+					"priceCurrency": "EUR",
+					"price": "7200"
+				},
+				"itemOffered" : {
+					"@type": "Car",
+					"name": "Ford C-MAX",
+					"image": "https://www.sauto.md/media/images/upload/car/05a5/751d/9bf3/6977/high/0aa3d4ceac7d2e5f90eb96c8921270a6.jpg",
+					"modelDate": "2013",
+					"bodyType": "Universal",
+					"mileageFromOdometer": "167000 km",
+					"vehicleEngine" : {
+						"@type": "EngineSpecification",
+						"name": "998 cc"
+					},
+					"description": "Universal 2013 Ford C-MAX (7200 EUR)"
+				}
+				
+			}
+		}
+		</script>
+		';*/
+}
+?>
+
+<style>
+
+</style>
+<script data-cfasync="false">
+// Google Consent Mode v2
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('consent', 'default', {
+	'ad_storage': 'denied',
+	'ad_user_data': 'denied',
+	'ad_personalization': 'denied',
+	'analytics_storage': 'denied'
+});
+
+function unixTime(){ return Math.floor(Date.now() / 1000); }
+
+// Consent UI helper functions
+function showPref(){document.getElementById('cons_bx').style.display = 'none'; var prefBox = document.getElementById('pref_bx'); prefBox.style.display = 'flex'; prefBox.style.visibility = 'visible'; prefBox.style.opacity = '1'; prefBox.style.alignItems = 'center'; prefBox.style.justifyContent = 'center';}
+function hidePref(){document.getElementById('pref_bx').style.display = 'none'; document.getElementById('pref_bx').style.visibility = 'hidden'; document.getElementById('pref_bx').style.opacity = '0'; document.getElementById('cons_bx').style.display = 'flex';}
+
+function setConsent(adCons, usrDtCons, persCons, anaCons) {
+	updateConsent(adCons, usrDtCons, persCons, anaCons);
+	document.getElementById('cons_bx').style.display = 'none';
+}
+
+function savePref() {
+	const adCons = document.getElementById('ad-storage').checked;
+	const usrDtCons = document.getElementById('ad-user-data').checked;
+	const persCons = document.getElementById('ad-personalization').checked;
+	const anaCons = document.getElementById('analytics-storage').checked;
+	setConsent(adCons, usrDtCons, persCons, anaCons);
+	document.getElementById('pref_bx').style.display = 'none';
+	document.getElementById('pref_bx').style.visibility = 'hidden';
+	document.getElementById('pref_bx').style.opacity = '0';
+}
+
+function updateConsent(ad_cons, usr_dt_cons, pers_cons, ana_cons ) {
+	gtag('consent', 'update', {
+		'ad_storage': ad_cons ? 'granted' : 'denied',
+		'ad_user_data': usr_dt_cons ? 'granted' : 'denied',
+		'ad_personalization': pers_cons ? 'granted' : 'denied',
+		'analytics_storage': ana_cons ? 'granted' : 'denied'
+	});
+	// Send page_view after consent is granted for analytics
+	if (ana_cons) {
+		gtag('event', 'page_view', {
+			page_title: document.title,
+			page_location: window.location.href
+		});
+	}
+	const CONSENT_VERSION = 5;
+	localStorage.setItem( 'z_cks_alwd', '{"ad":'+(ad_cons?'true':'false')+', "usrDt":'+(usr_dt_cons?'true':'false')+', "prsn":'+(pers_cons?'true':'false')+', "ana":'+(ana_cons?'true':'false')+', "version":'+CONSENT_VERSION+'}' );
+	localStorage.setItem( 'z_cks_alwd_t', unixTime() );
+}
+
+$(document).ready(function(){
+	const ONE_YEAR = 365 * 24 * 3600;
+	const CURRENT_VERSION = 5;
+	const stored = localStorage.getItem('z_cks_alwd');
+	const storedTime = parseInt( localStorage.getItem('z_cks_alwd_t') || '0' );
+
+	function clearConsent() {
+		localStorage.removeItem('z_cks_alwd');
+		localStorage.removeItem('z_cks_alwd_t');
+		localStorage.removeItem('z_cks_alwd_v');
+	}
+
+	if ( stored !== null && storedTime >= 1719846403 && (unixTime() - storedTime) < ONE_YEAR ) {
+		const cksAlwdObj = JSON.parse( stored );
+		const storedVersion = cksAlwdObj['version'] || 1;
+
+		if (storedVersion >= CURRENT_VERSION) {
+			var adCks = cksAlwdObj['ad']?true:false; var usrDtCks = cksAlwdObj['usrDt']?true:false; var prsnCks = cksAlwdObj['prsn']?true:false; var anaCks = cksAlwdObj['ana']?true:false;
+			updateConsent(adCks, usrDtCks, prsnCks, anaCks);
+		} else {
+			clearConsent();
+			document.getElementById('cons_bx').style.display = 'flex';
+		}
+	} else {
+		clearConsent();
+		document.getElementById('cons_bx').style.display = 'flex';
+	}
+})
+</script>
+
+<!-- AMP removed - site is not AMP, was loading unnecessary ~100KB -->
+

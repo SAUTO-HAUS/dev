@@ -326,7 +326,8 @@ if ($contract['contract_type'] == 'vinzare_proc') {
 	<div class="ttl">Cumpărător (din contract original)</div>
 	<label class="lbl"><span class="ttl">Nume cumpărător</span><input class="need" type="text" name="u_nm" title="Nume cumpărător" value="'.(isset($_POST['u_nm']) ? htmlspecialchars($_POST['u_nm']) : '').'" required /></label>
 	<label class="lbl"><span class="ttl">IDNO/CF cumpărător</span><input class="need" type="text" name="u_cf_idno" title="IDNO/CF cumpărător" value="'.(isset($_POST['u_cf_idno']) ? htmlspecialchars($_POST['u_cf_idno']) : '').'" required /></label>
-	
+	<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="'.(isset($_POST['u_phn']) ? htmlspecialchars($_POST['u_phn']) : '+373').'" title="Phone" pattern=".{6,}" required /></label>
+
 	<div class="ttl">Cesionar (terța parte care primește dreptul de plată)</div>
 	<input type="hidden" name="add_cesionar" value="1" />
 	
@@ -478,6 +479,7 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp" required><option value="fiz">Fizic</option><option value="jur">Juridic</option></select></label>
 		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" required /></label>
 		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
+		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" pattern=".{6,}" required /></label>
 
 		<div class="kyc-questionnaire" style="display: block;">
 			
@@ -1036,12 +1038,13 @@ JAVASCRIPT;
 		
 		<label class="lbl"><span class="ttl">Price, EUR</span><input class="need" type="number" name="prc_eur" title="Price EUR" required /></label>
 		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="number" name="prc" title="Price MDL" required /></label>
-		
+
 		<div class="ttl">Cumparator</div>
 		<label class="lbl none"><select name="u_tp" required><option value="fiz" selected="selected">Fizic</option><option value="jur">Juridic</option></select></label>
 		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" required /></label>
 		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
-				
+		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" pattern=".{6,}" required /></label>
+
     <div class="kyc-questionnaire" style="display: block;">
 			
 		<div style="margin-top: 30px;" class="ttl">Date Chestionar</div>
@@ -1155,12 +1158,13 @@ JAVASCRIPT;
 
 		<label class="lbl"><span class="ttl">Price, EUR</span><input class="need" type="number" name="prc_eur" title="Price EUR" required /></label>
 		<label class="lbl"><span class="ttl">Price, MDL</span><input class="need" type="number" name="prc" title="Price MDL" required /></label>
-		
+
 		<div class="ttl">Cumparator</div>
 		<label class="lbl none"><select name="u_tp" required><option value="fiz" selected="selected">Fizic</option><option value="jur">Juridic</option></select></label>
 		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" required /></label>
 		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
-				
+		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" pattern=".{6,}" required /></label>
+
     <div class="kyc-questionnaire" style="display: block;">
 			
 		<div style="margin-top: 30px;" class="ttl">Date Chestionar</div>
@@ -1396,6 +1400,7 @@ JAVASCRIPT;
 		<input type="hidden" name="u_tp" value="fiz" />
 		<input type="hidden" name="u_cf_idno" value="" />
 		<input type="hidden" name="u_nm" value="" />
+		<input type="hidden" name="u_phn" value="" />
 		
 		<script>
 		function loadVCACompensareData() {
@@ -1730,3 +1735,61 @@ JAVASCRIPT;
 	unset($it_ar, $br_html, $mo_html, $clr_html);
 }
 ?>
+<script>
+(function(){
+	var PREFIX = '+373';
+	function initPhnField(inp){
+		if(inp.dataset.phnInit) return;
+		inp.dataset.phnInit = '1';
+
+		// ensure prefix on load
+		if(inp.value.indexOf(PREFIX) !== 0) inp.value = PREFIX;
+
+		inp.addEventListener('keydown', function(e){
+			var pos = this.selectionStart;
+			var end = this.selectionEnd;
+			// block deletion into prefix
+			if((e.key === 'Backspace' && pos <= PREFIX.length && end <= PREFIX.length) ||
+			   (e.key === 'Delete'    && pos < PREFIX.length)){
+				e.preventDefault();
+			}
+		});
+
+		inp.addEventListener('input', function(){
+			if(this.value.indexOf(PREFIX) !== 0){
+				this.value = PREFIX;
+				// move cursor to end
+				this.setSelectionRange(this.value.length, this.value.length);
+			}
+		});
+
+		inp.addEventListener('click', function(){
+			if(this.selectionStart < PREFIX.length){
+				this.setSelectionRange(PREFIX.length, PREFIX.length);
+			}
+		});
+
+		// custom validity: need at least 8 digits after prefix
+		function validate(){
+			var after = inp.value.slice(PREFIX.length).replace(/\D/g,'');
+			if(after.length < 8){
+				inp.setCustomValidity('Introduceți minim 8 cifre după +373');
+			} else {
+				inp.setCustomValidity('');
+			}
+		}
+		inp.addEventListener('input', validate);
+		inp.addEventListener('change', validate);
+		validate();
+	}
+
+	function initAll(){
+		document.querySelectorAll('input[name="u_phn"]:not([type="hidden"])').forEach(initPhnField);
+	}
+
+	// run now and watch for dynamically added forms
+	initAll();
+	var obs = new MutationObserver(initAll);
+	obs.observe(document.body, {childList:true, subtree:true});
+})();
+</script>

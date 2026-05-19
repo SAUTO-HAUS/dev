@@ -205,6 +205,7 @@ if (!isset($t_mp[2]) || $t_mp[2]=='' || $t_mp[2]=='ordercars'){
 	// If no sort active, show current catalog (on_order on /ordercars) as selected
 	$srtSelectedHasValue = ($srtCur !== '' && isset($srtSortOpts[$srtCur]));
 	echo '
+	<div class="srt_row">
 	<div class="srt_wrap'.($srtSelectedHasValue?' has_value':'').'" data-page="ordercars">
 		<div class="srt_cat_badge" data-cat="in_stock" title="'.$lng['w']['sort_in_stock'].'">← '.$lng['w']['sort_in_stock'].'</div>
 		<div class="srt_lbl">
@@ -220,6 +221,7 @@ if (!isset($t_mp[2]) || $t_mp[2]=='' || $t_mp[2]=='ordercars'){
 	echo '
 			</ul>
 		</div>
+	</div>
 	</div>';
 
 //----------------------------------------------------------------------------------------------TYRES

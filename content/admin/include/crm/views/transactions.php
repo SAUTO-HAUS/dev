@@ -106,11 +106,14 @@ $stmt = $db->prepare("
     SELECT d.id, d.f, d.gr, d.date, d.inf, d.adm, d.owner_adm, d.lead_id,
            d.u AS u_id,
            u.nm AS client_name, u.cf_idno, u.tp AS client_tp, u.phn AS client_phn,
-           COALESCE(oa.name, a.name) AS adm_name
+           COALESCE(oa.name, a.name) AS adm_name,
+           s.name AS source_name, s.color AS source_color
     FROM {$prefx}_docs_ctlg d
     LEFT JOIN {$prefx}_docs_u u ON u.id = d.u
     LEFT JOIN {$prefx}_adm_usr a ON a.id = d.adm
     LEFT JOIN {$prefx}_adm_usr oa ON oa.id = d.owner_adm
+    LEFT JOIN {$prefx}_crm_leads l ON l.id = d.lead_id
+    LEFT JOIN {$prefx}_crm_sources s ON s.id = l.source_id
     WHERE $where
     ORDER BY d.id DESC
     LIMIT 500
@@ -274,12 +277,13 @@ function tx_parse_inf(string $inf): array {
             <thead>
                 <tr>
                     <th style="width:8%;"><?= $cL['tx_col_date'] ?? 'Data' ?></th>
-                    <th style="width:18%;"><?= $cL['tx_col_client'] ?? 'Nume client' ?></th>
-                    <th style="width:12%;"><?= $cL['tx_col_phone'] ?? 'Telefon' ?></th>
-                    <th style="width:13%;"><?= $cL['tx_col_idno'] ?? 'CP / CF' ?></th>
-                    <th style="width:18%;"><?= $cL['tx_col_car'] ?? 'Marcă, Model' ?></th>
-                    <th style="width:16%;"><?= $cL['tx_col_doc_type'] ?? 'Tip document' ?></th>
-                    <th style="width:10%;"><?= $cL['tx_col_manager'] ?? 'Manager' ?></th>
+                    <th style="width:16%;"><?= $cL['tx_col_client'] ?? 'Nume client' ?></th>
+                    <th style="width:11%;"><?= $cL['tx_col_phone'] ?? 'Telefon' ?></th>
+                    <th style="width:11%;"><?= $cL['tx_col_idno'] ?? 'CP / CF' ?></th>
+                    <th style="width:15%;"><?= $cL['tx_col_car'] ?? 'Marcă, Model' ?></th>
+                    <th style="width:14%;"><?= $cL['tx_col_doc_type'] ?? 'Tip document' ?></th>
+                    <th style="width:9%;"><?= $cL['tx_col_manager'] ?? 'Manager' ?></th>
+                    <th style="width:11%;"><?= $cL['col_source'] ?? 'Sursă' ?></th>
                     <th style="width:5%;"></th>
                 </tr>
             </thead>
@@ -310,7 +314,7 @@ function tx_parse_inf(string $inf): array {
                     }
             ?>
             <tr class="crm-leads-day-sep">
-                <td colspan="8"><span class="day-label"><?= htmlspecialchars($day_label) ?> <span style="opacity:0.7;font-weight:400;">(<?= $docs_per_day[$doc_day] ?? 0 ?>)</span></span></td>
+                <td colspan="9"><span class="day-label"><?= htmlspecialchars($day_label) ?> <span style="opacity:0.7;font-weight:400;">(<?= $docs_per_day[$doc_day] ?? 0 ?>)</span></span></td>
             </tr>
             <?php endif; ?>
             <tr class="crm-leads-row" data-doc-id="<?= $doc->id ?>" style="cursor:pointer;" onclick="txViewDoc(event, <?= $doc->id ?>, '<?= htmlspecialchars($doc->f) ?>', '<?= htmlspecialchars($doc->gr) ?>', <?= (int)($doc->u_id ?? 0) ?>, '<?= htmlspecialchars($doc->date ?? '') ?>')">
@@ -346,6 +350,13 @@ function tx_parse_inf(string $inf): array {
                 </td>
                 <td style="font-size:0.8rem;color:#444;"><?= htmlspecialchars($doc->adm_name ?? '—') ?></td>
                 <td>
+                    <?php if (!empty($doc->source_name)): ?>
+                    <span class="crm-source-badge" style="background:<?= htmlspecialchars($doc->source_color ?: '#888') ?>;font-size:0.72rem;"><?= htmlspecialchars($doc->source_name) ?></span>
+                    <?php else: ?>
+                    <span class="crm-source-badge" style="background:#6b7280;font-size:0.72rem;"><?= $cL['tx_origin_direct'] ?? 'Direct' ?></span>
+                    <?php endif; ?>
+                </td>
+                <td>
                     <button type="button"
                         onclick="txArchive(<?= $doc->id ?>, this)"
                         class="leads-archive-btn"
@@ -356,7 +367,7 @@ function tx_parse_inf(string $inf): array {
             </tr>
             <?php endforeach; ?>
             <?php else: ?>
-            <tr><td colspan="8" class="calls-empty">📭 <?= $cL['no_leads'] ?? 'Nu sunt înregistrări' ?></td></tr>
+            <tr><td colspan="9" class="calls-empty">📭 <?= $cL['no_leads'] ?? 'Nu sunt înregistrări' ?></td></tr>
             <?php endif; ?>
             </tbody>
         </table>

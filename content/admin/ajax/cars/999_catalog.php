@@ -179,7 +179,7 @@ if (__post('sub') == 'get_subcategory') {
     
     // Parse form data
     parse_str($_POST['form_data'], $input);
-    
+
     // Validate required fields
     if (empty($input['999_api_id'])) {
         $rtrn = ['error' => 'API ID is required'];
@@ -386,6 +386,19 @@ if (__post('sub') == 'get_subcategory') {
             ':carId' => $carId,
             ':n_a_new' => $isChecked
         ]);
+
+        // SAUTO Personal: save scheduled publications even when republishing an already-published car
+        if (($input['announcement_type'] ?? null) === 'sauto_personal' && !empty($input['sauto_schedules'])) {
+            __log("SAUTO Personal scheduling (existing 999_id branch) for car {$carId}");
+            $schedulesData = json_decode($input['sauto_schedules'], true);
+            if ($schedulesData && is_array($schedulesData)) {
+                $sautoSchedulingService = new \App\Services\SautoPersonalSchedulingService();
+                $result = $sautoSchedulingService->saveSchedules($carId, 'in_stock', $schedulesData);
+                __log("Save schedules result (existing branch): " . ($result ? 'SUCCESS' : 'FAILED'));
+            } else {
+                __log("Invalid schedules data format (existing branch)");
+            }
+        }
     } else {
         $imgs0 = (new Car())->getCarsImg($carId);
 

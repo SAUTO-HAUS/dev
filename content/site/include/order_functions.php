@@ -905,6 +905,103 @@ function tyre_card($prefx, $db, $img_frmt, $lng, $v1='', $lmt='4', $zreq=null){
 	return $ar;
 }
 
+/**
+ * Render numbered pagination UI (1, 2, 3 ... N) with SEO-friendly URLs.
+ */
+if (!function_exists('render_pagination')) {
+function render_pagination($current_page, $per_page, $total, $query_params = [], $base_path = null) {
+    if ($total <= $per_page) return '';
+    $total_pages = (int)ceil($total / $per_page);
+    if ($total_pages < 2) return '';
+    $current_page = max(1, min($current_page, $total_pages));
+
+    if ($base_path === null) {
+        $base_path = strtok($_SERVER['REQUEST_URI'], '?');
+    }
+    $params = $query_params;
+    unset($params['page']);
+
+    $url_for = function($p) use ($base_path, $params) {
+        $q = $params;
+        if ($p > 1) $q['page'] = $p;
+        $qs = http_build_query($q);
+        return $base_path . ($qs ? '?'.$qs : '');
+    };
+
+    $left_icon  = '<img src="/content/site/img/svg_description/icons/left-arrow.svg" width="14" height="14" alt="" />';
+    $right_icon = '<img src="/content/site/img/svg_description/icons/right-arrow.svg" width="14" height="14" alt="" />';
+
+    static $css_emitted = false;
+    $css = '';
+    if (!$css_emitted) {
+        $css_emitted = true;
+        $css = '<style>
+.pagination{margin:40px 0 24px;text-align:center;font-family:inherit;}
+.pagination__list{display:inline-flex;flex-wrap:wrap;gap:8px;list-style:none;padding:0;margin:0;justify-content:center;align-items:center;}
+.pagination__item{display:inline-flex;}
+.pagination__btn{display:inline-flex;align-items:center;justify-content:center;min-width:42px;height:42px;padding:0 14px;border-radius:10px;border:1px solid #e5e7eb;background:#fff;color:#374151;text-decoration:none;font-weight:600;font-size:15px;line-height:1;box-sizing:border-box;transition:all .18s ease;cursor:pointer;}
+.pagination__btn:hover{border-color:#e2001a;color:#e2001a;background:#fff;transform:translateY(-1px);box-shadow:0 4px 12px rgba(226,0,26,0.18);}
+.pagination__btn:active{transform:translateY(0);box-shadow:0 2px 6px rgba(226,0,26,0.12);}
+.pagination__btn--active{background:#e2001a;border-color:#e2001a;color:#fff;font-weight:700;box-shadow:0 4px 14px rgba(226,0,26,0.30);cursor:default;}
+.pagination__btn--active:hover{background:#e2001a;color:#fff;transform:none;box-shadow:0 4px 14px rgba(226,0,26,0.30);}
+.pagination__btn--disabled{background:#f9fafb;border-color:#f3f4f6;color:#d1d5db;cursor:default;opacity:.6;}
+.pagination__btn--disabled:hover{transform:none;box-shadow:none;border-color:#f3f4f6;color:#d1d5db;}
+.pagination__arrow{width:42px;height:42px;min-width:42px;padding:0;}
+.pagination__arrow img{display:block;transition:transform .18s ease;}
+.pagination__arrow:hover img{transform:scale(1.15);}
+.pagination__arrow--disabled img{opacity:.5;}
+.pagination__dots{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:42px;color:#9ca3af;font-weight:500;letter-spacing:1px;}
+@media (max-width:600px){
+  .pagination__list{gap:5px;}
+  .pagination__btn{min-width:38px;height:38px;padding:0 10px;font-size:14px;}
+  .pagination__arrow{width:38px;height:38px;min-width:38px;}
+  .pagination__dots{height:38px;}
+}
+</style>';
+    }
+
+    $html = $css;
+    $html .= '<nav class="pagination" aria-label="Pagination">';
+    $html .= '<ul class="pagination__list">';
+
+    if ($current_page > 1) {
+        $html .= '<li class="pagination__item"><a href="'.htmlspecialchars($url_for($current_page - 1)).'" rel="prev" aria-label="Previous" class="pagination__btn pagination__arrow">'.$left_icon.'</a></li>';
+    } else {
+        $html .= '<li class="pagination__item"><span aria-hidden="true" class="pagination__btn pagination__arrow pagination__btn--disabled pagination__arrow--disabled">'.$left_icon.'</span></li>';
+    }
+
+    $window = 2;
+    $pages = [];
+    for ($i = 1; $i <= $total_pages; $i++) {
+        if ($i == 1 || $i == $total_pages || ($i >= $current_page - $window && $i <= $current_page + $window)) {
+            $pages[] = $i;
+        }
+    }
+
+    $prev = 0;
+    foreach ($pages as $p) {
+        if ($prev && $p - $prev > 1) {
+            $html .= '<li class="pagination__item"><span class="pagination__dots">…</span></li>';
+        }
+        if ($p == $current_page) {
+            $html .= '<li class="pagination__item"><span aria-current="page" class="pagination__btn pagination__btn--active">'.$p.'</span></li>';
+        } else {
+            $html .= '<li class="pagination__item"><a href="'.htmlspecialchars($url_for($p)).'" class="pagination__btn">'.$p.'</a></li>';
+        }
+        $prev = $p;
+    }
+
+    if ($current_page < $total_pages) {
+        $html .= '<li class="pagination__item"><a href="'.htmlspecialchars($url_for($current_page + 1)).'" rel="next" aria-label="Next" class="pagination__btn pagination__arrow">'.$right_icon.'</a></li>';
+    } else {
+        $html .= '<li class="pagination__item"><span aria-hidden="true" class="pagination__btn pagination__arrow pagination__btn--disabled pagination__arrow--disabled">'.$right_icon.'</span></li>';
+    }
+
+    $html .= '</ul></nav>';
+    return $html;
+}
+}
+
 /*
 $fn_card = function ($gr='x', $v1='', $lmt='4', $zreq=null, $stts='av') use (&$prefx, &$db, &$img_frmt, &$lng){
 	$ar = [ 'ids'=>[], 'txt'=>'', 'qu'=>0 ];

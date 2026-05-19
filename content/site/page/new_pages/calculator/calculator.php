@@ -270,7 +270,7 @@ for ($y = $current_year; $y >= 1990; $y--) {
             <div class="calc-order-block">
                 <h3 class="calc-order-title"><?php echo $t['order_title']; ?></h3>
                 <p class="calc-order-subtitle"><?php echo $t['order_subtitle']; ?></p>
-                <a href="/<?php echo $current_lang; ?>/services/order" class="calc-order-btn"><?php echo $t['order_btn']; ?></a>
+                <a href="/<?php echo $current_lang; ?>/order" class="calc-order-btn"><?php echo $t['order_btn']; ?></a>
             </div>
 
             <div class="calc-bitrix-wrap" style="margin-top:1rem;background:#f0f0f0;border-radius:10px;padding:1.5rem;box-sizing:border-box;">

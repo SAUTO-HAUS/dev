@@ -174,8 +174,6 @@ if (!isset($new999)) $new999 = true;
                         
                         <!-- 999.md Scheduling History -->
                         <div style="margin-top: 15px; border-top: 1px solid #e9ecef; padding-top: 10px;">
-                            <h6 style="margin-bottom: 10px; color: #495057; text-align: center; font-size: 12px; font-weight: 600;">📋 <?= __('cars.schedule_history') ?></h6>
-                            
                             <?php
                             // Get all 999.md schedules for this car
                             $all999Schedules = [];
@@ -189,8 +187,19 @@ if (!isset($new999)) $new999 = true;
                                     // Table might not exist yet, ignore error
                                 }
                             }
+                            $deletableCount = 0;
+                            foreach ($all999Schedules as $s) { if (($s['status'] ?? '') !== 'published') $deletableCount++; }
                             ?>
-                            
+
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;">
+                                <h6 style="margin:0;color:#495057;font-size:12px;font-weight:600;">📋 <?= __('cars.schedule_history') ?></h6>
+                                <?php if ($deletableCount > 1): ?>
+                                <button type="button" class="delete-all-schedules-btn" style="background:#dc3545;color:#fff;border:none;border-radius:3px;padding:3px 8px;font-size:10px;cursor:pointer;font-weight:600;" title="<?= __('cars.delete_all_pending_schedules') ?? 'Șterge toate neapărute' ?>">
+                                    ✕ <?= __('cars.delete_all') ?? 'Șterge toate' ?> (<?= $deletableCount ?>)
+                                </button>
+                                <?php endif; ?>
+                            </div>
+
                             <div style="max-height: 120px; overflow-y: auto;">
                                 <?php if (!empty($all999Schedules)): ?>
                                     <?php foreach ($all999Schedules as $schedule): ?>

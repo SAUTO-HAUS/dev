@@ -164,7 +164,9 @@ if (!defined('_DOIT')) {
 date_default_timezone_set('Europe/Chisinau');
 
 // Change to feeds directory
-define('_DOIT', 1);
+if (!defined('_DOIT')) {
+    define('_DOIT', 1);
+}
 
 echo "<div class='output'>";
 echo "=== SAUTO DATA FEEDS MANUAL GENERATOR ===\n";

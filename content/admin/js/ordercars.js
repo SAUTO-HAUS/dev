@@ -511,15 +511,31 @@ $(document).ready(function(){
 		// Populate SAUTO Personal schedules data before form serialization
 		if ($('#announcement_type').val() === 'sauto_personal' && schedules.length > 0) {
 			const schedulesData = schedules.map(schedule => ({
-				date: schedule.date.getFullYear() + '-' + 
-					  String(schedule.date.getMonth() + 1).padStart(2, '0') + '-' + 
+				date: schedule.date.getFullYear() + '-' +
+					  String(schedule.date.getMonth() + 1).padStart(2, '0') + '-' +
 					  String(schedule.date.getDate()).padStart(2, '0'), // Local date format
 				time: schedule.time
 			}));
 			$('#sauto_schedules_data').val(JSON.stringify(schedulesData));
 		}
-		
+
 		const $form = $(this);
+
+		// Force-include disabled-select values via form data attributes (fallback when selects are disabled in edit mode)
+		const ensureHidden = function(name, value) {
+			if (value === undefined || value === null || value === '') return;
+			let $h = $form.find('input[type="hidden"][name="' + name + '"]');
+			if ($h.length === 0) {
+				$h = $('<input type="hidden">').attr('name', name).appendTo($form);
+			}
+			if (!$h.val()) $h.val(value);
+		};
+		ensureHidden('car[category]',                $form.data('category-id'));
+		ensureHidden('car[subcategory]',             $form.data('subcategory-id'));
+		ensureHidden('car[subcategory_offer_types]', $form.data('offer-type'));
+		ensureHidden('999_api_id',                   $form.data('api-id'));
+		ensureHidden('announcement_type',            $form.data('announcement-type'));
+
 		data['form_data'] = $form.serialize();
 
 		try {
@@ -1879,62 +1895,22 @@ $(document).ready(function() {
 	}
 	
 	function generatePresetSchedules(frequency, duration, time) {
-		
+
 		// Clear existing schedules
 		schedules = [];
-		
-		// Calculate schedules
-		const startDate = new Date(); // Start from today
-		
-		const endDate = new Date(startDate);
-		endDate.setMonth(endDate.getMonth() + duration);
-		
-		// Generate schedules with uniform distribution
-		const intervalDays = Math.floor(30 / frequency); // Days between publications
-		
-		// Start with today's date
-		let currentDate = new Date(startDate);
-		let monthsProcessed = 0;
-		
-		while (monthsProcessed < duration) {
-			const currentMonth = currentDate.getMonth();
-			let publicationsThisMonth = 0;
-			
-			// Generate publications for current month
-			while (publicationsThisMonth < frequency && currentDate < endDate) {
-				// Skip weekends (Saturday=6, Sunday=0)
-				while (currentDate.getDay() === 0 || currentDate.getDay() === 6) {
-					currentDate.setDate(currentDate.getDate() + 1);
-				}
-				
-				// Add schedule if still in valid range
-				if (currentDate < endDate) {
-					schedules.push({
-						date: new Date(currentDate),
-						time: time
-					});
-					publicationsThisMonth++;
-				}
-				
-				// Move to next publication date
-				if (publicationsThisMonth < frequency) {
-					currentDate.setDate(currentDate.getDate() + intervalDays);
-					
-					// If we moved to next month, break to start new month cycle
-					if (currentDate.getMonth() !== currentMonth) {
-						break;
-					}
-				}
-			}
-			
-			// Move to first day of next month and reset pattern
-			monthsProcessed++;
-			if (monthsProcessed < duration) {
-				const nextMonth = new Date(startDate);
-				nextMonth.setMonth(startDate.getMonth() + monthsProcessed);
-				nextMonth.setDate(startDate.getDate()); // Keep same day as start
-				currentDate = nextMonth;
-			}
+
+		// Uniform distribution across calendar days (weekends included).
+		// 30 days per "month" / frequency = average step between publications.
+		const totalPublications = frequency * duration;
+		const totalDays = duration * 30;
+		const startDate = new Date();
+		startDate.setHours(0, 0, 0, 0);
+
+		const step = totalDays / totalPublications;
+		for (let i = 0; i < totalPublications; i++) {
+			const d = new Date(startDate);
+			d.setDate(startDate.getDate() + Math.round(i * step));
+			schedules.push({ date: d, time: time });
 		}
 		
 		// Update UI
@@ -2071,5 +2047,49 @@ $(document).ready(function() {
 				alert('Ошибка соединения: ' + error);
 			}
 		});
+	});
+
+	// Delete ALL pending/failed/cancelled/postponed schedules for current car
+	$(document).on('click', '.delete-all-schedules-btn', function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		var btn = $(this);
+		var $section = btn.closest('div').parent();
+		var $container = $section.find('[data-schedule-id]').first().parent();
+		var $items = $container.find('.delete-schedule-btn');
+		if (!$items.length) { alert('Nu sunt programări de șters'); return; }
+
+		if (!confirm('Sigur ștergi toate ' + $items.length + ' programări neapărute?')) return;
+
+		btn.prop('disabled', true).css('opacity', '0.6');
+		var ids = $items.map(function() { return $(this).data('schedule-id'); }).get();
+		var done = 0, failed = 0;
+
+		function next(i) {
+			if (i >= ids.length) {
+				if (failed > 0) alert('Șterse: ' + done + ', erori: ' + failed);
+				location.reload();
+				return;
+			}
+			var sid = ids[i];
+			$.ajax({
+				url: '/ajax.php',
+				method: 'POST',
+				data: { tp: 'adm', pg: 'ordercars', fn: 'delete_schedule', schedule_id: sid },
+				dataType: 'json',
+				success: function(r) {
+					if (r && r.success) {
+						done++;
+						$container.find('[data-schedule-id="' + sid + '"]').fadeOut(150);
+					} else {
+						failed++;
+					}
+					next(i + 1);
+				},
+				error: function() { failed++; next(i + 1); }
+			});
+		}
+		next(0);
 	});
 });
