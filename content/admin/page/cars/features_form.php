@@ -3,6 +3,7 @@
 use App\Services\Api999Service;
 use App\Helper\DefaultText;
 
+$car999features = [];  
 if(!empty($car999['features'])) {
     foreach ($car999['features'] as $item) {
         $id = $item['id'];
@@ -11,6 +12,18 @@ if(!empty($car999['features'])) {
     }
 }
 if (!isset($new999)) $new999 = true;
+
+// Commercial defaults (subcategory 660). Same as the order/parsing form.
+$subcatForm999   = (string)($feature_id ?? $car999['subcategory_id'] ?? $defaultSubcategory ?? '');
+$isCommercial999 = ($subcatForm999 === '660');
+$commercialNumericDefaults = [152 => '1500', 105 => '3'];  // weight, seats
+$numericFeatureDefault = function ($featureId) use ($isCommercial999, $car999features, $commercialNumericDefaults) {
+    if (!empty($car999features[$featureId]['value'])) return $car999features[$featureId]['value'];
+    if ($isCommercial999 && isset($commercialNumericDefaults[(int)$featureId])) {
+        return $commercialNumericDefaults[(int)$featureId];
+    }
+    return '';
+};
 ?>
 <div class="main_info">
     <fieldset class="row">
@@ -21,12 +34,7 @@ if (!isset($new999)) $new999 = true;
                 <span class="text-danger">*</span>
             </label>
             <select id="announcement_type" name="announcement_type" <?php if (!$new999) : ?> disabled <?php endif; ?> class="form-control" required>
-                <option value=""><?= __('cars.type_ad_hint') ?></option>
-                <option value="sauto_personal" <?php if (empty($car999['announcement_type']) || $car999['announcement_type'] == "sauto_personal") : ?> selected <?php endif; ?>><?= __('cars.personal_promotion') ?></option>
-                <option value="auto_company" <?php if (!empty($car999['announcement_type']) && $car999['announcement_type'] == "auto_company") : ?> selected <?php endif; ?>><?= __('cars.auto_companies') ?></option>
-                <option value="auto_company_min" <?php if (!empty($car999['announcement_type']) && $car999['announcement_type'] == "auto_company_min") : ?> selected <?php endif; ?>><?= __('cars.auto_companies_minimal_promotion') ?></option>
-                <option value="auto_realization" <?php if (!empty($car999['announcement_type']) && $car999['announcement_type'] == "auto_realization") : ?> selected <?php endif; ?>><?= __('cars.auto_for_sale') ?></option>
-                <option value="auto_realization_min" <?php if (!empty($car999['announcement_type']) && $car999['announcement_type'] == "auto_realization_min") : ?> selected <?php endif; ?>><?= __('cars.auto_for_sale_minimal_promotion') ?></option>
+                <option value="sauto_personal" selected><?= __('cars.personal_promotion') ?></option>
             </select>
         </div>
 
@@ -416,14 +424,28 @@ if (!isset($new999)) $new999 = true;
                             <option value=""><?= __('cars.select') ?> ...</option>
                             <?php if (!empty($feature['options'])) : ?>
                                 <?php foreach ($feature['options'] as $option): ?>
-                                    <option value="<?= htmlspecialchars($option['id']) ?>" <?php if($feature['id'] == 5 || (!empty($car999features[$feature['id']]) && $car999features[$feature['id']]['value'] == $option['id']) || (($option['id'] == '18592' && $option['title'] == 'Республика Молдова') || ($option['id'] == '29677' && $option['title'] == 'Еврозона') || ($option['id'] == '18668' && $option['title'] == 'С пробегом') || ($option['id'] == '29670' && $option['title'] == 'На месте') || ($option['id'] == '12900' && $option['title'] == 'Кишинёв мун.') || ($option['id'] == '23241' && $option['title'] == 'Автодилер') || ($option['id'] == '21979' && $option['title'] == 'Левый') || ($option['id'] == '19119' && $option['title'] == '5') || ($option['id'] == '19086' && $option['title'] == '5')) && empty($car999features[$feature['id']]['value'])) :?> selected <?php endif; ?>>
+                                    <?php
+                                        $isDefaultOpt = ($option['id'] == '18592' && $option['title'] == 'Республика Молдова') || ($option['id'] == '29677' && $option['title'] == 'Еврозона') || ($option['id'] == '18668' && $option['title'] == 'С пробегом') || ($option['id'] == '29670' && $option['title'] == 'На месте') || ($option['id'] == '12900' && $option['title'] == 'Кишинёв мун.') || ($option['id'] == '23241' && $option['title'] == 'Автодилер') || ($option['id'] == '21979' && $option['title'] == 'Левый') || ($option['id'] == '19119' && $option['title'] == '5') || ($option['id'] == '19086' && $option['title'] == '5');
+                                        // Commercial body type (102) → "Микроавтобус" (1047).
+                                        if ($feature['id'] == 102 && $isCommercial999) $isDefaultOpt = ($option['id'] == '1047');
+                                        $isOptSelected = ($feature['id'] == 5)
+                                            || (!empty($car999features[$feature['id']]) && $car999features[$feature['id']]['value'] == $option['id'])
+                                            || ($isDefaultOpt && empty($car999features[$feature['id']]['value']));
+                                    ?>
+                                    <option value="<?= htmlspecialchars($option['id']) ?>" <?php if($isOptSelected) :?> selected <?php endif; ?>>
                                         <?= htmlspecialchars($option['title']) ?>
                                     </option>
                                 <?php endforeach; ?>
                             <?php elseif(!empty($feature['depends_on']) && !empty($car999)) : ?>
                                 <?php $featureDepends = (new Api999Service())->getDependentOptions($car999['subcategory_id'], $feature['depends_on'], $car999features[$feature['depends_on']]['value']); ?>
                                 <?php foreach ($featureDepends['Options'] as $option): ?>
-                                    <option value="<?= htmlspecialchars($option['id']) ?>" <?php if((!empty($car999features[$feature['id']]) && $car999features[$feature['id']]['value'] == $option['id']) || (($option['id'] == '18592' && $option['title'] == 'Республика Молдова') || ($option['id'] == '29677' && $option['title'] == 'Еврозона') || ($option['id'] == '18668' && $option['title'] == 'С пробегом') || ($option['id'] == '29670' && $option['title'] == 'На месте') || ($option['id'] == '12900' && $option['title'] == 'Кишинёв мун.') || ($option['id'] == '23241' && $option['title'] == 'Автодилер') || ($option['id'] == '21979' && $option['title'] == 'Левый') || ($option['id'] == '19119' && $option['title'] == '5') || ($option['id'] == '19086' && $option['title'] == '5')) && empty($car999features[$feature['id']]['value'])) :?> selected <?php endif; ?>>
+                                    <?php
+                                        $isDefaultOpt = ($option['id'] == '18592' && $option['title'] == 'Республика Молдова') || ($option['id'] == '29677' && $option['title'] == 'Еврозона') || ($option['id'] == '18668' && $option['title'] == 'С пробегом') || ($option['id'] == '29670' && $option['title'] == 'На месте') || ($option['id'] == '12900' && $option['title'] == 'Кишинёв мун.') || ($option['id'] == '23241' && $option['title'] == 'Автодилер') || ($option['id'] == '21979' && $option['title'] == 'Левый') || ($option['id'] == '19119' && $option['title'] == '5') || ($option['id'] == '19086' && $option['title'] == '5');
+                                        if ($feature['id'] == 102 && $isCommercial999) $isDefaultOpt = ($option['id'] == '1047');
+                                        $isOptSelected = (!empty($car999features[$feature['id']]) && $car999features[$feature['id']]['value'] == $option['id'])
+                                            || ($isDefaultOpt && empty($car999features[$feature['id']]['value']));
+                                    ?>
+                                    <option value="<?= htmlspecialchars($option['id']) ?>" <?php if($isOptSelected) :?> selected <?php endif; ?>>
                                         <?= htmlspecialchars($option['title']) ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -435,7 +457,7 @@ if (!isset($new999)) $new999 = true;
                                 class="form-control <?= $feature['required'] ? 'required' : '' ?>"
                                 name="feature[<?= htmlspecialchars($feature['id']) ?>]"
                                 id="feature_<?= htmlspecialchars($feature['id']) ?>"
-                                value="<?= $car999features[$feature['id']]['value'] ?? '' ?>"
+                                value="<?= htmlspecialchars($numericFeatureDefault($feature['id'])) ?>"
                                 <?= $feature['required'] ? 'required' : '' ?>
                         >
                     <?php elseif ($feature['type'] === 'textbox_numeric_measurement'): ?>
@@ -445,7 +467,7 @@ if (!isset($new999)) $new999 = true;
                                     class="form-control <?= $feature['required'] ? 'required' : '' ?> <?php if (!empty($feature['units'])): ?> col-md-80 <?php endif; ?>"
                                     name="feature[<?= htmlspecialchars($feature['id']) ?>]"
                                     id="feature_<?= htmlspecialchars($feature['id']) ?>"
-                                    value="<?= $car999features[$feature['id']]['value'] ?? '' ?>"
+                                    value="<?= htmlspecialchars($numericFeatureDefault($feature['id'])) ?>"
                                     <?= $feature['required'] ? 'required' : '' ?>
                             >
                             <?php if (!empty($feature['units'])): ?>

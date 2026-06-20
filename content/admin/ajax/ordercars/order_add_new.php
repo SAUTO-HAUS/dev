@@ -45,6 +45,93 @@ if (__post('sub') == 'mo_search') {
         $br = __post('br');
         $mo = __post('mo');
 
+        // Auto-create the make/model in car_list when a parsing car carries a
+        // brand/model the catalog doesn't have yet, so publishing never blocks.
+        // The form may send EITHER an empty br/mo (no match) OR an injected slug
+        // (the front-end added a temporary option). Either way, if the br+mo pair
+        // doesn't exist in car_list yet, we create it from the raw source names.
+        $rawBrandNm = trim((string)__post('parsing_brand_nm'));
+        $rawModelNm = trim((string)__post('parsing_model_nm'));
+        if (($rawBrandNm !== '' || $rawModelNm !== '')) {
+            $slugify = function (string $s): string {
+                $s = trim($s);
+                if (function_exists('transliterator_transliterate')) {
+                    $t = @transliterator_transliterate('Any-Latin; Latin-ASCII; Lower()', $s);
+                    if ($t !== false) $s = $t;
+                }
+                $s = mb_strtolower($s, 'UTF-8');
+                $s = preg_replace('/[^a-z0-9]+/u', '_', $s);
+                return trim($s, '_');
+            };
+
+            // Does the submitted br+mo already exist? If yes, nothing to create.
+            $exists = false;
+            if ($br !== '' && $mo !== '') {
+                $chk = $db->prepare("SELECT 1 FROM {$prefx}_car_list WHERE br=:br AND mo=:mo LIMIT 1");
+                $chk->execute(['br' => $br, 'mo' => $mo]);
+                $exists = (bool)$chk->fetchColumn();
+            }
+
+            if (!$exists) {
+                // --- Brand: reuse an existing one (by code or name) else create. ---
+                if ($rawBrandNm !== '') {
+                    $brSlug = $br !== '' ? $br : $slugify($rawBrandNm);
+                    $bs = $db->prepare("SELECT br, br_nm FROM {$prefx}_car_list WHERE br=:slug OR LOWER(br_nm)=LOWER(:nm) LIMIT 1");
+                    $bs->execute(['slug' => $brSlug, 'nm' => $rawBrandNm]);
+                    $bx = $bs->fetch(PDO::FETCH_ASSOC);
+                    if ($bx) { $br = $bx['br']; $rawBrandNm = $bx['br_nm']; }
+                    elseif ($br === '') { $br = $brSlug !== '' ? $brSlug : 'brand'; }
+                }
+
+                // --- Model: reuse if it exists for this brand, else INSERT. ---
+                if ($rawModelNm !== '' && $br !== '') {
+                    $moSlug = $mo !== '' ? $mo : $slugify($rawModelNm);
+                    $ms = $db->prepare("SELECT mo FROM {$prefx}_car_list WHERE br=:br AND (mo=:slug OR LOWER(mo_nm)=LOWER(:nm)) LIMIT 1");
+                    $ms->execute(['br' => $br, 'slug' => $moSlug, 'nm' => $rawModelNm]);
+                    $mx = $ms->fetch(PDO::FETCH_ASSOC);
+
+                    // Last-line defence against duplicates like "C 200" when "C Class"
+                    // already exists: scan ALL of the brand's models and match by a
+                    // normalized key (no spaces/dashes/case). If the raw model starts
+                    // with, or is contained in, an existing model's normalized name,
+                    // reuse that model instead of creating a new (wrong) one.
+                    if (!$mx) {
+                        $normKey = function ($s) {
+                            return preg_replace('/[^a-z0-9]+/', '', mb_strtolower(trim((string)$s), 'UTF-8'));
+                        };
+                        $rawN = $normKey($rawModelNm);
+                        if ($rawN !== '') {
+                            $all = $db->prepare("SELECT mo, mo_nm FROM {$prefx}_car_list WHERE br=:br");
+                            $all->execute(['br' => $br]);
+                            $best = null; $bestLen = 0;
+                            foreach ($all as $row) {
+                                $optN = $normKey($row['mo_nm']);
+                                if ($optN === '' || mb_strlen($optN) < 2) continue;
+                                // Prefer the LONGEST existing model that the raw name
+                                // starts with (e.g. "cclass..." starts with "cclass").
+                                if (strpos($rawN, $optN) === 0 && mb_strlen($optN) > $bestLen) {
+                                    $best = $row; $bestLen = mb_strlen($optN);
+                                }
+                            }
+                            if ($best) $mx = ['mo' => $best['mo']];
+                        }
+                    }
+
+                    if ($mx) { $mo = $mx['mo']; }
+                    else {
+                        $mo = $moSlug !== '' ? $moSlug : 'model';
+                        // Brand display name: existing brand's, else the raw source name.
+                        $bnmStmt = $db->prepare("SELECT br_nm FROM {$prefx}_car_list WHERE br=:br LIMIT 1");
+                        $bnmStmt->execute(['br' => $br]);
+                        $brandDisplay = $bnmStmt->fetchColumn();
+                        if ($brandDisplay === false) $brandDisplay = $rawBrandNm !== '' ? $rawBrandNm : $br;
+                        $ins = $db->prepare("INSERT INTO {$prefx}_car_list (br, mo, br_nm, mo_nm) VALUES (:br, :mo, :brnm, :monm)");
+                        $ins->execute(['br' => $br, 'mo' => $mo, 'brnm' => $brandDisplay, 'monm' => $rawModelNm]);
+                    }
+                }
+            }
+        }
+
         if ($br && $mo) {
             $stmt = $db->prepare('SELECT * FROM '.$prefx.'_car_list WHERE `br`=:br AND `mo`=:mo');
             $stmt->execute(['br' => $br, 'mo' => $mo]);
@@ -341,8 +428,8 @@ if (__post('sub') == 'mo_search') {
 
             $upd = $db->prepare($sqlUpdate);
 
-            $tp_fixed  = 'item';   /* как у тебя */
-            $p1_fixed  = 'cars';   /* как у тебя */
+            $tp_fixed  = 'item';
+            $p1_fixed  = 'ordercars';
             $it_fixed  = $last_id; /* искомый it_id */
 
             $updated_total = 0;
@@ -376,6 +463,32 @@ if (__post('sub') == 'mo_search') {
             }
 
         } else {
+
+            $parsingIdGuard = (int)__post('parsing_id', 0);
+            if ($parsingIdGuard > 0) {
+                $g = $db->prepare("SELECT pc.car_ctlg_id
+                    FROM {$prefx}_parsing_cars pc
+                    JOIN {$prefx}_car_ctlg cc ON cc.id = pc.car_ctlg_id
+                    WHERE pc.id = ? AND pc.car_ctlg_id IS NOT NULL AND pc.car_ctlg_id > 0
+                    LIMIT 1");
+                $g->execute([$parsingIdGuard]);
+                $existingCtlgId = (int)$g->fetchColumn();
+                if ($existingCtlgId > 0) {
+                    $_dupLang = $_COOKIE['lang'] ?? 'ro';
+                    $_dupMsg = [
+                        'ro' => 'Această mașină este deja publicată pe sauto (anunț #'.$existingCtlgId.'). Nu s-a creat un duplicat.',
+                        'ru' => 'Этот автомобиль уже опубликован на sauto (объявление #'.$existingCtlgId.'). Дубликат не создан.',
+                        'en' => 'This car is already published on sauto (listing #'.$existingCtlgId.'). No duplicate was created.',
+                    ];
+                    $rtrn = [
+                        'error'       => 'already_published',
+                        'car_ctlg_id' => $existingCtlgId,
+                        'message'     => $_dupMsg[$_dupLang] ?? $_dupMsg['ro'],
+                    ];
+                    return;
+                }
+            }
+
             // Convert offer_timer from DD:HH:MM:SS to timestamp for new car
             $offer_timer_str = __post('offer_timer', '60:00:00:00');
             $timer_parts = explode(':', $offer_timer_str);
@@ -389,8 +502,8 @@ if (__post('sub') == 'mo_search') {
             }
             $offer_timer_end = time() + $timer_seconds;
 
-            $pdo = $db->prepare('INSERT INTO ' . $prefx . '_car_ctlg (`gr`, `br`, `mo`, `br_nm`, `mo_nm`, `yr`, `vin`, `vin_check_enabled`, `bt`, `sts`, `mlg`, `unit`, `vol`, `hp`, `fl`, `tra`, `wd`, `clr`, `loc`, `txt`, `prc`, `cur`, `soon`, `n_a`, `top`, `tva`, `gift`, `is_at_client`, `import_country_id`, `catalog_type`, `delivery_time`, `advance_amount`, `offer_timer`, `offer_timer_end`, `p_path`, `date`, `author`, `vis`, `inf`, `telegram_published`, `facebook_published`)
-                VALUES (:gr, :br, :mo, :br_nm, :mo_nm, :yr, :vin, :vin_check_enabled, :bt, :sts, :mlg, :unit, :vol, :hp, :fl, :tra, :wd, :clr, :loc, :txt, :prc, :cur, :soon, :n_a, :top, :tva, :gift, :is_at_client, :import_country_id, :catalog_type, :delivery_time, :advance_amount, :offer_timer, :offer_timer_end, :p_path, :date, :author, "1", "", 0, 0)');
+            $pdo = $db->prepare('INSERT INTO ' . $prefx . '_car_ctlg (`gr`, `br`, `mo`, `br_nm`, `mo_nm`, `yr`, `vin`, `vin_check_enabled`, `bt`, `sts`, `mlg`, `unit`, `vol`, `hp`, `fl`, `tra`, `wd`, `clr`, `loc`, `txt`, `prc`, `cur`, `soon`, `n_a`, `top`, `tva`, `gift`, `is_at_client`, `import_country_id`, `catalog_type`, `delivery_time`, `advance_amount`, `offer_timer`, `offer_timer_end`, `p_path`, `date`, `author`, `vis`, `inf`, `telegram_published`, `facebook_published`, `parsing_id`, `parsing_source`)
+                VALUES (:gr, :br, :mo, :br_nm, :mo_nm, :yr, :vin, :vin_check_enabled, :bt, :sts, :mlg, :unit, :vol, :hp, :fl, :tra, :wd, :clr, :loc, :txt, :prc, :cur, :soon, :n_a, :top, :tva, :gift, :is_at_client, :import_country_id, :catalog_type, :delivery_time, :advance_amount, :offer_timer, :offer_timer_end, :p_path, :date, :author, "1", "", 0, 0, :parsing_id, :parsing_source)');
 
             $pdo->execute([
                 'gr' => __post('gr'),
@@ -429,10 +542,210 @@ if (__post('sub') == 'mo_search') {
                 'offer_timer_end' => $offer_timer_end,
                 'p_path' => $zY . '/' . $zM,
                 'date' => time(),
-                'author' => __post('author') ?: ($_SESSION['user_name'] ?? '')
+                'author' => __post('author') ?: ($_SESSION['user_name'] ?? ''),
+                'parsing_id'     => __post('parsing_id') ?: null,
+                'parsing_source' => __post('parsing_source') ?: null,
             ]);
 
             $last_id = $db->lastInsertId();
+
+            // Mark the parsing entry as published when this car came from /parsing/ctlg.
+            $parsingIdFromPost = (int)__post('parsing_id', 0);
+            if ($parsingIdFromPost > 0 && $last_id) {
+                try {
+                    $db->prepare("UPDATE {$prefx}_parsing_cars
+                                  SET status = 'published',
+                                      published_sauto = 1,
+                                      published_at = NOW(),
+                                      car_ctlg_id = ?
+                                  WHERE id = ?")
+                       ->execute([$last_id, $parsingIdFromPost]);
+                } catch (Throwable $e) { /* non-fatal */ }
+            }
+
+            // --- Auto-import images from parsing entry ---
+            // If this car came from /parsing/ctlg via ?parsing_id=X, copy its
+            // images directly into the sauto car folder + register in car_pht.
+            $parsingIdPost = (int)__post('parsing_id', 0);
+            if ($parsingIdPost > 0 && $last_id) {
+                try {
+                    $pStmt = $db->prepare("SELECT source, source_id, images_local, raw_data FROM {$prefx}_parsing_cars WHERE id = ?");
+                    $pStmt->execute([$parsingIdPost]);
+                    $pRow = $pStmt->fetch(PDO::FETCH_ASSOC);
+
+                    if ($pRow && !empty($pRow['images_local'])) {
+                        // Prefer the visual order sent by JS (drag/delete in preview).
+                        // Falls back to the stored images_local order if not sent.
+                        // Read raw (not via __post) — htmlspecialchars would corrupt
+                        // the JSON quotes and break json_decode.
+                        $orderJson = $_POST['parsing_image_order'] ?? '';
+                        $orderedUrls = $orderJson ? json_decode($orderJson, true) : null;
+
+                        if (is_array($orderedUrls) && !empty($orderedUrls)) {
+                            $urls = array_values(array_filter($orderedUrls, 'is_string'));
+                        } else {
+                            $imgList = json_decode($pRow['images_local'], true) ?: [];
+                            // Build list of absolute URLs / local paths.
+                            $urls = [];
+                            foreach ($imgList as $img) {
+                                if (is_string($img) && $img !== '') {
+                                    $urls[] = $img;
+                                } elseif (is_array($img)) {
+                                    if (!empty($img['url'])) {
+                                        $urls[] = $img['url'];
+                                    } elseif (!empty($img['path']) && !empty($img['name'])) {
+                                        $urls[] = $_SERVER['DOCUMENT_ROOT'] . '/' . trim($img['path'], '/') . '/' . $img['name'];
+                                    }
+                                }
+                            }
+                        }
+                        $urls = array_slice($urls, 0, 30); // cap
+
+                        if (!empty($urls)) {
+                            $zDir = _CAR_IMG;
+                            $carDir = $_SERVER['DOCUMENT_ROOT'] . '/' . $zDir . '/' . $zY . '/' . $zM . '/' . $last_id . '/img';
+                            if (!is_dir($carDir)) @mkdir($carDir, 0755, true);
+
+                            $referer = 'https://www.encar.com/';
+                            if (($pRow['source'] ?? '') === 'ecarstrade') $referer = 'https://ru.ecarstrade.com/';
+                            if (($pRow['source'] ?? '') === 'openlane')   $referer = 'https://www.openlane.eu/';
+                            $isEncar = ($pRow['source'] ?? '') === 'encar';
+
+                            $insPht = $db->prepare('INSERT INTO '.$prefx.'_car_pht (`it_id`, `tp`, `path`, `name`, `ff`, `main`, `pos`)
+                                VALUES (:it_id, :tp, :path, :name, :ff, :main, :pos)');
+
+                            // Fetch all remote photos in PARALLEL (curl_multi) instead
+                            // of one-by-one — 30 sequential round-trips to Korea were
+                            // the main cause of the slow publish. Local files are read
+                            // directly. Encar URLs are downscaled to 900px (lighter,
+                            // still sharp; sauto re-processes on upload anyway).
+                            $fetched = [];   // index => bytes, preserves original order
+                            $remote  = [];   // index => prepared URL
+                            foreach ($urls as $idx => $u) {
+                                if (preg_match('#^https?://#i', $u)) {
+                                    if ($isEncar && stripos($u, 'encar.com') !== false) {
+                                        $u = preg_replace('/\?.*$/', '', $u);
+                                        // Large variant WITH the small "encar" watermark
+                                        // overlay (wtmk=w_mark_04.png) — drops the big
+                                        // "encar.com" mark, the trick automenu.md uses.
+                                        $u .= '?impolicy=heightRate&cw=1200&rh=700&cg=Center&wtmk=https://ci.encar.com/wt_mark/w_mark_04.png';
+                                    }
+                                    $remote[$idx] = $u;
+                                } elseif (is_file($u)) {
+                                    $b = @file_get_contents($u);
+                                    if ($b) $fetched[$idx] = $b;
+                                }
+                            }
+                            if (!empty($remote)) {
+                                $mh = curl_multi_init();
+                                $handles = [];
+                                foreach ($remote as $idx => $u) {
+                                    $ch = curl_init($u);
+                                    curl_setopt_array($ch, [
+                                        CURLOPT_RETURNTRANSFER => true,
+                                        CURLOPT_FOLLOWLOCATION => true,
+                                        CURLOPT_TIMEOUT        => 25,
+                                        CURLOPT_SSL_VERIFYPEER => false,
+                                        CURLOPT_HTTPHEADER     => [
+                                            'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                                            'Accept: image/*',
+                                            'Referer: ' . $referer,
+                                        ],
+                                    ]);
+                                    curl_multi_add_handle($mh, $ch);
+                                    $handles[$idx] = $ch;
+                                }
+                                do {
+                                    $status = curl_multi_exec($mh, $running);
+                                    if ($running) curl_multi_select($mh, 1.0);
+                                } while ($running && $status === CURLM_OK);
+                                foreach ($handles as $idx => $ch) {
+                                    $b = curl_multi_getcontent($ch);
+                                    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                                    if ($code === 200 && $b !== false && strlen($b) >= 1000) {
+                                        $fetched[$idx] = $b;
+                                    }
+                                    curl_multi_remove_handle($mh, $ch);
+                                    curl_close($ch);
+                                }
+                                curl_multi_close($mh);
+                            }
+                            ksort($fetched);   // keep the original visual order
+
+                            // Photoroom TEMPORARILY DISABLED — Encar photos now come
+                            // clean from the CDN (small "encar" watermark). Set
+                            // $usePhotoroom = true to re-enable. Block stays intact.
+                            $usePhotoroom = true;
+                            $photoroom = ($usePhotoroom && $isEncar) ? new \App\Services\Parsing\PhotoroomService() : null;
+
+                            $pos = 0;
+                            foreach ($fetched as $bytes) {
+                                $pos++;
+                                $n_nm = 'car_' . $last_id . '_' . $pos;
+
+                                if ($pos === 1 && $photoroom && $photoroom->isEnabled()) {
+                                    $clean = $photoroom->removeBackgroundToWhiteJpeg($bytes);
+                                    if ($clean !== null) $bytes = $clean;
+                                }
+
+                                // Write bytes directly — no PHP re-encode so quality is preserved.
+                                // Create both /high/ and /med/ folders; put the original in /high/
+                                // and a copy in /med/ (site reads /high/ for the slider).
+                                $baseDir = $_SERVER['DOCUMENT_ROOT'] . '/' . $zDir . '/' . $zY . '/' . $zM . '/' . $last_id;
+                                $highDir = $baseDir . '/high';
+                                $medDir  = $baseDir . '/med';
+                                if (!is_dir($highDir)) @mkdir($highDir, 0755, true);
+                                if (!is_dir($medDir))  @mkdir($medDir,  0755, true);
+
+                                $highPath = $highDir . '/' . $n_nm . '.jpg';
+                                $medPath  = $medDir  . '/' . $n_nm . '.jpg';
+
+                                $tmpRaw = $highPath . '.raw';
+                                if (@file_put_contents($tmpRaw, $bytes) === false) continue;
+                                $imgInfo = @getimagesize($tmpRaw);
+                                $srcW = $imgInfo[0] ?? 0;
+                                $src  = ($srcW > 0) ? @imagecreatefromjpeg($tmpRaw) : false;
+
+                                // /high/: cap at 1600px (resize only if larger).
+                                if ($src !== false && $srcW > 1600) {
+                                    $hi = @imagescale($src, 1600);
+                                    if ($hi !== false) { imagejpeg($hi, $highPath, 88); imagedestroy($hi); }
+                                    else { @copy($tmpRaw, $highPath); }
+                                } else {
+                                    @copy($tmpRaw, $highPath);
+                                }
+
+                                // /med/: 800px (higher quality for the small mobile slider).
+                                if ($src !== false && $srcW > 800) {
+                                    $md = @imagescale($src, 800);
+                                    if ($md !== false) { imagejpeg($md, $medPath, 92); imagedestroy($md); }
+                                    else { @copy($highPath, $medPath); }
+                                } else {
+                                    @copy($highPath, $medPath);
+                                }
+
+                                if ($src !== false) imagedestroy($src);
+                                @unlink($tmpRaw);
+
+                                $insPht->execute([
+                                    'it_id' => $last_id,
+                                    'tp'    => 'img',
+                                    'path'  => $zY . '/' . $zM,
+                                    'name'  => $n_nm,
+                                    'ff'    => 'jpg',
+                                    'main'  => $pos === 1 ? 1 : 0,
+                                    'pos'   => $pos,
+                                ]);
+                            }
+                        }
+                    }
+                } catch (Throwable $e) {
+                    @file_put_contents($_SERVER['DOCUMENT_ROOT'].'/logs/order_add_new_debug.log',
+                        '['.date('Y-m-d H:i:s')."] PARSING IMG IMPORT FAILED: ".$e->getMessage()."\n",
+                        FILE_APPEND);
+                }
+
+            }
 
             // --- CHANGELOG: log car creation ---
             car_changelog_log($db, $prefx, [
@@ -452,7 +765,7 @@ if (__post('sub') == 'mo_search') {
                 $pdo_ar += [
                     'lng_'.$i=>$v,
                     'tp_'.$i=>'item',
-                    'p1_'.$i=>'cars',
+                    'p1_'.$i=>'ordercars',
                     'p2_'.$i=>$last_id,
                     'qr_'.$i=>'',
                     'it_id_'.$i=>$last_id,
@@ -467,6 +780,42 @@ if (__post('sub') == 'mo_search') {
             $pdo = $db->prepare('INSERT INTO '.$prefx.'_seo2 (`lng`, `tp`, `p1`, `p2`, `qr`, `it_id`, `ttl`, `h1`, `dsc`, `kwd`, `txt`, `params_html`) VALUES '.$pdo_v);
             $pdo->execute($pdo_ar);
         }
+
+        // OpenLane: bake the Condition + Equipment report into parsing_cars.report_data
+        // so the public product page shows it from the DB (no live OpenLane call).
+        // Runs on BOTH insert and edit (the publish flow may take either path), keyed
+        // off the parsing_id in POST.
+        $parsingIdPub = (int)__post('parsing_id', 0);
+        if ($parsingIdPub > 0) {
+            try {
+                $pcS = $db->prepare("SELECT source, raw_data, report_data FROM {$prefx}_parsing_cars WHERE id = ?");
+                $pcS->execute([$parsingIdPub]);
+                $pcR = $pcS->fetch(PDO::FETCH_ASSOC);
+                $alreadyHas = $pcR && !empty($pcR['report_data']) && strpos((string)$pcR['report_data'], 'openlane_report') !== false;
+                if ($pcR && ($pcR['source'] ?? '') === 'openlane' && !$alreadyHas) {
+                    $rawOl  = json_decode($pcR['raw_data'] ?? '{}', true) ?: [];
+                    $itemOl = (!empty($rawOl['CarId']) ? $rawOl : ($rawOl['raw_data'] ?? $rawOl));
+                    $auctionId = (string)($itemOl['AuctionId'] ?? '');
+                    $olAdapter = \App\Services\Parsing\AdapterFactory::create('openlane');
+                    if ($auctionId !== '' && $olAdapter && method_exists($olAdapter, 'fetchDetailRaw')) {
+                        $detailOl = $olAdapter->fetchDetailRaw($auctionId);
+                        if (is_array($detailOl)) {
+                            require_once(_ADM_PAGE.'/parsing/parsing_openlane_report.php');
+                            $reportByLang = [];
+                            foreach (['ro','ru','en'] as $rl) {
+                                $reportByLang[$rl] = parsing_openlane_report_html($detailOl, $rl, 0);
+                            }
+                            $updRep = $db->prepare("UPDATE {$prefx}_parsing_cars SET report_data = ? WHERE id = ?");
+                            $updRep->execute([json_encode(['openlane_report' => $reportByLang], JSON_UNESCAPED_UNICODE), $parsingIdPub]);
+                        }
+                    }
+                }
+            } catch (Throwable $e) {
+                @file_put_contents($_SERVER['DOCUMENT_ROOT'].'/logs/order_add_new_debug.log',
+                    '['.date('Y-m-d H:i:s')."] OPENLANE REPORT SAVE FAILED (pub): ".$e->getMessage()."\n", FILE_APPEND);
+            }
+        }
+
         $rtrn = [
             'id' => $_POST['bx_id'],
             'last_id' => $last_id

@@ -28,6 +28,234 @@ if (!empty(__get('id'))) {
     $new = false;
     $new999 = empty($car['999_id']);
 }
+
+// Resolve the real VIN for a parsing car the same way "Publish to sauto" does:
+// prefer the stored vin, else pull the official VIN from the inspection report
+// (report_data), else the 17-zero placeholder for Encar. Used both on prefill
+// (new) and on edit, so the VIN auto-fills in both flows.
+function resolve_parsing_vin(array $pcar): string {
+    // Only a clean 17-char VIN counts. The stored vin should already be the full
+    // detail VIN, but guard against older imports that saved a partial/masked one.
+    $vin = strtoupper(preg_replace('/[^A-HJ-NPR-Z0-9]/i', '', (string)($pcar['vin'] ?? '')));
+    if (strlen($vin) !== 17) $vin = '';
+    // The inspection report only has a masked/partial VIN, so it's a last resort.
+    if (empty($vin) && !empty($pcar['report_data'])) {
+        $rd = json_decode($pcar['report_data'], true);
+        $rvin = $rd['inspection']['master']['detail']['vin']
+            ?? ($rd['record']['vin'] ?? '');
+        $rvin = strtoupper(preg_replace('/[^A-HJ-NPR-Z0-9]/i', '', (string)$rvin));
+        if (strlen($rvin) === 17) $vin = $rvin;
+    }
+    // No real VIN found → use the 17-zero placeholder for any parsing source
+    // (Encar, OpenLane, eCarsTrade). Only kicks in when there's truly no VIN.
+    if (empty($vin) && in_array($pcar['source'] ?? '', ['encar', 'openlane', 'ecarstrade'], true)) {
+        $vin = '00000000000000000';
+    }
+    return $vin;
+}
+
+// Pre-fill form from parsing entry when ?parsing_id=XXX is supplied.
+// This lets the user open a parsed car and review/save it as a sauto listing.
+$parsing_prefill = null;
+$parsing_id_url = $_GET['parsing_id'] ?? '';
+@file_put_contents($_SERVER['DOCUMENT_ROOT'].'/logs/parsing_prefill.log',
+    '['.date('Y-m-d H:i:s').'] new='.($new ? 'true' : 'false').' parsing_id='.$parsing_id_url."\n", FILE_APPEND);
+if ($new && !empty($parsing_id_url)) {
+    $pid = (int)$parsing_id_url;
+    try {
+        $stmt = $db->prepare("SELECT * FROM {$prefx}_parsing_cars WHERE id = ?");
+        $stmt->execute([$pid]);
+        $pcar = $stmt->fetch(PDO::FETCH_ASSOC);
+        @file_put_contents($_SERVER['DOCUMENT_ROOT'].'/logs/parsing_prefill.log',
+            '['.date('Y-m-d H:i:s').'] pcar_found='.($pcar ? 'yes' : 'no').' pid='.$pid."\n", FILE_APPEND);
+        if ($pcar) {
+            // Map parsing fuel codes -> sauto codes.
+            // Parsing fuel code -> sauto fuel code (fl). Keep hybrid sub-types:
+            //   hybrid        = full hybrid petrol      -> hbd
+            //   hybrid_plugin = plug-in hybrid petrol   -> pih
+            //   diesel_hybrid = plug-in hybrid diesel   -> pid
+            $fuelMap = [
+                'benzina' => 'gsl', 'gasoline' => 'gsl',
+                'diesel' => 'dsl',
+                'lpg' => 'gas',
+                'hybrid' => 'hbd', 'gasoline_lpg' => 'gmn', 'gasoline_cng' => 'gmn',
+                'electric' => 'elc',
+                'diesel_hybrid' => 'pid',
+                'hybrid_plugin' => 'pih',
+            ];
+            $gearMap = [
+                'automat' => 'atm',
+                'manual' => 'mnl',
+                'semi-auto' => 'tpt',
+                'cvt' => 'vrr',
+            ];
+            $bodyMap = [
+                'sedan' => 'sdn', 'suv' => 'suv', 'hatchback' => 'hbk',
+                'wagon' => 'unv', 'coupe' => 'cup', 'crossover' => 'crv',
+                'minivan' => 'mnv', 'pickup' => 'pkp', 'van' => 'van',
+                'convertible' => 'cbr', 'microbus' => 'mbs',
+            ];
+            $countryMap = [
+                'encar' => 41,   // KR
+                'openlane' => 11, // DE (fallback)
+                'ecarstrade' => 2, // BE (fallback)
+            ];
+            // Map common Korean colour names (Encar) -> sauto codes.
+            $colorMap = [
+                '흰색'   => 'wht',  // white
+                '검정'   => 'blk',  // black
+                '검정색' => 'blk',
+                '은색'   => 'slv',  // silver
+                '회색'   => 'gra',  // gray
+                '쥐색'   => 'gra',  // dark gray
+                '빨간색' => 'red',
+                '파란색' => 'blu',
+                '갈색'   => 'brn',
+                '베이지' => 'bge',
+                '금색'   => 'gld',
+                '노란색' => 'ylw',
+                '주황색' => 'orn',
+                '녹색'   => 'grn',
+                '진한녹색' => 'd_grn',
+                '연두색' => 'l_grn',
+                '보라색' => 'prp',
+                '분홍색' => 'pnk',
+                '와인색' => 'vns',
+                // English fallbacks already in our DB
+                'white' => 'wht', 'black' => 'blk', 'silver' => 'slv',
+                'gray' => 'gra', 'grey' => 'gra', 'red' => 'red',
+                'blue' => 'blu', 'brown' => 'brn',
+            ];
+
+            $brandKey = strtolower(str_replace([' ', '-'], '_', (string)($pcar['brand'] ?? '')));
+            // Group inferred from body type: vans/trucks/pickups -> commercial (com), rest -> personal (car).
+            $bodyLower = strtolower((string)($pcar['body_type'] ?? ''));
+            $commercialBodies = ['van','truck','pickup','minivan','microbus'];
+            $groupCode = in_array($bodyLower, $commercialBodies, true) ? 'com' : 'car';
+
+            // Price field = full landed cost in Moldova ("MD" price), the same
+            // figure shown on the card and the public page. Encar uses the Korea
+            // breakdown (sea RoRo), OpenLane / eCarsTrade the Europe breakdown
+            // (road delivery). Falls back to the source price if not computable.
+            $parsing_prc = $pcar['price_final_eur'] ? (int)round($pcar['price_final_eur']) : '';
+            $pcarSrc = $pcar['source'] ?? '';
+            if (in_array($pcarSrc, ['encar', 'openlane', 'ecarstrade'], true)) {
+                include_once _ADM_PAGE.'/parsing/parsing_pricing.php';
+                $bdCar = [
+                    'price_eur' => (float)($pcar['price_eur'] ?? 0),
+                    'fuel'      => (string)($pcar['fuel_type'] ?? ''),
+                    'capacity'  => (int)($pcar['engine_volume'] ?? 0),
+                    'year'      => (int)($pcar['year'] ?? 0),
+                ];
+                $bd = ($pcarSrc === 'encar')
+                    ? parsing_md_breakdown_kr($db, $prefx, $bdCar)
+                    : parsing_md_breakdown_eu($db, $prefx, $bdCar);
+                if ($bd && !empty($bd['total'])) {
+                    $parsing_prc = (int)round($bd['total']);
+                }
+            }
+
+            // Real VIN: same resolution as "Publish to sauto" (see helper above).
+            $parsing_vin = resolve_parsing_vin($pcar);
+
+            // Import country: OpenLane gives the car's real country code
+            // (CarCountryExtended, e.g. "it"/"be"/"fr"). Resolve it to the sauto
+            // country id by matching against the real countries table (NOT a
+            // guessed id map) so it can't point at the wrong country. Other
+            // sources keep the per-source fallback.
+            $importCountryId = $countryMap[$pcar['source']] ?? 39;
+            if (($pcar['source'] ?? '') === 'openlane') {
+                $rawData = !empty($pcar['raw_data']) ? (json_decode($pcar['raw_data'], true) ?: []) : [];
+                // The OpenLane listing item (with CarCountryExtended) may sit at the
+                // top level OR nested under raw_data (normalizeCarData wraps it).
+                $olItem = $rawData;
+                if (empty($olItem['CarCountryExtended']) && !empty($rawData['raw_data']) && is_array($rawData['raw_data'])) {
+                    $olItem = $rawData['raw_data'];
+                }
+                $cc = strtolower(trim((string)(
+                    $olItem['CarCountryExtended']
+                    ?? $olItem['OriginCountryId']
+                    ?? $olItem['CarEcadisCountryCountryId']
+                    ?? ''
+                )));
+                try {
+                    $matched = false;
+                    if ($cc !== '') {
+                        $cstmt = $db->prepare('SELECT id FROM countries WHERE LOWER(code) = ? LIMIT 1');
+                        $cstmt->execute([$cc]);
+                        $cid = $cstmt->fetchColumn();
+                        if ($cid !== false) { $importCountryId = (int)$cid; $matched = true; }
+                    }
+                    // Country not in our DB (or missing) → use the generic "Europa"
+                    // (code EU) option instead of defaulting to a wrong country.
+                    if (!$matched) {
+                        $eu = $db->query("SELECT id FROM countries WHERE code = 'EU' LIMIT 1")->fetchColumn();
+                        if ($eu !== false) $importCountryId = (int)$eu;
+                    }
+                } catch (\Throwable $e) { /* keep fallback */ }
+            }
+
+            $parsing_prefill = [
+                'parsing_id'        => $pid,
+                'gr'                => $groupCode,
+                'br'                => $brandKey,
+                'br_nm'             => $pcar['brand'] ?? '',
+                'mo'                => '',
+                'mo_nm'             => $pcar['model'] ?? '',
+                'yr'                => $pcar['year'] ?? '',
+                'mlg'               => $pcar['km'] ?? '',
+                'vol'               => $pcar['engine_volume'] ?? '',
+                'hp'                => $pcar['power_hp'] ?? '',
+                'fl'                => $fuelMap[$pcar['fuel_type']] ?? '',
+                'tra'               => $gearMap[$pcar['gearbox']] ?? '',
+                'bt'                => $bodyMap[strtolower((string)$pcar['body_type'])] ?? '',
+                'vin'               => $parsing_vin,
+                // Show the VIN on the public sauto page only when it's a REAL VIN
+                // (not the 17-zero placeholder). Real VIN -> toggle ON; placeholder
+                // -> toggle OFF (current behaviour).
+                'vin_check_enabled' => (preg_match('/^[A-HJ-NPR-Z0-9]{17}$/', (string)$parsing_vin) && $parsing_vin !== '00000000000000000') ? 1 : 0,
+                'clr'               => $colorMap[trim((string)($pcar['color'] ?? ''))] ?? trim((string)($pcar['color'] ?? '')),
+                'sts'               => $pcar['seats'] ?? '',
+                'hp'                => $pcar['power_hp'] ?? '',
+                'loc'               => '1',
+                'wd'                => (function ($d) {
+                    $m = ['4x4' => '44', 'fwd' => 'fr', 'rwd' => 're'];
+                    return $m[$d] ?? '';
+                })($pcar['drive_type'] ?? ''),
+                'prc'               => $parsing_prc,
+                'cur'               => 'EUR',
+                'import_country_id' => $importCountryId,
+                'title_ro'          => $pcar['title_ro'] ?? '',
+                'description_ro'    => $pcar['description_ro'] ?? '',
+                'images_local'      => $pcar['images_local'] ?? '[]',
+                'source'            => $pcar['source'] ?? '',
+                'source_url'        => $pcar['source_url'] ?? '',
+            ];
+        }
+    } catch (Exception $e) {
+        // ignore — form stays empty
+    }
+}
+
+// On EDIT (?id=), if the car came from parsing and its VIN is still empty,
+// auto-fill it from the parsing entry exactly like "Publish to sauto" does.
+// This mirrors the comment auto-fill, which already works on edit.
+if (!$new && empty($car['vin']) && !empty($car['parsing_id'])) {
+    try {
+        $stmt = $db->prepare("SELECT vin, source, report_data FROM {$prefx}_parsing_cars WHERE id = ?");
+        $stmt->execute([(int)$car['parsing_id']]);
+        $pcar_edit = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($pcar_edit) {
+            $car['vin'] = resolve_parsing_vin($pcar_edit);
+            // Placeholder VIN (17 zeros) must never show on the public page → keep
+            // the VIN toggle OFF. A real VIN turns it ON.
+            $car['vin_check_enabled'] = ($car['vin'] === '00000000000000000') ? 0 : 1;
+        }
+    } catch (Exception $e) {
+        // ignore — VIN field stays empty
+    }
+}
+
 $it_br = [];
 $pdo = (new \App\Db\Brand())->getBrands();
 foreach ($pdo as $r) {
@@ -230,6 +458,28 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
             <div class="main_info row">
                 <input type="hidden" name="id" value="<?= $car['id'] ?? '' ?>" />
                 <input type="hidden" name="catalog_type" value="on_order" />
+                <?php
+                // Mark the form as a parsing-origin car when prefilling from a
+                // parsing entry (?parsing_id=) OR when editing an existing car
+                // (?id=) that was originally imported from parsing. This flag
+                // tells the front-end to skip costly OpenAI description generation
+                // for parsing cars, on create AND on every later edit.
+                $form_parsing_id = $parsing_prefill['parsing_id'] ?? ($car['parsing_id'] ?? null);
+                $form_parsing_source = $parsing_prefill['source'] ?? ($car['parsing_source'] ?? '');
+                ?>
+                <?php if (!empty($form_parsing_id)) : ?>
+                <input type="hidden" name="parsing_id" value="<?= (int)$form_parsing_id ?>" />
+                <input type="hidden" name="parsing_source" value="<?= htmlspecialchars($form_parsing_source) ?>" />
+                <?php
+                // Raw brand/model names from the source. If the brand/model select
+                // can't be matched (the make/model isn't in sauto yet), the server
+                // creates it in car_list from these names so publishing never blocks.
+                $form_brand_nm = $parsing_prefill['br_nm'] ?? '';
+                $form_model_nm = $parsing_prefill['mo_nm'] ?? '';
+                ?>
+                <input type="hidden" name="parsing_brand_nm" value="<?= htmlspecialchars($form_brand_nm, ENT_QUOTES) ?>" />
+                <input type="hidden" name="parsing_model_nm" value="<?= htmlspecialchars($form_model_nm, ENT_QUOTES) ?>" />
+                <?php endif; ?>
                 <div class="checks_cont">
                     <label>
                         <input type="checkbox" name="gift" class="no_need" tabindex="1"
@@ -327,20 +577,21 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                         <option value=""><?= strtoupper(__('cars.import_country')) ?></option>
                         <?php endif; ?>
                         <?php if ($new) : ?>
+                            <?php
+                                // Pre-select the parsed car's real import country (e.g. Korea=41
+                                // for Encar) when known; otherwise default to EU (Eurozona).
+                                $prefillCountryId = (int)($parsing_prefill['import_country_id'] ?? 0);
+                            ?>
                             <?php foreach ($countries as $country) : ?>
-                                <?php if ($country['code'] == 'EU') : ?>
-                                    <option value="<?= $country['id'] ?>" selected data-flag="<?= $country['flag'] ?>">
-                                        <?= $country['name'] ?>
-                                    </option>
-                                <?php endif; ?>
-                            <?php endforeach; ?>
-                            <?php foreach ($countries as $country) : ?>
-                                <?php if ($country['code'] != 'EU') : ?>
-                                    <option value="<?= $country['id'] ?>" data-flag="<?= $country['flag'] ?>"
-                                        <?= ($country['id'] == 41) ? 'style="color: #ff0000; font-weight: bold;"' : '' ?>>
-                                        <?= $country['name'] ?>
-                                    </option>
-                                <?php endif; ?>
+                                <?php
+                                    $isSel = $prefillCountryId > 0
+                                        ? ($country['id'] == $prefillCountryId)
+                                        : ($country['code'] == 'EU');
+                                ?>
+                                <option value="<?= $country['id'] ?>" <?= $isSel ? 'selected' : '' ?> data-flag="<?= $country['flag'] ?>"
+                                    <?= ($country['id'] == 41) ? 'style="color: #ff0000; font-weight: bold;"' : '' ?>>
+                                    <?= $country['name'] ?>
+                                </option>
                             <?php endforeach; ?>
                         <?php else : ?>
                             <?php foreach ($countries as $country) : ?>
@@ -529,7 +780,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                             else echo 'Delivery time';
                         ?></div>
                     <input class="delivery_time form-control" type="number" name="delivery_time" tabindex="16"
-                           value="<?= $car['delivery_time'] ?? '14' ?>"
+                           value="<?= $car['delivery_time'] ?? '20' ?>"
                            placeholder="<?= __('cars.delivery_time') ?>"
                            title="<?= __('cars.delivery_time') ?>"
                            min="1"
@@ -965,13 +1216,12 @@ SVG
 
                             $html = '';
                             if(@$car) {
-                                // webs25
-                                $pdo = $db->prepare('SELECT * FROM ' . $prefx . '_seo2 WHERE `it_id`=:it_id AND lng = :lng LIMIT 1');
+                                $pdo = $db->prepare('SELECT * FROM ' . $prefx . '_seo2 WHERE `it_id`=:it_id AND lng = :lng AND tp = "item" AND p1 = "ordercars" LIMIT 1');
                                 $pdo->execute(['it_id' => $car['id'], 'lng' => $v]);
                                 $rseo = $pdo->fetch();
                                 // var_dump( $rseo);
 
-                                $html = $rseo['params_html'];
+                                $html = $rseo['params_html'] ?? '';
 
                             }
 
@@ -1063,25 +1313,25 @@ SVG
                             </span>
                     </div>
                     <?php
-                    // Generate random Facebook posting time between 18:00 and 22:00
+                    // Get Facebook schedule status + the actual scheduled time (if any).
                     require_once __DIR__ . '/../../../../App/Helper/RandomTimeHelper.php';
-                    $random_schedule_time = \App\Helper\RandomTimeHelper::generateRandomFacebookTime();
-                    ?>
-                    <input type="time" id="facebook_schedule_time" value="<?= $random_schedule_time ?>" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;" onclick="event.stopPropagation();">
-                    <?php
-                    // Get Facebook schedule status
                     $facebookStatus = '';
                     $facebookStatusIcon = '';
                     $facebookStatusText = '';
                     $facebookStatusColor = '';
+                    $facebookScheduledTime = ''; // real time of an existing schedule
                     if (!empty($car['id'])) {
                         try {
                             $catalogType = 'on_order';
-                            $stmt = $db->prepare("SELECT status FROM {$prefx}_scheduled_facebook_posts WHERE car_id = ? AND catalog_type = ? ORDER BY created_at DESC LIMIT 1");
+                            $stmt = $db->prepare("SELECT status, scheduled_time FROM {$prefx}_scheduled_facebook_posts WHERE car_id = ? AND catalog_type = ? ORDER BY created_at DESC LIMIT 1");
                             $stmt->execute([$car['id'], $catalogType]);
                             $facebookSchedule = $stmt->fetch();
                             if ($facebookSchedule) {
                                 $facebookStatus = $facebookSchedule['status'];
+                                // Show the time it was actually scheduled for (HH:MM), not a new random.
+                                if (!empty($facebookSchedule['scheduled_time'])) {
+                                    $facebookScheduledTime = substr((string)$facebookSchedule['scheduled_time'], 0, 5);
+                                }
                                 switch ($facebookStatus) {
                                     case 'pending':
                                         $facebookStatusIcon = '⏳';
@@ -1109,7 +1359,12 @@ SVG
                             // Ignore error
                         }
                     }
+                    // If already scheduled, show that real time; otherwise pick a random one.
+                    $facebook_schedule_time = $facebookScheduledTime !== ''
+                        ? $facebookScheduledTime
+                        : \App\Helper\RandomTimeHelper::generateRandomFacebookTime();
                     ?>
+                    <input type="time" id="facebook_schedule_time" value="<?= $facebook_schedule_time ?>" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;" onclick="event.stopPropagation();">
                     <?php if ($facebookStatus): ?>
                         <div style="display: flex; align-items: center; gap: 4px;">
                             <span style="font-size: 14px;"><?= $facebookStatusIcon ?></span>
@@ -1152,25 +1407,25 @@ SVG
                     </span>
                 </div>
                 <?php
-                // Generate random Telegram posting time between 18:00 and 22:00
+                // Get Telegram schedule status + the actual scheduled time (if any).
                 require_once __DIR__ . '/../../../../App/Helper/RandomTimeHelper.php';
-                $random_telegram_time = \App\Helper\RandomTimeHelper::generateRandomTelegramTime();
-                ?>
-                <input type="time" id="telegram_schedule_time" value="<?= $random_telegram_time ?>" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;" onclick="event.stopPropagation();">
-                <?php
-                // Get Telegram schedule status
                 $telegramStatus = '';
                 $telegramStatusIcon = '';
                 $telegramStatusText = '';
                 $telegramStatusColor = '';
+                $telegramScheduledTime = ''; // real time of an existing schedule
                 if (!empty($car['id'])) {
                     try {
                         $catalogType = 'on_order';
-                        $stmt = $db->prepare("SELECT status FROM {$prefx}_scheduled_telegram_posts WHERE car_id = ? AND catalog_type = ? ORDER BY created_at DESC LIMIT 1");
+                        $stmt = $db->prepare("SELECT status, scheduled_time FROM {$prefx}_scheduled_telegram_posts WHERE car_id = ? AND catalog_type = ? ORDER BY created_at DESC LIMIT 1");
                         $stmt->execute([$car['id'], $catalogType]);
                         $telegramSchedule = $stmt->fetch();
                         if ($telegramSchedule) {
                             $telegramStatus = $telegramSchedule['status'];
+                            // Show the time it was actually scheduled for (HH:MM), not a new random.
+                            if (!empty($telegramSchedule['scheduled_time'])) {
+                                $telegramScheduledTime = substr((string)$telegramSchedule['scheduled_time'], 0, 5);
+                            }
                             switch ($telegramStatus) {
                                 case 'pending':
                                     $telegramStatusIcon = '⏳';
@@ -1198,7 +1453,12 @@ SVG
                         // Ignore error
                     }
                 }
+                // If already scheduled, show that real time; otherwise pick a random one.
+                $telegram_schedule_time = $telegramScheduledTime !== ''
+                    ? $telegramScheduledTime
+                    : \App\Helper\RandomTimeHelper::generateRandomTelegramTime();
                 ?>
+                <input type="time" id="telegram_schedule_time" value="<?= $telegram_schedule_time ?>" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;" onclick="event.stopPropagation();">
                 <?php if ($telegramStatus): ?>
                     <div style="display: flex; align-items: center; gap: 4px;">
                         <span style="font-size: 14px;"><?= $telegramStatusIcon ?></span>
@@ -1208,7 +1468,7 @@ SVG
             </div>
 
         </div>
-        
+
         <div class="site_999_block" style="padding-bottom: 40px;">
             <h3 class="ttl site_999_block_title">
                 <?= __('cars.999_block_title') ?>
@@ -1413,24 +1673,40 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
         
-        // Fallback: text match
+        // Fallback: normalized text match (covers brands not in brandMapping, e.g.
+        // newly auto-created ones). Normalize spaces/dashes/case so "Mercedes Benz"
+        // == "Mercedes-Benz", and accept exact OR one starting with the other
+        // (≥3 chars) so "Mercedes Benz" finds "Mercedes" — but NOT loose includes
+        // that could match the wrong brand.
         if (!brandSynced) {
             const brandText = brandField.options[brandField.selectedIndex]?.textContent?.trim();
             if (brandText) {
+                const nb = s => String(s).toLowerCase()
+                    .normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[\s\-_]+/g, '').trim();
+                const need = nb(brandText);
+                let best = null;
                 options.forEach(option => {
-                    const optionText = option.textContent.trim();
-                    if (!brandSynced && (
-                        optionText.toLowerCase() === brandText.toLowerCase() ||
-                        optionText.toLowerCase().includes(brandText.toLowerCase()) ||
-                        brandText.toLowerCase().includes(optionText.toLowerCase())
-                    )) {
-                        brand999Field.value = option.value;
-                        brandSynced = true;
-                        brand999Field.classList.remove('empty');
-                        brand999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                    if (best || !option.value) return;
+                    const o = nb(option.textContent);
+                    if (o.length < 2 || need.length < 2) return;
+                    if (o === need || (o.length >= 3 && need.startsWith(o)) || (need.length >= 3 && o.startsWith(need))) {
+                        best = option;
                     }
                 });
+                if (best) {
+                    brand999Field.value = best.value;
+                    brandSynced = true;
+                    brand999Field.classList.remove('empty');
+                    brand999Field.dispatchEvent(new Event('change', { bubbles: true }));
+                }
             }
+        }
+
+        // Brand changed → the model list must be (re)loaded for it, so clear the
+        // one-time guard in syncModelTo999.
+        if (brandSynced) {
+            syncModelTo999._loaded = false;
+            if (window.jQuery) window.jQuery(brand999Field).trigger('change');
         }
     }
 
@@ -1458,12 +1734,41 @@ document.addEventListener('DOMContentLoaded', function() {
         // If it's a select field (subcategory 659), match options
         const model999Field = model999SelectField;
         if (!model999Field) return;
-        
-        // Check if model field is disabled (depends on brand)
-        if (model999Field.disabled) {
-            return; // Don't sync if disabled
+
+        // The model list depends on brand. On Edit it often never auto-loads, so
+        // if it has no real options yet, fetch them ourselves (same request the
+        // .feature-select change handler uses), then retry the match.
+        const hasRealOptions = Array.from(model999Field.options).some(o => o.value);
+        if (!hasRealOptions) {
+            const br999 = document.querySelector('select[name="feature[20]"]');
+            const bx = model999Field.closest('.bx');
+            // subcategory may be blank by now (the select gets reset); fall back to
+            // the fixed group code so the request never goes out with empty params.
+            const grp = <?= json_encode(($car['gr'] ?? '') === 'com' ? '660' : '659') ?>;
+            const subcat = (bx && $(bx).find('.subcategory').val()) || grp;
+            // Load the model list ONCE (guard against the previous infinite retry).
+            if (window.jQuery && br999 && br999.value && !syncModelTo999._loaded) {
+                syncModelTo999._loaded = true;
+                window.jQuery.post('/ajax.php', {
+                    tp: 'adm', pg: 'ordercars', fn: '999_catalog', sub: 'get_features_depends',
+                    feature_id: model999Field.dataset.featureId || '21',
+                    subcategory: subcat,
+                    dependency_feature_id: br999.dataset.featureId || '20',
+                    parent_option_id: br999.value,
+                    bx_id: bx ? $(bx).data('bx_id') : ''
+                }, function (response) {
+                    const str = response && response.rtrn && response.rtrn.str;
+                    if (str) {
+                        const defText = $(model999Field).attr('def_text') || 'Select...';
+                        $(model999Field).html('<option value="">' + defText + '</option>' + str);
+                        setTimeout(syncModelTo999, 150); // now match with options present
+                    }
+                }, 'json');
+            }
+            return; // no blind retry loop — we either loaded once or we wait
         }
-        
+        syncModelTo999._tries = 0;
+
         const options = model999Field.querySelectorAll('option');
         let modelSynced = false;
         
@@ -1478,28 +1783,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 model999Field.value = option.value;
                 modelSynced = true;
                 model999Field.classList.remove('empty');
+                model999Field.dispatchEvent(new Event('change', { bubbles: true }));
             }
         });
         
-        // Try text match with priority for exact and longer matches
+        // Try text match with priority for exact matches. Normalize away spaces,
+        // dashes and case so "C Class" == "C-Class" == "cclass" — but they stay
+        // DISTINCT from "CLA" (cla), preventing the wrong model being picked.
         if (!modelSynced) {
             const modelText = modelField.options[modelField.selectedIndex]?.textContent?.trim();
             if (modelText) {
+                const norm999 = s => String(s).toLowerCase()
+                    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+                    .replace(/[\s\-_]+/g, '').trim();
+                const needN = norm999(modelText);
                 let bestMatch = null;
                 let bestMatchScore = 0;
-                
+
                 options.forEach(option => {
-                    const optionText = option.textContent.trim();
+                    if (!option.value) return;
+                    const optN = norm999(option.textContent);
                     let score = 0;
-                    
-                    if (optionText.toLowerCase() === modelText.toLowerCase()) {
-                        score = 100; // Exact match - highest priority
-                    } else if (optionText.toLowerCase().includes(modelText.toLowerCase())) {
-                        score = 80 + optionText.length; // Option contains model text
-                    } else if (modelText.toLowerCase().includes(optionText.toLowerCase())) {
-                        score = 60 - optionText.length; // Model text contains option (prefer longer options)
+
+                    if (optN === needN) {
+                        score = 100; // Exact match (normalized) — highest priority
+                    } else if (optN.length >= 3 && needN.length >= 3 && optN.includes(needN)) {
+                        // Option contains the whole model word, prefer the SHORTEST
+                        // such option (closest to the model, avoids over-long trims).
+                        score = 80 - optN.length;
+                    } else if (optN.length >= 3 && needN.length >= 3 && needN.includes(optN)) {
+                        score = 60 - optN.length;
                     }
-                    
+
                     if (score > bestMatchScore) {
                         bestMatch = option;
                         bestMatchScore = score;
@@ -1513,6 +1828,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     model999Field.dispatchEvent(new Event('change', { bubbles: true }));
                 }
             }
+        }
+
+        // Model set → the generation list depends on it, so (re)load + sync it.
+        if (modelSynced) {
+            syncGenerationTo999._loaded = false;
+            setTimeout(syncGenerationTo999, 200);
         }
     }
 
@@ -1581,37 +1902,54 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const generationField = document.querySelector('select[name="feature[2095]"]');
         if (!generationField) return;
-        
-        const options = generationField.querySelectorAll('option');
-        if (options.length <= 1) {
-            // Retry after 500ms if options not loaded yet
-            setTimeout(syncGenerationTo999, 500);
+
+        // Generation depends on the 999 model (feature[21]). On Edit its options
+        // often don't auto-load, so fetch them once ourselves (same as the model),
+        // then retry. Guarded so it can't loop.
+        const hasGenOptions = Array.from(generationField.options).some(o => o.value);
+        if (!hasGenOptions) {
+            const mo999 = document.querySelector('select[name="feature[21]"]');
+            const bx = generationField.closest('.bx');
+            const grp = <?= json_encode(($car['gr'] ?? '') === 'com' ? '660' : '659') ?>;
+            const subcat = (bx && $(bx).find('.subcategory').val()) || grp;
+            if (window.jQuery && mo999 && mo999.value && !syncGenerationTo999._loaded) {
+                syncGenerationTo999._loaded = true;
+                window.jQuery.post('/ajax.php', {
+                    tp: 'adm', pg: 'ordercars', fn: '999_catalog', sub: 'get_features_depends',
+                    feature_id: generationField.dataset.featureId || '2095',
+                    subcategory: subcat,
+                    dependency_feature_id: mo999.dataset.featureId || '21',
+                    parent_option_id: mo999.value,
+                    bx_id: bx ? $(bx).data('bx_id') : ''
+                }, function (response) {
+                    const str = response && response.rtrn && response.rtrn.str;
+                    if (str) {
+                        const defText = $(generationField).attr('def_text') || 'Select...';
+                        $(generationField).html('<option value="">' + defText + '</option>' + str);
+                        setTimeout(syncGenerationTo999, 150);
+                    }
+                }, 'json');
+            }
             return;
         }
-        
+
         let generationSynced = false;
-        
-        options.forEach(option => {
+
+        Array.from(generationField.options).forEach(option => {
             if (generationSynced || !option.value) return;
-            
+
             const optionText = option.textContent.trim();
-            
-            // Extract year ranges from text like "XA10 (1994 - 2000)" or "I (1995 - 2002)" or "XA50 (2018 - н.в)"
-            const yearRangeMatch = optionText.match(/\((\d{4})\s*[-–]\s*(\d{4}|н\.в|н\. в)\)/);
-            
+
+            // Year range like "E84 (2009 - 2015)" / "U11 (2022 - prezent)" /
+            // "XA50 (2018 - н.в)". End may be a year, Romanian "prezent" or
+            // Russian "н.в" — all meaning "present".
+            const yearRangeMatch = optionText.match(/\((\d{4})\s*[-–]\s*(\d{4}|н\.\s*в|prezent|present|н\.в)\)/i);
+
             if (yearRangeMatch) {
                 const startYear = parseInt(yearRangeMatch[1]);
-                const endYearText = yearRangeMatch[2];
-                
-                let endYear;
-                if (endYearText === 'н.в' || endYearText === 'н. в') {
-                    // "н.в" means "настоящее время" (present time)
-                    endYear = new Date().getFullYear();
-                } else {
-                    endYear = parseInt(endYearText);
-                }
-                
-                // Check if car year falls within this generation range
+                const endYearText = yearRangeMatch[2].toLowerCase();
+                const endYear = /^\d{4}$/.test(endYearText) ? parseInt(endYearText) : new Date().getFullYear();
+
                 if (year >= startYear && year <= endYear) {
                     generationField.value = option.value;
                     generationSynced = true;
@@ -2192,9 +2530,203 @@ document.addEventListener('DOMContentLoaded', function() {
             // Sync generation AFTER model, when generation options are loaded
             setTimeout(syncGenerationTo999, 3000);
         } else {
-       
+
             observer.observe(featuresContainer, { childList: true, subtree: true });
         }
+    }
+
+    // Any car opened FROM parsing (?parsing_id=) — whether via "Edit" or any
+    // autopublish flow (sauto / 999 / fb / tg) — must return to the parsing
+    // "Published" page, not the default /ordercars/ctlg. finishProcess() reads
+    // this back-url after publishing.
+    if (/[?&](parsing_id=|autopublish(=1|999=1|fb=1|tg=1))\b/.test(window.location.search)) {
+        const _lang = (document.cookie.split('; ').find(c => c.startsWith('lang=')) || 'lang=ro').split('=')[1];
+        const _adminDir = <?= json_encode($admin_dir ?? 'adm') ?>;
+        const _cb = document.getElementById('content_box');
+        if (_cb) _cb.setAttribute('back-url', '/' + _lang + '/' + _adminDir + '/parsing/published');
+
+        // Pre-load the 999 form on Edit too (not just on autopublish), so its
+        // fields fill from sauto right away. The 999 .features only load when the
+        // "offer type" select changes — so if it already has a value but the
+        // features aren't loaded yet, trigger that change once.
+        // Pre-load the 999 form on Edit: walk the dependent-select chain
+        // (category → subcategory → offer type → features) so all 999 fields fill
+        // from sauto. Each change is async (AJAX), so we wait for each step's
+        // options to appear before selecting + triggering the next.
+        const $j = window.jQuery;
+        if ($j) {
+            const fire = el => { if (el) $j(el).trigger('change'); };
+            const setVal = (sel, val) => { const e = document.querySelector(sel); if (e && val) { e.value = val; } return e; };
+            // Wait until <select> has a real value option, then run cb.
+            const waitOpt = (sel, want, cb, tries) => {
+                tries = tries || 0;
+                const e = document.querySelector(sel);
+                const has = e && Array.from(e.options).some(o => o.value && (!want || o.value === String(want)));
+                if (has) { cb(e); }
+                else if (tries < 40) { setTimeout(() => waitOpt(sel, want, cb, tries + 1), 250); }
+            };
+            setTimeout(function () {
+                const offerSel = document.querySelector('.subcategory_offer_types');
+                if (offerSel && offerSel.value) return; // already set up
+
+                // On edit these selects are disabled; enable them so the dependent
+                // AJAX chain (and change events) can run.
+                ['.category', '.subcategory', '.subcategory_offer_types'].forEach(s => {
+                    const e = document.querySelector(s); if (e) e.disabled = false;
+                });
+
+                const grp = <?= json_encode(($car['gr'] ?? '') === 'com' ? '660' : '659') ?>;
+                const defOffer = '23844';
+
+                // 1) Category is preselected (Auto) → trigger to load subcategories.
+                fire(document.querySelector('.category'));
+                // 2) Pick the subcategory, then trigger to load offer types.
+                waitOpt('.subcategory', grp, () => {
+                    setVal('.subcategory', grp);
+                    fire(document.querySelector('.subcategory'));
+                    // 3) Pick the offer type, then trigger to load the features.
+                    waitOpt('.subcategory_offer_types', defOffer, () => {
+                        setVal('.subcategory_offer_types', defOffer);
+                        fire(document.querySelector('.subcategory_offer_types'));
+                        // features load + features999Loaded fires → sync runs.
+                    });
+                });
+            }, 1200);
+        }
+    }
+
+    if (/[?&]autopublish999=1\b/.test(window.location.search)) {
+        let done = false;
+        const start = Date.now();
+        const timer = setInterval(function () {
+            if (done) return;
+            if (Date.now() - start > 60000) { clearInterval(timer); return; }
+
+            const btn = document.querySelector('button.confirm_999');
+            if (!btn) return;
+
+            const requiredSelects = document.querySelectorAll('#main_form_999 select.required, #main_form_999 select.feature-select.required');
+            let allSelectsFilled = true;
+            requiredSelects.forEach(function (s) {
+                if (!s.value || s.value === '') allSelectsFilled = false;
+            });
+            const generation = document.querySelector('select[name="feature[2095]"]');
+            const generationOk = !generation || (generation.value && generation.value !== '');
+
+            // Phone: tick the first contact checkbox ourselves rather than waiting
+            // for it to be pre-checked (it loads async after the 999 account is
+            // chosen, so "wait for checked" stalled forever). The server forces the
+            // account's own phone anyway, so this just passes the form's validation.
+            const phoneBoxes = document.querySelectorAll('.form-check-input.contact');
+            let phoneChecked = document.querySelectorAll('.form-check-input.contact:checked').length > 0;
+            if (!phoneChecked && phoneBoxes.length) {
+                phoneBoxes[0].checked = true;
+                phoneBoxes[0].dispatchEvent(new Event('change', { bubbles: true }));
+                phoneChecked = true;
+            }
+            // If the contact list still hasn't rendered after ~8s, stop blocking on
+            // it — the server resolves the phone.
+            const phoneOk = phoneChecked || (phoneBoxes.length === 0 && (Date.now() - start > 8000));
+
+            if (!allSelectsFilled || !generationOk || !phoneOk) return;
+
+            done = true;
+            clearInterval(timer);
+
+            const annType = document.getElementById('announcement_type');
+            const isPersonal = annType && annType.value === 'sauto_personal';
+            const genBtn = document.getElementById('generate_presets');
+
+            // The category / subcategory / offer-type selects are DISABLED in edit
+            // mode (id=...), so their values aren't serialized on submit — which
+            // gave 999 an empty subcategory. Force them as hidden inputs (from the
+            // select's value, falling back to the form's data-* defaults).
+            (function forceCar999Fields() {
+                const form = document.getElementById('main_form_999');
+                if (!form) return;
+                const put = (name, value) => {
+                    if (!value) return;
+                    let h = form.querySelector('input[type="hidden"][name="' + name + '"]');
+                    if (!h) { h = document.createElement('input'); h.type = 'hidden'; h.name = name; form.appendChild(h); }
+                    if (!h.value) h.value = value;
+                };
+                const selVal = sel => {
+                    const el = form.querySelector('select[name="' + sel + '"]');
+                    return el && el.value ? el.value : '';
+                };
+                put('car[category]',                selVal('car[category]')                || form.dataset.categoryId);
+                put('car[subcategory]',             selVal('car[subcategory]')             || form.dataset.subcategoryId);
+                put('car[subcategory_offer_types]', selVal('car[subcategory_offer_types]') || form.dataset.offerType);
+            })();
+
+            const submitNow = () => {
+                if (window.jQuery) {
+                    window.jQuery('#main_form_999').trigger('submit');
+                } else {
+                    btn.click();
+                }
+            };
+
+            if (isPersonal && genBtn) {
+                genBtn.click();
+
+                let waits = 0;
+                const schedTimer = setInterval(function () {
+                    waits++;
+                    const list = document.getElementById('schedules_list');
+                    const hasSchedules = list && !document.getElementById('no_schedules_message')
+                        && list.children.length > 0;
+                    if (hasSchedules || waits > 25) {   // ~7.5s cap at 300ms steps
+                        clearInterval(schedTimer);
+                        submitNow();
+                    }
+                }, 300);
+            } else {
+                submitNow();
+            }
+        }, 300);   // poll faster so we submit the instant the form is ready
+    }
+
+    // Auto-publish to Facebook: call sendToFacebookCars() once available.
+    if (/[?&]autopublishfb=1\b/.test(window.location.search)) {
+        let done = false;
+        const start = Date.now();
+        const t = setInterval(function () {
+            if (done) return;
+            if (Date.now() - start > 30000) { clearInterval(t); return; }
+            const fb = document.querySelector('.fb-share');
+            if (!fb || typeof sendToFacebookCars !== 'function') return;
+            done = true;
+            clearInterval(t);
+            try { sendToFacebookCars(); } catch (e) { fb.click(); }
+            redirectToPublishedNow();
+        }, 500);
+    }
+
+    // Auto-publish to Telegram: trigger sendToTelegramCars() once available.
+    if (/[?&]autopublishtg=1\b/.test(window.location.search)) {
+        let done = false;
+        const start = Date.now();
+        const t = setInterval(function () {
+            if (done) return;
+            if (Date.now() - start > 30000) { clearInterval(t); return; }
+            const tg = document.querySelector('.adm_tg_btn');
+            if (!tg || typeof sendToTelegramCars !== 'function') return;
+            done = true;
+            clearInterval(t);
+            try { sendToTelegramCars(); } catch (e) { tg.click(); }
+            redirectToPublishedNow();
+        }, 500);
+    }
+
+    function parsingPublishedUrl() {
+        const lang = (document.cookie.split('; ').find(c => c.startsWith('lang=')) || 'lang=ro').split('=')[1];
+        const adminDir = <?= json_encode($admin_dir ?? 'adm') ?>;
+        return '/' + lang + '/' + adminDir + '/parsing/published';
+    }
+
+    function redirectToPublishedNow() {
+        setTimeout(function () { window.location.href = parsingPublishedUrl(); }, 200);
     }
 });
 
@@ -2306,5 +2838,626 @@ function generateWithGemini() {
 }
 
 </script>
+
+<?php if ($parsing_prefill) : ?>
+<script>
+(function () {
+    const data = <?= json_encode($parsing_prefill, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>;
+
+    window._parsingPrefilling = true;
+
+    // Normalize a string for fuzzy matching (lowercase, collapse spaces, strip dashes).
+    function norm(s) {
+        // Lowercase, strip diacritics (Citroën → citroen, Škoda → skoda, Peugeot
+        // stays), drop spaces/dashes/underscores. This lets source brand names with
+        // accents match sauto's accent-free codes/labels.
+        return String(s)
+            .toLowerCase()
+            .normalize('NFD').replace(/[̀-ͯ]/g, '') // strip combining accents
+            .replace(/[\s\-_]+/g, '')
+            .trim();
+    }
+
+    // Smart setter that tries multiple match strategies (value, exact text, normalized text).
+    function setField(form, name, val, displayName) {
+        const hasVal = val !== null && val !== undefined && val !== '';
+        const hasDisp = displayName !== null && displayName !== undefined && displayName !== '';
+        if (!hasVal && !hasDisp) return true;
+
+        const el = form.querySelector('[name="' + name + '"]');
+        if (!el) return false;
+
+        if (el.tagName === 'SELECT') {
+            // If the model was already set to a real option (e.g. by the AI match,
+            // "E 220" -> "E Class"), keep it — don't re-search the raw name and end
+            // up injecting a duplicate.
+            if (name === 'mo' && el.value) {
+                const cur = el.options[el.selectedIndex];
+                if (cur && cur.value && cur.dataset.injected !== '1') return true;
+            }
+            let target = null;
+            // 1. Exact value match.
+            if (hasVal) {
+                for (const opt of el.options) {
+                    if (opt.value === String(val)) { target = opt.value; break; }
+                }
+                // 2. Normalized value match (handles "X5" vs "x5").
+                if (target === null) {
+                    const needV = norm(val);
+                    for (const opt of el.options) {
+                        if (norm(opt.value) === needV) { target = opt.value; break; }
+                    }
+                }
+            }
+            // 3. Display-name exact match.
+            if (target === null && hasDisp) {
+                const need = String(displayName).toLowerCase();
+                for (const opt of el.options) {
+                    if (opt.textContent.trim().toLowerCase() === need) { target = opt.value; break; }
+                }
+            }
+            // 4. Display-name normalized match (case + spacing forgiving).
+            if (target === null && hasDisp) {
+                const needN = norm(displayName);
+                for (const opt of el.options) {
+                    if (norm(opt.textContent) === needN) { target = opt.value; break; }
+                }
+            }
+            // 5. BRAND only: prefix match for sub-naming differences like
+            //    "Mercedes" (Encar) vs "Mercedes Benz" (sauto), "VW" vs
+            //    "Volkswagen". One side must START with the other (min 3 chars)
+            //    to avoid false hits. Restricted to the brand field.
+            if (target === null && name === 'br') {
+                const cands = [];
+                if (hasDisp) cands.push(norm(displayName));
+                if (hasVal)  cands.push(norm(val));
+                for (const need of cands) {
+                    if (need.length < 3) continue;
+                    for (const opt of el.options) {
+                        if (!opt.value) continue;
+                        const t = norm(opt.textContent), v = norm(opt.value);
+                        if (t.startsWith(need) || need.startsWith(t)
+                            || v.startsWith(need) || need.startsWith(v)) { target = opt.value; break; }
+                    }
+                    if (target !== null) break;
+                }
+            }
+            // 6. BRAND/MODEL: still no match → the make/model isn't in sauto yet.
+            //    Inject a new option (slug value + raw name) and select it, so the
+            //    field isn't empty and passes validation. The server creates it in
+            //    car_list on save (see order_add_new.php auto-create).
+            if (target === null && (name === 'br' || name === 'mo') && hasDisp) {
+                // For MODEL: never inject before the AI match has had its say, so
+                // "E 220"/"320d" map to the existing "E Class"/"Seria 3" instead of
+                // creating a duplicate. Only inject once AI settled with no match.
+                if (name === 'mo') {
+                    // Never overwrite a real (non-injected) value that's already
+                    // selected — e.g. AI mapped "420 Gran Coupé" → "4 Series". Only
+                    // a placeholder/empty/injected value may be replaced.
+                    if (el.value) {
+                        const curOpt = el.options[el.selectedIndex];
+                        if (curOpt && curOpt.value && curOpt.dataset.injected !== '1') return true;
+                    }
+                    const brSel = form.querySelector('[name="br"]');
+                    const brInjected = brSel && brSel.selectedOptions[0] && brSel.selectedOptions[0].dataset.injected === '1';
+                    // Brand is brand-new → its model list is empty, AI can't help,
+                    // so inject right away. Otherwise wait for the AI result.
+                    if (!brInjected) {
+                        if (!window._aiModelDone) return false;       // AI not done yet
+                        if (el.options.length <= 1) return false;     // list not loaded
+                    }
+                }
+                const raw = String(displayName).trim();
+                const slug = raw.toLowerCase()
+                    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+                    .replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+                if (slug !== '') {
+                    // Reuse if we already injected it earlier.
+                    for (const opt of el.options) { if (opt.value === slug) { target = slug; break; } }
+                    if (target === null) {
+                        const o = document.createElement('option');
+                        o.value = slug; o.textContent = raw; o.dataset.injected = '1';
+                        el.appendChild(o);
+                        target = slug;
+                    }
+                }
+            }
+            if (target === null) return false;
+            if (el.value === target) return true;
+            el.value = target;
+        } else {
+            if (!hasVal) return true;
+            if (String(el.value) === String(val)) return true;
+            el.value = val;
+        }
+
+        if (name === 'br') return true;
+
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+        el.dispatchEvent(new Event('input',  { bubbles: true }));
+        if (window.jQuery) window.jQuery(el).trigger('change');
+        return true;
+    }
+
+    // Refresh the country-flag image based on the currently selected option.
+    function refreshFlag(form) {
+        const sel = form.querySelector('[name="import_country_id"]');
+        const img = form.querySelector('.country-flag-display');
+        if (!sel || !img) return;
+        const opt = sel.options[sel.selectedIndex];
+        if (!opt) return;
+        const flag = opt.getAttribute('data-flag');
+        if (flag) img.src = '/media/images/flags/' + flag;
+        const txt = opt.textContent.trim();
+        if (txt) img.alt = ' ' + txt + ' ';
+    }
+
+    // Round the 70% advance amount sauto calculates from price.
+    function roundAdvance(form) {
+        const el = form.querySelector('[name="advance_amount"]');
+        if (!el || !el.value) return;
+        const n = parseFloat(String(el.value).replace(',', '.'));
+        if (isNaN(n)) return;
+        const rounded = Math.round(n);
+        if (rounded === Number(el.value)) return;
+        el.value = rounded;
+        el.dispatchEvent(new Event('change', { bubbles: true }));
+        if (window.jQuery) window.jQuery(el).trigger('change');
+    }
+
+    // Map of form field -> [data key, optional display-name key].
+    const FIELDS = [
+        ['gr',                'gr'],
+        ['br',                'br',     'br_nm'],
+        ['mo',                null,     'mo_nm'],   // model select is populated after brand change
+        ['import_country_id', 'import_country_id'],
+        ['yr',                'yr'],
+        ['bt',                'bt'],
+        ['sts',               'sts'],
+        ['mlg',               'mlg'],
+        ['vol',               'vol'],
+        ['hp',                'hp'],
+        ['fl',                'fl'],
+        ['tra',               'tra'],
+        ['wd',                'wd'],
+        ['clr',               'clr'],
+        ['loc',               'loc'],
+        ['vin',               'vin'],
+        ['prc',               'prc'],
+        ['cur',               'cur'],
+        ['title_ro',          'title_ro'],
+        ['description_ro',    'description_ro'],
+    ];
+
+    // One pass — set every field that is not yet correct. Returns true when
+    // all fields with data have been applied.
+    function applyOnce(form) {
+        let allDone = true;
+        for (const [name, key, displayKey] of FIELDS) {
+            const val = key ? data[key] : null;
+            const displayName = displayKey ? data[displayKey] : null;
+            if (val === undefined && !displayName) continue;
+            const ok = setField(form, name, val ?? '', displayName);
+            if (!ok) allDone = false;
+        }
+        // VIN-check toggle: ON when the prefill carries a real VIN (so it shows on
+        // the public sauto page), OFF for the 17-zero placeholder. The checkbox is
+        // visual-only, so update its checked state + the switch styling to match.
+        if (data.vin_check_enabled !== undefined) {
+            const vinChk = form.querySelector('[name="vin_check_enabled"]');
+            if (vinChk) {
+                const on = String(data.vin_check_enabled) === '1';
+                vinChk.checked = on;
+                vinChk.value = on ? '1' : '0';
+                const track = vinChk.nextElementSibling;          // background span
+                const knob  = track && track.nextElementSibling;  // round knob span
+                if (track) track.style.backgroundColor = on ? '#e2001a' : '#ccc';
+                if (knob)  knob.style.left = on ? '29px' : '3px';
+            }
+        }
+        refreshFlag(form);
+        roundAdvance(form);
+        ensureModelsLoaded(form);
+        // Source models (eCarsTrade "BMW 320", OpenLane free text) often don't
+        // match sauto's canonical names ("Seria 3"). When the model select has
+        // loaded its options but our model is still empty, ask AI to map the raw
+        // name to the right option. Runs once.
+        tryAiMatchModel(form);
+        // After prefilling from parsing, flag any still-empty required fields in
+        // red — same .empty styling as the manual-add validation — so the operator
+        // sees at a glance what AI/source couldn't fill and must be set by hand.
+        highlightEmptyNeeds(form);
+        return allDone;
+    }
+
+    // Mark required (.need) fields that are still empty with the .empty class,
+    // matching sauto's own validation look. Text/select fields go red when blank;
+    // numeric (.need.nmb) fields go red when blank or 0. Filled fields are cleared.
+    function highlightEmptyNeeds(form) {
+        form.querySelectorAll('.need').forEach(el => {
+            if (el.type === 'checkbox' || el.type === 'radio') return;
+            const isNum = el.classList.contains('nmb');
+            const v = (el.value || '').trim();
+            const empty = isNum ? !(parseFloat(v) > 0) : (v === '');
+            el.classList.toggle('empty', empty);
+        });
+    }
+
+    // AI fallback for the model field: only when it's still empty after the normal
+    // text matching, the option list is loaded, and we have a raw model name.
+    // aiModelDone flips true once the AI answer has been processed (match or not),
+    // which gates the "inject new model" step so we never create a duplicate model
+    // (e.g. eCarsTrade "E 220" must map to the existing "E Class", not add "E 220").
+    let aiModelTried = false;
+    window._aiModelDone = false;
+    function tryAiMatchModel(form) {
+        if (aiModelTried) return;
+        const rawModel = (data.mo_nm || '').trim();
+        if (!rawModel) { window._aiModelDone = true; return; }
+        const moSel = form.querySelector('[name="mo"]');
+        if (!moSel || moSel.options.length <= 1) return; // options not loaded yet
+        if (moSel.value) { window._aiModelDone = true; return; } // already matched
+        aiModelTried = true;
+
+        const options = Array.from(moSel.options)
+            .filter(o => o.value !== '')
+            .map(o => ({ value: o.value, text: o.textContent.trim() }));
+        if (!options.length) { window._aiModelDone = true; return; }
+
+        const body = new FormData();
+        body.append('tp', 'adm');
+        body.append('pg', 'parsing');
+        body.append('action', 'match_model');
+        body.append('brand', data.br_nm || '');
+        body.append('raw_model', rawModel);
+        body.append('options', JSON.stringify(options));
+        fetch('/ajax.php', { method: 'POST', body, credentials: 'same-origin' })
+            .then(r => r.json())
+            .then(res => {
+                if (res && res.success && res.value && !moSel.value) {
+                    moSel.value = res.value;
+                    moSel.dispatchEvent(new Event('change', { bubbles: true }));
+                    moSel.dispatchEvent(new Event('input',  { bubbles: true }));
+                    if (window.jQuery) window.jQuery(moSel).trigger('change');
+                }
+                window._aiModelDone = true; // AI settled → allow inject fallback
+            })
+            .catch(() => { aiModelTried = false; window._aiModelDone = true; });
+    }
+
+    // If brand is set but the model list is still empty for THAT brand, request
+    // the model list from sauto (mo_search AJAX). We track which brand we fetched
+    // for, so a later/corrected brand (e.g. after prefix-match "Mercedes" ->
+    // "mercedes_benz") triggers a fresh fetch instead of being blocked.
+    let modelsRequestedFor = '';
+    function ensureModelsLoaded(form) {
+        const moSel = form.querySelector('[name="mo"]');
+        if (!moSel) return;
+        const brSel = form.querySelector('[name="br"]');
+        const br = (brSel && brSel.value) || '';   // always the REAL sauto code
+        if (!br) return;                            // brand not matched yet
+        if (modelsRequestedFor === br && moSel.options.length > 1) return; // done for this brand
+        if (modelsRequestedFor === br) return;      // fetch already in flight
+
+        modelsRequestedFor = br;
+        const bx = form.querySelector('.bx');
+        const bxId = bx ? bx.getAttribute('data-bx_id') : '';
+        const body = new FormData();
+        body.append('tp', 'adm');
+        body.append('pg', 'ordercars');
+        body.append('fn', 'add_new');
+        body.append('sub', 'mo_search');
+        body.append('br', br);
+        body.append('bx_id', bxId || 'parsing-prefill');
+        fetch('/ajax.php', { method: 'POST', body, credentials: 'same-origin' })
+            .then(r => r.json())
+            .then(resp => {
+                const html = (resp && resp.rtrn && resp.rtrn.str) || '';
+                if (!html) return;
+                // Reset placeholder then append models, then let applyOnce match.
+                const def = moSel.getAttribute('def_text') || 'МОДЕЛЬ';
+                moSel.innerHTML = '<option value="">' + def + '</option>' + html;
+                applyOnce(form); // re-run matching now that options exist
+            })
+            .catch(() => { if (modelsRequestedFor === br) modelsRequestedFor = ''; });
+    }
+
+    // Keep re-applying until the user submits. Sauto's own scripts can reset
+    // values, so we keep guard up. Uses MutationObserver to react instantly
+    // when the model list gets populated (no visible flicker).
+    function start() {
+        const form = document.querySelector('#content_box form, #content_box');
+        if (!form) return;
+
+        // Tell sauto's brand-change handler to stand down while we prefill — it
+        // would otherwise wipe + re-fetch the model list, flashing the model.
+        window._parsingPrefilling = true;
+
+        // Model list is fetched by ensureModelsLoaded() inside applyOnce(), using
+        // the brand select's REAL value AFTER it gets matched (incl. prefix-match
+        // like "Mercedes" -> "mercedes_benz"). We don't pre-fetch with the raw
+        // parsing key, which isn't a valid sauto brand code.
+
+        const tick = () => applyOnce(form);
+        tick();
+        const handle = setInterval(tick, 80);
+
+        // Observer: model <select> list changes → re-apply immediately.
+        const moSel = form.querySelector('[name="mo"]');
+        let moObserver = null;
+        let valueGuard = null;
+        if (moSel) {
+            moObserver = new MutationObserver(() => tick());
+            moObserver.observe(moSel, { childList: true });
+
+            // If sauto's code resets mo to "" after we set it, snap back instantly
+            // without waiting for the next interval tick.
+            const wantedDisplay = (data.mo_nm || '').toLowerCase();
+            valueGuard = (e) => {
+                if (!wantedDisplay) return;
+                if (!moSel.value) { setTimeout(tick, 0); return; }
+                const cur = (moSel.options[moSel.selectedIndex]?.textContent || '').trim().toLowerCase();
+                if (cur !== wantedDisplay) setTimeout(tick, 0);
+            };
+            moSel.addEventListener('change', valueGuard);
+        }
+
+        const stopGuard = () => {
+            clearInterval(handle);
+            window._parsingPrefilling = false;
+            if (moObserver) moObserver.disconnect();
+            if (valueGuard && moSel) moSel.removeEventListener('change', valueGuard);
+        };
+        form.addEventListener('submit', stopGuard, { once: true });
+        const confirmBtn = form.querySelector('.confirm');
+        if (confirmBtn) confirmBtn.addEventListener('click', stopGuard, { once: true });
+        setTimeout(stopGuard, 30000);
+        // Release the brand-handler lock after the prefill has settled (models
+        // loaded + model set), so the user can still change the brand manually
+        // afterwards and get a fresh model list. The value-guard keeps running.
+        setTimeout(() => { window._parsingPrefilling = false; }, 4000);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', start);
+    } else {
+        start();
+    }
+
+    // Delay image downloads until after the form fields settle so they
+    // don't compete for network/CPU with mo_search and model selection.
+    setTimeout(loadParsingImages, 500);
+
+    function loadParsingImages() {
+    // Pre-load parsing images into the file input so the form shows thumbs.
+    // The actual import is done server-side from these same URLs; we send the
+    // current visual order (parsing_image_order) so the server respects drag
+    // reordering and deletions made in the preview.
+    if (data.images_local && data.parsing_id) {
+        try {
+            const imgs = typeof data.images_local === 'string' ? JSON.parse(data.images_local) : data.images_local;
+            const urls = [];
+            for (const it of (imgs || [])) {
+                if (typeof it === 'string') urls.push(it);
+                else if (it && it.url) urls.push(it.url);
+                else if (it && it.path && it.name) urls.push('/' + String(it.path).replace(/^\/+/, '') + '/' + it.name);
+            }
+            if (urls.length) {
+                const CONCURRENT = 6;
+                // eCarsTrade/OpenLane: cap at 10 photos for sauto (their galleries
+                // are large and we don't need them all); Encar keeps up to 30.
+                const _src = (data.source || data.parsing_source || '');
+                const _maxImgs = (_src === 'ecarstrade' || _src === 'openlane') ? 10 : 30;
+                const list = urls.slice(0, _maxImgs);
+                const results = new Array(list.length).fill(null);
+
+                const fetchOne = (i) => {
+                    const proxyUrl = '/ajax.php?tp=adm&pg=parsing&action=image_proxy&url=' + encodeURIComponent(list[i]);
+                    return fetch(proxyUrl, { credentials: 'same-origin' })
+                        .then(r => (r.ok && r.headers.get('content-type')?.includes('image')) ? r.blob() : null)
+                        .then(b => {
+                            if (b && b.size > 1000) {
+                                const f = new File([b], 'parsing_' + (i + 1) + '.jpg', { type: 'image/jpeg' });
+                                f._parsingUrl = list[i]; // remember source URL for ordering
+                                results[i] = f;
+                            }
+                        })
+                        .catch(() => null);
+                };
+
+                let next = 0;
+                const fileInput = document.querySelector('input[name="img[]"]');
+                const updateInput = () => {
+                    if (!fileInput) return;
+                    // Keep files in the original index order (no holes) so the
+                    // preview's data-file-index lines up with fileInput.files.
+                    const valid = results.filter(Boolean);
+                    if (!valid.length) return;
+                    const dt = new DataTransfer();
+                    valid.forEach(f => dt.items.add(f));
+                    fileInput.files = dt.files;
+                    fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+                    // Tag each preview tile with its source URL so we can read
+                    // the visual order at submit time.
+                    const tiles = document.querySelectorAll('.prv.imgs:not(.ready) > .its > .it[data-file-index]');
+                    tiles.forEach(tile => {
+                        const fi = parseInt(tile.dataset.fileIndex, 10);
+                        if (!isNaN(fi) && valid[fi] && valid[fi]._parsingUrl) {
+                            tile.dataset.parsingUrl = valid[fi]._parsingUrl;
+                        }
+                    });
+                };
+
+                const worker = async () => {
+                    while (next < list.length) {
+                        const idx = next++;
+                        await fetchOne(idx);
+                        updateInput(); // refresh thumbs as soon as each one lands
+                    }
+                };
+                const workers = [];
+                for (let w = 0; w < CONCURRENT; w++) workers.push(worker());
+                Promise.all(workers).then(updateInput);
+            }
+        } catch (e) { /* ignore */ }
+    }
+    } // end loadParsingImages
+
+    // Fetch missing HP / drive type from AI in parallel (doesn't block prefill).
+    if (data.parsing_id) {
+        const form = document.querySelector('#content_box form, #content_box');
+        if (form) {
+            const hpEmpty = !(form.querySelector('[name="hp"]')?.value || data.hp);
+            const wdEmpty = !(form.querySelector('[name="wd"]')?.value || data.wd);
+            if (hpEmpty || wdEmpty) {
+                const body = new FormData();
+                body.append('tp', 'adm');
+                body.append('pg', 'parsing');
+                body.append('action', 'ai_enrich_specs');
+                body.append('car_id', data.parsing_id);
+                fetch('/ajax.php', { method: 'POST', body, credentials: 'same-origin' })
+                    .then(r => r.json())
+                    .then(res => {
+                        if (!res || !res.success) return;
+                        if (res.hp)         setField(form, 'hp', res.hp);
+                        if (res.drive_type) setField(form, 'wd', ({'4x4':'44','fwd':'fr','rwd':'re'})[res.drive_type] || '');
+                    })
+                    .catch(() => {});
+            }
+        }
+    }
+
+    // Always pre-fill the mandatory comment (name="txt") for parsing cars, on
+    // both Edit and Publish flows. Publish has its own writeSourceNote, but this
+    // covers the Edit button too (no autopublish flag). Only fills if empty.
+    if (data.parsing_id) {
+        const writeParsingComment = () => {
+            const txt = document.querySelector('[name="txt"]');
+            if (!txt || txt.value.trim()) return true; // already has a comment
+            const src   = (data.source || data.parsing_source || 'encar');
+            const brand = (data.br_nm || '').trim();
+            const model = (data.mo_nm || '').trim();
+            const year  = (data.yr || '').toString().trim();
+            const parts = [brand, model, year].filter(Boolean).join(' ');
+            // Wait until brand/model are populated before writing.
+            if (!brand && !model) return false;
+            txt.value = (parts ? parts + '. ' : '') + 'Sursa: ' + src;
+            txt.dispatchEvent(new Event('input', { bubbles: true }));
+            txt.dispatchEvent(new Event('change', { bubbles: true }));
+            return true;
+        };
+        if (!writeParsingComment()) {
+            // br_nm/mo_nm may arrive a tick later — retry briefly.
+            let tries = 0;
+            const ci = setInterval(() => {
+                if (writeParsingComment() || ++tries > 20) clearInterval(ci);
+            }, 300);
+        }
+    }
+
+    const wantAutoPublish = /[?&]autopublish=1\b/.test(window.location.search);
+    if (wantAutoPublish && data.parsing_id) {
+        const REQUIRED = ['gr', 'br', 'mo', 'yr', 'mlg', 'vol', 'hp', 'fl', 'tra', 'bt', 'clr', 'prc'];
+        const form = document.querySelector('#content_box form, #content_box');
+
+        // How many photos do we expect? (from the parsing entry, capped the same
+        // way as the downloader: 10 for eCarsTrade/OpenLane, 30 otherwise). We must
+        // wait for ALL of them, not just the first.
+        let expectedImages = 0;
+        try {
+            const imgs = typeof data.images_local === 'string' ? JSON.parse(data.images_local) : data.images_local;
+            const _src = (data.source || data.parsing_source || '');
+            const _maxImgs = (_src === 'ecarstrade' || _src === 'openlane') ? 10 : 30;
+            expectedImages = Math.min((Array.isArray(imgs) ? imgs.length : 0), _maxImgs);
+        } catch (e) { expectedImages = 0; }
+
+        const fieldsReady = () => {
+            if (!form) return false;
+            return REQUIRED.every(name => {
+                const el = form.querySelector('[name="' + name + '"]');
+                return el && String(el.value).trim() !== '';
+            });
+        };
+
+        // Ready when downloads have stopped growing for ~4s (some images may
+        // fail, so we can't wait for the exact expected count) and we have the
+        // minimum 5 photos sauto requires. We treat "reached expected" as an
+        // early exit only when we actually hit it.
+        let lastCount = -1;
+        let stableSince = 0;
+        const imagesReady = () => {
+            const fi = document.querySelector('input[name="img[]"]');
+            const n = (fi && fi.files) ? fi.files.length : 0;
+            if (n < 5) { // sauto needs at least 5
+                if (n !== lastCount) { lastCount = n; stableSince = Date.now(); }
+                return false;
+            }
+            // Count grew since last tick → reset the stability window.
+            if (n !== lastCount) { lastCount = n; stableSince = Date.now(); return false; }
+            // All expected arrived, or the count has been stable ~4s → done.
+            if (expectedImages > 0 && n >= expectedImages) return true;
+            return (Date.now() - stableSince) >= 4000;
+        };
+
+        // Fill the mandatory comment (name="txt") — publishing fails if empty.
+        // Build a sensible default from brand/model/year + source.
+        const writeSourceNote = () => {
+            const src   = (data.source || data.parsing_source || 'encar');
+            const brand = (data.br_nm || '').trim();
+            const model = (data.mo_nm || '').trim();
+            const year  = (data.yr || '').toString().trim();
+            const parts = [brand, model, year].filter(Boolean).join(' ');
+            const note  = (parts ? parts + '. ' : '') + 'Sursa: ' + src;
+
+            // Mandatory comment field.
+            const txt = document.querySelector('[name="txt"]');
+            if (txt && !txt.value.trim()) {
+                txt.value = note;
+                txt.dispatchEvent(new Event('input', { bubbles: true }));
+                txt.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        };
+
+        let fired = false;
+        const startedAt = Date.now();
+        const apTimer = setInterval(() => {
+            // Give up after 90s so we never hang (images can be slow).
+            if (Date.now() - startedAt > 90000) { clearInterval(apTimer); return; }
+            if (fired) return;
+            if (!fieldsReady() || !imagesReady()) return;
+
+            fired = true;
+            clearInterval(apTimer);
+            writeSourceNote();
+
+            // Submit the sauto form by triggering its submit handler directly
+            // (more reliable than clicking the button).
+            const sf = document.getElementById('sautoForm');
+            if (sf && window.jQuery) {
+                window.jQuery(sf).trigger('submit');
+            } else {
+                const confirmBtn = document.querySelector('#sautoForm button.confirm, #content_box button.confirm');
+                if (confirmBtn) confirmBtn.click();
+            }
+
+            const lang = (document.cookie.split('; ').find(c => c.startsWith('lang=')) || 'lang=ro').split('=')[1];
+            const adminDir = <?= json_encode($admin_dir ?? 'adm') ?>;
+            const watchDone = setInterval(() => {
+                const cb = document.getElementById('content_box');
+                const created = cb && cb.getAttribute('data-car-id');
+                if (created) {
+                    clearInterval(watchDone);
+                    // Give the parallel photo uploads time to land in car_pht.
+                    setTimeout(() => {
+                        window.location.href = '/' + lang + '/' + adminDir + '/parsing/published';
+                    }, 6000);
+                }
+            }, 400);
+            setTimeout(() => clearInterval(watchDone), 120000);
+        }, 300);
+    }
+})();
+</script>
+<?php endif; ?>
 
 <?php include(__DIR__ . '/order_country_flags_include.php'); ?>

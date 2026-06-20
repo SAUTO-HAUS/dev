@@ -33,7 +33,7 @@ $(document).ready(function() {
 function sendToFacebookCars() {
 	// Get selected time
 	const selectedTime = document.getElementById('facebook_schedule_time').value;
-	var confirmation = confirm( 'Опубликовать в facebook в ' + selectedTime + '?' );
+	var confirmation = true;
 	if (confirmation){
 
 		$('body').addClass('ajx');
@@ -78,9 +78,7 @@ function sendToFacebookCars() {
 				if(d['status'] == false) {
 					alert("Произошла ошибка публикации");
 				}
-				else {
-					alert("Опубликовано");
-				}
+				// Success: no alert (general rule — publish silently).
 
 				$('#stts_bar').removeClass('act');
 				$('#stts_bar > .ln').attr('style','');
@@ -106,7 +104,8 @@ function sendToFacebookCars() {
 function sendToTelegramCars() {
 	// Get selected time
 	const selectedTime = document.getElementById('telegram_schedule_time').value;
-	var confirmation = confirm( 'Программировать в telegram в ' + selectedTime + '?' );
+	// Publish without a confirm dialog (general rule).
+	var confirmation = true;
 	if (confirmation){
 
 		$('body').addClass('ajx');
@@ -150,9 +149,7 @@ function sendToTelegramCars() {
 				if(d['status'] == false) {
 					alert("Произошла ошибка публикации");
 				}
-				else {
-					alert("Опубликовано");
-				}
+				// Success: no alert (general rule — publish silently).
 
 				$('#stts_bar').removeClass('act');
 				$('#stts_bar > .ln').attr('style','');
@@ -654,6 +651,14 @@ $(document).ready(function(){
 						$('#announcement_type').trigger('change');
 					}
 				}, 300);
+				// After features render: reload the phone for the selected account
+				// (the contact block was rendered for the default account, so a
+				// commercial car would otherwise keep the wrong phone). Keep
+				// confirm_rules checked and re-validate so Publish activates.
+				setTimeout(function() {
+					$('#content_box .account_999_id').trigger('change');
+					$('#confirm_rules').prop('checked', true);
+				}, 450);
 			});
 		}
 	}).on('change', '#content_box .account_999_id', function(){
@@ -859,6 +864,43 @@ $(document).ready(function(){
 		}
 	}, 100);
 	
+	// Re-validate periodically after load: 999 features render + auto-fill async,
+	// and programmatic .prop('checked') doesn't fire 'change', so the Publish
+	// button stayed disabled until the operator clicked confirm_rules. This
+	// activates it automatically. Also fills the commercial model field (585).
+	var _revalidateTries = 0;
+	var _phoneLoaded = false;
+	var _revalidate = setInterval(function () {
+		$('#confirm_rules').prop('checked', true);
+		// Reload the phone ONCE for the already-selected account. The contact block
+		// is first rendered for the wrong (API) account, and the account select is
+		// already on the right value (e.g. 2) so its 'change' never fires by itself
+		// → without this you see all API phones until you switch account and back.
+		if (!_phoneLoaded) {
+			var $acc = $('#content_box .account_999_id');
+			if ($acc.length && $acc.val() && $('.feature-contacts, .form-check-input.contact').length) {
+				$acc.trigger('change');
+				_phoneLoaded = true;
+			}
+		}
+		var f585 = $('#feature_585');
+		if (f585.length && !f585.val().trim()) {
+			var moSel = $('select[name="mo"]');
+			var moName = moSel.length ? (moSel.find('option:selected').text() || '').trim() : '';
+			if (!moName) moName = ($('#feature_21').val() || '').trim();
+			if (moName && moName.toLowerCase() !== 'loading...') f585.val(moName).trigger('change');
+		}
+		// Auto-check the phone when there's a single contact (the account's own
+		// number, e.g. 616 for commercial) so the required field is satisfied and
+		// Publish can activate without the operator ticking it manually.
+		var $contacts = $('.form-check-input.contact');
+		if ($contacts.length === 1 && !$contacts.is(':checked')) {
+			$contacts.prop('checked', true).trigger('change');
+		}
+		checkFormValidity();
+		if (++_revalidateTries > 25) clearInterval(_revalidate);  // ~10s
+	}, 400);
+
 	// Initial check
 	checkFormValidity();
 
@@ -899,6 +941,13 @@ $(document).ready(function(){
 				if (dbText) {
 					$('.text-option-radio.sauto-personal-radio[value="' + savedOption + '"]').closest('.text-option-wrapper').find('.text-preview').val(dbText);
 				}
+			} else {
+				var $radios = $('.text-option-radio.sauto-personal-radio');
+				let $promo = $radios.filter(function () {
+					return $(this).closest('label').find('span').text().trim().toUpperCase().indexOf('PROMO MIX ALL') !== -1;
+				}).first();
+				if (!$promo.length) $promo = $radios.first();
+				$promo.prop('checked', true).trigger('change');
 			}
 			$("#text_options_wrapper").show();
 		}
@@ -1254,8 +1303,10 @@ function validateInputsSauto($contentBox, fileInput) {
 		const val = parseInt($(this).val(), 10);
 		let rule = rules[fieldName];
 		
+		// Electric cars have no real engine displacement — accept ANY engine-volume
+		// value (even 1 cc placeholder). Drop the 700cc min/max for them.
 		if (fieldName === 'vol' && fuelType === 'elc') {
-			rule = { ...rule, special: [0] };
+			rule = { ...rule, min: 0, max: Number.MAX_SAFE_INTEGER, special: [0] };
 		}
 		
 		$(this).removeClass('empty invalid-range');
@@ -1718,12 +1769,29 @@ $(document).ready(function() {
 			}
 			$('#feature_13').val(dbText);
 		}
-	}, 500);
+		var savedOpt = $('#text_options_wrapper').data('text-option');
+		if ((savedOpt === '' || savedOpt === undefined)
+			&& !$('.text-option-radio.sauto-personal-radio:checked').length) {
+			var $promo = $('.text-option-radio.sauto-personal-radio').filter(function () {
+				return $(this).closest('label').find('span').text().trim().toUpperCase().indexOf('PROMO MIX ALL') !== -1;
+			}).first();
+			if (!$promo.length) $promo = $('.text-option-radio.sauto-personal-radio').first();
+			$promo.prop('checked', true).trigger('change');
+		}
+	}, 600);
 	
 	// Initialize calendar when SAUTO Personal is selected
 	$(document).on('change', '#announcement_type', function() {
 		if ($(this).val() === 'sauto_personal') {
 			initializeCalendar();
+			if (!window._presetsAutoGenerated && schedules.length === 0) {
+				window._presetsAutoGenerated = true;
+				setTimeout(function () {
+					if ($('#generate_presets').length && schedules.length === 0) {
+						$('#generate_presets').trigger('click');
+					}
+				}, 400);
+			}
 		}
 	});
 	

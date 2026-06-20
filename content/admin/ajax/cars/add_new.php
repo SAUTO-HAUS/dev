@@ -113,6 +113,13 @@ if (__post('sub') == 'mo_search') {
                 }
             }
 
+            // If a new (discounted) price is set, publish it to 999.md instead of the base price
+            $prc_n_val = __post('prc_n', 0);
+            $price_for_999 = $extracted_price;
+            if (!empty($prc_n_val) && is_numeric($prc_n_val) && (float)$prc_n_val < (float)$extracted_price) {
+                $price_for_999 = (float)$prc_n_val;
+            }
+
             // Update 999 JSON data with new price
             $updated_999_data = null;
             if (!empty($r['999'])) {
@@ -120,9 +127,9 @@ if (__post('sub') == 'mo_search') {
                 if (!empty($car999_data['features'])) {
                     // Update price in 999 features
                     foreach ($car999_data['features'] as &$feature) {
-                        if (!empty($feature['unit']) && 
+                        if (!empty($feature['unit']) &&
                             in_array(strtolower($feature['unit']), ['eur', 'usd', 'mdl', 'ron'])) {
-                            $feature['value'] = (string)$extracted_price;
+                            $feature['value'] = (string)$price_for_999;
                             $feature['unit'] = strtolower($extracted_currency);
 
                             break;
@@ -139,7 +146,7 @@ if (__post('sub') == 'mo_search') {
                 `tra`=:tra, `wd`=:wd, `clr`=:clr, `loc`=:loc, `txt`=:txt, `vin`=:vin, `vin_check_enabled`=:vin_check_enabled,
                 `prc`=:prc, `cur`=:cur, `soon`=:soon, `n_a`=:n_a, `tva`=:tva, `top`=:top,
                 `gift`=:gift, `is_at_client`=:is_at_client, `import_country_id`=:import_country_id,
-                `prc_t`=:prc_t, `prc_n`=:prc_n, `999`=:data_999 
+                `prc_n`=:prc_n, `999`=:data_999
                 WHERE `id`=:id');
             $pdo->execute([
                 'id' => __post('id'),
@@ -172,8 +179,7 @@ if (__post('sub') == 'mo_search') {
                 'gift' => __post('gift', 0),
                 'is_at_client' => __post('is_at_client', 0),
                 'import_country_id' => __post('import_country_id', 0),
-                'prc_t' => (strtotime(__post('prc_t'))!=''&&strtotime(__post('prc_t'))!=0?strtotime(__post('prc_t')):0),
-                'prc_n' => __post('prc_n', __post('prc', 0)),
+                'prc_n' => (is_numeric(__post('prc_n')) ? (float)__post('prc_n') : 0),
                 'data_999' => $updated_999_data
             ]);
 
@@ -334,8 +340,8 @@ if (__post('sub') == 'mo_search') {
 
         } else {
 
-            $pdo = $db->prepare('INSERT INTO ' . $prefx . '_car_ctlg (`gr`, `br`, `mo`, `br_nm`, `mo_nm`, `yr`, `vin`, `vin_check_enabled`, `bt`, `sts`, `mlg`, `unit`, `vol`, `hp`, `fl`, `tra`, `wd`, `clr`, `loc`, `txt`, `prc`, `cur`, `soon`, `n_a`, `top`, `tva`, `gift`, `is_at_client`, `import_country_id`, `p_path`, `date`, `author`, `vis`, `catalog_type`, `inf`, `telegram_published`, `facebook_published`)
-                VALUES (:gr, :br, :mo, :br_nm, :mo_nm, :yr, :vin, :vin_check_enabled, :bt, :sts, :mlg, :unit, :vol, :hp, :fl, :tra, :wd, :clr, :loc, :txt, :prc, :cur, :soon, :n_a, :top, :tva, :gift, :is_at_client, :import_country_id, :p_path, :date, :author, "1", "in_stock", "", 0, 0)');
+            $pdo = $db->prepare('INSERT INTO ' . $prefx . '_car_ctlg (`gr`, `br`, `mo`, `br_nm`, `mo_nm`, `yr`, `vin`, `vin_check_enabled`, `bt`, `sts`, `mlg`, `unit`, `vol`, `hp`, `fl`, `tra`, `wd`, `clr`, `loc`, `txt`, `prc`, `cur`, `prc_n`, `soon`, `n_a`, `top`, `tva`, `gift`, `is_at_client`, `import_country_id`, `p_path`, `date`, `author`, `vis`, `catalog_type`, `inf`, `telegram_published`, `facebook_published`)
+                VALUES (:gr, :br, :mo, :br_nm, :mo_nm, :yr, :vin, :vin_check_enabled, :bt, :sts, :mlg, :unit, :vol, :hp, :fl, :tra, :wd, :clr, :loc, :txt, :prc, :cur, :prc_n, :soon, :n_a, :top, :tva, :gift, :is_at_client, :import_country_id, :p_path, :date, :author, "1", "in_stock", "", 0, 0)');
 
             $pdo->execute([
                 'gr' => __post('gr'),
@@ -360,6 +366,7 @@ if (__post('sub') == 'mo_search') {
                 'txt' => __post('txt'),
                 'prc' => __post('prc', 0),
                 'cur' => __post('cur'),
+                'prc_n' => (is_numeric(__post('prc_n')) ? (float)__post('prc_n') : 0),
                 'soon' => __post('soon', 0),
                 'n_a' => __post('n_a', 0),
                 'top' => __post('top', 0),
@@ -482,15 +489,20 @@ if (__post('sub') == 'mo_search') {
 					</select>
 					
 					<div class="ttl">'.$r['br_nm'].' '.$r['mo_nm'].' <span class="zx">id: '.$r['id'].'</span></div>
-					
-					<div class="cnt">';				
+					';
+						$print_has_new = ($r['prc_n']!=0 && $r['prc_n']<$r['prc']);
+						$print_eff_prc = $print_has_new ? $r['prc_n'] : $r['prc'];
+						$rtrn .= '<input class="none" type="text" name="prc_old" value="'.($print_has_new ? $r['prc'] : '').'" />';
+						$rtrn .= '
+					<div class="cnt">';
 						foreach ($r as $k2 => $v2){
 							if ( isset($av_k[$k2]) ){
-								$rtrn .= '<label '.(($av_k[$k2]==1)?'class="act"':'').'>'.(($av_k[$k2]==1)?'<span class="ttl">'.$lng['l']['car']['spec'][$k2].'</span>':'').'<input type="text" name="'.$k2.'" value="'.$v2.'" /></label>';
+								$print_val = ($k2 === 'prc') ? $print_eff_prc : $v2;
+								$rtrn .= '<label '.(($av_k[$k2]==1)?'class="act"':'').'>'.(($av_k[$k2]==1)?'<span class="ttl">'.$lng['l']['car']['spec'][$k2].'</span>':'').'<input type="text" name="'.$k2.'" value="'.$print_val.'" /></label>';
 							}
 						}
 						$rtrn .= '
-						<label class="act"><span class="ttl">'.$lng['w']['exchange'].' [Trade-in]</span><input type="text" name="exchange" value="'.($r['prc']+1000).'" /></label>
+						<label class="act"><span class="ttl">'.$lng['w']['exchange'].' [Trade-in]</span><input type="text" name="exchange" value="'.($print_eff_prc+1000).'" /></label>
 						<label class="act"><span class="ttl">'.$lng['l']['car']['spec']['cons'].'</span><input type="text" name="cons" value="" placeholder="L/100" /></label>
 						<label class="act"><span class="ttl">'.$lng['l']['car']['spec']['tnk'].'</span><input type="text" name="tnk" value="" placeholder="L" /></label>
 					</div>

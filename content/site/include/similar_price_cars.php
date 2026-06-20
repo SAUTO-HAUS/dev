@@ -1,14 +1,28 @@
 <?php
 
 defined('_DOIT') or die('Restricted access');
+
+// Effective price SQL expression: discounted price when set and lower than base price
+if (!defined('EFFECTIVE_PRICE_SQL')) {
+    define('EFFECTIVE_PRICE_SQL', '(CASE WHEN `prc_n` > 0 AND `prc_n` < `prc` THEN `prc_n` ELSE `prc` END)');
+}
+
+// Effective price for a fetched car row
+function carEffectivePrice($car) {
+    if (!empty($car['prc_n']) && is_numeric($car['prc_n']) && (float)$car['prc_n'] < (float)$car['prc']) {
+        return (float)$car['prc_n'];
+    }
+    return (float)($car['prc'] ?? 0);
+}
+
 function getSimilarPriceCars($currentCar, $limit = 8, $db, $prefx, $lng, $img_frmt) {
     $result = ['cars' => [], 'txt' => '', 'message' => '', 'has_cross_section' => false];
-    
+
     if (empty($currentCar['prc']) || $currentCar['prc'] < 100) {
         return getSimilarByBrandModel($currentCar, $limit, $db, $prefx, $lng, $img_frmt);
     }
-    
-    $basePrice = (float)$currentCar['prc'];
+
+    $basePrice = carEffectivePrice($currentCar);
     $currentSection = isset($currentCar['catalog_type']) ? $currentCar['catalog_type'] : 'in_stock';
     $otherSection = ($currentSection === 'in_stock') ? 'on_order' : 'in_stock';
     $priceRanges = [0.20, 0.30, 0.40];
@@ -73,7 +87,7 @@ function getSimilarPriceCars($currentCar, $limit = 8, $db, $prefx, $lng, $img_fr
     // Sort: same section first, then by price proximity
     usort($allCars, function($a, $b) use ($basePrice) {
         if ($a['from_other_section'] !== $b['from_other_section']) return $a['from_other_section'] ? 1 : -1;
-        return abs($a['prc'] - $basePrice) - abs($b['prc'] - $basePrice);
+        return abs(carEffectivePrice($a) - $basePrice) - abs(carEffectivePrice($b) - $basePrice);
     });
     
     $result['cars'] = array_slice($allCars, 0, $limit);
@@ -90,12 +104,12 @@ function getSimilarPriceCars($currentCar, $limit = 8, $db, $prefx, $lng, $img_fr
 function fetchSimilarCars($db, $prefx, $currentCar, $priceLow, $priceHigh, $section, $excludeIds, $limit, &$modelCounts) {
     $excludeList = implode(',', array_map('intval', $excludeIds));
     $currentTime = time();
-    $sql = "SELECT *, 
+    $sql = "SELECT *,
             CASE WHEN br = :br AND mo = :mo THEN 1 WHEN br = :br2 THEN 2 WHEN bt = :bt THEN 3 ELSE 4 END AS priority,
-            ABS(prc - :base_price) AS price_diff
-            FROM {$prefx}_car_ctlg 
+            ABS(" . EFFECTIVE_PRICE_SQL . " - :base_price) AS price_diff
+            FROM {$prefx}_car_ctlg
             WHERE vis = '1' AND act = '1' AND n_a = '0'
-            AND prc BETWEEN :price_low AND :price_high
+            AND " . EFFECTIVE_PRICE_SQL . " BETWEEN :price_low AND :price_high
             AND id NOT IN ({$excludeList})
             AND (catalog_type = :section OR (catalog_type IS NULL AND :section2 = 'in_stock'))
             AND (offer_timer_end IS NULL OR offer_timer_end = 0 OR offer_timer_end > :current_time)
@@ -106,7 +120,7 @@ function fetchSimilarCars($db, $prefx, $currentCar, $priceLow, $priceHigh, $sect
         $stmt->bindValue(':br2', $currentCar['br'], PDO::PARAM_STR);
         $stmt->bindValue(':mo', $currentCar['mo'], PDO::PARAM_STR);
         $stmt->bindValue(':bt', $currentCar['bt'] ?? '', PDO::PARAM_STR);
-        $stmt->bindValue(':base_price', $currentCar['prc'], PDO::PARAM_INT);
+        $stmt->bindValue(':base_price', (int)carEffectivePrice($currentCar), PDO::PARAM_INT);
         $stmt->bindValue(':price_low', $priceLow, PDO::PARAM_INT);
         $stmt->bindValue(':price_high', $priceHigh, PDO::PARAM_INT);
         $stmt->bindValue(':section', $section, PDO::PARAM_STR);
@@ -123,8 +137,8 @@ function fetchSimilarCars($db, $prefx, $currentCar, $priceLow, $priceHigh, $sect
 function fetchFreshArrivals($db, $prefx, $currentCar, $maxPrice, $preferSection, $excludeIds, $limit) {
     $excludeList = implode(',', array_map('intval', $excludeIds));
     $currentTime = time();
-    $sql = "SELECT * FROM {$prefx}_car_ctlg 
-            WHERE vis = '1' AND act = '1' AND n_a = '0' AND prc <= :max_price AND prc > 100
+    $sql = "SELECT * FROM {$prefx}_car_ctlg
+            WHERE vis = '1' AND act = '1' AND n_a = '0' AND " . EFFECTIVE_PRICE_SQL . " <= :max_price AND `prc` > 100
             AND id NOT IN ({$excludeList})
             AND (offer_timer_end IS NULL OR offer_timer_end = 0 OR offer_timer_end > :current_time)
             ORDER BY CASE WHEN catalog_type = :section THEN 0 ELSE 1 END, id DESC LIMIT :limit";
@@ -178,18 +192,19 @@ function generateSimilarCarsHTML($cars, $currentSection, $db, $prefx, $lng, $img
     $is_mobile = (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/Mobile|Android|iPhone|iPad/', $_SERVER['HTTP_USER_AGENT']));
     
     foreach ($cars as $car) {
-        $image_extension = (isset($car['catalog_type']) && $car['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
+        $fallback_ext = (isset($car['catalog_type']) && $car['catalog_type'] === 'on_order') ? '.jpg' : $img_frmt;
         $page_type = (isset($car['catalog_type']) && $car['catalog_type'] === 'on_order') ? 'ordercars' : 'cars';
-        
+
         if ($is_mobile) {
-            $pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `main` DESC, `pos` ASC LIMIT 10');
+            $pdo2 = $db->prepare('SELECT `name`, `ff` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `main` DESC, `pos` ASC LIMIT 7');
             $pdo2->execute(['it_id' => $car['id']]);
             $all_images = $pdo2->fetchAll(PDO::FETCH_ASSOC);
-            
+
             if (count($all_images) > 1) {
                 $image_html = '<div class="mobile-card-slider" data-lazy-load="pending"><div class="mobile-card-slider__container"><div class="mobile-card-slider__track">';
                 foreach ($all_images as $idx => $img) {
-                    $img_src = '/'._CAR_IMG.'/'.$car['p_path'].'/'.$car['id'].'/med/'.$img['name'].$image_extension;
+                    $img_ext = !empty($img['ff']) ? '.'.$img['ff'] : $fallback_ext;
+                    $img_src = '/'._CAR_IMG.'/'.$car['p_path'].'/'.$car['id'].'/med/'.$img['name'].$img_ext;
                     if ($idx === 0) {
                         $image_html .= '<div class="mobile-card-slider__slide"><img src="'.$img_src.'" loading="lazy" width="300" height="200" alt="car '.$car['br_nm'].' '.$car['mo_nm'].' photo '.($idx+1).'" /></div>';
                     } else {
@@ -197,21 +212,27 @@ function generateSimilarCarsHTML($cars, $currentSection, $db, $prefx, $lng, $img
                     }
                 }
                 $image_html .= '</div>';
-                $image_html .= '<div class="mobile-card-slider__line-indicator"></div>';
+                $image_html .= '<div class="mobile-card-slider__line-indicator">';
+                foreach ($all_images as $seg_idx => $_seg) {
+                    $image_html .= '<div class="mobile-card-slider__line-indicator__segment'.($seg_idx === 0 ? ' mobile-card-slider__line-indicator__segment--active' : '').'"></div>';
+                }
+                $image_html .= '</div>';
                 $image_html .= '</div></div>';
             } else {
                 $p = $all_images[0] ?? null;
+                $p_ext = (isset($p['ff']) && $p['ff'] !== '') ? '.'.$p['ff'] : $fallback_ext;
                 $p_src = isset($p['name']) ? '/'._CAR_IMG.'/'.$car['p_path'].'/'.$car['id'].'/med/' : '/'._SITE_IMG.'/v2/';
-                $p_name = isset($p['name']) ? $p['name'].$image_extension : 'no_image.svg';
+                $p_name = isset($p['name']) ? $p['name'].$p_ext : 'no_image.svg';
                 $image_html = '<img src="'.$p_src.$p_name.'" loading="lazy" width="300" height="200" alt="car '.$car['br_nm'].' '.$car['mo_nm'].' id'.$car['id'].' main photo" />';
             }
         } else {
-            $pdo2 = $db->prepare('SELECT `name` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id AND `main`="1" LIMIT 1');
+            $pdo2 = $db->prepare('SELECT `name`, `ff` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id AND `main`="1" LIMIT 1');
             $pdo2->execute(['it_id' => $car['id']]);
             $photo = $pdo2->fetch();
-            
+
+            $photo_ext = ($photo && !empty($photo['ff'])) ? '.'.$photo['ff'] : $fallback_ext;
             $p_src = $photo ? '/'._CAR_IMG.'/'.$car['p_path'].'/'.$car['id'].'/med/' : '/'._SITE_IMG.'/v2/';
-            $p_name = $photo ? $photo['name'].$image_extension : 'no_image.svg';
+            $p_name = $photo ? $photo['name'].$photo_ext : 'no_image.svg';
             $image_html = '<img src="'.$p_src.$p_name.'" loading="lazy" width="300" height="200" alt="car '.$car['br_nm'].' '.$car['mo_nm'].' id'.$car['id'].' main photo" />';
         }
         
@@ -221,27 +242,36 @@ function generateSimilarCarsHTML($cars, $currentSection, $db, $prefx, $lng, $img
         $volume = $car['vol'].' '.$lng['l']['unit']['cm3'];
         $mileage = number_format($car['mlg']).' '.($lng['l']['unit'][$car['unit']] ?? $car['unit']);
         
-        $prc = number_format($car['prc'], 0, ',', ' ');
+        // Effective price: show discounted price + crossed-out old price
+        $hasNewPrice = (!empty($car['prc_n']) && is_numeric($car['prc_n']) && (float)$car['prc_n'] < (float)$car['prc']);
+        $prc = number_format($hasNewPrice ? $car['prc_n'] : $car['prc'], 0, ',', ' ');
+        $o_prc_bl = $hasNewPrice
+            ? '<span class="o_val" title="'.($lng['w']['o_prc'] ?? '').'"><span class="i">'.number_format($car['prc'], 0, ',', ' ').'</span> &#8364;</span>'
+            : '';
         $stock_status_class = ($car['catalog_type'] == 'on_order') ? ' on-order' : '';
         $stock_status_text = ($car['catalog_type'] == 'on_order') ? ($lng['w']['on_order'] ?? 'La comandă') : ($lng['w']['in_stock'] ?? 'În stoc');
-        
+
         $html .= '
         <a class="it car" href="/'.$_COOKIE['lang'].'/'.$page_type.'/'.$car['id'].'">
+            '.car_share_btn($car['id'], $page_type, $lng).'
             <div class="name">'.$car['br_nm'].' '.$car['mo_nm'].'</div>
             <div class="compact-info">
                 <div class="line1">'.$year.' | '.$fuel.' | '.$volume.'</div>
                 <div class="line2">'.$transmission.' | '.$mileage.'</div>
             </div>
-            '.$image_html.'
+            <div class="card-img-wrap">
+                '.car_fav_btn($car['id'], $lng).'
+                '.$image_html.'
+            </div>
             <div class="prc">
-                <strong class="val">'.($car['prc'] > 100 ? $prc.' &#8364;' : ($lng['w']['negociabil'] ?? 'Negociabil')).'</strong>
+                <strong class="val">'.($car['prc'] > 100 ? $prc.' &#8364;' : ($lng['w']['negociabil'] ?? 'Negociabil')).'</strong>'.$o_prc_bl.'
                 <span class="stock-status'.$stock_status_class.'">'.$stock_status_text.'</span>
             </div>
             <div class="txt">
                 <div class="specs">';
         
         if($car['prc'] > 100) {
-            $monthly_payment = floor($car['prc'] * (9.2/1200) / (1 - pow(1 + (9.2/1200), -60)));
+            $monthly_payment = floor(carEffectivePrice($car) * (9.2/1200) / (1 - pow(1 + (9.2/1200), -60)));
             $html .= '
                     <p class="ar">
                         <span class="name">'.($lng['w']['monthly_payment'] ?? 'Plată lunară').'</span>

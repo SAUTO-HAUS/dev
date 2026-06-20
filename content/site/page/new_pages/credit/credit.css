@@ -76,7 +76,7 @@
     color: white;
     text-transform: uppercase;
     line-height: 1.2;
-    margin-bottom: 1rem;
+    margin: 0 0 1rem 0;
 }
 
 .hero-subtitle {

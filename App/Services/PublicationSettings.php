@@ -338,7 +338,7 @@ $rtrn .= '
                 
                 <label>' . ($lng[$_COOKIE['lang']]['w']['api_token'] ?? 'API Token:') . '</label>
                 <div class="input-with-button">
-                    <input type="password" name="korea_999md_token" id="korea_999md_token" value="' . htmlspecialchars($current_settings['korea_999md_token'] ?? 'dfqNtulPrtU4nHApOI1Hyn_d3gjs') . '" autocomplete="new-password" data-form-type="other">
+                    <input type="password" name="korea_999md_token" id="korea_999md_token" value="' . htmlspecialchars($current_settings['korea_999md_token'] ?? 'dfqNtulPKUh_6_kROZel6VKvHKxC') . '" autocomplete="new-password" data-form-type="other">
                     <button type="button" class="generate-btn" onclick="generate999Token(&quot;korea&quot;)">🔑 Generează</button>
                 </div>
             </div>

@@ -11,6 +11,35 @@ function getReqPage() {
 var reqPage = getReqPage();
 
 $(document).ready(function() {
+	// Arrived with #car-<id> (from the parsing "already on sauto" link): find that
+	// card, scroll to it and flash an amber ring. The catalog loads cards lazily
+	// (initial batch + "load more"), so the card may be below the loaded ones — if
+	// it's not present yet, click "load more" and keep looking until it appears.
+	(function highlightLinkedCar() {
+		var m = (location.hash || '').match(/^#car-(\d+)$/);
+		if (!m) return;
+		var id = m[1], tries = 0;
+
+		function found() {
+			var $card = $('.bx[data-id="' + id + '"]').first();
+			if (!$card.length) return false;
+			$card[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+			// Ring stays until the page is reloaded (no auto-remove).
+			$card.addClass('car-card-linked');
+			return true;
+		}
+
+		var timer = setInterval(function () {
+			if (found()) { clearInterval(timer); return; }
+			// Not loaded yet — pull the next batch if there's a visible "load more".
+			var $more = $('#more_it:not(.none)');
+			if ($more.length) {
+				$more.trigger('click');
+			}
+			if (++tries > 60) { clearInterval(timer); }  // ~18s safety
+		}, 300);
+	})();
+
 	var pending = localStorage.getItem('pending_ai_generation');
 	if (pending && window.location.href.indexOf('/ctlg') !== -1) {
 		try {
@@ -33,7 +62,7 @@ $(document).ready(function() {
 function sendToFacebookCars() {
 	// Get selected time
 	const selectedTime = document.getElementById('facebook_schedule_time').value;
-	var confirmation = confirm( 'Опубликовать в facebook в ' + selectedTime + '?' );
+	var confirmation = true;
 	if (confirmation){
 
 		$('body').addClass('ajx');
@@ -41,8 +70,8 @@ function sendToFacebookCars() {
 		$('#stts_bar > .ln').attr('style','width:100%');
 
 
-		let carId = $('#content_box').data('car-id'); // Получаем ID автомобиля
-		let statusText = $(this).siblings('.status-text'); // Получаем элемент с текстом
+		let carId = $('#content_box').data('car-id'); 
+		let statusText = $(this).siblings('.status-text'); 
 
 		$.ajax({
 			url: '/ajax.php',
@@ -50,7 +79,7 @@ function sendToFacebookCars() {
 			data: {
 				tp: reqType,
 				pg: reqPage,
-				fn: 'sendToFacebookCars', // Имя обработчика в PHP
+				fn: 'sendToFacebookCars', 
 				id: carId,
 				local_id: $('select[name=loc]').val(),
 				schedule_time: selectedTime
@@ -76,9 +105,6 @@ function sendToFacebookCars() {
 
 				if(d['status'] == false) {
 					alert("Произошла ошибка публикации");
-				}
-				else {
-					alert("Опубликовано");
 				}
 
 				$('#stts_bar').removeClass('act');
@@ -108,7 +134,7 @@ function sendToFacebookCars() {
 function sendToTelegramCars() {
 	// Get selected time
 	const selectedTime = document.getElementById('telegram_schedule_time').value;
-	var confirmation = confirm( 'Программировать в telegram в ' + selectedTime + '?' );
+	var confirmation = true;
 	if (confirmation){
 
 		$('body').addClass('ajx');
@@ -116,8 +142,8 @@ function sendToTelegramCars() {
 		$('#stts_bar > .ln').attr('style','width:100%');
 
 
-		let carId = $('#content_box').data('car-id'); // Получаем ID автомобиля
-		let statusText = $(this).siblings('.status-text'); // Получаем элемент с текстом
+		let carId = $('#content_box').data('car-id'); 
+		let statusText = $(this).siblings('.status-text'); 
 
 		$.ajax({
 			url: '/ajax.php',
@@ -125,7 +151,7 @@ function sendToTelegramCars() {
 			data: {
 				tp: reqType,
 				pg: reqPage,
-				fn: 'sendToTelegramCars', // Имя обработчика в PHP
+				fn: 'sendToTelegramCars', 
 				id: carId,
 				schedule_time: selectedTime
 			},
@@ -152,13 +178,8 @@ function sendToTelegramCars() {
 					if(d['status'] == false) {
 						alert("Произошла ошибка публикации");
 					}
-					else {
-						alert("Опубликовано");
-					}
 				} catch (e) {
-					if (response && response.length > 0) {
-						alert("Опубликовано");
-					} else {
+					if (!(response && response.length > 0)) {
 						alert("Ошибка обработки ответа");
 					}
 				}
@@ -308,10 +329,17 @@ $(document).ready(function(){
 	
 	//---------------------------------------------------------model select
 	$(document).on('change', '#content_box .brand', function(){
+		if (window._parsingPrefilling) {
+			const brandValue = $(this).val();
+			if (brandValue) {
+				$('#main_form_999').find('select[name="feature[20]"]').val(brandValue);
+			}
+			return;
+		}
 		var data = {}; data['tp'] = reqType; data['pg'] = reqPage; data['fn'] = 'add_new'; data['sub'] = 'mo_search';
 		data['br'] = $(this).val(); data['bx_id'] = $(this).closest('.bx').data('bx_id');
 		ajaxIt(data);
-		
+
 		// Sync brand from SAUTO to 999 form
 		const brandValue = $(this).val();
 		if (brandValue) {
@@ -424,18 +452,43 @@ $(document).ready(function(){
 			data.append('main_img', main_img);
 			data.append('del_img', del_img);
 
+			// If these are parsing images, send the current visual order of the
+			// source URLs so the server imports them in that exact order.
+			// The server does the actual download, so we clear the file input
+			// to avoid double-inserting the same photos via order_file_upload.php.
+			let parsingOrder = [];
+			$('#content_box > .bx .prv.imgs:not(.ready) > .its > .it[data-parsing-url]').each(function(){
+				parsingOrder.push($(this).attr('data-parsing-url'));
+			});
+			if (parsingOrder.length) {
+				data.set('parsing_image_order', JSON.stringify(parsingOrder));
+				// Clear file input — server imports from parsing_image_order.
+				fileInput[0].files = new DataTransfer().files;
+			}
+
 			let carId = await ajaxCarImg(fileInput, data);
-			
-			// Always trigger AI generation - PHP will skip if car already has description
-			if (carId) {
+
+			// Cars imported from parsing (?parsing_id=) must NEVER trigger AI
+			// description generation — neither on create nor on later edits. They
+			// show the landed-cost price table instead, so generating a costly
+			// OpenAI description would be wasted money.
+			let isParsing = $('#content_box [name="parsing_id"]').filter(function(){
+				return String($(this).val() || '').trim() !== '' && $(this).val() !== '0';
+			}).length > 0;
+
+			// Trigger AI generation only for manually-added cars. PHP also skips
+			// if the car already has a description.
+			if (carId && !isParsing) {
 				localStorage.setItem('pending_ai_generation', JSON.stringify({
 					car_id: carId,
 					pg: 'ordercars',
 					timestamp: Date.now()
 				}));
 				console.log('AI generation scheduled for ordercar ID:', carId);
+			} else if (isParsing) {
+				console.log('Parsing car — AI description generation skipped.');
 			}
-			
+
 			finishProcess(confirmButton);
 		}
 	}).on('submit', '#main_form_999', async function (event) {
@@ -596,9 +649,17 @@ $(document).ready(function(){
 		};
 		if ($(this).val()) {
 			ajaxMain(data, function (response) {
-				var defText = $('#content_box .id_'+response.rtrn.bx_id+' .subcategory').attr('def_text');
+				var $sub = $('#content_box .id_'+response.rtrn.bx_id+' .subcategory');
+				var defText = $sub.attr('def_text');
 				defText = '<option value="">'+defText+'</option>';
-				$('#content_box .id_'+response.rtrn.bx_id+' .subcategory').html(defText + response.rtrn.str);
+				$sub.html(defText + response.rtrn.str);
+				// Re-apply the form's default subcategory (lost on reload). The
+				// list is freshly rebuilt, so the preset value would otherwise be
+				// dropped → the "selects for 1s then goes blank" bug.
+				var want = $('#main_form_999').data('subcategory-id');
+				if (want && $sub.find('option[value="'+want+'"]').length) {
+					$sub.val(String(want)).trigger('change');
+				}
 			});
 		}
 	}).on('change', '#content_box .subcategory', function(){
@@ -614,9 +675,15 @@ $(document).ready(function(){
 
 		if ($(this).val()) {
 			ajaxMain(data, function (response) {
-				var defText = $('#content_box .id_'+response.rtrn.bx_id+' .subcategory_offer_types').attr('def_text');
+				var $ot = $('#content_box .id_'+response.rtrn.bx_id+' .subcategory_offer_types');
+				var defText = $ot.attr('def_text');
 				defText = '<option value="">'+defText+'</option>';
-				$('#content_box .id_'+response.rtrn.bx_id+' .subcategory_offer_types').html(defText + response.rtrn.str);
+				$ot.html(defText + response.rtrn.str);
+				// Re-apply the form's default offer type (lost on reload).
+				var want = $('#main_form_999').data('offer-type');
+				if (want && $ot.find('option[value="'+want+'"]').length) {
+					$ot.val(String(want)).trigger('change');
+				}
 			});
 		}
 	}).on('change', '#content_box .subcategory_offer_types', function(){
@@ -630,6 +697,9 @@ $(document).ready(function(){
 			offer_type: $(this).val(),
 			account_id: $(this).closest('.bx').find('.account_999_id').val(),
 			bx_id: $(this).closest('.bx').data('bx_id'),
+			// Pass the selected import country so feature 1763 ("origin") defaults
+			// to Korea for Korean cars instead of always Eurozone.
+			import_country_id: $('select[name="import_country_id"]').val() || '',
 		};
 
 		if ($(this).val()) {
@@ -849,7 +919,14 @@ $(document).ready(function(){
 			$('#confirm_rules').prop('checked', true);
 		}
 	}, 100);
-	
+
+	var _revalidateTries = 0;
+	var _revalidate = setInterval(function () {
+		$('#confirm_rules').prop('checked', true);
+		checkFormValidity();
+		if (++_revalidateTries > 25) clearInterval(_revalidate);  // ~10s
+	}, 400);
+
 	// Initial check
 	checkFormValidity();
 
@@ -1256,8 +1333,10 @@ function validateInputsSauto($contentBox, fileInput) {
 		const val = parseInt($(this).val(), 10);
 		let rule = rules[fieldName];
 		
+		// Electric cars have no real engine displacement — accept ANY engine-volume
+		// value (even 1 cc placeholder). Drop the 700cc min/max for them.
 		if (fieldName === 'vol' && fuelType === 'elc') {
-			rule = { ...rule, special: [0] };
+			rule = { ...rule, min: 0, max: Number.MAX_SAFE_INTEGER, special: [0] };
 		}
 		
 		$(this).removeClass('empty invalid-range');
@@ -1528,6 +1607,10 @@ $(document).on('change', '.car-checkbox-n_a_new', function() {
 
 // Brand change handler for model filtering (both add form and catalog filter)
 $(document).on('change', 'select[name="br"], select[name="br_search"]', function() {
+
+	if (window._parsingPrefilling && $(this).attr('name') === 'br') {
+		return;
+	}
 	var selectedBrand = $(this).val();
 	var modelSelect;
 	var bxId = $('.bx').data('bx_id') || 'default';
@@ -1719,6 +1802,14 @@ $(document).ready(function() {
 	$(document).on('change', '#announcement_type', function() {
 		if ($(this).val() === 'sauto_personal') {
 			initializeCalendar();
+			if (!window._presetsAutoGenerated && schedules.length === 0) {
+				window._presetsAutoGenerated = true;
+				setTimeout(function () {
+					if ($('#generate_presets').length && schedules.length === 0) {
+						$('#generate_presets').trigger('click');
+					}
+				}, 400);
+			}
 		}
 	});
 	
@@ -1991,14 +2082,37 @@ $(document).ready(function() {
 				account999Select.val('3').trigger('change');
 			}
 
+			// Auto-set delivery_time based on country (60 for Korea, 20 otherwise)
+			$('input[name="delivery_time"]').val(countryId == '41' ? 60 : 20);
+
 			if ($('#announcement_type').val() === 'sauto_personal') {
 				$('#announcement_type').trigger('change');
 			}
 		});
 
-		if ($('select[name="import_country_id"]').val() == '41') {
-			$('.account_999_id').val('4').trigger('change');
-		}
+		var _acctTries = 0;
+		var _acctTimer = setInterval(function () {
+			var countryId = $('select[name="import_country_id"]').val();
+			var grVal = $('select[name="gr"]').val();
+			var isCom = grVal === 'com';
+			var $acc = $('.account_999_id');
+			if ($acc.length && $('.feature-contacts, .form-check-input.contact').length) {
+				var want = (countryId == '41') ? '4' : (isCom ? '2' : '3');
+				// ALWAYS trigger change, even if the value is already correct: the
+				// account select can already be 2 while the phone block was rendered
+				// earlier for the default account 3, so the phone must be reloaded.
+				$acc.val(want).trigger('change');   // reloads the phone for that account
+				// Race fix: the text options (AUTO DIN COREEA vs LA COMANDA) are chosen
+				// from the account, but they may have been built earlier while the
+				// account was still the default. Rebuild them now that the account is
+				// correct, so Korea cars always get the Korea text auto-selected.
+				if ($('#announcement_type').val() === 'sauto_personal') {
+					$('#announcement_type').trigger('change');
+				}
+				clearInterval(_acctTimer);
+			}
+			if (++_acctTries > 30) clearInterval(_acctTimer);  // ~9s safety
+		}, 300);
 	});
 
 	// Delete schedule from database (for existing schedules in history)

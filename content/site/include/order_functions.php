@@ -2,6 +2,36 @@
 
 use App\Helper\PhoneHelper;
 
+// Share button shown in the top-right corner of every car card: copies the car
+// URL to clipboard on click (JS handler lives in head.php). Label sits above the icon.
+if (!function_exists('car_share_btn')) {
+	function car_share_btn($id, $page_type, $lng) {
+		$lang = $_COOKIE['lang'] ?? 'ro';
+		$url = '/'.$lang.'/'.$page_type.'/'.(int)$id;
+		$label = htmlspecialchars($lng['w']['share'] ?? 'Distribuie', ENT_QUOTES);
+		$title = htmlspecialchars($lng['w']['link_copied'] ?? 'Link copiat', ENT_QUOTES);
+		$ico = '<svg class="csb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+				.'<path fill-rule="evenodd" clip-rule="evenodd" d="M19.6495 0.799565C18.4834 -0.72981 16.0093 0.081426 16.0093 1.99313V3.91272C12.2371 3.86807 9.65665 5.16473 7.9378 6.97554C6.10034 8.9113 5.34458 11.3314 5.02788 12.9862C4.86954 13.8135 5.41223 14.4138 5.98257 14.6211C6.52743 14.8191 7.25549 14.7343 7.74136 14.1789C9.12036 12.6027 11.7995 10.4028 16.0093 10.5464V13.0069C16.0093 14.9186 18.4834 15.7298 19.6495 14.2004L23.3933 9.29034C24.2022 8.2294 24.2022 6.7706 23.3933 5.70966L19.6495 0.799565ZM7.48201 11.6095C9.28721 10.0341 11.8785 8.55568 16.0093 8.55568H17.0207C17.5792 8.55568 18.0319 9.00103 18.0319 9.55037L18.0317 13.0069L21.7754 8.09678C22.0451 7.74313 22.0451 7.25687 21.7754 6.90322L18.0317 1.99313V4.90738C18.0317 5.4567 17.579 5.90201 17.0205 5.90201H16.0093C11.4593 5.90201 9.41596 8.33314 9.41596 8.33314C8.47524 9.32418 7.86984 10.502 7.48201 11.6095Z" fill="currentColor"/>'
+				.'<path d="M7 1.00391H4C2.34315 1.00391 1 2.34705 1 4.00391V20.0039C1 21.6608 2.34315 23.0039 4 23.0039H20C21.6569 23.0039 23 21.6608 23 20.0039V17.0039C23 16.4516 22.5523 16.0039 22 16.0039C21.4477 16.0039 21 16.4516 21 17.0039V20.0039C21 20.5562 20.5523 21.0039 20 21.0039H4C3.44772 21.0039 3 20.5562 3 20.0039V4.00391C3 3.45162 3.44772 3.00391 4 3.00391H7C7.55228 3.00391 8 2.55619 8 2.00391C8 1.45162 7.55228 1.00391 7 1.00391Z" fill="currentColor"/>'
+				.'</svg>';
+		return '<button type="button" class="card-share-btn" data-share-url="'.htmlspecialchars($url, ENT_QUOTES).'" data-copied-text="'.$title.'" aria-label="'.$label.'" title="'.$label.'">'
+				.$ico.'<span class="csb-label"></span></button>';
+	}
+}
+
+// Favorite (heart) button. Toggles localStorage on the client (JS handler in head.php).
+if (!function_exists('car_fav_btn')) {
+	function car_fav_btn($id, $lng = null) {
+		$id = (int)$id;
+		$add = 'Adaugă în favorite'; $rem = 'Scoate din favorite';
+		if (is_array($lng) && isset($lng['w']['fav_add'])) { $add = $lng['w']['fav_add']; }
+		if (is_array($lng) && isset($lng['w']['fav_remove'])) { $rem = $lng['w']['fav_remove']; }
+		$add = htmlspecialchars($add, ENT_QUOTES); $rem = htmlspecialchars($rem, ENT_QUOTES);
+		$ico = '<svg class="cfb-ico" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+		return '<button type="button" class="card-fav-btn" data-fav-id="'.$id.'" data-fav-add="'.$add.'" data-fav-remove="'.$rem.'" aria-label="'.$add.'" title="'.$add.'">'.$ico.'</button>';
+	}
+}
+
 $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_brand_page=false) use (&$prefx, &$db, &$img_frmt, &$lng){
 	/** @var PDO $db */
 	$ar = [ 'ids'=>[], 'txt'=>'', 'qu'=>0, 'total'=>0 ];
@@ -50,9 +80,15 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 			// file_put_contents('debug_sql.log', "stts: {$stts}\n", FILE_APPEND);
 			// file_put_contents('debug_sql.log', "zreq: " . print_r($zreq, true) . "\n", FILE_APPEND);
 
-			// Clean up parameters - remove query string from values
+			// Clean up parameters - remove query string from values, and normalize
+			// array range inputs (name="prc[]") into the "from-to" string the range
+			// filters below expect (x for an empty end).
 			foreach ($zreq as $k => $v) {
-				if (is_string($v)) {
+				if (is_array($v)) {
+					$from = isset($v[0]) && $v[0] !== '' ? $v[0] : 'x';
+					$to   = isset($v[1]) && $v[1] !== '' ? $v[1] : 'x';
+					$zreq[$k] = ($from === 'x' && $to === 'x') ? '' : ($from . '-' . $to);
+				} elseif (is_string($v)) {
 					$zreq[$k] = explode('?', $v)[0];
 				}
 			}
@@ -250,6 +286,17 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 				}
 			}
 
+			if (!empty($zreq['ic'])) {
+				$ic = strtolower($zreq['ic']);
+				if ($ic === 'korea' || $ic === 'kr') {
+					$sql .= " AND `import_country_id` IN (SELECT id FROM countries WHERE code = 'KR')";
+				} elseif ($ic === 'usa' || $ic === 'us') {
+					$sql .= " AND `import_country_id` IN (SELECT id FROM countries WHERE code = 'US')";
+				} elseif ($ic === 'europe' || $ic === 'eu') {
+					$sql .= " AND `import_country_id` IN (SELECT id FROM countries WHERE code NOT IN ('KR','US'))";
+				}
+			}
+
 			// Add visibility conditions
 			$sql .= ' AND `vis`="1" AND `act`="1"';
 
@@ -260,67 +307,6 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 
 			// Process remaining filter parameters directly
 			$common_filters = ['loc'];
-			
-			// Special handling for transmission filter
-			if (isset($zreq['tra']) && !empty($zreq['tra'])) {
-				$sql .= " AND `tra` = :tra";
-				$query_args['tra'] = $zreq['tra'];
-				// file_put_contents('debug_sql.log', "\nDIRECTLY APPLIED TRANSMISSION FILTER: tra = {$zreq['tra']}\n", FILE_APPEND);
-			} else {
-				// file_put_contents('debug_sql.log', "\nNO TRANSMISSION FILTER FOUND IN REQUEST\n", FILE_APPEND);
-			}
-			
-			// Special handling for fuel type filter
-			if (isset($zreq['fl']) && !empty($zreq['fl'])) {
-				$sql .= " AND `fl` = :fl";
-				$query_args['fl'] = $zreq['fl'];
-				// file_put_contents('debug_sql.log', "\nDIRECTLY APPLIED FUEL TYPE FILTER: fl = {$zreq['fl']}\n", FILE_APPEND);
-			} else {
-				// file_put_contents('debug_sql.log', "\nNO FUEL TYPE FILTER FOUND IN REQUEST\n", FILE_APPEND);
-			}
-			
-			// Special handling for drivetrain filter
-			if (isset($zreq['wd']) && !empty($zreq['wd'])) {
-				$sql .= " AND `wd` = :wd";
-				$query_args['wd'] = $zreq['wd'];
-				// file_put_contents('debug_sql.log', "\nDIRECTLY APPLIED DRIVETRAIN FILTER: wd = {$zreq['wd']}\n", FILE_APPEND);
-			} else {
-				// file_put_contents('debug_sql.log', "\nNO DRIVETRAIN FILTER FOUND IN REQUEST\n", FILE_APPEND);
-			}
-			
-			// Process range filters individually for better control
-			$range_filters = ['yr', 'mlg', 'vol', 'prc'];
-			foreach ($range_filters as $filter) {
-				if (isset($zreq[$filter]) && !empty($zreq[$filter])) {
-					// Check if it's a range with hyphen format
-					$range_values = explode("-", $zreq[$filter]);
-					if (count($range_values) == 2) {
-						// Handle special range formats
-						if ($range_values[0] == 'x') {
-							// Less than max value
-							$sql .= " AND `{$filter}` <= :{$filter}_max";
-							$query_args["{$filter}_max"] = (int)$range_values[1];
-							// file_put_contents('debug_sql.log', "RANGE FILTER: {$filter} <= {$range_values[1]}\n", FILE_APPEND);
-						} elseif ($range_values[1] == 'x') {
-							// Greater than min value
-							$sql .= " AND `{$filter}` >= :{$filter}_min";
-							$query_args["{$filter}_min"] = (int)$range_values[0];
-							// file_put_contents('debug_sql.log', "RANGE FILTER: {$filter} >= {$range_values[0]}\n", FILE_APPEND);
-						} else {
-							// Between min and max
-							$sql .= " AND `{$filter}` BETWEEN :{$filter}_min AND :{$filter}_max";
-							$query_args["{$filter}_min"] = (int)min($range_values);
-							$query_args["{$filter}_max"] = (int)max($range_values);
-							// file_put_contents('debug_sql.log', "RANGE FILTER: {$filter} BETWEEN {$query_args["{$filter}_min"]} AND {$query_args["{$filter}_max"]}\n", FILE_APPEND);
-						}
-					} else {
-						// Single value (exact match)
-						$sql .= " AND `{$filter}` = :{$filter}";
-						$query_args[$filter] = (int)$zreq[$filter];
-					}
-				}
-			}
-			
 			
 			foreach ($common_filters as $filter) {
 				// Skip if parameter is empty or null
@@ -333,8 +319,10 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 			
 			// Handle other filter parameters (legacy approach for compatibility)
 			foreach($zreq as $k => $v){
-				// Skip parameters already processed or special parameters
-				if ($k=='tg' || $k=='br' || $k=='mo' || $k=='bt' || $k=='clr' || $k=='sts' || in_array($k, $common_filters)){continue;}
+				// Skip every field already handled above so ranges (prc/mlg/vol/yr) and
+				// single selects are not applied twice (which broke /ordercars filtering).
+				$processed_filters = ['tg','br','mo','gr','bt','clr','tra','fl','wd','yr','mlg','vol','prc','loc','sts','ic'];
+				if (in_array($k, $processed_filters) || in_array($k, $common_filters)){continue;}
 				
 				if ( isset( $f_arr[$k] ) ){
 					if ($f_arr[$k]=='1'){//inp
@@ -530,14 +518,14 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 		}
 		
 		if ($is_mobile) {
-			// Mobile: Get images for slider (limited to 5 for better mobile performance)
-			$pdo2 = $db->prepare('SELECT `name`, `ff` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `main` DESC, `pos` ASC LIMIT 5');
+			// Mobile: Get images for slider (limited to 7 for better mobile performance)
+			$pdo2 = $db->prepare('SELECT `name`, `ff` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `main` DESC, `pos` ASC LIMIT 7');
 			$pdo2->execute([ 'it_id'=>$r['id'] ]);
 			$all_images = $pdo2->fetchAll(PDO::FETCH_ASSOC);
 
-			// Ensure maximum 5 images for mobile performance
-			if (count($all_images) > 5) {
-				$all_images = array_slice($all_images, 0, 5);
+			// Ensure maximum 7 images for mobile performance
+			if (count($all_images) > 7) {
+				$all_images = array_slice($all_images, 0, 7);
 			}
 
 			if (count($all_images) > 1) {
@@ -555,7 +543,11 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 							}
 				}
 				$image_html .= '</div>';
-				$image_html .= '<div class="mobile-card-slider__line-indicator"></div>';
+				$image_html .= '<div class="mobile-card-slider__line-indicator">';
+				foreach ($all_images as $seg_idx => $_seg) {
+					$image_html .= '<div class="mobile-card-slider__line-indicator__segment'.($seg_idx === 0 ? ' mobile-card-slider__line-indicator__segment--active' : '').'"></div>';
+				}
+				$image_html .= '</div>';
 				$image_html .= '</div>'.$timer_html_for_image.'</div>';
 			} else {
 				// Single image - normal display with timer
@@ -636,12 +628,16 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 		
 		$ar['txt'] .= '
 		<a class="it car" href="/'.$_COOKIE['lang'].'/'.$page_type.'/'.$r['id'].'">
+			'.car_share_btn($r['id'], $page_type, $lng).'
 			<div class="name">'.$r['br_nm'].' '.$r['mo_nm'].'</div>
 			<div class="compact-info">
 				<div class="line1">'.$year.' | '.$fuel.' | '.$volume.'</div>
 				<div class="line2">'.$transmission.' | '.$mileage.'</div>
 			</div>
-			'.$image_html.'
+			<div class="card-img-wrap">
+				'.car_fav_btn($r['id'], $lng).'
+				'.$image_html.'
+			</div>
 			<div class="prc">
 				<strong class="val">'.($r['prc'] > 100 ? $prc.' &#8364;' : $lng['w']['negociabil']).'</strong>'.$o_prc_bl.'
 				'.$timer_html.'

@@ -28,7 +28,8 @@ class ProductCardSlider {
         this.bindEvents();
         this.updateCounter();
         this.updateDots();
-        
+        this.updateLineIndicator();
+
         // Add touch support for mobile
         this.addTouchSupport();
     }
@@ -152,18 +153,29 @@ class ProductCardSlider {
     
     updateLineIndicator() {
         const lineIndicator = this.slider.querySelector('.product-card-slider__line-indicator');
-        if (lineIndicator) {
-            const progress = ((this.currentIndex + 1) / this.totalSlides) * 100;
-            lineIndicator.style.setProperty('--progress', `${progress}%`);
+        if (!lineIndicator) return;
+
+        let segments = lineIndicator.querySelectorAll('.product-card-slider__line-indicator__segment');
+        if (segments.length !== this.totalSlides) {
+            lineIndicator.innerHTML = '';
+            for (let i = 0; i < this.totalSlides; i++) {
+                const seg = document.createElement('div');
+                seg.className = 'product-card-slider__line-indicator__segment';
+                lineIndicator.appendChild(seg);
+            }
+            segments = lineIndicator.querySelectorAll('.product-card-slider__line-indicator__segment');
         }
+        segments.forEach((seg, i) => {
+            seg.classList.toggle('product-card-slider__line-indicator__segment--active', i === this.currentIndex);
+        });
     }
-    
+
     updateCounter() {
         if (this.counter) {
             this.counter.textContent = `${this.currentIndex + 1}/${this.totalSlides}`;
         }
     }
-    
+
     updateDots() {
         this.dots.forEach((dot, index) => {
             dot.classList.toggle('product-card-slider__dot--active', index === this.currentIndex);
@@ -311,7 +323,8 @@ class MobileCardSlider {
     init() {
         this.bindEvents();
         this.updateCounter();
-        
+        this.updateLineIndicator();
+
         // Add touch support
         this.addSimpleTouchSupport();
     }
@@ -322,133 +335,154 @@ class MobileCardSlider {
     }
     
     addSimpleTouchSupport() {
+        // Per-touch state. Tracked by identifier so a second finger / a fresh
+        // gesture can't inherit stale values — the main cause of "the 2nd swipe
+        // doesn't work" on iOS Safari, where touchend sometimes fires without a
+        // clean reset.
         let startX = 0;
         let startY = 0;
+        let trackWidth = 0;
+        let isDragging = false;
+        let axisLocked = null; // null | 'x' | 'y'
+        let lastDeltaX = 0;
+        let didSwipe = false;
+        let pointerId = null;
         let startTime = 0;
-        let hasMoved = false;
-        
-        this.track.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
+        const AXIS_LOCK_PX = 6;       // a touch counts as a gesture past this
+        const SWIPE_RATIO = 0.10;
+        const FLICK_VELOCITY = 0.3;
+
+        let watchdog = null;
+
+        const reset = () => {
+            isDragging = false;
+            axisLocked = null;
+            pointerId = null;
+            if (watchdog) { clearTimeout(watchdog); watchdog = null; }
+            this.track.classList.remove('is-dragging');
+        };
+
+        const onTouchStart = (e) => {
+            if (isDragging) { reset(); this.updateSlider(); }
+            const t = e.changedTouches[0];
+            pointerId = t.identifier;
+            startX = t.clientX;
+            startY = t.clientY;
             startTime = Date.now();
-            hasMoved = false;
-        }, { passive: true });
-        
-        this.track.addEventListener('touchmove', (e) => {
-            if (!hasMoved) {
-                const currentX = e.touches[0].clientX;
-                const currentY = e.touches[0].clientY;
-                const diffX = Math.abs(startX - currentX);
-                const diffY = Math.abs(startY - currentY);
-                
-                // If vertical movement is dominant, allow scroll
-                if (diffY > diffX && diffY > 10) {
-                    hasMoved = true;
-                    return; // Allow vertical scroll
-                }
-                
-                // If horizontal movement is significant, mark as moved
-                if (diffX > 10) {
-                    hasMoved = true;
+            trackWidth = this.track.offsetWidth || 1;
+            isDragging = true;
+            axisLocked = null;
+            lastDeltaX = 0;
+            didSwipe = false;
+            if (watchdog) clearTimeout(watchdog);
+            watchdog = setTimeout(() => {
+                if (isDragging) { reset(); this.updateSlider(); }
+            }, 1200);
+        };
+
+        // Find this gesture's touch by identifier (ignore other fingers).
+        const findTouch = (e) => {
+            const list = e.changedTouches;
+            for (let i = 0; i < list.length; i++) {
+                if (list[i].identifier === pointerId) return list[i];
+            }
+            return null;
+        };
+
+        const onTouchMove = (e) => {
+            if (!isDragging) return;
+            const t = findTouch(e) || e.touches[0];
+            if (!t) return;
+            const dx = t.clientX - startX;
+            const dy = t.clientY - startY;
+
+            if (axisLocked === null) {
+                if (Math.abs(dx) > AXIS_LOCK_PX || Math.abs(dy) > AXIS_LOCK_PX) {
+                    // Lock to the dominant axis. Bias slightly toward horizontal
+                    // so a near-diagonal swipe still flips the photo on iOS.
+                    axisLocked = (Math.abs(dx) * 1.15 >= Math.abs(dy)) ? 'x' : 'y';
+                    if (axisLocked === 'x') this.track.classList.add('is-dragging');
+                } else {
+                    return;
                 }
             }
-            
-            // Allow vertical scrolling by not preventing default
-        }, { passive: true });
-        
-        this.track.addEventListener('touchend', (e) => {
-            const endX = e.changedTouches[0].clientX;
-            const endY = e.changedTouches[0].clientY;
-            const endTime = Date.now();
-            const diffX = startX - endX;
-            const diffY = Math.abs(startY - endY);
-            const diffTime = endTime - startTime;
-            
-            // Only trigger if it's a horizontal swipe with reasonable distance and time
-            // and if vertical movement is not dominant
-            if (hasMoved && Math.abs(diffX) > 30 && diffTime < 500 && diffY < Math.abs(diffX)) {
-                if (diffX > 0) {
-                    this.nextSlide();
-                } else {
-                    this.prevSlide();
-                }
-                // Prevent card click after swipe
+
+            if (axisLocked === 'y') return; // let the page scroll vertically
+
+            let effectiveDx = dx;
+            if (this.currentIndex === 0 && dx > 0) effectiveDx = dx * 0.35;
+            else if (this.currentIndex === this.totalSlides - 1 && dx < 0) effectiveDx = dx * 0.35;
+
+            lastDeltaX = effectiveDx;
+            const basePct = -this.currentIndex * 100;
+            const dragPct = (effectiveDx / trackWidth) * 100;
+            this.track.style.transform = `translateX(${basePct + dragPct}%)`;
+
+            // Owning the horizontal pan → stop the page from also scrolling.
+            if (e.cancelable) e.preventDefault();
+        };
+
+        const onTouchEnd = (e) => {
+            if (!isDragging) return;
+            // Only react to the finger that started this gesture.
+            if (pointerId !== null && !findTouch(e) && e.touches.length) return;
+
+            const wasX = axisLocked === 'x';
+            this.track.classList.remove('is-dragging');
+
+            if (!wasX) { reset(); return; }
+
+            const threshold = trackWidth * SWIPE_RATIO;
+            const elapsed = Math.max(1, Date.now() - startTime);
+            const velocity = Math.abs(lastDeltaX) / elapsed; // px/ms
+            const isFlick = velocity >= FLICK_VELOCITY && Math.abs(lastDeltaX) > 10;
+
+            if ((lastDeltaX <= -threshold || (isFlick && lastDeltaX < 0)) && this.currentIndex < this.totalSlides - 1) {
+                this.currentIndex++;
+                didSwipe = true;
+            } else if ((lastDeltaX >= threshold || (isFlick && lastDeltaX > 0)) && this.currentIndex > 0) {
+                this.currentIndex--;
+                didSwipe = true;
+            }
+            // Always snap back to a whole slide (even if under threshold) so the
+            // track never gets stuck mid-drag — the other iOS "stuck" symptom.
+            this.updateSlider();
+            reset();
+
+            if (didSwipe && e.cancelable) e.preventDefault();
+        };
+
+        const onClickCapture = (e) => {
+            if (didSwipe) {
                 e.preventDefault();
                 e.stopPropagation();
+                didSwipe = false;
             }
-        }, { passive: false });
-    }
-    
-    addTouchSupport() {
-        let startX = 0;
-        let startY = 0;
-        let currentX = 0;
-        let currentY = 0;
-        let isDragging = false;
-        let isHorizontalSwipe = false;
-        
-        this.track.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-            isDragging = true;
-            isHorizontalSwipe = false;
-        }, { passive: true });
-        
-        this.track.addEventListener('touchmove', (e) => {
+        };
+
+        this.slider.addEventListener('touchstart', onTouchStart, { passive: true });
+        this.slider.addEventListener('touchmove', onTouchMove, { passive: false });
+        this.slider.addEventListener('touchend', onTouchEnd, { passive: false });
+        this.slider.addEventListener('touchcancel', () => {
             if (!isDragging) return;
-            
-            currentX = e.touches[0].clientX;
-            currentY = e.touches[0].clientY;
-            
-            const diffX = Math.abs(startX - currentX);
-            const diffY = Math.abs(startY - currentY);
-            
-            // Only consider horizontal swipe if it's VERY clearly horizontal
-            if (diffX > 30 && diffX > diffY * 2) {
-                // Very clear horizontal swipe
-                isHorizontalSwipe = true;
-            } else if (diffY > 10) {
-                // Any vertical movement - stop slider interaction completely
-                isDragging = false;
-                isHorizontalSwipe = false;
-                return;
-            }
-            
-            // NEVER prevent default - always allow scroll
+            reset();
+            this.updateSlider();
         }, { passive: true });
-        
-        this.track.addEventListener('touchend', (e) => {
-            if (!isDragging) return;
-            isDragging = false;
-            
-            if (isHorizontalSwipe) {
-                const diffX = startX - currentX;
-                const threshold = 30; // Reduced threshold for better responsiveness
-                
-                if (Math.abs(diffX) > threshold) {
-                    if (diffX > 0) {
-                        this.nextSlide();
-                    } else {
-                        this.prevSlide();
-                    }
-                    // Prevent card click after swipe
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            }
-            
-            isHorizontalSwipe = false;
-        });
+        this.slider.addEventListener('click', onClickCapture, true);
     }
-    
+
     prevSlide() {
-        this.currentIndex = this.currentIndex > 0 ? this.currentIndex - 1 : this.totalSlides - 1;
-        this.updateSlider();
+        if (this.currentIndex > 0) {
+            this.currentIndex--;
+            this.updateSlider();
+        }
     }
-    
+
     nextSlide() {
-        this.currentIndex = this.currentIndex < this.totalSlides - 1 ? this.currentIndex + 1 : 0;
-        this.updateSlider();
+        if (this.currentIndex < this.totalSlides - 1) {
+            this.currentIndex++;
+            this.updateSlider();
+        }
     }
     
     updateSlider() {
@@ -460,12 +494,23 @@ class MobileCardSlider {
     
     updateLineIndicator() {
         const lineIndicator = this.slider.querySelector('.mobile-card-slider__line-indicator');
-        if (lineIndicator) {
-            const progress = ((this.currentIndex + 1) / this.totalSlides) * 100;
-            lineIndicator.style.setProperty('--progress', `${progress}%`);
+        if (!lineIndicator) return;
+
+        let segments = lineIndicator.querySelectorAll('.mobile-card-slider__line-indicator__segment');
+        if (segments.length !== this.totalSlides) {
+            lineIndicator.innerHTML = '';
+            for (let i = 0; i < this.totalSlides; i++) {
+                const seg = document.createElement('div');
+                seg.className = 'mobile-card-slider__line-indicator__segment';
+                lineIndicator.appendChild(seg);
+            }
+            segments = lineIndicator.querySelectorAll('.mobile-card-slider__line-indicator__segment');
         }
+        segments.forEach((seg, i) => {
+            seg.classList.toggle('mobile-card-slider__line-indicator__segment--active', i === this.currentIndex);
+        });
     }
-    
+
     updateCounter() {
         if (this.counter) {
             this.counter.textContent = `${this.currentIndex + 1}/${this.totalSlides}`;

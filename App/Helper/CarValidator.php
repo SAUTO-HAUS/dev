@@ -63,7 +63,12 @@ class CarValidator
         
         foreach (self::$numericRules as $field => $rule) {
             $fieldRule = $rule;
+            // Electric cars have no real engine displacement, so the engine-volume
+            // (vol) field must accept ANY value (even 1 cc, used as a placeholder)
+            // — drop the 700cc minimum/maximum entirely for them.
             if ($field === 'vol' && ($data['fl'] ?? '') === 'elc') {
+                $fieldRule['min'] = 0;
+                $fieldRule['max'] = PHP_INT_MAX;
                 $fieldRule['special'] = [0];
             }
             $result = self::validateNumeric($data[$field] ?? null, $fieldRule, $field);

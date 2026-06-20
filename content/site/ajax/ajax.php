@@ -35,6 +35,26 @@ elseif ($_POST['fn']=='order_item'){
 	);
 }
 
+//FAVORITES (render cards for a list of car IDs) ------------------------------
+elseif ($_POST['fn']=='fav_cars'){
+	require_once(_SITE_INCL.'/functions.php');
+
+	$ids = array();
+	if (isset($_POST['ids'])) {
+		$raw = is_array($_POST['ids']) ? $_POST['ids'] : explode(',', (string)$_POST['ids']);
+		foreach ($raw as $rid) { $rid = (int)$rid; if ($rid > 0) { $ids[] = $rid; } }
+	}
+
+	$card = $car_card('fav', count($ids) ?: 1, $ids, 'av', 0, true);
+
+	$returnIt = array(
+		'fn'   => 'fav_cars',
+		'html' => $card['txt'],
+		'count'=> $card['qu'],
+		'ids'  => $card['ids'] ?? array()
+	);
+}
+
 //SEND MESSAGE------------------------------------------------------------------
 elseif ($_POST['fn']=='snd_msg'){
 	

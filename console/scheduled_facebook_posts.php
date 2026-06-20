@@ -11,7 +11,7 @@ if (php_sapi_name() !== 'cli' && !defined('MANUAL_CRON_TRIGGER')) {
 }
 
 // Set error reporting
-error_reporting(E_ALL);
+error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING & ~E_DEPRECATED);
 ini_set('display_errors', 1);
 
 // Set timezone
@@ -289,6 +289,43 @@ function publishToFacebook($settings, $message, $mediaPaths) {
 }
 
 /**
+ * Prepare a photo for Facebook upload: downscale to <= $maxW px and re-encode at
+ * a sane quality into a temp JPEG, so Facebook doesn't reject oversized images
+ * (HTTP 500). Returns the temp path, or the original path if no resize is needed
+ * / on any failure (the caller cleans up temp files it created).
+ */
+function fbPreparePhoto($path, $maxW = 1600, $maxBytes = 3500000) {
+    if (!is_file($path)) return $path;
+    $info = @getimagesize($path);
+    if (!$info) return $path;
+    $w = $info[0]; $h = $info[1];
+    $size = @filesize($path) ?: 0;
+
+    // Already small enough → upload as-is.
+    if ($w <= $maxW && $size <= $maxBytes) return $path;
+
+    $src = @imagecreatefromjpeg($path);
+    if (!$src) return $path;
+
+    $newW = min($w, $maxW);
+    $newH = (int)round($newW * ($h / $w));
+    $scaled = @imagescale($src, $newW, $newH);
+    $img = ($scaled !== false) ? $scaled : $src;
+
+    $tmp = tempnam(sys_get_temp_dir(), 'fbimg_') . '.jpg';
+    $ok = @imagejpeg($img, $tmp, 85);
+
+    if ($scaled !== false) imagedestroy($scaled);
+    imagedestroy($src);
+
+    if (!$ok || !is_file($tmp) || filesize($tmp) < 1000) {
+        @unlink($tmp);
+        return $path;
+    }
+    return $tmp;
+}
+
+/**
  * Publish multiple photos as Facebook album
  */
 function publishFacebookAlbum($pageId, $accessToken, $message, $mediaPaths) {
@@ -298,10 +335,15 @@ function publishFacebookAlbum($pageId, $accessToken, $message, $mediaPaths) {
     $photoIds = [];
     foreach ($mediaPaths as $index => $photoPath) {
         echo "[" . date('Y-m-d H:i:s') . "] Uploading photo " . ($index + 1) . ": " . basename($photoPath) . "\n";
-        
+
+        // Facebook rejects oversized images (HTTP 500 "retry later"). Old cars have
+        // huge /high/ photos (2200px / 1-4 MB), so downscale to <=1600px / good
+        // quality into a temp file before uploading. Falls back to the original.
+        $uploadPath = fbPreparePhoto($photoPath);
+
         $uploadUrl = "https://graph.facebook.com/v22.0/{$pageId}/photos";
         $uploadData = [
-            'source' => new CURLFile($photoPath),
+            'source' => new CURLFile($uploadPath),
             'published' => 'false',
             'access_token' => $accessToken
         ];
@@ -319,21 +361,22 @@ function publishFacebookAlbum($pageId, $accessToken, $message, $mediaPaths) {
         
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        
-        if (curl_errno($ch)) {
-            $error = curl_error($ch);
-            curl_close($ch);
-            throw new Exception("cURL Error uploading photo " . ($index + 1) . ": {$error}");
-        }
-        
+        $curlErr  = curl_errno($ch) ? curl_error($ch) : null;
         curl_close($ch);
-        
+
+        // Remove the resized temp file (only needed for this upload).
+        if ($uploadPath !== $photoPath) @unlink($uploadPath);
+
+        if ($curlErr !== null) {
+            throw new Exception("cURL Error uploading photo " . ($index + 1) . ": {$curlErr}");
+        }
+
         $data = json_decode($response, true);
         if ($httpCode !== 200 || !isset($data['id'])) {
             $errorMsg = isset($data['error']['message']) ? $data['error']['message'] : 'Unknown error';
             throw new Exception("Failed to upload photo " . ($index + 1) . " (HTTP {$httpCode}): {$errorMsg}");
         }
-        
+
         $photoIds[] = ['media_fbid' => $data['id']];
         echo "[" . date('Y-m-d H:i:s') . "] Photo " . ($index + 1) . " uploaded with ID: {$data['id']}\n";
     }

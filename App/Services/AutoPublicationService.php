@@ -181,7 +181,42 @@ class AutoPublicationService
         }
 
         $catalogType = $carData['catalog_type'] ?? 'in_stock'; // Default to in_stock for backward compatibility
-        
+
         return $this->autoPublishCar($carId, $catalogType);
+    }
+
+    /**
+     * Publish an existing catalog car to a SINGLE platform on demand.
+     * Used by the parsing "Published" page (999 / facebook / telegram buttons).
+     *
+     * @param int    $carId    car_ctlg id
+     * @param string $platform '999' | 'facebook' | 'telegram'
+     * @return array ['success' => bool, 'error' => string|null]
+     */
+    public function publishToPlatform($carId, $platform)
+    {
+        $carData = $this->getCarData($carId);
+        if (!$carData) {
+            return ['success' => false, 'error' => 'Car not found'];
+        }
+        $catalogType = $carData['catalog_type'] ?? 'in_stock';
+
+        $ok = false;
+        switch ($platform) {
+            case 'telegram':
+                $ok = $this->publishToTelegram($carId, $catalogType, $carData);
+                break;
+            case 'facebook':
+                $ok = $this->publishToFacebook($carId, $catalogType, $carData);
+                break;
+            case '999':
+            case '999md':
+                $ok = $this->publishTo999md($carId, $catalogType, $carData);
+                break;
+            default:
+                return ['success' => false, 'error' => 'Unknown platform: ' . $platform];
+        }
+
+        return ['success' => (bool)$ok, 'error' => $ok ? null : ('Publish to ' . $platform . ' failed')];
     }
 }

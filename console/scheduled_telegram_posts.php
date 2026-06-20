@@ -11,7 +11,7 @@ if (php_sapi_name() !== 'cli' && !defined('MANUAL_CRON_TRIGGER')) {
 }
 
 // Set error reporting
-error_reporting(E_ALL);
+error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING & ~E_DEPRECATED);
 ini_set('display_errors', 1);
 
 // Set timezone

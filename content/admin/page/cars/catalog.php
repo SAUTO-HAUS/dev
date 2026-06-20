@@ -276,6 +276,12 @@ $last_car_id = 0;
                         <span class="zx">id: <?= $r['id'] ?></span>
                     </div>
 
+                    <?php
+                        // Effective price: use the new (discounted) price when set and lower than base price
+                        $print_has_new = ($r['prc_n'] != 0 && $r['prc_n'] < $r['prc']);
+                        $print_eff_prc = $print_has_new ? $r['prc_n'] : $r['prc'];
+                    ?>
+                    <input class="none" type="text" name="prc_old" value="<?= $print_has_new ? $r['prc'] : '' ?>" />
                     <div class="cnt">
                         <?php foreach ($r as $k2 => $v2) :
                             if ( isset($av_k[$k2]) ) : ?>
@@ -283,14 +289,14 @@ $last_car_id = 0;
                                     <?php if ($av_k[$k2]==1) : ?>
                                         <span class="ttl"><?= $lng['l']['car']['spec'][$k2] ?></span>
                                     <?php endif; ?>
-                                    <input type="text" name="<?= $k2 ?>" value="<?= $v2 ?>" />
+                                    <input type="text" name="<?= $k2 ?>" value="<?= ($k2 === 'prc' ? $print_eff_prc : $v2) ?>" />
                                 </label>
                             <?php endif;
                         endforeach; ?>
 
                         <label class="act">
                             <span class="ttl"><?= $lng['w']['exchange'] ?> [Trade-in]</span>
-                            <input type="text" name="exchange" value="<?= ($r['prc']+1000) ?>" />
+                            <input type="text" name="exchange" value="<?= ($print_eff_prc+1000) ?>" />
                         </label>
                         <label class="act">
                             <span class="ttl"><?= $lng['l']['car']['spec']['cons'] ?></span>
@@ -428,8 +434,12 @@ $last_car_id = 0;
 
             <div class="prc_wrap">
                 <?php if( $r['prc'] > 100 ) : ?>
+                    <?php $hasNewPrc = ($r['prc_n'] != 0 && $r['prc_n'] < $r['prc']); ?>
                     <div class="prc" title="<?= $lng['w']['prc'] ?>">
-                        <?= $r['prc'] ?> <span><?= $lng['l']['cur'][$r['cur']] ?></span>
+                        <?php if( $hasNewPrc ) : ?>
+                            <span class="o_prc"><?= $r['prc'] ?> <?= $lng['l']['cur'][$r['cur']] ?></span>
+                        <?php endif; ?>
+                        <?= $hasNewPrc ? $r['prc_n'] : $r['prc'] ?> <span><?= $lng['l']['cur'][$r['cur']] ?></span>
                     </div>
                 <?php elseif( !empty($data999['price']) ) : ?>
                     <div class="prc">

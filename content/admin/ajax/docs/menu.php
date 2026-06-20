@@ -60,7 +60,7 @@ if ( $t_mp[5]=='invoice' || isset($mixall) ){
 	<label class="lbl"><span class="ttl">VAT/IDNO</span><input type="text" name="buyer_vat" title="Buyer VAT/IDNO" value="'.(isset($_POST['buyer_vat']) ? htmlspecialchars($_POST['buyer_vat']) : '').'" required /></label>
 	<label class="lbl"><span class="ttl">Cont bancar</span><input type="text" name="buyer_account" title="Buyer Account" value="'.(isset($_POST['buyer_account']) ? htmlspecialchars($_POST['buyer_account']) : '').'" required /></label>
 	<div style="display: flex; gap: 10px;">
-		<label class="lbl" style="flex: 2;"><span class="ttl">Legal Address</span><textarea name="buyer_address" title="Buyer Address" rows="2" required>'.(isset($_POST['buyer_address']) ? htmlspecialchars($_POST['buyer_address']) : '').'</textarea></label>
+		<label class="lbl" style="flex: 2;"><span class="ttl">Legal Address</span><textarea name="buyer_address" title="Buyer Address" rows="2">'.(isset($_POST['buyer_address']) ? htmlspecialchars($_POST['buyer_address']) : '').'</textarea></label>
 		<label class="lbl" style="flex: 1;"><span class="ttl">Țara</span><input type="text" name="buyer_country" title="Buyer Country" value="'.(isset($_POST['buyer_country']) ? htmlspecialchars($_POST['buyer_country']) : '').'" required /></label>
 		<label class="lbl" style="flex: 1;"><span class="ttl">SWIFT/BIC</span><input type="text" name="buyer_swift" title="Buyer SWIFT/BIC" value="'.(isset($_POST['buyer_swift']) ? htmlspecialchars($_POST['buyer_swift']) : '').'" required /></label>
 	</div>
@@ -70,7 +70,7 @@ if ( $t_mp[5]=='invoice' || isset($mixall) ){
 	<label class="lbl"><span class="ttl">VAT/IDNO</span><input type="text" name="seller_vat" title="Seller VAT/IDNO" value="'.(isset($_POST['seller_vat']) ? htmlspecialchars($_POST['seller_vat']) : '').'" required /></label>
 	<label class="lbl"><span class="ttl">Cont bancar</span><input type="text" name="seller_account" title="Seller Account" value="'.(isset($_POST['seller_account']) ? htmlspecialchars($_POST['seller_account']) : '').'" required /></label>
 	<div style="display: flex; gap: 10px;">
-		<label class="lbl" style="flex: 2;"><span class="ttl">Legal Address</span><textarea name="seller_address" title="Seller Address" rows="2" required>'.(isset($_POST['seller_address']) ? htmlspecialchars($_POST['seller_address']) : '').'</textarea></label>
+		<label class="lbl" style="flex: 2;"><span class="ttl">Legal Address</span><textarea name="seller_address" title="Seller Address" rows="2">'.(isset($_POST['seller_address']) ? htmlspecialchars($_POST['seller_address']) : '').'</textarea></label>
 		<label class="lbl" style="flex: 1;"><span class="ttl">Țara</span><input type="text" name="seller_country" title="Seller Country" value="'.(isset($_POST['seller_country']) ? htmlspecialchars($_POST['seller_country']) : '').'" required /></label>
 		<label class="lbl" style="flex: 1;"><span class="ttl">SWIFT/BIC</span><input type="text" name="seller_swift" title="Seller SWIFT/BIC" value="'.(isset($_POST['seller_swift']) ? htmlspecialchars($_POST['seller_swift']) : '').'" required /></label>
 	</div>
@@ -326,7 +326,7 @@ if ($contract['contract_type'] == 'vinzare_proc') {
 	<div class="ttl">Cumpărător (din contract original)</div>
 	<label class="lbl"><span class="ttl">Nume cumpărător</span><input class="need" type="text" name="u_nm" title="Nume cumpărător" value="'.(isset($_POST['u_nm']) ? htmlspecialchars($_POST['u_nm']) : '').'" required /></label>
 	<label class="lbl"><span class="ttl">IDNO/CF cumpărător</span><input class="need" type="text" name="u_cf_idno" title="IDNO/CF cumpărător" value="'.(isset($_POST['u_cf_idno']) ? htmlspecialchars($_POST['u_cf_idno']) : '').'" required /></label>
-	<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="'.(isset($_POST['u_phn']) ? htmlspecialchars($_POST['u_phn']) : '+373').'" title="Phone" pattern=".{6,}" required /></label>
+	<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="'.(isset($_POST['u_phn']) ? htmlspecialchars($_POST['u_phn']) : '+373').'" title="Phone" pattern="\+373\d{8}" required /></label>
 
 	<div class="ttl">Cesionar (terța parte care primește dreptul de plată)</div>
 	<input type="hidden" name="add_cesionar" value="1" />
@@ -479,7 +479,7 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Tip</span><select name="u_tp" required><option value="fiz">Fizic</option><option value="jur">Juridic</option></select></label>
 		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" required /></label>
 		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
-		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" pattern=".{6,}" required /></label>
+		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" pattern="\+373\d{8}" required /></label>
 
 		<div class="kyc-questionnaire" style="display: block;">
 			
@@ -626,9 +626,9 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
 		<label class="lbl"><span class="ttl">Data nasterii</span><input class="need fj dt" type="text" name="u_tva_dt" min="1900-01-01" max="2099-12-31" title="Data nasterii" data-fiz="Data nasterii" data-jur="TVA" required /></label> <!--onfocus=\'(this.type="date")\'-->
 		<label class="lbl"><span class="ttl">Data elibirat</span><input class="need fj dt" type="text" name="u_iban_dt_tk" min="1900-01-01" max="2099-12-31" title="Data elibirat" data-fiz="Data elibirat" data-jur="IBAN" required /></label>
-		<label class="lbl"><span class="ttl">Adress</span><input class="need" type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" required /></label>
-		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" pattern=".{6,}" required /></label>
-		<label class="lbl"><span class="ttl">Email</span><input type="text" name="u_eml" title="Email" required /></label>
+		<label class="lbl"><span class="ttl">Adress</span><input type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" /></label>
+		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" pattern="\+373\d{8}" required /></label>
+		<label class="lbl"><span class="ttl">Email</span><input type="text" name="u_eml" title="Email" /></label>
 		
 		<div class="kyc-questionnaire" style="display: block;">
 			
@@ -761,9 +761,9 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
 		<label class="lbl"><span class="ttl">Data nasterii</span><input class="need fj dt" type="text" name="u_tva_dt" min="1900-01-01" max="2099-12-31" title="Data nasterii" data-fiz="Data nasterii" data-jur="TVA" required /></label> <!--onfocus=\'(this.type="date")\'-->
 		<label class="lbl"><span class="ttl">Data elibirat</span><input class="need fj dt" type="text" name="u_iban_dt_tk" min="1900-01-01" max="2099-12-31" title="Data elibirat" data-fiz="Data elibirat" data-jur="IBAN" required /></label>
-		<label class="lbl"><span class="ttl">Adress</span><input class="need" type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" required /></label>
-		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" pattern=".{6,}" required /></label>
-		<label class="lbl"><span class="ttl">Email</span><input type="text" name="u_eml" title="Email" required /></label>
+		<label class="lbl"><span class="ttl">Adress</span><input type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" /></label>
+		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" pattern="\+373\d{8}" required /></label>
+		<label class="lbl"><span class="ttl">Email</span><input type="text" name="u_eml" title="Email" /></label>
 		
     <div class="kyc-questionnaire" style="display: block;">
 			
@@ -912,9 +912,9 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
 		<label class="lbl"><span class="ttl">Data nasterii</span><input class="need fj dt" type="text" name="u_tva_dt" min="1900-01-01" max="2099-12-31" title="Data nasterii" data-fiz="Data nasterii" data-jur="TVA" required /></label> <!--onfocus=\'(this.type="date")\'-->
 		<label class="lbl"><span class="ttl">Data elibirat</span><input class="need fj dt" type="text" name="u_iban_dt_tk" min="1900-01-01" max="2099-12-31" title="Data elibirat" data-fiz="Data elibirat" data-jur="IBAN" required /></label>
-		<label class="lbl"><span class="ttl">Adress</span><input class="need" type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" required /></label>
-		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" pattern=".{6,}" required /></label>
-		<label class="lbl"><span class="ttl">Email</span><input type="text" name="u_eml" title="Email" required /></label>
+		<label class="lbl"><span class="ttl">Adress</span><input type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" /></label>
+		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" pattern="\+373\d{8}" required /></label>
+		<label class="lbl"><span class="ttl">Email</span><input type="text" name="u_eml" title="Email" /></label>
 		
 		
 		<div class="ttl">Extra</div>
@@ -1043,7 +1043,7 @@ JAVASCRIPT;
 		<label class="lbl none"><select name="u_tp" required><option value="fiz" selected="selected">Fizic</option><option value="jur">Juridic</option></select></label>
 		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" required /></label>
 		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
-		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" pattern=".{6,}" required /></label>
+		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" pattern="\+373\d{8}" required /></label>
 
     <div class="kyc-questionnaire" style="display: block;">
 			
@@ -1163,7 +1163,7 @@ JAVASCRIPT;
 		<label class="lbl none"><select name="u_tp" required><option value="fiz" selected="selected">Fizic</option><option value="jur">Juridic</option></select></label>
 		<label class="lbl"><span class="ttl">IDNO</span><input class="need fj" type="text" name="u_cf_idno" title="IDNO" data-fiz="IDNO" data-jur="CF" required /></label>
 		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
-		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" pattern=".{6,}" required /></label>
+		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" value="+373" title="Phone" pattern="\+373\d{8}" required /></label>
 
     <div class="kyc-questionnaire" style="display: block;">
 			
@@ -1265,7 +1265,7 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
 		<label class="lbl"><span class="ttl">Data nasterii</span><input class="need fj dt" type="date" name="u_tva_dt" min="1900-01-01" max="2099-12-31" title="Data nasterii" data-fiz="Data nasterii" data-jur="TVA" required /></label> <!--onfocus=\'(this.type="date")\'-->
 		<label class="lbl"><span class="ttl">Data elibirat</span><input class="need fj dt" type="date" name="u_iban_dt_tk" min="1900-01-01" max="2099-12-31" title="Data elibirat" data-fiz="Data elibirat" data-jur="IBAN" required /></label>
-		<label class="lbl"><span class="ttl">Adress</span><input class="need" type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" required /></label>
+		<label class="lbl"><span class="ttl">Adress</span><input type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" /></label>
 		';
 		
 		//---LOCATION---
@@ -1687,9 +1687,9 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
 		<label class="lbl"><span class="ttl">Data nasterii</span><input class="need fj dt" type="text" name="u_tva_dt" min="1900-01-01" max="2099-12-31" title="Data nasterii" data-fiz="Data nasterii" data-jur="TVA" required /></label> <!--onfocus=\'(this.type="date")\'-->
 		<label class="lbl"><span class="ttl">Data elibirat</span><input class="need fj dt" type="text" name="u_iban_dt_tk" min="1900-01-01" max="2099-12-31" title="Data elibirat" data-fiz="Data elibirat" data-jur="IBAN" required /></label>
-		<label class="lbl"><span class="ttl">Adress</span><input class="need" type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" required /></label>
-		<label class="lbl"><span class="ttl">Phone</span><input class="need" type="text" name="u_phn" value="+373" title="Phone" pattern=".{6,}" required /></label>
-		<label class="lbl"><span class="ttl">Email</span><input type="text" name="u_eml" title="Email" required /></label>
+		<label class="lbl"><span class="ttl">Adress</span><input type="text" name="u_adr" value="Republica Moldova, mun.Chişinau, or.Chisinau, str."  title="Adress" /></label>
+		<label class="lbl"><span class="ttl">Phone</span><input class="need" type="text" name="u_phn" value="+373" title="Phone" pattern="\+373\d{8}" required /></label>
+		<label class="lbl"><span class="ttl">Email</span><input type="text" name="u_eml" title="Email" /></label>
 		
 		<div class="ttl">Damage</div>
 		<div id="dmg_clk_bx" oncontextmenu="return false;">
@@ -1738,12 +1738,51 @@ JAVASCRIPT;
 <script>
 (function(){
 	var PREFIX = '+373';
+	var CODE = '373';
+
+	// Build a clean "+373XXXXXXXX" value from any input (CRM number, saved number,
+	// pasted number with spaces/dashes, etc.), keeping only the 8 local digits.
+	// Mirrors the CRM rule (crm_normalize_phone): national "0XXXXXXXX" drops the
+	// leading 0, so MD numbers are 8 local digits after +373.
+	function buildValue(raw){
+		var digits = (raw || '').replace(/\D/g, '');
+		// strip a leading country code if present (00373 or 373)
+		if(digits.indexOf('00' + CODE) === 0) digits = digits.slice(2 + CODE.length);
+		else if(digits.indexOf(CODE) === 0)   digits = digits.slice(CODE.length);
+		// strip the national leading 0 (e.g. "069..." -> "69...")
+		if(digits.length === 9 && digits.charAt(0) === '0') digits = digits.slice(1);
+		// MD local numbers are exactly 8 digits — never keep more
+		if(digits.length > 8) digits = digits.slice(0, 8);
+		return PREFIX + digits;
+	}
+
+	// Count the local digits (after +373) — validation works even if the prefix
+	// was missing or differed in the source value.
+	function localDigits(inp){
+		return buildValue(inp.value).slice(PREFIX.length);
+	}
+
+	function validate(inp){
+		if(localDigits(inp).length < 8){
+			inp.setCustomValidity('Introduceți minim 8 cifre după +373');
+		} else {
+			inp.setCustomValidity('');
+		}
+	}
+
+	// Normalize a programmatically set value (CRM / loaded contract / paste) and
+	// re-run validation so the field is accepted once it actually holds 8+ digits.
+	function normalize(inp){
+		var fixed = buildValue(inp.value);
+		if(inp.value !== fixed) inp.value = fixed;
+		validate(inp);
+	}
+
 	function initPhnField(inp){
-		if(inp.dataset.phnInit) return;
+		if(inp.dataset.phnInit){ normalize(inp); return; }
 		inp.dataset.phnInit = '1';
 
-		// ensure prefix on load
-		if(inp.value.indexOf(PREFIX) !== 0) inp.value = PREFIX;
+		normalize(inp);
 
 		inp.addEventListener('keydown', function(e){
 			var pos = this.selectionStart;
@@ -1756,36 +1795,41 @@ JAVASCRIPT;
 		});
 
 		inp.addEventListener('input', function(){
-			if(this.value.indexOf(PREFIX) !== 0){
-				this.value = PREFIX;
-				// move cursor to end
+			// keep "+373" + max 8 digits, so the field always matches the strict pattern
+			var local = this.value.indexOf(PREFIX) === 0 ? this.value.slice(PREFIX.length) : this.value;
+			var cleaned = PREFIX + local.replace(/\D/g, '').slice(0, 8);
+			if(this.value !== cleaned){
+				this.value = cleaned;
 				this.setSelectionRange(this.value.length, this.value.length);
 			}
+			validate(this);
 		});
+
+		// On paste, rebuild the whole value so a pasted "069..." or "+37369..." works.
+		inp.addEventListener('paste', function(e){
+			e.preventDefault();
+			var txt = (e.clipboardData || window.clipboardData).getData('text');
+			this.value = buildValue(this.value + txt);
+			this.setSelectionRange(this.value.length, this.value.length);
+			validate(this);
+		});
+
+		inp.addEventListener('change', function(){ validate(this); });
 
 		inp.addEventListener('click', function(){
 			if(this.selectionStart < PREFIX.length){
 				this.setSelectionRange(PREFIX.length, PREFIX.length);
 			}
 		});
-
-		// custom validity: need at least 8 digits after prefix
-		function validate(){
-			var after = inp.value.slice(PREFIX.length).replace(/\D/g,'');
-			if(after.length < 8){
-				inp.setCustomValidity('Introduceți minim 8 cifre după +373');
-			} else {
-				inp.setCustomValidity('');
-			}
-		}
-		inp.addEventListener('input', validate);
-		inp.addEventListener('change', validate);
-		validate();
 	}
 
 	function initAll(){
 		document.querySelectorAll('input[name="u_phn"]:not([type="hidden"])').forEach(initPhnField);
 	}
+
+	// Re-normalize + re-validate after another script sets the value via .val()/.value
+	// (CRM prefill, loadContractData, etc.), since those don't fire 'input'.
+	window.docsNormalizePhone = initAll;
 
 	// run now and watch for dynamically added forms
 	initAll();

@@ -48,10 +48,10 @@ if (isset($t_mp[3])){
 			$cnt->$i->wheel_drive = $r['wd'];
 			$cnt->$i->seats = $r['sts'];
 			$cnt->$i->color = $r['clr'];
-			$cnt->$i->price = $r['prc'].' '.$r['cur'];
+			$cnt->$i->price = (($r['prc_n']!=0 && $r['prc_n']<$r['prc']) ? $r['prc_n'] : $r['prc']).' '.$r['cur'];
 			$i++;
 		}
-		
+
 		unset($i);
 	}
 }

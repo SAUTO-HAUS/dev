@@ -145,15 +145,30 @@ foreach ($pdo as $r){
 	$tg_fb_icons_html = '';
 	if ($r['telegram_published'] >= 1 || $r['facebook_published'] >= 1) {
 		$tg_fb_icons_html .= '<div class="icon_list_cattg">';
-		
+
+		// Pull the scheduled time (HH:MM) so the hover tooltip can show WHEN it is
+		// scheduled, not just "Запланировано". Cheap per-card lookup, same as 999 above.
+		$tg_sched_time = '';
+		$fb_sched_time = '';
+		try {
+			$st = $db->prepare("SELECT scheduled_time FROM {$prefx}_scheduled_telegram_posts WHERE car_id = ? AND catalog_type = 'on_order' AND status = 'pending' ORDER BY created_at DESC LIMIT 1");
+			$st->execute([$r['id']]);
+			if ($v = $st->fetchColumn()) { $tg_sched_time = substr((string)$v, 0, 5); }
+			$st = $db->prepare("SELECT scheduled_time FROM {$prefx}_scheduled_facebook_posts WHERE car_id = ? AND catalog_type = 'on_order' AND status = 'pending' ORDER BY created_at DESC LIMIT 1");
+			$st->execute([$r['id']]);
+			if ($v = $st->fetchColumn()) { $fb_sched_time = substr((string)$v, 0, 5); }
+		} catch (Exception $e) { /* tooltip time is best-effort */ }
+
 		if ($r['telegram_published'] >= 1) {
 			$tg_title = $r['telegram_published'] == 1 ? 'Опубликовано в Telegram' : 'Запланировано в Telegram';
+			if ($r['telegram_published'] != 1 && $tg_sched_time !== '') { $tg_title .= ' на ' . $tg_sched_time; }
 			$tg_color = $r['telegram_published'] == 1 ? '#0088cc' : '#888888';
 			$tg_fb_icons_html .= '<div class="icon_tg" title="'.$tg_title.'"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><circle cx="248" cy="256" r="248" fill="'.$tg_color.'"/><path fill="#ffffff" d="M248,8C111.033,8,0,119.033,0,256S111.033,504,248,504,496,392.967,496,256,384.967,8,248,8ZM362.952,176.66c-3.732,39.215-19.881,134.378-28.1,178.3-3.476,18.584-10.322,24.816-16.948,25.425-14.4,1.326-25.338-9.517-39.287-18.661-21.827-14.308-34.158-23.215-55.346-37.177-24.485-16.135-8.612-25,5.342-39.5,3.652-3.793,67.107-61.51,68.335-66.746.153-.655.3-3.1-1.154-4.384s-3.59-.849-5.135-.5q-3.283.746-104.608,69.142-14.845,10.194-26.894,9.934c-8.855-.191-25.888-5.006-38.551-9.123-15.531-5.048-27.875-7.717-26.8-16.291q.84-6.7,18.45-13.7,108.446-47.248,144.628-62.3c68.872-28.647,83.183-33.623,92.511-33.789,2.052-.034,6.639.474,9.61,2.885a10.452,10.452,0,0,1,3.53,6.716A43.765,43.765,0,0,1,362.952,176.66Z"/></svg></div>';
 		}
 		
 		if ($r['facebook_published'] >= 1) {
 			$fb_title = $r['facebook_published'] == 1 ? 'Опубликовано в Facebook' : 'Запланировано в Facebook';
+			if ($r['facebook_published'] != 1 && $fb_sched_time !== '') { $fb_title .= ' на ' . $fb_sched_time; }
 			$fb_color = $r['facebook_published'] == 1 ? '#1877F2' : '#888888';
 			$tg_fb_icons_html .= '<div class="icon_tg" title="'.$fb_title.'"><svg style="top: 7px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><circle cx="256" cy="256" r="256" fill="'.$fb_color.'"/><path fill="#ffffff" d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.5 90.9 225.8 209 245v-173h-63v-72h63v-55c0-62.3 37-96.5 93.7-96.5 27.1 0 55.5 4.8 55.5 4.8v61h-31.2c-30.8 0-40.4 19.1-40.4 38.7v46.1h68.8l-11 72h-57.8v173c118.1-19.2 209-121.5 209-245z"/></svg></div>';
 		}
@@ -212,21 +227,32 @@ foreach ($pdo as $r){
 			</form>
 		</div>
 		<div class="adm_menu">';
+			// Mirror the page-load template (order_catalog.php page version) so
+			// "MAI MULT" cards get the SAME buttons/icons. Previously this used
+			// in_array($user_type, ['dev','sad']) which hid the visibility (eye)
+			// button on loaded-more cards and left the publish icon stuck on "X".
 			if( $r['act'] == 1 ){
-				$rtrn .= '
-				<a class="btn edit" href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/ordercars/detail?id=' . $r['id'].'&v='.time().'" title="'.$lng['adm']['edit'].'"> <div></div> </a><!--data-fn="edit"-->
-				<div class="btn fn_av" data-fn="'.($r['n_a']==0?'av0':'av1').'" title="'.($r['n_a']==0?'+':'-').'" data-alt="'.($r['n_a']==0?'-':'+').'"> <div></div> </div>';
-				if ( in_array($user_type, ['dev', 'sad']) ){
+				if (rbac_has_permission($user_role, 'cars', 'update')) {
 					$rtrn .= '
-					<div class="btn fn_hr" data-fn="'.($r['vis']==0?'reveal':'hide').'" title="'.$lng['adm'][($r['vis']==0?'reveal':'hide')].'" data-alt="'.$lng['adm'][($r['vis']==0?'hide':'reveal')].'" data-fn> <div></div> </div>';
-					// DISABLED: delete button
-					// $rtrn .= '<div class="btn fn_dre" data-fn="delete" title="'.$lng['adm']['delete'].'"> <div></div> </div>';
+					<a class="btn edit" href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/ordercars/detail?id=' . $r['id'].'&v='.time().'" title="'.$lng['adm']['edit'].'"> <div></div> </a>';
 				}
-			} elseif ( $r['act'] == 0 && in_array($user_type, ['dev', 'sad']) ){
-				$rtrn .= '
-				<div class="btn fn_dre" data-fn="restore" title="'.$lng['adm']['restore'].'"> <div></div> </div>';
-				// DISABLED: erase button
-				// <div class="btn fn_dre" data-fn="erase" title="'.$lng['adm']['delete'].'"> <div></div> </div>';
+				if (rbac_has_permission($user_role, 'cars', 'update')) {
+					$rtrn .= '
+					<div class="btn fn_av" data-fn="'.($r['n_a']==0?'av0':'av1').'" title="'.($r['n_a']==0?'Нет в наличии':'Есть в наличии').'" data-alt="'.($r['n_a']==0?'+':'-').'"> <div></div> </div>';
+				}
+				if (isset($user_role) && $user_role === 'gordon') {
+					$rtrn .= '
+					<a class="btn" href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/sett/changelog?car_id='.$r['id'].'&catalog=ordercars" title="Log" style="text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;">LOG</a>';
+				}
+				if (rbac_has_permission($user_role, 'cars', 'update')) {
+					$rtrn .= '
+					<div class="btn fn_hr" data-fn="'.($r['vis']==0?'reveal':'hide').'" title="'.$lng['adm'][($r['vis']==0?'reveal':'hide')].'" data-alt="'.$lng['adm'][($r['vis']==0?'hide':'reveal')].'"> <div></div> </div>';
+				}
+			} elseif ( $r['act'] == 0 ){
+				if (rbac_has_permission($user_role, 'cars', 'restore')) {
+					$rtrn .= '
+					<div class="btn fn_dre" data-fn="restore" title="'.$lng['adm']['restore'].'"> <div></div> </div>';
+				}
 			}
 		$rtrn .= '
 		</div>
@@ -249,10 +275,17 @@ foreach ($pdo as $r){
 	} catch (Exception $e) {
 		$hasHtml = false;
 	}
-	$htmlIndicator = '<div class="html-indicator" title="'.($hasHtml ? 'HTML описание есть' : 'HTML описание отсутствует').'" style="position:absolute;top:5px;left:5px;width:14px;height:14px;border-radius:3px;text-align:center;line-height:14px;font-size:9px;font-weight:bold;color:#fff;background:'.($hasHtml ? '#28a745' : '#dc3545').';z-index:10;">'.($hasHtml ? '✓' : '✗').'</div>';
+	// Match the page-load template: parsing cars get a blue "P" badge,
+	// everything else shows ✓/✗ for HTML description presence.
+	$isParsingCar = !empty($r['parsing_id']) || !empty($r['parsing_source']);
+	if ($isParsingCar) {
+		$htmlIndicator = '<div class="html-indicator" title="Adăugat din parsing" style="position:absolute;top:10px;left:10px;width:16px;height:16px;border-radius:3px;text-align:center;line-height:16px;font-size:10px;font-weight:bold;color:#fff;background:#2563eb;z-index:10;">P</div>';
+	} else {
+		$htmlIndicator = '<div class="html-indicator" title="'.($hasHtml ? 'HTML описание есть' : 'HTML описание отсутствует').'" style="position:absolute;top:10px;left:10px;width:16px;height:16px;border-radius:3px;text-align:center;line-height:16px;font-size:10px;font-weight:bold;color:#fff;background:'.($hasHtml ? '#28a745' : '#dc3545').';z-index:10;">'.($hasHtml ? '✓' : '✗').'</div>';
+	}
 	
 	$rtrn .= '
-		<div class="img" style="background-image:url(/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/'.$p_nm.( !empty($p_ff) ? ('.'.$p_ff) : $img_frmt ).'), url(/media/images/site/no_image.png);position:relative;">'.$htmlIndicator;
+		<div class="img" style="background-image:url(/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/'.$p_nm.'.jpg), url(/media/images/site/no_image.png);position:relative;">'.$htmlIndicator;
 			//if($r['top']){$rtrn .= '<div class="top-sales" title="Top Sales">'.$lng['l']['stat']['top1'].'</div>';}
 			if( $r['act'] == 0 ){$rtrn .= '<div class="remove_after" timer="'.( $r['del_t']-time() ).'" ra="'.$r['del_t'].'">**, **:**:**</div>';}
 			$rtrn .= '

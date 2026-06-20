@@ -218,6 +218,12 @@ $(document).on("change", "#fltr .srch", function(e){
 	if (clrMatch && clrMatch[1] && !zData.clr) {
 		zData.clr = clrMatch[1];
 	}
+
+	// Preserve import region (ic=korea|usa|europe) selected via the ordercars buttons
+	var icMatch = fullUrl.match(/[?&]ic=([^&#]*)/i);
+	if (icMatch && icMatch[1] && !zData.ic) {
+		zData.ic = icMatch[1];
+	}
 	
 	// Ensure all filter parameters are captured
 	// First check for input fields (ranges and single values)

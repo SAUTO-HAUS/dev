@@ -8,6 +8,7 @@ if ( $_POST ){
 		$pCur = mb_strtoupper($_POST['cur'], "utf-8");
 		$zCur = isset($_POST['cur_'.$pCur])?$lng['l']['cur'][ $pCur ]:$pCur;
 		echo '
+		// test
 		<!DOCTYPE html>
 		<html>
 			<head>
@@ -19,10 +20,11 @@ if ( $_POST ){
 				<title>Print '.$_POST['br_nm'].' '.$_POST['mo_nm'].' ['.$_POST['id'].']</title>
 				<style>
 					@font-face {font-family:"def"; src:url("/media/fonts/def_font.ttf") format("opentype");}
-					
-					body {position:relative; margin:0 auto; /*padding:20mm 10mm 20mm 30mm;*/ box-sizing:border-box; font-family:"def"; /*border:1px solid #333;*/'.(($_POST['theme']==0)?' filter:grayscale(1);':'').'}
-						body.v {width:210mm; height:297mm;}
-						body.h {width:297mm; height:200mm;}
+					@page {size:A4 '.(($_POST['drct']=='h')?'landscape':'portrait').'; margin:0;}
+
+					body {position:relative; margin:0 auto; padding:5mm 5mm; box-sizing:border-box; font-family:"def"; /*border:1px solid #333;*/'.(($_POST['theme']==0)?' filter:grayscale(1);':'').'}
+						body.v {width:210mm; height:297mm; overflow:hidden;}
+						body.h {width:297mm; height:210mm; overflow:hidden;}
 					//.c {width:100%; height:100%; display:flex; flex-flow:row wrap; justify-content:center; align-items:center;}
 					body .top {width:100%; min-height:15mm;}
 					body .top > .adr {float:right; text-align:right;}
@@ -36,25 +38,35 @@ if ( $_POST ){
 						body.v .bx > .txt.m {display:none;}
 						body.h .bx > .txt.x {padding: 2rem 2% 0 1%; float:right;}
 					
-					body .bx.main {font-size:4rem; line-height:normal; width:100%;}
+					body .bx.main {font-size:4rem; line-height:normal; width:100%; margin-top:1rem;}
 						body.h .bx.main {margin:0 auto;}
-					body .bx.main > .spec {font-size:1.5rem; display:flex; flex-flow:row wrap; justify-content:space-evenly; margin:0 1rem; background-color:#e2001a; color:#fff;}
+					body .bx.main > .spec {font-size:2.5rem; display:flex; flex-flow:row wrap; justify-content:space-evenly; margin:0 1rem; background-color:#e2001a; color:#fff;}
 						body.h .bx.main > .spec {display:none;}
 					body .bx.main > .spec > span {margin:0 1rem;}
 					
 						body.h .bx.mtds {width:50%; margin:3rem 25% 0; float:left;}
 						body.h .bx.mtds > .txt {margin:0 auto; width:100%; padding:0;}
+					body .bx.mtds > .txt.credit {font-size:1.8rem; line-height:2.4rem; margin-top:.4rem;}
+					body .bx.mtds > .txt.credit > .term {font-weight:bold;}
+					body .bx.mtds > .txt.credit > .sum {color:#e2001a; font-weight:bold; font-size:2.2rem;}
+					body .bx.mtds > .txt.credit > .per {color:#555; font-size:1.4rem;}
 					
 					body .bx.spec > .txt > .it {display:flex; flex-flow:row; justify-content:space-between; align-items:center;}
 					body .bx.spec > .txt > .it > .ttl {}
 					body .bx.spec > .txt > .it > .space {flex-grow:1; border-bottom:1.5px dashed #d7d7d7; height:1.2rem; line-height:1.5rem; font-size:1.2rem; text-align:right; padding:0 1rem 0 0; margin:0 .5rem;}
 					body .bx.spec > .txt > .it > .val {}
 					
-					body .bx.prc {width:100%; text-align:right; position:absolute; bottom:0; right:0;}
-						body.h .bx.prc {margin:0}
+					body .bx.prc {width:calc(100% - 10mm); text-align:right; position:absolute; bottom:5mm; right:5mm;}
+						body.h .bx.prc {margin:0;}
+						body.h .bx.prc > .chng {position:absolute; left:0; bottom:0; float:none; line-height:1;}
+						body.h .bx.prc > .chng > .i2 {margin-top:0;}
 					body .bx.prc > .chng {display:block; line-height:normal; float:left;}
 					body .bx.prc > .chng > .i1 {display:block; text-align:center; line-height:normal; padding-right:0rem; font-size:1rem;}
 					body .bx.prc > .chng > .i2 {display:flex; align-items:center; font-size:3rem; margin-top:-.8rem;}
+					body .bx.prc > .old_value {width:100%; float:right; text-align:right; line-height:1; margin-bottom:2rem;}
+					body .bx.prc > .old_value > .i2 {position:relative; display:inline-block; color:#1a1a1a; font-size:3.2rem; font-weight:bold;}
+					body .bx.prc > .old_value > .i2 > .cur {font-size:1.6rem;}
+					body .bx.prc > .old_value > .i2::after {content:" "; position:absolute; left:-2px; right:-2px; top:50%; height:4px; margin-top:-2px; background:#e2001a; transform:rotate(-8deg);}
 					body .bx.prc > .value {float:right;}
 					body .bx.prc > .value > .i1 {font-size:3rem; display:block; float:left; line-height:normal;}
 					body .bx.prc > .value > .i2 {color:#e2001a; font-size:7rem; display:block; float:left;}
@@ -133,9 +145,25 @@ if ( $_POST ){
 					</div>
 				</div>
 				
-				<div class="bx mtds">
+				<div class="bx mtds" style="margin-top:1rem;">
 					<div class="ttl">Modalități de procurare</div>
-					<div class="txt">CASH / CREDIT / TRANSFER / SCHIMB</div>
+					<div class="txt">CASH / CREDIT / TRANSFER / SCHIMB</div>';
+
+					$creditPrc = (float)($_POST['prc'] ?? 0);
+					if ($creditPrc > 0) {
+						// Match site formula (cars.php / ordercars.php): min rate 9.2% annual, Math.floor
+						$monthlyRateMin = 9.2 / 1200;
+						$calcPayment = function($p, $n) use ($monthlyRateMin) {
+							return $p * $monthlyRateMin / (1 - pow(1 + $monthlyRateMin, -$n));
+						};
+						$payment36 = floor($calcPayment($creditPrc, 36));
+						$payment60 = floor($calcPayment($creditPrc, 60));
+						echo '
+					<div class="txt credit"><span class="term">Credit 36 luni:</span> <span class="sum">de la '.number_format($payment36, 0).' '.$zCur.'</span> <span class="per">/ lună</span></div>
+					<div class="txt credit"><span class="term">Credit 60 luni:</span> <span class="sum">de la '.number_format($payment60, 0).' '.$zCur.'</span> <span class="per">/ lună</span></div>';
+					}
+
+					echo '
 				</div>
 				
 				<div class="bx prc">';
@@ -143,6 +171,11 @@ if ( $_POST ){
 						<div class="chng">
 							<span class="i1">SCHIMB negociabil</span>
 							<span class="i2">'.(number_format($_POST['exchange'], 0)).' '.$zCur.'</span>
+						</div>';
+					}
+					if ( !empty($_POST['prc_old']) && is_numeric($_POST['prc_old']) && $_POST['prc_old'] > $_POST['prc'] ){echo '
+						<div class="old_value">
+							<span class="i2">'.(number_format($_POST['prc_old'], 0)).'<span class="cur">'.$zCur.'</span></span>
 						</div>';
 					}
 					echo '

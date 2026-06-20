@@ -140,15 +140,30 @@ foreach ($pdo as $r){
 	$tg_fb_icons_html = '';
 	if ($r['telegram_published'] >= 1 || $r['facebook_published'] >= 1) {
 		$tg_fb_icons_html .= '<div class="icon_list_cattg">';
-		
+
+		// Pull the scheduled time (HH:MM) so the hover tooltip can show WHEN it is
+		// scheduled, not just "Запланировано".
+		$tg_sched_time = '';
+		$fb_sched_time = '';
+		try {
+			$st = $db->prepare("SELECT scheduled_time FROM {$prefx}_scheduled_telegram_posts WHERE car_id = ? AND catalog_type = 'in_stock' AND status = 'pending' ORDER BY created_at DESC LIMIT 1");
+			$st->execute([$r['id']]);
+			if ($v = $st->fetchColumn()) { $tg_sched_time = substr((string)$v, 0, 5); }
+			$st = $db->prepare("SELECT scheduled_time FROM {$prefx}_scheduled_facebook_posts WHERE car_id = ? AND catalog_type = 'in_stock' AND status = 'pending' ORDER BY created_at DESC LIMIT 1");
+			$st->execute([$r['id']]);
+			if ($v = $st->fetchColumn()) { $fb_sched_time = substr((string)$v, 0, 5); }
+		} catch (Exception $e) { /* tooltip time is best-effort */ }
+
 		if ($r['telegram_published'] >= 1) {
 			$tg_title = $r['telegram_published'] == 1 ? 'Опубликовано в Telegram' : 'Запланировано в Telegram';
+			if ($r['telegram_published'] != 1 && $tg_sched_time !== '') { $tg_title .= ' на ' . $tg_sched_time; }
 			$tg_color = $r['telegram_published'] == 1 ? '#0088cc' : '#888888';
 			$tg_fb_icons_html .= '<div class="icon_tg" title="'.$tg_title.'"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><circle cx="248" cy="256" r="248" fill="'.$tg_color.'"/><path fill="#ffffff" d="M248,8C111.033,8,0,119.033,0,256S111.033,504,248,504,496,392.967,496,256,384.967,8,248,8ZM362.952,176.66c-3.732,39.215-19.881,134.378-28.1,178.3-3.476,18.584-10.322,24.816-16.948,25.425-14.4,1.326-25.338-9.517-39.287-18.661-21.827-14.308-34.158-23.215-55.346-37.177-24.485-16.135-8.612-25,5.342-39.5,3.652-3.793,67.107-61.51,68.335-66.746.153-.655.3-3.1-1.154-4.384s-3.59-.849-5.135-.5q-3.283.746-104.608,69.142-14.845,10.194-26.894,9.934c-8.855-.191-25.888-5.006-38.551-9.123-15.531-5.048-27.875-7.717-26.8-16.291q.84-6.7,18.45-13.7,108.446-47.248,144.628-62.3c68.872-28.647,83.183-33.623,92.511-33.789,2.052-.034,6.639.474,9.61,2.885a10.452,10.452,0,0,1,3.53,6.716A43.765,43.765,0,0,1,362.952,176.66Z"/></svg></div>';
 		}
 		
 		if ($r['facebook_published'] >= 1) {
 			$fb_title = $r['facebook_published'] == 1 ? 'Опубликовано в Facebook' : 'Запланировано в Facebook';
+			if ($r['facebook_published'] != 1 && $fb_sched_time !== '') { $fb_title .= ' на ' . $fb_sched_time; }
 			$fb_color = $r['facebook_published'] == 1 ? '#1877F2' : '#888888';
 			$tg_fb_icons_html .= '<div class="icon_tg" title="'.$fb_title.'"><svg style="top: 7px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><circle cx="256" cy="256" r="256" fill="'.$fb_color.'"/><path fill="#ffffff" d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.5 90.9 225.8 209 245v-173h-63v-72h63v-55c0-62.3 37-96.5 93.7-96.5 27.1 0 55.5 4.8 55.5 4.8v61h-31.2c-30.8 0-40.4 19.1-40.4 38.7v46.1h68.8l-11 72h-57.8v173c118.1-19.2 209-121.5 209-245z"/></svg></div>';
 		}
@@ -181,17 +196,22 @@ foreach ($pdo as $r){
 				</select>
 				
 				<div class="ttl">'.$r['br_nm'].' '.$r['mo_nm'].' <span class="zx">id: '.$r['id'].'</span></div>
-				
-				<div class="cnt">';				
+				';
+					$print_has_new = ($r['prc_n']!=0 && $r['prc_n']<$r['prc']);
+					$print_eff_prc = $print_has_new ? $r['prc_n'] : $r['prc'];
+					$rtrn .= '<input class="none" type="text" name="prc_old" value="'.($print_has_new ? $r['prc'] : '').'" />';
+					$rtrn .= '
+				<div class="cnt">';
 					foreach ($r as $k2 => $v2){
 						if ( isset($av_k[$k2]) ){
-							$rtrn .= '<label '.(($av_k[$k2]==1)?'class="act"':'').'>'.(($av_k[$k2]==1)?'<span class="ttl">'.$lng['l']['car']['spec'][$k2].'</span>':'').'<input type="text" name="'.$k2.'" value="'.$v2.'" /></label>';
+							$print_val = ($k2 === 'prc') ? $print_eff_prc : $v2;
+							$rtrn .= '<label '.(($av_k[$k2]==1)?'class="act"':'').'>'.(($av_k[$k2]==1)?'<span class="ttl">'.$lng['l']['car']['spec'][$k2].'</span>':'').'<input type="text" name="'.$k2.'" value="'.$print_val.'" /></label>';
 						}
 					}
+					$rtrn .= '<label class="act"><span class="ttl">'.$lng['w']['exchange'].' [Trade-in]</span><input type="text" name="exchange" value="'.($print_eff_prc+1000).'" /></label>';
+					$rtrn .= '<label class="act"><span class="ttl">'.$lng['l']['car']['spec']['cons'].'</span><input type="text" name="cons" value="" placeholder="L/100" /></label>';
+					$rtrn .= '<label class="act"><span class="ttl">'.$lng['l']['car']['spec']['tnk'].'</span><input type="text" name="tnk" value="" placeholder="L" /></label>';
 					$rtrn .= '
-					<label class="act"><span class="ttl">'.$lng['w']['exchange'].' [Trade-in]</span><input type="text" name="exchange" value="'.($r['prc']+1000).'" /></label>
-					<label class="act"><span class="ttl">'.$lng['l']['car']['spec']['cons'].'</span><input type="text" name="cons" value="" placeholder="L/100" /></label>
-					<label class="act"><span class="ttl">'.$lng['l']['car']['spec']['tnk'].'</span><input type="text" name="tnk" value="" placeholder="L" /></label>
 				</div>
 				
 				<div class="cur none">';
@@ -207,22 +227,30 @@ foreach ($pdo as $r){
 			</form>
 		</div>
 		<div class="adm_menu">';
+			// Mirror the page-load template (cars/catalog.php page version) so
+			// "MAI MULT" cards get the SAME 4 buttons. Previously this used
+			// in_array($user_type, ['dev','sad']) which hid the visibility (eye)
+			// button on loaded-more cards.
 			if( $r['act'] == 1 ){
 				$detail_section = ($r['catalog_type'] == 'on_order') ? 'ordercars' : 'cars';
-				$rtrn .= '
-				<a class="btn edit" href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/'.$detail_section.'/detail?id=' . $r['id'].'" title="'.$lng['adm']['edit'].'"> <div></div> </a><!--data-fn="edit"-->
-				<div class="btn fn_av" data-fn="'.($r['n_a']==0?'av0':'av1').'" title="'.($r['n_a']==0?'-':'+').'" data-alt="'.($r['n_a']==0?'+':'-').'"> <div></div> </div>';
-				if ( in_array($user_type, ['dev', 'sad']) ){
+				if (rbac_has_permission($user_role, 'cars', 'update')) {
 					$rtrn .= '
-					<div class="btn fn_hr" data-fn="'.($r['vis']==0?'reveal':'hide').'" title="'.$lng['adm'][($r['vis']==0?'reveal':'hide')].'" data-alt="'.$lng['adm'][($r['vis']==0?'hide':'reveal')].'" data-fn> <div></div> </div>';
-					// DISABLED: delete button
-					// $rtrn .= '<div class="btn fn_dre" data-fn="delete" title="'.$lng['adm']['delete'].'"> <div></div> </div>';
+					<a class="btn edit" href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/'.$detail_section.'/detail?id=' . $r['id'].'" title="'.$lng['adm']['edit'].'"> <div></div> </a>
+					<div class="btn fn_av" data-fn="'.($r['n_a']==0?'av0':'av1').'" title="'.($r['n_a']==0?'Нет в наличии':'Есть в наличии').'" data-alt="'.($r['n_a']==0?'+':'-').'"> <div></div> </div>';
 				}
-			} elseif ( $r['act'] == 0 && in_array($user_type, ['dev', 'sad']) ){
-				$rtrn .= '
-				<div class="btn fn_dre" data-fn="restore" title="'.$lng['adm']['restore'].'"> <div></div> </div>';
-				// DISABLED: erase button
-				// <div class="btn fn_dre" data-fn="erase" title="'.$lng['adm']['delete'].'"> <div></div> </div>';
+				if (isset($user_role) && $user_role === 'gordon') {
+					$rtrn .= '
+					<a class="btn" href="/'.$_COOKIE['lang'].'/'.$admin_dir.'/sett/changelog?car_id='.$r['id'].'" title="Log" style="text-decoration:none;text-align:center;display:flex;align-items:center;justify-content:center;">LOG</a>';
+				}
+				if (rbac_has_permission($user_role, 'cars', 'update')) {
+					$rtrn .= '
+					<div class="btn fn_hr" data-fn="'.($r['vis']==0?'reveal':'hide').'" title="'.$lng['adm'][($r['vis']==0?'reveal':'hide')].'" data-alt="'.$lng['adm'][($r['vis']==0?'hide':'reveal')].'"> <div></div> </div>';
+				}
+			} elseif ( $r['act'] == 0 ){
+				if (rbac_has_permission($user_role, 'cars', 'restore')) {
+					$rtrn .= '
+					<div class="btn fn_dre" data-fn="restore" title="'.$lng['adm']['restore'].'"> <div></div> </div>';
+				}
 			}
 		$rtrn .= '
 		</div>
@@ -274,7 +302,10 @@ foreach ($pdo as $r){
 		</div>
 
 		<div class="prc_wrap">
-			<div class="prc" title="'.$lng['w']['prc'].'">'.$r['prc'].' <span>'.$lng['l']['cur'][$r['cur']].'</span></div>
+			'.(($r['prc_n']!=0 && $r['prc_n']<$r['prc'])
+				? '<div class="prc" title="'.$lng['w']['prc'].'"><span class="o_prc">'.$r['prc'].' '.$lng['l']['cur'][$r['cur']].'</span> '.$r['prc_n'].' <span>'.$lng['l']['cur'][$r['cur']].'</span></div>'
+				: '<div class="prc" title="'.$lng['w']['prc'].'">'.$r['prc'].' <span>'.$lng['l']['cur'][$r['cur']].'</span></div>'
+			).'
 		</div>
 	</div>';
 }

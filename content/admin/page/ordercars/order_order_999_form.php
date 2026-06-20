@@ -4,7 +4,15 @@ use App\Helper\DefaultText;
 
 $categories = (new Api999Service())->getCategories();
 $subcategories = (new Api999Service())->getSubcategories(DefaultText::CATEGORY_AUTO);
-$defaultSubcategory = (!empty($car['gr']) && $car['gr'] == 'com') ? '660' : '659';
+
+// Group + import country: from $car (edit) or $parsing_prefill (parsing_id), so
+// the 999 defaults are right even before the car exists in the catalog.
+$grForm        = (string)($car['gr'] ?? $parsing_prefill['gr'] ?? '');
+$importIdForm  = (int)($car['import_country_id'] ?? $parsing_prefill['import_country_id'] ?? 0);
+
+// Subcategory: commercial → 660 (Микроавтобусы и фургоны), else 659 (Легковые).
+$defaultSubcategory = ($grForm === 'com') ? '660' : '659';
+$defaultOfferType = ($grForm === 'com') ? '776' : '23844';
 
 if (!empty($car['999'])) {
     $car999 = json_decode($car['999'], true);
@@ -14,8 +22,9 @@ if (!empty($car['999'])) {
 }
 
 if ($new999) {
-    $is_korea = !empty($car['import_country_id']) && $car['import_country_id'] == 41;
-    $is_com = !empty($car['gr']) && $car['gr'] == 'com';
+    // Encar (Korea, country 41) → account 4; commercial → 2; the rest → 3.
+    $is_korea = ($importIdForm == 41);
+    $is_com   = ($grForm === 'com');
     $default999AccountId = $is_korea ? 4 : ($is_com ? 2 : 3);
 } else {
     $default999AccountId = null;
@@ -26,7 +35,7 @@ if ($new999) {
 <form class="main_info" id="main_form_999"
     data-category-id="<?= htmlspecialchars($car999['category_id'] ?? DefaultText::CATEGORY_AUTO) ?>"
     data-subcategory-id="<?= htmlspecialchars($car999['subcategory_id'] ?? $defaultSubcategory) ?>"
-    data-offer-type="<?= htmlspecialchars($car999['offer_type'] ?? '776') ?>"
+    data-offer-type="<?= htmlspecialchars($car999['offer_type'] ?? $defaultOfferType) ?>"
     data-api-id="<?= htmlspecialchars($car['999_api_id'] ?? '') ?>"
     data-announcement-type="<?= htmlspecialchars($car999['announcement_type'] ?? 'sauto_personal') ?>">
     <div class="row">
@@ -67,7 +76,7 @@ if ($new999) {
                 <option value=""><?= __('cars.select_subcategory_offer_types') ?>...</option>
                 <?php if (!empty($offer_types['offer_types'])) : ?>
                     <?php foreach ($offer_types['offer_types'] as $offerType) : ?>
-                        <option value="<?= $offerType['id'] ?>" <?php if((!empty($car999['offer_type']) && $car999['offer_type'] == $offerType['id']) || ($offerType['id'] == '776' && empty($car999['offer_type']))) : ?> selected <?php endif; ?>><?= $offerType['title'] ?></option>
+                        <option value="<?= $offerType['id'] ?>" <?php if((!empty($car999['offer_type']) && $car999['offer_type'] == $offerType['id']) || ((string)$offerType['id'] === $defaultOfferType && empty($car999['offer_type']))) : ?> selected <?php endif; ?>><?= $offerType['title'] ?></option>
                     <?php endforeach; ?>
                 <?php endif; ?>
             </select>
@@ -92,8 +101,8 @@ if ($new999) {
         <?php if (!empty($car999)) :
             $types = (new Api999Service())->getSubcategoryFeatures((int)$car999['category_id'], (int)$car999['subcategory_id'], (int)$car999['offer_type']); ?>
             <?php include('order_features_form.php') ?>
-        <?php else : 
-            $types = (new Api999Service())->getSubcategoryFeatures(DefaultText::CATEGORY_AUTO, $defaultSubcategory, '776'); ?>
+        <?php else :
+            $types = (new Api999Service())->getSubcategoryFeatures(DefaultText::CATEGORY_AUTO, $defaultSubcategory, $defaultOfferType); ?>
             <?php include('order_features_form.php') ?>
         <?php endif; ?>
     </div>

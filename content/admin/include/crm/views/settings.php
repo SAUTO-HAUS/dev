@@ -53,8 +53,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['crm_section'])) {
     }
 
     if ($section === 'ai_inbox') {
-        foreach (['inbox_ai_prompt_default','inbox_ai_prompt_telegram','inbox_ai_prompt_999md','inbox_ai_prompt_facebook','inbox_ai_prompt_instagram','inbox_ai_prompt_viber'] as $k) {
+        foreach ([
+            'inbox_ai_prompt_default',
+            'inbox_ai_prompt_telegram',
+            'inbox_ai_prompt_999md',
+            'inbox_ai_prompt_sautohaus_999md',
+            'inbox_ai_prompt_order_999md',
+            'inbox_ai_prompt_korea_999md',
+            'inbox_ai_prompt_regular_999md',
+            'inbox_ai_prompt_facebook',
+            'inbox_ai_prompt_instagram',
+            'inbox_ai_prompt_viber',
+        ] as $k) {
             if (isset($_POST[$k])) crm_set_setting($db, $prefx, $k, trim($_POST[$k]));
+        }
+        // AI enable toggles per channel (checkbox: present = 1, absent = 0)
+        $enable_channels = ['telegram','999md','sautohaus_999md','order_999md','korea_999md','regular_999md','facebook','instagram','viber'];
+        foreach ($enable_channels as $ch) {
+            $val = isset($_POST['inbox_ai_enabled_' . $ch]) ? '1' : '0';
+            crm_set_setting($db, $prefx, 'inbox_ai_enabled_' . $ch, $val);
         }
     }
 
@@ -346,28 +363,43 @@ Never reveal internal company details, staff names, or system architecture.') ?>
             <div class="ai-channels-grid">
                 <?php
                 $ai_channels = [
-                    ['telegram',  'inbox_ai_prompt_telegram',  'telegram.svg'],
-                    ['999md',     'inbox_ai_prompt_999md',     '999.svg'],
-                    ['facebook',  'inbox_ai_prompt_facebook',  'facebook.svg'],
-                    ['instagram', 'inbox_ai_prompt_instagram', 'instagram.svg'],
-                    ['viber',     'inbox_ai_prompt_viber',     'viber.svg'],
+                    ['telegram',         'inbox_ai_prompt_telegram',         'telegram.svg'],
+                    ['999md',            'inbox_ai_prompt_999md',            '999.svg'],
+                    ['sautohaus_999md',  'inbox_ai_prompt_sautohaus_999md',  '999.svg'],
+                    ['order_999md',      'inbox_ai_prompt_order_999md',      '999.svg'],
+                    ['korea_999md',      'inbox_ai_prompt_korea_999md',      '999.svg'],
+                    ['regular_999md',    'inbox_ai_prompt_regular_999md',    '999.svg'],
+                    ['facebook',         'inbox_ai_prompt_facebook',         'facebook.svg'],
+                    ['instagram',        'inbox_ai_prompt_instagram',        'instagram.svg'],
+                    ['viber',            'inbox_ai_prompt_viber',            'viber.svg'],
                 ];
                 $icons_base = '/content/admin/include/crm/icons/';
                 foreach ($ai_channels as [$ch, $key, $icon_file]):
                     $val = $s[$key] ?? '';
                     $hasVal = $val !== '';
+                    $is_999_sub = (substr($ch, -6) === '_999md') && $ch !== '999md';
+                    $is_999_sub = (substr($ch, -6) === '_999md') && $ch !== '999md';
+                    $enable_key = 'inbox_ai_enabled_' . $ch;
+                    $enabled = !isset($s[$enable_key]) || $s[$enable_key] === '1' || $s[$enable_key] === '';
+                    $hint = $is_999_sub
+                        ? 'Dacă este gol — se folosește promptul „999.md (toate sub-canalele)", iar dacă și acela e gol — promptul default. Dacă este completat — suprascrie complet pentru acest sub-canal.'
+                        : 'Dacă este gol — se folosește promptul default. Dacă este completat — suprascrie complet promptul default pentru acest canal.';
                 ?>
-                <div class="ai-ch-card<?= $hasVal ? ' ai-ch-active' : '' ?>" id="ai-ch-<?= $ch ?>">
+                <div class="ai-ch-card<?= $hasVal ? ' ai-ch-active' : '' ?><?= $is_999_sub ? ' ai-ch-sub' : '' ?><?= !$enabled ? ' ai-ch-disabled' : '' ?>" id="ai-ch-<?= $ch ?>">
                     <div class="ai-ch-header" onclick="aiChToggle('<?= $ch ?>')">
                         <span class="ai-ch-icon">
                             <img src="<?= $icons_base . $icon_file ?>" width="18" height="18" alt="<?= $ch ?>">
                         </span>
                         <span class="ai-ch-name"><?= $cL['settings_ai_prompt_'.$ch] ?? $ch ?></span>
                         <span class="ai-ch-badge<?= $hasVal ? ' ai-ch-badge-on' : '' ?>"><?= $hasVal ? 'custom' : 'default' ?></span>
+                        <label class="ai-ch-switch" title="Activează/dezactivează AI pe acest canal" onclick="event.stopPropagation();">
+                            <input type="checkbox" name="<?= $enable_key ?>" value="1" <?= $enabled ? 'checked' : '' ?> onclick="event.stopPropagation();">
+                            <span class="ai-ch-switch-slider" onclick="event.stopPropagation();"></span>
+                        </label>
                         <svg class="ai-ch-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
                     </div>
                     <div class="ai-ch-body" style="display:none;">
-                        <p class="ai-ch-hint">Dacă este gol — se folosește promptul default. Dacă este completat — suprascrie complet promptul default pentru acest canal.</p>
+                        <p class="ai-ch-hint"><?= $hint ?></p>
                         <textarea name="<?= $key ?>" rows="14" class="crm-textarea-mono" placeholder="Lasă gol pentru a folosi promptul default..."><?= htmlspecialchars($val) ?></textarea>
                         <?php if ($hasVal): ?>
                         <button type="button" class="ai-ch-clear" onclick="aiChClear('<?= $ch ?>', '<?= $key ?>')">✕ Șterge (revino la default)</button>
@@ -427,6 +459,15 @@ Never reveal internal company details, staff names, or system architecture.') ?>
 <style>
 .ai-channels-grid { display:flex; flex-direction:column; gap:6px; margin:1.2rem 0 1.4rem; }
 .ai-ch-card { border:1.5px solid #e8e8e8; border-radius:8px; overflow:hidden; transition:border-color .15s; }
+.ai-ch-card.ai-ch-sub { margin-left:24px; border-left:3px solid #c5d8ff; }
+.ai-ch-card.ai-ch-disabled { opacity:0.55; background:#fafafa; border-color:#e0e0e0; }
+.ai-ch-card.ai-ch-disabled .ai-ch-name { color:#888; }
+.ai-ch-switch { position:relative; display:inline-block; width:36px; height:20px; flex-shrink:0; cursor:pointer; }
+.ai-ch-switch input { opacity:0; width:0; height:0; }
+.ai-ch-switch-slider { position:absolute; inset:0; background:#ccc; border-radius:20px; transition:background .2s; }
+.ai-ch-switch-slider::before { content:""; position:absolute; left:2px; top:2px; width:16px; height:16px; background:#fff; border-radius:50%; transition:transform .2s; box-shadow:0 1px 2px rgba(0,0,0,0.2); }
+.ai-ch-switch input:checked + .ai-ch-switch-slider { background:#22a05a; }
+.ai-ch-switch input:checked + .ai-ch-switch-slider::before { transform:translateX(16px); }
 .ai-ch-card.ai-ch-active { border-color:#c5d8ff; background:#fafcff; }
 .ai-ch-header { display:flex; align-items:center; gap:10px; padding:10px 14px; cursor:pointer; user-select:none; }
 .ai-ch-header:hover { background:#f7f7f7; }
@@ -513,6 +554,13 @@ function aiChToggle(ch) {
         card.classList.add('ai-ch-open');
     }
 }
+document.querySelectorAll('.ai-ch-switch input[type=checkbox]').forEach(function(cb) {
+    cb.addEventListener('change', function() {
+        var card = cb.closest('.ai-ch-card');
+        if (cb.checked) card.classList.remove('ai-ch-disabled');
+        else card.classList.add('ai-ch-disabled');
+    });
+});
 function aiChClear(ch, key) {
     var card = document.getElementById('ai-ch-' + ch);
     card.querySelector('textarea[name="' + key + '"]').value = '';

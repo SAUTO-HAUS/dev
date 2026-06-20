@@ -186,8 +186,9 @@
   
   main .gr > .txt {padding:1rem 4rem; background-color:#fff; border-radius:12px; font-family:"def_l"; font-size:1.2rem;}
   
-  main .gr > h1 {font-size:2rem; font-weight:bold; text-transform:uppercase; margin:-1vw 0 1.5vw 0;}
-  main .gr > h2 {font-size:2rem; font-weight:bold; text-transform:uppercase; margin:0 0 1.5vw 0;}
+  main .gr > h1,
+  main .gr .gr-h1 {font-size:2rem; font-weight:bold; text-transform:uppercase; margin:-1vw 0 1.5vw 0;}
+  main .gr > h2 {font-size:2rem; font-weight:bold; text-transform:uppercase; margin:1.5vw 0 1.5vw 0;}
   main .gr > .cnt {width:100%; display:flex; flex-flow:row wrap; justify-content:space-between; align-items:center; row-gap:1rem;}
   main .gr > .cnt > .lnk {width:23.5%; height:17rem; padding:1rem 2rem; background-color:#fff; border-radius:12px; transition:.3s; text-align:center; display: flex; flex-direction: column; align-items: center;}
   main .gr > .cnt > .lnk:hover {transform:scale(1.025); box-shadow:0 5px 10px 0 rgba(0,0,0,.3);}
@@ -357,7 +358,7 @@
       padding: 0.3rem;
   }
   main .gr > .cnt > .it > .prc > .val {
-      font-size: 1.3rem; 
+      font-size: 1.3rem;
   }
   main .gr > .cnt > .it > .prc > .stock-status {
       font-size: 1rem;
@@ -373,7 +374,22 @@
       background-color: #CE3226;
       color: #fff;
   }
-  main .gr > .cnt > .it > .txt > .prc > .o_val {color:#e2001a; text-decoration:line-through; margin-left:1rem;}
+  main .gr > .cnt > .it > .txt > .prc > .o_val,
+  main .gr > .cnt > .it > .prc > .o_val {
+      position:relative; display:inline-block;
+      color:#CE3226; font-size:0.95rem; font-weight:700;
+      letter-spacing:0.02em;
+      padding:0.05rem 0.15rem;
+  }
+  main .gr > .cnt > .it > .txt > .prc > .o_val {margin-left:1rem;}
+  main .gr > .cnt > .it > .prc > .o_val {margin-left:0.55rem; margin-right:auto;}
+  main .gr > .cnt > .it > .txt > .prc > .o_val::after,
+  main .gr > .cnt > .it > .prc > .o_val::after {
+      content:''; position:absolute; left:0; right:0; top:50%;
+      height:1.5px; border-radius:1px; margin-top:-0.75px;
+      background:linear-gradient(90deg, transparent, #1a1a1a 18%, #1a1a1a 82%, transparent);
+      transform:rotate(-16deg); transform-origin:center;
+  }
   
   main .gr > .cnt > .it > .txt > .specs2 {width:100%; margin-top:1rem; float:left;}
   main .gr > .cnt > .it > .txt > .specs2 > .ar {width:50%; height:3rem; float:left;}
@@ -485,7 +501,18 @@
   main > .spc_bx > .prc {width:100%; float:left; line-height:2rem; margin-top:2rem;}
   main > .spc_bx > .prc > .val {font-size:2rem; margin-left:1rem;}
   main > .spc_bx > .prc > .val > .cur {font-size:1.4rem;}
-  main > .spc_bx > .prc > .o_val {color:#e2001a; text-decoration:line-through;}
+  main > .spc_bx > .prc > .o_val {
+      position:relative; display:inline-block;
+      color:#ff3b30; font-size:1.25rem; font-weight:700;
+      letter-spacing:0.02em;
+      margin-left:0.8rem; padding:0.1rem 0.2rem;
+  }
+  main > .spc_bx > .prc > .o_val::after {
+      content:''; position:absolute; left:0; right:0; top:50%;
+      height:2px; border-radius:1px; margin-top:-1px;
+      background:linear-gradient(90deg, transparent, #1a1a1a 18%, #1a1a1a 82%, transparent);
+      transform:rotate(-16deg); transform-origin:center;
+  }
   
   main > .spc_bx > .prc > .cntr {float:left; border:1px solid #d8d8d8;}
   main > .spc_bx > .prc > .cntr > .btn {width:2rem; height:2rem; font-size:2rem; float:left; text-align:center; color:#d8d8d8; font-family:"def_l"; cursor:pointer; transition:.2s;}
@@ -495,8 +522,17 @@
   main > .spc_bx > .prc > .cntr > .val {width:2rem; height:2rem; line-height:2rem; float:left; text-align:center; font-size:1.3rem;}
   
   main > .spc_bx > .doit {width:100%; float:left; margin-top:2rem;}
-  main > .spc_bx > .doit > .btn {width:48%; line-height:3rem; text-align:center; border-radius:.5rem; cursor:pointer;}
+  main > .spc_bx > .doit > .btn {width:48%; line-height:3rem; text-align:center; border-radius:.5rem; cursor:pointer; position:relative; overflow:hidden; transition:transform .18s ease, box-shadow .18s ease, background-color .18s ease, filter .18s ease;}
   main > .spc_bx > .doit > .call {background-color:#e2001a; color:#fff; float:left;}
+  main > .spc_bx > .doit > .btn::before {content:""; position:absolute; top:0; left:-120%; width:80%; height:100%; background:linear-gradient(120deg, transparent 0%, rgba(255,255,255,.45) 50%, transparent 100%); transform:skewX(-20deg); pointer-events:none;}
+  main > .spc_bx > .doit > .btn:hover::before {animation:btn-shine .6s ease forwards;}
+  @keyframes btn-shine {from{left:-120%;} to{left:130%;}}
+  main > .spc_bx > .doit > .call:hover {background-color:#c4001a; transform:translateY(-2px); box-shadow:0 6px 16px rgba(226,0,26,.35);}
+  main > .spc_bx > .doit > .call:active {transform:translateY(0); box-shadow:0 2px 6px rgba(226,0,26,.30);}
+  main > .spc_bx > .doit > .btn-whatsapp {background-color:#25d366; color:#fff; float:right; height:3rem; line-height:0; display:flex; align-items:center; justify-content:center; box-sizing:border-box;}
+  main > .spc_bx > .doit > .btn-whatsapp > svg {position:relative; z-index:1;}
+  main > .spc_bx > .doit > .btn-whatsapp:hover {background-color:#1fb457; transform:translateY(-2px); box-shadow:0 6px 16px rgba(37,211,102,.40);}
+  main > .spc_bx > .doit > .btn-whatsapp:active {transform:translateY(0); box-shadow:0 2px 6px rgba(37,211,102,.35);}
   main > .spc_bx > .doit > .msg {line-height:calc(3rem - 2px); background-color:#fff; color:#515151; border:1px solid #515151; float:right;}
   main > .spc_bx > .doit > .msg2 {line-height:calc(3rem - 2px); background-color:#fff; color:#515151; border:1px solid #515151; float:right;padding-bottom: 4px;padding-top: 4px;}
   
@@ -2266,141 +2302,130 @@ footer .columns-wrapper .column-container.col-logo-container {
       margin-top: 15px;
   
   }
-  .calc_head {
-      font-weight: 600;
-      font-size: 23px;
-      text-transform: uppercase;
-      color: #292929;
+  .d_right_b .credit-calculator-container {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
-  .d_right_b .irs--round .irs-handle.state_hover,
-  .d_right_b .irs--round .irs-handle:hover {
-      background-color: unset;
+  .d_right_b .calculator-title {
+      font-size: 1.6rem;
+      color: #333333;
+      font-weight: 700;
+      margin: 0 0 1.5rem;
+      text-align: left;
+  }
+  .d_right_b .calculator-content {
+      padding: 0;
+  }
+  .d_right_b .calculator-field {
+      margin-bottom: 2rem;
+  }
+  .d_right_b .field-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 0.5rem;
+  }
+  .d_right_b .field-label {
+      font-size: 1rem;
+      color: #666666;
+      font-weight: 400;
+      line-height: 1.35;
+  }
+  .d_right_b .field-label .field-range {
+      display: block;
+      font-size: 0.78rem;
+      color: #333333;
+      font-weight: 700;
+  }
+  .d_right_b .field-value {
+      font-size: 0.8rem;
+      color: #333333;
+      font-weight: 700;
+      width: 96px;
+      height: 34px;
+      padding: 0 0.6rem;
+      text-align: center;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      background: #fafafa;
+      transition: border-color .18s ease, box-shadow .18s ease, background-color .18s ease;
+  }
+  .d_right_b .field-value:hover {
+      border-color: #cfcfcf;
+  }
+  .d_right_b .field-value:focus {
+      outline: none;
+      border-color: #dc3545;
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(220,53,69,.15);
+  }
+
+  .d_right_b .irs--round .irs-line {
+      background: #e5e5e5;
+      height: 0.25rem;
   }
   .d_right_b .irs--round .irs-bar {
-      background-color: #e4002b; /* красная линия заполнения */
-      height: 10px;
-      border-radius: 10px;
-      background: linear-gradient(176deg, #fa5f71 0%, #e2001a 100%);
+      background: #dc3545;
+      height: 0.25rem;
   }
-  
-  .d_right_b .irs--round .irs-line {
-      background-color: #ccc; /* серая линия фона */
-      height: 10px;
-      border-radius: 10px;
-  }
-  
   .d_right_b .irs--round .irs-handle {
-      width: 26px;
-      height: 26px;
-      top: 26px;
-      background-color: #e4002b;
-      border: 3px solid white;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      background: #f4f4f4;
+      border: 0.1875rem solid #dc3545;
+      width: 1.5rem;
+      height: 1.5rem;
+      transform: translateY(0);
       border-radius: 50%;
-      background: url(/media/roundcalc.svg) no-repeat;
-      border: none;
+      cursor: pointer;
       box-shadow: none;
   }
-  
+  .d_right_b .irs--round .irs-handle:hover,
+  .d_right_b .irs--round .irs-handle.state_hover {
+      background: #c82333;
+  }
+  .d_right_b .irs--round .irs-handle > i:first-child {
+      background: #ffffff;
+  }
   .d_right_b .irs--round .irs-from,
   .d_right_b .irs--round .irs-to,
-  .d_right_b .irs--round .irs-single {
-      display: none; /* скрываем метки над ползунком */
-  }
-  
-  .d_right_b .irs--round .irs-grid-text {
-      font-size: 12px;
-      color: #333;
-  }
-  
+  .d_right_b .irs--round .irs-single,
   .d_right_b .irs--round .irs-min,
-  .d_right_b .irs--round .irs-max {
+  .d_right_b .irs--round .irs-max,
+  .d_right_b .irs--round .irs-grid {
       display: none;
   }
-  .d_right_b .irs--round {
-      height: 25px;
+
+  /* Payment result panel */
+  .d_right_b .payment-result {
+      background: #ffe8e8;
+      border-radius: 0.75rem;
+      padding: 0.9rem 1.25rem;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 0.5rem;
+      width: 100%;
+      box-sizing: border-box;
   }
-  
-  .clacl_inpt_vie {
-      border: 1px solid #292929;
-      border-radius: 8px;
-      width: 75px;
-      height: 27px;
-  
+  .d_right_b .result-label {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #4f4f4f;
+      white-space: nowrap;
+  }
+  .d_right_b .result-value {
+      font-size: 1.05rem;
+      color: #db1629;
+      font-weight: 700;
+      white-space: nowrap;
+  }
+  .d_right_b .result-value .payment-number {
+      font-size: 1.35rem;
       font-weight: 900;
-      font-size: 14px;
-      text-align: center;
-      color: #292929;
   }
-  .calc_inpt_cont {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      position: relative;
-      top: 20px;
-      z-index: 20;
-  }
-  .calc_ipt_tl {
-      font-weight: 600;
-      font-size: 16px;
-      text-transform: capitalize;
-      color: #515151;
-  }
-  .calc_block_sum {
-      margin-bottom: 25px;
-      margin-top: 5px;
-  }
-  .calc_block_terms {
-      margin-top: 50px;
-  }
-  .calc_btn_btt {
-      text-align: center;
-  }
-  .calc_btn_point {
-      background: #e2001a;
-      border-radius: 8px;
-      padding: 15px 78px;
-      display: inline-block;
-      font-weight: 600;
-      font-size: 16px;
-      text-align: center;
-      color: #fff;
-      cursor: pointer;
-      margin-top: 30px;
-  }
-  .calc_btn_point:hover {
-      background: #eb0520;
-  }
-  .calc_btt_word {
-      display: flex;
-      margin-top: 50px;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-  }
-  .calc_btt_left {
-      font-weight: 600;
-      font-size: 17px;
-      text-transform: uppercase;
-      color: #000;
-  }
-  .calc_btt_right {
-      text-align: right;
-  }
-  .calc_btt_r1 {
-      font-weight: 600;
-      font-size: 16px;
-      text-transform: capitalize;
-      color: #000;
-  }
-  .calc_btt_r2 {
-      font-weight: 600;
-      font-size: 18px;
-      text-align: center;
-      color: #e2001a;
-  }
-  
+
   .spc_bx_calc_b {
       min-height: auto;
       background-color: #fff;
@@ -2422,22 +2447,7 @@ footer .columns-wrapper .column-container.col-logo-container {
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       margin-bottom: 30px;
   }
-  
-  .calc_head {
-      font-size: 1.5rem;
-      font-weight: bold;
-      margin-bottom: 25px;
-      color: #e2001a;
-  }
-  
-  .calc_block_sum, .calc_block_terms {
-      margin-bottom: 25px;
-  }
-  
-  .calc_inpt_cont {
-      margin-bottom: 15px;
-  }
-  
+
   /* Insurance page styles - Fix for SVG icons overlapping text on mobile */
   #services .insurance-content ul li {
       position: relative;
@@ -2569,7 +2579,8 @@ footer .columns-wrapper .column-container.col-logo-container {
       }
       
       /* Make main h1 smaller on mobile */
-      main .gr > h1 {
+      main .gr > h1,
+      main .gr .gr-h1 {
           font-size: 1.4rem !important;
           padding-left: 15px !important;
           padding-right: 10px !important;
@@ -2948,9 +2959,12 @@ footer .columns-wrapper .column-container.col-logo-container {
       }
   }
 
-  /* Sort dropdown - placed below filter, aligned right */
-  body > .srt_row {width:80vw; margin:30px 10vw 0; float:left; clear:both; display:flex; justify-content:flex-end; z-index:2; position:relative;}
-  body > .srt_row > .srt_wrap {width:auto; padding:6px; background:#515151; border-radius:.5rem; display:flex; justify-content:flex-end; align-items:center; gap:6px;}
+  body:has(> .srt_row) main .gr > h1:not(.srt_h1),
+  body:has(> .srt_row) main .gr > div > h1:not(.srt_h1) {display:none;}
+  body > .srt_row {width:80vw; margin:20px 10vw 20px; float:left; clear:both; display:flex; justify-content:flex-end; align-items:center; z-index:2; position:relative;}
+  body > .srt_row:has(> .srt_h1) {justify-content:space-between;}
+  body > .srt_row > .srt_h1 {margin:0; font-size:1.5rem; font-weight:bold; text-transform:uppercase; line-height:1.2; text-align:left;}
+  body > .srt_row > .srt_wrap {width:auto; padding:6px; background:#515151; border-radius:.5rem; display:flex; justify-content:flex-end; align-items:center; gap:6px; flex:0 0 auto;}
   body > .srt_row > .srt_wrap > .srt_cat_badge,
   body > .srt_row > .srt_wrap > .srt_cat_badge * {cursor:pointer !important; user-select:none; -webkit-user-select:none;}
   body > .srt_row > .srt_wrap > .srt_cat_badge {height:38px; padding:0 1rem; background-color:#e2001a; color:#fff; border-radius:.5rem; font-family:"def_l"; font-size:.9rem; font-weight:700; white-space:nowrap; line-height:1.4; box-sizing:border-box; display:flex; align-items:center; border:1px solid #e2001a; transition:background-color .2s;}
@@ -2976,6 +2990,14 @@ footer .columns-wrapper .column-container.col-logo-container {
   body > .srt_row > .srt_wrap > .srt_sel_overlay {position:absolute; right:15px; min-width:200px; padding:.6rem 2rem .6rem 1rem; border:1px solid #ddd; border-radius:.5rem; background:#fff url(/media/images/site/v2/arw_b_def.svg) no-repeat right .8rem center / 12px; color:#e2001a; font-family:"def_l"; font-size:.95rem; line-height:1.4; box-sizing:border-box; pointer-events:none; white-space:nowrap;}
   body > .srt_row > .srt_wrap > .srt_sel:hover, body > .srt_row > .srt_wrap > .srt_sel:focus {border-color:#e2001a;}
   body > .srt_row > .srt_wrap > .srt_sel > option[value^="cat:"] {font-weight:700; color:#000;}
+
+  /* Ordercars region quick-filter buttons (Korea / Europe / USA) + order button at the end */
+  main .gr > .oc_regions {display:flex; gap:1rem; margin:0; flex-wrap:wrap; align-items:center;}
+  main .gr > .oc_regions > .oc_region_btn {flex:1 1 0; min-width:140px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0; padding:.25rem 1.5rem; background-color:#fff; border:2px solid #eee; border-radius:.75rem; color:#292929; font-family:"def_l"; font-size:1.1rem; font-weight:700; text-transform:uppercase; transition:border-color .2s, box-shadow .2s, transform .2s; cursor:pointer;}
+  main .gr > .oc_regions > .oc_region_btn > span {margin-top:-.4rem;}
+  main .gr > .oc_regions > .oc_region_btn > img {width:96px; height:auto; display:block; object-fit:contain; margin-top:-.6rem;}
+  main .gr > .oc_regions > .oc_region_btn:hover {background:#f0f0f0; transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.15);}
+  main .gr > .oc_regions > .oc_order_btn {flex:0 0 auto; margin-left:auto; margin-top:0; border:2px solid #eee; border-radius:.75rem;}
 
 
 

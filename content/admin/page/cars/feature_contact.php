@@ -1,6 +1,7 @@
 <?php
 use App\Helper\DefaultText;
-$contacts = (new DefaultText)->getContacts(__post('account_id', $car['999_api_id'] ?? 1));
+$contactAccountId = __post('account_id', $car['999_api_id'] ?? ($default999AccountId ?? 1));
+$contacts = (new DefaultText)->getContacts($contactAccountId);
 foreach ($contacts as $contact): ?>
     <div class="form-check contact-container">
         <input

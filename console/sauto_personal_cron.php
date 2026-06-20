@@ -11,11 +11,151 @@ if (php_sapi_name() !== 'cli' && !defined('MANUAL_CRON_TRIGGER')) {
 }
 
 // Set error reporting
-error_reporting(E_ALL);
+error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING & ~E_DEPRECATED);
 ini_set('display_errors', 1);
 
 // Set timezone
 date_default_timezone_set('Europe/Chisinau');
+
+function enforcePhoneForAccount($features, $accountId) {
+    $phoneMap = [
+        2 => '37379600616',
+        3 => '37379600326',
+        4 => '37379603161',
+    ];
+    if (empty($phoneMap[$accountId])) {
+        return $features;
+    }
+    $phone = $phoneMap[$accountId];
+    $found = false;
+    foreach ($features as $idx => $f) {
+        if ((string)($f['id'] ?? '') === '16') {
+            $features[$idx]['value'] = [$phone];
+            $found = true;
+            break;
+        }
+    }
+    if (!$found) {
+        $features[] = ['id' => '16', 'value' => [$phone]];
+    }
+    echo "[" . date('Y-m-d H:i:s') . "] Phone enforced for account {$accountId}: {$phone}\n";
+    return $features;
+}
+
+/**
+ * Upload the car's photos to 999.md and (re)build feature 14 (images).
+ *
+ * Mirrors content/admin/ajax/cars/999_catalog.php so the cron never relies on a
+ * stale/empty feature 14 in the saved `999` column — it always rebuilds it from
+ * gh3sp_car_pht (the source of truth). Images must be uploaded to the SAME account
+ * the advert is published with.
+ *
+ * Stops on the first 403 (Too many requests / blocked account) so we don't hammer
+ * a rate-limited or blocked account with 19 more doomed uploads.
+ *
+ * @return array List of 999.md image IDs (empty if none could be uploaded).
+ */
+function buildImagesFeature14($carId, $accountId, $db, $prefx, &$rateLimited = false) {
+    $rateLimited = false;
+    $stmt = $db->prepare("SELECT * FROM {$prefx}_car_pht WHERE `it_id` = :carId ORDER BY `main` DESC, `pos`, `id`");
+    $stmt->execute(['carId' => $carId]);
+    $photos = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+    if (empty($photos)) {
+        echo "[" . date('Y-m-d H:i:s') . "] Feature 14: no photos in car_pht for car {$carId}\n";
+        return [];
+    }
+
+    $maxImages = ($accountId == 4) ? 10 : 20;
+    $photos = array_slice($photos, 0, $maxImages);
+
+    $api = new \App\Services\Api999Service($accountId);
+    // Running from CLI cron — $_SERVER['DOCUMENT_ROOT'] is unreliable, so resolve
+    // the media dir relative to this script (console/../media).
+    $mediaBase = __DIR__ . '/../media/images/upload/car/';
+    $imageIds = [];
+    foreach ($photos as $img) {
+        $imgPath = $mediaBase . $img['path'] . '/' . $img['it_id'] . '/high/' . $img['name'] . '.' . $img['ff'];
+        if (!file_exists($imgPath)) {
+            echo "[" . date('Y-m-d H:i:s') . "] Feature 14: missing file {$imgPath}\n";
+            continue;
+        }
+
+        // Upload one image, retrying on 429 (nginx network rate-limit — temporary,
+        // means "slow down") with exponential backoff. A 403 (account blocked) is
+        // NOT retried — bail out, every further upload would fail too.
+        $uploaded = false;
+        $stop = false;
+        for ($attempt = 1; $attempt <= 4; $attempt++) {
+            $imageLink = $api->uploadImage($imgPath);
+            if (is_array($imageLink) && !empty($imageLink['image_id'])) {
+                $imageIds[] = $imageLink['image_id'];
+                $uploaded = true;
+                break;
+            }
+            $msg = is_string($imageLink) ? $imageLink : json_encode($imageLink, JSON_UNESCAPED_UNICODE);
+
+            if (strpos($msg, '429') !== false) {
+                // nginx throttled us — wait longer each time, then retry SAME image.
+                $wait = 3 * $attempt; // 3s, 6s, 9s
+                echo "[" . date('Y-m-d H:i:s') . "] Feature 14: 429 from nginx, backing off {$wait}s (attempt {$attempt}/4) for {$imgPath}\n";
+                sleep($wait);
+                if ($attempt === 4) {
+                    // Still 429 after all retries — the IP is throttled. Stop and tell
+                    // the caller so it skips the rest of this account this run.
+                    echo "[" . date('Y-m-d H:i:s') . "] Feature 14: still 429 after retries — account {$accountId} rate-limited, stopping uploads\n";
+                    $rateLimited = true;
+                    $stop = true;
+                }
+                continue;
+            }
+            if (strpos($msg, '403') !== false) {
+                echo "[" . date('Y-m-d H:i:s') . "] Feature 14: got 403 — account {$accountId} blocked/rate-limited, stopping uploads\n";
+                $rateLimited = true;
+                $stop = true;
+                break;
+            }
+            // Other error — log once and move to next image.
+            echo "[" . date('Y-m-d H:i:s') . "] Feature 14: upload failed for {$imgPath}: {$msg}\n";
+            break;
+        }
+        if ($stop) {
+            break;
+        }
+        // Steady pace between every image so we never burst nginx.
+        usleep(700000); // 0.7s
+    }
+
+    echo "[" . date('Y-m-d H:i:s') . "] Feature 14: uploaded " . count($imageIds) . " image(s) for car {$carId} on account {$accountId}\n";
+    return $imageIds;
+}
+
+/**
+ * Per-account daily image-upload cooldown. 999.md allows ~1200 image uploads/day;
+ * when an account hits the limit it returns 403 on /images. Instead of retrying
+ * every minute (and spamming the log), we mark the account "on cooldown until
+ * tomorrow" so the cron skips it entirely until the quota resets.
+ *
+ * Stored in gh3sp_settings as "999md_upload_cooldown_<accountId>" = unix timestamp
+ * (when the cooldown ends). Cleared automatically once that time has passed.
+ */
+function isAccountOnCooldown($accountId, $db, $prefx) {
+    $stmt = $db->prepare("SELECT value FROM {$prefx}_settings WHERE name = ?");
+    $stmt->execute(["999md_upload_cooldown_{$accountId}"]);
+    $until = (int)$stmt->fetchColumn();
+    return $until > time() ? $until : 0;
+}
+
+function setAccountCooldownUntilTomorrow($accountId, $db, $prefx) {
+    // Reset at the start of the next day (server time) — that's when the daily
+    // 1200-image quota rolls over.
+    $until = strtotime('tomorrow 00:05');
+    $stmt = $db->prepare("INSERT INTO {$prefx}_settings (name, value) VALUES (?, ?)
+        ON DUPLICATE KEY UPDATE value = VALUES(value)");
+    $stmt->execute(["999md_upload_cooldown_{$accountId}", (string)$until]);
+    echo "[" . date('Y-m-d H:i:s') . "] Account {$accountId} hit daily image limit — cooldown until " . date('Y-m-d H:i', $until) . "\n";
+    return $until;
+}
 
 function updateFeaturesWithFreshData($features, $carData, $db, $prefx) {
     $updatedFeatures = [];
@@ -33,36 +173,42 @@ function updateFeaturesWithFreshData($features, $carData, $db, $prefx) {
         }
         
         if ($featureId === '13' || $featureId === 13) {
-            $descriptionText = $feature['value'] ?? '';
-            $linkMarker = "\n\nDetalii despre automobil:";
-            $markerPos = strpos($descriptionText, $linkMarker);
-            if ($markerPos !== false) {
-                $descriptionText = substr($descriptionText, 0, $markerPos);
-            }
-            
+            $descriptionText = (string)($feature['value'] ?? '');
+            $descriptionText = preg_replace(
+                '/Detalii despre automobil:\s*\n'
+                . 'https?:\/\/\S+\s*\n'
+                . 'Toate automobilele modelului[^\n]*\n'
+                . 'https?:\/\/\S+\s*\n'
+                . 'Toate automobilele mărcii[^\n]*\n'
+                . 'https?:\/\/\S+\s*/u',
+                '',
+                $descriptionText
+            );
+            $descriptionText = trim((string)$descriptionText);
+
             if (!empty($carData['br']) && !empty($carData['mo'])) {
                 $stmtCarList = $db->prepare("SELECT br_nm, mo_nm FROM {$prefx}_car_list WHERE br = ? AND mo = ? LIMIT 1");
                 $stmtCarList->execute([$carData['br'], $carData['mo']]);
                 $carListInfo = $stmtCarList->fetch(PDO::FETCH_ASSOC);
-                
+
                 if ($carListInfo && !empty($carListInfo['br_nm']) && !empty($carListInfo['mo_nm'])) {
                     $brandSlug = strtolower(str_replace('_', '-', $carData['br']));
                     $modelSlug = strtolower(str_replace('_', '-', $carData['mo']));
                     $brandText = $carListInfo['br_nm'];
                     $modelText = $carListInfo['mo_nm'];
-                    
+
                     $section = ($carData['catalog_type'] === 'on_order') ? 'ordercars' : 'cars';
-                    
+
                     $carLink = "https://www.sauto.md/ro/{$section}/{$carData['id']}";
                     $modelLink = "https://www.sauto.md/ro/{$section}/{$brandSlug}/{$modelSlug}";
                     $brandLink = "https://www.sauto.md/ro/{$section}/{$brandSlug}";
-                    
-                    $linksText = "\n\nDetalii despre automobil:\n{$carLink}\nToate automobilele modelului {$modelText}:\n{$modelLink}\nToate automobilele mărcii {$brandText}:\n{$brandLink}";
-                    
-                    $descriptionText .= $linksText;
+
+                    $linksText = "Detalii despre automobil:\n{$carLink}\nToate automobilele modelului {$modelText}:\n{$modelLink}\nToate automobilele mărcii {$brandText}:\n{$brandLink}";
+
+                    $descriptionText = $linksText . ($descriptionText !== '' ? "\n\n" . $descriptionText : '');
                 }
             }
-            
+
             $feature['value'] = $descriptionText;
         }
         
@@ -146,14 +292,31 @@ try {
     // Get pending schedules that should be published now
     $currentDateTime = date('Y-m-d H:i:s');
     echo "[" . date('Y-m-d H:i:s') . "] Current server time: {$currentDateTime}\n";
-    
+
+    // Accounts that hit their daily image limit (403) are on cooldown — EXCLUDE their
+    // cars from the batch, otherwise the oldest 10 are all from a blocked account and
+    // the cron never reaches cars on accounts that CAN still publish.
+    $cooldownAccounts = [];
+    $cdStmt = $db->query("SELECT name, value FROM {$prefx}_settings WHERE name LIKE '999md_upload_cooldown_%'");
+    foreach ($cdStmt->fetchAll() as $row) {
+        if ((int)$row['value'] > time()) {
+            $cooldownAccounts[] = (int)str_replace('999md_upload_cooldown_', '', $row['name']);
+        }
+    }
+    $cooldownSql = '';
+    if (!empty($cooldownAccounts)) {
+        $cooldownSql = ' AND (c.`999_api_id` IS NULL OR c.`999_api_id` NOT IN (' . implode(',', array_map('intval', $cooldownAccounts)) . ')) ';
+        echo "[" . date('Y-m-d H:i:s') . "] Accounts on cooldown (excluded this run): " . implode(',', $cooldownAccounts) . "\n";
+    }
+
     $stmt = $db->prepare("
-        SELECT s.*, c.id as car_id, c.999_id as existing_999_id, s.catalog_type,
+        SELECT s.*, c.id as car_id, c.`999_id` as existing_999_id, s.catalog_type,
                CONCAT(s.schedule_date, ' ', s.schedule_time) as full_schedule_time
         FROM gh3sp_sauto_personal_schedules s
         LEFT JOIN {$prefx}_car_ctlg c ON s.car_id = c.id
-        WHERE s.status = 'pending' 
+        WHERE s.status = 'pending'
         AND CONCAT(s.schedule_date, ' ', s.schedule_time) <= :current_time
+        {$cooldownSql}
         ORDER BY s.schedule_date, s.schedule_time
         LIMIT 10
     ");
@@ -161,13 +324,14 @@ try {
     $pendingSchedules = $stmt->fetchAll();
     
     $postponedStmt = $db->prepare("
-        SELECT s.*, c.id as car_id, c.999_id as existing_999_id, s.catalog_type,
+        SELECT s.*, c.id as car_id, c.`999_id` as existing_999_id, s.catalog_type,
                CONCAT(s.schedule_date, ' ', s.schedule_time) as full_schedule_time
         FROM gh3sp_sauto_personal_schedules s
         LEFT JOIN {$prefx}_car_ctlg c ON s.car_id = c.id
-        WHERE s.status = 'postponed' 
+        WHERE s.status = 'postponed'
         AND s.retry_count < 72
         AND (s.last_retry_at IS NULL OR s.last_retry_at <= DATE_SUB(:current_time, INTERVAL 2 HOUR))
+        {$cooldownSql}
         ORDER BY s.schedule_date, s.schedule_time
         LIMIT 5
     ");
@@ -215,18 +379,52 @@ try {
     \App\Core\Container::set('db', $db);
     \App\Core\Container::set('prefix', $prefx);
     
+    // Accounts that got rate-limited (429/403) this run — once an account trips,
+    // we skip the rest of its cars this run so we stop hammering a throttled IP.
+    $rateLimitedAccounts = [];
+
     foreach ($pendingSchedules as $schedule) {
         try {
             echo "[" . date('Y-m-d H:i:s') . "] Processing schedule ID: {$schedule['id']}, Car ID: {$schedule['car_id']}, Type: {$schedule['catalog_type']}\n";
             
             // Get car data to determine which 999.md account to use
-            $carStmt = $db->prepare("SELECT 999_api_id FROM {$prefx}_car_ctlg WHERE id = :car_id");
+            $carStmt = $db->prepare("SELECT `999_api_id`, import_country_id, gr FROM {$prefx}_car_ctlg WHERE id = :car_id");
             $carStmt->execute(['car_id' => $schedule['car_id']]);
             $carInfo = $carStmt->fetch();
-            
+
             // Determine which 999.md account to use based on car's 999_api_id or catalog_type
             $catalogType = $schedule['catalog_type'];
             $apiAccountId = !empty($carInfo['999_api_id']) ? $carInfo['999_api_id'] : null;
+
+            // Auto-correct 999_api_id for on_order cars based on import country / group
+            // (mirrors UI logic in content/admin/js/ordercars.js)
+            if ($catalogType === 'on_order') {
+                $importCountry = (int)($carInfo['import_country_id'] ?? 0);
+                $isCom = ($carInfo['gr'] ?? '') === 'com';
+
+                if ($isCom) {
+                    $expectedAccountId = 2; // Sauto-auto-comerciale (commercial takes priority over country)
+                } elseif ($importCountry === 41) {
+                    $expectedAccountId = 4; // Encars-MD (Korea, non-commercial)
+                } else {
+                    $expectedAccountId = 3; // Sauto-stock-extern
+                }
+
+                if ($apiAccountId != $expectedAccountId) {
+                    echo "[" . date('Y-m-d H:i:s') . "] Auto-correcting 999_api_id {$apiAccountId} → {$expectedAccountId} for car {$schedule['car_id']} (country={$importCountry}, gr=" . ($carInfo['gr'] ?? 'NULL') . ")\n";
+                    $apiAccountId = $expectedAccountId;
+                    $fixStmt = $db->prepare("UPDATE {$prefx}_car_ctlg SET `999_api_id` = :acc WHERE id = :car_id");
+                    $fixStmt->execute(['acc' => $expectedAccountId, 'car_id' => $schedule['car_id']]);
+                }
+            } elseif ($catalogType === 'in_stock') {
+                $isCom = ($carInfo['gr'] ?? '') === 'com';
+                if ($isCom && $apiAccountId != 2) {
+                    echo "[" . date('Y-m-d H:i:s') . "] Auto-correcting 999_api_id {$apiAccountId} → 2 (commercial stock) for car {$schedule['car_id']}\n";
+                    $apiAccountId = 2;
+                    $fixStmt = $db->prepare("UPDATE {$prefx}_car_ctlg SET `999_api_id` = :acc WHERE id = :car_id");
+                    $fixStmt->execute(['acc' => 2, 'car_id' => $schedule['car_id']]);
+                }
+            }
             
             if ($catalogType === 'in_stock') {
                 // For in_stock cars, use 999_api_id from car or default to regular account
@@ -293,7 +491,8 @@ try {
                     
                     if ($featuresData && isset($featuresData['features'])) {
                         $updatedFeatures = updateFeaturesWithFreshData($featuresData['features'], $carData, $db, $prefx);
-                        
+                        $updatedFeatures = enforcePhoneForAccount($updatedFeatures, $accountIdForApi);
+
                         echo "[" . date('Y-m-d H:i:s') . "] Обновление объявления актуальными данными перед републикацией...\n";
                         $updateResult = $api999Service->updateAdvert($schedule['existing_999_id'], $updatedFeatures);
                         
@@ -476,7 +675,29 @@ try {
                         ];
                         echo "[" . date('Y-m-d H:i:s') . "] Added feature 2553 with value: {$optionId}\n";
                     }
-                    
+
+                    $hasFeature585 = false;
+                    $model585 = '';
+                    if (!empty($carData['br']) && !empty($carData['mo'])) {
+                        $mStmt = $db->prepare("SELECT mo_nm FROM {$prefx}_car_list WHERE br = ? AND mo = ? LIMIT 1");
+                        $mStmt->execute([$carData['br'], $carData['mo']]);
+                        $model585 = trim((string)$mStmt->fetchColumn());
+                    }
+                    foreach ($featuresData['features'] as $idx585 => $f585) {
+                        if (($f585['id'] ?? '') === '585') {
+                            $hasFeature585 = true;
+                            if (empty($f585['value']) && $model585 !== '') {
+                                $featuresData['features'][$idx585]['value'] = $model585;
+                                echo "[" . date('Y-m-d H:i:s') . "] Filled feature 585 (model): {$model585}\n";
+                            }
+                            break;
+                        }
+                    }
+                    if (!$hasFeature585 && $model585 !== '') {
+                        $featuresData['features'][] = ['id' => '585', 'value' => $model585];
+                        echo "[" . date('Y-m-d H:i:s') . "] Added feature 585 (model): {$model585}\n";
+                    }
+
                     echo "[" . date('Y-m-d H:i:s') . "] Final check - hasFeature103: " . ($hasFeature103 ? 'YES' : 'NO') . ", hasFeature2553: " . ($hasFeature2553 ? 'YES' : 'NO') . ", optionId: " . ($optionId ?? 'NULL') . "\n";
                 }
                 
@@ -493,9 +714,81 @@ try {
                         $accountIdForApi = 3;
                     }
                     $api999Service = new \App\Services\Api999Service($accountIdForApi);
+
+                    // Daily image-upload limit (999.md: ~1200 images/day). If this account
+                    // hit it (403) earlier — this run OR a previous run today — skip it
+                    // entirely until tomorrow, so we don't waste the quota re-uploading
+                    // photos on doomed retries.
+                    $cooldownUntil = isAccountOnCooldown($accountIdForApi, $db, $prefx);
+                    if (!empty($rateLimitedAccounts[$accountIdForApi]) || $cooldownUntil) {
+                        // Daily-limit / cooldown is NOT the car's fault — DON'T burn its
+                        // retry_count (otherwise it could hit 72 and vanish from the queue
+                        // while just waiting for the quota to reset). Only set last_retry_at.
+                        $note = $cooldownUntil
+                            ? 'Account daily image limit reached - waiting for reset'
+                            : 'Account rate-limited this run (will retry)';
+                        $stmt = $db->prepare("
+                            UPDATE gh3sp_sauto_personal_schedules
+                            SET status = 'postponed',
+                                last_retry_at = NOW(),
+                                error_message = :note
+                            WHERE id = :id
+                        ");
+                        $stmt->execute(['note' => $note, 'id' => $schedule['id']]);
+                        $when = $cooldownUntil ? ' until ' . date('H:i', $cooldownUntil) : '';
+                        echo "[" . date('Y-m-d H:i:s') . "] ⏸️ Account {$accountIdForApi} on cooldown{$when} - skipping car {$schedule['car_id']}\n";
+                        continue;
+                    }
+
+                    // (Re)build feature 14 (images) from car_pht — the saved `999` column
+                    // for cars created via /parsing has no images, which 999.md rejects
+                    // with feature_id 14 "Completați câmpul".
+                    $imgRateLimited = false;
+                    $imageIds = buildImagesFeature14($schedule['car_id'], $accountIdForApi, $db, $prefx, $imgRateLimited);
+                    if ($imgRateLimited) {
+                        // Remember for the rest of this run AND persist a cooldown until
+                        // tomorrow (the daily quota likely ran out), so future runs skip it.
+                        $rateLimitedAccounts[$accountIdForApi] = true;
+                        setAccountCooldownUntilTomorrow($accountIdForApi, $db, $prefx);
+                    }
+                    if (empty($imageIds)) {
+                        // No usable images. If it was a rate-limit (403, $imgRateLimited),
+                        // it's not the car's fault — DON'T burn retry_count (cooldown was
+                        // just set; it'll retry tomorrow). Only a genuine "no photos / upload
+                        // failed" case counts toward the 72 retries.
+                        $currentRetryCount = isset($schedule['retry_count']) ? (int)$schedule['retry_count'] : 0;
+                        if ($imgRateLimited) {
+                            $stmt = $db->prepare("
+                                UPDATE gh3sp_sauto_personal_schedules
+                                SET status = 'postponed', last_retry_at = NOW(),
+                                    error_message = 'Account daily image limit reached - waiting for reset'
+                                WHERE id = :id
+                            ");
+                            $stmt->execute(['id' => $schedule['id']]);
+                            echo "[" . date('Y-m-d H:i:s') . "] ⏸️ Daily image limit - postponed car {$schedule['car_id']} (no retry burned)\n";
+                        } else {
+                            $stmt = $db->prepare("
+                                UPDATE gh3sp_sauto_personal_schedules
+                                SET status = 'postponed', retry_count = retry_count + 1, last_retry_at = NOW(),
+                                    error_message = 'No images uploaded for feature 14 (will retry)'
+                                WHERE id = :id
+                            ");
+                            $stmt->execute(['id' => $schedule['id']]);
+                            echo "[" . date('Y-m-d H:i:s') . "] ⏸️ No images for feature 14 - postponed car {$schedule['car_id']} (retry " . ($currentRetryCount + 1) . "/72)\n";
+                        }
+                        continue;
+                    }
+                    // Drop any stale feature 14, then add the freshly uploaded one.
+                    $featuresData['features'] = array_values(array_filter(
+                        $featuresData['features'],
+                        fn($f) => (string)($f['id'] ?? '') !== '14'
+                    ));
+                    $featuresData['features'][] = ['id' => '14', 'value' => $imageIds];
+
+                    $featuresData['features'] = enforcePhoneForAccount($featuresData['features'], $accountIdForApi);
                     $result = $api999Service->setAdvert(
                         $featuresData['category_id'],
-                        $featuresData['subcategory_id'], 
+                        $featuresData['subcategory_id'],
                         $featuresData['offer_type'],
                         $featuresData['features']
                     );
@@ -505,8 +798,8 @@ try {
                         
                         // Update car with new 999.md ID
                         $updateCarStmt = $db->prepare("
-                            UPDATE {$prefx}_car_ctlg 
-                            SET 999_id = :new_999_id
+                            UPDATE {$prefx}_car_ctlg
+                            SET `999_id` = :new_999_id
                             WHERE id = :car_id
                         ");
                         $updateCarStmt->execute([

@@ -224,7 +224,8 @@ if (in_array($_z2, ['cars', 'ordercars'], true) && is_numeric($_z3)) {
         $car_year      = $car_row['yr'] ?? '';
         $car_mileage   = $car_row['mlg'] ?? '';
         $car_engine_cc = $car_row['vol'] ?? '';
-        $car_price     = $car_row['prc'] ?? '';
+        $car_price     = (!empty($car_row['prc_n']) && $car_row['prc_n'] > 0 && $car_row['prc_n'] < ($car_row['prc'] ?? 0))
+                          ? $car_row['prc_n'] : ($car_row['prc'] ?? '');
         $car_currency  = $car_row['cur'] ?? 'EUR';
         $car_currency  = strtoupper($car_currency) === 'EUR' ? 'EUR' : (strtoupper($car_currency) === 'USD' ? 'USD' : 'EUR');
         $car_color     = $car_row['clr'] ?? '';
@@ -324,7 +325,78 @@ if (in_array($_z2, ['cars', 'ordercars'], true) && isset($t_mp[3]) && !is_numeri
 ?>
 
 <style>
-
+/* Share button on car cards (top-right corner): black icon only, no label. */
+.card-share-btn{position:absolute;top:8px;right:8px;z-index:5;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:0;width:36px;height:36px;padding:0;background:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.6);border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.12);color:#111;cursor:pointer;line-height:1;transition:background .15s,transform .12s,box-shadow .15s;-webkit-tap-highlight-color:transparent;}
+.card-share-btn:hover{background:#000;border-color:#000;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.25);transform:translateY(-1px);}
+.card-share-btn:active{transform:scale(.96);}
+/* Label is hidden by default — only shown (as "Copiat") after a successful copy. */
+.card-share-btn .csb-label{display:none;font-size:.62rem;font-weight:700;letter-spacing:.01em;color:#fff;}
+.card-share-btn .csb-ico{width:18px;height:18px;display:block;fill:currentColor;}
+.card-share-btn .csb-ico path{fill:currentColor;}
+/* After copy: red pill with white "Copiat", icon hidden, auto width for the text. */
+.card-share-btn.is-copied{width:auto;min-width:36px;padding:0 10px;background:#d30909;border-color:#d30909;color:#fff;border-radius:10px;}
+.card-share-btn.is-copied .csb-label{display:inline;color:#fff;}
+.card-share-btn.is-copied .csb-ico{display:none;}
+/* Make sure the card is a positioning context for the absolute button. */
+.it.car,.car_box.similar{position:relative;}
+/* Image wrapper inside cards: anchors the favorite button ON the photo.
+   The original card CSS targets `.it > img` (direct child); the wrapper broke that
+   chain, so re-apply the image-slot sizing to the wrapper + its inner image. */
+.it.car .card-img-wrap{position:relative;display:block;width:100%;float:left;}
+.it.car .card-img-wrap > img{width:100%;height:13rem;object-fit:cover;object-position:center;display:block;background:#fff url(/media/images/site/v2/no_image.svg) no-repeat center / 30%;}
+.it.car .card-img-wrap > .mobile-card-slider{width:100%;display:block;}
+@media (min-width:1600px) and (max-width:2199px){ .it.car .card-img-wrap > img{height:15rem;} }
+@media (min-width:2200px) and (max-width:2999px){ .it.car .card-img-wrap > img{height:17rem;} }
+@media (min-width:3000px){ .it.car .card-img-wrap > img{height:19rem;} }
+@media (max-width:767px){ .it.car .card-img-wrap > img{height:13rem;} }
+/* Mobile: bigger button, more spacing from the corner. */
+@media (max-width:767px){
+	.card-share-btn{top:12px;right:12px;width:44px;height:44px;border-radius:12px;}
+	.card-share-btn .csb-label{font-size:.72rem;}
+	.card-share-btn .csb-ico{width:22px;height:22px;}
+	.card-share-btn.is-copied{width:auto;border-radius:12px;}
+}
+/* Favorite (heart) button — same white box as the share button, top-right of the image. */
+.card-fav-btn{position:absolute;top:4px;right:4px;z-index:6;box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:36px;height:36px;padding:0;background:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.6);border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.12);cursor:pointer;line-height:1;transition:background .15s,transform .12s,box-shadow .15s;-webkit-tap-highlight-color:transparent;}
+.card-fav-btn:hover{background:#fff;transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.25);}
+.card-fav-btn:active{transform:scale(.92);}
+/* Heart icon: outline (empty) by default, fully red-filled when favorited. */
+.card-fav-btn .cfb-ico{width:20px;height:20px;display:block;fill:none;stroke:#111;stroke-width:2;transition:fill .15s,stroke .15s;}
+.card-fav-btn:hover .cfb-ico{stroke:#e2001a;}
+.card-fav-btn.is-fav .cfb-ico{fill:#e2001a;stroke:#e2001a;}
+.card-fav-btn.fav-pop{animation:favPop .28s ease;}
+@keyframes favPop{0%{transform:scale(1);}45%{transform:scale(1.28);}100%{transform:scale(1);}}
+/* Product page carousel + fullscreen slider hearts */
+.wrapf-carousel > .card-fav-btn{top:12px;right:12px;width:44px;height:44px;border-radius:12px;z-index:8;}
+.wrapf-carousel > .card-fav-btn .cfb-ico{width:24px;height:24px;}
+/* Desktop product gallery big photo */
+main > .pht_bx > .big_pht{position:relative;}
+main > .pht_bx > .big_pht > .card-fav-btn{top:12px;right:12px;width:44px;height:44px;border-radius:12px;z-index:8;}
+main > .pht_bx > .big_pht > .card-fav-btn .cfb-ico{width:24px;height:24px;}
+#show_img .show-img-fav{position:absolute;top:10%;right:20%;width:44px;height:44px;border-radius:12px;z-index:3;}
+#show_img .show-img-fav .cfb-ico{width:24px;height:24px;}
+#fav_float{position:fixed;right:40px;top:40px;z-index:11;display:none;flex-direction:column;align-items:center;gap:5px;text-decoration:none;cursor:pointer;}
+#fav_float.has-favs{display:flex;}
+#fav_float > .fav-float-ico{position:relative;display:block;width:50px;height:50px;}
+#fav_float > .fav-float-ico > svg{width:50px;height:50px;padding:13px;box-sizing:border-box;fill:#e2001a;background:#fff;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.2);transition:transform .15s,box-shadow .15s;}
+#fav_float:hover > .fav-float-ico > svg{transform:translateY(-2px);box-shadow:0 5px 14px rgba(0,0,0,.3);}
+#fav_float > .fav-float-lbl{font-family:"def_l";font-size:.95rem;font-weight:700;color:#000;line-height:1;text-align:center;}
+#fav_float > .fav-float-ico > .fav-nav-count{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;line-height:18px;padding:0 5px;background:#e2001a;color:#fff;border-radius:9px;font-size:.7rem;font-weight:700;text-align:center;box-sizing:border-box;}
+/* Mobile/portrait: favorites float goes bottom-left, directly above #to_top.
+   Kept here (not in media.css) so it loads after the desktop rule above and wins. */
+@media (max-width:999px), (orientation: portrait){
+	#fav_float{top:auto;right:auto;left:10px;bottom:100px;}
+	#fav_float > .fav-float-lbl{display:none;}
+}
+/* Favorites nav count badge */
+.favorites .fav-nav-count{display:inline-block;min-width:18px;height:18px;line-height:18px;padding:0 5px;margin-left:4px;background:#e2001a;color:#fff;border-radius:9px;font-size:.7rem;font-weight:700;text-align:center;vertical-align:middle;}
+main .gr.fav-page > h1{margin-top:1vw;margin-bottom:0.5vw;}
+.fav-loading{padding:2rem 0;text-align:center;color:#888;font-size:1.5rem;}
+.fav-empty{padding:2rem 1rem;text-align:center;color:#555;font-size:1.1rem;}
+@media (max-width:767px){
+	.card-fav-btn{top:12px;right:12px;width:44px;height:44px;border-radius:12px;}
+	.card-fav-btn .cfb-ico{width:24px;height:24px;}
+}
 </style>
 <script data-cfasync="false">
 // Google Consent Mode v2
@@ -406,6 +478,180 @@ $(document).ready(function(){
 		document.getElementById('cons_bx').style.display = 'flex';
 	}
 })
+</script>
+
+<script data-cfasync="false">
+// Card "Share" button: copy the car URL to clipboard, show check + "link copied" toast.
+// Delegated on document so it also covers cards injected after load (similar prices, etc.).
+(function(){
+	function copyText(text){
+		if (navigator.clipboard && window.isSecureContext) {
+			return navigator.clipboard.writeText(text);
+		}
+		return new Promise(function(resolve, reject){
+			try {
+				var ta = document.createElement('textarea');
+				ta.value = text; ta.setAttribute('readonly',''); ta.style.position='absolute'; ta.style.left='-9999px';
+				document.body.appendChild(ta); ta.select();
+				var ok = document.execCommand('copy');
+				document.body.removeChild(ta);
+				ok ? resolve() : reject();
+			} catch(e){ reject(e); }
+		});
+	}
+	function showCopied(btn){
+		var label = btn.querySelector('.csb-label');
+		if (label && btn._csbOrig == null) { btn._csbOrig = label.innerHTML; }
+		btn.classList.add('is-copied');
+		if (label) { label.textContent = btn.getAttribute('data-copied-text') || 'Link copiat'; }
+		clearTimeout(btn._csbT);
+		btn._csbT = setTimeout(function(){
+			btn.classList.remove('is-copied');
+			if (label && btn._csbOrig != null) { label.innerHTML = btn._csbOrig; }
+		}, 1600);
+	}
+	document.addEventListener('click', function(e){
+		var btn = e.target.closest && e.target.closest('.card-share-btn');
+		if (!btn) return;
+		// Inside an <a> card — don't follow the link.
+		e.preventDefault();
+		e.stopPropagation();
+		var url = btn.getAttribute('data-share-url');
+		if (!url) return;
+		if (url.indexOf('http') !== 0) { url = location.origin + url; }
+		// On phones, open the OS share sheet (Viber / Telegram / WhatsApp / Mail…).
+		if (navigator.share) {
+			try { navigator.share({ url: url }); } catch (err) {}
+			return;
+		}
+		// Desktop (no Web Share API): copy the link + show "Copiat".
+		copyText(url).then(function(){ showCopied(btn); }).catch(function(){});
+	}, true);
+})();
+</script>
+
+<script data-cfasync="false">
+// Favorites (wishlist) — localStorage based, no account needed.
+(function(){
+	var KEY = 'sauto_favorites';
+
+	function getFavs(){
+		try { var v = JSON.parse(localStorage.getItem(KEY) || '[]'); return Array.isArray(v) ? v.map(Number).filter(Boolean) : []; }
+		catch(e){ return []; }
+	}
+	function saveFavs(list){
+		try { localStorage.setItem(KEY, JSON.stringify(list)); } catch(e){}
+	}
+	function toggleFav(id){
+		id = Number(id); if (!id) return false;
+		var list = getFavs(); var i = list.indexOf(id);
+		if (i === -1) { list.push(id); } else { list.splice(i, 1); }
+		saveFavs(list);
+		return i === -1; // true if now favorited
+	}
+
+	// Reflect current state on every heart button + the nav count badge.
+	function syncUI(){
+		var favs = getFavs();
+		document.querySelectorAll('.card-fav-btn').forEach(function(btn){
+			var id = Number(btn.getAttribute('data-fav-id'));
+			var on = id && favs.indexOf(id) !== -1;
+			btn.classList.toggle('is-fav', !!on);
+			// Tooltip: "remove" when already favorited, "add" otherwise.
+			var t = on ? btn.getAttribute('data-fav-remove') : btn.getAttribute('data-fav-add');
+			if (t) { btn.setAttribute('title', t); btn.setAttribute('aria-label', t); }
+		});
+		document.querySelectorAll('.fav-nav-count').forEach(function(b){
+			b.textContent = favs.length;
+			b.style.display = favs.length ? 'inline-block' : 'none';
+		});
+		// Floating favorites button: only show when there is at least one favorite.
+		var floatBtn = document.getElementById('fav_float');
+		if (floatBtn) { floatBtn.classList.toggle('has-favs', favs.length > 0); }
+	}
+
+	// Keep the fullscreen viewer (#show_img) heart pointed at the current car.
+	function currentCarId(){
+		var b = document.querySelector('.wrapf-carousel .card-fav-btn[data-fav-id], .pht_bx .card-fav-btn[data-fav-id]');
+		return b ? b.getAttribute('data-fav-id') : '';
+	}
+
+	function renderFavEmptyIfNeeded(){
+		var box = document.getElementById('fav_container');
+		var empty = document.getElementById('fav_empty');
+		if (!box || !empty) return;
+		empty.style.display = box.querySelector('.it') ? 'none' : 'block';
+	}
+
+	document.addEventListener('click', function(e){
+		var btn = e.target.closest && e.target.closest('.card-fav-btn');
+		if (!btn) return;
+		e.preventDefault();
+		e.stopPropagation();
+		// The fullscreen viewer heart has no id of its own — borrow the product's.
+		if (btn.classList.contains('show-img-fav') && !btn.getAttribute('data-fav-id')) {
+			btn.setAttribute('data-fav-id', currentCarId());
+		}
+		var id = btn.getAttribute('data-fav-id');
+		if (!id) return;
+		var nowFav = toggleFav(id);
+		btn.classList.remove('fav-pop'); void btn.offsetWidth; btn.classList.add('fav-pop');
+		syncUI();
+		// On the /favorites page, removing a fav should drop its card.
+		if (!nowFav && document.getElementById('fav_container')) {
+			var card = document.querySelector('#fav_container [data-fav-id="'+id+'"]');
+			var it = card ? card.closest('.it') : null;
+			if (it) { it.remove(); renderFavEmptyIfNeeded(); }
+		}
+	}, true);
+
+	// When opening the fullscreen viewer, point its heart at the current car.
+	document.addEventListener('click', function(e){
+		if (e.target.closest && e.target.closest('.big_pht')) {
+			var fav = document.querySelector('#show_img .show-img-fav');
+			if (fav) { fav.setAttribute('data-fav-id', currentCarId()); setTimeout(syncUI, 0); }
+		}
+	});
+
+	// /favorites page — fetch cards for the saved IDs via AJAX.
+	function loadFavoritesPage(){
+		var box = document.getElementById('fav_container');
+		if (!box) return;
+		var loading = document.getElementById('fav_loading');
+		var empty = document.getElementById('fav_empty');
+		var ids = getFavs();
+		if (!ids.length) { if (empty) empty.style.display = 'block'; return; }
+		if (loading) loading.style.display = 'block';
+
+		var form = new URLSearchParams();
+		form.append('tp', 'ste');
+		form.append('fn', 'fav_cars');
+		form.append('ids', ids.join(','));
+
+		fetch('/ajax.php', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: form.toString() })
+			.then(function(r){ return r.json(); })
+			.then(function(data){
+				if (loading) loading.style.display = 'none';
+				if (data && data.html && (data.count > 0)) {
+					box.innerHTML = data.html;
+					// Prune localStorage of IDs that no longer exist/are inactive.
+					if (Array.isArray(data.ids)) {
+						var valid = data.ids.map(Number);
+						var cleaned = getFavs().filter(function(id){ return valid.indexOf(id) !== -1; });
+						saveFavs(cleaned);
+					}
+					syncUI();
+				} else {
+					if (empty) empty.style.display = 'block';
+				}
+			})
+			.catch(function(){ if (loading) loading.style.display = 'none'; if (empty) empty.style.display = 'block'; });
+	}
+
+	function init(){ syncUI(); loadFavoritesPage(); }
+	if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); }
+	else { init(); }
+})();
 </script>
 
 <!-- AMP removed - site is not AMP, was loading unnecessary ~100KB -->

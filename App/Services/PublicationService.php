@@ -137,19 +137,43 @@ class PublicationService
         
         // Add catalog type label first
         if ($catalogType === 'on_order') {
-            $message = "📋 LA COMANDĂ";
+            // Delivery: Korea (import country 41) → 60 working days, others → 20
+            // (same rule as the Telegram caption). Look it up if not in $carData.
+            $importCountryId = (int)($carData['import_country_id'] ?? 0);
+            if ($importCountryId === 0 && !empty($carData['id'])) {
+                try {
+                    $st = $this->db->prepare("SELECT import_country_id FROM {$this->prefx}_car_ctlg WHERE id = ?");
+                    $st->execute([$carData['id']]);
+                    $importCountryId = (int)$st->fetchColumn();
+                } catch (\Throwable $e) { /* fall back to 20 below */ }
+            }
+            // Korea (41) vs Europe: different title, delivery term and price label.
+            $isKorea = ($importCountryId === 41);
+            $deliveryDays = $isKorea ? 60 : 20;
+
+            $message = $isKorea ? "🇰🇷 LA COMANDĂ DIN COREEA" : "🇪🇺 LA COMANDĂ DIN EUROPA";
             $message .= "\n🚘 " . $title;
-            $message .= "\n⏰ Termen de livrare: " . ($carData['delivery_time'] ?? '14 zile');
+            $message .= "\n⏰ Termen de livrare: " . $deliveryDays . " zile lucratoare";
         } else {
             $message = "✅ În stoc";
             $message .= "\n🚘 " . $title;
         }
         
         // Add price (different text for on_order cars)
-        if (!empty($carData['prc'])) {
-            $price = number_format($carData['prc'], 0, '.', ',') . ' €';
+        // For in-stock cars, use the new (discounted) price when it is set
+        $effectivePrc = $carData['prc'] ?? 0;
+        if ($catalogType !== 'on_order'
+            && !empty($carData['prc_n']) && is_numeric($carData['prc_n'])
+            && (float)$carData['prc_n'] < (float)($carData['prc'] ?? 0)) {
+            $effectivePrc = $carData['prc_n'];
+        }
+        if (!empty($effectivePrc)) {
+            $price = number_format($effectivePrc, 0, '.', ',') . ' €';
             if ($catalogType === 'on_order') {
-                $message .= "\n💰 Pretul masinii la licitatii Europene: " . $price;
+                // Korea: plain "Pretul masinii"; Europe: "...la licitatii Europene".
+                $message .= !empty($isKorea)
+                    ? "\n💰 Pretul masinii: " . $price
+                    : "\n💰 Pretul masinii la licitatii Europene: " . $price;
             } else {
                 $message .= "\n💰 Preț: " . $price;
             }
@@ -346,9 +370,22 @@ class PublicationService
         $caption_lines = [];
         
         if ($catalogType === 'on_order') {
+            // Delivery term: Korea (import country 41) takes 60 working days, every
+            // other on-order country 20. import_country_id comes with $carData; if
+            // it's missing, look it up by car id.
+            $importCountryId = (int)($carData['import_country_id'] ?? 0);
+            if ($importCountryId === 0 && !empty($carData['id'])) {
+                try {
+                    $st = $this->db->prepare("SELECT import_country_id FROM {$this->prefx}_car_ctlg WHERE id = ?");
+                    $st->execute([$carData['id']]);
+                    $importCountryId = (int)$st->fetchColumn();
+                } catch (\Throwable $e) { /* fall back to 20 below */ }
+            }
+            $deliveryDays = ($importCountryId === 41) ? 60 : 20;
+
             // Order cars format
             $caption_lines[] = '🏆 Pretul masinii la cheie in MD este de ' . $parseCurr($carData['prc']) . '€';
-            $caption_lines[] = '✨ Termen livrare 15 zile lucratoare';
+            $caption_lines[] = '✨ Termen livrare ' . $deliveryDays . ' zile lucratoare';
             $caption_lines[] = '';
             $caption_lines[] = '📋 Detalii despre o mașină disponibilă acum la comandă:';
             
@@ -360,12 +397,22 @@ class PublicationService
             $caption_lines[] = '✅ Specificații:';
             $caption_lines[] = '▪️ Motor: ' . $carData['vol'] . 'cc ' . $carData['hp'] . 'hp';
             
-            // Fuel type (use language mappings like for in_stock)
-            $fuel = isset($lng['l']['car']['fl'][$carData['fl']]) ? $lng['l']['car']['fl'][$carData['fl']] : ($carData['fl'] ?? 'Necunoscut');
+            // Fuel type — map the code to a readable name (the $lng lookup failed
+            // and printed the raw "dsl"/"atm"). Same maps as the in_stock block.
+            $fuelTypes = [
+                'gsl' => 'Benzină', 'gmn' => 'Benzină / Gaz (metan)', 'gpn' => 'Benzină / Gaz (propan)',
+                'hbd' => 'Hibrid', 'dsl' => 'Diesel', 'pih' => 'Plug-in Hibrid', 'pid' => 'Plug-in Hibrid (diesel)',
+                'elc' => 'Electricitate', 'gas' => 'Gaz',
+            ];
+            $fuel = $fuelTypes[$carData['fl']] ?? ($carData['fl'] ?? 'Necunoscut');
             $caption_lines[] = '▪️ Combustibil: ' . $fuel;
-            
-            // Transmission (use language mappings like for in_stock)
-            $transmission = isset($lng['l']['car']['tra'][$carData['tra']]) ? $lng['l']['car']['tra'][$carData['tra']] : ($carData['tra'] ?? 'Necunoscut');
+
+            // Transmission.
+            $transTypes = [
+                'atm' => 'Automată', 'mnl' => 'Mecanică', 'tpt' => 'Tiptronic',
+                'rbt' => 'Robotizată', 'vrr' => 'Variator',
+            ];
+            $transmission = $transTypes[$carData['tra']] ?? ($carData['tra'] ?? 'Necunoscut');
             $caption_lines[] = '▪️ Transmisie: ' . $transmission;
             $caption_lines[] = '';
             
@@ -385,7 +432,8 @@ class PublicationService
             $caption_lines[] = $car_title;
             
             $cur = $carData['cur'];
-            $prc = ($carData['prc_t'] != 0 && $carData['prc_t'] > time()) ? $carData['prc_n'] : $carData['prc'];
+            $prc = (!empty($carData['prc_n']) && is_numeric($carData['prc_n']) && (float)$carData['prc_n'] < (float)$carData['prc'])
+                ? $carData['prc_n'] : $carData['prc'];
             $caption_lines[] = '✅ ' . $carData['yr'] . ', ' . $parseCurr($prc) . ' ' . $symb_rplc($cur);
             
             // Specifications with icons

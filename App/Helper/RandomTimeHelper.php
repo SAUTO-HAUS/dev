@@ -48,7 +48,7 @@ class RandomTimeHelper
         // Get database connection from global scope or create new one
         global $db, $prefx;
         
-        // Default fallback values
+        // Default fallback values (only used if DB has no setting)
         $defaultStart = '18:00';
         $defaultEnd = '22:00';
         $defaultInterval = 5;
@@ -89,21 +89,52 @@ class RandomTimeHelper
             $intervalMinutes = $defaultInterval;
         }
         
-        // Parse start and end times
+        if ($intervalMinutes < 1) {
+            $intervalMinutes = $defaultInterval;
+        }
+
+        // Parse start and end times into minutes-from-midnight.
         $startParts = explode(':', $startTime);
         $endParts = explode(':', $endTime);
-        
-        $startHour = intval($startParts[0]);
-        $startMinute = intval($startParts[1] ?? 0);
-        $endHour = intval($endParts[0]);
-        $endMinute = intval($endParts[1] ?? 0);
-        
-        // Convert to minutes from midnight
-        $startMinutes = ($startHour * 60) + $startMinute;
-        $endMinutes = ($endHour * 60) + $endMinute;
-        
-        // Generate random time using the custom function
-        return self::generateRandomTime($startHour, $endHour, $intervalMinutes);
+        $startMinutes = (intval($startParts[0]) * 60) + intval($startParts[1] ?? 0);
+        $endMinutes = (intval($endParts[0]) * 60) + intval($endParts[1] ?? 0);
+
+        // "From now on" logic: if we are currently inside the window, don't pick a
+        // slot in the past — raise the effective start to the current time (rounded
+        // up to the next interval). Before the window we use the full window; after
+        // it (window already passed today) we also fall back to the full window so
+        // the publish cron picks it up the next day.
+        $nowMinutes = (intval(date('H')) * 60) + intval(date('i'));
+        if ($nowMinutes >= $startMinutes && $nowMinutes < $endMinutes) {
+            $startMinutes = (int) (ceil($nowMinutes / $intervalMinutes) * $intervalMinutes);
+        }
+
+        return self::generateRandomTimeBetween($startMinutes, $endMinutes, $intervalMinutes);
+    }
+
+    /**
+     * Pick a random interval-aligned time between two minute-of-day bounds.
+     *
+     * @param int $startMinutes Start, minutes from midnight
+     * @param int $endMinutes   End (exclusive), minutes from midnight
+     * @param int $intervalMinutes Step in minutes
+     * @return string Time in H:i format
+     */
+    private static function generateRandomTimeBetween(int $startMinutes, int $endMinutes, int $intervalMinutes): string
+    {
+        // Guard against an empty/inverted window (e.g. now is past end): clamp to the
+        // last valid slot so we always return a sane time inside the window.
+        if ($endMinutes <= $startMinutes) {
+            $randomMinutes = max(0, $endMinutes - $intervalMinutes);
+        } else {
+            $totalIntervals = (int) floor(($endMinutes - $startMinutes) / $intervalMinutes);
+            if ($totalIntervals < 1) {
+                $totalIntervals = 1;
+            }
+            $randomMinutes = $startMinutes + (rand(0, $totalIntervals - 1) * $intervalMinutes);
+        }
+
+        return sprintf('%02d:%02d', intdiv($randomMinutes, 60), $randomMinutes % 60);
     }
     
     /**
@@ -114,19 +145,11 @@ class RandomTimeHelper
      * @param int $intervalMinutes Interval in minutes (default: 5)
      * @return string Time in H:i format
      */
-    public static function generateRandomTime(int $startHour = 18, int $endHour = 22, int $intervalMinutes = 5): string 
+    public static function generateRandomTime(int $startHour = 18, int $endHour = 22, int $intervalMinutes = 5): string
     {
-        $startMinutes = $startHour * 60;
-        $endMinutes = $endHour * 60;
-        
-        $totalIntervals = ($endMinutes - $startMinutes) / $intervalMinutes;
-        $randomInterval = rand(0, $totalIntervals - 1);
-        
-        $randomMinutes = $startMinutes + ($randomInterval * $intervalMinutes);
-        
-        $hours = intval($randomMinutes / 60);
-        $minutes = $randomMinutes % 60;
-        
-        return sprintf('%02d:%02d', $hours, $minutes);
+        if ($intervalMinutes < 1) {
+            $intervalMinutes = 5;
+        }
+        return self::generateRandomTimeBetween($startHour * 60, $endHour * 60, $intervalMinutes);
     }
 }

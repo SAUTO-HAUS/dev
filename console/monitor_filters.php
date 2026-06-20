@@ -9,7 +9,7 @@ $_SERVER['HTTP_HOST'] = 'sauto.md';
 $_SERVER['REQUEST_URI'] = '/';
 $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
 
-$SITE_URL           = 'https://sauto.md';
+$SITE_URL           = 'https://www.sauto.md';
 $FACET_ENDPOINT     = '/content/site/ajax/get_facets.php';
 $RESPONSE_TIMEOUT   = 10;       
 $MAX_RESPONSE_TIME  = 5;        
@@ -18,7 +18,7 @@ $ALERT_COOLDOWN_MIN = 30;
 $LOG_FILE           = $docRoot . '/logs/filter_monitor.log';
 $COOLDOWN_FILE      = $docRoot . '/logs/filter_monitor_cooldown.txt';
 
-$ALERT_EMAILS       = ['vlad@sauto.md', 'botnarenco1996@mail.com'];
+$ALERT_EMAILS       = ['botnarenco1996@mail.com'];
 $ALERT_FROM_EMAIL   = 'monitor@sauto.md';
 $ALERT_FROM_NAME    = 'SAUTO Monitor';
 
@@ -41,78 +41,86 @@ function monitorLog($msg, $level = 'INFO') {
 
 monitorLog('Запуск проверки фильтров');
 
-$ch = curl_init();
-curl_setopt_array($ch, [
-    CURLOPT_URL            => $SITE_URL . $FACET_ENDPOINT,
-    CURLOPT_POST           => true,
-    CURLOPT_POSTFIELDS     => json_encode(['page' => 'in_stock', 'lang' => 'ro']),
-    CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
-    CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_TIMEOUT        => $RESPONSE_TIMEOUT,
-    CURLOPT_CONNECTTIMEOUT => 5,
-    CURLOPT_SSL_VERIFYPEER => false,
-    CURLOPT_FOLLOWLOCATION => true,
-    CURLOPT_USERAGENT      => 'SAUTO-FilterMonitor/1.0'
-]);
+// Проверяем оба типа каталога: in_stock (/cars) и on_order (/ordercars)
+$catalogChecks = [
+    'in_stock' => ['page' => 'cars',      'catalog_type' => 'in_stock'],
+    'on_order' => ['page' => 'ordercars', 'catalog_type' => 'on_order'],
+];
 
-$response = curl_exec($ch);
-$httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-$responseTime = round(curl_getinfo($ch, CURLINFO_TOTAL_TIME), 3);
-$curlError = curl_error($ch);
-curl_close($ch);
+foreach ($catalogChecks as $catalogName => $catalogParams) {
+    $ch = curl_init();
+    curl_setopt_array($ch, [
+        CURLOPT_URL            => $SITE_URL . $FACET_ENDPOINT,
+        CURLOPT_POST           => true,
+        CURLOPT_POSTFIELDS     => json_encode($catalogParams + ['lang' => 'ro']),
+        CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => $RESPONSE_TIMEOUT,
+        CURLOPT_CONNECTTIMEOUT => 5,
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_USERAGENT      => 'SAUTO-FilterMonitor/1.0'
+    ]);
 
-$results['http_code'] = $httpCode;
-$results['response_time'] = $responseTime . 's';
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $responseTime = round(curl_getinfo($ch, CURLINFO_TOTAL_TIME), 3);
+    $curlError = curl_error($ch);
+    curl_close($ch);
 
-if ($httpCode !== 200) {
-    $errors[] = "API вернул HTTP {$httpCode}" . ($curlError ? " ({$curlError})" : '');
-    monitorLog("ОШИБКА: Facet API — HTTP {$httpCode}. cURL: {$curlError}", 'ERROR');
-} else {
-    monitorLog("OK: Facet API — HTTP 200 за {$responseTime}s");
-}
+    $results[$catalogName]['http_code'] = $httpCode;
+    $results[$catalogName]['response_time'] = $responseTime . 's';
 
-if ($responseTime > $MAX_RESPONSE_TIME) {
-    $errors[] = "Время ответа {$responseTime}s превышает порог {$MAX_RESPONSE_TIME}s";
-    monitorLog("МЕДЛЕННО: Facet API — {$responseTime}s (порог: {$MAX_RESPONSE_TIME}s)", 'WARN');
-}
-
-if ($response) {
-    $data = json_decode($response, true);
-
-    if ($data === null) {
-        $errors[] = 'Невалидный JSON ответ';
-        monitorLog('ОШИБКА: Невалидный JSON от Facet API', 'ERROR');
-    } elseif (!isset($data['success']) || $data['success'] !== true) {
-        $errors[] = 'API вернул success=false: ' . ($data['error'] ?? 'неизвестно');
-        monitorLog('ОШИБКА: API success=false: ' . ($data['error'] ?? ''), 'ERROR');
+    if ($httpCode !== 200) {
+        $errors[] = "[{$catalogName}] API вернул HTTP {$httpCode}" . ($curlError ? " ({$curlError})" : '');
+        monitorLog("ОШИБКА: [{$catalogName}] Facet API — HTTP {$httpCode}. cURL: {$curlError}", 'ERROR');
     } else {
-        monitorLog('OK: Валидный JSON, success=true');
+        monitorLog("OK: [{$catalogName}] Facet API — HTTP 200 за {$responseTime}s");
+    }
 
-        $total = $data['data']['total'] ?? 0;
-        $results['total_cars'] = $total;
+    if ($responseTime > $MAX_RESPONSE_TIME) {
+        $errors[] = "[{$catalogName}] Время ответа {$responseTime}s превышает порог {$MAX_RESPONSE_TIME}s";
+        monitorLog("МЕДЛЕННО: [{$catalogName}] Facet API — {$responseTime}s (порог: {$MAX_RESPONSE_TIME}s)", 'WARN');
+    }
 
-        if ($total < $MIN_EXPECTED_CARS) {
-            $errors[] = "Всего {$total} машин (ожидается >= {$MIN_EXPECTED_CARS})";
-            monitorLog("ОШИБКА: {$total} машин в каталоге (мин: {$MIN_EXPECTED_CARS})", 'ERROR');
+    if ($response) {
+        $data = json_decode($response, true);
+
+        if ($data === null) {
+            $errors[] = "[{$catalogName}] Невалидный JSON ответ";
+            monitorLog("ОШИБКА: [{$catalogName}] Невалидный JSON от Facet API", 'ERROR');
+        } elseif (!isset($data['success']) || $data['success'] !== true) {
+            $errors[] = "[{$catalogName}] API вернул success=false: " . ($data['error'] ?? 'неизвестно');
+            monitorLog("ОШИБКА: [{$catalogName}] API success=false: " . ($data['error'] ?? ''), 'ERROR');
         } else {
-            monitorLog("OK: {$total} машин в каталоге");
-        }
+            monitorLog("OK: [{$catalogName}] Валидный JSON, success=true");
 
-        $facets = $data['data']['facets'] ?? [];
-        $emptyFacets = [];
-        foreach (['br', 'bt', 'fl', 'tra'] as $key) {
-            if (empty($facets[$key])) {
-                $emptyFacets[] = $key;
+            $total = $data['data']['total'] ?? 0;
+            $results[$catalogName]['total_cars'] = $total;
+
+            if ($total < $MIN_EXPECTED_CARS) {
+                $errors[] = "[{$catalogName}] Всего {$total} машин (ожидается >= {$MIN_EXPECTED_CARS})";
+                monitorLog("ОШИБКА: [{$catalogName}] {$total} машин в каталоге (мин: {$MIN_EXPECTED_CARS})", 'ERROR');
+            } else {
+                monitorLog("OK: [{$catalogName}] {$total} машин в каталоге");
             }
-        }
 
-        if (!empty($emptyFacets)) {
-            $errors[] = 'Пустые фасеты: ' . implode(', ', $emptyFacets);
-            monitorLog('ОШИБКА: Пустые фасеты: ' . implode(', ', $emptyFacets), 'ERROR');
-        } else {
-            $counts = [];
-            foreach ($facets as $k => $v) { $counts[] = "{$k}=" . count($v); }
-            monitorLog('OK: Фасеты заполнены: ' . implode(', ', $counts));
+            $facets = $data['data']['facets'] ?? [];
+            $emptyFacets = [];
+            foreach (['br', 'bt', 'fl', 'tra'] as $key) {
+                if (empty($facets[$key])) {
+                    $emptyFacets[] = $key;
+                }
+            }
+
+            if (!empty($emptyFacets)) {
+                $errors[] = "[{$catalogName}] Пустые фасеты: " . implode(', ', $emptyFacets);
+                monitorLog("ОШИБКА: [{$catalogName}] Пустые фасеты: " . implode(', ', $emptyFacets), 'ERROR');
+            } else {
+                $counts = [];
+                foreach ($facets as $k => $v) { $counts[] = "{$k}=" . count($v); }
+                monitorLog("OK: [{$catalogName}] Фасеты заполнены: " . implode(', ', $counts));
+            }
         }
     }
 }
@@ -201,9 +209,15 @@ if ($hasError) {
                 <ul>{$errorList}</ul>
                 <h3>Детали:</h3>
                 <table border='1' cellpadding='5' cellspacing='0' style='border-collapse:collapse;font-family:monospace;'>
-                    <tr><td>HTTP код</td><td>" . ($results['http_code'] ?? '-') . "</td></tr>
-                    <tr><td>Время ответа API</td><td>" . ($results['response_time'] ?? '-') . "</td></tr>
-                    <tr><td>Машин (API)</td><td>" . ($results['total_cars'] ?? '-') . "</td></tr>
+                    <tr><td colspan='2'><b>В наличии (in_stock)</b></td></tr>
+                    <tr><td>HTTP код</td><td>" . ($results['in_stock']['http_code'] ?? '-') . "</td></tr>
+                    <tr><td>Время ответа API</td><td>" . ($results['in_stock']['response_time'] ?? '-') . "</td></tr>
+                    <tr><td>Машин (API)</td><td>" . ($results['in_stock']['total_cars'] ?? '-') . "</td></tr>
+                    <tr><td colspan='2'><b>Под заказ (on_order)</b></td></tr>
+                    <tr><td>HTTP код</td><td>" . ($results['on_order']['http_code'] ?? '-') . "</td></tr>
+                    <tr><td>Время ответа API</td><td>" . ($results['on_order']['response_time'] ?? '-') . "</td></tr>
+                    <tr><td>Машин (API)</td><td>" . ($results['on_order']['total_cars'] ?? '-') . "</td></tr>
+                    <tr><td colspan='2'><b>База данных</b></td></tr>
                     <tr><td>Машин (DB)</td><td>" . ($results['db_cars'] ?? '-') . "</td></tr>
                     <tr><td>Время запроса DB</td><td>" . ($results['db_time'] ?? '-') . "</td></tr>
                     <tr><td>Файлов кэша</td><td>" . ($results['cache_files'] ?? '-') . "</td></tr>

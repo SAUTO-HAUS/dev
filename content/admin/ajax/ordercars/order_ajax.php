@@ -5,6 +5,8 @@ use App\Db\Adverts;
 
 defined( '_DOIT' ) or die( 'Restricted access' );
 
+date_default_timezone_set('Europe/Chisinau');
+
 $ajax_folder = _ADM_AJAX.'/ordercars';
 $photo_folder = _CAR_IMG;
 $rtrn = 'none';
@@ -471,7 +473,11 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
         // Update car as scheduled for Facebook
         $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `facebook_published`=:facebook_published WHERE `id`= :id ');
         $pdo->execute([ 'id' => $it_id, 'facebook_published' => 2 ]); // 2 = scheduled
-        
+
+        try {
+            $db->prepare('UPDATE '.$prefx.'_parsing_cars SET published_fb = 1 WHERE car_ctlg_id = ?')->execute([$it_id]);
+        } catch (\Throwable $e) { /* non-fatal */ }
+
         $returnIt['status'] = true;
         $returnIt['message'] = "Programat pentru publicare la {$scheduled_date} {$schedule_time}";
         
@@ -682,7 +688,13 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
         // Update car as scheduled for Telegram
         $stmt = $db->prepare("UPDATE {$prefx}_car_ctlg SET telegram_published = 2 WHERE id = ?");
         $stmt->execute([$it_id]); // 2 = scheduled
-        
+
+        // Mark on the parsing entry too, so the parsing "Published" page shows
+        // the Telegram button as done.
+        try {
+            $db->prepare("UPDATE {$prefx}_parsing_cars SET published_tg = 1 WHERE car_ctlg_id = ?")->execute([$it_id]);
+        } catch (\Throwable $e) { /* non-fatal */ }
+
         $returnIt['status'] = true;
         $returnIt['message'] = "Programat pentru publicare Telegram la {$scheduled_date} {$schedule_time}";
         

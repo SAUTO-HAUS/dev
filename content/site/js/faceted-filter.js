@@ -4,7 +4,7 @@
     const CONFIG = {
         debounceMs: 250,
         apiEndpoint: '/content/site/ajax/get_facets.php',
-        enableCounts: true
+        enableCounts: false
     };
 
     let debounceTimer = null;

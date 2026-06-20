@@ -110,7 +110,7 @@ while (time() - $daemon_start < MAX_RUNTIME) {
                 if ($advert_title || $advert_url) {
                     $car_context = trim($advert_title . ' (' . $advert_url . ')');
                 }
-                $ai      = inbox_ai_reply($db, $prefx, '999md', $history, $text, $car_context);
+                $ai      = inbox_ai_reply($db, $prefx, $account_key, $history, $text, $car_context);
 
                 if ($ai['reply']) {
                     // Save FIRST to prevent duplicate

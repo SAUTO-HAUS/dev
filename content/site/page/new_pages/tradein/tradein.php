@@ -14,9 +14,9 @@ $current_lang = isset($_COOKIE['lang']) ? $_COOKIE['lang'] : 'ro';
     <div class="trade-in__banner-wrap">
         <div class="trade-in__banner">
             <div class="trade-in__text">
-                <div class="trade-in__text-title">
+                <h1 class="trade-in__text-title">
                     <?php echo get_translation('banner_title', $current_lang, $lng); ?>
-                </div>
+                </h1>
                 <div class="trade-in__text-description">
                     <?php echo get_translation('banner_desc', $current_lang, $lng); ?>
                 </div>

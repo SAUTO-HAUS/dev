@@ -2,6 +2,37 @@
 
 use App\Helper\PhoneHelper;
 
+// Share button shown in the top-right corner of every car card: copies the car
+// URL to clipboard on click (JS handler lives in head.php). Label sits above the icon.
+if (!function_exists('car_share_btn')) {
+	function car_share_btn($id, $page_type, $lng) {
+		$lang = $_COOKIE['lang'] ?? 'ro';
+		$url = '/'.$lang.'/'.$page_type.'/'.(int)$id;
+		$label = htmlspecialchars($lng['w']['share'] ?? 'Distribuie', ENT_QUOTES);
+		$title = htmlspecialchars($lng['w']['link_copied'] ?? 'Link copiat', ENT_QUOTES);
+		$ico = '<svg class="csb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">'
+				.'<path fill-rule="evenodd" clip-rule="evenodd" d="M19.6495 0.799565C18.4834 -0.72981 16.0093 0.081426 16.0093 1.99313V3.91272C12.2371 3.86807 9.65665 5.16473 7.9378 6.97554C6.10034 8.9113 5.34458 11.3314 5.02788 12.9862C4.86954 13.8135 5.41223 14.4138 5.98257 14.6211C6.52743 14.8191 7.25549 14.7343 7.74136 14.1789C9.12036 12.6027 11.7995 10.4028 16.0093 10.5464V13.0069C16.0093 14.9186 18.4834 15.7298 19.6495 14.2004L23.3933 9.29034C24.2022 8.2294 24.2022 6.7706 23.3933 5.70966L19.6495 0.799565ZM7.48201 11.6095C9.28721 10.0341 11.8785 8.55568 16.0093 8.55568H17.0207C17.5792 8.55568 18.0319 9.00103 18.0319 9.55037L18.0317 13.0069L21.7754 8.09678C22.0451 7.74313 22.0451 7.25687 21.7754 6.90322L18.0317 1.99313V4.90738C18.0317 5.4567 17.579 5.90201 17.0205 5.90201H16.0093C11.4593 5.90201 9.41596 8.33314 9.41596 8.33314C8.47524 9.32418 7.86984 10.502 7.48201 11.6095Z" fill="currentColor"/>'
+				.'<path d="M7 1.00391H4C2.34315 1.00391 1 2.34705 1 4.00391V20.0039C1 21.6608 2.34315 23.0039 4 23.0039H20C21.6569 23.0039 23 21.6608 23 20.0039V17.0039C23 16.4516 22.5523 16.0039 22 16.0039C21.4477 16.0039 21 16.4516 21 17.0039V20.0039C21 20.5562 20.5523 21.0039 20 21.0039H4C3.44772 21.0039 3 20.5562 3 20.0039V4.00391C3 3.45162 3.44772 3.00391 4 3.00391H7C7.55228 3.00391 8 2.55619 8 2.00391C8 1.45162 7.55228 1.00391 7 1.00391Z" fill="currentColor"/>'
+				.'</svg>';
+		return '<button type="button" class="card-share-btn" data-share-url="'.htmlspecialchars($url, ENT_QUOTES).'" data-copied-text="'.$title.'" aria-label="'.$label.'" title="'.$label.'">'
+				.$ico.'<span class="csb-label"></span></button>';
+	}
+}
+
+// Favorite (heart) button. Toggles localStorage on the client (JS handler in head.php).
+// State (empty vs filled red) is synced on load + click by JS via the data-fav-id.
+if (!function_exists('car_fav_btn')) {
+	function car_fav_btn($id, $lng = null) {
+		$id = (int)$id;
+		$add = 'Adaugă în favorite'; $rem = 'Scoate din favorite';
+		if (is_array($lng) && isset($lng['w']['fav_add'])) { $add = $lng['w']['fav_add']; }
+		if (is_array($lng) && isset($lng['w']['fav_remove'])) { $rem = $lng['w']['fav_remove']; }
+		$add = htmlspecialchars($add, ENT_QUOTES); $rem = htmlspecialchars($rem, ENT_QUOTES);
+		$ico = '<svg class="cfb-ico" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+		return '<button type="button" class="card-fav-btn" data-fav-id="'.$id.'" data-fav-add="'.$add.'" data-fav-remove="'.$rem.'" aria-label="'.$add.'" title="'.$add.'">'.$ico.'</button>';
+	}
+}
+
 $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_brand_page=false) use (&$prefx, &$db, &$img_frmt, &$lng){
 	/** @var PDO $db */
 	$ar = [ 'ids'=>[], 'txt'=>'', 'qu'=>0, 'total'=>0 ];
@@ -24,13 +55,30 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 	if ($v1=='smlr') {
 		$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE (catalog_type = "in_stock" OR catalog_type = "on_order" OR catalog_type IS NULL)';
 	}
-	
+
+	// Favorites: render cards for an explicit list of car IDs (across both catalogs)
+	if ($v1=='fav') {
+		$fav_ids = array();
+		if (is_array($zreq)) {
+			foreach ($zreq as $fid) { $fid = (int)$fid; if ($fid > 0) { $fav_ids[] = $fid; } }
+		}
+		$fav_ids = array_slice(array_unique($fav_ids), 0, 200); // cap to avoid abuse
+		if (empty($fav_ids)) {
+			$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE 1=0';
+		} else {
+			$in = implode(',', $fav_ids); // already cast to int, safe to inline
+			$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE `id` IN ('.$in.') AND `vis`="1" AND `act`="1" ORDER BY FIELD(`id`, '.$in.')';
+		}
+		$query_args = array(); // fav SQL has no bound params
+		$ar['ids'] = $fav_ids;
+	}
+
 	if ($v1=='new'){ $sql .= ' AND `vis`="1" AND `act`="1" '; }
 	elseif ($v1=='archive'){ $sql .= ' AND `vis`="1" AND `act`="0" '; }
 	elseif ($v1=='top'){ $sql .= ' AND `vis`="1" AND `act`="1" AND `top`="1" '; }
-	elseif ($v1=='smlr'){ 
+	elseif ($v1=='smlr'){
 		if ($zreq!==null){
-			$sql .= ' AND `act`="1" AND `n_a`="0" AND (`prc` BETWEEN :prc_min AND :prc_max ) AND `id`<>:prc_id ';
+			$sql .= ' AND `act`="1" AND `n_a`="0" AND ((CASE WHEN `prc_n` > 0 AND `prc_n` < `prc` THEN `prc_n` ELSE `prc` END) BETWEEN :prc_min AND :prc_max ) AND `id`<>:prc_id ';
 			$query_args['prc_min'] = (($zreq['prc']*1)-1000);
 			$query_args['prc_max'] = (($zreq['prc']*1)+1000);
 			$query_args['prc_id'] = $zreq['id'];
@@ -173,30 +221,28 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 			
 			// Handle price range filter
 			if (!empty($zreq['prc'])) {
+				// Effective price: use the new (discounted) price when set and lower than base price
+				$prc_col = '(CASE WHEN `prc_n` > 0 AND `prc_n` < `prc` THEN `prc_n` ELSE `prc` END)';
 				$range = explode('-', $zreq['prc']);
 				if (count($range) == 2) {
 					if ($range[0] == 'x') {
 						// Less than max
-						$sql .= " AND `prc` <= :prc_max";
+						$sql .= " AND {$prc_col} <= :prc_max";
 						$query_args['prc_max'] = (int)$range[1];
-						// file_put_contents('debug_sql.log', "Added price max filter: prc <= {$range[1]}\n", FILE_APPEND);
 					} elseif ($range[1] == 'x') {
 						// Greater than min
-						$sql .= " AND `prc` >= :prc_min";
+						$sql .= " AND {$prc_col} >= :prc_min";
 						$query_args['prc_min'] = (int)$range[0];
-						// file_put_contents('debug_sql.log', "Added price min filter: prc >= {$range[0]}\n", FILE_APPEND);
 					} else {
 						// Between min and max
-						$sql .= " AND `prc` BETWEEN :prc_min AND :prc_max";
+						$sql .= " AND {$prc_col} BETWEEN :prc_min AND :prc_max";
 						$query_args['prc_min'] = (int)min($range);
 						$query_args['prc_max'] = (int)max($range);
-						// file_put_contents('debug_sql.log', "Added price range filter: prc BETWEEN {$query_args['prc_min']} AND {$query_args['prc_max']}\n", FILE_APPEND);
 					}
 				} else {
 					// Exact price
-					$sql .= " AND `prc` = :prc";
+					$sql .= " AND {$prc_col} = :prc";
 					$query_args['prc'] = (int)$zreq['prc'];
-					// file_put_contents('debug_sql.log', "Added exact price filter: prc = {$zreq['prc']}\n", FILE_APPEND);
 				}
 			}
 			
@@ -346,8 +392,8 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 		$srt_val = (isset($zreq['srt']) && is_string($zreq['srt'])) ? $zreq['srt'] : '';
 		$order_clause = '';
 		switch ($srt_val) {
-			case 'prc-asc':  $order_clause = '`n_a` ASC, `prc` ASC, `id` DESC'; break;
-			case 'prc-desc': $order_clause = '`n_a` ASC, `prc` DESC, `id` DESC'; break;
+			case 'prc-asc':  $order_clause = '`n_a` ASC, (CASE WHEN `prc_n` > 0 AND `prc_n` < `prc` THEN `prc_n` ELSE `prc` END) ASC, `id` DESC'; break;
+			case 'prc-desc': $order_clause = '`n_a` ASC, (CASE WHEN `prc_n` > 0 AND `prc_n` < `prc` THEN `prc_n` ELSE `prc` END) DESC, `id` DESC'; break;
 			case 'yr-desc':  $order_clause = '`n_a` ASC, `yr` DESC, `id` DESC'; break;
 			case 'yr-asc':   $order_clause = '`n_a` ASC, `yr` ASC, `id` DESC'; break;
 			case 'mlg-asc':  $order_clause = '`n_a` ASC, `mlg` ASC, `id` DESC'; break;
@@ -363,7 +409,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 		}
 		// file_put_contents('debug_sql.log', "SQL: " . $sql . "\n", FILE_APPEND);
 		// file_put_contents('debug_sql.log', "Params: " . print_r($query_args, true) . "\n", FILE_APPEND);
-	} elseif ($v1!='smlr'){
+	} elseif ($v1!='smlr' && $v1!='fav'){
 		$sql .= ' ORDER BY `n_a` ASC, `id` DESC LIMIT :lmt ';
 	}
 
@@ -436,14 +482,14 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 		$is_mobile = (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/Mobile|Android|iPhone|iPad/', $_SERVER['HTTP_USER_AGENT']));
 		
 		if ($is_mobile) {
-			// Mobile: Get images for slider (limited to 5 for better mobile performance)
-			$pdo2 = $db->prepare('SELECT `name`, `ff` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `main` DESC, `pos` ASC LIMIT 5');
+			// Mobile: Get images for slider (limited to 7 for better mobile performance)
+			$pdo2 = $db->prepare('SELECT `name`, `ff` FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id ORDER BY `main` DESC, `pos` ASC LIMIT 7');
 			$pdo2->execute([ 'it_id'=>$r['id'] ]);
 			$all_images = $pdo2->fetchAll(PDO::FETCH_ASSOC);
 
-			// Ensure maximum 5 images for mobile performance
-			if (count($all_images) > 5) {
-				$all_images = array_slice($all_images, 0, 5);
+			// Ensure maximum 7 images for mobile performance
+			if (count($all_images) > 7) {
+				$all_images = array_slice($all_images, 0, 7);
 			}
 
 			if (count($all_images) > 1) {
@@ -461,7 +507,11 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 					}
 				}
 				$image_html .= '</div>';
-				$image_html .= '<div class="mobile-card-slider__line-indicator"></div>';
+				$image_html .= '<div class="mobile-card-slider__line-indicator">';
+				foreach ($all_images as $seg_idx => $_seg) {
+					$image_html .= '<div class="mobile-card-slider__line-indicator__segment'.($seg_idx === 0 ? ' mobile-card-slider__line-indicator__segment--active' : '').'"></div>';
+				}
+				$image_html .= '</div>';
 				$image_html .= '</div></div>';
 			} else {
 				// Single image - normal display
@@ -487,7 +537,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 		if ( $r['n_a']==0 && $r['act']==1 ){
 			$z_stat .= ( $r['soon']==1 ) ? '<div class="stat soon1">'.$lng['l']['stat']['soon1'].'</div>' : '';
 			$z_stat .= ($r['top']==1) ? '<div class="stat top1">'.$lng['l']['stat']['top1'].'</div>' : '';
-			$z_stat .= ($r['prc_n']!=0 && $r['prc_t']>time()) ? '<div class="stat prc_n">'.$lng['l']['stat']['prc_n'].'</div>' : '';
+			$z_stat .= ($r['prc_n']!=0 && $r['prc_n']<$r['prc']) ? '<div class="stat prc_n">'.$lng['l']['stat']['prc_n'].'</div>' : '';
 			$z_stat .= ($r['tva']==1) ? '<div class="stat top1">'.$lng['l']['stat']['vat'].'</div>' : '';
 			$z_stat .= ($r['gift']==1) ? '<div class="stat gift">+ '.$lng['l']['stat']['gift'].'</div>' : '';
 		}else{
@@ -505,7 +555,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 			$mileage = number_format($r['mlg']).' '.( isset($lng['l']['unit'][ $r['unit'] ]) ? $lng['l']['unit'][ $r['unit'] ] : $r['unit'] );
 		
 			// Calculate price before displaying
-			if ( $r['prc_t']!=0 && $r['prc_t']>time() ){
+			if ( $r['prc_n']!=0 && $r['prc_n']<$r['prc'] ){
 				$prc = number_format($r['prc_n'], 0, ',', ' ');
 				$o_prc = number_format($r['prc'], 0, ',', ' ');
 				$o_prc_bl = '<span class="o_val" title="'.$lng['w']['o_prc'].'"><span class="i">'.$o_prc.'</span> &#8364;</span>';
@@ -517,12 +567,16 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 		
 			$ar['txt'] .= '
 			<a class="it car" href="/'.$_COOKIE['lang'].'/'.$page_type.'/'.$r['id'].'">
+				'.car_share_btn($r['id'], $page_type, $lng).'
 				<div class="name">'.$r['br_nm'].' '.$r['mo_nm'].'</div>
 				<div class="compact-info">
 					<div class="line1">'.$year.' | '.$fuel.' | '.$volume.'</div>
 					<div class="line2">'.$transmission.' | '.$mileage.'</div>
 				</div>
-				'.$image_html.'
+				<div class="card-img-wrap">
+					'.car_fav_btn($r['id'], $lng).'
+					'.$image_html.'
+				</div>
 				<div class="prc">
 					<strong class="val">'.($r['prc'] > 100 ? $prc.' &#8364;' : $lng['w']['negociabil']).'</strong>'.$o_prc_bl.'
 					<span class="stock-status'.($r['catalog_type'] == 'on_order' ? ' on-order' : '').'">'.($r['n_a'] == '1' ? $lng['w']['not_available'] : ($r['catalog_type'] == 'on_order' ? $lng['w']['on_order'] : $lng['w']['in_stock'])).'</span>
@@ -534,9 +588,10 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 				$ar['txt'] .= '
 				<div class="specs">';
 					
-					// Add monthly payment after the specs
+					// Add monthly payment after the specs (based on effective/discounted price)
 					if($r['prc'] > 100) {
-						$monthly_payment = floor($r['prc'] * (9.2/1200) / (1 - pow(1 + (9.2/1200), -60)));
+						$eff_prc = ($r['prc_n']!=0 && $r['prc_n']<$r['prc']) ? $r['prc_n'] : $r['prc'];
+						$monthly_payment = floor($eff_prc * (9.2/1200) / (1 - pow(1 + (9.2/1200), -60)));
 						$ar['txt'] .= '
 						<p class="ar">
 							<span class="name">'.(isset($lng['w']['monthly_payment']) ? $lng['w']['monthly_payment'] : 'Plată lunară').'</span>
@@ -546,7 +601,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 					}
 					
 					// Calculate price before displaying
-					if ( $r['prc_t']!=0 && $r['prc_t']>time() ){
+					if ( $r['prc_n']!=0 && $r['prc_n']<$r['prc'] ){
 						$prc = number_format($r['prc_n'], 0, ',', ' ');
 						$o_prc = number_format($r['prc'], 0, ',', ' ');
 						$o_prc_bl = '<span class="o_val" title="'.$lng['w']['o_prc'].'"><span class="i">'.$o_prc.'</span> &#8364;</span>';

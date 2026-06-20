@@ -350,29 +350,27 @@ window.setInterval(function(){
 }, 1000);
 
 document.addEventListener('DOMContentLoaded', () => {
-	const tooltipElements = document.querySelectorAll('[data-tooltip]');
+	document.addEventListener('mouseover', (e) => {
+		const target = e.target.closest('[data-tooltip]');
+		if (!target) return;
+		const tooltipHTML = target.getAttribute('data-tooltip');
+		if (!tooltipHTML) return;
+		if (document.querySelector('.custom-tooltip')) return;
 
-	tooltipElements.forEach(element => {
-		element.addEventListener('mouseover', (e) => {
-			const tooltipHTML = e.target.getAttribute('data-tooltip');
-			if (tooltipHTML) {
-				const tooltip = document.createElement('div');
-				tooltip.className = 'custom-tooltip';
-				tooltip.innerHTML = tooltipHTML;
-				document.body.appendChild(tooltip);
+		const tooltip = document.createElement('div');
+		tooltip.className = 'custom-tooltip';
+		tooltip.innerHTML = tooltipHTML;
+		document.body.appendChild(tooltip);
 
-				const rect = e.target.getBoundingClientRect();
-				tooltip.style.left = `${rect.left + window.scrollX + rect.width / 2}px`;
-				tooltip.style.top = `${rect.bottom + window.scrollY + 10}px`;
-			}
-		});
+		const rect = target.getBoundingClientRect();
+		tooltip.style.left = `${rect.left + window.scrollX + rect.width / 2}px`;
+		tooltip.style.top = `${rect.bottom + window.scrollY + 10}px`;
+	});
 
-		element.addEventListener('mouseout', () => {
-			const tooltip = document.querySelector('.custom-tooltip');
-			if (tooltip) {
-				tooltip.remove();
-			}
-		});
+	document.addEventListener('mouseout', (e) => {
+		if (!e.target.closest('[data-tooltip]')) return;
+		const tooltip = document.querySelector('.custom-tooltip');
+		if (tooltip) tooltip.remove();
 	});
 });
 
@@ -449,8 +447,8 @@ function uploadIt(filesX, dataX=[]){
 function compressCarImage(file) {
 	return new Promise(function(resolve) {
 		if (!file.type.startsWith('image/')) { resolve(file); return; }
-		var maxSize = 1600;
-		var quality = 0.75;
+		var maxSize = 1200;
+		var quality = 0.8;
 		var url = URL.createObjectURL(file);
 		var img = new Image();
 		img.onload = function() {
@@ -529,7 +527,9 @@ async function ajaxCarImg(filesX, dataX) {
 			}
 			var total = files.length;
 			$('#stts_bar > .txt > .el').html('0/' + total);
-			var compressed = await Promise.all(files.map(compressCarImage));
+			var compressed = (pg === 'ordercars')
+				? files
+				: await Promise.all(files.map(compressCarImage));
 
 			// Upload all files in parallel, each with explicit pos_start so PHP doesn't race on MAX(pos)
 			var done = 0;

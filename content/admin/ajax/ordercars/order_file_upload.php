@@ -70,6 +70,10 @@ foreach ($_FILES as $inp => $ar){
 			$max_mb = 100*1024*1024;
 			$size_cr = $file_av_ar[$inp]['fldr'];
 
+			if (isset($size_cr['high']['sz']) && $size_cr['high']['sz'] > 1200) {
+				$size_cr['high']['sz'] = 1200;
+			}
+
 			if ( $ar['error'][$k] !== UPLOAD_ERR_OK ) {
                 $rtrn .= ' | File #'.$i.': '.$nm.' - Upload failed with error code ' . $ar['error'][$k];
                 continue;

@@ -16,7 +16,7 @@ if (!empty($car['999'])) {
 if ($new999) {
     $default999AccountId = (!empty($car['gr']) && $car['gr'] == 'com') ? 2 : 1;
 } else {
-    $default999AccountId = null; 
+    $default999AccountId = null;
 }
 
 ?>

@@ -10,6 +10,19 @@ class FacetService
     
     private $selectFilters = ['br', 'mo', 'gr', 'bt', 'fl', 'tra', 'wd', 'clr'];
     private $rangeFilters = ['yr', 'mlg', 'vol', 'prc', 'sts'];
+
+    // Effective price: use the new (discounted) price when it is set and lower than the base price
+    private const EFFECTIVE_PRICE_SQL = '(CASE WHEN `prc_n` > 0 AND `prc_n` < `prc` THEN `prc_n` ELSE `prc` END)';
+
+    /**
+     * Returns the SQL column expression for a filter key.
+     * For `prc` it returns the effective-price expression so filtering/ranges
+     * respect the discounted price shown to the user.
+     */
+    private function priceAwareColumn(string $key): string
+    {
+        return $key === 'prc' ? self::EFFECTIVE_PRICE_SQL : "`{$key}`";
+    }
     
     public function __construct($db, $prefx, $cacheDir = null)
     {
@@ -129,9 +142,10 @@ class FacetService
         
         $sql .= $this->buildFilterConditions($filtersWithoutSelf, $params);
         
-        $rangeSql = "SELECT MIN(`{$filterName}`) as min_val, MAX(`{$filterName}`) as max_val 
-                     FROM ({$sql}) as subq 
-                     WHERE `{$filterName}` IS NOT NULL AND `{$filterName}` > 0";
+        $rangeCol = $this->priceAwareColumn($filterName);
+        $rangeSql = "SELECT MIN({$rangeCol}) as min_val, MAX({$rangeCol}) as max_val
+                     FROM ({$sql}) as subq
+                     WHERE {$rangeCol} IS NOT NULL AND {$rangeCol} > 0";
         
         try {
             $stmt = $this->db->prepare($rangeSql);
@@ -245,24 +259,25 @@ class FacetService
                 }
             } elseif (in_array($key, $this->rangeFilters)) {
                 $range = is_array($value) ? $value : explode('-', $value);
-                
+                $col = $this->priceAwareColumn($key);
+
                 if (count($range) >= 2) {
                     $minVal = $range[0];
                     $maxVal = $range[1];
-                    
+
                     if ($minVal !== 'x' && $minVal !== '' && $maxVal !== 'x' && $maxVal !== '') {
-                        $conditions .= " AND `{$key}` BETWEEN :{$key}_min AND :{$key}_max";
+                        $conditions .= " AND {$col} BETWEEN :{$key}_min AND :{$key}_max";
                         $params["{$key}_min"] = (int)min($minVal, $maxVal);
                         $params["{$key}_max"] = (int)max($minVal, $maxVal);
                     } elseif ($minVal !== 'x' && $minVal !== '') {
-                        $conditions .= " AND `{$key}` >= :{$key}_min";
+                        $conditions .= " AND {$col} >= :{$key}_min";
                         $params["{$key}_min"] = (int)$minVal;
                     } elseif ($maxVal !== 'x' && $maxVal !== '') {
-                        $conditions .= " AND `{$key}` <= :{$key}_max";
+                        $conditions .= " AND {$col} <= :{$key}_max";
                         $params["{$key}_max"] = (int)$maxVal;
                     }
                 } elseif (!empty($range[0]) && $range[0] !== 'x') {
-                    $conditions .= " AND `{$key}` = :{$key}";
+                    $conditions .= " AND {$col} = :{$key}";
                     $params[$key] = (int)$range[0];
                 }
             }

@@ -17,6 +17,9 @@ include_once( _SITE_INCL.'/order_functions.php' );
 // Include car description functions
 include_once( _SITE_INCL.'/car_description.php' );
 
+// Parsing price helper (landed-cost breakdown for Encar cars).
+include_once( _ADM_PAGE.'/parsing/parsing_pricing.php' );
+
 // Include similar price cars function
 include_once( _SITE_INCL.'/similar_price_cars.php' );
 
@@ -227,6 +230,29 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
         $sa['meta']['ttl'] = $sa['meta']['h1'] . " | Sauto Haus";
         $sa['meta']['dsc'] = "Automobile de tip {$body_type_name} în stoc și la comandă. Prețuri și oferte actuale.";
     }
+    // Import region filter (ic) without brand/body type - set a region H1
+    elseif(!isset($_GET['br']) && !isset($_GET['bt']) && !empty($_GET['ic'])) {
+        $ic_key = strtolower($_GET['ic']);
+        $ic_names = [
+            'korea'  => ['ro' => 'Coreea', 'ru' => 'Корея',  'en' => 'Korea'],
+            'europe' => ['ro' => 'Europa', 'ru' => 'Европа',  'en' => 'Europe'],
+            'usa'    => ['ro' => 'SUA',    'ru' => 'США',     'en' => 'USA'],
+        ];
+        if (isset($ic_names[$ic_key])) {
+            $ic_lang = $_COOKIE['lang'] ?? 'ro';
+            $ic_label = $ic_names[$ic_key][$ic_lang] ?? $ic_names[$ic_key]['ro'];
+            $ic_red = '<span style="color: #ff0000;">'.mb_strtoupper($ic_label, 'UTF-8').'</span>';
+            if ($zlng == 'ru') {
+                $sa['meta']['h1'] = 'Авто на заказ из '.$ic_red;
+            } elseif ($zlng == 'en') {
+                $sa['meta']['h1'] = 'Cars to order from '.$ic_red;
+            } else {
+                $sa['meta']['h1'] = 'Auto la comandă din '.$ic_red;
+            }
+        } else {
+            $sa['meta']['h1'] = '';
+        }
+    }
     // Check if we have other filters without specific handling - hide H1
     elseif(!isset($_GET['br']) && !isset($_GET['bt'])) {
         // For general filters without brand or body type, don't show irrelevant H1
@@ -363,7 +389,7 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
             $rtrn = '<div class="gr">';
             $rtrn .= '<h1 style="font-size: inherit;">'.$sa['meta']['h1'].'</h1>';
             $rtrn .= '<div class="cnt list">';
-            $rtrn .= '<div class="no-results">'.$lng['w']['no_results'].'</div>';
+            $rtrn .= '<div class="no-results">'.$lng['t']['x']['no_offers'].'</div>';
             $rtrn .= '</div>';
             $rtrn .= '</div>';
 
@@ -378,22 +404,33 @@ elseif (!isset($t_mp[3])) {
     $order_button_text = isset($lng_order_page[$current_lang]['learn_more']) ? $lng_order_page[$current_lang]['learn_more'] : 'Learn more';
     
     $rtrn .= '<div class="gr">';
-    $rtrn .= '<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">';
-    $rtrn .= '<h1 style="margin: 0;">'.$sa['meta']['h1'].'</h1>';
     $rtrn .= '<style>@media (max-width: 767px) { .order-hero-button-circle { margin-left: 0.5rem !important; } }</style>';
     $rtrn .= '<link rel="stylesheet" type="text/css" href="/content/site/page/new_pages/order/order.css">';
-    $rtrn .= '<a href="/'.($_COOKIE['lang'] ?? 'ro').'/order" class="order-hero-button" style="white-space: nowrap;">';
+    $rtrn .= '<h1 class="gr-h1">'.$sa['meta']['h1'].'</h1>';
+
+    // Region quick-filter buttons (jump into the on_order catalog filtered by import country)
+    // plus the "order" button at the end of the same row.
+    $_oc_lang = $_COOKIE['lang'] ?? 'ro';
+    $oc_flag_dir = '/content/admin/page/parsing/media-parsing';
+    $oc_regions = [
+        'korea'  => ['ro' => 'Coreea', 'ru' => 'Корея',  'en' => 'Korea',  'flag' => 'south-korea-fl.png'],
+        'europe' => ['ro' => 'Europa', 'ru' => 'Европа',  'en' => 'Europe', 'flag' => 'european-fl.png'],
+        'usa'    => ['ro' => 'SUA',    'ru' => 'США',     'en' => 'USA',    'flag' => 'united-states-fl.png'],
+    ];
+    $rtrn .= '<div class="oc_regions">';
+    foreach ($oc_regions as $rk => $rv) {
+        $label = $rv[$_oc_lang] ?? $rv['ro'];
+        $rtrn .= '<a class="oc_region_btn" href="/'.$_oc_lang.'/ordercars?tg=fltr&ic='.$rk.'" title="'.$label.'">';
+        $rtrn .= '<img src="'.$oc_flag_dir.'/'.$rv['flag'].'" alt="'.$label.'" />';
+        $rtrn .= '<span>'.$label.'</span>';
+        $rtrn .= '</a>';
+    }
+    $rtrn .= '<a href="/'.$_oc_lang.'/order" class="order-hero-button oc_order_btn" style="white-space: nowrap;">';
     $rtrn .= $order_button_text;
     $rtrn .= '<span class="order-hero-button-circle">';
     $rtrn .= '<img src="/content/site/page/new_pages/order/order-media/icons/right.svg" alt="Arrow" class="order-hero-button-arrow">';
     $rtrn .= '</span>';
     $rtrn .= '</a>';
-    $rtrn .= '</div>';
-    
-    $intro_text = $lng['w']['on_order_intro'];
-
-    $rtrn .= '<div style="margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-left: 4px solid #ff0000; border-radius: 4px;">';
-    $rtrn .= '<p style="margin: 0; color: #333; font-size: 16px;">'.$intro_text.'</p>';
     $rtrn .= '</div>';
 
     // Use filtered mode with empty filters so pagination works
@@ -624,7 +661,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 $main_ext = !empty($img['main_ff']) ? '.'.$img['main_ff'] : $img_frmt;
                 $z_src = isset($img['main'])?'/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/high/'.$img['main'].$main_ext:'';
                 //$z_src = (@getimagesize($site_url.$z_src)?$z_src:'');
-                $rtrn .= '<div class="big_pht" role="img" aria-label="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' large photo" data-pos="1" data-cnt="'.$img_cnt.'" style="background-image:url('.$z_src.');" data-src="'.$z_src.'"></div>';
+                $rtrn .= '<div class="big_pht" role="img" aria-label="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' large photo" data-pos="1" data-cnt="'.$img_cnt.'" style="background-image:url('.$z_src.');" data-src="'.$z_src.'">'.car_fav_btn($r['id'], $lng).'</div>';
                 $rtrn .= '</div>';
                 
                 
@@ -644,6 +681,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 ?>
                 <?php // webs25  ?>
                 <div class="wrapf-carousel 11">
+                    <?= car_fav_btn($r['id'], $lng) ?>
                     <div class="f-carousel" id="heroCarousel">
 
                         <?
@@ -1008,7 +1046,14 @@ $iconTelegramParams = array(
                     $bnt_params_desktop = ' <div class="btn_params desktop" onclick=" openParamsPopAuto(\'open\')  " > '.$lng['w']['characteristics'].' </div> ';
                 }
                 
-                $dynamicPhone = PhoneHelper::getOrderPhone();
+                $dynamicPhone = ((int)$import_country_id === 41) ? '37368689995' : PhoneHelper::getOrderPhone();
+
+                $waPhone = ((int)$import_country_id === 41) ? '37368689995' : '37362166880';
+                $waLang   = $_COOKIE['lang'] ?? 'ro';
+                $waCarUrl = 'https://www.sauto.md/' . $waLang . '/ordercars/' . (int)$r['id'];
+                $waUrl    = 'https://wa.me/' . $waPhone . '?text=' . rawurlencode($waCarUrl);
+                $waIcon  = '<svg viewBox="-1.66 0 740.824 740.824" width="28" height="28" fill="#ffffff" aria-hidden="true" style="vertical-align:middle;"><path fill-rule="evenodd" clip-rule="evenodd" d="M630.056 107.658C560.727 38.271 468.525.039 370.294 0 167.891 0 3.16 164.668 3.079 367.072c-.027 64.699 16.883 127.855 49.016 183.523L0 740.824l194.666-51.047c53.634 29.244 114.022 44.656 175.481 44.682h.151c202.382 0 367.128-164.689 367.21-367.094.039-98.088-38.121-190.32-107.452-259.707m-259.758 564.8h-.125c-54.766-.021-108.483-14.729-155.343-42.529l-11.146-6.613-115.516 30.293 30.834-112.592-7.258-11.543c-30.552-48.58-46.689-104.729-46.665-162.379C65.146 198.865 202.065 62 370.419 62c81.521.031 158.154 31.81 215.779 89.482s89.342 134.332 89.311 215.859c-.07 168.242-136.987 305.117-305.211 305.117m167.415-228.514c-9.176-4.591-54.286-26.782-62.697-29.843-8.41-3.061-14.526-4.591-20.644 4.592-6.116 9.182-23.7 29.843-29.054 35.964-5.351 6.122-10.703 6.888-19.879 2.296-9.175-4.591-38.739-14.276-73.786-45.526-27.275-24.32-45.691-54.36-51.043-63.542-5.352-9.183-.569-14.148 4.024-18.72 4.127-4.11 9.175-10.713 13.763-16.07 4.587-5.356 6.116-9.182 9.174-15.303 3.059-6.122 1.53-11.479-.764-16.07-2.294-4.591-20.643-49.739-28.29-68.104-7.447-17.886-15.012-15.466-20.644-15.746-5.346-.266-11.469-.323-17.585-.323-6.117 0-16.057 2.296-24.468 11.478-8.41 9.183-32.112 31.374-32.112 76.521s32.877 88.763 37.465 94.885c4.587 6.122 64.699 98.771 156.741 138.502 21.891 9.45 38.982 15.093 52.307 19.323 21.981 6.979 41.983 5.994 57.793 3.633 17.628-2.633 54.285-22.19 61.932-43.616 7.646-21.426 7.646-39.791 5.352-43.617-2.293-3.826-8.41-6.122-17.585-10.714"/></svg>';
+                $whatsappBtn = '<a class="btn btn-whatsapp" href="' . $waUrl . '" target="_blank" rel="noopener" aria-label="WhatsApp">' . $waIcon . '</a>';
 
                 $rtrn .= '
                             <div class="prc  desktop">
@@ -1021,7 +1066,7 @@ $iconTelegramParams = array(
                                 
                                 <a class="btn call" href="tel:'.$dynamicPhone.'">'.$lng['w']['call'].'</a>
                                 
-                                <div class="btn msg2" onclick="openOrdercarContactModal()" style="line-height:3rem; padding-top:0; padding-bottom:0;">'.$lng['w']['message'].'</div>
+                                '.$whatsappBtn.'
  
                                 
 
@@ -1050,348 +1095,150 @@ $iconTelegramParams = array(
                             </div>
                             </div>';
 
-               // Mobile accordions 
-                $parsedHtml = parseEquipmentSection($rseo['params_html']);
-                $rtrn .= getMobileAccordions($parsedHtml, $_COOKIE['lang'], $rseo['params_html']);
+                // Landed-cost breakdown for parsing cars (computed once, reused by
+                // mobile + desktop below). Encar uses the Korea route (sea RoRo),
+                // OpenLane / eCarsTrade use the Europe route (road delivery). Empty
+                // for non-parsing cars.
+                $mdTable = '';
+                $encarReport = ''; // Encar inspection report + equipment (public block)
+                $parsingSrc = $r['parsing_source'] ?? '';
+                if (!empty($r['parsing_id']) && in_array($parsingSrc, ['encar', 'openlane', 'ecarstrade'], true)) {
+                    // The breakdown needs the SOURCE car price (in EUR), not the
+                    // car_ctlg `prc` — that already holds the full landed MD price,
+                    // so feeding it back would double-count customs/costs. Read the
+                    // original price from the parsing entry via parsing_id.
+                    $srcPriceEur = 0.0;
+                    try {
+                        $ps = $db->prepare('SELECT price_eur FROM '.$prefx.'_parsing_cars WHERE id = ? LIMIT 1');
+                        $ps->execute([(int)$r['parsing_id']]);
+                        $srcPriceEur = (float)($ps->fetchColumn() ?: 0);
+                    } catch (Exception $e) {}
 
-                            // Add order-info-grid after specifications for mobile
-                if (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') {
-                    $rtrn .= '
-                    <style>
-                        .order-info-grid-mobile {
-                            display: none;
-                            grid-template-columns: 1fr;
-                            gap: 1rem;
-                            margin: 0.1rem 0;
-                            padding: 1rem;
-                            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-                            border-radius: 1rem;
-                            box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.08);
-                        }
-                        
-                        .order-info-grid-mobile .order-info-card {
-                            background: #f8f9faff;
-                            padding: 1.5rem;
-                            border-radius: 1rem;
-                            box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.08);
-                            text-align: left;
-                            transition: all 0.3s ease;
-                            border: 0.1rem solid #b6b6b6ff;
-                            display: flex;
-                            flex-direction: column;
-                            overflow: hidden;
-                            position: relative;
-                            min-height: 200px;
-                        }
-                        
-                        .order-info-grid-mobile .order-info-card:hover {
-                            transform: translateY(-0.5rem);
-                            box-shadow: 0 1rem 2rem rgba(226, 0, 26, 0.15);
-                            border-color: #e2001a;
-                        }
-                        
-                        .order-info-grid-mobile .order-info-header {
-                            display: flex;
-                            align-items: center;
-                            margin-bottom: 1rem;
-                            gap: 1rem;
-                        }
-                        
-                        .order-info-grid-mobile .order-info-icon {
-                            width: 3rem !important;
-                            height: 3rem !important;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            background: transparent;
-                            border-radius: 1rem;
-                            flex-shrink: 0;
-                            border: none;
-                        }
-                        
-                        .order-info-grid-mobile .order-info-icon img {
-                            width: 3rem !important;
-                            height: 3rem !important;
-                        }
-                        
-                        .order-info-grid-mobile .order-info-title {
-                            font-size: 1.1rem;
-                            font-weight: 700;
-                            color: #27394cff;
-                            margin: 0;
-                            line-height: 1.3;
-                        }
-                        
-                        .order-info-grid-mobile .order-info-content {
-                            flex: 1;
-                        }
-                        
-                        .order-info-grid-mobile .order-info-desc {
-                            font-size: 1rem;
-                            color: #6c757d;
-                            line-height: 1.6;
-                            margin: 0 0 0.3rem 0;
-                            position: relative;
-                            padding-left: 1.2rem;
-                        }
-                        
-                        .order-info-grid-mobile .order-info-desc::before {
-                            content: "✓";
-                            position: absolute;
-                            left: 0;
-                            top: 0;
-                            color: #e2001a;
-                            font-weight: bold;
-                            font-size: 1rem;
-                        }
-                        
-                        .order-info-grid-mobile .order-info-desc:last-child {
-                            margin-bottom: 0;
-                        }
-                        
-                        @media (max-width: 768px) {
-                            .order-info-grid {
-                                display: none !important;
+                    if ($srcPriceEur > 0) {
+                        // Keep the hybrid sub-type so customs uses the right base
+                        // fuel + discount (same as /calc): hbd = full hybrid (petrol,
+                        // 25% off), pih = plug-in petrol (50% off), pid = plug-in
+                        // diesel (50% off, diesel excise base).
+                        $fuelMap = [
+                            'gsl' => 'benzina', 'gmn' => 'benzina', 'gpn' => 'benzina', 'gas' => 'benzina',
+                            'dsl' => 'diesel',
+                            'hbd' => 'hybrid', 'pih' => 'hybrid_plugin', 'pid' => 'diesel_hybrid',
+                            'elc' => 'electric',
+                        ];
+                        $carForBd = [
+                            'price_eur' => $srcPriceEur,
+                            'fuel'      => $fuelMap[$r['fl'] ?? ''] ?? '',
+                            'capacity'  => (int)($r['vol'] ?? 0),
+                            'year'      => (int)($r['yr'] ?? 0),
+                        ];
+                        $bd = ($parsingSrc === 'encar')
+                            ? parsing_md_breakdown_kr($db, $prefx, $carForBd)
+                            : parsing_md_breakdown_eu($db, $prefx, $carForBd);
+                        $mdTable = parsing_md_price_table($bd, $_COOKIE['lang']);
+                    }
+
+                    // Encar cars also carry an official inspection report + equipment
+                    // (report_data). Render it the same way the admin "Raport" modal
+                    // does so the public page shows it as a static block under the
+                    // MD price. Best-effort — silent if there's no report or it fails.
+                    if ($parsingSrc === 'encar') {
+                        try {
+                            $rps = $db->prepare('SELECT report_data FROM '.$prefx.'_parsing_cars WHERE id = ? LIMIT 1');
+                            $rps->execute([(int)$r['parsing_id']]);
+                            $rpRow = $rps->fetch(PDO::FETCH_ASSOC);
+                            $report = ($rpRow && !empty($rpRow['report_data'])) ? json_decode($rpRow['report_data'], true) : null;
+                            if (is_array($report)) {
+                                include_once _ADM_PAGE.'/parsing/parsing_report.php';
+                                // Public page: two separate accordions — "Istoric"
+                                // (inspection) and "Dotări" (equipment). VIN + photos
+                                // hidden (3rd arg true).
+                                $reportLang = $_COOKIE['lang'] ?? 'ro';
+                                $histHtml = parsing_report_html($report, $reportLang, true, 'history');
+                                $equipHtml = parsing_report_html($report, $reportLang, true, 'equipment');
+                                // Both calls emit the same <style> block; keep it
+                                // once (on the first) and strip it from the second.
+                                $equipHtml = preg_replace('#<style>.*?</style>#s', '', $equipHtml, 1);
+                                $encarReport = $histHtml . $equipHtml;
                             }
-                            
-                            .order-info-grid-mobile {
-                                display: grid !important;
+                        } catch (Throwable $e) { $encarReport = ''; }
+                    }
+                    // OpenLane: the Condition (damages) + Equipment HTML was baked into
+                    // report_data['openlane_report'][lang] at publish time. Show it as a
+                    // static block (always open) — no live OpenLane call here.
+                    elseif ($parsingSrc === 'openlane') {
+                        try {
+                            $rps = $db->prepare('SELECT report_data FROM '.$prefx.'_parsing_cars WHERE id = ? LIMIT 1');
+                            $rps->execute([(int)$r['parsing_id']]);
+                            $rpRow = $rps->fetch(PDO::FETCH_ASSOC);
+                            $report = ($rpRow && !empty($rpRow['report_data'])) ? json_decode($rpRow['report_data'], true) : null;
+                            $olRep = $report['openlane_report'] ?? null;
+                            if (is_array($olRep)) {
+                                $reportLang = $_COOKIE['lang'] ?? 'ro';
+                                $encarReport = $olRep[$reportLang] ?? ($olRep['ro'] ?? '');
                             }
-                            
-                            .order-info-grid-mobile .order-info-header {
-                                flex-direction: row !important;
-                                align-items: center !important;
-                                gap: 1rem !important;
-                            }
-                        }
-                    </style>
-                    
-                    <div class="order-info-grid-mobile">
-                        <!-- Siguranța -->
-                        <div class="order-info-card">
-                            <div class="order-info-header">
-                                <div class="order-info-icon"><img src="/content/site/page/icons-order/safety-1.png" alt="Security icon"></div>
-                                <h3 class="order-info-title">'.$lng['w']['order_info_security_title'].'</h3>
-                            </div>
-                            <div class="order-info-content">
-                                <p class="order-info-desc">'.$lng['w']['order_info_security_desc1'].'</p>
-                                <p class="order-info-desc">'.$lng['w']['order_info_security_desc2'].'</p>
-                                <p class="order-info-desc">'.$lng['w']['order_info_security_desc3'].'</p>
-                                <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc3'].'</p>
-                            </div>
-                        </div>
-                        
-                        <!-- Avantaje -->
-                        <div class="order-info-card">
-                            <div class="order-info-header">
-                                <div class="order-info-icon"><img src="/content/site/page/icons-order/winner-2.png" alt="Advantages icon"></div>
-                                <h3 class="order-info-title">'.$lng['w']['order_info_advantages_title'].'</h3>
-                            </div>
-                            <div class="order-info-content">
-                                <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc1'].'</p>
-                                <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc2'].'</p>
-                                <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc4'].'</p>
-                            </div>
-                        </div>
-                        
-                        <!-- Transparența -->
-                        <div class="order-info-card">
-                            <div class="order-info-header">
-                                <div class="order-info-icon"><img src="/content/site/page/icons-order/magnifying-glass-3.png" alt="Transparency icon"></div>
-                                <h3 class="order-info-title">'.$lng['w']['order_info_transparency_title'].'</h3>
-                            </div>
-                            <div class="order-info-content">
-                                <p class="order-info-desc">'.$lng['w']['order_info_transparency_desc1'].'</p>
-                                <p class="order-info-desc">'.$lng['w']['order_info_transparency_desc2'].'</p>
-                                <p class="order-info-desc">'.$lng['w']['order_info_transparency_desc3'].'</p>
-                            </div>
-                        </div>
-                    </div>';
+                        } catch (Throwable $e) { $encarReport = ''; }
+                    }
                 }
+
+               // Mobile: Encar parsing cars show the landed-cost table here (this
+               // spot is in the main flow, visible on mobile). Others get the
+               // normal mobile accordions. The desktop column renders its own
+               // copy below (hidden on mobile via .md-price-mobile-only).
+                if ($mdTable !== '') {
+                    $rtrn .= '<div class="md-price-mobile-only">'.$mdTable
+                           . ($encarReport !== '' ? '<div class="encar-report-public">'.$encarReport.'</div>' : '')
+                           . '</div>';
+                } else {
+                    $parsedHtml = parseEquipmentSection($rseo['params_html']);
+                    $rtrn .= getMobileAccordions($parsedHtml, $_COOKIE['lang'], $rseo['params_html']);
+                }
+
 
                 // Order info grid in left column (similar to html description in cars.php)
                 $rtrn .= '<div class="pht_bx d_left_b">';
-                $rtrn .= '
-                            <style>
-                                .order-info-grid-desktop {
-                                    display: grid;
-                                    grid-template-columns: repeat(3, 1fr);
-                                    width: 100%;
-                                    gap: 1rem;
-                                    padding: 1rem;
-                                    border-radius: 1rem;
-                                    box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.08);
-                                }
-                                
-                                .order-info-grid-desktop .order-info-card {
-                                    background: #f8f9faff;
-                                    padding: 0.8rem;
-                                    border-radius: 1rem;
-                                    box-shadow: 0 0.25rem 1rem rgba(0, 0, 0, 0.08);
-                                    text-align: left;
-                                    transition: all 0.3s ease;
-                                    border: 0.1rem solid #b6b6b6ff;
-                                    display: flex;
-                                    flex-direction: column;
-                                    min-height: 220px;
-                                }
-                                
-                                .order-info-grid-desktop .order-info-card:hover {
-                                    transform: translateY(-0.5rem);
-                                    box-shadow: 0 1rem 2rem rgba(226, 0, 26, 0.15);
-                                    border-color: #e2001a;
-                                }
-                                
-                                .order-info-grid-desktop .order-info-header {
-                                    display: flex;
-                                    align-items: center;
-                                    margin-bottom: 1rem;
-                                    gap: 1rem;
-                                }
-                                
-                                .order-info-grid-desktop .order-info-icon {
-                                    width: 4rem;
-                                    height: 4rem;
-                                    display: flex;
-                                    align-items: center;
-                                    justify-content: center;
-                                }
-                                
-                                .order-info-grid-desktop .order-info-icon img {
-                                    width: 2.5rem;
-                                    height: 2.5rem;
-                                }
-                                
-                                .order-info-grid-desktop .order-info-title {
-                                    font-size: 1.25rem;
-                                    font-weight: 700;
-                                    color: #2c3e50;
-                                    margin: 0;
-                                }
-                                
-                                .order-info-grid-desktop .order-info-desc {
-                                    font-size: 0.95rem;
-                                    color: #6c757d;
-                                    line-height: 1.6;
-                                    margin: 0 0 0.3rem 0;
-                                    position: relative;
-                                    padding-left: 1.2rem;
-                                }
-                                
-                                .order-info-grid-desktop .order-info-desc::before {
-                                    content: "✓";
-                                    position: absolute;
-                                    left: 0;
-                                    color: #e2001a;
-                                    font-weight: bold;
-                                }
-                                
-                                @media (max-width: 768px) {
-                                    .order-info-grid-desktop {
-                                        display: none !important;
-                                    }
-                                }
-                            </style>
-                            
-                            <div class="order-info-grid-desktop">
-                                <div class="order-info-card">
-                                    <div class="order-info-header">
-                                        <div class="order-info-icon"><img src="/content/site/page/icons-order/safety-1.png" alt="Security icon"></div>
-                                        <h3 class="order-info-title">'.$lng['w']['order_info_security_title'].'</h3>
-                                    </div>
-                                    <div class="order-info-content">
-                                        <p class="order-info-desc">'.$lng['w']['order_info_security_desc1'].'</p>
-                                        <p class="order-info-desc">'.$lng['w']['order_info_security_desc2'].'</p>
-                                        <p class="order-info-desc">'.$lng['w']['order_info_security_desc3'].'</p>
-                                        <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc3'].'</p>
-                                    </div>
-                                </div>
-                                <div class="order-info-card">
-                                    <div class="order-info-header">
-                                        <div class="order-info-icon"><img src="/content/site/page/icons-order/winner-2.png" alt="Advantages icon"></div>
-                                        <h3 class="order-info-title">'.$lng['w']['order_info_advantages_title'].'</h3>
-                                    </div>
-                                    <div class="order-info-content">
-                                        <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc1'].'</p>
-                                        <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc2'].'</p>
-                                        <p class="order-info-desc">'.$lng['w']['order_info_advantages_desc4'].'</p>
-                                    </div>
-                                </div>
-                                <div class="order-info-card">
-                                    <div class="order-info-header">
-                                        <div class="order-info-icon"><img src="/content/site/page/icons-order/magnifying-glass-3.png" alt="Transparency icon"></div>
-                                        <h3 class="order-info-title">'.$lng['w']['order_info_transparency_title'].'</h3>
-                                    </div>
-                                    <div class="order-info-content">
-                                        <p class="order-info-desc">'.$lng['w']['order_info_transparency_desc1'].'</p>
-                                        <p class="order-info-desc">'.$lng['w']['order_info_transparency_desc2'].'</p>
-                                        <p class="order-info-desc">'.$lng['w']['order_info_transparency_desc3'].'</p>
-                                    </div>
-                                </div>
-                            </div>';
                 
-                // HTML description
-                $rtrn .= getDesktopDescriptionBlock($rseo['params_html'], $_COOKIE['lang']);
-                
+                // Encar parsing cars: landed-cost table here for DESKTOP (this
+                // column is hidden on mobile; the mobile copy is rendered above).
+                if ($mdTable !== '') {
+                    $rtrn .= '<div class="md-price-desktop-only">'.$mdTable
+                           . ($encarReport !== '' ? '<div class="encar-report-public">'.$encarReport.'</div>' : '')
+                           . '</div>';
+                } else {
+                    $rtrn .= getDesktopDescriptionBlock($rseo['params_html'], $_COOKIE['lang']);
+                }
+
                 $rtrn .= '</div>';
 
                 $rtrn .= '
-                            <div class="spc_bx  d_right_b"> 
-                                <!--Plugin CSS file with desired skin-->
-                                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css"/>
-                                <!--Plugin JavaScript file-->
-                                <script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js"></script>
-                                <div class="calc_head"> '.$lng['w']['calc_title'].' </div>
-                                
-                                <div class="calc_block_sum">
-                                <!-- заголовок и отображение текущего значения слайдера -->
-                                    <div class="calc_inpt_cont">
-                                        <div class="calc_ipt_tl">
-                                            '.$lng['w']['calc_title_sum_tl'].'
+                            <div class="spc_bx  d_right_b">
+
+                                <div class="credit-calculator-container">
+                                    <h3 class="calculator-title">'.$lng['w']['calc_title'].'</h3>
+                                    <div class="calculator-content">
+
+                                        <div class="calculator-field">
+                                            <div class="field-header">
+                                                <label for="view_suma_creditului" class="field-label">'.$lng['w']['calc_title_sum_tl'].'</label>
+                                                <input type="text" id="view_suma_creditului" class="field-value clacl_inpt_vie" inputmode="numeric">
+                                            </div>
+                                            <input type="text" id="suma-creditului">
                                         </div>
-                                        <div class="calc_inpt_blk">
-                                        <!-- отображение текущего значения слайдера -->
-                                            <input type="text" id="view_suma_creditului"  class="clacl_inpt_vie">
+
+                                        <div class="calculator-field">
+                                            <div class="field-header">
+                                                <label for="view_termen_creditului" class="field-label">'.$lng['w']['calc_title_term_tl'].'</label>
+                                                <input type="text" id="view_termen_creditului" class="field-value clacl_inpt_vie" inputmode="numeric">
+                                            </div>
+                                            <input type="text" id="termen-creditului" name="termen_creditului">
                                         </div>
+
+                                        <div class="payment-result">
+                                            <span class="result-label">'.$lng['w']['calc_title_rata'].' (<span class="calc_btt_r1_nrl">24</span> '.$lng['w']['calc_title_luni'].')</span>
+                                            <span class="result-value">'.$lng['w']['calc_title_plata'].' <span class="payment-number calc_btt_r2_nrl">0</span> '.$lng['w']['calc_title_plata2'].' <span class="payment-number calc_btt_r3_nrl">0</span> €</span>
+                                        </div>
+
                                     </div>
-                                 <!-- элемент вызова слайдера -->
-                                    <input type="text" id="suma-creditului" >
                                 </div>
-                                    
-                                <div class="calc_block_terms">
-                                <!-- заголовок и отображение текущего значения слайдера -->
-                                    <div class="calc_inpt_cont">
-                                        <div class="calc_ipt_tl">
-                                            '.$lng['w']['calc_title_term_tl'].'
-                                        </div>
-                                        <div class="calc_inpt_blk">
-                                        <!-- отображение текущего значения слайдера -->
-                                            <input type="text" id="view_termen_creditului"  class="clacl_inpt_vie">
-                                        </div>
-                                    </div>
-                                     <!-- элемент вызова слайдера -->
-                                    <input type="text" id="termen-creditului" name="termen_creditului">
-                                </div>
-                                
-                                
-                                <div style="clear: both"> </div>
-                                
-                                <!-- отображение результатов расчета калькулятора -->
-                                <div class="calc_btt_word">
-                                    <div class="calc_btt_left">
-                                        '.$lng['w']['calc_title_rata'].'
-                                    </div>
-                                    <div class="calc_btt_right">
-                                        <div class="calc_btt_r1">
-                                            <span class="calc_btt_r1_nrl"> 24 </span> '.$lng['w']['calc_title_luni'].'
-                                        </div>
-                                        <div class="calc_btt_r2">
-                                            <span class="payment-amount">'.$lng['w']['calc_title_plata'].' <span class="payment-number calc_btt_r2_nrl">0</span> '.$lng['w']['calc_title_plata2'].' <span class="payment-number calc_btt_r3_nrl">0</span></span>
-                                        </div>
-                                    </div>
-                                </div> 
-                                
-                                <div style="clear: both"> </div>
 
  ';
 
@@ -1550,7 +1397,10 @@ $iconTelegramParams = array(
                                     sliderSuma.update({ from: val });
                                     updateRate();
                                 }).on("input", function() {
-                                    let val = parseInt($(this).val(), 10);
+                                    // Digits only — strip anything else as it is typed/pasted.
+                                    var clean = $(this).val().replace(/\D+/g, "");
+                                    if (clean !== $(this).val()) $(this).val(clean);
+                                    let val = parseInt(clean, 10);
                                     if (!isNaN(val)) {
                                         val = Math.max(2000, Math.min(50000, val));
                                         val = Math.round(val / 500) * 500;
@@ -1572,7 +1422,10 @@ $iconTelegramParams = array(
                                     sliderTermen.update({ from: val });
                                     updateRate();
                                 }).on("input", function() {
-                                    let val = parseInt($(this).val(), 10);
+                                    // Digits only — strip anything else as it is typed/pasted.
+                                    var clean = $(this).val().replace(/\D+/g, "");
+                                    if (clean !== $(this).val()) $(this).val(clean);
+                                    let val = parseInt(clean, 10);
                                     if (!isNaN(val)) {
                                         val = Math.max(6, Math.min(60, val));
                                         sliderTermen.update({ from: val });
@@ -1695,6 +1548,8 @@ $iconTelegramParams = array(
 }
 
 echo $rtrn;
+
+echo '<script>(function(){var r=document.querySelector("body > .srt_row");if(!r)return;var h=document.querySelector("main .gr > h1, main .gr > div > h1");if(!h||!h.textContent.trim())return;h.classList.add("srt_h1");r.insertBefore(h,r.firstChild);})();</script>';
 
 // Ordercar contact modal
 $_oc_lang = $_COOKIE['lang'] ?? 'ro';

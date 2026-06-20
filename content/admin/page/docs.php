@@ -1511,27 +1511,10 @@ c/f 1017600006845, c/TVA 0609417</pre>
 				
 				$("input[type=\"submit\"]").on("click", function(e){
 			var ok = confirm( "Print?" );
-			if (!ok){ 
-				e.preventDefault(); 
-			} else {
-				var form = $(this).closest("form")[0];
-				var addressField = form.querySelector("input[name=\"u_adr\"]");
-				var defaultAddress = "Republica Moldova, mun.Chişinau, or.Chisinau, str.";
-				
-				if (addressField && addressField.value.trim() === defaultAddress.trim()) {
-					e.preventDefault();
-					alert("Vă rugăm să completați adresa completă (adăugați strada și numărul)");
-					addressField.focus();
-					return false;
-				}
-
-				// For vinzare_avans (cars/ordercars): use _self so PHP redirect with crm_confirm works in main window
-				var docF  = (form.querySelector("input[name=\"doc_f\"]") || {}).value || "";
-				var docGr = (form.querySelector("input[name=\"doc_gr\"]") || {}).value || "";
-				if (docF === "vinzare_avans" && (docGr === "cars" || docGr === "ordercars")) {
-					form.target = "_self";
-				}
+			if (!ok){
+				e.preventDefault();
 			}
+			// Form submits in the same tab (target=_self); PHP redirects this tab to /docs/ctlg after saving
 		});
 				
 				$(document).on("change", "select[name=\"br\"], select[name=\"br[]\"]", function(){
@@ -1627,6 +1610,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 						$("form").find("[name=\"u_"+k+"\"]").val(v);
 						if (k=="tp"){ $("form").find("[name=\"u_"+k+"\"]").trigger("change"); }
 					})
+					if (window.docsNormalizePhone) window.docsNormalizePhone();
 					$("#find_user_rslt").html("");
 				})
 				
@@ -1733,7 +1717,10 @@ c/f 1017600006845, c/TVA 0609417</pre>
 
 				if (crmPhone) {
 					var phnField = $("input[name=\"u_phn\"]");
-					if (phnField.length) phnField.val(crmPhone);
+					if (phnField.length) {
+						phnField.val(crmPhone);
+						if (window.docsNormalizePhone) window.docsNormalizePhone();
+					}
 				}
 				if (crmNm) {
 					var nmField = $("input[name=\"u_nm\"]");
@@ -1795,7 +1782,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 				$rtrn .= '
 				</div>
 				
-				<form target="_blank" method="POST" action="/'._ADM_INCL.'/docs_print.php">
+				<form target="_self" method="POST" action="/'._ADM_INCL.'/docs_print.php">
 					<div class="doc_f" style="text-align:center;">'.strtoupper( strtr($t_mp[4].', '.$t_mp[5], '_', ' ') ).'</div>
 					
 					<input type="hidden" name="doc_gr" value="'.$_doc_gr_val.'" />

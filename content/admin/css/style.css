@@ -361,6 +361,13 @@
 	  line-height: 32px;
   }
   .form-label-sm {font-size:0.7rem; color:#888; margin:0 0 2px 2px; line-height:1.2;}
+  /* Card linked from the parsing "already on sauto" result — amber pulsing ring.
+     Catalog cards live in section.ctlg (NOT #content_box), so scope it there. */
+  .ctlg .bx.car-card-linked {position:relative; z-index:6; border-radius:8px; animation:card-linked-pulse 1.1s ease-in-out 0s infinite;}
+  @keyframes card-linked-pulse {
+    0%,100% {box-shadow:0 0 0 3px rgba(245,158,11,.55), 0 6px 20px rgba(245,158,11,.25);}
+    50%     {box-shadow:0 0 0 7px rgba(245,158,11,.18), 0 6px 22px rgba(245,158,11,.30);}
+  }
   #content_box .top {width:100%; padding:5px 0; line-height:2.2rem; font-size:1.1rem; text-align:center;background-color: white; position: relative;}
   #content_box .top > .title {height:100%; width:100%; box-sizing:border-box; background-color:transparent; color:var(--clr); float:left;}
   #content_box .top > .close {height: auto; box-sizing:border-box; color:#333; cursor:pointer; transition:.3s;position: absolute;right: 0;padding: 0 30px;}
@@ -628,6 +635,8 @@
   .prc_wrap {width:100%; color:var(--clr); padding:3px; box-sizing:border-box; float:left;}
   .prc_wrap .prc {float:right; margin-right:1rem; font-size:1.3rem;}
   .prc_wrap .prc.tyres {width:inherit; text-align:center;}
+  .prc_wrap .prc .o_prc {position:relative; display:inline-block; margin-left:0.4rem; font-size:0.95rem; font-weight:600; color:#ff3b30;}
+  .prc_wrap .prc .o_prc::after {content:''; position:absolute; left:0; right:0; top:50%; height:1.5px; margin-top:-0.75px; border-radius:1px; background:#1a1a1a; transform:rotate(-13deg);}
   
   #more_it {width:100%; height:50px; background-color:var(--clr); text-align:center; line-height:50px; color:#fff; cursor:pointer;}
   

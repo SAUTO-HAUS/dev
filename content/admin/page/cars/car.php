@@ -398,6 +398,19 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                         <?php endforeach; ?>
                     </select>
                 </div>
+
+                <?php
+                    $prc_n_val = (!empty($car['prc_n']) && $car['prc_n'] != 0) ? $car['prc_n'] : '';
+                    $lbl_prc_n = ($_COOKIE['lang'] == 'ru') ? 'Новая цена' : (($_COOKIE['lang'] == 'en') ? 'New price' : 'Preț nou');
+                ?>
+                <!-----NEW PRICE--->
+                <div class="form-group col-md-90">
+                    <div class="form-label-sm"><?= $lbl_prc_n ?></div>
+                    <input class="price nmb form-control no_need" type="text" name="prc_n" tabindex="18"
+                           value="<?= $prc_n_val ?>"
+                           placeholder="<?= mb_strtoupper($lbl_prc_n, "UTF-8") ?>"
+                           title="<?= mb_strtoupper($lbl_prc_n, "UTF-8") ?>">
+                </div>
             </div>
             <div class="add_info" style="margin-top: 10px">
                 <!-----SEO----->
@@ -848,25 +861,25 @@ SVG
                             </span>
                     </div>
                     <?php
-                    // Generate random Facebook posting time between 18:00 and 22:00
+                    // Get Facebook schedule status + the actual scheduled time (if any).
                     require_once __DIR__ . '/../../../../App/Helper/RandomTimeHelper.php';
-                    $random_schedule_time = \App\Helper\RandomTimeHelper::generateRandomFacebookTime();
-                    ?>
-                    <input type="time" id="facebook_schedule_time" value="<?= $random_schedule_time ?>" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;" onclick="event.stopPropagation();">
-                    <?php
-                    // Get Facebook schedule status
                     $facebookStatus = '';
                     $facebookStatusIcon = '';
                     $facebookStatusText = '';
                     $facebookStatusColor = '';
+                    $facebookScheduledTime = ''; // real time of an existing schedule
                     if (!empty($car['id'])) {
                         try {
                             $catalogType = 'in_stock';
-                            $stmt = $db->prepare("SELECT status FROM {$prefx}_scheduled_facebook_posts WHERE car_id = ? AND catalog_type = ? ORDER BY created_at DESC LIMIT 1");
+                            $stmt = $db->prepare("SELECT status, scheduled_time FROM {$prefx}_scheduled_facebook_posts WHERE car_id = ? AND catalog_type = ? ORDER BY created_at DESC LIMIT 1");
                             $stmt->execute([$car['id'], $catalogType]);
                             $facebookSchedule = $stmt->fetch();
                             if ($facebookSchedule) {
                                 $facebookStatus = $facebookSchedule['status'];
+                                // Show the time it was actually scheduled for (HH:MM), not a new random.
+                                if (!empty($facebookSchedule['scheduled_time'])) {
+                                    $facebookScheduledTime = substr((string)$facebookSchedule['scheduled_time'], 0, 5);
+                                }
                                 switch ($facebookStatus) {
                                     case 'pending':
                                         $facebookStatusIcon = '⏳';
@@ -894,7 +907,12 @@ SVG
                             // Ignore error
                         }
                     }
+                    // If already scheduled, show that real time; otherwise pick a random one.
+                    $facebook_schedule_time = $facebookScheduledTime !== ''
+                        ? $facebookScheduledTime
+                        : \App\Helper\RandomTimeHelper::generateRandomFacebookTime();
                     ?>
+                    <input type="time" id="facebook_schedule_time" value="<?= $facebook_schedule_time ?>" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;" onclick="event.stopPropagation();">
                     <?php if ($facebookStatus): ?>
                         <div style="display: flex; align-items: center; gap: 4px;">
                             <span style="font-size: 14px;"><?= $facebookStatusIcon ?></span>
@@ -937,25 +955,25 @@ SVG
                     </span>
                 </div>
                 <?php
-                // Generate random Telegram posting time between 18:00 and 22:00
+                // Get Telegram schedule status + the actual scheduled time (if any).
                 require_once __DIR__ . '/../../../../App/Helper/RandomTimeHelper.php';
-                $random_telegram_time = \App\Helper\RandomTimeHelper::generateRandomTelegramTime();
-                ?>
-                <input type="time" id="telegram_schedule_time" value="<?= $random_telegram_time ?>" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;" onclick="event.stopPropagation();">
-                <?php
-                // Get Telegram schedule status
                 $telegramStatus = '';
                 $telegramStatusIcon = '';
                 $telegramStatusText = '';
                 $telegramStatusColor = '';
+                $telegramScheduledTime = ''; // real time of an existing schedule
                 if (!empty($car['id'])) {
                     try {
                         $catalogType = 'in_stock';
-                        $stmt = $db->prepare("SELECT status FROM {$prefx}_scheduled_telegram_posts WHERE car_id = ? AND catalog_type = ? ORDER BY created_at DESC LIMIT 1");
+                        $stmt = $db->prepare("SELECT status, scheduled_time FROM {$prefx}_scheduled_telegram_posts WHERE car_id = ? AND catalog_type = ? ORDER BY created_at DESC LIMIT 1");
                         $stmt->execute([$car['id'], $catalogType]);
                         $telegramSchedule = $stmt->fetch();
                         if ($telegramSchedule) {
                             $telegramStatus = $telegramSchedule['status'];
+                            // Show the time it was actually scheduled for (HH:MM), not a new random.
+                            if (!empty($telegramSchedule['scheduled_time'])) {
+                                $telegramScheduledTime = substr((string)$telegramSchedule['scheduled_time'], 0, 5);
+                            }
                             switch ($telegramStatus) {
                                 case 'pending':
                                     $telegramStatusIcon = '⏳';
@@ -983,7 +1001,12 @@ SVG
                         // Ignore error
                     }
                 }
+                // If already scheduled, show that real time; otherwise pick a random one.
+                $telegram_schedule_time = $telegramScheduledTime !== ''
+                    ? $telegramScheduledTime
+                    : \App\Helper\RandomTimeHelper::generateRandomTelegramTime();
                 ?>
+                <input type="time" id="telegram_schedule_time" value="<?= $telegram_schedule_time ?>" style="padding: 5px; border: 1px solid #ccc; border-radius: 4px;" onclick="event.stopPropagation();">
                 <?php if ($telegramStatus): ?>
                     <div style="display: flex; align-items: center; gap: 4px;">
                         <span style="font-size: 14px;"><?= $telegramStatusIcon ?></span>

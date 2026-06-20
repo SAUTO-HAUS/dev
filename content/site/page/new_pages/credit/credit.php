@@ -24,24 +24,6 @@ if (file_exists($js_file_path)) {
 }
 ?>
 
-<?php
-// Set page title and description based on language
-switch($current_lang) {
-    case 'ru':
-        $page_title = 'Автокредит в Молдове — Кредит на покупку автомобиля | Sauto.md';
-        $page_description = 'Оформите автокредит на выгодных условиях с Sauto.md. Быстрое одобрение, минимальный пакет документов, автомобили в наличии и под заказ. Консультации и сопровождение на всех этапах.';
-        break;
-    case 'ro':
-        $page_title = 'Credit auto în Moldova — Finanțare pentru achiziția unei mașini | Sauto.md';
-        $page_description = 'Obține un credit auto rapid și avantajos cu Sauto.md. Aprobări rapide, documente minime, mașini în stoc sau la comandă. Consultanță gratuită și suport complet.';
-        break;
-    case 'en':
-    default:
-        $page_title = 'Car Loan in Moldova — Auto Financing Made Easy | Sauto.md';
-        $page_description = 'Get your car financed quickly and easily with Sauto.md. Fast approvals, minimal paperwork, cars available in stock or by order. Expert guidance every step of the way.';
-        break;
-}
-?>
 
 <!-- Include Ion Range Slider CSS -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ion-rangeslider@2.3.1/css/ion.rangeSlider.min.css">
@@ -98,7 +80,7 @@ switch($current_lang) {
             <!-- Right side - Text and Car Image  -->
             <div class="hero-right-content">
                 <div class="hero-text">
-                    <div class="hero-main-title"><?php echo get_translation('hero_main_title', $current_lang, $lng); ?></div>
+                    <h1 class="hero-main-title"><?php echo get_translation('hero_main_title', $current_lang, $lng); ?></h1>
                     <div class="hero-subtitle"><?php echo get_translation('hero_subtitle', $current_lang, $lng); ?></div>
                 </div>
                 

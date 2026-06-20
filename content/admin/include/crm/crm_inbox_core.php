@@ -120,11 +120,36 @@ function inbox_get_tg_settings(PDO $db, string $prefx, string $type = 'regular')
     return $s;
 }
 
+function inbox_is_ai_enabled(PDO $db, string $prefx, string $channel): bool {
+    // No static cache: long-running daemons (poll_999_daemon) must see toggle
+    // changes applied via Settings UI within seconds, not after process restart.
+    $stmt = $db->prepare("SELECT v FROM {$prefx}_crm_settings WHERE k=:k LIMIT 1");
+
+    $read = function(string $key) use ($stmt): bool {
+        $stmt->execute([':k' => $key]);
+        $v = $stmt->fetchColumn();
+        return ($v === false || $v === null || $v === '' || $v === '1');
+    };
+
+    // Sub-channels of 999.md require BOTH master AND sub-channel enabled
+    if (substr($channel, -6) === '_999md' && $channel !== '999md') {
+        if (!$read('inbox_ai_enabled_999md')) return false;
+    }
+    return $read('inbox_ai_enabled_' . $channel);
+}
+
 function inbox_get_crm_ai_prompt(PDO $db, string $prefx, string $channel = 'default'): string {
     $stmt = $db->prepare("SELECT v FROM {$prefx}_crm_settings WHERE k=:k LIMIT 1");
     $stmt->execute([':k' => 'inbox_ai_prompt_' . $channel]);
     $v = $stmt->fetchColumn();
     if ($v) return $v;
+
+    // Intermediate fallback for 999.md sub-accounts (e.g. sautohaus_999md → 999md → default)
+    if (substr($channel, -6) === '_999md') {
+        $stmt->execute([':k' => 'inbox_ai_prompt_999md']);
+        $v = $stmt->fetchColumn();
+        if ($v) return $v;
+    }
 
     // fallback to default prompt
     $stmt->execute([':k' => 'inbox_ai_prompt_default']);
@@ -138,6 +163,12 @@ function inbox_get_crm_ai_prompt(PDO $db, string $prefx, string $channel = 'defa
 
 function inbox_ai_reply(PDO $db, string $prefx, string $channel, array $history, string $new_message, string $car_context = ''): array {
     $log_root = !empty($_SERVER['DOCUMENT_ROOT']) ? $_SERVER['DOCUMENT_ROOT'] : dirname(__DIR__, 4);
+
+    // Channel-level kill switch (set in CRM settings)
+    if (!inbox_is_ai_enabled($db, $prefx, $channel)) {
+        return ['reply' => '', 'trigger' => false, 'phone' => ''];
+    }
+
     $api_key = defined('OPENAI_API_KEY') ? OPENAI_API_KEY : '';
     if (!$api_key) {
         file_put_contents($log_root . '/logs/fb_ai.log',

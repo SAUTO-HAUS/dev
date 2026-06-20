@@ -5,6 +5,8 @@ use App\Db\Adverts;
 
 defined( '_DOIT' ) or die( 'Restricted access' );
 
+date_default_timezone_set('Europe/Chisinau');
+
 $ajax_folder = _ADM_AJAX.'/cars';
 $photo_folder = _CAR_IMG;
 $rtrn = 'none';
@@ -359,7 +361,7 @@ elseif ( __post('fn')=='sendToFacebookCars' ){
         $loc_auto = $r['loc'];
 
         $cur = $r['cur'];
-        if ( $r['prc_t']!=0 && $r['prc_t']>time() ){
+        if ( $r['prc_n']!=0 && $r['prc_n']<$r['prc'] ){
             $prc = $r['prc_n'];
             $o_prc = $r['prc'];
             // $o_prc_bl = '<span class="o_val" title="'.$lng['w']['o_prc'].'"><span class="i">'.parseCurr($o_prc).'</span> '.( symb_rplc($r['cur']) ).'</span>';
@@ -540,7 +542,7 @@ elseif ( __post('fn')=='sendToTelegramCars' ){
         // var_dump( $r);  exit();
 
         $cur = $r['cur'];
-        if ( $r['prc_t']!=0 && $r['prc_t']>time() ){
+        if ( $r['prc_n']!=0 && $r['prc_n']<$r['prc'] ){
             $prc = $r['prc_n'];
             $o_prc = $r['prc'];
             // $o_prc_bl = '<span class="o_val" title="'.$lng['w']['o_prc'].'"><span class="i">'.parseCurr($o_prc).'</span> '.( symb_rplc($r['cur']) ).'</span>';

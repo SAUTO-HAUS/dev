@@ -2,7 +2,7 @@
 
 $file_av_ar = [
 	'img'=>[
-		'fldr'=>[ 'high'=>['sz'=>1600, 'ql'=>75], 'med'=>['sz'=>600, 'ql'=>70] ],
+		'fldr'=>[ 'high'=>['sz'=>1600, 'ql'=>88], 'med'=>['sz'=>600, 'ql'=>80] ],
 		'frmt'=>[ 'image/jpeg'=>['jpg'], 'image/jpg'=>['jpg'], 'image/png'=>['jpg'], 'image/gif'=>['jpg'], 'image/webp'=>['jpg'] ]
 	],
 	'doc'=>[

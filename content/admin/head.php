@@ -4,7 +4,7 @@
 <meta name="description" content="">
 <meta name="keywords" content="">
 <meta name="robots" content="noindex, nofollow">
-<meta name="viewport" content="width=device-width, initial-scale=1" id="mobile_viewport">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" id="mobile_viewport">
 
 <link rel="apple-touch-icon" sizes="180x180" href="/<?php e(_SITE_IMG)?>/favicon/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/<?php e(_SITE_IMG)?>/favicon/favicon-32x32.png">

@@ -64,11 +64,15 @@
 
 .mobile-card-slider__track {
     display: flex;
-    transition: transform 0.1s ease-out;
+    transition: transform 0.25s ease-out;
     height: 100%;
     will-change: transform;
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
+}
+
+.mobile-card-slider__track.is-dragging {
+    transition: none;
 }
 
 .mobile-card-slider__slide {
@@ -107,26 +111,30 @@
     display: none;
 }
 
-/* Slider indicator line */
+/* Slider indicator line - segmented */
 .mobile-card-slider__line-indicator {
     position: absolute;
     bottom: -12px;
     left: 0;
     width: 100%;
     height: 4px;
-    background: #ddd;
-    border-radius: 2px;
+    padding: 0 8px;
+    box-sizing: border-box;
+    display: flex;
+    gap: 4px;
+    background: transparent;
 }
 
-.mobile-card-slider__line-indicator::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
+.mobile-card-slider__line-indicator__segment {
+    flex: 1 1 0;
     height: 100%;
-    width: var(--progress, 0%);
-    background: #000; /* Black active color */
+    background: rgba(0, 0, 0, 0.25); /* inactive: black transparent */
     border-radius: 2px;
+    transition: background 0.2s ease;
+}
+
+.mobile-card-slider__line-indicator__segment--active {
+    background: #000; /* active: solid black */
 }
 
 /* Hide line indicator for single image */
@@ -134,9 +142,20 @@
     display: none;
 }
 
-/* Touch support for mobile */
+/* Touch support for mobile.
+   pan-y lets the page scroll vertically while JS owns the horizontal swipe.
+   On iOS Safari we also kill the tap-callout / text-selection / image drag that
+   otherwise steals the gesture and makes the swipe stutter or skip. */
 .mobile-card-slider__track {
     touch-action: pan-y;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+.mobile-card-slider__slide img {
+    -webkit-user-drag: none;
+    -webkit-touch-callout: none;
+    pointer-events: none; /* image itself must not eat the swipe on iOS */
 }
 
 /* Product Card Slider Styles */
@@ -291,26 +310,30 @@
     background: #f0f0f0 url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23ccc"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>') center/50px no-repeat;
 }
 
-/* Slider indicator line */
+/* Slider indicator line - segmented */
 .product-card-slider__line-indicator {
     position: absolute;
     bottom: -12px;
     left: 0;
     width: 100%;
     height: 4px;
-    background: #ddd;
-    border-radius: 2px;
+    padding: 0 8px;
+    box-sizing: border-box;
+    display: flex;
+    gap: 4px;
+    background: transparent;
 }
 
-.product-card-slider__line-indicator::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
+.product-card-slider__line-indicator__segment {
+    flex: 1 1 0;
     height: 100%;
-    width: var(--progress, 0%);
-    background: #000; /* Black active color */
+    background: rgba(0, 0, 0, 0.25); /* inactive: black transparent */
     border-radius: 2px;
+    transition: background 0.2s ease;
+}
+
+.product-card-slider__line-indicator__segment--active {
+    background: #000; /* active: solid black */
 }
 
 /* Hide line indicator for single image */

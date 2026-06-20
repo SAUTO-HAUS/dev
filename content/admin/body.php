@@ -7,7 +7,7 @@ if (!empty($_GET['embed']) && isset($i_counts) && $i_counts == 1) {
     $rbac = new RBAC($db, $prefx, $user_id);
     require_once(_ADM_INCL.'/crm/crm_core.php');
     echo '<!DOCTYPE html><html lang="'.($_COOKIE['lang']??'ro').'"><head>';
-    echo '<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">';
+    echo '<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">';
     echo '<link rel="stylesheet" href="/content/default/css/default.css">';
     echo '<link rel="stylesheet" href="/content/admin/css/style.css">';
     echo '<link rel="stylesheet" href="/content/admin/include/crm/crm.css">';
@@ -69,6 +69,22 @@ if (!empty($_GET['embed']) && isset($i_counts) && $i_counts == 1) {
 			<div id="menu" class="dev1">';
 				// Use RBAC menu system
 				$current_menu = rbac_update_admin_menu($user_type, $user_role ?? null, $user_id ?? null);
+
+					// Parsing menu — ids configured in include/parsing_access.php.
+					require_once(_ADM_INCL.'/parsing_access.php');
+					$parsingActions = parsing_menu_actions($user_id ?? 0);
+					if (!empty($parsingActions)) {
+						if (array_key_exists('ordercars', $current_menu)) {
+							$rebuilt = [];
+							foreach ($current_menu as $mk => $mv) {
+								$rebuilt[$mk] = $mv;
+								if ($mk === 'ordercars') $rebuilt['parsing'] = $parsingActions;
+							}
+							$current_menu = $rebuilt;
+						} else {
+							$current_menu = ['parsing' => $parsingActions] + $current_menu;
+						}
+					}
 				
 				if (!empty($current_menu)) {
 					foreach($current_menu as $k => $ar){
@@ -119,6 +135,16 @@ if (!empty($_GET['embed']) && isset($i_counts) && $i_counts == 1) {
 			<div id="content">';
 				// Check access using RBAC system
 			$has_access = false;
+
+				// Parsing pages: access by the configured user-id groups.
+				if (isset($t_mp[3]) && $t_mp[3] === 'parsing') {
+					require_once(_ADM_INCL.'/parsing_access.php');
+					$pAction = $t_mp[4] ?? 'filters';
+					if (parsing_is_full($user_id ?? 0)) { $has_access = true; }
+					elseif (parsing_is_limited($user_id ?? 0) && in_array($pAction, ['filters', 'ctlg', 'favorites', 'published'], true)) { $has_access = true; }
+					elseif (parsing_is_encar_only($user_id ?? 0) && in_array($pAction, ['filters', 'ctlg'], true)) { $has_access = true; }
+					else { $has_access = false; }
+				} else
 			
 			// Gordon (superadmin) always has full access
 			if (isset($user_role) && $user_role === 'gordon') {

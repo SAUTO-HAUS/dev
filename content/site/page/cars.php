@@ -359,7 +359,7 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
             $rtrn = '<div class="gr">';
             $rtrn .= '<h1 style="font-size: inherit;">'.$sa['meta']['h1'].'</h1>';
             $rtrn .= '<div class="cnt list">';
-            $rtrn .= '<div class="no-results">'.$lng['w']['no_results'].'</div>';
+            $rtrn .= '<div class="no-results">'.$lng['t']['x']['no_offers'].'</div>';
             $rtrn .= '</div>';
             $rtrn .= '</div>';
 
@@ -378,7 +378,7 @@ elseif (!isset($t_mp[3])) {
 
     $intro_text = $lng['w']['in_stock_intro'];
 
-    $rtrn .= '<div style="margin: 20px 0; padding: 15px; background-color: #f8f9fa; border-left: 4px solid #ff0000; border-radius: 4px;">';
+    $rtrn .= '<div style="margin: 5px 0; padding: 15px; background-color: #f8f9fa; border-left: 4px solid #ff0000; border-radius: 4px;">';
     $rtrn .= '<p style="margin: 0; color: #333; font-size: 16px;">'.$intro_text.'</p>';
     $rtrn .= '</div>';
 
@@ -516,7 +516,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 if ( $r['n_a']==0 && $r['act']==1 ){
                     $z_stat .= ( $r['soon']==1 ) ? '<div class="stat soon1">'.$lng['l']['stat']['soon1'].'</div>' : '<div class="stat n_a0">'.$lng['l']['stat']['n_a0'].'</div>';
                     $z_stat .= ($r['top']==1) ? '<div class="stat top1">'.$lng['l']['stat']['top1'].'</div>' : '';
-                    $z_stat .= ($r['prc_n']!=0 && $r['prc_t']>time()) ? '<div class="stat prc_n">'.$lng['l']['stat']['prc_n'].'</div>' : '';
+                    $z_stat .= ($r['prc_n']!=0 && $r['prc_n']<$r['prc']) ? '<div class="stat prc_n">'.$lng['l']['stat']['prc_n'].'</div>' : '';
                     $z_stat .= ($r['tva']==1) ? '<div class="stat top1">'.$lng['l']['stat']['vat'].'</div>' : '';
                     $z_stat .= ($r['gift']==1) ? '<div class="stat gift">+ '.$lng['l']['stat']['gift'].'</div>' : '';
 
@@ -578,7 +578,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                             ,state_of_vehicle: "Used"';
                 foreach($trnslt_ar as $k=>$v){ $rtrn .= isset( $lng_x['car'][$k][$r[$k]] )?','.$v.': "'.$lng_x['car'][$k][$r[$k]].'"':''; }
                 $rtrn .= '
-                            '.($r['prc']>100?',price: '.$r['prc'].',currency: "'.$r['cur'].'"':'').'
+                            '.($r['prc']>100?',price: '.(($r['prc_n']!=0 && $r['prc_n']<$r['prc']) ? $r['prc_n'] : $r['prc']).',currency: "'.$r['cur'].'"':'').'
                         });</script>
                         
                         <div class="pht_bx">
@@ -600,11 +600,11 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                             </div>';
                 $z_src = isset($img['main'])?'/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/high/'.$img['main'].(!empty($img['main_ff'])?'.'.$img['main_ff']:$img_frmt):'';
                 //$z_src = (@getimagesize($site_url.$z_src)?$z_src:'');
-                $rtrn .= '<div class="big_pht" role="img" aria-label="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' large photo" data-pos="1" data-cnt="'.$img_cnt.'" style="background-image:url('.$z_src.');" data-src="'.$z_src.'"></div>';
+                $rtrn .= '<div class="big_pht" role="img" aria-label="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' large photo" data-pos="1" data-cnt="'.$img_cnt.'" style="background-image:url('.$z_src.');" data-src="'.$z_src.'">'.car_fav_btn($r['id'], $lng).'</div>';
                 $rtrn .= '</div>';
 
                 $cur = $r['cur'];
-                if ( $r['prc_t']!=0 && $r['prc_t']>time() ){
+                if ( $r['prc_n']!=0 && $r['prc_n']<$r['prc'] ){
                     $prc = $r['prc_n'];
                     $o_prc = $r['prc'];
                     $o_prc_bl = '<span class="o_val" title="'.$lng['w']['o_prc'].'"><span class="i">'.parseCurr($o_prc).'</span> '.( symb_rplc($r['cur']) ).'</span>';
@@ -618,6 +618,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 ?>
                 <?php // webs25  ?>
                 <div class="wrapf-carousel 11">
+                    <?= car_fav_btn($r['id'], $lng) ?>
                     <div class="f-carousel" id="heroCarousel">
 
                         <?
@@ -921,7 +922,7 @@ $iconTelegramParams = array(
 
 
                 <?
-                if ( $r['prc_t']!=0 && $r['prc_t']>time() ){
+                if ( $r['prc_n']!=0 && $r['prc_n']<$r['prc'] ){
                     $prc = $r['prc_n'];
                     $o_prc = $r['prc'];
                     $o_prc_bl = '<span class="o_val" title="'.$lng['w']['o_prc'].'"><span class="i">'.parseCurr($o_prc).'</span> '.( symb_rplc($r['cur']) ).'</span>';
@@ -999,63 +1000,36 @@ $iconTelegramParams = array(
                 $rtrn .= '</div>';
 
                 $rtrn .= '
-                            <div class="spc_bx  d_right_b"> 
-                                <!--Plugin CSS file with desired skin-->
-                                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/css/ion.rangeSlider.min.css"/>
-                                <!--Plugin JavaScript file-->
-                                <script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js"></script>
-                                <div class="calc_head"> '.$lng['w']['calc_title'].' </div>
-                                
-                                <div class="calc_block_sum">
-                                <!-- заголовок и отображение текущего значения слайдера -->
-                                    <div class="calc_inpt_cont">
-                                        <div class="calc_ipt_tl">
-                                            '.$lng['w']['calc_title_sum_tl'].'
+                            <div class="spc_bx  d_right_b">
+
+                                <div class="credit-calculator-container">
+                                    <h3 class="calculator-title">'.$lng['w']['calc_title'].'</h3>
+                                    <div class="calculator-content">
+
+                                        <div class="calculator-field">
+                                            <div class="field-header">
+                                                <label for="view_suma_creditului" class="field-label">'.$lng['w']['calc_title_sum_tl'].'</label>
+                                                <input type="text" id="view_suma_creditului" class="field-value clacl_inpt_vie" inputmode="numeric">
+                                            </div>
+                                            <input type="text" id="suma-creditului">
                                         </div>
-                                        <div class="calc_inpt_blk">
-                                        <!-- отображение текущего значения слайдера -->
-                                            <input type="text" id="view_suma_creditului"  class="clacl_inpt_vie">
+
+                                        <div class="calculator-field">
+                                            <div class="field-header">
+                                                <label for="view_termen_creditului" class="field-label">'.$lng['w']['calc_title_term_tl'].'</label>
+                                                <input type="text" id="view_termen_creditului" class="field-value clacl_inpt_vie" inputmode="numeric">
+                                            </div>
+                                            <input type="text" id="termen-creditului" name="termen_creditului">
                                         </div>
+
+                                        <div class="payment-result">
+                                            <span class="result-label">'.$lng['w']['calc_title_rata'].' (<span class="calc_btt_r1_nrl">24</span> '.$lng['w']['calc_title_luni'].')</span>
+                                            <span class="result-value">'.$lng['w']['calc_title_plata'].' <span class="payment-number calc_btt_r2_nrl">0</span> '.$lng['w']['calc_title_plata2'].' <span class="payment-number calc_btt_r3_nrl">0</span> €</span>
+                                        </div>
+
                                     </div>
-                                 <!-- элемент вызова слайдера -->
-                                    <input type="text" id="suma-creditului" >
                                 </div>
-                                    
-                                <div class="calc_block_terms">
-                                <!-- заголовок и отображение текущего значения слайдера -->
-                                    <div class="calc_inpt_cont">
-                                        <div class="calc_ipt_tl">
-                                            '.$lng['w']['calc_title_term_tl'].'
-                                        </div>
-                                        <div class="calc_inpt_blk">
-                                        <!-- отображение текущего значения слайдера -->
-                                            <input type="text" id="view_termen_creditului"  class="clacl_inpt_vie">
-                                        </div>
-                                    </div>
-                                     <!-- элемент вызова слайдера -->
-                                    <input type="text" id="termen-creditului" name="termen_creditului">
-                                </div>
-                                
-                                
-                                <div style="clear: both"> </div>
-                                
-                                <!-- отображение результатов расчета калькулятора -->
-                                <div class="calc_btt_word">
-                                    <div class="calc_btt_left">
-                                        '.$lng['w']['calc_title_rata'].'
-                                    </div>
-                                    <div class="calc_btt_right">
-                                        <div class="calc_btt_r1">
-                                            <span class="calc_btt_r1_nrl"> 24 </span> '.$lng['w']['calc_title_luni'].'
-                                        </div>
-                                        <div class="calc_btt_r2">
-                                            <span class="payment-amount">'.$lng['w']['calc_title_plata'].' <span class="payment-number calc_btt_r2_nrl">0</span> '.$lng['w']['calc_title_plata2'].' <span class="payment-number calc_btt_r3_nrl">0</span></span>
-                                        </div>
-                                    </div>
-                                </div> 
-                                
-                                <div style="clear: both"> </div>
-                                
+
                                 ';
 
                  // --- CarVertical VIN Check Block ---
@@ -1176,8 +1150,8 @@ $iconTelegramParams = array(
                                 let userIsEditing = false;
                                 var $input_suma_creditului = $("#view_suma_creditului");
                                 // Credit amount slider
-                                // Get car price from PHP
-                                const carPrice = '.($r['prc'] > 2000 ? $r['prc'] : 2000).';
+                                // Get car price from PHP (effective/discounted price)
+                                const carPrice = '.((($r['prc_n']!=0 && $r['prc_n']<$r['prc']) ? $r['prc_n'] : $r['prc']) > 2000 ? (($r['prc_n']!=0 && $r['prc_n']<$r['prc']) ? $r['prc_n'] : $r['prc']) : 2000).';
                                 const sliderSuma = $("#suma-creditului").ionRangeSlider({
                                     skin: "round",
                                     min: 2000,
@@ -1234,7 +1208,10 @@ $iconTelegramParams = array(
                                     sliderSuma.update({ from: val });
                                     updateRate();
                                 }).on("input", function() {
-                                    let val = parseInt($(this).val(), 10);
+                                    // Digits only — strip anything else as it is typed/pasted.
+                                    var clean = $(this).val().replace(/\D+/g, "");
+                                    if (clean !== $(this).val()) $(this).val(clean);
+                                    let val = parseInt(clean, 10);
                                     if (!isNaN(val)) {
                                         val = Math.max(2000, Math.min(50000, val));
                                         val = Math.round(val / 500) * 500;
@@ -1256,7 +1233,10 @@ $iconTelegramParams = array(
                                     sliderTermen.update({ from: val });
                                     updateRate();
                                 }).on("input", function() {
-                                    let val = parseInt($(this).val(), 10);
+                                    // Digits only — strip anything else as it is typed/pasted.
+                                    var clean = $(this).val().replace(/\D+/g, "");
+                                    if (clean !== $(this).val()) $(this).val(clean);
+                                    let val = parseInt(clean, 10);
                                     if (!isNaN(val)) {
                                         val = Math.max(6, Math.min(60, val));
                                         sliderTermen.update({ from: val });
@@ -1378,6 +1358,8 @@ $iconTelegramParams = array(
 }
 
 echo $rtrn;
+
+echo '<script>(function(){var r=document.querySelector("body > .srt_row");if(!r)return;var h=document.querySelector("main .gr > h1");if(!h||!h.textContent.trim())return;h.classList.add("srt_h1");r.insertBefore(h,r.firstChild);})();</script>';
 
 // Car contact modal
 $_car_lang = $_COOKIE['lang'] ?? 'ro';

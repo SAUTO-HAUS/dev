@@ -125,10 +125,25 @@ class FileService
                 $img_h = $v['sz'];
             }
 
-            $img_new = imagecreatetruecolor($img_w, $img_h);
-            imagecopyresampled($img_new, $img_old, 0, 0, 0, 0, $img_w, $img_h, $w, $h);
-            imagejpeg($img_new, $full_path, $v['ql']);
-            imagedestroy($img_new);
+            // Never upscale — keep source dimensions if smaller than target.
+            // Upscaling small parser images to 1600 makes them blurry.
+            if ($img_w > $w) { $img_w = $w; $img_h = $h; }
+
+            // Force a decent quality floor so we don't recompress to mush
+            // (sauto's arrays.php defaults to ql=75 which is too aggressive
+            // for already-compressed parser images).
+            $ql = max((int)$v['ql'], 88);
+
+            // Save directly without resampling when already at target size —
+            // skips the bilinear soft pass.
+            if ($img_w === $w && $img_h === $h) {
+                imagejpeg($img_old, $full_path, $ql);
+            } else {
+                $img_new = imagecreatetruecolor($img_w, $img_h);
+                imagecopyresampled($img_new, $img_old, 0, 0, 0, 0, $img_w, $img_h, $w, $h);
+                imagejpeg($img_new, $full_path, $ql);
+                imagedestroy($img_new);
+            }
         }
 
         imagedestroy($img_old);

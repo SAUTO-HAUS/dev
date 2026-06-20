@@ -68,6 +68,10 @@ foreach ($_FILES as $_inp_raw => $ar){
             $max_mb    = 100 * 1024 * 1024;
             $size_cr   = $file_av_ar[$inp]['fldr'];
 
+            if (isset($size_cr['high']['sz']) && $size_cr['high']['sz'] > 1200) {
+                $size_cr['high']['sz'] = 1200;
+            }
+
             if (getimagesize($fi_path) === false) {
                 $rtrn .= ' | File #'.$i.': '.$nm.' - Not a valid image';
                 continue;

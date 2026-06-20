@@ -168,6 +168,7 @@ if (isset($t_mp[2]) && $t_mp[2] == 'ordercars' && isset($t_mp[3]) && !isset($_GE
 echo '
 	<div id="show_img">
 		<div class="status"></div>
+		<button type="button" class="card-fav-btn show-img-fav" data-fav-id="" data-fav-add="'.htmlspecialchars($lng['w']['fav_add'] ?? 'Adaugă în favorite', ENT_QUOTES).'" data-fav-remove="'.htmlspecialchars($lng['w']['fav_remove'] ?? 'Scoate din favorite', ENT_QUOTES).'" title="'.htmlspecialchars($lng['w']['fav_add'] ?? 'Adaugă în favorite', ENT_QUOTES).'"><svg class="cfb-ico" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button>
 		<div class="close"></div>
 		<div class="left"></div>
 		<div class="right"></div>
@@ -176,6 +177,15 @@ echo '
 ?>
 
 <div id="to_top" title="<?php echo $lang_to_top; ?>"></div>
+
+<?php $fav_lbl = ['ro'=>'Favorite','ru'=>'Избранное','en'=>'Favorites'][$_COOKIE['lang']] ?? 'Favorite'; ?>
+<a id="fav_float" href="/<?php echo $_COOKIE['lang']; ?>/favorites" title="<?php echo $fav_lbl; ?>" aria-label="<?php echo $fav_lbl; ?>">
+	<span class="fav-float-ico">
+		<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+		<span class="fav-nav-count" style="display:none;">0</span>
+	</span>
+	<span class="fav-float-lbl"><?php echo $fav_lbl; ?></span>
+</a>
 
 <header>
     <div class="def">
@@ -368,6 +378,7 @@ elseif ( $t_mp[2]=='ordercars' && (!isset($t_mp[3]) || $t_mp[3]=='' || !is_numer
     elseif ($t_mp[2]=='order') {include (_SITE_PAGE.'/new_pages/order/order.php');}
     elseif ($t_mp[2]=='rent'&&(!isset($t_mp[3])&&!isset($q_mp[1]))) {include (_SITE_PAGE.'/rent.php');}
     elseif ( in_array( $t_mp[2], $info_arr ) ) {include (_SITE_PAGE.'/information.php');}
+    elseif ($t_mp[2]=='favorites') {include (_SITE_PAGE.'/favorites.php');}
     elseif ($t_mp[2]=='contacts') {include (_SITE_PAGE.'/contacts.php');}
     elseif ($t_mp[2]=='calculator') {include (_SITE_PAGE.'/new_pages/calculator/calculator.php');}
     elseif ($t_mp[2]=='telegram') {include (_SITE_PAGE.'/new_pages/telegram/telegram.php');}
@@ -989,7 +1000,7 @@ SVG
         ];
         ?>
 
-        <h1 class="name"> <?=$r['br_nm']?> <?=$r['mo_nm']?> <span class="fl"> <?=$lng['l']['car']['fl'][$r['fl']]?> </span> </h1>
+        <h2 class="name"> <?=$r['br_nm']?> <?=$r['mo_nm']?> <span class="fl"> <?=$lng['l']['car']['fl'][$r['fl']]?> </span> </h2>
         <div class="block_txt_params">
             <? if(trim($rseo['params_html']) != '') { ?>
 
@@ -1318,7 +1329,7 @@ SVG
                         const fav = document.createElement('button');
                         fav.className = 'fav-btn';
                         fav.type = 'button';
-                        fav.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>';
+                        fav.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
                         fav.setAttribute('aria-label', 'Добавить в избранное');
                         fav.addEventListener('click', (e) => { e.stopPropagation(); onFavClick(fb); });
                         fb.container.appendChild(fav);

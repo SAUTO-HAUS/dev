@@ -5,6 +5,24 @@ use App\Db\Car;
 use App\Helper\DefaultText;
 use App\Services\Api999Service;
 
+if (!function_exists('parsing_strip_999_links')) {
+ 
+    function parsing_strip_999_links(string $text): string
+    {
+        $text = preg_replace(
+            '/Detalii despre automobil:\s*\n'
+            . 'https?:\/\/\S+\s*\n'
+            . 'Toate automobilele modelului[^\n]*\n'
+            . 'https?:\/\/\S+\s*\n'
+            . 'Toate automobilele mărcii[^\n]*\n'
+            . 'https?:\/\/\S+\s*/u',
+            '',
+            $text
+        );
+        return trim((string)$text);
+    }
+}
+
 /*error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);*/
@@ -42,6 +60,9 @@ if (__post('sub') == 'get_subcategory') {
     if (!empty(__post('category')) && !empty(__post('subcategory')) && !empty(__post('offer_type'))) {
         $types = $api999Service->getSubcategoryFeatures(__post('category'), __post('subcategory'), __post('offer_type'));
         $feature_id = __post('subcategory');
+        // Import country selected in the form (so feature 1763 can default to
+        // Korea for Korean cars). features_form reads $importCountryIdForAjax.
+        $importCountryIdForAjax = (int)__post('import_country_id', 0);
         ob_start();
         include _ADM_PAGE.'/ordercars/order_features_form.php';
         $rtrn = ob_get_clean();
@@ -57,7 +78,7 @@ if (__post('sub') == 'get_subcategory') {
 } elseif (__post('sub') == 'get_features_depends') {
     if (!empty(__post('subcategory')) && !empty(__post('dependency_feature_id')) && !empty(__post('parent_option_id'))) {
         $types = $api999Service->getDependentOptions(__post('subcategory'), __post('dependency_feature_id'), __post('parent_option_id'));
-        foreach ($types['Options'] as $cat) {
+        foreach (($types['Options'] ?? []) as $cat) {
             $rtrn .= '<option value="'.$cat['id'].'">'.$cat['title'].'</option>';
         }
         $rtrn = [ 'bx_id'=>__post('bx_id'), 'str'=>$rtrn ];
@@ -90,7 +111,9 @@ if (__post('sub') == 'get_subcategory') {
                 if ($carListInfo && !empty($carListInfo['br_nm']) && !empty($carListInfo['mo_nm'])) {
                     $brandSlug = strtolower(str_replace('_', '-', $carInfo['br']));
                     $modelSlug = strtolower(str_replace('_', '-', $carInfo['mo']));
-                    $newText .= "\n\nDetalii despre automobil:\nhttps://www.sauto.md/ro/ordercars/{$carId}\nToate automobilele modelului {$carListInfo['mo_nm']}:\nhttps://www.sauto.md/ro/ordercars/{$brandSlug}/{$modelSlug}\nToate automobilele mărcii {$carListInfo['br_nm']}:\nhttps://www.sauto.md/ro/ordercars/{$brandSlug}";
+                    $newText = parsing_strip_999_links($newText);
+                    $linksText = "Detalii despre automobil:\nhttps://www.sauto.md/ro/ordercars/{$carId}\nToate automobilele modelului {$carListInfo['mo_nm']}:\nhttps://www.sauto.md/ro/ordercars/{$brandSlug}/{$modelSlug}\nToate automobilele mărcii {$carListInfo['br_nm']}:\nhttps://www.sauto.md/ro/ordercars/{$brandSlug}";
+                    $newText = $linksText . ($newText !== '' ? "\n\n" . $newText : '');
                 }
             }
             
@@ -189,25 +212,33 @@ if (__post('sub') == 'get_subcategory') {
     // Parse form data
     parse_str($_POST['form_data'], $input);
     
-    // If 999_api_id is missing (disabled field not submitted), get it from database or default to 3 for order cars
-    if (empty($input['999_api_id'])) {
-        if (!empty($carId)) {
-            $stmt = $pdo->prepare("SELECT 999_api_id FROM gh3sp_car_ctlg WHERE id = ?");
-            $stmt->execute([$carId]);
-            $carApiData = $stmt->fetch(\PDO::FETCH_ASSOC);
-            if (!empty($carApiData['999_api_id'])) {
-                $input['999_api_id'] = $carApiData['999_api_id'];
-                __log("Using 999_api_id from database: {$input['999_api_id']}");
+    if (!empty($carId)) {
+        $stmt = $pdo->prepare("SELECT 999_api_id, import_country_id, gr, catalog_type FROM gh3sp_car_ctlg WHERE id = ?");
+        $stmt->execute([$carId]);
+        $carApiData = $stmt->fetch(\PDO::FETCH_ASSOC) ?: [];
+
+        $catalogType = $carApiData['catalog_type'] ?? 'on_order';
+        if ($catalogType === 'on_order') {
+            $importCountry = (int)($carApiData['import_country_id'] ?? 0);
+            $isCom = ($carApiData['gr'] ?? '') === 'com';
+            if ($isCom) {
+                $input['999_api_id'] = 2;             // commercial takes priority
+            } elseif ($importCountry === 41) {
+                $input['999_api_id'] = 4;             // Korea → Encars-MD
             } else {
-                // Default to API ID 3 (Sauto-stock-extern) for order cars
-                $input['999_api_id'] = 3;
-                __log("Defaulting to 999_api_id = 3 (Sauto-stock-extern) for order cars");
+                $input['999_api_id'] = 3;             // Sauto-stock-extern
             }
-        } else {
-            // Default to API ID 3 (Sauto-stock-extern) for new order cars
-            $input['999_api_id'] = 3;
-            __log("Defaulting to 999_api_id = 3 (Sauto-stock-extern) for new order cars");
+            __log("on_order: forced 999_api_id={$input['999_api_id']} (country={$importCountry}, gr=".($carApiData['gr'] ?? 'NULL').")");
+            // Persist the correction so future publishes are consistent.
+            if (!empty($carApiData['999_api_id']) && (int)$carApiData['999_api_id'] !== (int)$input['999_api_id']) {
+                $pdo->prepare("UPDATE gh3sp_car_ctlg SET 999_api_id = ? WHERE id = ?")
+                    ->execute([$input['999_api_id'], $carId]);
+            }
+        } elseif (empty($input['999_api_id'])) {
+            $input['999_api_id'] = $carApiData['999_api_id'] ?: 3;
         }
+    } elseif (empty($input['999_api_id'])) {
+        $input['999_api_id'] = 3;
     }
     
     // Validate required fields
@@ -256,7 +287,33 @@ if (__post('sub') == 'get_subcategory') {
         $features[] = $feature;
         }
     }
-    
+
+    // Force the phone (feature 16) to the one registered for this 999 account.
+    // Each account accepts only its own number — sending a mismatched phone
+    // makes 999 reject with "Numărul de telefon nu a fost găsit".
+    // (Mirrors enforcePhoneForAccount() in console/sauto_personal_cron.php.)
+    $accountPhoneMap = [
+        2 => '37379600616', // Sauto-auto-comerciale
+        3 => '37379600326', // Sauto-stock-extern
+        4 => '37379603161', // Encars-MD (Korea)
+    ];
+    $acc = (int)$input['999_api_id'];
+    if (!empty($accountPhoneMap[$acc])) {
+        $forcedPhone = $accountPhoneMap[$acc];
+        $phoneSet = false;
+        foreach ($features as $idx => $f) {
+            if ((string)($f['id'] ?? '') === '16') {
+                $features[$idx]['value'] = [$forcedPhone];
+                $phoneSet = true;
+                break;
+            }
+        }
+        if (!$phoneSet) {
+            $features[] = ['id' => '16', 'value' => [$forcedPhone]];
+        }
+        __log("Phone enforced for account {$acc}: {$forcedPhone}");
+    }
+
     // CRITICAL: Validate and ensure price (feature 2) exists for SAUTO Personal
     if ($input['announcement_type'] === 'sauto_personal') {
         $hasPrice = false;
@@ -367,12 +424,13 @@ if (__post('sub') == 'get_subcategory') {
                 $modelLink = "https://www.sauto.md/ro/ordercars/{$brandSlug}/{$modelSlug}";
                 $brandLink = "https://www.sauto.md/ro/ordercars/{$brandSlug}";
                 
-                $linksText = "\n\nDetalii despre automobil:\n{$carLink}\nToate automobilele modelului {$modelText}:\n{$modelLink}\nToate automobilele mărcii {$brandText}:\n{$brandLink}";
-                
+                $linksText = "Detalii despre automobil:\n{$carLink}\nToate automobilele modelului {$modelText}:\n{$modelLink}\nToate automobilele mărcii {$brandText}:\n{$brandLink}";
+
                 $feature13Found = false;
                 foreach ($features as $index => $feature) {
                     if ($feature['id'] === '13') {
-                        $features[$index]['value'] .= $linksText;
+                        $val = parsing_strip_999_links((string)$features[$index]['value']);
+                        $features[$index]['value'] = $linksText . ($val !== '' ? "\n\n" . $val : '');
                         __log("Added dynamic links to description for on_order car {$carId}");
                         $feature13Found = true;
                         break;
@@ -439,7 +497,8 @@ if (__post('sub') == 'get_subcategory') {
 
         if (!empty($imgs0)) {
             $i = 1;
-            $imgs = array_chunk($imgs0, 20);
+            $maxImg999 = ((int)($input['999_api_id'] ?? 0) === 4) ? 10 : 20;
+            $imgs = array_chunk($imgs0, $maxImg999);
 
             if (!empty($imgs[0]) && is_array($imgs[0])) {
                 foreach ($imgs[0] as $img) {
@@ -551,6 +610,14 @@ if (__post('sub') == 'get_subcategory') {
                 (new Api999Service($advert['999_api_id']))->changeAccessPolicy($advert, $status);
             }
         }
+
+        // If this car came from the parser, mark it as published on 999 so the
+        // parsing "Published" page shows the 999 button as done (and disabled).
+        try {
+            $pmStmt = $pdo->prepare("UPDATE gh3sp_parsing_cars SET published_999 = 1 WHERE car_ctlg_id = ?");
+            $pmStmt->execute([$carId]);
+        } catch (\Throwable $e) { /* non-fatal */ }
+
         // Handle SAUTO Personal custom scheduling
         if ($input['announcement_type'] === 'sauto_personal' && !empty($input['sauto_schedules'])) {
             $schedulesData = json_decode($input['sauto_schedules'], true);

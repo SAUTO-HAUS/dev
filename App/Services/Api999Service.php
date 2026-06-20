@@ -20,7 +20,7 @@ class Api999Service
         "key" => "jMEsHjO0FhoRZm0KSsONLpkGLMIK",
         "name" => "Sauto-stock-extern",
     ], 4 => [
-        "key" => "dfqNtulPrtU4nHApOI1Hyn_d3gjs",
+        "key" => "dfqNtulPKUh_6_kROZel6VKvHKxC",
         "name" => "Encars-MD",
     ]];
     protected const BASE_URL = "https://partners-api.999.md";

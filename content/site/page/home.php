@@ -1,8 +1,7 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 $rtrn = '
 <div class="gr">
-	<h1 style="font-size:inherit; text-align:center;">'.$sa['meta']['h1'].'</h1>
-	<h2>'.$lng['w']['novelty'].'</h2>
+	<h1 style="text-align:left;">'.$sa['meta']['h1'].'</h1>
 	<div class="cnt">';	
 		$card = $car_card('new', 4, null); $rtrn .= $card['txt'];
 	$rtrn .= '
@@ -43,4 +42,6 @@ $rtrn = '
 </div>';
 
 echo $rtrn;
+
+echo '<script>(function(){var r=document.querySelector("body > .srt_row");if(!r)return;var h=document.querySelector("main .gr > h1");if(!h||!h.textContent.trim())return;h.classList.add("srt_h1");r.insertBefore(h,r.firstChild);})();</script>';
 ?>

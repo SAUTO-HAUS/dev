@@ -4,6 +4,10 @@
     margin-top: 1rem;
 }
 
+.smlr.gr.similar-price-block {
+    margin-top: 10px !important;
+}
+
 /* Right column block - calculator under specifications */
 .spc_bx.d_right_b {
     float: right;

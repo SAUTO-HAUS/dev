@@ -125,20 +125,15 @@ if (!isset($t_mp[2]) || $t_mp[2]=='' || $t_mp[2]=='ordercars'){
 			foreach($f_it_xtd_arr['car'] as $k => $v){
 				$zData .= isset($_GET[$k])?' data-'.$k.'="'.$_GET[$k].'"':' data-'.$k.'=""';
 				if ($v['i']=='1'){
-					$v0 = ''; $v1 = '';
 					$zArr = isset($_GET[$k]) ? explode("-", $_GET[$k] ) : null;
-					if ($zArr!==null){ $v0 = ' value="'.$zArr[0].'"'; $v1 = ' value="'.(isset($zArr[1])?$zArr[1]:$zArr[0]).'"';}
-					
+					$v0 = ($zArr!==null && isset($zArr[0]) && $zArr[0]!='x') ? $zArr[0] : '';
+					$v1 = ($zArr!==null && isset($zArr[1]) && $zArr[1]!='x') ? $zArr[1] : '';
+
 					echo '
-					<div class="data '.$k.'" data-name="'.$k.'" data-type="text">
-						<input '.$v0.' data-tg="'.$k.'" class="srch inp fr" list="list_'.$k.'" type="text" name="'.$k.'[]" placeholder="'.$v['t'].', '.$lng['w']['from'].'" title="'.$v['t'].' ['.$lng['w']['from'].']"/>
-						<input '.$v1.' data-tg="'.$k.'" class="srch inp to" list="list_'.$k.'" type="text" name="'.$k.'[]" placeholder="'.$lng['w']['to'].'" title="'.$v['t'].' ['.$lng['w']['to'].']"/>
+					<div class="data '.$k.'" data-name="'.$k.'" data-type="input">
+						<input type="number" data-tg="'.$k.'" class="srch inp fr'.($v0!=''?' y':'').'" name="'.$k.'[]" placeholder="'.$v['t'].', '.$lng['w']['from'].'" title="'.$v['t'].' ['.$lng['w']['from'].']" value="'.$v0.'" />
+						<input type="number" data-tg="'.$k.'" class="srch inp to'.($v1!=''?' y':'').'" name="'.$k.'[]" placeholder="'.$lng['w']['to'].'" title="'.$v['t'].' ['.$lng['w']['to'].']" value="'.$v1.'" />
 						<span class="unit">'.$v['unit'].'</span>
-						<datalist id="list_'.$k.'">';
-							ksort($f_arr[$k]['list']);
-							foreach($f_arr[$k]['list'] as $lv){ echo '<option>'.$lv.'</option>'; }
-						echo '
-						</datalist> 
 					</div>
 					';
 				}else{

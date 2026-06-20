@@ -357,7 +357,14 @@ $last_car_id = 0;
                 <?php if( $r['act'] == 0 ) : ?>
                     <div class="remove_after" timer="<?= ( $r['del_t']-time() ) ?>" ra="<?= $r['del_t'] ?>">**, **:**:**</div>
                 <?php endif; ?>
+                <?php
+                $isParsingCar = !empty($r['parsing_id']) || !empty($r['parsing_source']);
+                ?>
+                <?php if ($isParsingCar) : ?>
+                <div class="html-indicator" title="Adăugat din parsing" style="position:absolute;top:10px;left:10px;width:16px;height:16px;border-radius:3px;text-align:center;line-height:16px;font-size:10px;font-weight:bold;color:#fff;background:#2563eb;">P</div>
+                <?php else : ?>
                 <div class="html-indicator" title="<?= $hasHtml ? 'HTML описание есть' : 'HTML описание отсутствует' ?>" style="position:absolute;top:10px;left:10px;width:16px;height:16px;border-radius:3px;text-align:center;line-height:16px;font-size:10px;font-weight:bold;color:#fff;background:<?= $hasHtml ? '#28a745' : '#dc3545' ?>;"><?= $hasHtml ? '✓' : '✗' ?></div>
+                <?php endif; ?>
                 <a class="url" href="<?= $site_url.'/'.$_COOKIE['lang'].'/ordercars/'.$r['id'] ?>" target="_blank" title="To the item page">
                     <div class="ico"></div>
                 </a>

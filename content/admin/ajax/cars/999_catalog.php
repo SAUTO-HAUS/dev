@@ -5,6 +5,24 @@ use App\Db\Car;
 use App\Helper\DefaultText;
 use App\Services\Api999Service;
 
+if (!function_exists('parsing_strip_999_links')) {
+
+    function parsing_strip_999_links(string $text): string
+    {
+        $text = preg_replace(
+            '/Detalii despre automobil:\s*\n'
+            . 'https?:\/\/\S+\s*\n'
+            . 'Toate automobilele modelului[^\n]*\n'
+            . 'https?:\/\/\S+\s*\n'
+            . 'Toate automobilele mărcii[^\n]*\n'
+            . 'https?:\/\/\S+\s*/u',
+            '',
+            $text
+        );
+        return trim((string)$text);
+    }
+}
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -84,7 +102,9 @@ if (__post('sub') == 'get_subcategory') {
                 if ($carListInfo && !empty($carListInfo['br_nm']) && !empty($carListInfo['mo_nm'])) {
                     $brandSlug = strtolower(str_replace('_', '-', $carInfo['br']));
                     $modelSlug = strtolower(str_replace('_', '-', $carInfo['mo']));
-                    $newText .= "\n\nDetalii despre automobil:\nhttps://www.sauto.md/ro/cars/{$carId}\nToate automobilele modelului {$carListInfo['mo_nm']}:\nhttps://www.sauto.md/ro/cars/{$brandSlug}/{$modelSlug}\nToate automobilele mărcii {$carListInfo['br_nm']}:\nhttps://www.sauto.md/ro/cars/{$brandSlug}";
+                    $newText = parsing_strip_999_links($newText);
+                    $linksText = "Detalii despre automobil:\nhttps://www.sauto.md/ro/cars/{$carId}\nToate automobilele modelului {$carListInfo['mo_nm']}:\nhttps://www.sauto.md/ro/cars/{$brandSlug}/{$modelSlug}\nToate automobilele mărcii {$carListInfo['br_nm']}:\nhttps://www.sauto.md/ro/cars/{$brandSlug}";
+                    $newText = $linksText . ($newText !== '' ? "\n\n" . $newText : '');
                 }
             }
 
@@ -194,7 +214,7 @@ if (__post('sub') == 'get_subcategory') {
     // Get car data for engine volume conversion AND price
     $carData = null;
     if (!empty($carId)) {
-        $stmt = $pdo->prepare("SELECT vol, prc, cur FROM gh3sp_car_ctlg WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT vol, prc, cur, prc_n FROM gh3sp_car_ctlg WHERE id = ?");
         $stmt->execute([$carId]);
         $carData = $stmt->fetch(\PDO::FETCH_ASSOC);
     }
@@ -226,7 +246,30 @@ if (__post('sub') == 'get_subcategory') {
         $features[] = $feature;
         }
     }
-    
+
+    // NEW PRICE: if a discounted price is set, publish it to 999.md (price = feature 2)
+    if (!empty($carData['prc_n']) && is_numeric($carData['prc_n'])
+        && (float)$carData['prc_n'] < (float)$carData['prc']) {
+        $newPriceApplied = false;
+        foreach ($features as &$feature) {
+            if ($feature['id'] === '2') {
+                $feature['value'] = (string)$carData['prc_n'];
+                $newPriceApplied = true;
+                break;
+            }
+        }
+        unset($feature);
+        if (!$newPriceApplied) {
+            $currency = !empty($carData['cur']) ? strtolower($carData['cur']) : 'eur';
+            $features[] = [
+                "id"    => "2",
+                "value" => (string)$carData['prc_n'],
+                "unit"  => $currency
+            ];
+        }
+        __log("999: applied new price {$carData['prc_n']} for car {$carId}");
+    }
+
     // CRITICAL: Validate and ensure price (feature 2) exists for SAUTO Personal
     if ($input['announcement_type'] === 'sauto_personal') {
         $hasPrice = false;
@@ -337,12 +380,13 @@ if (__post('sub') == 'get_subcategory') {
                 $modelLink = "https://www.sauto.md/ro/cars/{$brandSlug}/{$modelSlug}";
                 $brandLink = "https://www.sauto.md/ro/cars/{$brandSlug}";
                 
-                $linksText = "\n\nDetalii despre automobil:\n{$carLink}\nToate automobilele modelului {$modelText}:\n{$modelLink}\nToate automobilele mărcii {$brandText}:\n{$brandLink}";
-                
+                $linksText = "Detalii despre automobil:\n{$carLink}\nToate automobilele modelului {$modelText}:\n{$modelLink}\nToate automobilele mărcii {$brandText}:\n{$brandLink}";
+
                 $feature13Found = false;
                 foreach ($features as $index => $feature) {
                     if ($feature['id'] === '13') {
-                        $features[$index]['value'] .= $linksText;
+                        $val = parsing_strip_999_links((string)$features[$index]['value']);
+                        $features[$index]['value'] = $linksText . ($val !== '' ? "\n\n" . $val : '');
                         __log("Added dynamic links to description for car {$carId}");
                         $feature13Found = true;
                         break;
@@ -406,7 +450,8 @@ if (__post('sub') == 'get_subcategory') {
 
         if (!empty($imgs0)) {
             $i = 1;
-            $imgs = array_chunk($imgs0, 20);
+            $maxImg999 = ((int)($input['999_api_id'] ?? 0) === 4) ? 10 : 20;
+            $imgs = array_chunk($imgs0, $maxImg999);
 
             if (!empty($imgs[0]) && is_array($imgs[0])) {
                 foreach ($imgs[0] as $img) {

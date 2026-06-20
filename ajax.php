@@ -1,6 +1,13 @@
 <?php
 include_once('environment.php');
 
+// This endpoint returns JSON. PHP warnings/notices printed into the output
+// stream produce "<br /><b>Warning</b>: ..." before the JSON, which breaks
+// JSON.parse on the client ("Unexpected token '<'"). Keep errors logged but
+// out of the response body.
+@ini_set('display_errors', '0');
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_WARNING);
+
 if ( ( session_id()=='' || !isset($_SESSION) ) ){ session_start(); }
 
 $requestTp = $_POST['tp'] ?? $_GET['tp'] ?? '';
@@ -84,6 +91,9 @@ if (__post('tp') == 'adm' || (isset($_GET['tp']) && $_GET['tp'] == 'adm')) {
         // Allow full access for gordon
     } elseif ($pg === 'crm' && in_array($_POST['fn'] ?? '', ['get_notifications', 'mark_notifications_read'])) {
         // Notification endpoints accessible to all logged-in users
+    } elseif ($pg === 'parsing') {
+        // Parsing access is ID-based (include/parsing_access.php), not role-based.
+        // Let any logged-in user through here; parsing/ajax.php gates by user_id.
     } elseif (in_array($user_role, ['publisher', 'publisher_limited']) && in_array($pg, ['docs', 'cars', 'ordercars', 'tyres', 'calculator'])) {
         // Allow access for publisher roles to their permitted modules
     } elseif (!rbac_has_permission($user_role, $pg, 'read')) {
