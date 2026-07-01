@@ -104,6 +104,7 @@ $rtrn = '
             <legend>'.$t['settings_general'].'</legend>
             <label>'.$t['field_cron_freq'].'
                 <select name="cron_frequency_minutes">
+                    <option value="15" '.($g('cron_frequency_minutes')=='15'?'selected':'').'>'.$t['opt_15min'].'</option>
                     <option value="30" '.($g('cron_frequency_minutes')=='30'?'selected':'').'>'.$t['opt_30min'].'</option>
                     <option value="60" '.($g('cron_frequency_minutes')=='60'?'selected':'').'>'.$t['opt_1h'].'</option>
                     <option value="120" '.($g('cron_frequency_minutes')=='120'?'selected':'').'>'.$t['opt_2h'].'</option>
@@ -116,8 +117,8 @@ $rtrn = '
     </form>
 
     <fieldset class="ol-cookie-box" style="margin-top:2rem;">
-        <legend>OpenLane — Cookie / VIN</legend>
-        <p class="muted">'.($t['ol_cookie_hint'] ?? 'VIN-ul OpenLane cere o sesiune logată. Când VIN-ul lipsește (cookie expirat), loghează-te pe openlane.eu, copiază din DevTools antetul „cookie" al unui request către future/carv6 și lipește-l aici.').'</p>
+        <legend>OpenLane — Cookie</legend>
+        <p class="muted">'.($t['ol_cookie_hint'] ?? 'Loghează-te pe openlane.eu, deschide DevTools → Network, alege un request „search" și copiază aici antetul „cookie" (și opțional „__requestverificationtoken").').'</p>
         <div id="ol-cookie-status" class="ol-cookie-status">…</div>
         <label style="display:block;margin-top:8px;">'.($t['cookie_label'] ?? 'Cookie').':
             <textarea id="ol-cookie-input" rows="4" style="width:100%;font-family:monospace;font-size:12px;" placeholder="cf_clearance=...; ASP.NET_SessionId=...; __RequestVerificationToken=..."></textarea>
@@ -127,20 +128,20 @@ $rtrn = '
         </label>
         <div style="margin-top:10px;display:flex;gap:8px;">
             <button type="button" class="btn-primary" onclick="parsingOpenlaneSaveCookie()">'.($t['btn_save'] ?? 'Salvează').'</button>
-            <button type="button" class="btn-secondary" onclick="parsingOpenlaneCheckCookie()">'.($t['ol_cookie_check'] ?? 'Verifică VIN').'</button>
+            <button type="button" class="btn-secondary" onclick="parsingOpenlaneCheckCookie()">'.($t['ol_cookie_check'] ?? 'Verifică cookie').'</button>
         </div>
     </fieldset>
 
     <fieldset class="ol-cookie-box" style="margin-top:2rem;">
-        <legend>e-CarsTrade — Cookie / VIN</legend>
-        <p class="muted">'.($t['ec_cookie_hint'] ?? 'VIN-ul eCarsTrade cere o sesiune logată. Când expiră, loghează-te pe ru.ecarstrade.com, copiază antetul „cookie" dintr-un request (future_api.php) și lipește-l aici.').'</p>
+        <legend>e-CarsTrade — Cookie</legend>
+        <p class="muted">'.($t['ec_cookie_hint'] ?? 'Loghează-te pe ru.ecarstrade.com, deschide DevTools → Network, alege un request „future_api.php" și copiază aici antetul „cookie".').'</p>
         <div id="ec-cookie-status" class="ol-cookie-status">…</div>
         <label style="display:block;margin-top:8px;">'.($t['cookie_label'] ?? 'Cookie').':
             <textarea id="ec-cookie-input" rows="4" style="width:100%;font-family:monospace;font-size:12px;" placeholder="eCT/PHPSESSID=...; eCT/user=...; eCT/eCT-User-Auth=true; ..."></textarea>
         </label>
         <div style="margin-top:10px;display:flex;gap:8px;">
             <button type="button" class="btn-primary" onclick="parsingEcarstradeSaveCookie()">'.($t['btn_save'] ?? 'Salvează').'</button>
-            <button type="button" class="btn-secondary" onclick="parsingEcarstradeCheckCookie()">'.($t['ol_cookie_check'] ?? 'Verifică VIN').'</button>
+            <button type="button" class="btn-secondary" onclick="parsingEcarstradeCheckCookie()">'.($t['ol_cookie_check'] ?? 'Verifică cookie').'</button>
         </div>
     </fieldset>
 

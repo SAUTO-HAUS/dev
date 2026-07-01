@@ -205,6 +205,11 @@ ALTER TABLE gh3sp_parsing_cars
 ALTER TABLE gh3sp_parsing_filters
     ADD COLUMN `last_offset` INT(11) NOT NULL DEFAULT 0 AFTER `last_run_at`;
 
+    -- Fuel type now holds multiple codes (CSV, e.g. "benzina,diesel,hybrid") so
+    -- a filter can target several fuels at once. Widen from VARCHAR(50).
+ALTER TABLE gh3sp_parsing_filters
+    MODIFY COLUMN `fuel_type` VARCHAR(255) DEFAULT NULL;
+
     -- Track whether a parsing run was triggered manually (from the admin UI) or
 -- automatically (by the cron). Shown in /parsing/logs.
 ALTER TABLE `gh3sp_parsing_runs`

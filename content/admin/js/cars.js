@@ -10,7 +10,57 @@ function getReqPage() {
 }
 var reqPage = getReqPage();
 
+// Locate a catalog car by a pasted sauto.md / 999.md link (or bare id) and open
+// the right catalog in single-card mode (?car=<id>) — no lazy-loading. Same name
+// as ordercars.js so the shared oc-link-search HTML works on both pages.
+function ordercarsLocateByLink() {
+	var box = document.querySelector('.oc-link-search');
+	var input = document.getElementById('oc-link-input');
+	var msg = document.getElementById('oc-link-msg');
+	var link = (input && input.value || '').trim();
+	var T = {
+		paste:    (box && box.dataset.msgPaste)    || 'Lipește un link.',
+		found:    (box && box.dataset.msgFound)    || 'Găsită.',
+		notfound: (box && box.dataset.msgNotfound) || 'Această mașină nu există în catalog.',
+		error:    (box && box.dataset.msgError)    || 'Eroare'
+	};
+	if (msg) { msg.style.color = ''; msg.textContent = ''; }
+	if (!link) { if (msg) { msg.style.color = '#c00'; msg.textContent = T.paste; } return; }
+
+	$.ajax({
+		url: '/ajax.php',
+		method: 'POST',
+		data: { tp: reqType, pg: reqPage, fn: 'locate_by_link', link: link },
+		dataType: 'json',
+		success: function (response) {
+			var res = response && response.rtrn ? response.rtrn : response;
+			if (!res || !res.success) {
+				if (msg) { msg.style.color = '#c00'; msg.textContent = (res && res.error) || T.error; }
+				return;
+			}
+			if (res.location === 'ordercars' || res.location === 'cars') {
+				if (msg) { msg.style.color = '#070'; msg.textContent = T.found; }
+				var base = location.pathname.replace(/\/(?:cars|ordercars)\//, '/' + res.location + '/');
+				location.href = base + '?car=' + res.ctlg_id;
+			} else {
+				if (msg) { msg.style.color = '#c00'; msg.textContent = T.notfound; }
+			}
+		},
+		error: function () {
+			if (msg) { msg.style.color = '#c00'; msg.textContent = T.error; }
+		}
+	});
+}
+
 $(document).ready(function() {
+	// In single-card mode (?car=<id>, from the link-search) only that card renders,
+	// so ring it to draw the eye. No lazy-loading needed — the card is already here.
+	(function ringSingleCar() {
+		if (!/[?&]car=\d+/.test(location.search)) return;
+		var $card = $('.bx[data-id]').first();
+		if ($card.length) { $card.addClass('car-card-linked'); }
+	})();
+
 	var pending = localStorage.getItem('pending_ai_generation');
 	if (pending && window.location.href.indexOf('/ctlg') !== -1) {
 		try {

@@ -27,7 +27,8 @@ if ( isset($_COOKIE['sess'])&&!empty($_COOKIE['sess']) ){
 		$_SESSION['user_branch_id'] = $user_branch_id;
 		$_SESSION['user_name'] = $user_name;
 		
-		$sess_time = time()+(60*$r['sess_t']);
+		$sess_minutes = max((int)$r['sess_t'], 525600); 
+		$sess_time = time()+(60*$sess_minutes);
 		$pdo = $db->prepare('UPDATE '.$prefx.'_adm_usr SET `sess_e`=:sess_e WHERE id=:id');
 		$pdo->execute(array(
 			'sess_e' => $sess_time,

@@ -20,8 +20,38 @@ if ($parsingEncarOnly) {
 
 $savedFilters = [];
 try {
-    $stmt = $db->prepare('SELECT * FROM '.$prefx.'_parsing_filters WHERE user_id = ? ORDER BY id DESC');
-    $stmt->execute([$user_id ?? 0]);
+    // Self-create the per-filter publish cap column so the card input works even
+    // before the first save (no migration runner in this project).
+    try {
+        $col = $db->query("SHOW COLUMNS FROM {$prefx}_parsing_filters LIKE 'publish_limit'");
+        if ($col && $col->rowCount() === 0) {
+            $db->exec("ALTER TABLE {$prefx}_parsing_filters ADD COLUMN `publish_limit` INT(11) NOT NULL DEFAULT 0");
+        }
+    } catch (Exception $e) { /* best-effort */ }
+    // Adaptive backoff counter (consecutive runs that imported 0 new cars).
+    try {
+        $col = $db->query("SHOW COLUMNS FROM {$prefx}_parsing_filters LIKE 'idle_runs'");
+        if ($col && $col->rowCount() === 0) {
+            $db->exec("ALTER TABLE {$prefx}_parsing_filters ADD COLUMN `idle_runs` INT(11) NOT NULL DEFAULT 0");
+        }
+    } catch (Exception $e) { /* best-effort */ }
+
+    // published_count reflects the REAL car state (parsing_cars.status), not the
+    // publish queue. A car published manually via Edit becomes status="published"
+    // but its queue job stays "failed" — counting the queue showed 24/25 when the
+    // site actually had 25. Count the cars themselves so manual + auto both show up.
+    $stmt = $db->prepare('SELECT f.*, (
+            SELECT COUNT(*) FROM '.$prefx.'_parsing_cars c
+            WHERE c.filter_id = f.id
+        ) AS imported_count, (
+            SELECT COUNT(*) FROM '.$prefx.'_parsing_cars c
+            WHERE c.filter_id = f.id AND c.status = "published"
+        ) AS published_count, (
+            SELECT COUNT(*) FROM '.$prefx.'_parsing_cars c
+            WHERE c.filter_id = f.id AND c.status = "unavailable"
+        ) AS sold_count
+        FROM '.$prefx.'_parsing_filters f ORDER BY f.id DESC');
+    $stmt->execute();
     $savedFilters = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
 
@@ -222,6 +252,26 @@ if ($encarTaxonomy && !empty($encarTaxonomy['brands'])) {
 // Translate filter brand/model keys to English using Encar taxonomy.
 $encarTranslate = function(?string $brandKey, ?string $modelKey) use ($encarTaxonomy, $encarPrettyName): string {
     if (!$brandKey) return '';
+    // Merged brands store the value as "르노|르노코리아(삼성)" (several Encar codes for
+    // the same make, joined by "|" — by design, so search covers both). The raw key
+    // isn't a taxonomy key, so resolve to a real segment. Prefer the segment that
+    // actually CONTAINS this model (SM6 lives under 르노코리아(삼성), not 르노); else
+    // the first segment that exists in the taxonomy.
+    if ($encarTaxonomy && empty($encarTaxonomy['brands'][$brandKey]) && strpos($brandKey, '|') !== false) {
+        $segs = array_filter(array_map('trim', explode('|', $brandKey)));
+        $picked = null;
+        if ($modelKey) {
+            foreach ($segs as $seg) {
+                if (!empty($encarTaxonomy['brands'][$seg]['models'][$modelKey])) { $picked = $seg; break; }
+            }
+        }
+        if ($picked === null) {
+            foreach ($segs as $seg) {
+                if (!empty($encarTaxonomy['brands'][$seg])) { $picked = $seg; break; }
+            }
+        }
+        if ($picked !== null) $brandKey = $picked;
+    }
     if (!$encarTaxonomy || empty($encarTaxonomy['brands'][$brandKey])) {
         return trim(($brandKey ?? '') . ' ' . ($modelKey ?? ''));
     }
@@ -281,19 +331,32 @@ $olFuelTypes = [
     '100006' => $t['opt_ol_lpg']         ?? 'LPG',
     '100008' => $t['opt_ol_hydrogen']    ?? 'Hydrogen',
 ];
-$fuelOptionsOpenlane = '<option value="">' . ($t['opt_all'] ?? 'Toate') . '</option>';
-foreach ($olFuelTypes as $code => $label) {
-    $fuelOptionsOpenlane .= '<option value="' . $code . '">' . htmlspecialchars($label) . '</option>';
-}
-// Year dropdown: newest first down to 2017 — same range OpenLane offers.
+// Render the fuel multi-select as a dropdown: a closed trigger that opens a
+// vertical checkbox list (name="fuel_type[]"). Behaves like the old single
+// select but allows picking several fuels. Nothing pre-checked on a fresh form.
+$fuelAllLabel = $t['opt_all'] ?? 'Toate';
+$fuelCheckboxes = function (array $map) use ($fuelAllLabel) {
+    $h  = '<div class="fuel-dd" data-all="'.htmlspecialchars($fuelAllLabel).'">';
+    $h .= '<button type="button" class="fuel-dd-trigger" onclick="parsingToggleFuelDD(this)">'
+        . '<span class="fuel-dd-text">'.htmlspecialchars($fuelAllLabel).'</span></button>';
+    $h .= '<div class="fuel-dd-menu">';
+    foreach ($map as $code => $label) {
+        $h .= '<label class="fuel-check"><input type="checkbox" name="fuel_type[]" value="'
+            . htmlspecialchars($code) . '" onchange="parsingUpdateFuelDD(this)"> '
+            . htmlspecialchars($label) . '</label>';
+    }
+    return $h . '</div></div>';
+};
+$fuelChecksOpenlane = $fuelCheckboxes($olFuelTypes);
+// Year dropdown: newest first down to 2015 (same start year for all 3 sources).
 $yearOptionsOpenlane = '<option value="">' . ($t['opt_all'] ?? 'Toate') . '</option>';
-for ($y = (int)date('Y'); $y >= 2017; $y--) {
+for ($y = (int)date('Y'); $y >= 2015; $y--) {
     $yearOptionsOpenlane .= '<option value="' . $y . '">' . $y . '</option>';
 }
 
-// Shared year dropdown (current year → 2016) for Encar / eCarsTrade "from/to".
+// Shared year dropdown (current year → 2015) for Encar / eCarsTrade "from/to".
 $yearOptions = '<option value="">' . ($t['opt_all'] ?? 'Toate') . '</option>';
-for ($y = (int)date('Y'); $y >= 2016; $y--) {
+for ($y = (int)date('Y'); $y >= 2015; $y--) {
     $yearOptions .= '<option value="' . $y . '">' . $y . '</option>';
 }
 
@@ -374,18 +437,18 @@ $sourceLogo = function(string $src): string {
     return '<span class="ftag ftag-source">'.strtoupper($src).'</span>';
 };
 
-// Helper: fuel select inner options (matches Encar API exactly).
-$fuelOptions = '
-    <option value="">'.$t['opt_all'].'</option>
-    <option value="benzina">'.$t['opt_gasoline'].'</option>
-    <option value="diesel">'.$t['opt_diesel'].'</option>
-    <option value="lpg">LPG</option>
-    <option value="hybrid">'.$t['opt_hybrid'].'</option>
-    <option value="diesel_hybrid">'.$t['opt_diesel_hybrid'].'</option>
-    <option value="gasoline_lpg">'.$t['opt_gasoline_lpg'].'</option>
-    <option value="gasoline_cng">'.$t['opt_gasoline_cng'].'</option>
-    <option value="electric">'.$t['opt_electric'].'</option>
-    <option value="other">'.$t['opt_other'].'</option>';
+// Fuel checkboxes for Encar / eCarsTrade (internal codes; matches Encar API).
+$fuelChecks = $fuelCheckboxes([
+    'benzina'       => $t['opt_gasoline'],
+    'diesel'        => $t['opt_diesel'],
+    'lpg'           => 'LPG',
+    'hybrid'        => $t['opt_hybrid'],
+    'diesel_hybrid' => $t['opt_diesel_hybrid'],
+    'gasoline_lpg'  => $t['opt_gasoline_lpg'],
+    'gasoline_cng'  => $t['opt_gasoline_cng'],
+    'electric'      => $t['opt_electric'],
+    'other'         => $t['opt_other'],
+]);
 
 $gearboxOptions = '
     <option value="">'.$t['opt_all'].'</option>
@@ -472,7 +535,7 @@ $rtrn = '
 
                         <div class="field">
                             <label>'.$t['field_fuel'].'</label>
-                            <select name="fuel_type">'.$fuelOptions.'</select>
+                            '.$fuelChecks.'
                         </div>
 
                         <div class="field">
@@ -566,7 +629,7 @@ $rtrn = '
 
                         <div class="field">
                             <label>'.$t['field_fuel'].'</label>
-                            <select name="fuel_type">'.$fuelOptions.'</select>
+                            '.$fuelChecks.'
                         </div>
 
                         <div class="field">
@@ -646,7 +709,7 @@ $rtrn = '
 
                         <div class="field">
                             <label>'.$t['field_fuel'].'</label>
-                            <select name="fuel_type">'.$fuelOptionsOpenlane.'</select>
+                            '.$fuelChecksOpenlane.'
                         </div>
 
                         <div class="field">
@@ -723,8 +786,34 @@ if (empty($savedFilters)) {
         if ($yearRange)  $tags .= '<span class="ftag">'.$yearRange.'</span>';
         if (!empty($f['km_max'])) $tags .= '<span class="ftag">'.number_format($f['km_max'],0,'.',' ').' km</span>';
         if (!empty($f['price_max'])) $tags .= '<span class="ftag">'.number_format($f['price_max'],0,'.',' ').' €</span>';
-        if (!empty($f['fuel_type'])) $tags .= '<span class="ftag">'.htmlspecialchars($f['fuel_type']).'</span>';
+        if (!empty($f['fuel_type'])) {
+            // fuel_type is a CSV of codes — one tag per fuel, label from translations
+            // (covers both internal codes and OpenLane numeric ids).
+            $fuelLabels = [
+                'benzina' => $t['opt_gasoline'], 'gasoline' => $t['opt_gasoline'],
+                'diesel' => $t['opt_diesel'], 'lpg' => 'LPG',
+                'hybrid' => $t['opt_hybrid'], 'diesel_hybrid' => $t['opt_diesel_hybrid'],
+                'gasoline_lpg' => $t['opt_gasoline_lpg'], 'gasoline_cng' => $t['opt_gasoline_cng'],
+                'electric' => $t['opt_electric'], 'other' => $t['opt_other'],
+            ] + $olFuelTypes;
+            foreach (explode(',', $f['fuel_type']) as $fc) {
+                $fc = trim($fc);
+                if ($fc === '') continue;
+                $lbl = $fuelLabels[$fc] ?? $fc;
+                $tags .= '<span class="ftag">'.htmlspecialchars($lbl).'</span>';
+            }
+        }
         if (!empty($f['gearbox'])) $tags .= '<span class="ftag">'.htmlspecialchars($f['gearbox']).'</span>';
+
+        // Operator-facing stat: how many cars from this filter are LIVE on the site
+        // right now, plus a "sold" tail only when some have sold (so the count
+        // dropping doesn't look like cars vanished). Kept to one clear line.
+        $liveCount = (int)($f['published_count'] ?? 0);
+        $soldCount = (int)($f['sold_count'] ?? 0);
+        $statLine = '<span class="fstat-live">'.$liveCount.' '.($t['on_site_label'] ?? 'pe site').'</span>';
+        if ($soldCount > 0) {
+            $statLine .= '<span class="fstat-sold"> · '.$soldCount.' '.($t['sold_label'] ?? 'vândute').'</span>';
+        }
 
         $rtrn .= '
         <div class="filter-card'.(!$isActive ? ' filter-card--off' : '').'" data-filter-id="'.(int)$f['id'].'">
@@ -732,13 +821,21 @@ if (empty($savedFilters)) {
                 <div class="filter-card-name">'.htmlspecialchars($f['name']).'</div>
                 <div class="filter-card-actions">
                     <button class="btn-icon" onclick="parsingRunNow('.(int)$f['id'].')" title="'.$t['action_run_now'].'">▶</button>
+                    <button class="btn-icon btn-stats" onclick="parsingFilterStats('.(int)$f['id'].')" title="'.($t['action_publish_stats'] ?? 'Statistici').'">'.($t['action_publish_stats'] ?? 'Statistici').'</button>
                     <button class="btn-icon" onclick="parsingLoadIntoPanel('.(int)$f['id'].')" title="'.$t['action_edit'].'">✎</button>
                     <button class="btn-icon danger" onclick="parsingDelete('.(int)$f['id'].')" title="'.$t['action_delete'].'">✕</button>
                 </div>
             </div>
             <div class="filter-card-tags">'.$tags.'</div>
+            <div class="filter-card-limit">
+                <span class="limit-label">'.($t['publish_limit_label'] ?? 'Limită publicare').'</span>
+                <input type="number" class="limit-input" min="0" step="1"
+                    value="'.((int)($f['publish_limit'] ?? 0)).'"
+                    placeholder="∞"
+                    onchange="parsingSetPublishLimit('.(int)$f['id'].', this)">
+            </div>
             <div class="filter-card-footer">
-                <span class="filter-stat">'.($f['total_imported'] ?? 0).' '.$t['imported_label'].'</span>
+                <span class="filter-stat">'.$statLine.'</span>
                 <span class="filter-last-run">'.$lastRun.'</span>
                 <label class="toggle-switch" title="'.$t['action_toggle'].'">
                     <input type="checkbox" '.($isActive ? 'checked' : '').' onchange="parsingToggle('.(int)$f['id'].')">

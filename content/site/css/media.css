@@ -77,10 +77,12 @@
 	header .def {flex-flow:column wrap;}
 	header > .def > .call {margin-top:1rem;}
 	
-	#main_menu {position:fixed; overflow:visible; background-color:#fff; top:0; right:-100%; z-index:10; -webkit-transform:translateZ(0); -webkit-backface-visibility:hidden;}
-	
+	#main_menu {position:fixed; overflow-y:auto; -webkit-overflow-scrolling:touch; background-color:#fff; top:0; bottom:0; height:100%; right:-100%; z-index:10; display:flex; flex-direction:column; align-items:stretch;}
+
 	#mm_cbx:checked+#main_menu {right:0;}
-	#mm_cbx:checked+#main_menu > .mm_lb {left:1rem; background-image:url(/media/images/site/v2/close.svg); background-size:50%; border-radius:.5rem;}
+	body:has(#mm_cbx:checked) {overflow:hidden;}
+	#main_menu > .mm_lb {position:fixed; left:auto; right:1rem; top:1rem; z-index:11;}
+	#mm_cbx:checked+#main_menu > .mm_lb {left:auto; right:1rem; background:none; box-shadow:none; border-radius:0;}
 	/* Text change when menu is open */
 	#mm_cbx:checked+#main_menu > .mm_lb .menu-text::before {
 		content: attr(data-close-text);
@@ -91,11 +93,11 @@
 	}
 	
 	#mm_cbx:checked+#main_menu > .mm_lb::after {
-		content: attr(data-close);
-		font-size: 0.8rem;
-		font-weight: 700;
-		color: #333;
-		font-family: "def_l";
+		content: "\00D7";
+		font-size: 3.5rem;
+		font-weight: 400;
+		line-height: 1;
+		color: #1f2430;
 		margin-bottom: 3rem;
 	}
 	
@@ -116,8 +118,47 @@
 		margin-bottom: 1rem;
 	}
 	
-	#main_menu .menu a {width:100%; padding:1rem; text-align:left; padding-left:4.5rem;}
-	#main_menu .lang a {width: 100%; padding:.5rem 0; text-align:left; padding-left:2rem;}
+	/* --- Premium mobile menu (no images) ---------------------------------- */
+	#main_menu {background:#f1f3f5;}
+
+	#main_menu .menu {float:none; margin:0 0 auto; width:100%; display:flex; flex-direction:column; padding:0 1.25rem; box-sizing:border-box;}
+	#main_menu .menu a {
+		position:relative;
+		width:100%; box-sizing:border-box; float:none;
+		padding:1.05rem 1.25rem;
+		margin:.3rem 0;
+		text-align:left; border:1px solid #eceef1; border-radius:.85rem;
+		background:#fff; box-shadow:0 2px 8px rgba(20,24,31,.04);
+		display:flex; align-items:center; justify-content:flex-start;
+		transition:background .2s, box-shadow .2s, transform .12s, border-color .2s;
+	}
+	#main_menu .menu a div {
+		font-size:1.1rem; font-weight:600; color:#1f2430; letter-spacing:.2px;
+		transition:color .2s, transform .2s;
+	}
+	#main_menu .menu a:active {transform:scale(.985);}
+	#main_menu .menu a:hover {background:#fff; border-color:#f5c6cc; box-shadow:0 6px 16px rgba(20,24,31,.08);}
+	#main_menu .menu a:hover div {color:#e2001a; transform:translateX(.15rem);}
+	/* Active page = filled brand pill */
+	#main_menu .menu a.active {background:linear-gradient(135deg,#e2001a 0%,#b80016 100%); border-color:transparent; box-shadow:0 8px 20px rgba(226,0,26,.28);}
+	#main_menu .menu a.active div {color:#fff;}
+
+	/* Language switch = segmented pill control, above the list */
+	#main_menu .lang {
+		order:-1; float:none; margin:auto auto 2.5rem; width:auto;
+		display:flex; gap:.25rem;
+		padding:.3rem; border-radius:999px;
+		background:#eceef1; box-shadow:inset 0 1px 2px rgba(20,24,31,.06);
+	}
+	#main_menu .lang a {
+		flex:0 0 auto; width:auto; float:none;
+		padding:.6rem 1.1rem; border:none; border-radius:999px;
+		text-align:center; transition:background .2s, box-shadow .2s;
+	}
+	#main_menu .lang a div {font-size:.9rem; font-weight:700; color:#9aa0a8; letter-spacing:.6px; transition:color .2s;}
+	#main_menu .lang a:hover div {color:#1f2430;}
+	#main_menu .lang a.active {background:#fff; box-shadow:0 2px 6px rgba(20,24,31,.12);}
+	#main_menu .lang a.active div {color:#e2001a;}
 	
 	main > .pht_bx {width:100%; height:auto;}
 	main > .pht_bx > .list {width:100%; max-height:10.5rem; transition:.5s; position:relative; overflow-y:hidden;}
@@ -269,4 +310,8 @@
 		height: 120px !important;
 		object-fit: cover !important;
 	}
+}
+
+@media (orientation: landscape) and (pointer: coarse) {
+	#main_menu {padding-top:1.5rem; padding-bottom:2.5rem; box-sizing:border-box;}
 }

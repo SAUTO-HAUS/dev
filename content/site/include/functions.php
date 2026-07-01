@@ -2,6 +2,14 @@
 
 use App\Helper\PhoneHelper;
 
+// Effective "out of stock" flag: 1 when n_a is set OR the offer timer has expired
+// (on_order cars). Lets list sorting push expired-timer cars to the end instantly,
+// without waiting for the 5-min cron that flips n_a in the DB. UNIX_TIMESTAMP() uses
+// the DB clock; offer_timer_end is stored as a unix timestamp too.
+if (!defined('EFFECTIVE_NA_SQL')) {
+    define('EFFECTIVE_NA_SQL', '(CASE WHEN `n_a` = 1 OR (`offer_timer_end` > 0 AND `offer_timer_end` < UNIX_TIMESTAMP()) THEN 1 ELSE 0 END)');
+}
+
 // Share button shown in the top-right corner of every car card: copies the car
 // URL to clipboard on click (JS handler lives in head.php). Label sits above the icon.
 if (!function_exists('car_share_btn')) {
@@ -391,15 +399,18 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 		// Sort dropdown handling
 		$srt_val = (isset($zreq['srt']) && is_string($zreq['srt'])) ? $zreq['srt'] : '';
 		$order_clause = '';
+		// Use the effective out-of-stock flag so expired-timer cars sort to the end
+		// just like manually-marked n_a=1 cars.
+		$na_sql = EFFECTIVE_NA_SQL;
 		switch ($srt_val) {
-			case 'prc-asc':  $order_clause = '`n_a` ASC, (CASE WHEN `prc_n` > 0 AND `prc_n` < `prc` THEN `prc_n` ELSE `prc` END) ASC, `id` DESC'; break;
-			case 'prc-desc': $order_clause = '`n_a` ASC, (CASE WHEN `prc_n` > 0 AND `prc_n` < `prc` THEN `prc_n` ELSE `prc` END) DESC, `id` DESC'; break;
-			case 'yr-desc':  $order_clause = '`n_a` ASC, `yr` DESC, `id` DESC'; break;
-			case 'yr-asc':   $order_clause = '`n_a` ASC, `yr` ASC, `id` DESC'; break;
-			case 'mlg-asc':  $order_clause = '`n_a` ASC, `mlg` ASC, `id` DESC'; break;
-			case 'mlg-desc': $order_clause = '`n_a` ASC, `mlg` DESC, `id` DESC'; break;
+			case 'prc-asc':  $order_clause = $na_sql.' ASC, (CASE WHEN `prc_n` > 0 AND `prc_n` < `prc` THEN `prc_n` ELSE `prc` END) ASC, `id` DESC'; break;
+			case 'prc-desc': $order_clause = $na_sql.' ASC, (CASE WHEN `prc_n` > 0 AND `prc_n` < `prc` THEN `prc_n` ELSE `prc` END) DESC, `id` DESC'; break;
+			case 'yr-desc':  $order_clause = $na_sql.' ASC, `yr` DESC, `id` DESC'; break;
+			case 'yr-asc':   $order_clause = $na_sql.' ASC, `yr` ASC, `id` DESC'; break;
+			case 'mlg-asc':  $order_clause = $na_sql.' ASC, `mlg` ASC, `id` DESC'; break;
+			case 'mlg-desc': $order_clause = $na_sql.' ASC, `mlg` DESC, `id` DESC'; break;
 			default:
-				$order_clause = 'CASE WHEN catalog_type = "in_stock" AND n_a = 0 THEN 1 WHEN catalog_type = "on_order" THEN 2 ELSE 3 END, `id` DESC';
+				$order_clause = 'CASE WHEN catalog_type = "in_stock" AND '.$na_sql.' = 0 THEN 1 WHEN catalog_type = "on_order" AND '.$na_sql.' = 0 THEN 2 ELSE 3 END, `id` DESC';
 		}
 		if ($offset > 0) {
 			$sql .= ' ORDER BY '.$order_clause.' LIMIT :offset, :lmt ';
@@ -410,7 +421,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 		// file_put_contents('debug_sql.log', "SQL: " . $sql . "\n", FILE_APPEND);
 		// file_put_contents('debug_sql.log', "Params: " . print_r($query_args, true) . "\n", FILE_APPEND);
 	} elseif ($v1!='smlr' && $v1!='fav'){
-		$sql .= ' ORDER BY `n_a` ASC, `id` DESC LIMIT :lmt ';
+		$sql .= ' ORDER BY '.EFFECTIVE_NA_SQL.' ASC, `id` DESC LIMIT :lmt ';
 	}
 
 	// Debug info disabled

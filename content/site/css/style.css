@@ -76,9 +76,20 @@
   
   
   /*---------------------------------HEADER-----------------------------------*/
-  header, #crumbs, #ann, body > .fltr, main, footer, #nav_links {width:80vw; margin:10px 10vw -5px; position:relative; float:left; z-index:1;}
+  header, #crumbs, #ann, body > .fltr, main, footer, #nav_links, #home_banner {width:80vw; margin:10px 10vw -5px; position:relative; float:left; z-index:1;}
 
-  #nav_links {display:flex; flex-flow:row nowrap; gap:1rem; margin-top:1.5rem; margin-bottom: 0; z-index:1;}
+  #home_banner {margin-top:1.5rem; margin-bottom:0; border-radius:1rem; overflow:hidden; line-height:0; max-height:18rem;}
+  #home_banner > img {width:100%; height:18rem; object-fit:cover; object-position:center; display:block;}
+  #home_banner .hb_overlay {position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; gap:1.2rem; padding:0 6%; line-height:1.05; pointer-events:none;}
+  #home_banner .hb_main {display:flex; flex-direction:column; align-items:flex-start; gap:1.2rem;}
+  #home_banner .hb_title {color:#fff; font-family:"def_l"; font-weight:800; font-size:3.6vw; text-transform:uppercase; letter-spacing:1px; text-shadow:1px 1px 6px rgba(0,0,0,.5);}
+  #home_banner .hb_regions {display:flex; gap:.8rem; flex-wrap:wrap; pointer-events:auto;}
+  #home_banner .hb_region_btn {display:inline-block; color:#fff; font-family:"def_l"; font-weight:800; font-size:1.8vw; text-transform:uppercase; letter-spacing:1px; line-height:1; text-decoration:none; padding:.55em 1.1em; border:2px solid #fff; border-radius:.6rem; transition:color .2s, background-color .2s, border-color .2s, transform .2s;}
+  #home_banner .hb_region_btn:hover {color:#fff; background-color:#e2001a; border-color:#e2001a; transform:translateY(-2px);}
+  #home_banner .hb_tagline {color:#d6d6d6; font-family:"def_l"; font-weight:600; font-size:1.5vw; letter-spacing:1px; text-shadow:1px 1px 4px rgba(0,0,0,.5); margin-top:2.5rem;}
+  #home_banner .hb_tagline .hb_dot {color:#e2001a; margin:0 .4em; font-weight:800;}
+
+  #nav_links {display:flex; flex-flow:row nowrap; gap:1rem; margin-top:0.75rem; margin-bottom: 0; z-index:1;}
   body > .fltr.f_car {margin-top:0;}
 
   #mob_nav_links {display:none;}
@@ -2500,13 +2511,21 @@ footer .columns-wrapper .column-container.col-logo-container {
   }
   
   @media (max-width: 768px) {
-      header, #crumbs, #ann, body > .fltr, body > .srt_row, main, footer, #nav_links {
+      header, #crumbs, #ann, body > .fltr, body > .srt_row, main, footer, #nav_links, #home_banner {
           width: 100vw !important;
           margin-left: 0 !important;
           margin-right: 0 !important;
           padding-left: 0 !important;
           padding-right: 0 !important;
       }
+      #home_banner {border-radius:0; margin-top:0 !important; max-height:11rem;}
+      #home_banner > img {height:11rem;}
+      #home_banner .hb_overlay {gap:.5rem; padding:3rem 4% .2rem; justify-content:space-between;}
+      #home_banner .hb_main {gap:.5rem;}
+      #home_banner .hb_title {font-size:6vw;}
+      #home_banner .hb_region_btn {font-size:4vw; padding:.6em 1.3em; background-color:rgba(0,0,0,.4);}
+      #home_banner .hb_regions {gap:.5rem;}
+      #home_banner .hb_tagline {font-size:3.4vw; margin-top:0;}
       #nav_links {gap:.75rem; padding:0 .8rem !important; flex-direction:column; }
       #nav_links > a {aspect-ratio:16/4; max-height:none;}
       #nav_links > a > .ttl {font-size:1.3rem; padding:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; text-align:center;}

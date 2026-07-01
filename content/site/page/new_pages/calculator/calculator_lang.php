@@ -2,7 +2,7 @@
 
 $lng_calculator_page = [
     'ro' => [
-        'page_title'            => 'Calculator vămuire auto',
+        'page_title'            => 'Calculator devamare auto',
         'eur_rate_label'        => 'Curs 1 EUR =',
         'vehicle_type'          => 'Tipul vehiculului',
         'car'                   => 'Autoturism',

@@ -51,6 +51,15 @@ echo "[" . date('Y-m-d H:i:s') . "] Adverts:: " . count($adverts) . "\n";
 
 foreach ($adverts as $advert) {
     $car = (new Car())->getCarById($advert['car_id']);
+
+    // Out of stock (n_a=1) → don't publish/republish on 999. Applies to both
+    // in_stock and on_order cars, however they went out of stock (manual toggle,
+    // expired offer timer, or sold at the source). Resumes once back in stock.
+    if (!empty($car) && (int)($car['n_a'] ?? 0) === 1) {
+        echo "[" . date('Y-m-d H:i:s') . "] Skip advert {$advert['id']} (car {$advert['car_id']}): out of stock (n_a=1)\n";
+        continue;
+    }
+
     $images = (!empty($advert['images'])) ? json_decode($advert['images']) : [];
     $images = (is_countable($images) && count($images) > 20) ? array_slice($images, 0, 20) : $images;
 

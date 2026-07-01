@@ -59,8 +59,23 @@ try {
         case 'toggle_filter':
             $response = parsing_toggle_filter($db, $prefx, $user_id ?? 0, $_POST);
             break;
+        case 'set_publish_limit':
+            $response = parsing_set_publish_limit($db, $prefx, $user_id ?? 0, $_POST);
+            break;
         case 'run_filter':
             $response = parsing_run_filter($db, $prefx, $user_id ?? 0, $_POST);
+            break;
+        case 'filter_publish_stats':
+            $response = parsing_filter_publish_stats($db, $prefx, $_POST);
+            break;
+        case 'locate_by_link':
+            $response = parsing_locate_by_link($db, $prefx, $_POST);
+            break;
+        case 'cron_status':
+            $response = ['success' => true, 'running' => parsing_cron_is_running($db, $prefx)];
+            break;
+        case 'filter_facets':
+            $response = parsing_filter_facets($db, $prefx, $_POST);
             break;
         case 'publish_car':
             $response = parsing_publish_car($db, $prefx, $_POST);
@@ -109,6 +124,9 @@ try {
             exit;
         case 'remove_published':
             $response = parsing_remove_published($db, $prefx, $_POST);
+            break;
+        case 'mark_sold':
+            $response = parsing_mark_sold($db, $prefx, $_POST);
             break;
         case 'fetch_by_link':
             $response = parsing_fetch_by_link($db, $prefx, $_POST);
@@ -175,6 +193,47 @@ exit;
 // HANDLERS
 // ---------------------------------------------------------------
 
+// Normalize a fuel_type value (array of checkbox codes, or a single string/CSV)
+// into a clean comma-separated string, or null if empty. Stored as CSV in
+// parsing_filters.fuel_type; the adapters split it back into multiple codes.
+function parsing_fuel_to_csv($v): ?string {
+    if (is_array($v)) {
+        $codes = array_values(array_filter(array_map('trim', $v), fn($c) => $c !== ''));
+    } elseif (is_string($v) && trim($v) !== '') {
+        $codes = array_values(array_filter(array_map('trim', explode(',', $v)), fn($c) => $c !== ''));
+    } else {
+        return null;
+    }
+    $codes = array_unique($codes);
+    return $codes ? implode(',', $codes) : null;
+}
+
+// Self-create the per-filter publish cap column (no migration runner in this
+// project). Safe to call repeatedly; runs the ALTER only once per request.
+function parsing_ensure_publish_limit_col($db, $prefx) {
+    static $done = false;
+    if ($done) return;
+    try {
+        $col = $db->query("SHOW COLUMNS FROM {$prefx}_parsing_filters LIKE 'publish_limit'");
+        if ($col && $col->rowCount() === 0) {
+            $db->exec("ALTER TABLE {$prefx}_parsing_filters
+                ADD COLUMN `publish_limit` INT(11) NOT NULL DEFAULT 0");
+        }
+        $done = true;
+    } catch (\Throwable $e) { /* best-effort */ }
+}
+
+// Save just the publish cap from the filter card (quick inline edit). 0 = unlimited.
+function parsing_set_publish_limit($db, $prefx, $userId, $p) {
+    $id = (int)($p['id'] ?? 0);
+    $limit = max(0, (int)($p['publish_limit'] ?? 0));
+    if ($id <= 0) return ['success' => false, 'error' => 'ID invalid'];
+    parsing_ensure_publish_limit_col($db, $prefx);
+    $stmt = $db->prepare("UPDATE {$prefx}_parsing_filters SET publish_limit = ? WHERE id = ?");
+    $stmt->execute([$limit, $id]);
+    return ['success' => true, 'id' => $id, 'publish_limit' => $limit];
+}
+
 function parsing_save_filter($db, $prefx, $userId, $p) {
     $id = (int)($p['id'] ?? 0);
     $name = trim($p['name'] ?? '');
@@ -183,6 +242,8 @@ function parsing_save_filter($db, $prefx, $userId, $p) {
     if ($name === '' || $sources === '') {
         return ['success' => false, 'error' => 'Nume si surse obligatorii'];
     }
+
+    parsing_ensure_publish_limit_col($db, $prefx);
 
     $extra = [];
     if (!empty($p['body_type']))      $extra['body_type'] = $p['body_type'];
@@ -205,20 +266,44 @@ function parsing_save_filter($db, $prefx, $userId, $p) {
         'year_to' => !empty($p['year_to']) ? (int)$p['year_to'] : null,
         'km_max' => !empty($p['km_max']) ? (int)$p['km_max'] : null,
         'price_max' => !empty($p['price_max']) ? (int)$p['price_max'] : null,
-        'fuel_type' => $p['fuel_type'] ?? null,
+        'fuel_type' => parsing_fuel_to_csv($p['fuel_type'] ?? null),
         'gearbox' => $p['gearbox'] ?? null,
         'drive_type' => $p['drive_type'] ?? null,
         'criteria_extra' => $extra ? json_encode($extra, JSON_UNESCAPED_UNICODE) : null,
     ];
 
+    // Per-filter publish cap (0 = unlimited). Only written when the form sends it,
+    // so editing other fields never silently resets an existing cap.
+    if (array_key_exists('publish_limit', $p)) {
+        $data['publish_limit'] = max(0, (int)$p['publish_limit']);
+    }
+
+    // When editing, if the brand/model changed, the filter now targets a DIFFERENT
+    // car. Instead of mutating the existing filter (which would leave its old BMW X5
+    // cars attached and auto-published under the new Audi A6 criteria), we create a
+    // NEW filter and leave the original one untouched.
     if ($id > 0) {
+        $old = $db->prepare('SELECT brand, model FROM '.$prefx.'_parsing_filters WHERE id = ? LIMIT 1');
+        $old->execute([$id]);
+        $oldRow = $old->fetch(PDO::FETCH_ASSOC) ?: [];
+        $brandChanged = (string)($oldRow['brand'] ?? '') !== (string)($data['brand'] ?? '');
+        $modelChanged = (string)($oldRow['model'] ?? '') !== (string)($data['model'] ?? '');
+        if ($brandChanged || $modelChanged) {
+            $id = 0; // fall through to INSERT below — keep the original filter as-is
+        }
+    }
+
+    if ($id > 0) {
+        // Filters are shared: anyone can edit any filter. Keep the original owner
+        // (don't overwrite user_id) and don't scope the UPDATE by user_id.
+        $updateData = $data;
+        unset($updateData['user_id']);
         $sets = [];
-        foreach ($data as $k => $v) $sets[] = "`$k` = :$k";
-        $sql = 'UPDATE '.$prefx.'_parsing_filters SET '.implode(', ', $sets).' WHERE id = :id AND user_id = :uid';
-        $data['id'] = $id;
-        $data['uid'] = $userId;
+        foreach ($updateData as $k => $v) $sets[] = "`$k` = :$k";
+        $sql = 'UPDATE '.$prefx.'_parsing_filters SET '.implode(', ', $sets).' WHERE id = :id';
+        $updateData['id'] = $id;
         $stmt = $db->prepare($sql);
-        $stmt->execute($data);
+        $stmt->execute($updateData);
     } else {
         $data['active'] = 1;
         $cols = array_keys($data);
@@ -234,8 +319,8 @@ function parsing_save_filter($db, $prefx, $userId, $p) {
 
 function parsing_get_filter($db, $prefx, $userId, $p) {
     $id = (int)($p['id'] ?? 0);
-    $stmt = $db->prepare('SELECT * FROM '.$prefx.'_parsing_filters WHERE id = ? AND user_id = ?');
-    $stmt->execute([$id, $userId]);
+    $stmt = $db->prepare('SELECT * FROM '.$prefx.'_parsing_filters WHERE id = ?');
+    $stmt->execute([$id]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$row) return ['success' => false, 'error' => 'Negasit'];
 
@@ -255,16 +340,178 @@ function parsing_get_filter($db, $prefx, $userId, $p) {
 
 function parsing_delete_filter($db, $prefx, $userId, $p) {
     $id = (int)($p['id'] ?? 0);
-    $stmt = $db->prepare('DELETE FROM '.$prefx.'_parsing_filters WHERE id = ? AND user_id = ?');
-    $stmt->execute([$id, $userId]);
+    $stmt = $db->prepare('DELETE FROM '.$prefx.'_parsing_filters WHERE id = ?');
+    $stmt->execute([$id]);
     return ['success' => true];
 }
 
 function parsing_toggle_filter($db, $prefx, $userId, $p) {
     $id = (int)($p['id'] ?? 0);
-    $stmt = $db->prepare('UPDATE '.$prefx.'_parsing_filters SET active = 1 - active WHERE id = ? AND user_id = ?');
-    $stmt->execute([$id, $userId]);
+    // Flip active. When the filter is being RE-ENABLED (active 0 → 1), also clear
+    // last_run_at so the cron picks it up on the very next run instead of waiting
+    // out the frequency window (which made re-enabled filters look "stuck").
+    $stmt = $db->prepare('UPDATE '.$prefx.'_parsing_filters
+        SET last_run_at = CASE WHEN active = 0 THEN NULL ELSE last_run_at END,
+            active = 1 - active
+        WHERE id = ?');
+    $stmt->execute([$id]);
     return ['success' => true];
+}
+
+// Locate a sauto.md car by its public link (e.g. .../ordercars/18596). The number
+// is the car_ctlg id. Look first in parsing/published (cars published via parsing),
+// then in the manual ordercars catalog. Returns where it lives so the UI can jump.
+function parsing_locate_by_link($db, $prefx, $p) {
+    $link = trim((string)($_POST['link'] ?? ''));
+    if ($link === '') return ['success' => false, 'error' => 'Link gol'];
+
+    // Pull the car_ctlg id from the link. Accepts a bare id, any sauto URL that
+    // ends in /<id> (ordercars/18596, cars/18596, ?id=18596), or a 999.md ad URL
+    // (999.md/<999_id>) which maps to car_ctlg via the stored 999 advert id.
+    $ctlgId = 0;
+    if (preg_match('#999\.md/(?:[a-z]{2}/)?(\d+)#i', $link, $m)) {
+        $stmt = $db->prepare('SELECT id FROM '.$prefx.'_car_ctlg WHERE `999_id` = ? LIMIT 1');
+        $stmt->execute([(int)$m[1]]);
+        $ctlgId = (int)$stmt->fetchColumn();
+    } elseif (ctype_digit($link)) {
+        $ctlgId = (int)$link;
+    } elseif (preg_match('#(?:ordercars|cars)/(\d+)#i', $link, $m)) {
+        $ctlgId = (int)$m[1];
+    } elseif (preg_match('#[?&]id=(\d+)#i', $link, $m)) {
+        $ctlgId = (int)$m[1];
+    } elseif (preg_match('#/(\d+)(?:[/?#]|$)#', $link, $m)) {
+        $ctlgId = (int)$m[1];
+    }
+    if ($ctlgId <= 0) {
+        return ['success' => false, 'error' => 'Nu pot extrage ID-ul din link'];
+    }
+
+    $stmt = $db->prepare('SELECT pc.id, pc.published_at, pc.status, cc.vis
+        FROM '.$prefx.'_parsing_cars pc
+        LEFT JOIN '.$prefx.'_car_ctlg cc ON cc.id = pc.car_ctlg_id
+        WHERE pc.car_ctlg_id = ?
+          AND (pc.status = "published"
+               OR (pc.status = "unavailable" AND pc.car_ctlg_id IS NOT NULL AND pc.car_ctlg_id > 0))
+        ORDER BY pc.id DESC LIMIT 1');
+    $stmt->execute([$ctlgId]);
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    if ($row && (int)$row['id'] > 0) {
+        $page = parsing_locate_compute_page($db, $prefx, $row, $ctlgId);
+        return ['success' => true, 'location' => 'parsing',
+                'parsing_id' => (int)$row['id'], 'ctlg_id' => $ctlgId, 'page' => $page];
+    }
+
+    // Not tracked by parsing — fall back to the manual catalog. in_stock cars live
+    // on /cars/ctlg, on_order on /ordercars/ctlg, so report the right one.
+    $stmt = $db->prepare('SELECT catalog_type FROM '.$prefx.'_car_ctlg WHERE id = ? LIMIT 1');
+    $stmt->execute([$ctlgId]);
+    $ctlgType = $stmt->fetchColumn();
+    if ($ctlgType !== false) {
+        $location = ($ctlgType === 'on_order') ? 'ordercars' : 'cars';
+        return ['success' => true, 'location' => $location, 'ctlg_id' => $ctlgId];
+    }
+
+    // 3) Nowhere.
+    return ['success' => true, 'location' => 'none', 'ctlg_id' => $ctlgId];
+}
+
+// Live filter facets: distinct seats / gearbox / fuel (with counts) across the
+// WHOLE parsing catalog for the current page (status) + source. Lets the filter
+// dropdowns refresh after the async enrich filled Encar specs, without a full
+// page reload. Mirrors the SQL in parsing_filter_bar.php.
+function parsing_filter_facets($db, $prefx, $p): array {
+    $source = trim((string)($p['source'] ?? ''));
+    // page = ctlg | published | favorites — decides which status rows to count.
+    $page   = (string)($p['page'] ?? 'ctlg');
+    $statusMap = [
+        'ctlg'       => ['proposed'],
+        'favorites'  => ['favorite'],
+        'published'  => ['published', 'unavailable'],
+    ];
+    $statuses = $statusMap[$page] ?? ['proposed'];
+
+    $where = 'brand IS NOT NULL AND brand <> ""';
+    $params = [];
+    if ($source !== '') { $where .= ' AND source = ?'; $params[] = $source; }
+    $place = implode(',', array_fill(0, count($statuses), '?'));
+    $where .= ' AND status IN ('.$place.')';
+    $params = array_merge($params, $statuses);
+    // Published page only counts cars actually live on sauto.
+    if ($page === 'published') {
+        $where .= ' AND car_ctlg_id IS NOT NULL AND car_ctlg_id > 0';
+    }
+
+    $seats = []; $gears = []; $fuels = [];
+    try {
+        $stmt = $db->prepare('SELECT seats, gearbox, fuel_type, COUNT(*) cnt
+            FROM '.$prefx.'_parsing_cars WHERE '.$where.'
+            GROUP BY seats, gearbox, fuel_type');
+        $stmt->execute($params);
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+            $cnt = (int)$r['cnt'];
+            $s = (int)($r['seats'] ?? 0);
+            $g = trim((string)($r['gearbox'] ?? ''));
+            $f = trim((string)($r['fuel_type'] ?? ''));
+            if ($s > 0)    $seats[$s] = ($seats[$s] ?? 0) + $cnt;
+            if ($g !== '') $gears[$g] = ($gears[$g] ?? 0) + $cnt;
+            if ($f !== '') $fuels[$f] = ($fuels[$f] ?? 0) + $cnt;
+        }
+        ksort($seats);
+    } catch (\Throwable $e) {
+        return ['success' => false, 'error' => $e->getMessage()];
+    }
+    return ['success' => true, 'seats' => $seats, 'gears' => $gears, 'fuels' => $fuels];
+}
+
+function parsing_locate_compute_page($db, $prefx, array $target, int $ctlgId): int {
+    if (!function_exists('parsing_page_size')) {
+        $pg = _ADM_PAGE.'/parsing/parsing_pagination.php';
+        if (is_file($pg)) require_once $pg;
+    }
+    $pageSize = function_exists('parsing_page_size') ? parsing_page_size() : 100;
+    $listWhere = '(pc.status = "published" OR (pc.status = "unavailable" AND pc.car_ctlg_id IS NOT NULL AND pc.car_ctlg_id > 0))';
+
+    // Sort key of the target row.
+    $tUnavail = ($target['status'] === 'unavailable') ? 1 : 0;
+    $tHidden  = ((int)($target['vis'] ?? 1) === 0) ? 1 : 0;
+    $tPub     = (string)($target['published_at'] ?? '');
+    $tId      = (int)$target['id'];
+
+    $sql = 'SELECT COUNT(*) FROM '.$prefx.'_parsing_cars pc
+        LEFT JOIN '.$prefx.'_car_ctlg cc ON cc.id = pc.car_ctlg_id
+        WHERE '.$listWhere.' AND (
+            ((pc.status = "unavailable") < ?)
+            OR ((pc.status = "unavailable") = ? AND (COALESCE(cc.vis,1) = 0) < ?)
+            OR ((pc.status = "unavailable") = ? AND (COALESCE(cc.vis,1) = 0) = ? AND pc.published_at > ?)
+            OR ((pc.status = "unavailable") = ? AND (COALESCE(cc.vis,1) = 0) = ? AND pc.published_at = ? AND pc.id > ?)
+        )';
+    try {
+        $stmt = $db->prepare($sql);
+        $stmt->execute([$tUnavail, $tUnavail, $tHidden, $tUnavail, $tHidden, $tPub,
+                        $tUnavail, $tHidden, $tPub, $tId]);
+        $before = (int)$stmt->fetchColumn();
+        $page = (int)floor($before / max(1, $pageSize)) + 1;
+
+        $totStmt = $db->prepare('SELECT COUNT(*) FROM '.$prefx.'_parsing_cars pc WHERE '.$listWhere);
+        $totStmt->execute();
+        $total = (int)$totStmt->fetchColumn();
+        $lastPage = max(1, (int)ceil($total / max(1, $pageSize)));
+        return min($page, $lastPage);
+    } catch (\Throwable $e) {
+        return 1; 
+    }
+}
+
+// Per-filter publish stats + failed list for the filter card's "situation" panel.
+function parsing_filter_publish_stats($db, $prefx, $p) {
+    $id = (int)($p['id'] ?? 0);
+    if ($id <= 0) return ['success' => false, 'error' => 'Invalid filter ID'];
+    $queue = new \App\Services\Parsing\PublishQueue();
+    return [
+        'success' => true,
+        'stats'   => $queue->statsByFilter($id),
+        'failed'  => $queue->failedJobsByFilter($id, 50),
+    ];
 }
 
 function parsing_run_filter($db, $prefx, $userId, $p) {
@@ -272,8 +519,10 @@ function parsing_run_filter($db, $prefx, $userId, $p) {
     if ($id <= 0) return ['success' => false, 'error' => 'Invalid filter ID'];
 
     if (parsing_is_encar_only($userId)) {
-        $chk = $db->prepare('SELECT sources FROM '.$prefx.'_parsing_filters WHERE id = ? AND user_id = ? LIMIT 1');
-        $chk->execute([$id, $userId]);
+        // Filters are shared, so look it up by id only; the encar-only check below
+        // still restricts which filters this user may actually run.
+        $chk = $db->prepare('SELECT sources FROM '.$prefx.'_parsing_filters WHERE id = ? LIMIT 1');
+        $chk->execute([$id]);
         $row = $chk->fetch(PDO::FETCH_ASSOC);
         $srcs = $row ? array_filter(array_map('trim', explode(',', (string)$row['sources']))) : [];
         if (!$row || array_diff($srcs, ['encar'])) {
@@ -617,19 +866,27 @@ function parsing_enrich_one_md($db, $prefx, $p) {
         (new \App\Services\Parsing\ParsingOrchestrator())->enrichOnePublic($carId);
     } catch (\Throwable $e) { /* best-effort */ }
 
-    $stmt = $db->prepare("SELECT engine_volume, fuel_type, year, source, price_eur
+    $stmt = $db->prepare("SELECT engine_volume, fuel_type, year, source, price_eur,
+                          gearbox, seats, power_hp, drive_type
                           FROM {$prefx}_parsing_cars WHERE id = ? LIMIT 1");
     $stmt->execute([$carId]);
     $car = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$car) return ['success' => false, 'error' => 'Not found'];
 
+    // Return the spec fields too so the catalog card's car-meta (gearbox, seats,
+    // hp) can be filled live without a page refresh — enrichOnePublic just pulled
+    // them from the Encar detail page into the DB.
     return [
-        'success'   => true,
-        'capacity'  => (int)$car['engine_volume'],
-        'fuel'      => $car['fuel_type'],
-        'year'      => (int)$car['year'],
-        'source'    => $car['source'],
-        'price_eur' => (float)$car['price_eur'],
+        'success'    => true,
+        'capacity'   => (int)$car['engine_volume'],
+        'fuel'       => $car['fuel_type'],
+        'year'       => (int)$car['year'],
+        'source'     => $car['source'],
+        'price_eur'  => (float)$car['price_eur'],
+        'gearbox'    => $car['gearbox'] ?: '',
+        'seats'      => (int)$car['seats'],
+        'power_hp'   => (int)$car['power_hp'],
+        'drive_type' => $car['drive_type'] ?: '',
     ];
 }
 
@@ -680,6 +937,11 @@ function parsing_save_car_edits($db, $prefx, $p) {
 }
 
 function parsing_ai_enrich_specs($db, $prefx, $p) {
+    // Logic lives in SpecEnricher (shared with the publish queue's auto-publish).
+    return \App\Services\Parsing\SpecEnricher::enrich($db, $prefx, (int)($p['car_id'] ?? 0));
+}
+
+function parsing_ai_enrich_specs_OLD($db, $prefx, $p) {
     $carId = (int)($p['car_id'] ?? 0);
     if ($carId <= 0) return ['success' => false, 'error' => 'Invalid car_id'];
 
@@ -1174,6 +1436,40 @@ function parsing_remove_published($db, $prefx, $p) {
     return $publisher->unpublish($carId);
 }
 
+// Called by the Published page when a car's auction timer hits 0 in the browser.
+// Persists what the badge already shows: status='unavailable' on the parsing row,
+// and — if it's published on sauto — n_a=1 on the ad + cancel its leftover 999
+// schedules. Same effect as the source-SOLD path in parsing_availability_check.php,
+// so "Vândut" and "out of stock" always go together.
+function parsing_mark_sold($db, $prefx, $p) {
+    $parsingId = (int)($p['car_id'] ?? 0);
+    if ($parsingId <= 0) return ['success' => false, 'error' => 'car_id missing'];
+
+    $stmt = $db->prepare('SELECT id, status, car_ctlg_id FROM '.$prefx.'_parsing_cars WHERE id = ? LIMIT 1');
+    $stmt->execute([$parsingId]);
+    $pc = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$pc) return ['success' => false, 'error' => 'car not found'];
+
+    // Already sold → nothing to do (idempotent).
+    if ($pc['status'] !== 'unavailable') {
+        $db->prepare('UPDATE '.$prefx.'_parsing_cars SET status = "unavailable" WHERE id = ?')->execute([$parsingId]);
+    }
+
+    $ctlgId = (int)($pc['car_ctlg_id'] ?? 0);
+    if ($ctlgId > 0) {
+        // Sold → out of stock AND kill the running offer timer (offer_timer_end) so
+        // it stops counting down on the product page; the car shows "Not available".
+        $db->prepare('UPDATE '.$prefx.'_car_ctlg SET n_a = 1, offer_timer_end = 0 WHERE id = ? AND (n_a <> 1 OR offer_timer_end <> 0)')->execute([$ctlgId]);
+        try {
+            // Postpone (not cancel) so they resume if the car comes back in stock.
+            $db->prepare('UPDATE '.$prefx.'_sauto_personal_schedules SET status = "postponed"
+                WHERE car_id = ? AND status = "pending"')->execute([$ctlgId]);
+        } catch (\Throwable $e) { /* schedules table may not exist — non-fatal */ }
+    }
+
+    return ['success' => true, 'ctlg_id' => $ctlgId];
+}
+
 function parsing_fetch_by_link($db, $prefx, $p) {
     $url = trim($p['url'] ?? '');
     if ($url === '') {
@@ -1189,6 +1485,22 @@ function parsing_fetch_by_link($db, $prefx, $p) {
     try {
         $orchestrator = new \App\Services\Parsing\ParsingOrchestrator();
         $result = $orchestrator->runByUrl($url);
+
+        // If the car is already published (has a car_ctlg_id), work out which page
+        // of /parsing/published it sits on so the front-end can jump straight to
+        // it (the list is paginated; #car-<id> alone only finds it on page 1).
+        $ex = $result['existing'] ?? null;
+        if (is_array($ex) && !empty($ex['car_ctlg_id']) && !empty($ex['id'])) {
+            $pStmt = $db->prepare('SELECT pc.id, pc.published_at, pc.status, cc.vis
+                FROM '.$prefx.'_parsing_cars pc
+                LEFT JOIN '.$prefx.'_car_ctlg cc ON cc.id = pc.car_ctlg_id
+                WHERE pc.id = ? LIMIT 1');
+            $pStmt->execute([(int)$ex['id']]);
+            $pRow = $pStmt->fetch(PDO::FETCH_ASSOC);
+            if ($pRow) {
+                $result['existing']['page'] = parsing_locate_compute_page($db, $prefx, $pRow, (int)$ex['car_ctlg_id']);
+            }
+        }
         return $result;
     } catch (Throwable $e) {
         return ['success' => false, 'error' => $e->getMessage()];
@@ -1256,7 +1568,7 @@ function parsing_search_now($db, $prefx, $p) {
         'km_min'         => !empty($p['km_min']) ? (int)$p['km_min'] : null,
         'km_max'         => !empty($p['km_max']) ? (int)$p['km_max'] : null,
         'engine_volume'  => !empty($p['engine_volume']) ? (int)$p['engine_volume'] : null,
-        'fuel_type'      => $p['fuel_type'] ?? null,
+        'fuel_type'      => parsing_fuel_to_csv($p['fuel_type'] ?? null),
         'gearbox'        => $p['gearbox'] ?? null,
         'drive_type'     => $p['drive_type'] ?? null,
         'price_min'      => !empty($p['price_min']) ? (int)$p['price_min'] : null,
@@ -1388,25 +1700,38 @@ function parsing_openlane_save_cookie($db, $prefx, $p) {
 
 // Test the saved OpenLane cookie: fetch one detail and see if the VIN comes back
 // 17-char (logged in) or masked (expired). Returns logged_in + a sample VIN.
+// Test the OpenLane cookie by checking the SESSION (HTTP status of the detail
+// endpoint), not a single car's VIN. The old check called the cookie "expired"
+// whenever the newest car had no 17-char ChassisNumber or was already gone (404)
+// — both false alarms. checkSession reads 403 (expired) vs 404 (car gone) vs 200
+// (valid) across several recent auctions, so a removed car can't fake an expiry.
 function parsing_openlane_check_cookie($db, $prefx, $p) {
-    // Pick the most recent OpenLane car for the test.
-    $row = $db->query("SELECT raw_data FROM {$prefx}_parsing_cars WHERE source='openlane' ORDER BY id DESC LIMIT 1")->fetch(PDO::FETCH_ASSOC);
-    if (!$row) return ['success' => false, 'error' => 'Nicio mașină OpenLane de testat'];
-    $raw = json_decode($row['raw_data'] ?? '{}', true) ?: [];
-    $item = (!empty($raw['AuctionId']) ? $raw : ($raw['raw_data'] ?? $raw));
-    $aid = (string)($item['AuctionId'] ?? '');
-    if ($aid === '') return ['success' => false, 'error' => 'AuctionId lipsă'];
+    $rows = $db->query("SELECT raw_data FROM {$prefx}_parsing_cars WHERE source='openlane' ORDER BY id DESC LIMIT 8")->fetchAll(PDO::FETCH_COLUMN);
+    if (!$rows) return ['success' => false, 'error' => 'Nicio mașină OpenLane de testat'];
+
+    // Resolve an AuctionId out of each row's raw_data (top-level or nested).
+    $auctionIds = [];
+    foreach ($rows as $raw) {
+        $data = json_decode($raw ?? '{}', true) ?: [];
+        $item = (!empty($data['AuctionId']) ? $data : ($data['raw_data'] ?? $data));
+        $aid = (string)($item['AuctionId'] ?? '');
+        if ($aid !== '') $auctionIds[] = $aid;
+    }
+    if (!$auctionIds) return ['success' => false, 'error' => 'AuctionId lipsă'];
 
     $adapter = \App\Services\Parsing\AdapterFactory::create('openlane');
-    if (!$adapter || !method_exists($adapter, 'fetchDetailRaw')) {
+    if (!$adapter || !method_exists($adapter, 'checkSession')) {
         return ['success' => false, 'error' => 'Adapter indisponibil'];
     }
-    $d = $adapter->fetchDetailRaw($aid);
-    if (!is_array($d)) {
-        return ['success' => true, 'logged_in' => false, 'error' => 'Detaliu null (cookie expirat / 403)'];
-    }
-    $vin = preg_replace('/[^A-HJ-NPR-Z0-9]/i', '', (string)($d['ChassisNumber'] ?? ''));
-    return ['success' => true, 'logged_in' => strlen($vin) === 17, 'vin' => $vin];
+    $res = $adapter->checkSession($auctionIds);
+    return [
+        'success'   => true,
+        'logged_in' => !empty($res['logged_in']),
+        'vin'       => $res['vin'] ?? null,
+        'error'     => empty($res['logged_in'])
+            ? 'Sesiune neautentificată (' . ($res['reason'] ?? '403') . ')'
+            : null,
+    ];
 }
 
 // Save a fresh eCarsTrade cookie into .env (ECARSTRADE_COOKIE). Raw $_POST.
@@ -1427,21 +1752,29 @@ function parsing_ecarstrade_save_cookie($db, $prefx, $p) {
     return ['success' => true];
 }
 
-// Test the eCarsTrade cookie: fetch a detail page and look for a 17-char VIN.
+// Test the eCarsTrade cookie by checking the SESSION, not a single car's VIN.
+// The old check fetched the newest car and called the cookie "expired" whenever
+// that car had no 17-char VIN (common) or was already sold (404) — both false
+// alarms. We now ask the adapter to confirm a logged-in session across several
+// recent cars (a sold/removed one can't fake an expiry) using login markers
+// (buy button / VIN row) instead of the VIN value.
 function parsing_ecarstrade_check_cookie($db, $prefx, $p) {
-    $row = $db->query("SELECT source_id FROM {$prefx}_parsing_cars WHERE source='ecarstrade' ORDER BY id DESC LIMIT 1")->fetch(PDO::FETCH_ASSOC);
-    if (!$row || empty($row['source_id'])) return ['success' => false, 'error' => 'Nicio mașină eCarsTrade de testat'];
+    $rows = $db->query("SELECT source_id FROM {$prefx}_parsing_cars WHERE source='ecarstrade' AND source_id <> '' ORDER BY id DESC LIMIT 8")->fetchAll(PDO::FETCH_COLUMN);
+    if (!$rows) return ['success' => false, 'error' => 'Nicio mașină eCarsTrade de testat'];
 
     $adapter = \App\Services\Parsing\AdapterFactory::create('ecarstrade');
-    if (!$adapter || !method_exists($adapter, 'fetchById')) {
+    if (!$adapter || !method_exists($adapter, 'checkSession')) {
         return ['success' => false, 'error' => 'Adapter indisponibil'];
     }
-    $d = $adapter->fetchById((string)$row['source_id']);
-    if (!is_array($d)) {
-        return ['success' => true, 'logged_in' => false, 'error' => 'Detaliu null (cookie expirat / login)'];
-    }
-    $vin = preg_replace('/[^A-HJ-NPR-Z0-9]/i', '', (string)($d['vin'] ?? ''));
-    return ['success' => true, 'logged_in' => strlen($vin) === 17, 'vin' => $vin];
+    $res = $adapter->checkSession($rows);
+    return [
+        'success'   => true,
+        'logged_in' => !empty($res['logged_in']),
+        'vin'       => $res['vin'] ?? null,
+        'error'     => empty($res['logged_in'])
+            ? 'Sesiune neautentificată (' . ($res['reason'] ?? 'login') . ')'
+            : null,
+    ];
 }
 
 // (damages). Data comes from the detail endpoint (EtgOptionList + Damage),
@@ -1813,20 +2146,58 @@ function parsing_redownload_images($db, $prefx, $p) {
 
 /**
  * Wipe the parsing catalog EXCEPT cars that are/were published on sauto.md
- * (status published / unavailable). Also resets pagination offsets so the next
- * search/cron starts from the top of the source catalog again.
+ * (status published / unavailable). Keeps each filter's catalog walk position
+ * (last_offset) so the cron doesn't restart from page 0 and stall; only the
+ * ad-hoc manual-search offsets are cleared. Refused while the cron is running.
  */
+// True while the parsing cron is importing OR while cars are still being
+// published. Two independent background processes can be busy:
+//   1) the import cron — writes a heartbeat into parsing_settings.cron_running
+//      (fresher than 10 min = still running; older = it died, so we don't lock
+//      forever);
+//   2) the publish worker — drains parsing_publish_queue. We don't trust a
+//      worker heartbeat (it runs every minute and exits fast when idle); instead
+//      we check the queue directly: any pending/processing job = "publishing".
+// Either one makes "Clear catalog" unsafe.
+function parsing_cron_is_running($db, $prefx): bool {
+    // Import cron heartbeat.
+    try {
+        $stmt = $db->prepare("SELECT setting_value FROM {$prefx}_parsing_settings WHERE setting_key = 'cron_running' LIMIT 1");
+        $stmt->execute();
+        $val = (string)$stmt->fetchColumn();
+        if ($val !== '' && (time() - (int)$val) < 600) return true;
+    } catch (\Throwable $e) { /* ignore */ }
+
+    // Publish queue still has work.
+    try {
+        $stmt = $db->prepare("SELECT 1 FROM {$prefx}_parsing_publish_queue
+            WHERE status IN ('pending','processing') LIMIT 1");
+        $stmt->execute();
+        if ($stmt->fetchColumn()) return true;
+    } catch (\Throwable $e) { /* ignore */ }
+
+    return false;
+}
+
 function parsing_clear_catalog($db, $prefx, $p = []) {
+    // Block clearing while the cron is mid import/publish — deleting proposed
+    // cars now would pull the rug from under the publisher and corrupt the run.
+    if (parsing_cron_is_running($db, $prefx)) {
+        return ['success' => false, 'busy' => true,
+                'error' => 'Import/publicare în curs. Așteaptă să se termine și reîncearcă.'];
+    }
     try {
         // Keep published + unavailable (those live on the Published page).
         $del = $db->prepare("DELETE FROM {$prefx}_parsing_cars WHERE status NOT IN ('published','unavailable')");
         $del->execute();
         $deleted = $del->rowCount();
 
-        // Reset filter pagination so cron re-scans from offset 0.
-        $db->exec("UPDATE {$prefx}_parsing_filters SET last_offset = 0");
+        // NOTE: we intentionally DO NOT reset last_offset here. Clearing the
+        // proposed cars shouldn't throw away how far the cron has walked through
+        // each source catalog — otherwise it re-scans from 0 and stalls on the
+        // freshest pages forever. Offsets are only reset explicitly elsewhere.
 
-        // Drop manual-search offsets.
+        // Drop manual-search offsets (these are per ad-hoc search, safe to reset).
         $db->exec("DELETE FROM {$prefx}_parsing_settings WHERE setting_key LIKE 'offset_%'");
 
         return ['success' => true, 'deleted' => $deleted];
@@ -2109,5 +2480,84 @@ function parsing_save_eu_config($db, $prefx, $userId, $p) {
         $db->rollBack();
         return ['success' => false, 'error' => $e->getMessage()];
     }
-    return ['success' => true];
+
+    // Pricing config just changed → every published parsing car's frozen card
+    // price (car_ctlg.prc) is now stale vs the live "MD total". Resync ALL of them
+    // (maxDiff=0, no tolerance): when the config changes, even a large price shift
+    // is legitimate — it comes from the new config, not a manual override. The card
+    // must always equal the price table, euro for euro. Best-effort.
+    $resync = parsing_resync_card_prices($db, $prefx, 0);
+    return ['success' => true, 'resynced' => $resync['updated'] ?? 0];
+}
+
+/**
+ * Recompute the "MD total" for every PUBLISHED parsing car and write it onto the
+ * card (car_ctlg.prc) when it drifted from the frozen value. Only cars that have a
+ * computable breakdown (real source + price) are touched. Cars whose card price was
+ * overridden manually (diff above $maxDiff) are LEFT ALONE — a large gap means the
+ * price isn't the auto-computed total. $maxDiff=0 disables the guard (sync all).
+ *
+ * @return array{checked:int, updated:int, skipped_big:int}
+ */
+function parsing_resync_card_prices($db, $prefx, int $maxDiff = 500): array {
+    // Load the breakdown helpers via an ABSOLUTE path. _ADM_PAGE is relative
+    // ("content/admin/page"), which doesn't resolve from the AJAX working dir —
+    // using it here made the require fail silently, so the resync never ran on
+    // config save. Skip the include if the functions are already loaded.
+    if (!function_exists('parsing_md_breakdown_eu')) {
+        $pp = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '', '/\\') . '/content/admin/page/parsing/parsing_pricing.php';
+        if (is_file($pp)) require_once $pp;
+    }
+    if (!function_exists('parsing_md_breakdown_eu')) {
+        return ['checked' => 0, 'updated' => 0, 'skipped_big' => 0, 'error' => 'pricing helpers not loaded'];
+    }
+    $checked = 0; $updated = 0; $skippedBig = 0;
+    try {
+        // Pull fuel/vol/year from car_ctlg (the AD), NOT parsing_cars — the public
+        // price table (ordercars.php) computes the breakdown from the ad's fields,
+        // which may have been corrected on edit (e.g. fuel hybrid → plug-in, which
+        // changes the customs discount). Only price_eur comes from the source.
+        $rows = $db->query("SELECT pc.car_ctlg_id, pc.source, pc.price_eur,
+                cc.fl, cc.vol, cc.yr, cc.prc AS card_prc
+            FROM {$prefx}_parsing_cars pc
+            JOIN {$prefx}_car_ctlg cc ON cc.id = pc.car_ctlg_id
+            WHERE pc.status='published' AND pc.car_ctlg_id > 0
+              AND pc.source IN ('encar','openlane','ecarstrade')
+              AND pc.price_eur > 0")->fetchAll(PDO::FETCH_ASSOC);
+    } catch (\Throwable $e) {
+        return ['checked' => 0, 'updated' => 0, 'skipped_big' => 0, 'error' => $e->getMessage()];
+    }
+
+    // car_ctlg.fl (sauto fuel code) → internal fuel — same map the public page uses.
+    $fuelMap = [
+        'gsl' => 'benzina', 'gmn' => 'benzina', 'gpn' => 'benzina', 'gas' => 'benzina',
+        'dsl' => 'diesel',
+        'hbd' => 'hybrid', 'pih' => 'hybrid_plugin', 'pid' => 'diesel_hybrid',
+        'elc' => 'electric',
+    ];
+
+    $upd = $db->prepare("UPDATE {$prefx}_car_ctlg SET prc = ? WHERE id = ?");
+    foreach ($rows as $r) {
+        $checked++;
+        $bdCar = [
+            'price_eur' => (float)$r['price_eur'],
+            'fuel'      => $fuelMap[$r['fl'] ?? ''] ?? '',
+            'capacity'  => (int)$r['vol'],
+            'year'      => (int)$r['yr'],
+        ];
+        $bd = ($r['source'] === 'encar')
+            ? parsing_md_breakdown_kr($db, $prefx, $bdCar)
+            : parsing_md_breakdown_eu($db, $prefx, $bdCar);
+        if (!$bd || empty($bd['total'])) continue;
+
+        $total = (int)round($bd['total']);
+        $card  = (int)round($r['card_prc']);
+        if ($total === $card) continue;
+        // Big gap = price was set manually → don't overwrite it.
+        if ($maxDiff > 0 && abs($total - $card) > $maxDiff) { $skippedBig++; continue; }
+
+        $upd->execute([$total, (int)$r['car_ctlg_id']]);
+        $updated++;
+    }
+    return ['checked' => $checked, 'updated' => $updated, 'skipped_big' => $skippedBig];
 }

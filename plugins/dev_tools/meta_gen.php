@@ -248,7 +248,7 @@ if ($z2 === 'calculator') {
             $sa['meta']['h1'] = 'Car Customs Calculator Moldova';
             break;
         default: // ro
-            $sa['meta']['ttl'] = 'Calculator vămuire (devamare) auto Moldova ['.$cy.'] — Gratuit';
+            $sa['meta']['ttl'] = 'Calculator devamare (vămuire) auto Moldova ['.$cy.'] — Gratuit';
             $sa['meta']['dsc'] = '✓ Calculator vămuire auto online în 30 secunde. Accize '.$cy.', curs EUR de la BNM. Gratuit, fără înregistrare. Verificat de experți.';
             $sa['meta']['kwd'] = 'calculator vamuire auto moldova, calculator devamare auto moldova, devamare auto moldova, vamuire auto moldova, accize auto moldova, calculator taxe vamale, calcul vama auto, cost vamuire moldova, cost devamare auto, taxe vamale auto, vamuire auto din europa, devamare auto din europa';
             $sa['meta']['h1'] = 'Calculator vămuire auto Moldova';

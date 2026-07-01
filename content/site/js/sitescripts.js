@@ -1074,17 +1074,12 @@ setInterval(function(){
 		var timer = endTime - now;
 		
 		if (timer <= 0) {
-			var currentText = $(this).text().trim();
-			if (currentText && currentText !== '00:00:00:00') {
-				return;
-			}
-			var expiredText = 'Offer expired';
-			var lang = document.cookie.match(/lang=([^;]+)/);
-			if (lang && lang[1] == 'ro') expiredText = 'Oferta a expirat';
-			else if (lang && lang[1] == 'ru') expiredText = 'Предложение истекло';
-			$(this).html(expiredText);
+			// Timer expired → hide the countdown; the car is shown as out of stock
+			// via its status badge (rendered server-side on the next load).
+			$(this).closest('.offer-timer, .mobile-only-timer, .stat').hide();
+			$(this).hide();
 			return;
-		}		
+		}
 		var tD = Math.floor(timer / (24*60*60));
 		var tH = Math.floor((timer - (tD*24*60*60)) / (60*60));
 		var tM = Math.floor((timer - (tD*24*60*60) - (tH*60*60)) / 60);

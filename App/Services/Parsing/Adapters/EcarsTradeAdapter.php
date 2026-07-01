@@ -233,9 +233,43 @@ class EcarsTradeAdapter extends AbstractAdapter
         return $out;
     }
 
-    // Collect ALL distinct models for a brand (taxonomy use), including cars
-    // without a buy-now price — so the model list is complete. Returns
-    // [ 'X5' => count, ... ]. Pages through every result for the mark.
+    // Returns ['alive'=>bool, 'status'=>int, 'reason'=>string].
+    public function pingSession(): array
+    {
+        $cookie = $this->loadCookie();
+        if ($cookie === '') {
+            return ['alive' => false, 'status' => 0, 'reason' => 'no_cookie'];
+        }
+
+        // The cheapest authenticated call: the search endpoint with perpage=1.
+        // Same shape parsing already uses, so the server treats it as ordinary
+        // logged-in activity (it touches/extends the PHP session like any page).
+        $params = http_build_query([
+            'request_type' => 'cars', 'start' => 0, 'perpage' => 1,
+            'sort' => 'on_site.desc', 'only_next_available_car' => 'false',
+        ]);
+        $url = self::API_SEARCH . '?' . $params;
+        $response = $this->httpRequest($url, [
+            'headers' => $this->searchHeaders(self::BASE_URL . '/search'),
+        ]);
+        $status = (int)($response['status'] ?? 0);
+        $body   = (string)($response['body'] ?? '');
+
+        // A logged-in session returns the streamed car JSON. An expired/guest
+        // session typically answers non-200, empty, or an HTML login page.
+        if ($status !== 200 || $body === '') {
+            return ['alive' => false, 'status' => $status, 'reason' => 'http_' . $status];
+        }
+        // Look for the streamed-card shape ({"car_id":...) — proof the API
+        // answered as for a logged-in user, not a login/HTML redirect.
+        $looksLikeCards = (stripos($body, '"car_id"') !== false)
+                          || (stripos($body, '"status"') !== false && stripos($body, '"result"') !== false);
+        if (!$looksLikeCards) {
+            return ['alive' => false, 'status' => $status, 'reason' => 'non_card_body'];
+        }
+        return ['alive' => true, 'status' => $status, 'reason' => 'ok'];
+    }
+
     public function collectModelsForBrand(string $brand): array
     {
         $cookie = $this->loadCookie();
@@ -311,9 +345,12 @@ class EcarsTradeAdapter extends AbstractAdapter
         if (!empty($criteria['km_max']))    $parts[] = 'kilom_to=' . (int)$criteria['km_max'];
         if (!empty($criteria['price_min'])) $parts[] = 'price=' . (int)$criteria['price_min'];
         if (!empty($criteria['price_max'])) $parts[] = 'price_to=' . (int)$criteria['price_max'];
-        // Fuel: our internal code → eCarsTrade value (Diesel/Petrol/Electric...).
-        $fuelVal = $this->fuelFilterValue($criteria['fuel_type'] ?? null);
-        if ($fuelVal) $parts[] = 'fuel%5B%5D=' . rawurlencode($fuelVal);
+        // Fuel: one or more internal codes (CSV) → eCarsTrade values, each as its
+        // own fuel[] param (Diesel/Petrol/Electric...). The API ORs them together.
+        foreach ($this->splitCodes($criteria['fuel_type'] ?? null) as $code) {
+            $fuelVal = $this->fuelFilterValue($code);
+            if ($fuelVal) $parts[] = 'fuel%5B%5D=' . rawurlencode($fuelVal);
+        }
         // Gearbox: gearbox[]=Automatic|Manual|Semi-automatic (eCarsTrade has no CVT).
         $gearVal = $this->gearboxFilterValue($criteria['gearbox'] ?? null);
         if ($gearVal) $parts[] = 'gearbox%5B%5D=' . rawurlencode($gearVal);
@@ -322,6 +359,13 @@ class EcarsTradeAdapter extends AbstractAdapter
         if ($catVal) $parts[] = 'category%5B%5D=' . rawurlencode($catVal);
         $parts[] = 'power_value=kw';
         return implode('&', $parts);
+    }
+
+    // Split a CSV fuel_type ("benzina,diesel") into a clean list of codes.
+    private function splitCodes(?string $csv): array
+    {
+        if (!$csv) return [];
+        return array_values(array_filter(array_map('trim', explode(',', $csv)), fn($c) => $c !== ''));
     }
 
     // Internal fuel code → eCarsTrade filter value (from /search checkboxes).
@@ -824,6 +868,85 @@ class EcarsTradeAdapter extends AbstractAdapter
             if ($ts && $ts < time()) return false;
         }
         return true;
+    }
+
+    // Verify the .env cookie still carries a logged-in session — WITHOUT relying
+    // on a VIN. The old check called fetchById and treated "VIN != 17 chars" as
+    // "cookie expired", which gave a false "expired" whenever the newest car had
+    // no published VIN or was already sold (404). Those are not auth problems.
+    //
+    // What actually proves we're logged in: an authenticated detail page exposes
+    // the buyer-only bits a guest never sees — the VIN spec row and the buy/bid
+    // button. A guest page instead redirects/links to login. So we look for those
+    // logged-in markers in the HTML, not for a 17-char VIN.
+    //
+    // We try several recent cars (not just the newest) so one sold/removed car
+    // (404) can't masquerade as an expired cookie. Returns:
+    //   ['logged_in'=>bool, 'vin'=>?string, 'reason'=>string]
+    public function checkSession(array $sourceIds): array
+    {
+        $cookie = $this->loadCookie();
+        if ($cookie === '') {
+            return ['logged_in' => false, 'vin' => null, 'reason' => 'no_cookie'];
+        }
+
+        $sawCar = false;     // at least one car page loaded (HTTP 200 with body)
+        $allGone = true;     // every tested car answered 404 (sold/removed)
+        foreach ($sourceIds as $sid) {
+            $sid = preg_replace('/\D/', '', (string)$sid);
+            if ($sid === '') continue;
+
+            $url = self::CAR_WEB_URL . $sid;
+            $response = $this->httpRequest($url, [
+                'headers' => [
+                    'Accept: text/html,*/*',
+                    'Referer: ' . self::BASE_URL . '/search',
+                    'Cookie: ' . $cookie,
+                ],
+            ]);
+            $status = (int)($response['status'] ?? 0);
+            $body   = (string)($response['body'] ?? '');
+
+            // 404 = this car is gone, not a cookie problem. Try the next one.
+            if ($status === 404) { continue; }
+            $allGone = false;
+            // Network hiccup / non-200 with no body: inconclusive, try the next.
+            if ($status !== 200 || $body === '') { continue; }
+            $sawCar = true;
+
+            // Logged-in markers: the buy/bid button and the VIN spec row only
+            // render for an authenticated buyer; a guest sees a login prompt.
+            $hasBuyButton = stripos($body, 'item-bid-button') !== false;
+            $hasVinRow    = (bool)preg_match('/>\s*VIN\s*<\/span>/i', $body)
+                            || stripos($body, 'fa-barcode') !== false;
+            // Guest/expired markers: the page sends us to log in.
+            $isGuest = stripos($body, '/login') !== false
+                       && !$hasBuyButton && !$hasVinRow;
+
+            if ($hasBuyButton || $hasVinRow) {
+                // Pull the VIN as a bonus (may legitimately be absent for this car).
+                $vin = $this->detailField($body, 'VIN');
+                if ($vin && preg_match('/([A-HJ-NPR-Z0-9]{17})/i', $vin, $mm)) {
+                    $vin = strtoupper($mm[1]);
+                } else {
+                    $vin = null;
+                }
+                return ['logged_in' => true, 'vin' => $vin, 'reason' => 'ok'];
+            }
+            if ($isGuest) {
+                return ['logged_in' => false, 'vin' => null, 'reason' => 'guest_page'];
+            }
+            // 200 but no clear marker either way — keep trying other cars.
+        }
+
+        // No car confirmed login. Distinguish the causes so the UI can be honest:
+        //  - every tested car was 404 → cars are just gone, cookie unknown (keep).
+        //  - we loaded a page but saw no logged-in marker → likely expired.
+        if ($allGone) {
+            return ['logged_in' => true, 'vin' => null, 'reason' => 'all_404'];
+        }
+        return ['logged_in' => $sawCar ? false : true, 'vin' => null,
+                'reason' => $sawCar ? 'no_marker' : 'inconclusive'];
     }
 
     // Fetch the equipment list ("Комплектация") from the detail page. Each option

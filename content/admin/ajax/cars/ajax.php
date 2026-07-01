@@ -26,6 +26,43 @@ if ( __post('fn')=='search'||__post('fn')=='more'||__post('fn')=='filter' ){
         'search'=>$search
     ];
 }
+elseif ( __post('fn')=='locate_by_link' ){
+	// Find a catalog car by a sauto.md OR 999.md link (or bare id) and tell the
+	// front-end which catalog it lives in. Mirrors ordercars' locate_by_link.
+	$link = trim((string)__post('link'));
+	$ctlgId = 0;
+	if ($link !== '') {
+		// A 999.md link maps to car_ctlg via the stored 999 advert id, not the path id.
+		if (preg_match('#999\.md/(?:[a-z]{2}/)?(\d+)#i', $link, $m)) {
+			$stmt = $db->prepare('SELECT id FROM '.$prefx.'_car_ctlg WHERE `999_id` = ? LIMIT 1');
+			$stmt->execute([(int)$m[1]]);
+			$ctlgId = (int)$stmt->fetchColumn();
+		} elseif (ctype_digit($link)) {
+			$ctlgId = (int)$link;
+		} elseif (preg_match('#(?:ordercars|cars)/(\d+)#i', $link, $m)) {
+			$ctlgId = (int)$m[1];
+		} elseif (preg_match('#[?&]id=(\d+)#i', $link, $m)) {
+			$ctlgId = (int)$m[1];
+		} elseif (preg_match('#/(\d+)(?:[/?#]|$)#', $link, $m)) {
+			$ctlgId = (int)$m[1];
+		}
+	}
+	if ($ctlgId <= 0) {
+		$returnIt = ['success' => false, 'error' => $lng['w']['link_bad'] ?? 'Nu pot extrage ID-ul din link'];
+	} else {
+		// in_stock cars live on /cars/ctlg, on_order on /ordercars/ctlg — report the
+		// right one so the front-end sends the user to the correct catalog.
+		$stmt = $db->prepare('SELECT catalog_type FROM '.$prefx.'_car_ctlg WHERE id = ? LIMIT 1');
+		$stmt->execute([$ctlgId]);
+		$ctlgType = $stmt->fetchColumn();
+		if ($ctlgType === false) {
+			$returnIt = ['success' => true, 'location' => 'none', 'ctlg_id' => $ctlgId];
+		} else {
+			$location = ($ctlgType === 'on_order') ? 'ordercars' : 'cars';
+			$returnIt = ['success' => true, 'location' => $location, 'ctlg_id' => $ctlgId];
+		}
+	}
+}
 elseif ( __post('fn')=='saveBooster' ){
     $car = (new Car())->getCarById(__post('id'));
 
@@ -100,6 +137,9 @@ elseif ( __post('fn')=='av0' ) {
     $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `n_a`=1 WHERE `id`=:id');
     $pdo->execute([ 'id' => __post('id') ]);
 
+    // Out of stock → postpone the car's pending 999 schedules (reversible).
+    na_postpone_schedules($db, $prefx, (int)__post('id'));
+
     $car = (new Car())->getCarById(__post('id'));
     if (!empty($car['999_id'])) {
         (new Api999Service($car['999_api_id']))->changeAccessPolicy($car);
@@ -110,6 +150,9 @@ elseif ( __post('fn')=='av0' ) {
 elseif ( __post('fn')=='av1' ){
     $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `n_a`=0 WHERE `id`=:id');
     $pdo->execute([ 'id' => __post('id') ]);
+
+    // Back in stock → restore the car's postponed 999 schedules.
+    na_restore_schedules($db, $prefx, (int)__post('id'));
 
     $car = (new Car())->getCarById(__post('id'));
     if (!empty($car['999_id'])) {

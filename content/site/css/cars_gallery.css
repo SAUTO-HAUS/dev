@@ -1,3 +1,57 @@
+.import-country-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+}
+
+@keyframes status-pulse {
+    0%, 100% { transform: scale(1);     box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+    50%      { transform: scale(1.07);  box-shadow: 0 5px 16px rgba(0,0,0,.28); }
+}
+
+@keyframes status-shine {
+    0%   { left: -60%; }
+    60%, 100% { left: 130%; }
+}
+
+main > .spc_bx > .status > .stat.n_a0,
+main > .spc_bx > .status > .stat.n_a1,
+main > .spc_bx > .status > .stat.soon1,
+main > .spc_bx > .status > .stat.prc_n,
+main > .spc_bx > .status > .stat.stat-onorder {
+    animation: status-pulse 1.6s ease-in-out infinite;
+    transform-origin: center center;
+    position: relative;
+    overflow: hidden;
+}
+
+main > .spc_bx > .status > .stat.n_a0::after,
+main > .spc_bx > .status > .stat.n_a1::after,
+main > .spc_bx > .status > .stat.soon1::after,
+main > .spc_bx > .status > .stat.prc_n::after,
+main > .spc_bx > .status > .stat.stat-onorder::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -60%;
+    width: 45%;
+    height: 100%;
+    background: linear-gradient(100deg, transparent, rgba(255,255,255,.45), transparent);
+    transform: skewX(-20deg);
+    animation: status-shine 1.6s ease-in-out infinite;
+    pointer-events: none;
+}
+
+main > .spc_bx > .status {
+    display: flex !important;
+    flex-flow: row wrap;
+    gap: 15px !important;
+}
+main > .spc_bx > .status > .stat {
+    margin: 0 !important;
+}
+
 /* LED Digital Timer Styles */
 .timer-display {
     font-family: Arial, sans-serif !important;
@@ -447,8 +501,30 @@ html.with-fancybox body {
         margin-top: 10px;
         padding-top: 5px;
     }
+    /* Show all status badges on mobile too, same as desktop. */
     main > .spc_bx > .status {
-        display: none;
+        display: flex;
+        flex-flow: row wrap;
+        justify-content: flex-start;
+        align-items: flex-start;
+        margin-top: 10px;
+    }
+
+    main > .spc_bx > .status > .stat {
+        font-weight: 800 !important;
+        margin: 0 !important;
+        align-self: flex-start;
+    }
+
+    .mobile-only-timer {
+        display: none !important;
+    }
+
+    .import-country-box {
+        flex-direction: row;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
     }
     .prc.desktop {
         display: none;

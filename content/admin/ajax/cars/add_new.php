@@ -183,6 +183,16 @@ if (__post('sub') == 'mo_search') {
                 'data_999' => $updated_999_data
             ]);
 
+            // n_a changed → keep 999 schedules in sync (postpone when out of stock,
+            // restore when back in stock). Same behavior as the quick av0/av1 toggle.
+            $na_old = (int)($r['n_a'] ?? 0);
+            $na_new = (int)__post('n_a', 0);
+            if ($na_old === 0 && $na_new === 1) {
+                na_postpone_schedules($db, $prefx, (int)__post('id'));
+            } elseif ($na_old === 1 && $na_new === 0) {
+                na_restore_schedules($db, $prefx, (int)__post('id'));
+            }
+
             // --- CHANGELOG: log field edits ---
             car_changelog_log_diff($db, $prefx, __post('id'), $r, [
                 'gr' => __post('gr'), 'br' => __post('br'), 'mo' => __post('mo'),

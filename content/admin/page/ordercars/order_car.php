@@ -256,6 +256,32 @@ if (!$new && empty($car['vin']) && !empty($car['parsing_id'])) {
     }
 }
 
+// On EDIT (?id=) of a parsing car that was published WITHOUT photos (the publish
+// worker's photo step timed out under load — see ParsingPublisher), the ad has
+// 0 rows in car_pht. In that case feed the parsing images into a minimal prefill
+// so the form auto-downloads them. If the ad already has photos, we DON'T touch
+// them (loadParsingImages also re-checks and skips when photos are present).
+if (!$new && !$parsing_prefill && !empty($car['parsing_id'])) {
+    try {
+        $existingPhotos = (new \App\Db\CarPhoto())->getPhotosByCarId((int)($_GET['id'] ?? 0));
+        if (empty($existingPhotos)) {
+            $stmt = $db->prepare("SELECT id, images_local, source FROM {$prefx}_parsing_cars WHERE id = ?");
+            $stmt->execute([(int)$car['parsing_id']]);
+            $pimg = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($pimg && !empty($pimg['images_local']) && $pimg['images_local'] !== '[]') {
+                $parsing_prefill = [
+                    'parsing_id'   => (int)$pimg['id'],
+                    'images_local' => $pimg['images_local'],
+                    'source'       => $pimg['source'] ?? '',
+                    '_images_only' => true,   // JS: only download photos, don't re-prefill fields
+                ];
+            }
+        }
+    } catch (Exception $e) {
+        // ignore — no photo backfill
+    }
+}
+
 $it_br = [];
 $pdo = (new \App\Db\Brand())->getBrands();
 foreach ($pdo as $r) {
@@ -509,9 +535,15 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                                 value="<?= $car['top'] ?? 0 ?>">
                         <?=$lang_top_sales?>
                     </label>
+                    <?php
+                        // An expired offer timer means out of stock even before the 5-min
+                        // cron flips n_a in the DB, so pre-tick the box right away.
+                        $na_timer_expired = !empty($car['offer_timer_end']) && ($car['offer_timer_end'] - time()) <= 0;
+                        $na_checked = ((isset($car['n_a']) && $car['n_a'] == 1) || $na_timer_expired);
+                    ?>
                     <label><input type="checkbox" name="n_a" class="no_need" tabindex="1"
-                                <?= isset($car['n_a']) && $car['n_a'] == 1 ? 'checked' : '' ?>
-                                value="<?= $car['n_a'] ?? 0 ?>">
+                                <?= $na_checked ? 'checked' : '' ?>
+                                value="<?= $na_checked ? 1 : 0 ?>">
                         <?=$lang_not_av?>
                     </label>
                     <label>
@@ -586,7 +618,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                                 <?php
                                     $isSel = $prefillCountryId > 0
                                         ? ($country['id'] == $prefillCountryId)
-                                        : ($country['code'] == 'EU');
+                                        : (strcasecmp((string)($country['code'] ?? ''), 'EU') === 0);
                                 ?>
                                 <option value="<?= $country['id'] ?>" <?= $isSel ? 'selected' : '' ?> data-flag="<?= $country['flag'] ?>"
                                     <?= ($country['id'] == 41) ? 'style="color: #ff0000; font-weight: bold;"' : '' ?>>
@@ -3218,10 +3250,17 @@ function generateWithGemini() {
         setTimeout(() => { window._parsingPrefilling = false; }, 4000);
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', start);
+    // _images_only mode (editing an already-published ad that lost its photos):
+    // skip the field prefill entirely (fields are already filled on the ad) and
+    // only run the photo download.
+    if (!data._images_only) {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', start);
+        } else {
+            start();
+        }
     } else {
-        start();
+        window._parsingPrefilling = false;
     }
 
     // Delay image downloads until after the form fields settle so they
@@ -3233,6 +3272,11 @@ function generateWithGemini() {
     // The actual import is done server-side from these same URLs; we send the
     // current visual order (parsing_image_order) so the server respects drag
     // reordering and deletions made in the preview.
+    //
+    // If the ad ALREADY has photos (existing .f_img.ext rows from car_pht), do
+    // NOT re-download — keep what's there. Only fill in when the gallery is empty
+    // (the published-without-photos case we're recovering from).
+    if (document.querySelector('.f_img.ext')) return;
     if (data.images_local && data.parsing_id) {
         try {
             const imgs = typeof data.images_local === 'string' ? JSON.parse(data.images_local) : data.images_local;

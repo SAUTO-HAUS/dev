@@ -17,7 +17,7 @@ try {
     // Shared catalog filter (searches the whole DB, not just loaded rows).
     include_once _ADM_PAGE.'/parsing/parsing_filter_where.php';
     include_once _ADM_PAGE.'/parsing/parsing_pagination.php';
-    $flt = parsing_catalog_filter_where('pc.');
+    $flt = parsing_catalog_filter_where('pc.', $db, $prefx);
 
     $where = 'pc.status = "favorite"'.$flt['sql'];
 
@@ -47,9 +47,6 @@ $rtrn = '
     <div class="parsing-header">
         <h1>'.$t['page_favorites'].'</h1>
         <span class="counter">'.$totalCount.' '.$t['favorites_count_label'].'</span>
-        <button type="button" id="pcf-toggle" class="pcf-toggle" title="'.($t['filter_title'] ?? 'Filtru').'">
-            <img src="/content/admin/page/parsing/media-parsing/filter.png" alt="'.($t['filter_title'] ?? 'Filtru').'">
-        </button>
     </div>
 
     <div class="parsing-tabs">
@@ -203,13 +200,13 @@ if (empty($cars)) {
                       strtoupper($c['source'])))).'
                 </div>
                 <h3>'.htmlspecialchars($title).'</h3>
-                <div class="car-meta">
+                <div class="car-meta" data-seats-label="'.htmlspecialchars($t['card_seats'] ?? 'locuri', ENT_QUOTES).'">
                     '.($c['year'] ? $c['year'] . ' · ' : '').'
                     '.($c['km'] ? number_format($c['km'], 0, '.', ' ') . ' km · ' : '').'
                     '.htmlspecialchars($fuelLabels[parsing_fuel_code($c['fuel_type'] ?? '')] ?? ($c['fuel_type'] ?? '')).'
                     <span class="car-meta-cc">'.(($_l = parsing_engine_liters($c)) !== '' ? ' ' . $_l . 'L' : '').'</span>'.'
-                    '.(!empty($c['power_hp']) ? ' · ' . (int)$c['power_hp'] . ' hp' : '').'
-                    '.($c['gearbox'] ? ' · ' . htmlspecialchars($gearLabels[parsing_gear_code($c['gearbox'])] ?? $c['gearbox']) : '').'
+                    <span class="car-meta-gear">'.($c['gearbox'] ? ' · ' . htmlspecialchars($gearLabels[parsing_gear_code($c['gearbox'])] ?? $c['gearbox']) : '').'</span>
+                    <span class="car-meta-seats">'.(!empty($c['seats']) ? ' · ' . (int)$c['seats'] . ' ' . htmlspecialchars($t['card_seats'] ?? 'locuri') : '').'</span>
                 </div>
                 '.($auctionEndTs > 0
                     ? '<div class="ol-countdown" data-end-ts="'.$auctionEndTs.'"><span class="ol-cd-label">'.$t['auction_ends'].'</span> <span class="ol-cd-time">…</span></div>'

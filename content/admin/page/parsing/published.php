@@ -17,7 +17,7 @@ try {
     // Shared catalog filter (searches the whole DB, not just loaded rows).
     include_once _ADM_PAGE.'/parsing/parsing_filter_where.php';
     include_once _ADM_PAGE.'/parsing/parsing_pagination.php';
-    $flt = parsing_catalog_filter_where('pc.');
+    $flt = parsing_catalog_filter_where('pc.', $db, $prefx);
 
     // Only cars that were actually published to sauto: status published, OR
     // status unavailable BUT still linked to a sauto ad (car_ctlg_id set). This
@@ -38,7 +38,7 @@ try {
         FROM '.$prefx.'_parsing_cars pc
         LEFT JOIN '.$prefx.'_car_ctlg cc ON cc.id = pc.car_ctlg_id
         WHERE '.$where.'
-        ORDER BY (cc.vis = 0) ASC, pc.published_at DESC
+        ORDER BY (pc.status = "unavailable") ASC, (cc.vis = 0) ASC, pc.published_at DESC
         LIMIT '.$pageSize.' OFFSET '.$offset);
     $stmt->execute($flt['params']);
     $cars = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -89,11 +89,14 @@ $rtrn = '
     <div class="parsing-header">
         <h1>'.$t['page_published'].'</h1>
         <span class="counter">'.$totalCount.' '.$t['published_count_label'].'</span>
-        <button type="button" class="btn-999-stats" onclick="parsingShow999Stats()">'.($t['btn_999_stats'] ?? 'Publicări 999').'</button>
-        <button type="button" id="pcf-toggle" class="pcf-toggle" title="'.($t['filter_title'] ?? 'Filtru').'">
-            <img src="/content/admin/page/parsing/media-parsing/filter.png" alt="'.($t['filter_title'] ?? 'Filtru').'">
-        </button>
+        <div class="pub-link-search">
+            <input type="text" id="pcf-link-input" class="pcf-field"
+                   placeholder="'.htmlspecialchars($t['locate_placeholder'] ?? 'link sauto.md sau 999.md').'"
+                   onkeydown="if(event.key===\'Enter\'){event.preventDefault();parsingLocateByLink();}">
+            <button type="button" class="pcf-apply" onclick="parsingLocateByLink()">'.($t['filter_search'] ?? 'Caută').'</button>
+        </div>
     </div>
+    <div id="pcf-link-msg" class="pcf-link-msg"></div>
 
     <div class="parsing-tabs">
         <a href="/'.$admin_dir.'/parsing/filters" class="tab">'.$t['tab_filters'].'</a>
@@ -101,6 +104,7 @@ $rtrn = '
         <a href="/'.$admin_dir.'/parsing/published" class="tab active">'.$t['tab_published'].'</a>
         <a href="/'.$admin_dir.'/parsing/settings" class="tab">'.$t['tab_settings'].'</a>
         <a href="/'.$admin_dir.'/parsing/favorites" class="tab tab-favorites"><img src="/content/admin/page/parsing/media-parsing/favorite.png" alt=""> '.$t['tab_favorites'].'</a>
+        <button type="button" class="tab tab-999-stats" onclick="parsingShow999Stats()">'.($t['btn_999_stats'] ?? 'Publicări 999').'</button>
     </div>
 
 ';
@@ -336,13 +340,13 @@ if (empty($cars)) {
                       strtoupper($c['source'])))).'
                 </div>
                 <h3>'.htmlspecialchars($title).'</h3>
-                <div class="car-meta">
+                <div class="car-meta" data-seats-label="'.htmlspecialchars($t['card_seats'] ?? 'locuri', ENT_QUOTES).'">
                     '.($c['year'] ? $c['year'] . ' · ' : '').'
                     '.($c['km'] ? number_format($c['km'], 0, '.', ' ') . ' km · ' : '').'
                     '.htmlspecialchars($fuelLabels[parsing_fuel_code($c['fuel_type'] ?? '')] ?? ($c['fuel_type'] ?? '')).'
                     <span class="car-meta-cc">'.(($_l = parsing_engine_liters($c)) !== '' ? ' ' . $_l . 'L' : '').'</span>'.'
-                    '.(!empty($c['power_hp']) ? ' · ' . (int)$c['power_hp'] . ' hp' : '').'
-                    '.($c['gearbox'] ? ' · ' . htmlspecialchars($gearLabels[parsing_gear_code($c['gearbox'])] ?? $c['gearbox']) : '').'
+                    <span class="car-meta-gear">'.($c['gearbox'] ? ' · ' . htmlspecialchars($gearLabels[parsing_gear_code($c['gearbox'])] ?? $c['gearbox']) : '').'</span>
+                    <span class="car-meta-seats">'.(!empty($c['seats']) ? ' · ' . (int)$c['seats'] . ' ' . htmlspecialchars($t['card_seats'] ?? 'locuri') : '').'</span>
                 </div>
                 '.($auctionEndTs > 0
                     ? '<div class="ol-countdown" data-end-ts="'.$auctionEndTs.'"><span class="ol-cd-label">'.$t['auction_ends'].'</span> <span class="ol-cd-time">…</span></div>'

@@ -44,11 +44,24 @@ Container::set('prefix', 'gh3sp');
 
 $prefx = 'gh3sp';
 
+// Self-create the adaptive-backoff counter so the feature works even if the admin
+// page (which also creates it) was never opened on this install.
+try {
+    $col = $db->query("SHOW COLUMNS FROM {$prefx}_parsing_filters LIKE 'idle_runs'");
+    if ($col && $col->rowCount() === 0) {
+        $db->exec("ALTER TABLE {$prefx}_parsing_filters ADD COLUMN `idle_runs` INT(11) NOT NULL DEFAULT 0");
+    }
+} catch (\Throwable $e) { /* best-effort */ }
+
 $argFilterId = null;
 foreach ($argv ?? [] as $arg) {
     if (preg_match('/^--filter=(\d+)$/', $arg, $m)) {
         $argFilterId = (int)$m[1];
     }
+}
+// Web trigger (parsing_cron_web.php): allow ?filter=ID to run one filter on demand.
+if ($argFilterId === null && !empty($_GET['filter'])) {
+    $argFilterId = (int)$_GET['filter'];
 }
 
 // Prevent overlapping runs: if a previous run is still going (slow Encar),
@@ -59,7 +72,22 @@ if ($lockHandle === false || !flock($lockHandle, LOCK_EX | LOCK_NB)) {
     echo "[" . date('Y-m-d H:i:s') . "] Another run is still active — skipping.\n";
     exit;
 }
-register_shutdown_function(function () use ($lockHandle) {
+// DB-visible "cron is running" flag (the flock above is invisible to the web
+// AJAX process). The web UI reads this to disable "Clear catalog" while an
+// import/publish is in progress — clearing mid-run would delete proposed cars
+// the publisher is still processing and reset the catalog offset.
+$setBusy = function (bool $on) use ($db, $prefx) {
+    try {
+        $stmt = $db->prepare("INSERT INTO {$prefx}_parsing_settings (setting_key, setting_value)
+            VALUES ('cron_running', ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)");
+        // Store a heartbeat timestamp; an empty value means "not running".
+        $stmt->execute([$on ? (string)time() : '']);
+    } catch (\Throwable $e) { /* non-fatal */ }
+};
+$setBusy(true);
+
+register_shutdown_function(function () use ($lockHandle, $setBusy) {
+    $setBusy(false);
     flock($lockHandle, LOCK_UN);
     fclose($lockHandle);
 });
@@ -75,12 +103,35 @@ if ($argFilterId) {
     $stmt = $db->prepare($sql);
     $stmt->execute([$argFilterId]);
 } else {
+    // Cap filters per run so dozens of active filters can't turn one cron run
+    // into a 20-30 min marathon. Oldest-first rotation means every filter still
+    // gets its turn across runs; the overlap lock skips a run that's still busy.
+    $maxFiltersPerRun = 15;
+
+    // Adaptive backoff: a filter that keeps importing 0 new cars is queried less
+    // often (idle_runs grows), so we don't hammer Encar for a "full" filter. The
+    // per-filter due interval = frequency * (1 + idle_runs), capped at 60 min. The
+    // moment a run imports something new, idle_runs resets to 0 (back to 15 min).
+    // idle_runs missing (column not created yet) → treated as 0 = normal frequency.
+    $backoffCap = 60;
     $sql = "SELECT * FROM {$prefx}_parsing_filters
             WHERE active = 1
+              AND (last_run_at IS NULL OR last_run_at < DATE_SUB(NOW(), INTERVAL
+                    LEAST(? * (1 + COALESCE(idle_runs, 0)), ?) MINUTE))
+            ORDER BY last_run_at IS NULL DESC, last_run_at ASC
+            LIMIT {$maxFiltersPerRun}";
+    try {
+        $stmt = $db->prepare($sql);
+        $stmt->execute([$frequencyMinutes, $backoffCap]);
+    } catch (\Throwable $e) {
+        // idle_runs column not present yet — fall back to flat frequency.
+        $stmt = $db->prepare("SELECT * FROM {$prefx}_parsing_filters
+            WHERE active = 1
               AND (last_run_at IS NULL OR last_run_at < DATE_SUB(NOW(), INTERVAL ? MINUTE))
-            ORDER BY last_run_at IS NULL DESC, last_run_at ASC";
-    $stmt = $db->prepare($sql);
-    $stmt->execute([$frequencyMinutes]);
+            ORDER BY last_run_at IS NULL DESC, last_run_at ASC
+            LIMIT {$maxFiltersPerRun}");
+        $stmt->execute([$frequencyMinutes]);
+    }
 }
 
 $filters = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -98,6 +149,8 @@ foreach ($filters as $filter) {
     try {
         $summary = $orchestrator->runFilter((int)$filter['id'], false, 'cron');
         foreach ($summary as $source => $stats) {
+            if ($source === '_capped') { echo "    publish cap reached — idle (no import/publish)\n"; continue; }
+            if ($source === '_adopted') { echo "    adopted={$stats} orphan car(s)\n"; continue; }
             if (isset($stats['error']) && $stats['error']) {
                 echo "    [{$source}] ERROR: {$stats['error']}\n";
             } else {

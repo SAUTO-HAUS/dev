@@ -44,7 +44,7 @@ try {
     // Shared catalog filter (searches the whole DB, not just loaded rows).
     include_once _ADM_PAGE.'/parsing/parsing_filter_where.php';
     include_once _ADM_PAGE.'/parsing/parsing_pagination.php';
-    $flt = parsing_catalog_filter_where('pc.');
+    $flt = parsing_catalog_filter_where('pc.', $db, $prefx);
 
     $where = 'pc.status = "proposed"';
     $bind = [];
@@ -101,7 +101,7 @@ $rtrn = '
         <h1>'.$t['page_ctlg'].'</h1>
         <span class="counter">'.$totalCount.' '.$t['ctlg_count_label'].'</span>
         '.(parsing_has_access($user_id ?? 0)
-            ? '<button type="button" class="btn-danger" style="margin-left:auto;" onclick="parsingClearCatalog()" title="'.htmlspecialchars($t['clear_catalog_hint'] ?? '').'">'.($t['btn_clear_catalog'] ?? 'Șterge catalogul (păstrează publicate)').'</button>'
+            ? '<button type="button" id="parsing-clear-btn" class="btn-danger" style="margin-left:auto;" onclick="parsingClearCatalog()" title="'.htmlspecialchars($t['clear_catalog_hint'] ?? '').'">'.($t['btn_clear_catalog'] ?? 'Șterge catalogul (păstrează publicate)').'</button>'
             : '').'
     </div>
 
@@ -129,9 +129,6 @@ $rtrn = '
             <img src="/content/admin/page/parsing/media-parsing/openlane-logo.svg" alt="OpenLane">
             <span class="src-count">'.$sourceCounts['openlane'].'</span>
         </a>').'
-        <button type="button" id="pcf-toggle" class="pcf-toggle" title="'.($t['filter_title'] ?? 'Filtru').'">
-            <img src="/content/admin/page/parsing/media-parsing/filter.png" alt="'.($t['filter_title'] ?? 'Filtru').'">
-        </button>
     </div>
 
 ';
@@ -305,13 +302,13 @@ if (empty($cars)) {
                       strtoupper($c['source'])))).'
                 </div>
                 <h3>'.htmlspecialchars($title).'</h3>
-                <div class="car-meta">
+                <div class="car-meta" data-seats-label="'.htmlspecialchars($t['card_seats'] ?? 'locuri', ENT_QUOTES).'">
                     '.($c['year'] ? $c['year'] . ' · ' : '').'
                     '.($c['km'] ? number_format($c['km'], 0, '.', ' ') . ' km · ' : '').'
                     '.htmlspecialchars($fuelLabels[parsing_fuel_code($c['fuel_type'] ?? '')] ?? ($c['fuel_type'] ?? '')).'
                     <span class="car-meta-cc">'.(($_l = parsing_engine_liters($c)) !== '' ? ' ' . $_l . 'L' : '').'</span>
-                    '.(!empty($c['power_hp']) ? ' · ' . (int)$c['power_hp'] . ' hp' : '').'
-                    '.($c['gearbox'] ? ' · ' . htmlspecialchars($gearLabels[parsing_gear_code($c['gearbox'])] ?? $c['gearbox']) : '').'
+                    <span class="car-meta-gear">'.($c['gearbox'] ? ' · ' . htmlspecialchars($gearLabels[parsing_gear_code($c['gearbox'])] ?? $c['gearbox']) : '').'</span>
+                    <span class="car-meta-seats">'.(!empty($c['seats']) ? ' · ' . (int)$c['seats'] . ' ' . htmlspecialchars($t['card_seats'] ?? 'locuri') : '').'</span>
                 </div>
                 '.($auctionEndTs > 0
                     ? '<div class="ol-countdown" data-end-ts="'.$auctionEndTs.'"><span class="ol-cd-label">'.$t['auction_ends'].'</span> <span class="ol-cd-time">…</span></div>'

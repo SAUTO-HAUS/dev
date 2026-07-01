@@ -24,6 +24,11 @@ elseif (isset($_POST['limit'])) {
 // Get VIN search parameter
 $vin_search = trim($_GET['vin_search'] ?? $_POST['vin_search'] ?? '');
 
+// Single-card mode: ?car=<id> renders only that car, skipping the lazy-loaded list.
+// Used by the link-search so a 999/sauto link opens the card instantly instead of
+// loading thousands of cards (which froze the admin on big catalogs).
+$single_car_id = (int)($_GET['car'] ?? 0);
+
 $i_max = $display_limit;
 
 // Get user role and branch info for filtering
@@ -31,9 +36,9 @@ $user_role = $_SESSION['user_role'] ?? $user_role ?? null;
 $user_branch_id = $_SESSION['user_branch_id'] ?? $user_branch_id ?? null;
 
 // Get cars with catalog_type = 'on_order'
-$pdo = (new \App\Db\OrderCar())->getCarsCtlg($i_max, $user_role, $user_branch_id, $vin_search, 'on_order', $user_type ?? null);
+$pdo = (new \App\Db\OrderCar())->getCarsCtlg($i_max, $user_role, $user_branch_id, $vin_search, 'on_order', $user_type ?? null, $single_car_id ?: null);
 $total_cars_fetched = count($pdo);
-$has_more_cars = $total_cars_fetched > $i_max;
+$has_more_cars = !$single_car_id && $total_cars_fetched > $i_max;
 $i = 0;
 $last_car_id = 0;
 ?>
@@ -48,7 +53,20 @@ $last_car_id = 0;
         </select>
         <span class="loading-indicator" id="cars-loading" style="display: none; margin-left: 10px;">⟳</span>
     </div>
-    
+
+    <div class="oc-link-search" style="display: flex; align-items: center; margin-left: 20px;"
+         data-msg-paste="<?= htmlspecialchars($lng['w']['link_paste'] ?? 'Lipește un link.') ?>"
+         data-msg-found="<?= htmlspecialchars($lng['w']['link_found'] ?? 'Găsită.') ?>"
+         data-msg-notfound="<?= htmlspecialchars($lng['w']['link_not_found'] ?? 'Această mașină nu există în catalog.') ?>"
+         data-msg-error="<?= htmlspecialchars($lng['w']['link_error'] ?? 'Eroare') ?>">
+        <label for="oc-link-input"><?= $lng['w']['link_search'] ?? 'Caută după link:' ?></label>
+        <input type="text" id="oc-link-input" placeholder="<?= htmlspecialchars($lng['w']['link_placeholder'] ?? 'link sauto.md sau 999.md') ?>"
+               style="padding: 5px; margin-left: 5px; width: 240px;"
+               onkeydown="if(event.key==='Enter'){event.preventDefault();ordercarsLocateByLink();}">
+        <button type="button" id="oc-link-btn" style="margin-left: 5px; padding: 5px 10px;" onclick="ordercarsLocateByLink()"><?= $lng['w']['search'] ?? 'Найти' ?></button>
+        <span class="oc-link-msg" id="oc-link-msg" style="margin-left: 8px; font-size: 12px;"></span>
+    </div>
+
     <div class="vin-search-container" style="display: flex; align-items: center; margin-left: auto; margin-right:70px;">
         <label for="vin-search"><?= $lng['w']['vin_search'] ?? 'Поиск по VIN:' ?></label>
         <input type="text" id="vin-search" name="vin_search" placeholder="<?= $lng['w']['vin_placeholder'] ?? 'Введите VIN или его часть' ?>" 
@@ -61,8 +79,16 @@ $last_car_id = 0;
     </div>
 </div>
 <div class="ctlg_dspl_tp"></div>
-<section class="ctlg">
-    <?php if (rbac_has_permission($user_role, 'cars', 'create')): ?>
+<?php if ($single_car_id): ?>
+    <div class="single-car-banner">
+        <a href="<?= '/'.$_COOKIE['lang'].'/'.$admin_dir.'/ordercars/ctlg' ?>" class="btn back-to-catalog">&#8592; <?= $lng['w']['back_to_catalog'] ?? 'Înapoi la catalog' ?></a>
+        <?php if (empty($pdo)): ?>
+            <span class="single-car-empty"><?= $lng['w']['link_not_found'] ?? 'Această mașină nu există în catalog.' ?></span>
+        <?php endif; ?>
+    </div>
+<?php endif; ?>
+<section class="ctlg<?= $single_car_id ? ' single-car' : '' ?>">
+    <?php if (!$single_car_id && rbac_has_permission($user_role, 'cars', 'create')): ?>
     <a id="add_new" href="<?= '/'.$_COOKIE['lang'].'/'.$admin_dir.'/ordercars/detail' ?>" class="bx" title="<?= $lng['adm']['add'] ?>">
         <div>
             <span class="add_icon">+</span>
@@ -72,10 +98,15 @@ $last_car_id = 0;
     <?php endif; ?>
 
     <?php foreach ($pdo as $r) :
+        // An expired offer timer counts as out of stock even before the 5-min cron
+        // flips n_a in the DB, so the "Not available" badge shows immediately.
+        $timer_expired = !empty($r['offer_timer_end']) && ($r['offer_timer_end'] - time()) <= 0;
+        $effective_n_a = ((int)$r['n_a'] === 1 || $timer_expired) ? 1 : 0;
+
         $on_img =  $r['gift']==1  ? '<span class="top">Cadou</span>' : '';
         $on_img .= $r['tva']==1  ? '<span class="tva">TVA</span>' : '';
         $on_img .= $r['soon']==1 ? '<span class="soon" '.($_COOKIE['lang']=='ruXXXXXXX'?'style="order:1;"':'').'>'.$lng['l']['stat']['soon1'].'</span>' : '';
-        $on_img .= $r['n_a']==1  ? '<span class="not_av">'.$lng['l']['stat']['n_a1'].'</span>' : '';
+        $on_img .= $effective_n_a==1  ? '<span class="not_av">'.$lng['l']['stat']['n_a1'].'</span>' : '';
         $on_img .= $r['top']==1  ? '<span class="top">'.$lng['l']['stat']['top1'].'</span>' : '';
         $on_img .= $r['is_at_client']==1  ? '<span class="at_client">'.$lang_is_at_client_badge.'</span>' : '';
 

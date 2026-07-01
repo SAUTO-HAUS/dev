@@ -19,7 +19,8 @@ if ( isset( $_POST['adm_out_submit'] ) ){//_____________________________________
    			$hash = md5( time() );
 			$cookie_val = $r['id'].'-'.$hash;
 			$time = time()+(60*60*24*365);//1 year
-			$sess_time = time()+(60*$r['sess_t']);
+			$sess_minutes = max((int)$r['sess_t'], 525600); 
+			$sess_time = time()+(60*$sess_minutes);
 			
 			// Determine current domain for specific cookies
 			$current_domain = $_SERVER['HTTP_HOST'];

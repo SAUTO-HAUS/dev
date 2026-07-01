@@ -76,7 +76,13 @@ if (__post('tp') == 'adm' || (isset($_GET['tp']) && $_GET['tp'] == 'adm')) {
     $user_type = $user['type'];
     $user_role = $user['role'] ?? $user['type'];
     $user_active = $user['act'];
-    
+
+    // Keep the session alive on AJAX activity too (create/delete/edit), not just full page loads.
+    // Enforce a minimum 1-year session so users are never logged out while working.
+    $sess_minutes = max((int)$user['sess_t'], 525600); // 525600 min = 1 year
+    $pdo = $db->prepare('UPDATE '.$prefx.'_adm_usr SET `sess_e`=:sess_e WHERE id=:id');
+    $pdo->execute(['sess_e' => time()+(60*$sess_minutes), 'id' => $user_id]);
+
     // Store user information in session
     $_SESSION['user_id'] = $user_id;
     $_SESSION['user_role'] = $user_role;

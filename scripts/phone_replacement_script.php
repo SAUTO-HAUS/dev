@@ -19,8 +19,7 @@ $templateFiles = [
     '../content/site/page/contacts.php',
     '../content/site/page/services.php',
     '../content/site/page/tyres.php',
-    '../content/default/language.php',
-    '../content/default/language_new.php'
+    '../content/default/language.php'
 ];
 
 // Phone number patterns to search for

@@ -303,10 +303,15 @@ class OpenLaneAdapter extends AbstractAdapter
                 'To'   => !empty($criteria['price_max']) ? (int)$criteria['price_max'] : null,
             ];
         }
-        // Fuel: internal code → OpenLane FuelTypeId(s), as STRINGS ("9", "100003").
-        $fuelIds = $this->fuelTypeIds($criteria['fuel_type'] ?? null);
+        // Fuel: one or more internal codes (CSV) → OpenLane FuelTypeId(s), as
+        // STRINGS ("9", "100003"). FuelTypeIds is a native array (ORed by the API).
+        $fuelIds = [];
+        foreach ($this->splitCodes($criteria['fuel_type'] ?? null) as $code) {
+            foreach ($this->fuelTypeIds($code) as $id) $fuelIds[] = (string)$id;
+        }
+        $fuelIds = array_values(array_unique($fuelIds));
         if ($fuelIds) {
-            $query['FuelTypeIds'] = array_map('strval', $fuelIds);
+            $query['FuelTypeIds'] = $fuelIds;
         }
         // Gearbox → Transmissions ("Automatic"/"Manual").
         $gear = $this->gearboxGroup($criteria['gearbox'] ?? null);
@@ -419,6 +424,13 @@ class OpenLaneAdapter extends AbstractAdapter
     // facet): 100001=Petrol, 100003=Diesel, 8=MHEV petrol, 9=MHEV diesel,
     // 100013=HEV (full hybrid petrol), 100023=PHEV (plug-in), 100002=LPG,
     // 100008=Electric. "hybrid" spans every hybrid flavour OpenLane lists.
+    // Split a CSV fuel_type ("100001,100003") into a clean list of codes.
+    private function splitCodes(?string $csv): array
+    {
+        if (!$csv) return [];
+        return array_values(array_filter(array_map('trim', explode(',', $csv)), fn($c) => $c !== ''));
+    }
+
     private function fuelTypeIds(?string $fuel): array
     {
         if (!$fuel) return [];
@@ -771,6 +783,58 @@ class OpenLaneAdapter extends AbstractAdapter
         if (!$val) return null;
         $pos = strrpos($val, '.');
         return $pos !== false ? substr($val, $pos + 1) : $val;
+    }
+
+    // Verify the .env cookie still carries a logged-in session — WITHOUT relying
+    // on a VIN. The old check fetched the newest car's detail and treated
+    // "ChassisNumber != 17 chars" as "cookie expired", which fired a false
+    // "expired" whenever that car had no published VIN or was already gone (404).
+    //
+    // The real auth signal is the HTTP status of the detail endpoint:
+    //   200 + JSON with CarId → logged in (cookie valid)
+    //   403                   → cookie/token expired (renew .env)
+    //   404                   → that car is gone (NOT a cookie problem)
+    // We try several recent auctions so one removed car can't fake an expiry.
+    // Returns ['logged_in'=>bool, 'vin'=>?string, 'reason'=>string].
+    public function checkSession(array $auctionIds): array
+    {
+        [$cookie] = $this->loadAuth();
+        if (!$cookie) {
+            return ['logged_in' => false, 'vin' => null, 'reason' => 'no_cookie'];
+        }
+
+        $allGone = true; // every tested auction answered 404
+        foreach ($auctionIds as $aid) {
+            $aid = trim((string)$aid);
+            if ($aid === '') continue;
+
+            $url = self::API_DETAIL . rawurlencode($aid);
+            $response = $this->httpRequest($url, [
+                'headers' => $this->searchHeaders(self::BASE_URL . '/en/car/info?auctionId=' . $aid),
+            ]);
+            $status = (int)($response['status'] ?? 0);
+
+            if ($status === 403) {
+                // Unambiguous: the session is no longer authenticated.
+                return ['logged_in' => false, 'vin' => null, 'reason' => 'http_403'];
+            }
+            if ($status === 404) { continue; } // car gone, try the next
+            $allGone = false;
+            if ($status !== 200 || empty($response['body'])) { continue; } // hiccup
+
+            $d = json_decode($response['body'], true);
+            if (is_array($d) && !empty($d['CarId'])) {
+                $vin = preg_replace('/[^A-HJ-NPR-Z0-9]/i', '', (string)($d['ChassisNumber'] ?? ''));
+                return ['logged_in' => true, 'vin' => strlen($vin) === 17 ? $vin : null, 'reason' => 'ok'];
+            }
+            // 200 but not the expected JSON (e.g. a Cloudflare/login HTML page).
+            return ['logged_in' => false, 'vin' => null, 'reason' => 'non_json'];
+        }
+
+        // Never got a conclusive 200/403. If every car was 404 the cookie is
+        // simply untested — keep it visible rather than crying "expired".
+        return ['logged_in' => $allGone, 'vin' => null,
+                'reason' => $allGone ? 'all_404' : 'inconclusive'];
     }
 
     public function checkAvailability(string $sourceId): bool

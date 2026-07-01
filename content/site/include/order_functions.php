@@ -2,6 +2,13 @@
 
 use App\Helper\PhoneHelper;
 
+// Effective "out of stock" flag: 1 when n_a is set OR the offer timer has expired
+// (on_order cars). Lets list sorting push expired-timer cars to the end instantly,
+// without waiting for the 5-min cron that flips n_a in the DB.
+if (!defined('EFFECTIVE_NA_SQL')) {
+    define('EFFECTIVE_NA_SQL', '(CASE WHEN `n_a` = 1 OR (`offer_timer_end` > 0 AND `offer_timer_end` < UNIX_TIMESTAMP()) THEN 1 ELSE 0 END)');
+}
+
 // Share button shown in the top-right corner of every car card: copies the car
 // URL to clipboard on click (JS handler lives in head.php). Label sits above the icon.
 if (!function_exists('car_share_btn')) {
@@ -406,16 +413,21 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 	if ($v1=='fltr') {
 		// Sort dropdown handling
 		$srt_val = (isset($zreq['srt']) && is_string($zreq['srt'])) ? $zreq['srt'] : '';
+		// Effective out-of-stock flag: n_a=1 OR expired offer timer. Pushes expired
+		// cars to the end instantly, like manually marked n_a=1 cars.
+		$na_sql = defined('EFFECTIVE_NA_SQL') ? EFFECTIVE_NA_SQL : '`n_a`';
 		$order_clause = '';
 		switch ($srt_val) {
-			case 'prc-asc':  $order_clause = '`n_a` ASC, `prc` ASC, `id` DESC'; break;
-			case 'prc-desc': $order_clause = '`n_a` ASC, `prc` DESC, `id` DESC'; break;
-			case 'yr-desc':  $order_clause = '`n_a` ASC, `yr` DESC, `id` DESC'; break;
-			case 'yr-asc':   $order_clause = '`n_a` ASC, `yr` ASC, `id` DESC'; break;
-			case 'mlg-asc':  $order_clause = '`n_a` ASC, `mlg` ASC, `id` DESC'; break;
-			case 'mlg-desc': $order_clause = '`n_a` ASC, `mlg` DESC, `id` DESC'; break;
+			case 'prc-asc':  $order_clause = $na_sql.' ASC, `prc` ASC, `id` DESC'; break;
+			case 'prc-desc': $order_clause = $na_sql.' ASC, `prc` DESC, `id` DESC'; break;
+			case 'yr-desc':  $order_clause = $na_sql.' ASC, `yr` DESC, `id` DESC'; break;
+			case 'yr-asc':   $order_clause = $na_sql.' ASC, `yr` ASC, `id` DESC'; break;
+			case 'mlg-asc':  $order_clause = $na_sql.' ASC, `mlg` ASC, `id` DESC'; break;
+			case 'mlg-desc': $order_clause = $na_sql.' ASC, `mlg` DESC, `id` DESC'; break;
 			default:
-				$order_clause = 'CASE WHEN catalog_type = "on_order" THEN 1 WHEN catalog_type = "in_stock" THEN 2 ELSE 3 END, `n_a` ASC, `id` DESC';
+				// Available on_order first, then available in_stock, then everything
+				// out of stock (n_a=1 or expired timer) at the very end.
+				$order_clause = 'CASE WHEN catalog_type = "on_order" AND '.$na_sql.' = 0 THEN 1 WHEN catalog_type = "in_stock" AND '.$na_sql.' = 0 THEN 2 ELSE 3 END, '.$na_sql.' ASC, `id` DESC';
 		}
 		if ($offset > 0) {
 			$sql .= ' ORDER BY '.$order_clause.' LIMIT :offset, :lmt ';
@@ -424,7 +436,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 			$sql .= ' ORDER BY '.$order_clause.' LIMIT :lmt ';
 		}
 	} elseif ($v1!='smlr') {
-		$sql .= ' ORDER BY `n_a` ASC, `id` DESC LIMIT :lmt ';
+		$sql .= ' ORDER BY '.(defined('EFFECTIVE_NA_SQL') ? EFFECTIVE_NA_SQL : '`n_a`').' ASC, `id` DESC LIMIT :lmt ';
 	}
 
 	// Debug info disabled
@@ -495,10 +507,17 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 	foreach ($results as $r) {
 		// Check if mobile - simple detection
 		$is_mobile = (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/Mobile|Android|iPhone|iPad/', $_SERVER['HTTP_USER_AGENT']));
-		
-		// Generate timer HTML first (will be used in image generation)
+
+		// Treat an expired offer timer as out of stock, even before the cron flips
+		// n_a in the DB. Used everywhere below instead of the raw n_a so the card
+		// shows "Not available" (and no timer) the moment the timer runs out.
+		$timer_expired = !empty($r['offer_timer_end']) && ($r['offer_timer_end'] - time()) <= 0;
+		$effective_n_a = ((int)($r['n_a'] ?? 0) === 1 || $timer_expired) ? 1 : 0;
+
+		// Generate timer HTML first (will be used in image generation).
+		// Skip entirely for sold cars (n_a=1) — no offer countdown on a sold ad.
 		$timer_html_for_image = '';
-		if (!empty($r['offer_timer_end'])) {
+		if (!empty($r['offer_timer_end']) && empty($r['n_a'])) {
 			$time_remaining_check = $r['offer_timer_end'] - time();
 			if ($time_remaining_check > 0) {
 				$days_check = floor($time_remaining_check / 86400);
@@ -507,13 +526,9 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 				$seconds_check = $time_remaining_check % 60;
 				$timer_html_for_image = '<div class="offer-timer" style="position: absolute; bottom: 15px; right: 5px; color: #dc3545; font-weight: bold; font-size: 1rem; padding: 5px 10px; border-radius: 4px; z-index: 10;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.sprintf('%02d:%02d:%02d:%02d', $days_check, $hours_check, $minutes_check, $seconds_check).'</div></div>';
 			} else {
-				// Timer expired - show expired text
-				$expired_text = 'Offer expired';
-				if (isset($_COOKIE['lang'])) {
-					if ($_COOKIE['lang'] == 'ro') $expired_text = 'Oferta a expirat';
-					elseif ($_COOKIE['lang'] == 'ru') $expired_text = 'Предложение истекло';
-				}
-				$timer_html_for_image = '<div class="offer-timer" style="position: absolute; bottom: 15px; right: 5px; color: #dc3545; font-weight: bold; font-size: 1rem; padding: 5px 10px; border-radius: 4px; z-index: 10;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.$expired_text.'</div></div>';
+				// Timer expired → no "expired" overlay; the car is shown as out of stock
+				// via its status badge instead.
+				$timer_html_for_image = '';
 			}
 		}
 		
@@ -570,7 +585,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 		}
 		
 		$z_stat = '';
-		if ( $r['n_a']==0 && $r['act']==1 ){
+		if ( $effective_n_a==0 && $r['act']==1 ){
 			$z_stat .= ( $r['soon']==1 ) ? '<div class="stat soon1">'.$lng['l']['stat']['soon1'].'</div>' : '';
 			$z_stat .= ($r['top']==1) ? '<div class="stat top1">'.$lng['l']['stat']['top1'].'</div>' : '';
 			$z_stat .= ($r['prc_n']!=0 && $r['prc_t']>time()) ? '<div class="stat prc_n">'.$lng['l']['stat']['prc_n'].'</div>' : '';
@@ -605,9 +620,9 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 			$o_prc_bl = '';
 		}
 		
-		// Generate timer HTML if exists (only for desktop)
+		// Generate timer HTML if exists (only for desktop). Skip for sold cars.
 		$timer_html = '';
-		if (!$is_mobile && !empty($r['offer_timer_end'])) {
+		if (!$is_mobile && !empty($r['offer_timer_end']) && empty($r['n_a'])) {
 			$time_remaining = $r['offer_timer_end'] - time();
 			if ($time_remaining > 0) {
 				$days = floor($time_remaining / 86400);
@@ -616,13 +631,9 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 				$seconds = $time_remaining % 60;
 				$timer_html = '<div class="offer-timer active" style="position: absolute; bottom: 150px;  right: -5px; color: #dc3545; font-weight: bold; font-size: 0.85rem; padding: 5px 10px; border-radius: 4px; z-index: 10;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.sprintf('%02d:%02d:%02d:%02d', $days, $hours, $minutes, $seconds).'</div></div>';
 			} else {
-				// Timer expired - show expired text
-				$expired_text = 'Offer expired';
-				if (isset($_COOKIE['lang'])) {
-					if ($_COOKIE['lang'] == 'ro') $expired_text = 'Oferta a expirat';
-					elseif ($_COOKIE['lang'] == 'ru') $expired_text = 'Предложение истекло';
-				}
-				$timer_html = '<div class="offer-timer" style="position: absolute; bottom: 150px; right: 2px; color: #dc3545; font-weight: bold; font-size: 0.85rem; padding: 5px 10px; border-radius: 4px; z-index: 10;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.$expired_text.'</div></div>';
+				// Timer expired → no "expired" overlay; the car is shown as out of stock
+				// via its status badge instead.
+				$timer_html = '';
 			}
 		}
 		
@@ -641,7 +652,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 			<div class="prc">
 				<strong class="val">'.($r['prc'] > 100 ? $prc.' &#8364;' : $lng['w']['negociabil']).'</strong>'.$o_prc_bl.'
 				'.$timer_html.'
-				<span class="stock-status'.($r['catalog_type'] == 'on_order' ? ' on-order' : '').'">'.($r['n_a'] == '1' ? $lng['w']['not_available'] : ($r['catalog_type'] == 'on_order' ? $lng['w']['on_order'] : $lng['w']['in_stock'])).'</span>
+				<span class="stock-status'.($r['catalog_type'] == 'on_order' ? ' on-order' : '').'">'.($effective_n_a == 1 ? $lng['w']['not_available'] : ($r['catalog_type'] == 'on_order' ? $lng['w']['on_order'] : $lng['w']['in_stock'])).'</span>
 			</div>
 			<div class="txt">';
 				

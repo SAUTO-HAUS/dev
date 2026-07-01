@@ -42,6 +42,39 @@
         if (ov) ov.style.display = 'none';
     }
 
+    // ---------- Fuel multi-select dropdown ----------
+
+    // Open/close one fuel dropdown (closes any other that is open).
+    window.parsingToggleFuelDD = function (btn) {
+        const dd = btn.closest('.fuel-dd');
+        if (!dd) return;
+        const isOpen = dd.classList.contains('open');
+        document.querySelectorAll('.fuel-dd.open').forEach(d => d.classList.remove('open'));
+        if (!isOpen) dd.classList.add('open');
+    };
+
+    // Refresh the trigger label from the checked boxes (count or "Toate").
+    window.parsingUpdateFuelDD = function (cb) {
+        const dd = cb.closest('.fuel-dd');
+        if (!dd) return;
+        const checked = dd.querySelectorAll('input[name="fuel_type[]"]:checked');
+        const textEl = dd.querySelector('.fuel-dd-text');
+        if (!textEl) return;
+        if (checked.length === 0) {
+            textEl.textContent = dd.dataset.all || 'Toate';
+        } else if (checked.length === 1) {
+            textEl.textContent = checked[0].parentNode.textContent.trim();
+        } else {
+            textEl.textContent = checked.length + ' ' + L('fuel_selected', 'selectate');
+        }
+    };
+
+    // Click outside any fuel dropdown closes it.
+    document.addEventListener('click', function (e) {
+        if (e.target.closest && e.target.closest('.fuel-dd')) return;
+        document.querySelectorAll('.fuel-dd.open').forEach(d => d.classList.remove('open'));
+    });
+
     // ---------- Source panels (accordion) ----------
 
     window.parsingTogglePanel = function (src) {
@@ -67,6 +100,10 @@
         const fields = form.querySelectorAll('input, select');
         for (const el of fields) {
             if (el.type === 'hidden' || el.name === 'source') continue;
+            if (el.type === 'checkbox' || el.type === 'radio') {
+                if (el.checked) return true;
+                continue;
+            }
             if ((el.value || '').trim() !== '') return true;
         }
         return false;
@@ -247,9 +284,14 @@
         const fd = new FormData(form);
         const data = {};
         fd.forEach((v, k) => {
+            if (k === 'fuel_type[]') return; // multi-value; collected below
             const value = (typeof v === 'string') ? v.trim() : v;
             if (value !== '' && value !== null && value !== undefined) data[k] = value;
         });
+        // Fuel is a checkbox group — collect every checked code into an array so
+        // ajax() sends fuel_type[]=a&fuel_type[]=b (all sources support multi-fuel).
+        const fuels = fd.getAll('fuel_type[]').filter(v => v !== '');
+        if (fuels.length) data.fuel_type = fuels;
         // source is already a hidden field in each form, but make sure sources[] is also set.
         data.sources = [src];
         return data;
@@ -313,9 +355,11 @@
         const modal = document.getElementById('save-filter-modal');
         const input = document.getElementById('save-filter-name');
         if (!modal || !input) return;
-        input.value = '';
+        // When editing an existing filter, prefill its current name (editable).
+        const form = document.getElementById('sf-' + src);
+        input.value = (form && form.dataset.editName) ? form.dataset.editName : '';
         modal.style.display = 'flex';
-        setTimeout(() => input.focus(), 50);
+        setTimeout(() => { input.focus(); input.select(); }, 50);
     };
     window.parsingSaveFilterCancel = function () {
         document.getElementById('save-filter-modal').style.display = 'none';
@@ -327,6 +371,10 @@
         const data = readSourceForm(_saveFilterSrc);
         if (!data) return;
         data.name = name;
+        // If this panel was loaded from an existing filter (Edit), send its id so the
+        // server UPDATES it instead of inserting a duplicate.
+        const form = document.getElementById('sf-' + _saveFilterSrc);
+        if (form && form.dataset.editId) data.id = form.dataset.editId;
         document.getElementById('save-filter-modal').style.display = 'none';
         ajax('save_filter', data).then(res => {
             if (res && res.success) location.reload();
@@ -359,13 +407,25 @@
             const form = document.getElementById('sf-' + src);
             if (!form) return;
 
+            // Remember WHICH filter we're editing, so saving UPDATES it instead of
+            // creating a new one. Cleared when saving a brand-new filter.
+            form.dataset.editId = String(id);
+            form.dataset.editName = f.name || '';
+
             // Set scalar fields.
             ['brand','model','car_sub_model','year_from','year_to','km_max','price_max',
-             'fuel_type','gearbox','drive_type','body_type','country_origin','seats']
+             'gearbox','drive_type','body_type','country_origin','seats']
                 .forEach(k => {
                     const el = form.querySelector('[name="' + k + '"]');
                     if (el && f[k] != null) el.value = f[k];
                 });
+
+            // Fuel is now a checkbox dropdown: tick the codes stored as CSV and
+            // refresh the trigger label.
+            const fuelCodes = (f.fuel_type || '').split(',').map(s => s.trim()).filter(Boolean);
+            const fuelBoxes = form.querySelectorAll('input[name="fuel_type[]"]');
+            fuelBoxes.forEach(cb => { cb.checked = fuelCodes.indexOf(cb.value) !== -1; });
+            if (fuelBoxes.length) parsingUpdateFuelDD(fuelBoxes[0]);
 
             // Reload models if brand is set.
             if (f.brand) {
@@ -408,6 +468,25 @@
         });
     };
 
+    // Save the per-filter auto-publish cap inline from the card (0 = unlimited).
+    // Only gates auto-publish; manual publishing is unaffected. No reload — just a
+    // brief visual confirmation on the input.
+    window.parsingSetPublishLimit = function (id, input) {
+        let v = parseInt(input.value, 10);
+        if (isNaN(v) || v < 0) v = 0;
+        input.value = v;
+        input.classList.remove('saved', 'err');
+        ajax('set_publish_limit', { id, publish_limit: v }).then(res => {
+            if (res && res.success) {
+                input.classList.add('saved');
+                setTimeout(() => input.classList.remove('saved'), 1200);
+            } else {
+                input.classList.add('err');
+                errorAlert(res);
+            }
+        });
+    };
+
     window.parsingRunNow = function (id) {
         if (!confirm(L('confirm_run_now'))) return;
         const btn = document.querySelector('[onclick*="parsingRunNow(' + id + ')"]');
@@ -422,6 +501,69 @@
             } else errorAlert(res);
         });
     };
+
+    // Per-filter publish situation: today's success/failed + total, and the list
+    // of failed cars (with reason + link to fix). Data from the publish queue.
+    window.parsingFilterStats = function (id) {
+        ajax('filter_publish_stats', { id }).then(res => {
+            if (!res || !res.success) { errorAlert(res); return; }
+            const s = res.stats || {};
+            const failed = res.failed || [];
+
+            let html = '<div class="pf-stats-grid">'
+                + '<div class="pf-stat ok"><span class="pf-num">' + (s.today_done || 0) + '</span>'
+                    + '<span class="pf-lbl">' + L('stats_today_done', 'Publicate azi') + '</span></div>'
+                + '<div class="pf-stat bad"><span class="pf-num">' + (s.today_failed || 0) + '</span>'
+                    + '<span class="pf-lbl">' + L('stats_today_failed', 'Eșuate azi') + '</span></div>'
+                + '<div class="pf-stat"><span class="pf-num">' + ((s.total_done || 0) + (s.total_failed || 0)) + '</span>'
+                    + '<span class="pf-lbl">' + L('stats_total', 'Total') + '</span></div>'
+                + '</div>';
+
+            html += '<div class="pf-sub">'
+                + L('stats_total_done', 'Total publicate') + ': <b>' + (s.total_done || 0) + '</b> · '
+                + L('stats_total_failed', 'Total eșuate') + ': <b>' + (s.total_failed || 0) + '</b>'
+                + (s.pending ? ' · ' + L('stats_pending', 'În coadă') + ': <b>' + s.pending + '</b>' : '')
+                + '</div>';
+
+            if (failed.length) {
+                html += '<div class="pf-failed-title">' + L('stats_failed_list', 'Eșuate (de reparat manual)') + '</div>';
+                html += '<div class="pf-failed-list">';
+                failed.forEach(f => {
+                    const name = [f.brand, f.model, f.year].filter(Boolean).join(' ');
+                    const link = f.car_ctlg_id
+                        ? '/' + (window.ADMIN_DIR || 'adminsauto') + '/ordercars/detail?id=' + f.car_ctlg_id
+                        : '/' + (window.ADMIN_DIR || 'adminsauto') + '/ordercars/detail?parsing_id=' + f.parsing_car_id;
+                    html += '<div class="pf-failed-row">'
+                        + '<a href="' + link + '" target="_blank">' + (name || ('#' + f.parsing_car_id)) + '</a>'
+                        + '<span class="pf-err">' + (f.error || '').replace(/</g, '&lt;') + '</span>'
+                        + '</div>';
+                });
+                html += '</div>';
+            } else {
+                html += '<div class="pf-nofail">' + L('stats_no_failures', 'Nicio eșuare. Tot ok.') + '</div>';
+            }
+
+            parsingShowModal(L('stats_title', 'Statistici publicare'), html);
+        }).catch(() => errorAlert(null));
+    };
+
+    // Minimal reusable modal (used by the stats panel). Reuses .parsing-modal CSS.
+    function parsingShowModal(title, bodyHtml) {
+        let m = document.getElementById('pf-modal');
+        if (!m) {
+            m = document.createElement('div');
+            m.id = 'pf-modal';
+            m.className = 'parsing-modal';
+            m.innerHTML = '<div class="parsing-modal-content" style="max-width:520px;">'
+                + '<div class="modal-header"><h2 id="pf-modal-title"></h2>'
+                + '<button class="modal-close" onclick="document.getElementById(\'pf-modal\').style.display=\'none\'">✕</button></div>'
+                + '<div id="pf-modal-body" style="padding:1rem;"></div></div>';
+            document.body.appendChild(m);
+        }
+        m.querySelector('#pf-modal-title').textContent = title;
+        m.querySelector('#pf-modal-body').innerHTML = bodyHtml;
+        m.style.display = 'flex';
+    }
 
     // ---------- Proposed cars ----------
     // Make sure HP + drive_type are filled in DB (via Groq AI) before any
@@ -580,9 +722,13 @@
         const lang = (document.cookie.split('; ').find(c => c.startsWith('lang=')) || 'lang=ro').split('=')[1];
         const adminDir = window.ADMIN_DIR || 'adm';
         const base = '/' + lang + '/' + adminDir + '/ordercars/detail';
-        return (job.target === 'sauto' || !job.car_ctlg_id)
-            ? base + '?parsing_id=' + job.parsing_car_id
-            : base + '?id=' + job.car_ctlg_id;
+        // If the car already has a catalog ad (it was published — possibly without
+        // photos when processing timed out under load), EDIT that existing ad
+        // (?id=) instead of opening a fresh "create" form (?parsing_id=), which
+        // would publish a SECOND ad for the same car (a duplicate).
+        return job.car_ctlg_id
+            ? base + '?id=' + job.car_ctlg_id
+            : base + '?parsing_id=' + job.parsing_car_id;
     }
 
     function renderFailuresPanel(failed) {
@@ -1936,7 +2082,10 @@
                     if (ex.car_ctlg_id) {
                         // Already published to sauto → it lives on the parsing
                         // "Published" page; jump there and highlight it (by parsing id).
-                        href = '/' + adm + '/parsing/published#car-' + ex.id;
+                        // Include pg_n so the link lands on the right page (the list
+                        // is paginated; #car-<id> alone only finds it on page 1).
+                        const pg = ex.page ? ('?pg_n=' + ex.page) : '';
+                        href = '/' + adm + '/parsing/published' + pg + '#car-' + ex.id;
                         linkLabel = L('go_to_published', 'Vezi în deja publicate pe sauto.md');
                     } else if (ex.is_favorite) {
                         href = '/' + adm + '/parsing/favorites#car-' + ex.id;
@@ -1989,11 +2138,38 @@
         ajax('clear_catalog', {}).then(res => {
             if (res && res.success) {
                 location.reload();
+            } else if (res && res.busy) {
+                // Cron is importing/publishing — refuse and re-sync the button state.
+                // Prefer the localized JS string over the server's (Romanian) error.
+                alert(L('cron_busy', res.error || 'Import/publicare în curs. Reîncearcă mai târziu.'));
+                parsingSyncClearBtn();
             } else {
                 errorAlert(res);
             }
         });
     };
+
+    // Disable "Clear catalog" while the cron is importing/publishing, so nobody
+    // wipes the proposed cars mid-run. Polls every 5s; only active on /ctlg.
+    function parsingSyncClearBtn() {
+        const btn = document.getElementById('parsing-clear-btn');
+        if (!btn) return;
+        ajax('cron_status', {}).then(res => {
+            const running = !!(res && res.running);
+            btn.disabled = running;
+            btn.classList.toggle('is-disabled', running);
+            if (running) {
+                if (!btn.dataset.titleOrig) btn.dataset.titleOrig = btn.title || '';
+                btn.title = L('cron_busy', 'Import/publicare în curs. Reîncearcă mai târziu.');
+            } else if (btn.dataset.titleOrig !== undefined) {
+                btn.title = btn.dataset.titleOrig;
+            }
+        }).catch(() => {});
+    }
+    if (document.getElementById('parsing-clear-btn')) {
+        parsingSyncClearBtn();
+        setInterval(parsingSyncClearBtn, 5000);
+    }
 
     // --- OpenLane cookie refresh (settings page) ---
     window.parsingOpenlaneSaveCookie = function () {
@@ -2026,7 +2202,7 @@
                 return;
             }
             if (res && res.success && res.logged_in) {
-                box.textContent = L('cookie_valid_vin', '✓ Cookie valid — VIN: ') + (res.vin || '');
+                box.textContent = L('cookie_valid', '✓ Cookie действителен');
                 box.className = 'ol-cookie-status ok';
             } else {
                 box.textContent = L('cookie_expired_vin', '✗ Cookie expirat / VIN ascuns') + (res && res.error ? ' (' + res.error + ')' : '');
@@ -2068,7 +2244,7 @@
                 return;
             }
             if (res && res.success && res.logged_in) {
-                box.textContent = L('cookie_valid_vin', '✓ Cookie valid — VIN: ') + (res.vin || '');
+                box.textContent = L('cookie_valid', '✓ Cookie действителен');
                 box.className = 'ol-cookie-status ok';
             } else {
                 box.textContent = L('cookie_expired_vin', '✗ Cookie expirat / VIN ascuns') + (res && res.error ? ' (' + res.error + ')' : '');
@@ -2214,17 +2390,6 @@
         const bar = document.getElementById('parsing-catalog-filter');
         if (!bar) return;
 
-        // Toggle button (in source-subtabs / header) shows/hides the filter bar.
-        const toggleBtn = document.getElementById('pcf-toggle');
-        if (toggleBtn) {
-            // Reflect the initial open state (bar is shown when a filter is active).
-            toggleBtn.classList.toggle('active', bar.style.display !== 'none');
-            toggleBtn.addEventListener('click', function () {
-                const open = bar.style.display !== 'none';
-                bar.style.display = open ? 'none' : '';
-                toggleBtn.classList.toggle('active', !open);
-            });
-        }
 
         // Server-side filter: the bar is a <form method="get"> that reloads the
         // page with f_* params, so it searches the WHOLE DB (not just loaded cards).
@@ -2258,6 +2423,11 @@
                 modelSel.disabled = true;
             }
         });
+
+        // Refresh the seats/gearbox dropdowns once on load too, in case the enrich
+        // already ran in the background (so they're complete even if no card on this
+        // page is pending).
+        refreshFilterFacets();
     }
 
     // ---------- Landed-cost ("MD: price") computation ----------
@@ -2436,6 +2606,15 @@
             } else {
                 out.style.display = 'none';
             }
+
+            // Encar exposes gearbox / seats / hp only on the detail page, so a
+            // freshly-imported card may have those car-meta spans empty. Flag the
+            // card for the enrich poller so they get filled live (no refresh).
+            const metaEmpty = ['.car-meta-gear', '.car-meta-seats'].some(sel => {
+                const el = card.querySelector(sel);
+                return el && !el.textContent.trim();
+            });
+            if (metaEmpty) card.setAttribute('data-md-pending', '1');
         });
 
         scheduleMdPendingPoll();
@@ -2447,10 +2626,8 @@
         if (_mdPollTimer) return;
         const pending = document.querySelectorAll('.car-card[data-md-pending="1"]');
         if (!pending.length) { _mdPollTries = 0; return; }
-        if (_mdPollTries >= 12) return;
-        // First pass fires almost immediately (no needless 5s wait); later passes
-        // space out so we don't hammer the source with detail requests.
-        const delay = _mdPollTries === 0 ? 200 : 3000;
+        if (_mdPollTries >= 30) return;
+        const delay = _mdPollTries === 0 ? 150 : 1000;
         _mdPollTimer = setTimeout(() => {
             _mdPollTimer = null;
             _mdPollTries++;
@@ -2461,7 +2638,7 @@
     function refreshPendingMd() {
         // Each enrich_one_md pulls a detail page, so cap how many we hit per cycle
         // to avoid hammering the source with many simultaneous detail requests.
-        const pending = Array.from(document.querySelectorAll('.car-card[data-md-pending="1"]')).slice(0, 10);
+        const pending = Array.from(document.querySelectorAll('.car-card[data-md-pending="1"]')).slice(0, 16);
         if (!pending.length) return;
         // enrich_one_md PULLS the detail page (real engine_volume from the official
         // spec) and returns it — so cc lands even if the import's background worker
@@ -2483,10 +2660,87 @@
                         ccEl.textContent = ' ' + (cap / 1000).toFixed(1) + 'L';
                     }
                 }
+                // Fill the other car-meta specs that Encar only exposes on the detail
+                // page (gearbox / seats / hp) live, so they show without a refresh.
+                const meta = card.querySelector('.car-meta');
+                const gearMap = {
+                    'automat': L('opt_automatic', 'Automat'), 'manual': L('opt_manual', 'Manual'),
+                    'semi-auto': L('opt_semi_auto', 'Semi-auto'), 'cvt': L('opt_cvt', 'CVT'),
+                    'tpt': L('opt_automatic', 'Automat'), 'atm': L('opt_automatic', 'Automat'),
+                    'mnl': L('opt_manual', 'Manual'), 'vrr': L('opt_cvt', 'CVT'),
+                };
+                const gearEl = card.querySelector('.car-meta-gear');
+                if (gearEl && !gearEl.textContent.trim() && res.gearbox) {
+                    gearEl.textContent = ' · ' + (gearMap[res.gearbox] || res.gearbox);
+                }
+                const seatsEl = card.querySelector('.car-meta-seats');
+                if (seatsEl && !seatsEl.textContent.trim() && res.seats > 0) {
+                    const lbl = (meta && meta.dataset.seatsLabel) || 'locuri';
+                    seatsEl.textContent = ' · ' + res.seats + ' ' + lbl;
+                }
             }).catch(() => {});
         })).then(() => {
             renderMdPrices();
+            // Specs just landed in the DB → refresh the filter dropdowns so e.g.
+            // a "7 seats" option appears without a full page reload.
+            refreshFilterFacets();
         });
+    }
+
+    // Re-query distinct seats/gearbox/fuel from the WHOLE parsing catalog (not just
+    // the loaded cards) and rebuild the filter dropdowns, preserving the current
+    // selection. Called after the enrich poller fills Encar specs.
+    let _facetsTimer = null;
+    function refreshFilterFacets() {
+        const seatsSel = document.getElementById('pcf-seats');
+        const gearSel  = document.getElementById('pcf-gear');
+        if (!seatsSel && !gearSel) return;
+        // Debounce: the poller calls this every cycle; only hit the server once.
+        if (_facetsTimer) clearTimeout(_facetsTimer);
+        _facetsTimer = setTimeout(() => {
+            _facetsTimer = null;
+            const m = (location.pathname || '').match(/\/parsing\/(ctlg|published|favorites)/);
+            const page = m ? m[1] : 'ctlg';
+            const params = new URLSearchParams(location.search);
+            const source = params.get('source') || '';
+            ajax('filter_facets', { page: page, source: source }).then(res => {
+                if (!res || !res.success) return;
+                const fmtCnt = n => (n > 0 ? ' (' + Number(n).toLocaleString('ro-RO') + ')' : '');
+                // Seats: numeric options sorted ascending.
+                if (seatsSel && res.seats) {
+                    rebuildSelect(seatsSel, Object.keys(res.seats)
+                        .map(Number).sort((a, b) => a - b)
+                        .map(s => ({ value: String(s), label: s + fmtCnt(res.seats[s]) })));
+                }
+                // Gearbox: keep labels from the existing options where possible.
+                if (gearSel && res.gears) {
+                    const gearMap = {
+                        'automat': L('opt_automatic', 'Automat'), 'manual': L('opt_manual', 'Manual'),
+                        'semi-auto': L('opt_semi_auto', 'Semi-auto'), 'cvt': L('opt_cvt', 'CVT'),
+                    };
+                    rebuildSelect(gearSel, Object.keys(res.gears).sort()
+                        .map(g => ({ value: g, label: (gearMap[g] || g) + fmtCnt(res.gears[g]) })));
+                }
+            }).catch(() => {});
+        }, 800);
+    }
+
+    // Replace a <select>'s options (keeping the first "Toate" option and the
+    // current selection) with a fresh list of { value, label }.
+    function rebuildSelect(sel, options) {
+        const cur = sel.value;
+        const first = sel.options[0];                 // the "Toate / All" option
+        sel.innerHTML = '';
+        if (first) sel.appendChild(first);
+        options.forEach(o => {
+            const opt = document.createElement('option');
+            opt.value = o.value;
+            opt.textContent = o.label;
+            if (o.value === cur) opt.selected = true;
+            sel.appendChild(opt);
+        });
+        // If the previously-selected value vanished, fall back to "Toate".
+        if (cur && sel.value !== cur) sel.value = '';
     }
 
     // OpenLane auction countdown: render "1д 11ч" / "11ч 30м" / "Завершено" on
@@ -2531,6 +2785,10 @@
     // Status badge (Published page) follows the source auction timer: still
     // running → "Activ" (green); expired → "Vândut" (red). DB status takes
     // priority: if already marked unavailable, stay "Vândut" regardless.
+    // Parsing ids we've already told the server are sold (timer hit 0), so we don't
+    // POST the same car on every 30s tick.
+    const _markedSold = new Set();
+
     function renderStatusTimers() {
         const L = (k, fb) => (window.PARSING_LANG && window.PARSING_LANG[k]) || fb;
         const now = Date.now();
@@ -2542,11 +2800,75 @@
                 b.textContent = L('status_unavailable', 'Vândut');
                 b.classList.remove('badge-on');
                 b.classList.add('badge-off');
+                // Persist it: the timer just ran out → mark sold on the server so the
+                // sauto ad gets n_a=1 and its 999 schedules are cancelled (same as a
+                // source-SOLD car). Once per car.
+                const card = b.closest('.car-card[data-car-id]');
+                const id = card && card.getAttribute('data-car-id');
+                if (id && !_markedSold.has(id)) {
+                    _markedSold.add(id);
+                    ajax('mark_sold', { car_id: id }).catch(() => _markedSold.delete(id));
+                }
             }
+        });
+        sortSoldCardsToEnd();
+    }
+
+    // Keep "Vândut" (badge-off) cards at the bottom of the grid, active ones on top.
+    // The server already sorts status='unavailable' last, but cards whose auction
+    // timer expired live (still status='published' until the cron flips them) are
+    // only marked sold client-side — so re-pin them to the end here too. Stable:
+    // preserves the existing relative order within each group.
+    function sortSoldCardsToEnd() {
+        document.querySelectorAll('.proposed-grid').forEach(function (grid) {
+            const cards = Array.from(grid.querySelectorAll(':scope > .car-card'));
+            const sold = cards.filter(c => c.querySelector('.badge.status-timer.badge-off'));
+            // Move sold cards to the end, keeping their order; active cards stay put.
+            sold.forEach(c => grid.appendChild(c));
         });
     }
 
     // When we arrive with #car-<id> (from the "already in catalog" link), scroll to
+    // Published page: paste a sauto.md link (.../ordercars/18596) and jump to the
+    // car. Looks in parsing/published first, then the manual ordercars catalog,
+    // else says it doesn't exist.
+    window.parsingLocateByLink = function () {
+        const input = document.getElementById('pcf-link-input');
+        const msg = document.getElementById('pcf-link-msg');
+        const link = (input && input.value || '').trim();
+        if (msg) { msg.className = 'pcf-link-msg'; msg.textContent = ''; }
+        if (!link) { if (msg) { msg.className = 'pcf-link-msg bad'; msg.textContent = L('locate_paste_link', 'Lipește un link.'); } return; }
+
+        ajax('locate_by_link', { link }).then(res => {
+            if (!res || !res.success) { if (msg) { msg.className = 'pcf-link-msg bad'; msg.textContent = (res && res.error) || L('locate_error', 'Eroare'); } return; }
+
+            if (res.location === 'parsing') {
+                const id = res.parsing_id;
+                const card = document.querySelector('.car-card[data-car-id="' + id + '"]');
+                if (card) {
+                    // Already on this page — scroll + ring it.
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    card.classList.add('car-card-linked');
+                    if (msg) { msg.className = 'pcf-link-msg ok'; msg.textContent = L('locate_found_parsing', 'Găsită în catalogul publicat.'); }
+                } else {
+                    // On a far page — go to its page (pg_n) and ring it after reload.
+                    if (msg) { msg.className = 'pcf-link-msg ok'; msg.textContent = L('locate_found_parsing', 'Găsită în catalogul publicat.'); }
+                    const params = new URLSearchParams(location.search);
+                    params.set('pg_n', res.page || 1);
+                    location.href = location.pathname + '?' + params.toString() + '#car-' + id;
+                }
+            } else if (res.location === 'ordercars' || res.location === 'cars') {
+                // Open the right catalog in single-card mode (?car=<id>) so only the
+                // found car renders — no lazy-loading thousands of cards. A 999 link
+                // to an in_stock car resolves to 'cars', an on_order one to 'ordercars'.
+                if (msg) { msg.className = 'pcf-link-msg ok'; msg.textContent = L('locate_found_manual', 'Găsită în catalog — o deschid…'); }
+                location.href = '/' + (window.ADMIN_DIR || 'adm') + '/' + res.location + '/ctlg?car=' + res.ctlg_id;
+            } else {
+                if (msg) { msg.className = 'pcf-link-msg bad'; msg.textContent = L('locate_not_found', 'Această mașină nu există în catalog.'); }
+            }
+        }).catch(() => { if (msg) { msg.className = 'pcf-link-msg bad'; msg.textContent = L('locate_error', 'Eroare'); } });
+    };
+
     // that card and flash a highlight ring so the operator immediately sees it.
     function highlightLinkedCar() {
         const m = (location.hash || '').match(/^#car-(\d+)$/);

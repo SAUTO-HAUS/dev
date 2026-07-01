@@ -11,33 +11,12 @@ function getReqPage() {
 var reqPage = getReqPage();
 
 $(document).ready(function() {
-	// Arrived with #car-<id> (from the parsing "already on sauto" link): find that
-	// card, scroll to it and flash an amber ring. The catalog loads cards lazily
-	// (initial batch + "load more"), so the card may be below the loaded ones — if
-	// it's not present yet, click "load more" and keep looking until it appears.
-	(function highlightLinkedCar() {
-		var m = (location.hash || '').match(/^#car-(\d+)$/);
-		if (!m) return;
-		var id = m[1], tries = 0;
-
-		function found() {
-			var $card = $('.bx[data-id="' + id + '"]').first();
-			if (!$card.length) return false;
-			$card[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
-			// Ring stays until the page is reloaded (no auto-remove).
-			$card.addClass('car-card-linked');
-			return true;
-		}
-
-		var timer = setInterval(function () {
-			if (found()) { clearInterval(timer); return; }
-			// Not loaded yet — pull the next batch if there's a visible "load more".
-			var $more = $('#more_it:not(.none)');
-			if ($more.length) {
-				$more.trigger('click');
-			}
-			if (++tries > 60) { clearInterval(timer); }  // ~18s safety
-		}, 300);
+	// In single-card mode (?car=<id>, from the link-search) only that card renders,
+	// so ring it to draw the eye. No lazy-loading needed — the card is already here.
+	(function ringSingleCar() {
+		if (!/[?&]car=\d+/.test(location.search)) return;
+		var $card = $('.bx[data-id]').first();
+		if ($card.length) { $card.addClass('car-card-linked'); }
 	})();
 
 	var pending = localStorage.getItem('pending_ai_generation');
@@ -58,6 +37,54 @@ $(document).ready(function() {
 		}
 	}
 });
+
+// Locate a catalog car by a pasted sauto.md link (or bare id). If it's already
+// rendered, scroll+ring it; otherwise reload with #car-<id> so highlightLinkedCar
+// load-more's until the card appears (same flow as the parsing "already on sauto" link).
+function ordercarsLocateByLink() {
+	var box = document.querySelector('.oc-link-search');
+	var input = document.getElementById('oc-link-input');
+	var msg = document.getElementById('oc-link-msg');
+	var link = (input && input.value || '').trim();
+	// Localized strings passed from PHP via data-* on the container.
+	var T = {
+		paste:    (box && box.dataset.msgPaste)    || 'Lipește un link.',
+		found:    (box && box.dataset.msgFound)    || 'Găsită.',
+		notfound: (box && box.dataset.msgNotfound) || 'Această mașină nu există în catalog.',
+		error:    (box && box.dataset.msgError)    || 'Eroare'
+	};
+	if (msg) { msg.style.color = ''; msg.textContent = ''; }
+	if (!link) { if (msg) { msg.style.color = '#c00'; msg.textContent = T.paste; } return; }
+
+	$.ajax({
+		url: '/ajax.php',
+		method: 'POST',
+		data: { tp: reqType, pg: reqPage, fn: 'locate_by_link', link: link },
+		dataType: 'json',
+		success: function (response) {
+			var res = response && response.rtrn ? response.rtrn : response;
+			if (!res || !res.success) {
+				if (msg) { msg.style.color = '#c00'; msg.textContent = (res && res.error) || T.error; }
+				return;
+			}
+			if (res.location === 'ordercars' || res.location === 'cars') {
+				// Open the catalog in single-card mode (?car=<id>) so only the found
+				// car renders — no lazy-loading thousands of cards (which froze the
+				// admin). 'cars' = in_stock, 'ordercars' = on_order.
+				if (msg) { msg.style.color = '#070'; msg.textContent = T.found; }
+				// Swap the section segment (cars|ordercars) to the car's catalog;
+				// works whether we start from /cars/ctlg or /ordercars/ctlg.
+				var base = location.pathname.replace(/\/(?:cars|ordercars)\//, '/' + res.location + '/');
+				location.href = base + '?car=' + res.ctlg_id;
+			} else {
+				if (msg) { msg.style.color = '#c00'; msg.textContent = T.notfound; }
+			}
+		},
+		error: function () {
+			if (msg) { msg.style.color = '#c00'; msg.textContent = T.error; }
+		}
+	});
+}
 
 function sendToFacebookCars() {
 	// Get selected time
@@ -211,6 +238,7 @@ window.addEventListener('load', function() {
 	if (!$('#content_box').attr('data-car-id') && $('#content_box').length) {
 		const selects = document.querySelectorAll('#content_box select');
 		selects.forEach(select => {
+			if (select.name === 'import_country_id') return;
 			select.selectedIndex = 0;
 		});
 	}

@@ -640,6 +640,14 @@ $(document).ready(function(){
 						var cleaned = getFavs().filter(function(id){ return valid.indexOf(id) !== -1; });
 						saveFavs(cleaned);
 					}
+					// Cards were injected after page load, so initialize their sliders + lazy-load now.
+					try { if (typeof initSliderLazyLoading === 'function') initSliderLazyLoading(); } catch(e){}
+					try { if (typeof initProductCardSliders === 'function') initProductCardSliders(); } catch(e){}
+					try {
+						if (typeof initMobileCardSliders === 'function' && (window.innerWidth <= 768 || /Mobile|Android|iPhone|iPad/.test(navigator.userAgent))) {
+							initMobileCardSliders();
+						}
+					} catch(e){}
 					syncUI();
 				} else {
 					if (empty) empty.style.display = 'block';
@@ -647,6 +655,9 @@ $(document).ready(function(){
 			})
 			.catch(function(){ if (loading) loading.style.display = 'none'; if (empty) empty.style.display = 'block'; });
 	}
+
+	// Expose so other scripts (e.g. the Fancybox viewer heart) can refresh all hearts.
+	window.sautoFavSync = syncUI;
 
 	function init(){ syncUI(); loadFavoritesPage(); }
 	if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); }

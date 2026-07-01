@@ -39,10 +39,15 @@ class Car
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    public function getCarsCtlg($limit, $user_role = null, $user_branch_id = null, $vin_search = null, $catalog_type = 'in_stock', $user_type = null)
+    public function getCarsCtlg($limit, $user_role = null, $user_branch_id = null, $vin_search = null, $catalog_type = 'in_stock', $user_type = null, $single_id = null)
     {
         $sql = 'SELECT * FROM ' . $this->prefix . '_car_ctlg WHERE `act`="1" AND `catalog_type`="' . $catalog_type . '"';
         $params = [];
+
+        if (!empty($single_id)) {
+            $sql .= ' AND id = ?';
+            $params[] = (int)$single_id;
+        }
 
         // Add VIN search filter
         if (!empty($vin_search)) {
@@ -60,7 +65,10 @@ class Car
             }
         }
         
-        $sql .= ' ORDER BY `n_a` ASC, `vis` DESC, `id` DESC LIMIT ' . ($limit+1);
+        // Expired-timer cars sort to the end like manually marked n_a=1 cars
+        // (instant, without waiting for the cron that flips n_a in the DB).
+        $effNa = '(CASE WHEN `n_a` = 1 OR (`offer_timer_end` > 0 AND `offer_timer_end` < UNIX_TIMESTAMP()) THEN 1 ELSE 0 END)';
+        $sql .= ' ORDER BY '.$effNa.' ASC, `vis` DESC, `id` DESC LIMIT ' . ($limit+1);
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
         return $stmt->fetchAll(\PDO::FETCH_ASSOC);

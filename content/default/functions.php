@@ -101,6 +101,26 @@ function setSessTime($sess_time){
 	$_SESSION['discard_after'] = $now + $sess_time;
 }
 
+// When a car goes out of stock (n_a=1, manually or via expired offer timer),
+// postpone its still-pending 999 personal schedules. Reversible by na_restore_schedules.
+// Mirrors console/update_expired_offers.php so both paths behave the same.
+function na_postpone_schedules($db, $prefx, $carId) {
+    if ($carId <= 0) return;
+    $stmt = $db->prepare('UPDATE '.$prefx.'_sauto_personal_schedules
+        SET status = "postponed", error_message = "Car marked out of stock"
+        WHERE car_id = :id AND status = "pending"');
+    $stmt->execute(['id' => $carId]);
+}
+
+// When a car is back in stock (n_a=0), restore its postponed 999 schedules to pending.
+function na_restore_schedules($db, $prefx, $carId) {
+    if ($carId <= 0) return;
+    $stmt = $db->prepare('UPDATE '.$prefx.'_sauto_personal_schedules
+        SET status = "pending", error_message = NULL
+        WHERE car_id = :id AND status = "postponed"');
+    $stmt->execute(['id' => $carId]);
+}
+
 //Remove directories and files in them
 function removeIt($dir, $checker) {
     foreach (glob($dir) as $file) {

@@ -46,9 +46,26 @@ try {
     $stmt_postpone = $db->prepare($sql_postpone);
     $stmt_postpone->execute(['current_time' => $current_time]);
     $postponed_count = $stmt_postpone->rowCount();
-    
+
     if ($postponed_count > 0) {
         echo "[" . date('Y-m-d H:i:s') . "] ⏸️  Postponed {$postponed_count} scheduled post(s) - timer expired\n";
+    }
+
+    // 1b. Mark expired on_order cars as out of stock (n_a=1), same as the manual
+    // "Not available" toggle. Only flip cars not already n_a=1, so we can count
+    // real changes. Reversible below when the timer is renewed.
+    $sql_na_on = "UPDATE {$prefx}_car_ctlg
+                  SET `n_a` = 1
+                  WHERE catalog_type = 'on_order'
+                  AND `n_a` = 0
+                  AND offer_timer_end > 0
+                  AND offer_timer_end < :current_time";
+    $stmt_na_on = $db->prepare($sql_na_on);
+    $stmt_na_on->execute(['current_time' => $current_time]);
+    $na_on_count = $stmt_na_on->rowCount();
+
+    if ($na_on_count > 0) {
+        echo "[" . date('Y-m-d H:i:s') . "] 🚫 Marked {$na_on_count} car(s) as out of stock - timer expired\n";
     }
     
     // ============================================================================
@@ -66,12 +83,28 @@ try {
     $stmt_restore = $db->prepare($sql_restore);
     $stmt_restore->execute(['current_time' => $current_time]);
     $restored_count = $stmt_restore->rowCount();
-    
+
     if ($restored_count > 0) {
         echo "[" . date('Y-m-d H:i:s') . "] 🔄 Restored {$restored_count} postponed post(s) - timer renewed\n";
     }
-    
-    if ($postponed_count === 0 && $restored_count === 0) {
+
+    // 2b. Bring expired cars back in stock (n_a=0) when the timer is renewed into
+    // the future. Mirrors the postpone/restore logic so it's fully reversible.
+    $sql_na_off = "UPDATE {$prefx}_car_ctlg
+                   SET `n_a` = 0
+                   WHERE catalog_type = 'on_order'
+                   AND `n_a` = 1
+                   AND offer_timer_end > 0
+                   AND offer_timer_end >= :current_time";
+    $stmt_na_off = $db->prepare($sql_na_off);
+    $stmt_na_off->execute(['current_time' => $current_time]);
+    $na_off_count = $stmt_na_off->rowCount();
+
+    if ($na_off_count > 0) {
+        echo "[" . date('Y-m-d H:i:s') . "] ✅ Restored {$na_off_count} car(s) to in stock - timer renewed\n";
+    }
+
+    if ($postponed_count === 0 && $restored_count === 0 && $na_on_count === 0 && $na_off_count === 0) {
         echo "[" . date('Y-m-d H:i:s') . "] ✅ No changes needed - all scheduled posts are up to date\n";
     }
     

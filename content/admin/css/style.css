@@ -54,7 +54,7 @@
 	  }
   }
   .text-option-wrapper .text-option-radio, .scenario-option-radio, .promotions-option-radio {height: auto !important}
-  #prev_w_pos {width:fit-content; line-height:1rem; position:fixed; z-index:7; background-color:var(--clr); color:#fff; padding:2rem 1rem; left:0; right:0; margin:0 auto; top:-5rem; border-radius:0 0 1rem 1rem; cursor:pointer; transition:.5s; -webkit-transform:translateZ(0); -webkit-backface-visibility:hidden;}
+  #prev_w_pos {display:none !important;} /* "Previous position" jump button — hidden everywhere */
   #prev_w_pos.act {top:0;}
   
   #main_admin {width:100%; float:left; font-family:"def"; transition:.1s;}
@@ -162,7 +162,7 @@
 	    box-shadow:-8px 0 32px rgba(0,0,0,.14);
 	  }
 	  #search_content > .open_close {
-	    width:42px; height:3rem; position:absolute; left:-42px; top:0;
+	    width:42px; height:3.25rem; position:absolute; left:-42px; top:0;
 	    border-radius:0 0 0 7px;
 	    background:var(--clr) url('/media/images/site/magn.svg') no-repeat center/44%;
 	    cursor:pointer; z-index:13;
@@ -179,10 +179,10 @@
 	  .filter-inner::-webkit-scrollbar {width:3px;}
 	  .filter-inner::-webkit-scrollbar-thumb {background:#d0d0d0; border-radius:2px;}
 
-	  /* Header */
+	  /* Header — fixed height so the magnifier tab (.open_close) matches it exactly. */
 	  .filter-header {
 	    display:flex; align-items:center;
-	    padding:13px 14px;
+	    height:3.25rem; box-sizing:border-box; padding:0 14px;
 	    background:linear-gradient(135deg,#1e1e20 0%,#2e2e32 100%);
 	    position:sticky; top:0; z-index:5; flex-shrink:0;
 	    border-bottom:1px solid rgba(255,255,255,.06);
@@ -368,6 +368,11 @@
     0%,100% {box-shadow:0 0 0 3px rgba(245,158,11,.55), 0 6px 20px rgba(245,158,11,.25);}
     50%     {box-shadow:0 0 0 7px rgba(245,158,11,.18), 0 6px 22px rgba(245,158,11,.30);}
   }
+  /* Single-card mode (link-search ?car=<id>): banner above the lone card. */
+  .single-car-banner {display:flex; align-items:center; gap:14px; padding:14px 18px; clear:both;}
+  .single-car-banner .back-to-catalog {display:inline-block; padding:8px 16px; background:var(--clr); color:#fff; border-radius:7px; text-decoration:none; font-size:13px; font-weight:600; transition:background .2s;}
+  .single-car-banner .back-to-catalog:hover {background:#a83030;}
+  .single-car-banner .single-car-empty {color:#c00; font-size:13px;}
   #content_box .top {width:100%; padding:5px 0; line-height:2.2rem; font-size:1.1rem; text-align:center;background-color: white; position: relative;}
   #content_box .top > .title {height:100%; width:100%; box-sizing:border-box; background-color:transparent; color:var(--clr); float:left;}
   #content_box .top > .close {height: auto; box-sizing:border-box; color:#333; cursor:pointer; transition:.3s;position: absolute;right: 0;padding: 0 30px;}

@@ -1,5 +1,8 @@
 ﻿@media (max-width:767px), (orientation: portrait), (max-height:500px) and (orientation: landscape) {
 
+	/* Hide the "back to top" button in the admin on mobile. */
+	#to_top {display:none !important;}
+
 	#header {height:3.6rem; display:flex; flex-flow:row wrap; align-items:center; position:fixed; top:0; left:0; right:0; z-index:10000;}
 
 	.burger-btn {display:flex; flex-direction:column; justify-content:center; align-items:center; width:4.2rem; height:3.6rem; cursor:pointer; z-index:10001; position:relative; order:9;}
@@ -258,6 +261,8 @@
 	/* Cars/Ordercars catalog - 2 columns on mobile */
 	#content .ctlg {column-gap:4px !important; row-gap:16px !important; justify-content:space-between !important; padding:0 3px;}
 	#content .ctlg .bx {width:calc(50% - 4px) !important; margin:0 0 20px 0 !important; float:none !important; border-radius:0.6rem !important; position:relative; z-index:0;}
+	#content .ctlg.single-car {justify-content:center !important;}
+	.single-car-banner {justify-content:center !important; margin-bottom:35px !important;}
 	#content .ctlg .bx > .img {height:120px; border-radius:0.6rem 0.6rem 0 0; z-index:auto !important;}
 	#content .ctlg .bx > .img .html-indicator {z-index:1 !important;}
 	#content .ctlg .bx > .icon.comment {width:2.5rem; height:2.5rem; bottom:15.5rem !important; top:auto !important; left:0.2rem !important; right:auto !important; position:absolute; z-index:4; display:block !important; opacity:1 !important;}
@@ -278,7 +283,11 @@
 	#content .ctlg .bx .icon_list_cattg {position:absolute !important; top:45px !important; right:4px !important; left:auto !important; display:flex !important; flex-direction:column !important; align-items:flex-end !important; gap:2px !important; z-index:3; transform:none !important;}
 	#content .ctlg .bx .icon_list_cattg .icon_tg {margin:0 !important; padding:0 !important; line-height:0;}
 	#content .ctlg .bx .icon_list_cattg .icon_tg svg {width:16px !important; top:0 !important; margin:0 !important;}
-	/* Display controls (Show + VIN search) */
+	.oc-link-search {display:flex !important; width:100% !important; margin:0 !important; flex-wrap:wrap !important; gap:6px; align-items:center;}
+	.oc-link-search label {width:100%; font-size:0.85rem;}
+	.oc-link-search input[type="text"] {flex:1 !important; width:auto !important; min-width:0 !important; padding:0.5rem !important; margin:0 !important; font-size:0.9rem;}
+	.oc-link-search button {padding:0.5rem 0.8rem !important; margin:0 !important; font-size:0.85rem;}
+	.oc-link-search .oc-link-msg {width:100%; margin:0 !important;}
 	.display-controls {flex-wrap:wrap !important; gap:8px; padding:0.5rem 0.25rem; padding-right:3rem; min-height:2.5rem; align-items:center;}
 	.display-controls > div:first-child {width:auto !important; margin:0 !important; flex:1;}
 	.display-controls > div:first-child label {font-size:0.85rem; white-space:nowrap;}
@@ -287,10 +296,14 @@
 	.vin-search-container label {width:100%; font-size:0.85rem;}
 	.vin-search-container input[type="text"] {flex:1 !important; width:auto !important; min-width:0 !important; padding:0.5rem !important; margin:0 !important; font-size:0.9rem;}
 	.vin-search-container button {padding:0.5rem 0.8rem !important; margin:0 !important; font-size:0.85rem;}
-	#search_content {width:min(82vw, 290px) !important; right:max(-82vw, -290px) !important;}
+	/* Drop the filter panel below the fixed admin header (3.6rem) so the filter
+	   header (title/reset/close) isn't hidden behind it. */
+	#search_content {width:min(82vw, 290px) !important; right:max(-82vw, -290px) !important; top:3.6rem !important; height:calc(100vh - 3.6rem) !important;}
 	#search_content[style*="right: 0"] {right:0 !important;}
-	#search_content > .open_close {width:38px !important; height:3rem !important; top:0 !important; left:-38px !important; border-radius:0 0 0 6px !important;}
-	.filter-inner {height:100vh;}
+	/* Align the magnifier tab with the filter header bar (same top + height as the
+	   3.25rem .filter-header set in style.css). */
+	#search_content > .open_close {width:46px !important; height:3.25rem !important; top:0 !important; left:-46px !important; border-radius:0 0 0 6px !important; background-size:54% !important;}
+	.filter-inner {height:calc(100vh - 3.6rem) !important;}
 	.filter-group {padding:8px 11px 7px;}
 	.filter-label {font-size:9px; letter-spacing:.7px;}
 	.filter-select, #search_content .search_select {font-size:13px; padding:7px 26px 7px 9px;}

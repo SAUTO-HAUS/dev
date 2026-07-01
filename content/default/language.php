@@ -84,6 +84,14 @@ if ($_COOKIE['lang']=='ru'){
 			'count'=>'Количество',
 			'search'=>'Поиск',
 			'vin_search'=>'Поиск по VIN:',
+			'link_search'=>'Поиск по ссылке:',
+			'link_paste'=>'Вставьте ссылку.',
+			'link_found'=>'Найдена.',
+			'link_not_found'=>'Этой машины нет в каталоге.',
+			'link_error'=>'Ошибка',
+			'link_bad'=>'Не удалось извлечь ID из ссылки',
+			'link_placeholder'=>'ссылка sauto.md или 999.md',
+			'back_to_catalog'=>'Назад в каталог',
 			'vin_placeholder'=>'Введите VIN или его часть',
 			'clear'=>'Очистить',
 			'filter'=>'Фильтр',
@@ -345,7 +353,7 @@ if ($_COOKIE['lang']=='ru'){
 				
 				'calc_credit'=>array('name'=>'Кредитный калькулятор', 'ttl'=>'Расчитай кредит', 'txt'=>''),
 				'calc_insurance'=>array('name'=>'Страховой калькулятор', 'ttl'=>'Расчитай страховку', 'txt'=>''),
-				'calc_customs'=>array('name'=>'Расчет растаможки', 'ttl'=>'Расчитай таможенный налог', 'txt'=>''),
+				'calc_customs'=>array('name'=>'Калькулятор растаможки', 'ttl'=>'Расчитай таможенный налог', 'txt'=>''),
 				
 				'payment'=>array('name'=>'Способы оплаты', 'ttl'=>'Оплачивайте автомобиль так, как Вам удобно', 'txt'=>''),
 				'terms'=>array('name'=>'Условия', 'ttl'=>'Основные условия', 'txt'=>'')
@@ -888,8 +896,8 @@ if ($_COOKIE['lang']=='ru'){
 			'text' => '<p>Узнайте реальную цену полиса обязательного страхования RCA.<br/>Можно рассчитать стоимость всего за 1 минуту.<br/>Быстрый и удобный расчет.</p>'
 		),
 		'calc_customs' => array(
-			'name' => 'Расчет растоможки',
-			'title'=> 'Используй свой старый автомобиль как первоначальный взнос для покупки новой машины',
+			'name' => 'Калькулятор растаможки',
+			'title'=> 'Рассчитай таможенные платежи при ввозе автомобиля',
 			'text' => '<p>Удобный и быстрый онлайн сервис, позволяющий произвести расчет таможенных платежей при ввозе и растаможке автомобилей для физических и юридических лиц.</p>'
 		),
 		
@@ -1718,6 +1726,14 @@ elseif ($_COOKIE['lang']=='ro'){
 			'count'=>'Cantitate',
 			'search'=>'Căutare',
 			'vin_search'=>'Căutare după VIN:',
+			'link_search'=>'Caută după link:',
+			'link_paste'=>'Lipește un link.',
+			'link_found'=>'Găsită.',
+			'link_not_found'=>'Această mașină nu există în catalog.',
+			'link_error'=>'Eroare',
+			'link_bad'=>'Nu pot extrage ID-ul din link',
+			'link_placeholder'=>'link sauto.md sau 999.md',
+			'back_to_catalog'=>'Înapoi la catalog',
 			'vin_placeholder'=>'Introduceți VIN sau o parte',
 			'clear'=>'Ștergeți',
 			'filter'=>'Filtru',
@@ -1980,7 +1996,7 @@ elseif ($_COOKIE['lang']=='ro'){
 				
 				'calc_credit'=>array('name'=>'Calculator de credit', 'ttl'=>'Calculați creditul', 'txt'=>''),
 				'calc_insurance'=>array('name'=>'Calculator de asigurare', 'ttl'=>'Calculați asigurarea', 'txt'=>''),
-				'calc_customs'=>array('name'=>'Calculul vămuirii', 'ttl'=>'Calculați taxa vamală', 'txt'=>''),
+				'calc_customs'=>array('name'=>'Calculator devamare', 'ttl'=>'Calculați taxa vamală', 'txt'=>''),
 				
 				'payment'=>array('name'=>'Metode de plata', 'ttl'=>'Plătește mașina așa cum îți este convenabil', 'txt'=>''),
 				'terms'=>array('name'=>'Condiții', 'ttl'=>'Condiții', 'txt'=>'')
@@ -2517,8 +2533,8 @@ $lang_offers = array(
 		'text' => '<p>Aflați prețul real al unei polițe de asigurare obligatorie RCA.<br/>Puteți calcula costul în doar 1 minut.<br/>Calcul rapid și ușor.</p>'
 	),
 	'calc_customs' => array(
-		'name' => 'Расчет растоможки',
-		'title'=> 'Используй свой старый автомобиль как первоначальный взнос для покупки новой машины',
+		'name' => 'Calculator devamare',
+		'title'=> 'Calculează taxele vamale la importul automobilului',
 		'text' => '<p>Un serviciu online convenabil și rapid care vă permite să calculați plățile vamale pentru importul și vămuirea mașinilor pentru persoane fizice și juridice.</p>'
 	),
 	
@@ -3292,6 +3308,14 @@ elseif ($_COOKIE['lang']=='en'){
 			'count'=>'Count',
 			'search'=>'Search',
 			'vin_search'=>'Search by VIN:',
+			'link_search'=>'Find by link:',
+			'link_paste'=>'Paste a link.',
+			'link_found'=>'Found.',
+			'link_not_found'=>'This car is not in the catalog.',
+			'link_error'=>'Error',
+			'link_bad'=>'Could not extract ID from the link',
+			'link_placeholder'=>'sauto.md or 999.md link',
+			'back_to_catalog'=>'Back to catalog',
 			'vin_placeholder'=>'Enter VIN or part of it',
 			'clear'=>'Clear',
 			'filter'=>'Filter',
@@ -3554,7 +3578,7 @@ elseif ($_COOKIE['lang']=='en'){
 				
 				'calc_credit'=>array('name'=>'Credit calculator', 'ttl'=>'Calculate a loan', 'txt'=>''),
 				'calc_insurance'=>array('name'=>'Insurance Calculator', 'ttl'=>'Calculate insurance', 'txt'=>''),
-				'calc_customs'=>array('name'=>'Customs clearance calculation', 'ttl'=>'Calculate customs tax', 'txt'=>''),
+				'calc_customs'=>array('name'=>'Customs clearance calculator', 'ttl'=>'Calculate customs tax', 'txt'=>''),
 				
 				'payment'=>array('name'=>'Payment Methods', 'ttl'=>'Pay for the car the way you want', 'txt'=>''),
 				'terms'=>array('name'=>'Terms', 'ttl'=>'General Terms', 'txt'=>'')

@@ -51,6 +51,32 @@ class EncarAdapter extends AbstractAdapter
 
     public function searchByFilter(array $criteria): array
     {
+        // Multi-fuel: Encar's API rejects an OR group nested inside the And query
+        // (only a bare top-level "(Or.FuelType.X._.FuelType.Y.)" works, which would
+        // drop every other facet). So when several fuels are picked, run one search
+        // per fuel (all other filters kept) and merge the results, deduped by id —
+        // same fan-out pattern as merged brands below.
+        $fuelCsv = (string)($criteria['fuel_type'] ?? '');
+        if (strpos($fuelCsv, ',') !== false && empty($criteria['_single_fuel'])) {
+            $fuels = array_filter(array_map('trim', explode(',', $fuelCsv)));
+            $merged = [];
+            $seen = [];
+            $perFuel = max(50, (int)(($criteria['_max_results'] ?? 200)));
+            foreach ($fuels as $fuel) {
+                $sub = $criteria;
+                $sub['fuel_type']    = $fuel;
+                $sub['_single_fuel'] = true;        // prevent infinite recursion
+                $sub['_max_results'] = $perFuel;
+                foreach ($this->searchByFilter($sub) as $car) {
+                    $id = $car['source_id'] ?? null;
+                    if ($id === null || isset($seen[$id])) continue;
+                    $seen[$id] = true;
+                    $merged[] = $car;
+                }
+            }
+            return $merged;
+        }
+
         // A merged brand carries several Korean manufacturer codes joined by "|"
         // (e.g. Renault = "르노|르노코리아(삼성)" — the second is the ex-Samsung make
         // with SM3/SM5/QM... models). Encar's facet accepts only ONE manufacturer per
@@ -408,7 +434,11 @@ class EncarAdapter extends AbstractAdapter
                 'electric'      => '전기',
                 'other'         => '기타',
             ];
-            $fuelKr = $fuelMap[strtolower($criteria['fuel_type'])] ?? null;
+            // One fuel per query — multi-fuel is fanned out into separate searches
+            // in searchByFilter() (Encar's API can't OR fuels inside the And query).
+            // If a CSV still slips through, use the first code.
+            $first = strtolower(trim(explode(',', (string)$criteria['fuel_type'])[0]));
+            $fuelKr = $fuelMap[$first] ?? null;
             if ($fuelKr) {
                 $facets[] = 'FuelType.' . $fuelKr;
             }

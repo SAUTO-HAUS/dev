@@ -47,7 +47,7 @@ echo "[" . date('Y-m-d H:i:s') . "] Availability check started\n";
 // and steady (no big nightly burst that could look like a bot / trip rate limits).
 // Priority: published + favorite first (those must stay real), then proposed; and
 // within that, the longest-unchecked first so every car rotates through over time.
-$sql = "SELECT id, source, source_id FROM {$prefx}_parsing_cars
+$sql = "SELECT id, source, source_id, car_ctlg_id FROM {$prefx}_parsing_cars
         WHERE status IN ('proposed', 'published', 'favorite')
           AND (last_checked_at IS NULL
                OR last_checked_at < DATE_SUB(NOW(), INTERVAL 20 HOUR))
@@ -67,6 +67,15 @@ if (empty($cars)) {
 
 $markAvailable   = $db->prepare("UPDATE {$prefx}_parsing_cars SET last_checked_at = NOW() WHERE id = ?");
 $markUnavailable = $db->prepare("UPDATE {$prefx}_parsing_cars SET status = 'unavailable', last_checked_at = NOW() WHERE id = ?");
+// Sold on the source -> flag the sauto ad "not available" (n_a=1) AND zero the
+// running offer timer (offer_timer_end) so it stops counting down on the product
+// page. Keeps the page/SEO/photos, shows the "sold" badge, sinks it to the bottom.
+$markSautoNa     = $db->prepare("UPDATE {$prefx}_car_ctlg SET n_a = 1, offer_timer_end = 0 WHERE id = ? AND (n_a <> 1 OR offer_timer_end <> 0)");
+// And POSTPONE the car's still-pending 999 republish schedules (the already-posted
+// ad stays). Postponed (not cancelled) so they resume automatically if the car comes
+// back in stock — e.g. the operator unticks "out of stock".
+$cancel999       = $db->prepare("UPDATE gh3sp_sauto_personal_schedules
+    SET status = 'postponed' WHERE car_id = ? AND status = 'pending'");
 
 $checked = 0; $unavailable = 0;
 foreach ($cars as $car) {
@@ -82,6 +91,20 @@ foreach ($cars as $car) {
         } else {
             $markUnavailable->execute([$car['id']]);
             $unavailable++;
+            // Propagate to the published ad (sauto + 999) when it exists.
+            $ctlgId = (int)($car['car_ctlg_id'] ?? 0);
+            if ($ctlgId > 0) {
+                $markSautoNa->execute([$ctlgId]);
+                $cancelled = 0;
+                try {
+                    $cancel999->execute([$ctlgId]);
+                    $cancelled = $cancel999->rowCount();
+                } catch (Throwable $e) {
+                    // schedules table may not exist on some installs — non-fatal
+                }
+                echo "  Sold #{$car['id']} (ctlg {$ctlgId}): n_a=1"
+                    . ($cancelled > 0 ? ", {$cancelled} x 999 schedule cancelled" : '') . "\n";
+            }
         }
         $checked++;
         // 1.5s between requests — slow, human-like pacing so Encar never sees a
@@ -90,6 +113,24 @@ foreach ($cars as $car) {
     } catch (Throwable $e) {
         echo "  Error #{$car['id']}: " . $e->getMessage() . "\n";
     }
+}
+
+// Simple rule: any car that is SOLD in /parsing/published (status=unavailable)
+// and is published on sauto must be out of stock there. Align it in one query.
+$reconcileNa = $db->prepare("UPDATE {$prefx}_car_ctlg c
+    INNER JOIN {$prefx}_parsing_cars pc ON pc.car_ctlg_id = c.id
+    SET c.n_a = 1, c.offer_timer_end = 0
+    WHERE pc.status = 'unavailable' AND pc.car_ctlg_id > 0
+      AND (c.n_a <> 1 OR c.offer_timer_end <> 0)");
+$reconcileNa->execute();
+$reconciled = $reconcileNa->rowCount();
+if ($reconciled > 0) {
+    // Postpone leftover 999 schedules for those cars too (resume on restock).
+    $db->exec("UPDATE gh3sp_sauto_personal_schedules s
+        INNER JOIN {$prefx}_parsing_cars pc ON pc.car_ctlg_id = s.car_id
+        SET s.status = 'postponed'
+        WHERE pc.status = 'unavailable' AND s.status = 'pending'");
+    echo "[" . date('Y-m-d H:i:s') . "] 🔁 {$reconciled} sold car(s) set out of stock on sauto\n";
 }
 
 echo "[" . date('Y-m-d H:i:s') . "] Checked: {$checked}, marked unavailable: {$unavailable}\n";

@@ -148,8 +148,46 @@ class PublishQueue
             $this->db->prepare('UPDATE '.$this->table().'
                 SET status = "failed", error = ?, finished_at = NOW() WHERE id = ?')
                 ->execute([$error, $id]);
+            // Flag the car so auto-publish stops retrying it forever (it stays
+            // "proposed" on failure). It still shows in the failures panel; a
+            // manual retry clears the flag and lets auto-publish pick it up again.
+            $this->markAutoPublishFailed((int)$job['parsing_car_id']);
         }
         return false;
+    }
+
+    // Set/clear the "auto-publish gave up on this car" flag in parsing_cars, so
+    // autoPublishFilterCars skips it. Column is self-created (no migration runner).
+    private function markAutoPublishFailed(int $parsingCarId): void
+    {
+        try {
+            $this->ensureAutoPublishFailedColumn();
+            $this->db->prepare('UPDATE '.$this->prefix.'_parsing_cars
+                SET autopublish_failed = 1 WHERE id = ?')->execute([$parsingCarId]);
+        } catch (Throwable $e) { /* non-fatal */ }
+    }
+
+    public function clearAutoPublishFailed(int $parsingCarId): void
+    {
+        try {
+            $this->ensureAutoPublishFailedColumn();
+            $this->db->prepare('UPDATE '.$this->prefix.'_parsing_cars
+                SET autopublish_failed = 0 WHERE id = ?')->execute([$parsingCarId]);
+        } catch (Throwable $e) { /* non-fatal */ }
+    }
+
+    private function ensureAutoPublishFailedColumn(): void
+    {
+        static $done = false;
+        if ($done) return;
+        try {
+            $col = $this->db->query("SHOW COLUMNS FROM {$this->prefix}_parsing_cars LIKE 'autopublish_failed'");
+            if ($col && $col->rowCount() === 0) {
+                $this->db->exec("ALTER TABLE {$this->prefix}_parsing_cars
+                    ADD COLUMN `autopublish_failed` TINYINT(1) NOT NULL DEFAULT 0");
+            }
+            $done = true;
+        } catch (Throwable $e) { /* best-effort */ }
     }
 
     /** Counts by status for the admin progress indicator. */
@@ -163,6 +201,45 @@ class PublishQueue
             }
         }
         return $out;
+    }
+
+    public function statsByFilter(int $filterId): array
+    {
+        $out = ['today_done' => 0, 'today_failed' => 0, 'total_done' => 0, 'total_failed' => 0, 'pending' => 0];
+        $sql = 'SELECT q.status,
+                       SUM(q.status = "done"   AND DATE(q.finished_at) = CURDATE()) AS td,
+                       SUM(q.status = "failed" AND DATE(q.finished_at) = CURDATE()) AS tf,
+                       SUM(q.status = "done")   AS ad,
+                       SUM(q.status = "failed") AS af,
+                       SUM(q.status IN ("pending","processing")) AS pp
+                FROM '.$this->table().' q
+                JOIN '.$this->prefix.'_parsing_cars c ON c.id = q.parsing_car_id
+                WHERE c.filter_id = ?';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$filterId]);
+        $r = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+        $out['today_done']   = (int)($r['td'] ?? 0);
+        $out['today_failed'] = (int)($r['tf'] ?? 0);
+        $out['total_done']   = (int)($r['ad'] ?? 0);
+        $out['total_failed'] = (int)($r['af'] ?? 0);
+        $out['pending']      = (int)($r['pp'] ?? 0);
+        return $out;
+    }
+
+    // Failed jobs for ONE filter (the per-filter situation panel). Same shape as
+    // failedJobs() but scoped to the filter's cars.
+    public function failedJobsByFilter(int $filterId, int $limit = 100): array
+    {
+        $sql = 'SELECT q.id, q.parsing_car_id, q.error, q.car_ctlg_id, q.finished_at,
+                       c.brand, c.model, c.year
+                FROM '.$this->table().' q
+                JOIN '.$this->prefix.'_parsing_cars c ON c.id = q.parsing_car_id
+                WHERE q.status = "failed" AND c.filter_id = ?
+                ORDER BY q.finished_at DESC, q.id DESC
+                LIMIT '.(int)$limit;
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute([$filterId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
 
     /** Failed jobs with car detail for the failures panel. */
@@ -186,12 +263,20 @@ class PublishQueue
 
     public function retry(int $jobId): bool
     {
+        // Clear the car's auto-publish-failed flag so a manual retry (after the
+        // operator fixed the mapping) lets auto-publish pick it up again too.
+        $car = $this->db->prepare('SELECT parsing_car_id FROM '.$this->table().' WHERE id = ?');
+        $car->execute([$jobId]);
+        $parsingCarId = (int)$car->fetchColumn();
+
         $upd = $this->db->prepare('UPDATE '.$this->table().'
             SET status = "pending", attempts = 0, error = NULL,
                 started_at = NULL, finished_at = NULL, created_at = NOW()
             WHERE id = ? AND status = "failed"');
         $upd->execute([$jobId]);
-        return $upd->rowCount() > 0;
+        $ok = $upd->rowCount() > 0;
+        if ($ok && $parsingCarId > 0) $this->clearAutoPublishFailed($parsingCarId);
+        return $ok;
     }
 
     public function dismiss(int $jobId): bool

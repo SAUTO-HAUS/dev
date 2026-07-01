@@ -257,7 +257,15 @@ if (__post('sub') == 'mo_search') {
                 $offer_timer_end = $original_offer_timer_end;
             }
             
-            $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET 
+            // A live (future) offer timer means the car is in stock again — force
+            // n_a=0 so renewing the timer clears the "out of stock" status set when
+            // it had expired, without the operator having to untick n_a manually.
+            $na_to_save = (int)__post('n_a', 0);
+            if (!empty($offer_timer_end) && $offer_timer_end > time()) {
+                $na_to_save = 0;
+            }
+
+            $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET
                 `gr`=:gr, `br`=:br, `mo`=:mo, `br_nm`=:br_nm, `mo_nm`=:mo_nm, `yr`=:yr,
                 `bt`=:bt, `sts`=:sts, `mlg`=:mlg, `unit`=:unit, `vol`=:vol, `hp`=:hp, `fl`=:fl,
                 `tra`=:tra, `wd`=:wd, `clr`=:clr, `loc`=:loc, `txt`=:txt, `vin`=:vin, `vin_check_enabled`=:vin_check_enabled,
@@ -290,7 +298,7 @@ if (__post('sub') == 'mo_search') {
                 'prc' => __post('prc', 0),
                 'cur' => __post('cur'),
                 'soon' => __post('soon', 0),
-                'n_a' => __post('n_a', 0),
+                'n_a' => $na_to_save,
                 'tva' => __post('tva', 0),
                 'top' => __post('top', 0),
                 'gift' => __post('gift', 0),
@@ -305,6 +313,16 @@ if (__post('sub') == 'mo_search') {
                 'prc_n' => __post('prc_n', __post('prc', 0)),
                 'data_999' => $updated_999_data
             ]);
+
+            // n_a changed → keep 999 schedules in sync (postpone when out of stock,
+            // restore when back in stock). Uses the actually-saved n_a (which a renewed
+            // timer may have forced to 0). Same behavior as the quick av0/av1 toggle.
+            $na_old = (int)($r['n_a'] ?? 0);
+            if ($na_old === 0 && $na_to_save === 1) {
+                na_postpone_schedules($db, $prefx, (int)__post('id'));
+            } elseif ($na_old === 1 && $na_to_save === 0) {
+                na_restore_schedules($db, $prefx, (int)__post('id'));
+            }
 
             // --- CHANGELOG: log field edits ---
             car_changelog_log_diff($db, $prefx, __post('id'), $r, [

@@ -300,6 +300,42 @@ $_on_services_main = ($_cur_page == 'services' && (!isset($t_mp[3]) || $t_mp[3] 
 $_hide_nav_on_mobile = $isMobile == '1' && in_array($_cur_page, ['cars', 'ordercars', 'services']);
 if ( in_array($_cur_page, $_show_links_pages) && ($_cur_page != 'services' || $_on_services_main) && !$_hide_nav_on_mobile ):
 ?>
+<?php if ($_cur_page == ''): 
+    $_hb_lang = $_COOKIE['lang'] ?? 'ro';
+    $_hb_txt = [
+        'ro' => ['import' => 'Import auto din', 'see' => 'Vezi catalog auto', 'tagline' => ['Transparență', 'Calitate', 'Livrare Sigură']],
+        'ru' => ['import' => 'Импорт авто из',  'see' => 'Смотреть каталог авто', 'tagline' => ['Прозрачность', 'Качество', 'Безопасная доставка']],
+        'en' => ['import' => 'Car import from', 'see' => 'See car catalog', 'tagline' => ['Transparency', 'Quality', 'Safe Delivery']],
+    ];
+    $_hb = $_hb_txt[$_hb_lang] ?? $_hb_txt['ro'];
+    $_hb_regions = [
+        'korea'  => ['ro' => 'Coreea', 'ru' => 'Кореи', 'en' => 'Korea'],
+        'europe' => ['ro' => 'Europa', 'ru' => 'Европы', 'en' => 'Europe'],
+        'usa'    => ['ro' => 'SUA',    'ru' => 'США',    'en' => 'USA'],
+    ];
+?>
+<div id="home_banner">
+    <img src="/media/images/site/banner-home.jpg" alt="">
+    <div class="hb_overlay">
+        <div class="hb_main">
+            <div class="hb_title"><?php echo $_hb['import']; ?></div>
+            <div class="hb_regions">
+                <?php foreach ($_hb_regions as $_rk => $_rv):
+                    $_rlabel = $_rv[$_hb_lang] ?? $_rv['ro'];
+                ?>
+                <a class="hb_region_btn" href="/<?php echo $_hb_lang; ?>/ordercars?tg=fltr&amp;ic=<?php echo $_rk; ?>" title="<?php echo $_hb['see'].' '.$_rlabel; ?>"><?php echo $_rlabel; ?></a>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <div class="hb_tagline"><?php
+            foreach ($_hb['tagline'] as $_ti => $_tword) {
+                if ($_ti > 0) echo '<span class="hb_dot">·</span>';
+                echo $_tword;
+            }
+        ?></div>
+    </div>
+</div>
+<?php endif; ?>
 <div id="nav_links">
     <a href="/<?php echo $_COOKIE['lang']; ?>/calculator">
         <div class="img" style="background-image:url(/media/images/links/link-calc3.jpg);"></div>
@@ -1150,51 +1186,43 @@ SVG
             }
 
 
+            // Use the SAME store as the rest of the site (sauto_favorites) so the
+            // Fancybox heart stays in sync with the card/product hearts.
             function favLoad(){
                 try{
-                    const raw = localStorage.getItem('favSet');
+                    const raw = localStorage.getItem('sauto_favorites');
                     const arr = raw ? JSON.parse(raw) : [];
-                    return new Set(Array.isArray(arr) ? arr : []);
+                    return new Set((Array.isArray(arr) ? arr : []).map(Number));
                 }catch(_){ return new Set(); }
             }
 
             function favSave(set){
                 try{
-                    localStorage.setItem('favSet', JSON.stringify(Array.from(set)));
+                    localStorage.setItem('sauto_favorites', JSON.stringify(Array.from(set).map(Number)));
                 }catch(_){}
             }
 
+            // The Fancybox slide has no car id (only photo index). Derive the real car id
+            // from the slide's image URL (/car/.../<id>/...), falling back to the page heart.
             function getCurrentId(fb){
-                const slide = fb.getSlide && fb.getSlide();
-                const trg = slide && (slide.triggerEl || slide.el);
-                return trg?.dataset?.id || null;
+                try{
+                    const slide = fb && fb.getSlide && fb.getSlide();
+                    const trg = slide && (slide.triggerEl || slide.el);
+                    let src = '';
+                    if (trg){ src = trg.getAttribute('href') || (trg.querySelector && trg.querySelector('img') && trg.querySelector('img').getAttribute('src')) || ''; }
+                    const m = src.match(/\/car\/[^]*?\/(\d+)\//);
+                    if (m) return Number(m[1]);
+                }catch(_){}
+                const b = document.querySelector('.wrapf-carousel .card-fav-btn[data-fav-id], .big_pht .card-fav-btn[data-fav-id], .card-fav-btn[data-fav-id]');
+                return b ? Number(b.getAttribute('data-fav-id')) : null;
             }
 
             function updateFavBtn(fb){
                 const btn = fb._favBtn;
                 if (!btn) return;
-
-                const slide = fb.getSlide && fb.getSlide();
-                if (!slide) {
-                    requestAnimationFrame(() => updateFavBtn(fb));
-                    return;
-                }
-
-                if (slide.type !== 'image') {
-                    btn.style.display = 'none';
-                    return;
-                }
-
-                const trg = slide.triggerEl || slide.el || null;
-                const id  = trg?.dataset?.id || null;
-                if (!id) {
-                    btn.style.display = 'none';
-                    return;
-                }
-
                 btn.style.display = '';
-                const set   = favLoad();
-                const isFav = set.has(id);
+                const id = getCurrentId(fb);
+                const isFav = id ? favLoad().has(id) : false;
                 btn.classList.toggle('is-active', isFav);
                 btn.setAttribute('aria-pressed', String(isFav));
                 btn.title = isFav ? 'Убрать из избранного' : 'Добавить в избранное';
@@ -1203,11 +1231,12 @@ SVG
             function onFavClick(fb){
                 const id = getCurrentId(fb);
                 if (!id) return;
-
                 const set = favLoad();
                 if (set.has(id)) set.delete(id); else set.add(id);
                 favSave(set);
                 updateFavBtn(fb);
+                // Keep all other hearts + the floating button + count in sync.
+                if (typeof window.sautoFavSync === 'function') window.sautoFavSync();
             }
 
 

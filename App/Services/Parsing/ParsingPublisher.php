@@ -27,9 +27,6 @@ class ParsingPublisher
 
         $existingCtlgId = !empty($row['car_ctlg_id']) ? (int)$row['car_ctlg_id'] : null;
 
-        // Cross-posting to 999 / Facebook / Telegram from the Published page:
-        // the car is already on sauto.md (has a car_ctlg row), so we don't
-        // re-insert — we publish to ONLY the chosen platform.
         if (in_array($target, ['999', 'facebook', 'telegram'], true)) {
             if (!$existingCtlgId) {
                 return ['success' => false, 'error' => 'Mașina trebuie publicată pe sauto.md înainte.'];
@@ -58,6 +55,11 @@ class ParsingPublisher
         }
 
         try {
+            SpecEnricher::enrich($this->db, $this->prefix, $parsingCarId);
+            $row = $this->loadParsingCar($parsingCarId) ?: $row;
+        } catch (\Throwable $e) { /* publish with what we have */ }
+
+        try {
             $this->db->beginTransaction();
 
             $carCtlgId = null;
@@ -72,21 +74,11 @@ class ParsingPublisher
             return ['success' => false, 'error' => 'DB error: ' . $e->getMessage()];
         }
 
-        // Photos AFTER the catalog row exists (folder + filename use car_ctlg_id)
-        // and OUTSIDE the transaction (download + resize is slow). Stored exactly
-        // like the sauto upload handler so the public gallery finds them.
         if (in_array($target, ['sauto', 'all'], true) && $carCtlgId) {
             $this->processPhotos($carCtlgId, $row);
-            // OpenLane: bake the Condition + Equipment report into parsing_cars.
-            // report_data so the public product page shows it from the DB (no live
-            // OpenLane call). Best-effort — never blocks publishing.
             $this->bakeOpenlaneReport($parsingCarId, $row);
         }
 
-        // Publishing to sauto ONLY must not auto-post to FB/Telegram/999 (operator
-        // cross-posts those on demand from /parsing/published). Auto-publication
-        // runs only for the explicit 'all' target. For 'sauto', force the FB/TG
-        // flags to 0 so no hook leaves fake "published" badges on the card.
         if ($target === 'all' && $carCtlgId) {
             $this->triggerAutoPublication($carCtlgId);
         } elseif ($target === 'sauto' && $carCtlgId) {
@@ -100,11 +92,6 @@ class ParsingPublisher
         return ['success' => true, 'car_ctlg_id' => $carCtlgId];
     }
 
-    /**
-     * For an OpenLane car: fetch the detail once, render the Condition + Equipment
-     * report HTML (3 langs) and store it under parsing_cars.report_data so the
-     * public product page can show it from the DB. Best-effort; never throws.
-     */
     private function bakeOpenlaneReport(int $parsingCarId, array $row): void
     {
         try {
@@ -153,10 +140,6 @@ class ParsingPublisher
             if (!empty($row['car_ctlg_id'])) {
                 $ctlgId = (int)$row['car_ctlg_id'];
 
-                // Cancel any pending cross-post schedules (999 / Telegram / Facebook)
-                // BEFORE the car_ctlg row is gone. The crons only pick status='pending'
-                // rows; flipping these to 'cancelled' stops them from posting a car
-                // that no longer exists on sauto. Keyed by car_id = car_ctlg id.
                 foreach ([
                     $this->prefix.'_sauto_personal_schedules',
                     $this->prefix.'_scheduled_telegram_posts',
@@ -210,9 +193,6 @@ class ParsingPublisher
     {
         $importUserId = $this->getSetting('import_user_id', '1');
 
-        // Prefer the sauto brand/model the browser already resolved (BMW 318 →
-        // Seria 3 via match_model). Validate they exist in the catalog; if not,
-        // fall back to resolving from the raw brand/model names.
         $brandId = null; $modelId = null;
         if (!empty($parsingRow['sauto_br'])) {
             $brandId = $this->validBrandCode((string)$parsingRow['sauto_br']);
@@ -230,16 +210,10 @@ class ParsingPublisher
             throw new Exception("Brand/model not in sauto catalog: {$parsingRow['brand']} / {$parsingRow['model']}. Edit the car first to map manually.");
         }
 
-        // Use the OFFICIAL sauto names for the matched codes (so the card shows
-        // "Seria 3", not the raw "316"). Fall back to the raw names if a row is
-        // somehow missing the display name.
         $names = $this->catalogNames($brandId, $modelId);
         $brName = $names['br_nm'] ?: ($parsingRow['brand'] ?? '');
         $moName = $names['mo_nm'] ?: ($parsingRow['model'] ?? '');
 
-        // Map our codes to the catalog's codes — IDENTICAL to the autopublish form
-        // (order_car.php / order_add_new1.php). The car_ctlg columns are NOT NULL,
-        // so missing values become '' (never null) and codes are mapped (never raw).
         $fuelMap = [
             'benzina' => 'gsl', 'gasoline' => 'gsl', 'diesel' => 'dsl', 'lpg' => 'gas',
             'hybrid' => 'hbd', 'gasoline_lpg' => 'gmn', 'gasoline_cng' => 'gmn',
@@ -278,15 +252,15 @@ class ParsingPublisher
             'mo' => $modelId,
             'br_nm' => $brName,
             'mo_nm' => $moName,
-            'yr' => $parsingRow['year'] ?? '',
+            'yr' => (int)($parsingRow['year'] ?? 0),
             'vin' => $vin,
             'vin_check_enabled' => $this->vinCheckEnabled($vin),
             'bt' => $bodyMap[$bodyLower] ?? '',
-            'sts' => $parsingRow['seats'] ?? '',
-            'mlg' => $parsingRow['km'] ?? '',
+            'sts' => (int)($parsingRow['seats'] ?? 0),
+            'mlg' => (int)($parsingRow['km'] ?? 0),
             'unit' => 'km',
-            'vol' => $parsingRow['engine_volume'] ?? '',
-            'hp' => $parsingRow['power_hp'] ?? '',
+            'vol' => (int)($parsingRow['engine_volume'] ?? 0),
+            'hp' => (int)($parsingRow['power_hp'] ?? 0),
             'fl' => $fuelMap[strtolower((string)($parsingRow['fuel_type'] ?? ''))] ?? '',
             'tra' => $gearMap[strtolower((string)($parsingRow['gearbox'] ?? ''))] ?? '',
             'wd' => $driveMap[$parsingRow['drive_type'] ?? ''] ?? '',
@@ -307,13 +281,8 @@ class ParsingPublisher
             'offer_timer' => '60:00:00:00',
             'offer_timer_end' => time() + 60 * 86400,
             'advance_amount' => null,
-            // p_path MUST be the md5-hashed year/month (same as the upload handler)
-            // — catalog/public pages build the photo URL from car_ctlg.p_path, so
-            // it has to match the real photo folder.
             'p_path' => substr(md5(date('Y')), 0, 4) . '/' . substr(md5(date('m')), 0, 4),
             'date' => time(),
-            // Real operator name (saved at enqueue), falling back to "Parser" for
-            // the cron path where no one was logged in.
             'author' => trim((string)($parsingRow['published_by'] ?? '')) ?: 'Parser',
             'vis' => 1,
             'inf' => '',
@@ -333,12 +302,6 @@ class ParsingPublisher
         return (int)$this->db->lastInsertId();
     }
 
-    /**
-     * Download the source photos and store them EXACTLY like the sauto upload
-     * handler (order_file_upload.php) so the public gallery finds them:
-     *   _CAR_IMG/{p_path}/{carCtlgId}/{med,high}/car_{carCtlgId}_{pos}.jpg
-     * and one car_pht row per photo (path={p_path}, name=car_{id}_{pos}, ff=jpg).
-     */
     private function processPhotos(int $carCtlgId, array $parsingRow): void
     {
         $images = json_decode($parsingRow['images_local'] ?? '[]', true);
@@ -377,15 +340,9 @@ class ParsingPublisher
             (`it_id`, `tp`, `path`, `name`, `ff`, `main`, `pos`)
             VALUES (:it_id, :tp, :path, :name, :ff, :main, :pos)');
 
-        // Photoroom TEMPORARILY DISABLED — Encar photos now come clean from the CDN
-        // (small "encar" watermark via encarHiResUrl). Flip this to true to re-enable
-        // the cover background removal. The block below stays intact.
         $usePhotoroom = true;
         $photoroom = ($usePhotoroom && $source === 'encar') ? new PhotoroomService() : null;
-        // Photoroom must run EXACTLY ONCE (the cover), no matter how many earlier
-        // photos fail to download/encode. Tracking this with $pos was buggy:
-        // $pos stays 0 until a photo is fully saved, so a failed first photo made
-        // the next photo hit Photoroom again — burning extra API credits.
+        
         $coverProcessed = false;
 
         $fetchUrls = [];
@@ -680,18 +637,87 @@ class ParsingPublisher
     private function resolveModelId(string $modelName, ?string $brandId): ?string
     {
         if ($modelName === '' || !$brandId) return null;
-        // Try exact match on mo_nm first.
+
+        // Strip Encar marketing prefixes ("NEW QM3", "The New Sorento", "All New
+        // Niro") so they map to the base model instead of creating a bogus new one.
+        $modelName = $this->stripModelPrefix($modelName);
+        if ($modelName === '') return null;
+
+        // 1. Exact match on mo_nm.
         $stmt = $this->db->prepare('SELECT mo FROM '.$this->prefix.'_car_list WHERE br = ? AND LOWER(mo_nm) = LOWER(?) LIMIT 1');
         $stmt->execute([$brandId, $modelName]);
         $val = $stmt->fetchColumn();
         if ($val !== false) return (string)$val;
 
-        // Fallback: match on mo code.
+        // 2. Match on mo code (slug).
         $moKey = strtolower(str_replace([' ', '-'], '_', $modelName));
         $stmt = $this->db->prepare('SELECT mo FROM '.$this->prefix.'_car_list WHERE br = ? AND LOWER(mo) = ? LIMIT 1');
         $stmt->execute([$brandId, $moKey]);
         $val = $stmt->fetchColumn();
-        return $val !== false ? (string)$val : null;
+        if ($val !== false) return (string)$val;
+
+        // 3. Fuzzy: normalized key (no spaces/dashes/case). Reuse an existing model
+        //    the raw name starts with, or that starts with the raw name — so "RAV4"
+        //    matches "RAV 4", "NEW QM3"→"QM3", "C 200"→"C Class". Longest wins. Mirrors
+        //    order_add_new.php's duplicate defence so auto-publish maps like manual Edit.
+        $normKey = fn($s) => preg_replace('/[^a-z0-9]+/', '', mb_strtolower(trim((string)$s), 'UTF-8'));
+        $rawN = $normKey($modelName);
+        if ($rawN !== '' && mb_strlen($rawN) >= 2) {
+            $all = $this->db->prepare('SELECT mo, mo_nm FROM '.$this->prefix.'_car_list WHERE br = ?');
+            $all->execute([$brandId]);
+            $best = null; $bestLen = 0;
+            foreach ($all as $row) {
+                $optN = $normKey($row['mo_nm']);
+                if ($optN === '' || mb_strlen($optN) < 2) continue;
+                if ((strpos($rawN, $optN) === 0 || strpos($optN, $rawN) === 0) && mb_strlen($optN) > $bestLen) {
+                    $best = $row['mo']; $bestLen = mb_strlen($optN);
+                }
+            }
+            if ($best !== null) return (string)$best;
+        }
+
+        // 4. Not in catalog at all → create it (same as manual Edit does), so
+        //    auto-publish no longer stalls on models the catalog simply lacks.
+        return $this->createModel($brandId, $modelName);
+    }
+
+    // Remove Encar's marketing prefixes from a model name so it maps to the base
+    // model. Handles English ("NEW", "THE NEW", "ALL NEW") and Korean ("뉴", "더 뉴",
+    // "올 뉴") variants. Returns the trimmed name (never empties a real name).
+    private function stripModelPrefix(string $model): string
+    {
+        $m = trim($model);
+        $m = preg_replace('/^(the\s+new|all\s+new|new)\s+/i', '', $m);
+        $m = preg_replace('/^(더\s*뉴|올\s*뉴|뉴)\s+/u', '', $m);
+        return trim($m);
+    }
+
+    // Insert a new model under a brand and return its code. Mirrors the INSERT in
+    // content/admin/ajax/ordercars/order_add_new.php so auto-publish and manual Edit
+    // create catalog entries the same way.
+    private function createModel(string $brandId, string $modelName): ?string
+    {
+        try {
+            $moSlug = trim(preg_replace('/[^a-z0-9]+/u', '_',
+                mb_strtolower($modelName, 'UTF-8')), '_');
+            if ($moSlug === '') $moSlug = 'model';
+
+            // Guard against a race / pre-existing slug: reuse if already present.
+            $chk = $this->db->prepare('SELECT mo FROM '.$this->prefix.'_car_list WHERE br = ? AND mo = ? LIMIT 1');
+            $chk->execute([$brandId, $moSlug]);
+            $existing = $chk->fetchColumn();
+            if ($existing !== false) return (string)$existing;
+
+            $bnm = $this->db->prepare('SELECT br_nm FROM '.$this->prefix.'_car_list WHERE br = ? LIMIT 1');
+            $bnm->execute([$brandId]);
+            $brandDisplay = $bnm->fetchColumn() ?: $brandId;
+
+            $ins = $this->db->prepare('INSERT INTO '.$this->prefix.'_car_list (br, mo, br_nm, mo_nm) VALUES (?, ?, ?, ?)');
+            $ins->execute([$brandId, $moSlug, $brandDisplay, $modelName]);
+            return $moSlug;
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 
     // Confirm a brand code exists in the catalog (returns it or null).
@@ -712,12 +738,6 @@ class ParsingPublisher
         return $val !== false ? (string)$val : null;
     }
 
-    // Decide the sauto group: 'com' (AUTOCOMERCIALE) vs 'car' (AUTOTURISME).
-    // A real van/minibus/truck/pickup → commercial ONLY when the brand or model
-    // is actually commercial. This keeps genuine cargo vans (VW Transporter,
-    // Ford Transit, Renault Master...) as 'com', while a passenger car the source
-    // mis-tagged as "van" (e.g. a BMW 2 Series) stays 'car'. truck/pickup are
-    // always commercial regardless of brand.
     private function resolveGroup(string $bodyLower, string $brand, string $model): string
     {
         if (in_array($bodyLower, ['truck', 'pickup'], true)) return 'com';
@@ -729,8 +749,7 @@ class ParsingPublisher
         $commercialBrands = [
             'iveco', 'man', 'isuzu', 'gaz', 'uaz', 'maxus', 'ldv',
         ];
-        // Known commercial MODEL names across mixed brands (VW/Mercedes/Ford make
-        // both cars and vans). Matched as a substring of the raw model.
+
         $commercialModels = [
             'transporter', 'transit', 'sprinter', 'crafter', 'vito', 'viano',
             'master', 'trafic', 'kangoo', 'expert', 'jumper', 'jumpy', 'boxer',
@@ -749,8 +768,6 @@ class ParsingPublisher
         return 'car';
     }
 
-    // Official display names (br_nm / mo_nm) for the matched brand+model codes,
-    // so the catalog card shows "BMW Seria 3" instead of the raw "BMW 316".
     private function catalogNames(string $brandId, string $modelId): array
     {
         $stmt = $this->db->prepare('SELECT br_nm, mo_nm FROM '.$this->prefix.'_car_list
@@ -760,9 +777,6 @@ class ParsingPublisher
         return ['br_nm' => (string)($row['br_nm'] ?? ''), 'mo_nm' => (string)($row['mo_nm'] ?? '')];
     }
 
-    // Per-source fallback + OpenLane's real country (CarCountryExtended) resolved
-    // against the countries table, with generic "Europa" (EU) as last resort —
-    // same as the autopublish form.
     private function resolveImportCountryId(array $parsingRow): int
     {
         $source = $parsingRow['source'] ?? '';

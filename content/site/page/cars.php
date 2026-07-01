@@ -520,26 +520,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                     $z_stat .= ($r['tva']==1) ? '<div class="stat top1">'.$lng['l']['stat']['vat'].'</div>' : '';
                     $z_stat .= ($r['gift']==1) ? '<div class="stat gift">+ '.$lng['l']['stat']['gift'].'</div>' : '';
 
-                    // Adăugare țară de import cu stil evident
-                    $import_country_id = isset($r['import_country_id']) ? $r['import_country_id'] : null;
-
-                    // Forțăm verificarea în baza de date dacă nu avem import_country_id
-                    if (empty($import_country_id)) {
-                        $stmt = $db->prepare("SELECT import_country_id FROM ".$prefx."_car_ctlg WHERE id = :id LIMIT 1");
-                        $stmt->execute(['id' => $r['id']]);
-                        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-                        if ($result && isset($result['import_country_id'])) {
-                            $import_country_id = $result['import_country_id'];
-                        }
-                    }
-
-                    if (!empty($import_country_id)) {
-                        $country_name = getImportCountryName($import_country_id, $_COOKIE['lang']);
-                        if (!empty($country_name)) {
-                            $country_label = $_COOKIE['lang'] == 'ru' ? 'Страна импорта' : ($_COOKIE['lang'] == 'en' ? 'Import country' : 'Țara de import');
-                            $z_stat .= '<div class="stat import"><b>'.$country_label.':</b> '.$country_name.'</div>';
-                        }
-                    }
+    
                 }else{
                     $z_stat .= '
 						<div class="stat n_a1">'.$lng['l']['stat']['n_a1'].'</div>
@@ -729,11 +710,13 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                         // Check if the flag exists and add it
                         $flag_html = '';
                         if (!empty($country_code) && file_exists($_SERVER['DOCUMENT_ROOT'] . '/media/images/flags/' . $country_code . '.svg')) {
-                            $flag_html = '<img src="/media/images/flags/' . $country_code . '.svg" alt="' . $country_name . ' flag" style="width: 38px; height: 32px; display: block; margin-left: auto;">';
+                            $flag_html = '<img src="/media/images/flags/' . $country_code . '.svg" alt="' . $country_name . ' flag" style="width: 38px; height: 32px;">';
                         }
 
-                        // Prepare the import country text with same styling as product cards
-                        $import_country_text = '<div style="font-weight: bold; text-align: right; min-width: 200px;"><span style="color: #666; font-weight: 500;">' . $country_label . ': </span><span style="color: #000000; font-weight: bold;">' . $country_name . '</span></div>';
+                        $import_country_text = '<div class="import-country-box" style="margin-top: 10px; font-weight: bold; min-width: 200px;">
+                            <div style="text-align: right;"><span style="color: #666; font-weight: 500;">' . $country_label . ': </span><span style="color: #000000; font-weight: bold;">' . $country_name . '</span></div>
+                            ' . (!empty($flag_html) ? $flag_html : '') . '
+                        </div>';
                     }
                 }
 
@@ -741,11 +724,6 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
 
                 // Display the characteristics title
                 $rtrn .= '<div>';
-                // Add flag above if exists
-                if (!empty($flag_html)) {
-                    $rtrn .= '<div style="text-align: right; margin-bottom: -5px; margin-top: -20px; margin-right: -5px;">' . $flag_html . '</div>';
-                }
-                // Title and import country text aligned horizontally
                 $rtrn .= '<div style="display: flex; justify-content: space-between; align-items: center; margin: 0; padding: 0;">';
 
                 // Smaller title font for Russian and English to fit better

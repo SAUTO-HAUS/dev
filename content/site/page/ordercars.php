@@ -538,38 +538,35 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 }
                 unset($r2, $ii);
 
+                // An expired offer timer counts as out of stock even before the cron
+                // flips n_a in the DB — so the card drops into the "not available"
+                // branch below (badge + "find similar" link), with no timer text.
+                $timer_expired = !empty($r['offer_timer_end']) && ($r['offer_timer_end'] - time()) <= 0;
+                $effective_n_a = ((int)$r['n_a'] === 1 || $timer_expired) ? 1 : 0;
+
                 $z_stat = '';
-                if ( $r['n_a']==0 && $r['act']==1 ){
+                if ( $effective_n_a==0 && $r['act']==1 ){
                     // For on_order catalog type, show "On Order" status and timer
                     if (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') {
                         // Add "On Order" status with same style as in cards
                         $on_order_text = $lng['w']['on_order'] ?? 'On Order';
-                        $z_stat .= '<div class="stat" style="background-color: #CE3226; color: #fff; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; vertical-align: top; padding: 0.3rem 0.5rem !important; margin: 0.3rem 0.3rem 0 0 !important;"><span class="stock-status on-order">'.$on_order_text.'</span></div>';
-                        
-                        // Add offer timer if exists
+                        $z_stat .= '<div class="stat stat-onorder" style="background-color: #CE3226; color: #fff; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; vertical-align: top; padding: 0.3rem 0.5rem !important; margin: 0.3rem 0.3rem 0 0 !important;"><span class="stock-status on-order">'.$on_order_text.'</span></div>';
+
+                        // Add offer timer if it exists and is still running
                         if (!empty($r['offer_timer_end'])) {
                             $time_remaining = $r['offer_timer_end'] - time();
-                            if ($time_remaining > 0) {
-                                // Add "Offer expires in:" text with line break
-                                $expires_text = 'Oferta expiră<br>peste:';
-                                if (isset($_COOKIE['lang'])) {
-                                    if ($_COOKIE['lang'] == 'ru') $expires_text = 'Предложение<br>истекает через:';
-                                    elseif ($_COOKIE['lang'] == 'en') $expires_text = 'Offer expires<br>in:';
-                                }
-                                $z_stat .= '<div class="stat" style="padding: 0.3rem 0.5rem 0 0.5rem !important; margin: 0.3rem 0.3rem 0 0 !important; background: transparent; font-weight: 600; color: #333; font-size: 1rem; display: inline-block; vertical-align: top; line-height: 1.3;">'.$expires_text.'</div>';
-                                $days = floor($time_remaining / 86400);
-                                $hours = floor(($time_remaining % 86400) / 3600);
-                                $minutes = floor(($time_remaining % 3600) / 60);
-                                $seconds = $time_remaining % 60;
-                                $z_stat .= '<div class="stat" style="padding:0; margin:0; background:transparent; display: inline-block; vertical-align: top; margin-top: 0.5rem !important;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.sprintf('%02d:%02d:%02d:%02d', $days, $hours, $minutes, $seconds).'</div></div>';
-                            } else {
-                                $expired_text = 'Offer expired';
-                                if (isset($_COOKIE['lang'])) {
-                                    if ($_COOKIE['lang'] == 'ro') $expired_text = 'Oferta a expirat';
-                                    elseif ($_COOKIE['lang'] == 'ru') $expired_text = 'Предложение истекло';
-                                }
-                                $z_stat .= '<div class="stat" style="padding:0; margin:0; background:transparent;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.$expired_text.'</div></div>';
+                            // Add "Offer expires in:" text with line break
+                            $expires_text = 'Oferta expiră<br>peste:';
+                            if (isset($_COOKIE['lang'])) {
+                                if ($_COOKIE['lang'] == 'ru') $expires_text = 'Предложение<br>истекает через:';
+                                elseif ($_COOKIE['lang'] == 'en') $expires_text = 'Offer expires<br>in:';
                             }
+                            $z_stat .= '<div class="stat" style="padding: 0.3rem 0.5rem 0 0.5rem !important; margin: 0.3rem 0.3rem 0 0 !important; background: transparent; font-weight: 600; color: #333; font-size: 1rem; display: inline-block; vertical-align: top; line-height: 1.3;">'.$expires_text.'</div>';
+                            $days = floor($time_remaining / 86400);
+                            $hours = floor(($time_remaining % 86400) / 3600);
+                            $minutes = floor(($time_remaining % 3600) / 60);
+                            $seconds = $time_remaining % 60;
+                            $z_stat .= '<div class="stat" style="padding:0; margin:0; background:transparent; display: inline-block; vertical-align: top; margin-top: 0.5rem !important;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.sprintf('%02d:%02d:%02d:%02d', $days, $hours, $minutes, $seconds).'</div></div>';
                         }
                     } else {
                         // For regular cars, show all statuses
@@ -595,10 +592,6 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
 
                     if (!empty($import_country_id)) {
                         $country_name = getImportCountryName($import_country_id, $_COOKIE['lang']);
-                        if (!empty($country_name)) {
-                            $country_label = $_COOKIE['lang'] == 'ru' ? 'Страна импорта' : ($_COOKIE['lang'] == 'en' ? 'Import country' : 'Țara de import');
-                            $z_stat .= '<div class="stat import"><b>'.$country_label.':</b> '.$country_name.'</div>';
-                        }
                     }
                 }else{
                     $z_stat .= '
@@ -747,9 +740,9 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 $rtrn .= '<div class="spc_bx">';
                 $rtrn .= '<h1 class="name">'.$r['br_nm'].' '.$r['mo_nm'].' <span class="fl">'. $r['mlg'].', '.$lng['l']['car']['fl'][$r['fl']].', '.$lng['l']['car']['tra'][$r['tra']].'</span></h1>';
 
-                // Generate mobile timer HTML if exists
+                // Generate mobile timer HTML if exists. Skip for sold cars (n_a=1).
                 $mobile_timer_html = '';
-                if (!empty($r['offer_timer_end'])) {
+                if (!empty($r['offer_timer_end']) && empty($r['n_a'])) {
                     $time_remaining_mobile = $r['offer_timer_end'] - time();
                     if ($time_remaining_mobile > 0) {
                         // Add "Offer expires in:" text for mobile with line break
@@ -764,12 +757,9 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                         $seconds_m = $time_remaining_mobile % 60;
                         $mobile_timer_html = '<div class="mobile-only-timer" style="display: inline-flex; align-items: center; margin-left: 10px; gap: 5px;"><span style="font-weight: 600; color: #333; font-size: 0.85rem; line-height: 1.2;">'.$expires_text_mobile.'</span><div style="display: inline-block;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.sprintf('%02d:%02d:%02d:%02d', $days_m, $hours_m, $minutes_m, $seconds_m).'</div></div></div>';
                     } else {
-                        $expired_text_m = 'Offer expired';
-                        if (isset($_COOKIE['lang'])) {
-                            if ($_COOKIE['lang'] == 'ro') $expired_text_m = 'Oferta a expirat';
-                            elseif ($_COOKIE['lang'] == 'ru') $expired_text_m = 'Предложение истекло';
-                        }
-                        $mobile_timer_html = '<div class="mobile-only-timer" style="display: inline-block; margin-left: 10px;"><div class="timer-display" data-end-time="'.$r['offer_timer_end'].'">'.$expired_text_m.'</div></div>';
+                        // Timer expired → no "expired" text; the car shows as out of stock
+                        // via its status badge instead.
+                        $mobile_timer_html = '';
                     }
                 }
 
@@ -823,8 +813,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                             $flag_html = '<img src="/media/images/flags/' . $country_code . '.svg" alt="' . $country_name . ' flag" style="width: 38px; height: 32px;">';
                         }
 
-                        // Prepare the import country text with flag aligned on mobile
-                        $import_country_text = '<div style="display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin-top: 10px; font-weight: bold; min-width: 200px;">
+                        $import_country_text = '<div class="import-country-box" style="margin-top: 10px; font-weight: bold; min-width: 200px;">
                             <div style="text-align: right;"><span style="color: #666; font-weight: 500;">' . $country_label . ': </span><span style="color: #000000; font-weight: bold;">' . $country_name . '</span></div>
                             ' . (!empty($flag_html) ? $flag_html : '') . '
                         </div>';

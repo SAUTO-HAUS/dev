@@ -2,8 +2,8 @@
 
 if (!defined('PARSING_FULL_IDS')) {
     define('PARSING_FULL_IDS',    [1, 6, 28]);
-    define('PARSING_LIMITED_IDS', [17, 19, 27, 37]);
-    define('PARSING_ENCAR_IDS',   [22, 32]);
+    define('PARSING_LIMITED_IDS', [17, 19, 27, 32, 37]);
+    define('PARSING_ENCAR_IDS',   [22]);
 }
 
 /** Full access (Settings + Logs included). */

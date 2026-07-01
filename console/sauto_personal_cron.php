@@ -329,6 +329,7 @@ try {
         FROM gh3sp_sauto_personal_schedules s
         LEFT JOIN {$prefx}_car_ctlg c ON s.car_id = c.id
         WHERE s.status = 'postponed'
+        AND (c.n_a IS NULL OR c.n_a <> 1)
         AND s.retry_count < 72
         AND (s.last_retry_at IS NULL OR s.last_retry_at <= DATE_SUB(:current_time, INTERVAL 2 HOUR))
         {$cooldownSql}
@@ -388,9 +389,21 @@ try {
             echo "[" . date('Y-m-d H:i:s') . "] Processing schedule ID: {$schedule['id']}, Car ID: {$schedule['car_id']}, Type: {$schedule['catalog_type']}\n";
             
             // Get car data to determine which 999.md account to use
-            $carStmt = $db->prepare("SELECT `999_api_id`, import_country_id, gr FROM {$prefx}_car_ctlg WHERE id = :car_id");
+            $carStmt = $db->prepare("SELECT `999_api_id`, import_country_id, gr, n_a FROM {$prefx}_car_ctlg WHERE id = :car_id");
             $carStmt->execute(['car_id' => $schedule['car_id']]);
             $carInfo = $carStmt->fetch();
+
+            // Out of stock (n_a=1) → don't publish. Postpone this schedule so it
+            // resumes automatically if the car comes back in stock. Works for both
+            // in_stock and on_order cars, regardless of how it went out of stock
+            // (manual toggle, expired offer timer, or sold at the source).
+            if (!empty($carInfo) && (int)$carInfo['n_a'] === 1) {
+                $db->prepare("UPDATE gh3sp_sauto_personal_schedules
+                    SET status = 'postponed', error_message = 'Car out of stock'
+                    WHERE id = :id")->execute(['id' => $schedule['id']]);
+                echo "[" . date('Y-m-d H:i:s') . "] ⏸️ Skip car {$schedule['car_id']}: out of stock (n_a=1), schedule postponed\n";
+                continue;
+            }
 
             // Determine which 999.md account to use based on car's 999_api_id or catalog_type
             $catalogType = $schedule['catalog_type'];
