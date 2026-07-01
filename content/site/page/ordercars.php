@@ -1037,7 +1037,7 @@ $iconTelegramParams = array(
                 
                 $dynamicPhone = ((int)$import_country_id === 41) ? '37368689995' : PhoneHelper::getOrderPhone();
 
-                $waPhone = ((int)$import_country_id === 41) ? '37368689995' : '37362166880';
+                $waPhone = ((int)$import_country_id === 41) ? '37368689995' : '37362166881';
                 $waLang   = $_COOKIE['lang'] ?? 'ro';
                 $waCarUrl = 'https://www.sauto.md/' . $waLang . '/ordercars/' . (int)$r['id'];
                 $waUrl    = 'https://wa.me/' . $waPhone . '?text=' . rawurlencode($waCarUrl);
