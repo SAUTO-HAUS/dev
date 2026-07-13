@@ -189,6 +189,73 @@ class ParsingPublisher
         return $row ?: null;
     }
 
+    // Resolve a raw source brand/model to the SAUTO canonical display names
+    // (car_list br_nm/mo_nm) — the exact names publishing would assign — WITHOUT
+    // creating anything. Returns ['br_nm'=>..., 'mo_nm'=>...] or null if the model
+    // can't be matched to an existing catalog entry. Used to align parsing_cars so
+    // the /parsing filter reads identical to sauto. $createMissing=false keeps this
+    // read-safe for audits.
+    public function resolveCanonicalNames(string $brand, string $model, bool $createMissing = false): ?array
+    {
+        $brandId = $this->resolveBrandId($brand);
+        if (!$brandId) return null;
+        $modelName = $this->canonicalModelName($brandId, $this->stripModelPrefix($model));
+        // Try to match an existing model only (steps 1-3 of resolveModelId).
+        $modelId = $this->matchExistingModel($brandId, $modelName);
+        if (!$modelId && $createMissing) $modelId = $this->resolveModelId($model, $brandId);
+        if (!$modelId) return null;
+        $names = $this->catalogNames($brandId, $modelId);
+        return [
+            'br'    => $brandId,
+            'mo'    => $modelId,
+            'br_nm' => $names['br_nm'] ?: $brand,
+            'mo_nm' => $names['mo_nm'] ?: $model,
+        ];
+    }
+
+    // Match a model name to an existing car_list entry under a brand (no creation).
+    // Mirrors resolveModelId steps 1-3 (exact mo_nm, mo slug, fuzzy prefix).
+    private function matchExistingModel(string $brandId, string $modelName): ?string
+    {
+        if ($modelName === '') return null;
+        $stmt = $this->db->prepare('SELECT mo FROM '.$this->prefix.'_car_list WHERE br = ? AND LOWER(mo_nm) = LOWER(?) LIMIT 1');
+        $stmt->execute([$brandId, $modelName]);
+        $val = $stmt->fetchColumn();
+        if ($val !== false) return (string)$val;
+
+        $moKey = strtolower(str_replace([' ', '-'], '_', $modelName));
+        $stmt = $this->db->prepare('SELECT mo FROM '.$this->prefix.'_car_list WHERE br = ? AND LOWER(mo) = ? LIMIT 1');
+        $stmt->execute([$brandId, $moKey]);
+        $val = $stmt->fetchColumn();
+        if ($val !== false) return (string)$val;
+
+        // Fuzzy: reuse an existing model the raw name extends by a NON-alphabetic
+        // tail only (so "RAV4"→"RAV 4", "CR-V"→"CRV"), but NOT when the extra tail is
+        // a whole word — "C3 Aircross" must stay its own model, not collapse to "C3".
+        $normKey = fn($s) => preg_replace('/[^a-z0-9]+/', '', mb_strtolower(trim((string)$s), 'UTF-8'));
+        $rawN = $normKey($modelName);
+        if ($rawN === '' || mb_strlen($rawN) < 2) return null;
+        // The last token of the raw name; if it's an alphabetic word AND longer than
+        // a trim letter, the raw name is a distinct sub-model → don't fuzzy-collapse.
+        $rawTokens = preg_split('/[\s\-]+/', trim(mb_strtolower($modelName, 'UTF-8'))) ?: [];
+        $lastTok = end($rawTokens) ?: '';
+        $lastIsWord = (mb_strlen($lastTok) >= 3 && preg_match('/^[a-z]+$/', $lastTok));
+        $all = $this->db->prepare('SELECT mo, mo_nm FROM '.$this->prefix.'_car_list WHERE br = ?');
+        $all->execute([$brandId]);
+        $best = null; $bestLen = 0;
+        foreach ($all as $row) {
+            $optN = $normKey($row['mo_nm']);
+            if ($optN === '' || mb_strlen($optN) < 2) continue;
+            // raw starts with opt: only if the extra tail isn't a distinct word.
+            $rawExtendsOpt = (strpos($rawN, $optN) === 0 && !($lastIsWord && $optN !== $rawN));
+            $optExtendsRaw = (strpos($optN, $rawN) === 0);
+            if (($rawExtendsOpt || $optExtendsRaw) && mb_strlen($optN) > $bestLen) {
+                $best = $row['mo']; $bestLen = mb_strlen($optN);
+            }
+        }
+        return $best !== null ? (string)$best : null;
+    }
+
     private function insertIntoCarCtlg(array $parsingRow): int
     {
         $importUserId = $this->getSetting('import_user_id', '1');
@@ -318,7 +385,9 @@ class ParsingPublisher
         if (empty($urls)) return;
 
         $source = (string)($parsingRow['source'] ?? '');
-        $cap = in_array($source, ['ecarstrade', 'openlane'], true) ? 10 : 30;
+        // Photo cap per source on sauto: auction sources (eCarsTrade/OpenLane) have
+        // huge galleries we don't need all of → 10; Encar → 20.
+        $cap = in_array($source, ['ecarstrade', 'openlane'], true) ? 10 : 20;
         $urls = array_slice($urls, 0, $cap);
 
         $docRoot = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '', '/');
@@ -643,6 +712,12 @@ class ParsingPublisher
         $modelName = $this->stripModelPrefix($modelName);
         if ($modelName === '') return null;
 
+        // Fold known body/trim/engine variants into their canonical base model so
+        // sources never re-create fragments ("C Break"→"C Class", "A6 Avant"→"A6",
+        // "NX Series"→"NX"). Same rules the mergemodels cleanup used. Keeps genuinely
+        // distinct models (GLC Coupe, CX-30, ID.4, Range Rover Sport) untouched.
+        $modelName = $this->canonicalModelName($brandId, $modelName);
+
         // 1. Exact match on mo_nm.
         $stmt = $this->db->prepare('SELECT mo FROM '.$this->prefix.'_car_list WHERE br = ? AND LOWER(mo_nm) = LOWER(?) LIMIT 1');
         $stmt->execute([$brandId, $modelName]);
@@ -692,6 +767,49 @@ class ParsingPublisher
         return trim($m);
     }
 
+    // Fold body/trim/engine variants into their canonical base model, keyed by
+    // brand code. The map value is the canonical DISPLAY name (mo_nm) that step-1
+    // exact match then resolves. Only fold what is truly the SAME car — never a
+    // distinct model (different number, or a body 999 lists separately). This is the
+    // live-parsing twin of the mergemodels RULES, so fragments can't come back.
+    private function canonicalModelName(string $brandId, string $modelName): string
+    {
+        static $map = [
+            'mercedes_benz' => [
+                'a' => 'A Class', 'a amg' => 'A Class',
+                'b' => 'B Class',
+                'c' => 'C Class', 'c amg' => 'C Class', 'c break' => 'C Class',
+                'e' => 'E Class', 'e break' => 'E Class',
+                'g amg' => 'G Class',
+                's long' => 'S Class',
+                'v' => 'V Class', 'v l3' => 'V Class',
+            ],
+            'audi' => [
+                'a4 avant' => 'A4', 'a4 allroad' => 'A4',
+                'a6 avant' => 'A6', 'a6 allroad' => 'A6',
+            ],
+            'citroen'    => ['c4 picasso' => 'C4'],
+            'cupra'      => ['formentor vz' => 'Formentor', 'leon vz' => 'Leon',
+                             'leon sportstourer' => 'Leon', 'leon sportstourer vz' => 'Leon'],
+            'dacia'      => ['logan mcv' => 'Logan', 'logan van' => 'Logan', 'dokker van' => 'Dokker'],
+            'ford'       => ['focus rs' => 'Focus', 'focus wagon' => 'Focus'],
+            'honda'      => ['civic hibrid' => 'Civic'],
+            'lexus'      => ['nx series' => 'NX', 'ux 250h' => 'UX'],
+            'nissan'     => ['qashqai 2' => 'Qashqai', 'qashqai+2' => 'Qashqai'],
+            'renault'    => ['megane e-tech' => 'Megane', 'megane e tech' => 'Megane'],
+            'toyota'     => ['prius+' => 'Prius', 'prius plus' => 'Prius', 'prius c' => 'Prius'],
+            'volkswagen' => ['passat cc' => 'Passat'],
+        ];
+        $brandMap = $map[strtolower($brandId)] ?? null;
+        if (!$brandMap) return $modelName;
+        // Normalize the raw name to the map key form: lowercase, dashes/underscores
+        // → spaces, collapse whitespace. "C-Break"/"C_Break"/"C  Break" → "c break".
+        $key = mb_strtolower(trim($modelName), 'UTF-8');
+        $key = preg_replace('/[_\-]+/u', ' ', $key);
+        $key = preg_replace('/\s+/u', ' ', $key);
+        return $brandMap[$key] ?? $modelName;
+    }
+
     // Insert a new model under a brand and return its code. Mirrors the INSERT in
     // content/admin/ajax/ordercars/order_add_new.php so auto-publish and manual Edit
     // create catalog entries the same way.
@@ -738,8 +856,18 @@ class ParsingPublisher
         return $val !== false ? (string)$val : null;
     }
 
+    // Passenger pickups the source labels as truck/pickup (so they'd become commercial),
+    // but that has no matching category on sauto/999 — publish them as a normal car.
+    // Matched on brand+model, trimmed + case-insensitive. Add pairs here as they come up.
+    private const PASSENGER_PICKUPS = [
+        'tesla|cybertruck',
+    ];
+
     private function resolveGroup(string $bodyLower, string $brand, string $model): string
     {
+        $bm = mb_strtolower(trim($brand), 'UTF-8') . '|' . mb_strtolower(trim($model), 'UTF-8');
+        if (in_array($bm, self::PASSENGER_PICKUPS, true)) return 'car';
+
         if (in_array($bodyLower, ['truck', 'pickup'], true)) return 'com';
 
         $commercialBody = in_array($bodyLower, ['van', 'microbus', 'minibus', 'minivan'], true);

@@ -49,7 +49,7 @@ try {
 class SitemapGeneratorReal {
     
     private $baseUrl;
-    private $maxUrlsPerFile = 7000;
+    private $maxUrlsPerFile = 15000;
     private $outputDir = __DIR__ . '/..';
     private $logFile = 'sitemap_generation_real.log';
     private $languages = ['ro', 'ru', 'en'];
@@ -451,9 +451,13 @@ class SitemapGeneratorReal {
      */
     private function getStaticPages() {
         $staticPages = [
-            ['path' => '/ro/', 'file' => 'content/site/page/home.php', 'category' => 'core'],
-            ['path' => '/ro/cars', 'file' => 'content/site/page/cars.php', 'category' => 'core'],
-            ['path' => '/ro/tyres', 'file' => 'content/site/page/tyres.php', 'category' => 'core'],
+            ['path' => '/ro/', 'file' => 'content/site/page/home.php', 'category' => 'home'],
+            ['path' => '/ro/cars', 'file' => 'content/site/page/cars.php', 'category' => 'catalog'],
+            ['path' => '/ro/ordercars', 'file' => 'content/site/page/ordercars.php', 'category' => 'catalog'],
+            ['path' => '/ro/ordercars/korea', 'file' => 'content/site/page/ordercars.php', 'category' => 'region'],
+            ['path' => '/ro/ordercars/europe', 'file' => 'content/site/page/ordercars.php', 'category' => 'region'],
+            ['path' => '/ro/ordercars/usa', 'file' => 'content/site/page/ordercars.php', 'category' => 'region'],
+            ['path' => '/ro/tyres', 'file' => 'content/site/page/tyres.php', 'category' => 'catalog'],
             ['path' => '/ro/services', 'file' => 'content/site/page/services.php', 'category' => 'core'],
             ['path' => '/ro/contacts', 'file' => 'content/site/page/contacts.php', 'category' => 'core'],
             ['path' => '/ro/about', 'file' => 'content/site/page/about.php', 'category' => 'core'],
@@ -828,6 +832,10 @@ class SitemapGeneratorReal {
             if (!$lastmodDate) {
                 $lastmodDate = new DateTimeImmutable('now');
             }
+    
+            if ($lastmodDate < new DateTimeImmutable('2015-01-01')) {
+                $lastmodDate = new DateTimeImmutable('now');
+            }
 
             $priorityValue = $this->calculatePriority($page);
             $priorityValue = max(0.1, min(1.0, $priorityValue));
@@ -848,13 +856,16 @@ class SitemapGeneratorReal {
      * Calculate priority based on page type and rules
      */
     private function calculatePriority($page) {
+        // Coherent SEO hierarchy: home is the single top page, catalogs/brands/regions
+        // are the main commercial landing pages, individual listings scale by freshness.
+        // Priorities are RELATIVE — keeping most values below 1.0 preserves the signal.
         switch ($page['type']) {
             case 'brand':
-                return 1.0;
-            
+                return 0.9;
+
             case 'model':
-                return 1.0;
-            
+                return 0.8;
+
             case 'car':
                 if (!empty($page['status']) && $page['status'] === 'sold') {
                     return 0.2;
@@ -871,28 +882,37 @@ class SitemapGeneratorReal {
                 $daysOld = (new DateTimeImmutable('now'))->diff($createdAt)->days;
 
                 if ($daysOld <= 30) {
-                    return 1.0;
+                    return 0.8;
                 }
                 if ($daysOld <= 60) {
-                    return 0.9;
-                }
-                if ($daysOld <= 120) {
                     return 0.7;
                 }
-                return 0.6;
+                if ($daysOld <= 120) {
+                    return 0.6;
+                }
+                return 0.5;
 
             case 'tire':
-                return (!empty($page['status']) && $page['status'] === 'out_of_stock') ? 0.2 : 0.3;
+                return (!empty($page['status']) && $page['status'] === 'out_of_stock') ? 0.2 : 0.4;
 
             case 'static':
                 $category = $page['page_type'] ?? 'core';
+                if ($category === 'home') {
+                    return 1.0; // homepage — the single most important page
+                }
+                if ($category === 'catalog') {
+                    return 0.9; // main listing pages (cars, ordercars, tyres)
+                }
+                if ($category === 'region') {
+                    return 0.9; // import-region landing pages — key SEO pages
+                }
                 if ($category === 'legal') {
                     return 0.3;
                 }
                 if ($category === 'support') {
                     return 0.4;
                 }
-                return 0.5;
+                return 0.6; // other core pages (services, contacts, about, credit, tradein)
 
             default:
                 return 0.5;
@@ -909,11 +929,19 @@ class SitemapGeneratorReal {
             case 'model':
                 return 'daily';
             case 'car':
-                return 'daily';
+                // A sold listing no longer changes daily.
+                return (!empty($page['status']) && $page['status'] === 'sold') ? 'monthly' : 'daily';
             case 'tire':
                 return 'weekly';
             case 'static':
-                return 'monthly';
+                $cat = $page['page_type'] ?? '';
+                if ($cat === 'home' || $cat === 'catalog') {
+                    return 'daily';  // main pages refresh with new inventory
+                }
+                if ($cat === 'region') {
+                    return 'weekly'; // region catalog changes often, but less than the main list
+                }
+                return 'monthly';    // info/legal/support pages rarely change
             default:
                 return 'weekly';
         }
@@ -1472,6 +1500,7 @@ class SitemapGeneratorReal {
             '/\/ro\/cars\/[a-z0-9-]+\/[a-z0-9-]+$/', // /ro/cars/bmw/x1 
             '/\/ro\/cars\/[a-z0-9-]+$/',             // /ro/cars/audi (brand pages)
             '/\/ro\/ordercars\/\d+$/',               // /ro/ordercars/123 (order car detail pages)
+            '/\/ro\/ordercars\/(korea|europe|usa)$/', // /ro/ordercars/korea (import-region landing pages)
             '/\/ro\/tyres\/\d+$/',                   // /ro/tyres/123 (tyre detail pages)
             '/\/ro\/tires\/[a-z0-9-]+$/',            // /ro/tires/tire-slug
             '/\/ro\/[a-z-]+$/',                      // /ro/contact, /ro/about

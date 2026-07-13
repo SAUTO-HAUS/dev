@@ -759,7 +759,7 @@ $rtrn = '
     <!-- ═══════════════════════════════════════════════
          SAVED FILTERS
     ═══════════════════════════════════════════════ -->
-    <h2 class="filters-section-title">'.$t['section_filters_saved'].'</h2>';
+    <h2 class="filters-section-title">'.$t['section_filters_saved'].' <span class="filters-count">'.count($savedFilters).'</span></h2>';
 
 if (empty($savedFilters)) {
     $rtrn .= '<div class="empty-state">'.$t['empty_filters'].'</div>';
@@ -767,7 +767,6 @@ if (empty($savedFilters)) {
     $rtrn .= '<div class="filter-cards">';
     foreach ($savedFilters as $f) {
         $sources = array_filter(array_map('trim', explode(',', $f['sources'])));
-        $lastRun = $f['last_run_at'] ? date('d.m.Y H:i', strtotime($f['last_run_at'])) : $t['never_run'];
         $isActive = (bool)$f['active'];
         $primarySource = $sources[0] ?? '';
         $brandModel = $primarySource === 'encar'
@@ -815,32 +814,43 @@ if (empty($savedFilters)) {
             $statLine .= '<span class="fstat-sold"> · '.$soldCount.' '.($t['sold_label'] ?? 'vândute').'</span>';
         }
 
+        $statusLabel = $isActive ? ($t['status_active'] ?? 'Activ') : ($t['status_paused'] ?? 'Oprit');
         $rtrn .= '
         <div class="filter-card'.(!$isActive ? ' filter-card--off' : '').'" data-filter-id="'.(int)$f['id'].'">
             <div class="filter-card-top">
                 <div class="filter-card-name">'.htmlspecialchars($f['name']).'</div>
-                <div class="filter-card-actions">
-                    <button class="btn-icon" onclick="parsingRunNow('.(int)$f['id'].')" title="'.$t['action_run_now'].'">▶</button>
-                    <button class="btn-icon btn-stats" onclick="parsingFilterStats('.(int)$f['id'].')" title="'.($t['action_publish_stats'] ?? 'Statistici').'">'.($t['action_publish_stats'] ?? 'Statistici').'</button>
-                    <button class="btn-icon" onclick="parsingLoadIntoPanel('.(int)$f['id'].')" title="'.$t['action_edit'].'">✎</button>
-                    <button class="btn-icon danger" onclick="parsingDelete('.(int)$f['id'].')" title="'.$t['action_delete'].'">✕</button>
-                </div>
-            </div>
-            <div class="filter-card-tags">'.$tags.'</div>
-            <div class="filter-card-limit">
-                <span class="limit-label">'.($t['publish_limit_label'] ?? 'Limită publicare').'</span>
-                <input type="number" class="limit-input" min="0" step="1"
-                    value="'.((int)($f['publish_limit'] ?? 0)).'"
-                    placeholder="∞"
-                    onchange="parsingSetPublishLimit('.(int)$f['id'].', this)">
-            </div>
-            <div class="filter-card-footer">
-                <span class="filter-stat">'.$statLine.'</span>
-                <span class="filter-last-run">'.$lastRun.'</span>
                 <label class="toggle-switch" title="'.$t['action_toggle'].'">
                     <input type="checkbox" '.($isActive ? 'checked' : '').' onchange="parsingToggle('.(int)$f['id'].')">
                     <span class="toggle-slider"></span>
+                    <span class="toggle-text">'.$statusLabel.'</span>
                 </label>
+            </div>
+            <div class="filter-card-tags">'.$tags.'</div>
+            <div class="filter-card-meta">
+                <div class="filter-card-limit">
+                    <span class="limit-label">'.($t['publish_limit_label'] ?? 'Limită publicare').'</span>
+                    <input type="number" class="limit-input" min="0" step="1"
+                        value="'.((int)($f['publish_limit'] ?? 0)).'"
+                        placeholder="∞"
+                        onchange="parsingSetPublishLimit('.(int)$f['id'].', this)">
+                </div>
+                <div class="filter-card-stats">
+                    <span class="filter-stat">'.$statLine.'</span>
+                </div>
+            </div>
+            <div class="filter-card-actions">
+                <button class="btn-act" onclick="parsingFilterStats('.(int)$f['id'].')" title="'.($t['action_publish_stats'] ?? 'Statistici').'">
+                    <span class="btn-act-ico">📊</span><span class="btn-act-lbl">'.($t['action_publish_stats'] ?? 'Statistici').'</span>
+                </button>
+                <a class="btn-act btn-act-999" href="/'.$admin_dir.'/parsing/published?filter_id='.(int)$f['id'].'&crosspost999=1" title="'.($t['action_view_999'] ?? 'Publicate pe 999.md').'">
+                    <span class="btn-act-lbl">999.md</span>
+                </a>
+                <button class="btn-act btn-act-icon-only" onclick="parsingLoadIntoPanel('.(int)$f['id'].')" title="'.$t['action_edit'].'">
+                    <span class="btn-act-ico">✎</span>
+                </button>
+                <button class="btn-act btn-act-danger" onclick="parsingDelete('.(int)$f['id'].')" title="'.$t['action_delete'].'">
+                    <span class="btn-act-ico">🗑</span>
+                </button>
             </div>
         </div>';
     }
@@ -860,6 +870,22 @@ $rtrn .= '
             <div class="modal-actions">
                 <button class="btn-secondary" onclick="parsingSaveFilterCancel()">'.$t['btn_cancel'].'</button>
                 <button class="btn-primary" onclick="parsingSaveFilterConfirm()">'.$t['btn_save'].'</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="duplicate-filter-modal" class="parsing-modal" style="display:none;">
+        <div class="parsing-modal-content" style="max-width:400px;">
+            <div class="modal-header">
+                <h2>'.($t['filter_duplicate_exists'] ?? 'Există deja un filtru similar').'</h2>
+                <button class="modal-close" onclick="parsingDuplicateCancel()">✕</button>
+            </div>
+            <div class="modal-section">
+                <p id="duplicate-filter-text" style="margin:0;color:#4b5563;line-height:1.5;"></p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-secondary" onclick="parsingDuplicateCancel()">'.($t['btn_cancel'] ?? 'Anulează').'</button>
+                <button class="btn-primary" onclick="parsingDuplicateEdit()">'.($t['btn_edit_existing'] ?? 'Editează filtrul existent').'</button>
             </div>
         </div>
     </div>

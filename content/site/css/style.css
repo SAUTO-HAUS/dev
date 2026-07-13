@@ -25,24 +25,34 @@
   #show_img:not(.act) {display:none;}
   #show_img.act {display:block;}
   
-  #show_img > .close, #show_img > .left, #show_img > .right {
-      width:50px;
-      height:50px;
-      position:absolute;
-      cursor:pointer;
-      background-color:transparent;
-      background-image:url('/media/images/site/nav2.svg');
-      background-repeat:repeat;
-      background-size:200%;
-      transition:0.2s;
+  /* Close button — same round white style as the nav arrows, with an X drawn in it. */
+  #show_img > .close {
+      position:absolute; top:2%; right:8%; z-index:3;
+      width:52px; height:52px; display:flex; align-items:center; justify-content:center;
+      border-radius:50%; background:rgba(255,255,255,0.82); box-shadow:0 1px 5px rgba(0,0,0,.25);
+      cursor:pointer; transition:background .15s, transform .12s;
   }
-  
-  #show_img > .close {top:2%; right:2%; z-index:3; background-position:0 50px;}
-  #show_img > .close:hover {background-position:-50px 50px;}
-  #show_img > .left {left:2%; top:50%; margin-top:-25px; z-index:1; background-position:0 -50px;}
-  #show_img > .left:hover {background-position:-50px -50px;}
-  #show_img > .right {right:2%; top:50%; margin-top:-25px; z-index:1;background-position:0 0;}
-  #show_img > .right:hover {background-position:50px 0;}
+  #show_img > .close:hover {background:#fff;}
+  #show_img > .close:active {transform:scale(.92);}
+  #show_img > .close::before, #show_img > .close::after {content:""; position:absolute; width:22px; height:3px; background:#111; border-radius:2px; transition:background .15s;}
+  #show_img > .close:hover::before, #show_img > .close:hover::after {background:#e2001a;}
+  #show_img > .close::before {transform:rotate(45deg);}
+  #show_img > .close::after {transform:rotate(-45deg);}
+
+  /* Chevron nav arrows (same look as the big-photo arrows). */
+  #show_img > .left, #show_img > .right {
+      position:absolute; top:50%; transform:translateY(-50%); z-index:1;
+      width:52px; height:52px; display:flex; align-items:center; justify-content:center;
+      border-radius:50%; background:rgba(255,255,255,0.82); box-shadow:0 1px 5px rgba(0,0,0,.25);
+      cursor:pointer; transition:background .15s, transform .12s;
+  }
+  #show_img > .left:hover, #show_img > .right:hover {background:#fff;}
+  #show_img > .left:active, #show_img > .right:active {transform:translateY(-50%) scale(.92);}
+  #show_img > .left::before, #show_img > .right::before {content:""; width:16px; height:16px; border-right:3px solid #111; border-bottom:3px solid #111; box-sizing:border-box;}
+  #show_img > .left {left:8%;}
+  #show_img > .left::before {transform:rotate(135deg); margin-left:6px;}
+  #show_img > .right {right:8%;}
+  #show_img > .right::before {transform:rotate(-45deg); margin-right:6px;}
   #show_img > .status {position:absolute; z-index:2; top:2%; left:2%; color:#fff;}
   
   #menu_mobile {
@@ -78,15 +88,28 @@
   /*---------------------------------HEADER-----------------------------------*/
   header, #crumbs, #ann, body > .fltr, main, footer, #nav_links, #home_banner {width:80vw; margin:10px 10vw -5px; position:relative; float:left; z-index:1;}
 
-  #home_banner {margin-top:1.5rem; margin-bottom:0; border-radius:1rem; overflow:hidden; line-height:0; max-height:18rem;}
-  #home_banner > img {width:100%; height:18rem; object-fit:cover; object-position:center; display:block;}
-  #home_banner .hb_overlay {position:absolute; inset:0; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; gap:1.2rem; padding:0 6%; line-height:1.05; pointer-events:none;}
-  #home_banner .hb_main {display:flex; flex-direction:column; align-items:flex-start; gap:1.2rem;}
-  #home_banner .hb_title {color:#fff; font-family:"def_l"; font-weight:800; font-size:3.6vw; text-transform:uppercase; letter-spacing:1px; text-shadow:1px 1px 6px rgba(0,0,0,.5);}
-  #home_banner .hb_regions {display:flex; gap:.8rem; flex-wrap:wrap; pointer-events:auto;}
-  #home_banner .hb_region_btn {display:inline-block; color:#fff; font-family:"def_l"; font-weight:800; font-size:1.8vw; text-transform:uppercase; letter-spacing:1px; line-height:1; text-decoration:none; padding:.55em 1.1em; border:2px solid #fff; border-radius:.6rem; transition:color .2s, background-color .2s, border-color .2s, transform .2s;}
-  #home_banner .hb_region_btn:hover {color:#fff; background-color:#e2001a; border-color:#e2001a; transform:translateY(-2px);}
-  #home_banner .hb_tagline {color:#d6d6d6; font-family:"def_l"; font-weight:600; font-size:1.5vw; letter-spacing:1px; text-shadow:1px 1px 4px rgba(0,0,0,.5); margin-top:2.5rem;}
+  #home_banner {margin-top:1.5rem; margin-bottom:0; border-radius:1rem; overflow:hidden; line-height:0; aspect-ratio:1000 / 260; container-type:inline-size;}
+  #home_banner > img {width:100%; height:100%; object-fit:cover; object-position:center; display:block;}
+  /* Content occupies the LEFT 60% of the banner; the right 40% is reserved for
+     other content to be added later. */
+  #home_banner .hb_overlay {position:absolute; top:0; bottom:0; left:0; right:40%; padding:0 2% 0 3%; pointer-events:none;}
+  /* Title anchored near the top; buttons centered on the full banner height (independent rows). */
+  #home_banner .hb_title {position:absolute; top:20%; left:3%; right:2%; color:#fff; font-family:"def_l"; font-weight:800; font-size:3.6cqw; line-height:1; text-transform:uppercase; letter-spacing:1px; text-shadow:1px 1px 6px rgba(0,0,0,.5);}
+  #home_banner .hb_regions {position:absolute; top:50%; left:3%; right:2%; transform:translateY(-50%); display:flex; gap:1.1cqw; flex-wrap:wrap; pointer-events:auto; margin:0;}
+  #home_banner .hb_region_btn {position:relative; overflow:hidden; display:inline-block; box-sizing:border-box; width:9.5cqw; text-align:center; color:#fff; font-family:"def_l"; font-weight:800; font-size:1.6cqw; text-transform:uppercase; letter-spacing:1px; line-height:1; text-decoration:none; padding:.55em .5em; border:.08em solid #fff; border-radius:.6rem; background-color:rgba(0,0,0,.6); transform-origin:center center; transition:color .2s, background-color .2s, border-color .2s;}
+  #home_banner .hb_region_btn::after {content:""; position:absolute; top:0; left:-60%; width:45%; height:100%; background:linear-gradient(100deg, transparent, rgba(255,255,255,.45), transparent); transform:skewX(-20deg); animation:hb-btn-shine 1.8s ease-in-out infinite; pointer-events:none;}
+  #home_banner .hb_region_btn:hover {color:#fff; background-color:#e2001a; border-color:#e2001a;}
+  @keyframes hb-btn-shine {0%{left:-60%;} 60%,100%{left:130%;}}
+  /* Full banner width (sibling of the overlay, not constrained to the left 60%).
+     left:1.8% aligns with rows 1-2: their 3% is relative to the 60%-wide overlay (3%*0.6=1.8%). */
+  #home_banner .hb_tagline {position:absolute; left:1.8%; right:3%; bottom:1.4cqw; color:#fff; opacity:.84; font-family:"def_l"; font-weight:600; font-size:1.55cqw; line-height:1; letter-spacing:1px; text-shadow:1px 1px 4px rgba(0,0,0,.5); margin-top:0;}
+  /* Right block: a single clickable card (label on top, count below) filling the right 40%.
+     It reuses .hb_region_btn (fill + shine + hover) but overrides size/position/padding. */
+  /* Anchored to the right and centered in the right 40% via left:80% translateX; width shrinks
+     to the content so there's no big empty gap around the text/number. */
+  #home_banner .hb_right {position:absolute; top:80%; right:1.8%; left:auto; transform:translateY(-50%); width:max-content; max-width:38%; display:inline-flex; flex-direction:row; align-items:center; justify-content:center; gap:1.2cqw; padding:.6em .9em; border:none; text-decoration:none;}
+  #home_banner .hb_avail {display:flex; flex-direction:column; align-items:center; gap:.1em; color:#fff; font-family:"def_l"; font-weight:700; font-size:2.2cqw; line-height:1.05; text-transform:none; letter-spacing:1px; text-align:center; text-shadow:1px 1px 6px rgba(0,0,0,.5);}
+  #home_banner .hb_count {font-family:"def_l"; font-weight:800; font-size:6cqw; line-height:1; letter-spacing:1px; color:#fff; text-shadow:1px 1px 8px rgba(0,0,0,.55);}
   #home_banner .hb_tagline .hb_dot {color:#e2001a; margin:0 .4em; font-weight:800;}
 
   #nav_links {display:flex; flex-flow:row nowrap; gap:1rem; margin-top:0.75rem; margin-bottom: 0; z-index:1;}
@@ -2518,14 +2541,18 @@ footer .columns-wrapper .column-container.col-logo-container {
           padding-left: 0 !important;
           padding-right: 0 !important;
       }
-      #home_banner {border-radius:0; margin-top:0 !important; max-height:11rem;}
-      #home_banner > img {height:11rem;}
-      #home_banner .hb_overlay {gap:.5rem; padding:3rem 4% .2rem; justify-content:space-between;}
-      #home_banner .hb_main {gap:.5rem;}
-      #home_banner .hb_title {font-size:6vw;}
-      #home_banner .hb_region_btn {font-size:4vw; padding:.6em 1.3em; background-color:rgba(0,0,0,.4);}
-      #home_banner .hb_regions {gap:.5rem;}
-      #home_banner .hb_tagline {font-size:3.4vw; margin-top:0;}
+      /* Phone banner: content in the LEFT 60% (column layout), right 40% reserved. */
+      #home_banner {border-radius:0; margin-top:0 !important; aspect-ratio:5 / 3;}
+      #home_banner .hb_overlay {position:absolute; top:0; bottom:0; left:0; right:40%; display:flex; flex-direction:column; justify-content:center; align-items:stretch; gap:3.5cqw; padding:3cqw 4% 8cqw 3%;}
+      /* Reset the desktop absolute positioning: on phones title + buttons flow in the column. */
+      #home_banner .hb_title {position:static; left:auto; right:auto; top:auto; transform:none; font-size:5.5cqw; text-align:left;}
+      #home_banner .hb_region_btn {width:88%; font-size:3.4cqw; padding:.8em .5em; border-width:1px; background-color:rgba(0,0,0,.5);}
+      #home_banner .hb_regions {position:static; left:auto; right:auto; top:auto; transform:none; flex-direction:column; align-items:flex-start; gap:3.5cqw; margin:0;}
+      #home_banner .hb_tagline {position:absolute; left:0; right:0; bottom:1.8cqw; font-size:3.5cqw; margin-top:0; text-align:center;}
+      /* Right block sits in the reserved right 40% on phones too (single card). */
+      #home_banner .hb_right {position:absolute; top:50%; left:60%; right:3%; transform:translateY(-50%); width:auto; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1cqw; padding:.7em .6em; border:none;}
+      #home_banner .hb_count {font-size:10cqw;}
+      #home_banner .hb_avail {font-size:4cqw; letter-spacing:1px;}
       #nav_links {gap:.75rem; padding:0 .8rem !important; flex-direction:column; }
       #nav_links > a {aspect-ratio:16/4; max-height:none;}
       #nav_links > a > .ttl {font-size:1.3rem; padding:0; width:100%; height:100%; display:flex; align-items:center; justify-content:center; text-align:center;}
@@ -3016,6 +3043,9 @@ footer .columns-wrapper .column-container.col-logo-container {
   main .gr > .oc_regions > .oc_region_btn > span {margin-top:-.4rem;}
   main .gr > .oc_regions > .oc_region_btn > img {width:96px; height:auto; display:block; object-fit:contain; margin-top:-.6rem;}
   main .gr > .oc_regions > .oc_region_btn:hover {background:#f0f0f0; transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,.15);}
+  /* Active region = current page: red brand border, tinted fill, stays "pressed" (no hover lift). */
+  main .gr > .oc_regions > .oc_region_btn.is-active {background:#fff5f5; border-color:#e2001a; color:#e2001a; box-shadow:0 2px 8px rgba(226,0,26,.18); cursor:default;}
+  main .gr > .oc_regions > .oc_region_btn.is-active:hover {background:#fff5f5; transform:none; box-shadow:0 2px 8px rgba(226,0,26,.18);}
   main .gr > .oc_regions > .oc_order_btn {flex:0 0 auto; margin-left:auto; margin-top:0; border:2px solid #eee; border-radius:.75rem;}
 
 

@@ -23,7 +23,7 @@ $pf_seatsReal = [];     // seats => count
 $pf_srcWhere = '';
 $pf_srcParams = [];
 if (!empty($sourceFilter)) {
-    $pf_srcWhere = ' AND source = ?';
+    $pf_srcWhere = ' AND pc.source = ?';
     $pf_srcParams[] = $sourceFilter;
 }
 // Counts must reflect ONLY the page that is showing this bar: ctlg counts the
@@ -32,7 +32,7 @@ if (!empty($sourceFilter)) {
 $pf_statusWhere = '';
 if (!empty($pf_status_filter) && is_array($pf_status_filter)) {
     $place = implode(',', array_fill(0, count($pf_status_filter), '?'));
-    $pf_statusWhere = ' AND status IN ('.$place.')';
+    $pf_statusWhere = ' AND pc.status IN ('.$place.')';
     $pf_srcParams = array_merge($pf_srcParams, $pf_status_filter);
 }
 // Optional extra WHERE fragment (no params) the including page can set, e.g. the
@@ -40,10 +40,24 @@ if (!empty($pf_status_filter) && is_array($pf_status_filter)) {
 // safe, static SQL string (no user input).
 $pf_extraWhere = !empty($pf_extra_where) ? ' AND ('.$pf_extra_where.')' : '';
 try {
-    $pfStmt = $db->prepare('SELECT brand, model, fuel_type, gearbox, seats, COUNT(*) AS cnt
-        FROM '.$prefx.'_parsing_cars
-        WHERE brand IS NOT NULL AND brand <> ""'.$pf_srcWhere.$pf_statusWhere.$pf_extraWhere.'
-        GROUP BY brand, model, fuel_type, gearbox, seats
+    // Brand/model come from car_list (the ONE canonical sauto list) via the car's
+    // sauto_br/sauto_mo mapping, so the dropdown reads identical to the site — no
+    // duplicate spellings. Falls back to the raw source name only for cars not yet
+    // mapped (COALESCE), so nothing disappears while a backfill is in progress.
+    // Same 3-step canonical preference as the card queries: the published catalog
+    // row''s br/mo (clc), then the parsing sauto_br/mo mapping (cl), then the raw
+    // source name. So the dropdown shows exactly one spelling per brand/model,
+    // matching the cards, on every parsing page.
+    $pfStmt = $db->prepare('SELECT
+            COALESCE(NULLIF(clc.br_nm, ""), NULLIF(cl.br_nm, ""), pc.brand) AS brand,
+            COALESCE(NULLIF(clc.mo_nm, ""), NULLIF(cl.mo_nm, ""), pc.model) AS model,
+            pc.fuel_type, pc.gearbox, pc.seats, COUNT(*) AS cnt
+        FROM '.$prefx.'_parsing_cars pc
+        LEFT JOIN '.$prefx.'_car_ctlg cc ON cc.id = pc.car_ctlg_id
+        LEFT JOIN '.$prefx.'_car_list clc ON clc.br = cc.br AND clc.mo = cc.mo
+        LEFT JOIN '.$prefx.'_car_list cl ON cl.br = pc.sauto_br AND cl.mo = pc.sauto_mo
+        WHERE pc.brand IS NOT NULL AND pc.brand <> ""'.$pf_srcWhere.$pf_statusWhere.$pf_extraWhere.'
+        GROUP BY brand, model, pc.fuel_type, pc.gearbox, pc.seats
         ORDER BY brand ASC, model ASC');
     $pfStmt->execute($pf_srcParams);
     foreach ($pfStmt->fetchAll(PDO::FETCH_ASSOC) as $row) {

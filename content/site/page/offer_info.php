@@ -2,12 +2,6 @@
 
 use App\Helper\PhoneHelper;
 
-// If this is a 404 page, show 404 content and exit
-if (isset($GLOBALS['page_is_404']) && $GLOBALS['page_is_404'] === true) {
-    include(_DEFAULT.'/404.php');
-    exit;
-}
-
 $pdo = $db->prepare('SELECT * FROM '.$prefx.'_offer_catalog WHERE `id`=:id');
 $pdo->execute(array('id' => $t_mp[3]));
 

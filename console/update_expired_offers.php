@@ -51,11 +51,11 @@ try {
         echo "[" . date('Y-m-d H:i:s') . "] ⏸️  Postponed {$postponed_count} scheduled post(s) - timer expired\n";
     }
 
-    // 1b. Mark expired on_order cars as out of stock (n_a=1), same as the manual
-    // "Not available" toggle. Only flip cars not already n_a=1, so we can count
-    // real changes. Reversible below when the timer is renewed.
+    // 1b. Expired on_order cars are flagged out of stock (n_a=1). The cleanup cron
+    // (delete_out_of_stock) then permanently deletes on_order + n_a=1 cars. Timer is
+    // also zeroed so nothing keeps counting. in_stock cars are never touched here.
     $sql_na_on = "UPDATE {$prefx}_car_ctlg
-                  SET `n_a` = 1
+                  SET `n_a` = 1, offer_timer_end = 0
                   WHERE catalog_type = 'on_order'
                   AND `n_a` = 0
                   AND offer_timer_end > 0
@@ -63,9 +63,8 @@ try {
     $stmt_na_on = $db->prepare($sql_na_on);
     $stmt_na_on->execute(['current_time' => $current_time]);
     $na_on_count = $stmt_na_on->rowCount();
-
     if ($na_on_count > 0) {
-        echo "[" . date('Y-m-d H:i:s') . "] 🚫 Marked {$na_on_count} car(s) as out of stock - timer expired\n";
+        echo "[" . date('Y-m-d H:i:s') . "] 🚫 Flagged {$na_on_count} expired on_order car(s) out of stock (cron will delete)\n";
     }
     
     // ============================================================================
@@ -104,10 +103,22 @@ try {
         echo "[" . date('Y-m-d H:i:s') . "] ✅ Restored {$na_off_count} car(s) to in stock - timer renewed\n";
     }
 
-    if ($postponed_count === 0 && $restored_count === 0 && $na_on_count === 0 && $na_off_count === 0) {
+    // 3. CLEANUP: permanently delete on_order cars that are out of stock (n_a=1),
+    // whatever set them so (manual tick, expired timer, sold on source). in_stock
+    // cars are never deleted. This is THE single deletion point — runs every cron
+    // pass, so an out-of-stock on_order car is erased almost immediately.
+    require_once __DIR__ . '/../App/Services/CarEraser.php';
+    $carImg = defined('_CAR_IMG') ? _CAR_IMG
+        : rtrim($_SERVER['DOCUMENT_ROOT'] ?? dirname(__DIR__), '/') . '/media/images/upload/car';
+    $erased = \App\Services\CarEraser::eraseOutOfStockOnOrder($db, $prefx, $carImg, 500);
+    if ($erased > 0) {
+        echo "[" . date('Y-m-d H:i:s') . "] 🗑️  Deleted {$erased} out-of-stock on_order car(s) permanently\n";
+    }
+
+    if ($postponed_count === 0 && $restored_count === 0 && $na_on_count === 0 && $na_off_count === 0 && $erased === 0) {
         echo "[" . date('Y-m-d H:i:s') . "] ✅ No changes needed - all scheduled posts are up to date\n";
     }
-    
+
 } catch (Exception $e) {
     echo "[" . date('Y-m-d H:i:s') . "] ❌ Error: " . $e->getMessage() . "\n";
     echo $e->getTraceAsString() . "\n";

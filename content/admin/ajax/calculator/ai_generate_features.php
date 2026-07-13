@@ -76,35 +76,16 @@ RULES:
 Return ONLY valid JSON (no markdown, no explanation):
 {\"safety\": [\"...\", \"...\", \"...\", \"...\", \"...\", \"...\", \"...\"], \"comfort\": [\"...\", \"...\", \"...\", \"...\", \"...\", \"...\", \"...\"]}";
 
-// Choose API based on settings
-$aiProvider = $aiSettings['ai_provider'] ?? 'openai';
-
-if ($aiProvider === 'openai' && !empty($openaiApiKey)) {
-    $aiModel = $aiSettings['openai_model'] ?? 'gpt-4o-mini';
-    if (strpos($aiModel, 'gpt-5') !== false) {
-        $apiUrl = "https://api.openai.com/v1/responses";
-    } else {
-        $apiUrl = "https://api.openai.com/v1/chat/completions";
-    }
-    $apiKey = $openaiApiKey;
-} elseif ($aiProvider === 'groq' && !empty($groqApiKey)) {
-    $apiUrl = "https://api.groq.com/openai/v1/chat/completions";
-    $apiKey = $groqApiKey;
-    $aiModel = $aiSettings['groq_model'] ?? 'llama-3.3-70b-versatile';
-} elseif (!empty($openaiApiKey)) {
-    $apiUrl = "https://api.openai.com/v1/chat/completions";
-    $apiKey = $openaiApiKey;
-    $aiModel = 'gpt-4o-mini';
-} else {
-    $apiUrl = "https://api.groq.com/openai/v1/chat/completions";
-    $apiKey = $groqApiKey;
-    $aiModel = 'llama-3.3-70b-versatile';
-}
-
-if (empty($apiKey)) {
-    $returnIt = ['success' => false, 'error' => 'No API key configured'];
+// OpenAI only — commercial-offer features must use GPT, never Groq.
+if (empty($openaiApiKey)) {
+    $returnIt = ['success' => false, 'error' => 'OpenAI API key not configured'];
     return;
 }
+$aiModel = $aiSettings['openai_model'] ?? 'gpt-4.1-mini';
+$apiUrl = (strpos($aiModel, 'gpt-5') !== false)
+    ? "https://api.openai.com/v1/responses"
+    : "https://api.openai.com/v1/chat/completions";
+$apiKey = $openaiApiKey;
 
 // Check if we should analyze photos (setting from ai_prompt page)
 $analyzePhotos = ($aiSettings['analyze_photos'] ?? '0') === '1';

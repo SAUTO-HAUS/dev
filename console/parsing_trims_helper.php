@@ -15,15 +15,9 @@
 if (!function_exists('translate_korean_trims')) {
     function translate_korean_trims(PDO $db, string $prefx): int
     {
-        $groqKey = defined('GROQ_API_KEY') ? GROQ_API_KEY : '';
-        if ($groqKey === '') {
-            $env = @file_get_contents(__DIR__ . '/../.env');
-            if ($env && preg_match('/GROQ_API_KEY=(.+)/', $env, $m)) $groqKey = trim($m[1]);
-        }
-
-        // Helper: batch-translate Korean phrases via Groq. Returns [kr => latin].
-        $groqTranslate = function (array $phrases) use ($groqKey): array {
-            if (!$phrases || $groqKey === '') return [];
+        // Batch-translate Korean phrases via the central ParsingAI helper. Returns [kr => latin].
+        $groqTranslate = function (array $phrases): array {
+            if (!$phrases) return [];
             $prompt = "These are Korean car TRIM / grade names from Encar listings. "
                 . "Translate/transliterate each into its standard Latin marketing name. "
                 . "Translate EVERY Korean word, including multi-word phrases "
@@ -32,17 +26,10 @@ if (!function_exists('translate_korean_trims')) {
                 . "The result MUST contain no Korean characters. "
                 . "Return ONLY a JSON array of strings, SAME length and order. Input:\n"
                 . json_encode(array_values($phrases), JSON_UNESCAPED_UNICODE);
-            $payload = ['model' => 'meta-llama/llama-4-scout-17b-16e-instruct',
-                'messages' => [['role' => 'system', 'content' => 'You output only a valid JSON array of strings. No markdown.'],
-                               ['role' => 'user', 'content' => $prompt]],
-                'temperature' => 0, 'max_tokens' => 2000];
-            $ch = curl_init('https://api.groq.com/openai/v1/chat/completions');
-            curl_setopt_array($ch, [CURLOPT_RETURNTRANSFER => true, CURLOPT_POST => true,
-                CURLOPT_POSTFIELDS => json_encode($payload), CURLOPT_TIMEOUT => 40,
-                CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . $groqKey, 'Content-Type: application/json']]);
-            $body = curl_exec($ch); $code = curl_getinfo($ch, CURLINFO_HTTP_CODE); curl_close($ch);
-            if ($code !== 200 || !$body) return [];
-            $content = trim(preg_replace('/^```(?:json)?|```$/m', '', json_decode($body, true)['choices'][0]['message']['content'] ?? ''));
+            $content = \App\Services\Parsing\ParsingAI::chat(
+                'You output only a valid JSON array of strings. No markdown.', $prompt, 2000, 40
+            );
+            if ($content === null) return [];
             $tr = json_decode($content, true);
             if (!is_array($tr) || count($tr) !== count($phrases)) return [];
             $map = [];

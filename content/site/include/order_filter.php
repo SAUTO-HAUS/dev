@@ -2,9 +2,16 @@
 
 if (isset($t_mp[3]) && !empty($t_mp[3]) && !is_numeric($t_mp[3])) {
 	$_GET['tg'] = 'fltr';
-	$_GET['br'] = str_replace('-', '_', explode('?', $t_mp[3])[0]);
-	if (isset($t_mp[4]) && !empty($t_mp[4])) {
-		$_GET['mo'] = str_replace('-', '_', explode('?', $t_mp[4])[0]);
+	$seg = strtolower(explode('?', $t_mp[3])[0]);
+	// Import regions live on a clean path (/ordercars/korea) and map to the import-country
+	// filter, NOT a brand. Everything else is treated as a brand (+ optional model).
+	if ($t_mp[2] === 'ordercars' && in_array($seg, ['korea', 'europe', 'usa'], true)) {
+		$_GET['ic'] = $seg;
+	} else {
+		$_GET['br'] = str_replace('-', '_', $seg);
+		if (isset($t_mp[4]) && !empty($t_mp[4])) {
+			$_GET['mo'] = str_replace('-', '_', explode('?', $t_mp[4])[0]);
+		}
 	}
 }
 
@@ -170,7 +177,7 @@ if (!isset($t_mp[2]) || $t_mp[2]=='' || $t_mp[2]=='ordercars'){
 						<span class="cls">'.$lng['w']['simplified'].'</span>
 					</span>
 				</div>
-				<a class="btn sbmt" href="/'.$_COOKIE['lang'].'/ordercars'.$q_uri.'" data-gr="'.(isset($_GET['gr'])?$_GET['gr']:'').'" data-br="'.(isset($_GET['br'])?str_replace('_','-',$_GET['br']):'').'" data-mo="'.(isset($_GET['mo'])?str_replace('_','-',$_GET['mo']):'').'" data-bt="'.(isset($_GET['bt'])?$_GET['bt']:'').'" data-srt="'.(isset($_GET['srt'])?$_GET['srt']:'').'"';
+				<a class="btn sbmt" href="/'.$_COOKIE['lang'].'/ordercars'.$q_uri.'" data-gr="'.(isset($_GET['gr'])?$_GET['gr']:'').'" data-br="'.(isset($_GET['br'])?str_replace('_','-',$_GET['br']):'').'" data-mo="'.(isset($_GET['mo'])?str_replace('_','-',$_GET['mo']):'').'" data-bt="'.(isset($_GET['bt'])?$_GET['bt']:'').'" data-ic="'.(isset($_GET['ic'])?$_GET['ic']:'').'" data-srt="'.(isset($_GET['srt'])?$_GET['srt']:'').'"';
 
 				// Add all detailed filter parameters as data attributes
 				foreach($f_it_xtd_arr['car'] as $k => $v){

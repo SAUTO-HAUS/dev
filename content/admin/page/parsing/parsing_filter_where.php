@@ -7,11 +7,32 @@ function parsing_catalog_filter_where(string $col = '', $db = null, string $pref
     $sql = '';
     $params = [];
 
+    // Filter-card "999" button: show only cars of one saved filter that this
+    // cron cross-posted to 999 (crosspost_999 = 1).
+    $filterId = $g('filter_id');
+    if ($filterId !== '' && ctype_digit($filterId)) { $sql .= " AND {$col}filter_id = ?"; $params[] = (int)$filterId; }
+    if ($g('crosspost999') === '1') { $sql .= " AND {$col}crosspost_999 = 1"; }
+
+    // Brand/model filter matches the DISPLAYED name. Same 3-step preference the
+    // dropdown/cards use: (1) the published catalog row''s br/mo (via car_ctlg_id),
+    // (2) the parsing sauto_br/mo mapping, (3) the raw source name. Mirrors those
+    // exactly so a selected option actually matches. $prefx names the tables.
+    $ctlgBr = "(SELECT clc.br_nm FROM {$prefx}_car_list clc JOIN {$prefx}_car_ctlg cc ON cc.br=clc.br AND cc.mo=clc.mo WHERE cc.id = {$col}car_ctlg_id LIMIT 1)";
+    $mapBr  = "(SELECT cl.br_nm FROM {$prefx}_car_list cl WHERE cl.br = {$col}sauto_br AND cl.mo = {$col}sauto_mo LIMIT 1)";
+    $ctlgMo = "(SELECT clc.mo_nm FROM {$prefx}_car_list clc JOIN {$prefx}_car_ctlg cc ON cc.br=clc.br AND cc.mo=clc.mo WHERE cc.id = {$col}car_ctlg_id LIMIT 1)";
+    $mapMo  = "(SELECT cl.mo_nm FROM {$prefx}_car_list cl WHERE cl.br = {$col}sauto_br AND cl.mo = {$col}sauto_mo LIMIT 1)";
+    $displayBrand = $prefx !== ''
+        ? "COALESCE(NULLIF({$ctlgBr}, ''), NULLIF({$mapBr}, ''), {$col}brand)"
+        : "{$col}brand";
+    $displayModel = $prefx !== ''
+        ? "COALESCE(NULLIF({$ctlgMo}, ''), NULLIF({$mapMo}, ''), {$col}model)"
+        : "{$col}model";
+
     $brand = $g('f_brand');
-    if ($brand !== '') { $sql .= " AND {$col}brand = ?"; $params[] = $brand; }
+    if ($brand !== '') { $sql .= " AND {$displayBrand} = ?"; $params[] = $brand; }
 
     $model = $g('f_model');
-    if ($model !== '') { $sql .= " AND {$col}model = ?"; $params[] = $model; }
+    if ($model !== '') { $sql .= " AND {$displayModel} = ?"; $params[] = $model; }
 
     $fuel = $g('f_fuel');
     if ($fuel !== '') { $sql .= " AND {$col}fuel_type = ?"; $params[] = $fuel; }

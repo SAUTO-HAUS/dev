@@ -276,40 +276,20 @@ $jsonFormat = 'IMPORTANT: Return EXACTLY in this JSON format:
 
 $prompt = $editablePrompt . "\n\n" . $fixedCarData . "\n\n" . $htmlStructure . "\n\n" . $jsonFormat;
 
-// Choose API based on settings
-$aiProvider = $aiSettings['ai_provider'] ?? 'openai';
+$aiProvider = 'openai';
 
-if ($aiProvider === 'openai' && !empty($openaiApiKey)) {
-    $selectedModel = $aiSettings['openai_model'] ?? 'gpt-4o-mini';
-    // GPT-5.x uses new responses API endpoint
-    if (strpos($selectedModel, 'gpt-5') !== false) {
-        $apiUrl = "https://api.openai.com/v1/responses";
-    } else {
-        $apiUrl = "https://api.openai.com/v1/chat/completions";
-    }
-    $apiKey = $openaiApiKey;
-    $model = $selectedModel;
-    $useOpenAI = true;
-} elseif ($aiProvider === 'groq' && !empty($groqApiKey)) {
-    $apiUrl = "https://api.groq.com/openai/v1/chat/completions";
-    $apiKey = $groqApiKey;
-    $model = $aiSettings['groq_model'] ?? 'llama-3.3-70b-versatile';
-    $fallbackModel = 'llama-3.1-8b-instant';
-    $useOpenAI = false;
-} elseif (!empty($openaiApiKey)) {
-    // Fallback to OpenAI if selected provider key is missing
-    $apiUrl = "https://api.openai.com/v1/chat/completions";
-    $apiKey = $openaiApiKey;
-    $model = $aiSettings['openai_model'] ?? 'gpt-4o-mini';
-    $useOpenAI = true;
-} else {
-    // Fallback to Groq
-    $apiUrl = "https://api.groq.com/openai/v1/chat/completions";
-    $apiKey = $groqApiKey;
-    $model = $aiSettings['groq_model'] ?? 'llama-3.3-70b-versatile';
-    $fallbackModel = 'llama-3.1-8b-instant';
-    $useOpenAI = false;
+if (empty($openaiApiKey)) {
+    $returnIt = ['success' => false, 'error' => 'OpenAI API key not configured'];
+    return;
 }
+$selectedModel = $aiSettings['openai_model'] ?? 'gpt-4.1-mini';
+// GPT-5.x uses the new responses API endpoint.
+$apiUrl = (strpos($selectedModel, 'gpt-5') !== false)
+    ? "https://api.openai.com/v1/responses"
+    : "https://api.openai.com/v1/chat/completions";
+$apiKey = $openaiApiKey;
+$model = $selectedModel;
+$useOpenAI = true;
 
 $userContent = [];
 

@@ -142,7 +142,6 @@ if (__post('sub') == 'mo_search') {
         $mo_nm = $result['mo_nm'] ?? NULL;
 
         if (!empty(__post('id'))) {
-
             $pdo = $db->prepare('SELECT * FROM '.$prefx.'_car_ctlg WHERE `id`=:id LIMIT 1');
             $pdo->execute(['id' => __post('id')]);
             $r = $pdo->fetch();
@@ -257,12 +256,12 @@ if (__post('sub') == 'mo_search') {
                 $offer_timer_end = $original_offer_timer_end;
             }
             
-            // A live (future) offer timer means the car is in stock again — force
-            // n_a=0 so renewing the timer clears the "out of stock" status set when
-            // it had expired, without the operator having to untick n_a manually.
+            // Manual "out of stock" has the highest priority: ticking n_a=1 wins even
+            // over a live timer, and the timer is dropped to 0 so the car reads as out
+            // of stock. The cleanup cron then sees on_order + n_a=1 and deletes it.
             $na_to_save = (int)__post('n_a', 0);
-            if (!empty($offer_timer_end) && $offer_timer_end > time()) {
-                $na_to_save = 0;
+            if ($na_to_save === 1) {
+                $offer_timer_end = 0; // kill the timer when marked out of stock
             }
 
             $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET
@@ -617,7 +616,10 @@ if (__post('sub') == 'mo_search') {
                                 }
                             }
                         }
-                        $urls = array_slice($urls, 0, 30); // cap
+                        // Photo cap per source (same as ParsingPublisher): auction
+                        // sources (eCarsTrade/OpenLane) → 10, Encar → 20.
+                        $imgCap = in_array($pRow['source'] ?? '', ['ecarstrade', 'openlane'], true) ? 10 : 20;
+                        $urls = array_slice($urls, 0, $imgCap);
 
                         if (!empty($urls)) {
                             $zDir = _CAR_IMG;

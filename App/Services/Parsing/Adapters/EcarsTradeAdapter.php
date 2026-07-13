@@ -939,14 +939,13 @@ class EcarsTradeAdapter extends AbstractAdapter
             // 200 but no clear marker either way — keep trying other cars.
         }
 
-        // No car confirmed login. Distinguish the causes so the UI can be honest:
-        //  - every tested car was 404 → cars are just gone, cookie unknown (keep).
-        //  - we loaded a page but saw no logged-in marker → likely expired.
-        if ($allGone) {
-            return ['logged_in' => true, 'vin' => null, 'reason' => 'all_404'];
-        }
-        return ['logged_in' => $sawCar ? false : true, 'vin' => null,
-                'reason' => $sawCar ? 'no_marker' : 'inconclusive'];
+        // No car confirmed a logged-in marker → treat the cookie as NOT valid.
+        // The old code reported "valid" when every tested car was 404 (sold) or when
+        // no car loaded — a false positive that let imports run without VINs on an
+        // expired cookie. We now require POSITIVE proof (buy button / VIN row) to
+        // call it valid; anything short of that is "not authenticated".
+        $reason = $allGone ? 'all_404' : ($sawCar ? 'no_marker' : 'inconclusive');
+        return ['logged_in' => false, 'vin' => null, 'reason' => $reason];
     }
 
     // Fetch the equipment list ("Комплектация") from the detail page. Each option

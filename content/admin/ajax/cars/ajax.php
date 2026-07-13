@@ -805,8 +805,8 @@ elseif (__post('fn') == 'save_ai_settings') {
         
         $settings = [
             'ai_provider' => __post('ai_provider') ?: 'openai',
-            'openai_model' => __post('openai_model') ?: 'gpt-4o-mini',
-            'groq_model' => __post('groq_model') ?: 'llama-3.3-70b-versatile',
+            'openai_model' => __post('openai_model') ?: 'gpt-4.1-mini',
+            'groq_model' => __post('groq_model') ?: 'gpt-4.1-mini',
             'analyze_photos' => __post('analyze_photos') ?: '0',
             'photo_positions' => __post('photo_positions') ?? '',
             'car_type_order' => __post('car_type_order') ?: '',

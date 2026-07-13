@@ -350,16 +350,32 @@
 
     // Save the current source panel form as a named filter.
     let _saveFilterSrc = null;
-    window.parsingSaveSourceFilter = function (src) {
-        _saveFilterSrc = src;
+    const _openSaveNameModal = function (src) {
         const modal = document.getElementById('save-filter-modal');
         const input = document.getElementById('save-filter-name');
         if (!modal || !input) return;
-        // When editing an existing filter, prefill its current name (editable).
         const form = document.getElementById('sf-' + src);
+        // When editing an existing filter, prefill its current name (editable).
         input.value = (form && form.dataset.editName) ? form.dataset.editName : '';
         modal.style.display = 'flex';
         setTimeout(() => { input.focus(); input.select(); }, 50);
+    };
+    window.parsingSaveSourceFilter = function (src) {
+        _saveFilterSrc = src;
+        const form = document.getElementById('sf-' + src);
+        // Editing an existing filter → skip the duplicate pre-check (it's the same one).
+        if (form && form.dataset.editId) { _openSaveNameModal(src); return; }
+        // Creating a new filter → check for an existing brand+model+source match FIRST,
+        // so we don't make the operator type a name only to be rejected on save.
+        const data = readSourceForm(src);
+        if (!data) { _openSaveNameModal(src); return; }
+        ajax('check_duplicate_filter', data).then(res => {
+            if (res && res.duplicate && res.existing_id) {
+                parsingShowDuplicate(res.existing_id, res.existing_name || '');
+            } else {
+                _openSaveNameModal(src);
+            }
+        }).catch(() => _openSaveNameModal(src));
     };
     window.parsingSaveFilterCancel = function () {
         document.getElementById('save-filter-modal').style.display = 'none';
@@ -377,9 +393,48 @@
         if (form && form.dataset.editId) data.id = form.dataset.editId;
         document.getElementById('save-filter-modal').style.display = 'none';
         ajax('save_filter', data).then(res => {
-            if (res && res.success) location.reload();
-            else errorAlert(res);
+            if (res && res.success) { location.reload(); return; }
+            // Anti-duplicate: a filter for this brand+model on the same source already
+            // exists. Don't create a second one — show a modal and let the operator open
+            // the existing filter to edit instead of splitting the model across filters.
+            if (res && res.duplicate && res.existing_id) {
+                parsingShowDuplicate(res.existing_id, res.existing_name || '');
+                return;
+            }
+            errorAlert(res);
         });
+    };
+
+    // Duplicate-filter modal: shown when a create is blocked because a matching filter
+    // already exists. "Edit" opens that existing filter in its source panel.
+    let _duplicateExistingId = null;
+    window.parsingShowDuplicate = function (existingId, existingName) {
+        _duplicateExistingId = existingId;
+        const modal = document.getElementById('duplicate-filter-modal');
+        const text = document.getElementById('duplicate-filter-text');
+        if (!modal || !text) { parsingLoadIntoPanel(existingId); return; }
+        text.textContent = L('filter_duplicate_edit', 'Redactează filtrul existent în loc să creezi altul.');
+        modal.style.display = 'flex';
+    };
+    window.parsingDuplicateCancel = function () {
+        const modal = document.getElementById('duplicate-filter-modal');
+        if (modal) modal.style.display = 'none';
+        _duplicateExistingId = null;
+    };
+    window.parsingDuplicateEdit = function () {
+        const id = _duplicateExistingId;
+        parsingDuplicateCancel();
+        if (!id) return;
+        // skipScroll: let this handler do the ONE scroll (with a top offset) once the
+        // panel has expanded — otherwise loadIntoPanel's own scroll fires early and the
+        // page visibly jumps to the wrong spot, then to the right one.
+        parsingLoadIntoPanel(id, true);
+        setTimeout(() => {
+            const form = document.querySelector('.source-search-form[data-edit-id="' + id + '"]');
+            if (!form) return;
+            const top = form.getBoundingClientRect().top + window.pageYOffset - 90;
+            window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+        }, 700);
     };
     document.addEventListener('keydown', function (e) {
         const modal = document.getElementById('save-filter-modal');
@@ -389,7 +444,8 @@
     });
 
     // Load a saved filter back into the correct source panel.
-    window.parsingLoadIntoPanel = function (id) {
+    // skipScroll: caller will handle scrolling itself (avoids a double jump).
+    window.parsingLoadIntoPanel = function (id, skipScroll) {
         ajax('get_filter', { id }).then(res => {
             if (!res || !res.success) return errorAlert(res);
             const f = res.filter;
@@ -446,7 +502,7 @@
                 }
             }
 
-            form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (!skipScroll) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
             // A loaded filter has values, so clear any stale hint.
             setSearchHint(form, false);
         });
@@ -484,21 +540,6 @@
                 input.classList.add('err');
                 errorAlert(res);
             }
-        });
-    };
-
-    window.parsingRunNow = function (id) {
-        if (!confirm(L('confirm_run_now'))) return;
-        const btn = document.querySelector('[onclick*="parsingRunNow(' + id + ')"]');
-        if (btn) btn.textContent = '…';
-        ajax('run_filter', { id }).then(res => {
-            if (btn) btn.textContent = '▶';
-            if (res && res.success) {
-                let msg = (res.imported || 0) + ' ' + L('imported_label', 'importate');
-                if (res.duplicates > 0) msg += ' · ' + res.duplicates + ' ' + L('already_have', 'deja la noi');
-                alert(msg);
-                if (res.imported > 0) location.reload();
-            } else errorAlert(res);
         });
     };
 
@@ -632,6 +673,70 @@
             })
             .catch(() => ({ br: brCode, mo: '' }));
     }
+
+    // Edit the source price (price_eur) inline. Saving recomputes the MD/landed
+    // total on the card (renderMdPrices reads data-price-eur) and, at publish time,
+    // the server recomputes from the same price_eur. So this one edit is enough.
+    window.parsingEditPrice = function (carId, btn) {
+        const card = document.querySelector('[data-car-id="' + carId + '"]');
+        if (!card) return;
+        const priceBox = card.querySelector('.car-price');
+        const valSpan = card.querySelector('.car-price-val');
+        if (!priceBox || !valSpan || priceBox.querySelector('.car-price-input')) return;
+
+        const current = parseInt(card.getAttribute('data-price-eur'), 10) || 0;
+
+        const input = document.createElement('input');
+        input.type = 'number';
+        input.min = '0';
+        input.step = '1';
+        input.value = current || '';
+        input.className = 'car-price-input';
+        input.placeholder = '€';
+
+        valSpan.style.display = 'none';
+        if (btn) btn.style.display = 'none';
+        priceBox.insertBefore(input, priceBox.querySelector('.car-price-md'));
+        input.focus();
+        input.select();
+
+        let done = false;
+        const cancel = () => {
+            if (done) return; done = true;
+            input.remove();
+            valSpan.style.display = '';
+            if (btn) btn.style.display = '';
+        };
+        const save = () => {
+            if (done) return;
+            const newPrice = parseInt(input.value, 10) || 0;
+            if (newPrice <= 0 || newPrice === current) { cancel(); return; }
+            done = true;
+            input.disabled = true;
+            ajax('save_price', { car_id: carId, price_eur: newPrice }).then(res => {
+                if (res && res.success) {
+                    const p = res.price_eur || newPrice;
+                    card.setAttribute('data-price-eur', p);
+                    card.setAttribute('data-price', p);
+                    valSpan.textContent = p.toLocaleString('ro-MD') + ' €';
+                    input.remove();
+                    valSpan.style.display = '';
+                    if (btn) btn.style.display = '';
+                    renderMdPrices(); // recompute the MD line from the new price
+                } else {
+                    errorAlert(res);
+                    input.disabled = false;
+                    done = false;
+                }
+            });
+        };
+
+        input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') { e.preventDefault(); save(); }
+            else if (e.key === 'Escape') { e.preventDefault(); cancel(); }
+        });
+        input.addEventListener('blur', save);
+    };
 
     window.parsingPublish = function (carId, target) {
         if (target === 'sauto') {
@@ -2124,11 +2229,37 @@
         const fd = new FormData(e.target);
         const data = {};
         fd.forEach((v, k) => { data[k] = v; });
-        ['default_target_999', 'default_target_facebook', 'default_target_telegram', 'libretranslate_enabled']
+        ['default_target_999', 'default_target_facebook', 'default_target_telegram', 'libretranslate_enabled',
+         'crosspost_999_enabled', 'crosspost_fb_enabled', 'crosspost_tg_enabled']
             .forEach(k => { if (!(k in data)) data[k] = '0'; });
         ajax('save_settings', data).then(res => {
             if (res && res.success) alert(L('settings_saved'));
             else errorAlert(res);
+        });
+    };
+
+    // Auto-save a single cross-post setting on change (no Save button). Checkboxes
+    // send 1/0; number inputs send their value. A brief flash confirms the save.
+    window.parsingCrosspostAutoSave = function (el) {
+        const key = el.name;
+        // Cap the "cars per window" fields per channel: 999 → 5, FB/TG → 20. If the
+        // user types more, snap it back and flag the field — don't save a bad value.
+        if (el.type === 'number' && /_count$/.test(key)) {
+            const cap = /999/.test(key) ? 5 : 20;
+            const n = parseInt(el.value, 10);
+            if (n > cap) {
+                el.value = cap;
+                el.classList.add('cp-err');
+                setTimeout(() => el.classList.remove('cp-err'), 1200);
+                alert(L('crosspost_maxcars', 'Maxim {n} mașini.').replace('{n}', cap));
+            }
+        }
+        const val = el.type === 'checkbox' ? (el.checked ? '1' : '0') : String(el.value);
+        ajax('save_settings', { [key]: val }).then(res => {
+            const row = el.closest('.cp-row');
+            if (res && res.success) {
+                if (row) { row.classList.add('cp-saved'); setTimeout(() => row.classList.remove('cp-saved'), 700); }
+            } else errorAlert(res);
         });
     };
 

@@ -33,12 +33,24 @@ try {
     $offset   = (parsing_current_page() - 1) * $pageSize;
 
     // Join car_ctlg to know if the sauto ad is hidden (vis = 0). Hidden ones
-    // are pushed to the end and shown dimmed/red in the list.
-    $stmt = $db->prepare('SELECT pc.*, cc.vis AS ctlg_vis, cc.`999_id` AS ctlg_999_id
+    // are pushed to the end and shown dimmed/red in the list. brand/model come from
+    // car_list (single canonical sauto list) via sauto_br/mo, falling back to the
+    // raw source name — same as the ctlg page and the filter dropdown, so the
+    // displayed names and filtering stay consistent.
+    // Brand/model come from car_list, the single canonical sauto list. Preference:
+    // (1) the PUBLISHED catalog row''s own br/mo (cc → clc) — the definitive name
+    // for a car that already lives on sauto; (2) the parsing sauto_br/mo mapping
+    // (cl); (3) the raw source name. This keeps published showing exactly one
+    // spelling per brand even for cars published before the backfill.
+    $stmt = $db->prepare('SELECT pc.*, cc.vis AS ctlg_vis, cc.`999_id` AS ctlg_999_id,
+            COALESCE(NULLIF(clc.br_nm, ""), NULLIF(cl.br_nm, ""), pc.brand) AS brand,
+            COALESCE(NULLIF(clc.mo_nm, ""), NULLIF(cl.mo_nm, ""), pc.model) AS model
         FROM '.$prefx.'_parsing_cars pc
         LEFT JOIN '.$prefx.'_car_ctlg cc ON cc.id = pc.car_ctlg_id
+        LEFT JOIN '.$prefx.'_car_list clc ON clc.br = cc.br AND clc.mo = cc.mo
+        LEFT JOIN '.$prefx.'_car_list cl ON cl.br = pc.sauto_br AND cl.mo = pc.sauto_mo
         WHERE '.$where.'
-        ORDER BY (pc.status = "unavailable") ASC, (cc.vis = 0) ASC, pc.published_at DESC
+        ORDER BY pc.published_at DESC
         LIMIT '.$pageSize.' OFFSET '.$offset);
     $stmt->execute($flt['params']);
     $cars = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -81,6 +93,46 @@ if (!empty($ctlgIds)) {
             // Table may be missing — skip that platform.
         }
     }
+}
+
+// Per-channel published counts — ONLY when viewing a single saved filter (URL has
+// filter_id), so the header shows that filter's breakdown (e.g. via the "999"
+// button). Without a filter it would just count the whole catalog, which is noise,
+// so we skip the line entirely. The count must NOT be narrowed by the crosspost999
+// marker (that flag is for the button's list, not the site total), so build a
+// filter-only WHERE here instead of reusing $where.
+$statLine = '';
+$statFilterId = isset($_GET['filter_id']) && ctype_digit((string)$_GET['filter_id']) ? (int)$_GET['filter_id'] : 0;
+if ($statFilterId > 0) {
+    $stat = ['site' => 0, '999' => 0, 'fb' => 0, 'tg' => 0];
+    // Same "published to sauto" base as the list, scoped to this filter only.
+    $sWhere = '(pc.status = "published" OR (pc.status = "unavailable" AND pc.car_ctlg_id IS NOT NULL AND pc.car_ctlg_id > 0))
+               AND pc.filter_id = ? AND pc.car_ctlg_id > 0';
+    try {
+        $q = $db->prepare('SELECT COUNT(*) FROM '.$prefx.'_parsing_cars pc
+            JOIN '.$prefx.'_car_ctlg cc ON cc.id = pc.car_ctlg_id WHERE '.$sWhere);
+        $q->execute([$statFilterId]);
+        $stat['site'] = (int)$q->fetchColumn();
+
+        $chTables = ['999' => $prefx.'_sauto_personal_schedules',
+                     'fb'  => $prefx.'_scheduled_facebook_posts',
+                     'tg'  => $prefx.'_scheduled_telegram_posts'];
+        foreach ($chTables as $k => $tbl) {
+            try {
+                $q = $db->prepare('SELECT COUNT(DISTINCT pc.car_ctlg_id)
+                    FROM '.$prefx.'_parsing_cars pc
+                    JOIN '.$tbl.' s ON s.car_id = pc.car_ctlg_id AND s.status = "published"
+                    WHERE '.$sWhere);
+                $q->execute([$statFilterId]);
+                $stat[$k] = (int)$q->fetchColumn();
+            } catch (Exception $e) { /* table missing — leave 0 */ }
+        }
+    } catch (Exception $e) { /* keep zeros */ }
+
+    $statLine = '<span class="fstat-live">'.$stat['site'].' '.($t['stat_on_site'] ?? 'на сайте').'</span>'
+        . '<span class="fstat-sep">/</span><span class="fstat-999">'.$stat['999'].' '.($t['stat_on_999'] ?? 'на 999.md').'</span>'
+        . '<span class="fstat-sep">/</span><span class="fstat-fb">'.$stat['fb'].' FB</span>'
+        . '<span class="fstat-sep">/</span><span class="fstat-tg">'.$stat['tg'].' TG</span>';
 }
 
 $rtrn = '
@@ -131,10 +183,15 @@ $gearLabels = [
 // Shared catalog filter bar. Counts must match the list EXACTLY: only cars
 // actually published to sauto (published, or unavailable-but-still-linked) —
 // same condition as the list $where above.
-$pf_extra_where = 'status = "published" OR (status = "unavailable" AND car_ctlg_id IS NOT NULL AND car_ctlg_id > 0)';
+$pf_extra_where = 'pc.status = "published" OR (pc.status = "unavailable" AND pc.car_ctlg_id IS NOT NULL AND pc.car_ctlg_id > 0)';
 ob_start();
 include _ADM_PAGE.'/parsing/parsing_filter_bar.php';
 $rtrn .= ob_get_clean();
+
+// Per-filter cross-post summary, on its own row right under the catalog filter bar.
+if ($statLine !== '') {
+    $rtrn .= '<div class="parsing-chan-stats">'.$statLine.'</div>';
+}
 
 $rtrn .= '<div class="proposed-grid">';
 
@@ -278,7 +335,12 @@ if (empty($cars)) {
         // Link to the live sauto.md ad if we have its catalog id.
         $sautoLink = '';
         if (!empty($c['car_ctlg_id'])) {
-            $sautoLink = '<a class="btn-published-view" href="/'.$admin_dir.'/ordercars/detail?id='.(int)$c['car_ctlg_id'].'">'
+            // Return to THIS exact published view after saving — including its current
+            // filters (filter_id, crosspost999, …), not a bare /parsing/published.
+            $returnUrl = '/'.$admin_dir.'/parsing/published'
+                . (!empty($_SERVER['QUERY_STRING']) ? '?'.$_SERVER['QUERY_STRING'] : '');
+            $sautoLink = '<a class="btn-published-view" href="/'.$admin_dir.'/ordercars/detail?id='.(int)$c['car_ctlg_id']
+                . '&from=published&return='.rawurlencode($returnUrl).'">'
                 . ($t['action_view_sauto'] ?? 'Vezi pe sauto') . '</a>';
         }
 

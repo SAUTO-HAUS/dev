@@ -116,9 +116,14 @@ if ( strpos($uri, '/car/') ){
 }
 
 if ((isset($t_mp[2]) && ($t_mp[2]=='cars' || $t_mp[2]=='ordercars')) && isset($t_mp[3]) && !is_numeric($t_mp[3])) {
-    $section = $t_mp[2]; 
-    
-    if (isset($t_mp[4]) && !empty($t_mp[4])) {
+    $section = $t_mp[2];
+
+    // Import regions on /ordercars are a clean-path filter (import country), NOT a brand.
+    // Set ic here so the later brand-lookup block does not force br=korea (empty catalog).
+    if ($section === 'ordercars' && in_array(strtolower(explode('?', $t_mp[3])[0]), ['korea', 'europe', 'usa'], true)) {
+        $_GET['tg'] = 'fltr';
+        $_GET['ic'] = strtolower(explode('?', $t_mp[3])[0]);
+    } elseif (isset($t_mp[4]) && !empty($t_mp[4])) {
         $_GET['tg'] = 'fltr';
     } else {
         $brand_model = explode('?', $t_mp[3])[0];
@@ -214,7 +219,13 @@ if ( substr($uri, -1) == '/' ){
 }
 
 if ($redirect == 1){
+	// Preserve the query string (filters/sort/region ?ic=) — dropping it here lost the
+	// import region when redirecting brand/model URLs like /ordercars/toyota/rav-4?ic=korea.
+	$redir_qs = '';
+	if (isset($q_mp[1]) && $q_mp[1] !== '' && strpos($uri, '?') === false) {
+		$redir_qs = '?'.$q_mp[1];
+	}
 	header('HTTP/1.1 301 Moved Permanently');
-	header('Location: '.$protocol.'://'.$http_host . $uri);
+	header('Location: '.$protocol.'://'.$http_host . $uri . $redir_qs);
 	exit();
 }

@@ -145,6 +145,88 @@ $rtrn = '
         </div>
     </fieldset>
 
+    <div id="parsing-crosspost-box" style="margin-top:2rem;">
+        <fieldset class="crosspost-limits">
+            <legend>'.($t['settings_crosspost'] ?? 'Publicare automată pe canale').'</legend>
+            <p class="cp-hint">'.($t['crosspost_hint'] ?? 'Câte mașini (cele mai ieftine din fiecare filtru) se publică automat pe fiecare canal, într-o fereastră de timp.').'</p>
+            <div class="cp-row">
+                <label class="cp-toggle" title="'.($t['crosspost_toggle'] ?? 'Activează/dezactivează').'">
+                    <input type="checkbox" name="crosspost_999_enabled" value="1" '.($g('crosspost_999_enabled','0')==='1'?'checked':'').' onchange="parsingCrosspostAutoSave(this)">
+                    <span class="cp-slider"></span>
+                </label>
+                <span class="cp-label">999.md</span>
+                <div class="cp-controls">
+                    <input type="number" min="0" max="5" step="1" name="crosspost_999_count" value="'.htmlspecialchars($g('crosspost_999_count','2')).'" onchange="parsingCrosspostAutoSave(this)">
+                    <span class="cp-sep">'.($t['crosspost_per'] ?? 'mașini / la').'</span>
+                    <input type="number" min="1" step="1" name="crosspost_999_hours" value="'.htmlspecialchars($g('crosspost_999_hours','24')).'" onchange="parsingCrosspostAutoSave(this)">
+                    <span class="cp-unit">'.($t['crosspost_hours'] ?? 'ore').'</span>
+                </div>
+            </div>
+            <div class="cp-row">
+                <label class="cp-toggle" title="'.($t['crosspost_toggle'] ?? 'Activează/dezactivează').'">
+                    <input type="checkbox" name="crosspost_fb_enabled" value="1" '.($g('crosspost_fb_enabled','0')==='1'?'checked':'').' onchange="parsingCrosspostAutoSave(this)">
+                    <span class="cp-slider"></span>
+                </label>
+                <span class="cp-label">Facebook</span>
+                <div class="cp-controls">
+                    <input type="number" min="0" max="20" step="1" name="crosspost_fb_count" value="'.htmlspecialchars($g('crosspost_fb_count','10')).'" onchange="parsingCrosspostAutoSave(this)">
+                    <span class="cp-sep">'.($t['crosspost_per'] ?? 'mașini / la').'</span>
+                    <input type="number" min="1" step="1" name="crosspost_fb_hours" value="'.htmlspecialchars($g('crosspost_fb_hours','24')).'" onchange="parsingCrosspostAutoSave(this)">
+                    <span class="cp-unit">'.($t['crosspost_hours'] ?? 'ore').'</span>
+                </div>
+            </div>
+            <div class="cp-row">
+                <label class="cp-toggle" title="'.($t['crosspost_toggle'] ?? 'Activează/dezactivează').'">
+                    <input type="checkbox" name="crosspost_tg_enabled" value="1" '.($g('crosspost_tg_enabled','0')==='1'?'checked':'').' onchange="parsingCrosspostAutoSave(this)">
+                    <span class="cp-slider"></span>
+                </label>
+                <span class="cp-label">Telegram</span>
+                <div class="cp-controls">
+                    <input type="number" min="0" max="20" step="1" name="crosspost_tg_count" value="'.htmlspecialchars($g('crosspost_tg_count','10')).'" onchange="parsingCrosspostAutoSave(this)">
+                    <span class="cp-sep">'.($t['crosspost_per'] ?? 'mașini / la').'</span>
+                    <input type="number" min="1" step="1" name="crosspost_tg_hours" value="'.htmlspecialchars($g('crosspost_tg_hours','24')).'" onchange="parsingCrosspostAutoSave(this)">
+                    <span class="cp-unit">'.($t['crosspost_hours'] ?? 'ore').'</span>
+                </div>
+            </div>
+        </fieldset>
+    </div>
+
+    <style>
+        #parsing-container .crosspost-limits .cp-hint { font-size:.82rem; color:#6b7280; margin:0 0 12px; }
+        #parsing-container .crosspost-limits .cp-row {
+            display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap;
+        }
+        #parsing-container .crosspost-limits .cp-label {
+            min-width:90px; font-weight:600; color:#374151;
+        }
+        #parsing-container .crosspost-limits .cp-row input[type=number] {
+            width:70px; padding:6px 8px; border:1px solid #d1d5db; border-radius:6px;
+            text-align:center; font-weight:600;
+        }
+        #parsing-container .crosspost-limits .cp-sep,
+        #parsing-container .crosspost-limits .cp-unit { color:#6b7280; font-size:.85rem; }
+        /* on/off toggle per channel */
+        #parsing-container .crosspost-limits .cp-toggle {
+            position:relative; display:inline-block; width:40px; height:22px; flex:none; margin:0;
+        }
+        #parsing-container .crosspost-limits .cp-toggle input { opacity:0; width:0; height:0; position:absolute; }
+        #parsing-container .crosspost-limits .cp-slider {
+            position:absolute; inset:0; background:#cbd5e1; border-radius:22px; transition:.2s; cursor:pointer;
+        }
+        #parsing-container .crosspost-limits .cp-slider::before {
+            content:""; position:absolute; height:16px; width:16px; left:3px; top:3px;
+            background:#fff; border-radius:50%; transition:.2s;
+        }
+        #parsing-container .crosspost-limits .cp-toggle input:checked + .cp-slider { background:#1e7e34; }
+        #parsing-container .crosspost-limits .cp-toggle input:checked + .cp-slider::before { transform:translateX(18px); }
+        /* dim the number inputs when the channel is off */
+        #parsing-container .crosspost-limits .cp-row:has(input[type=checkbox]:not(:checked)) input[type=number] { opacity:.5; }
+        /* brief green flash on auto-save */
+        #parsing-container .crosspost-limits .cp-row.cp-saved { background:#eafaef; border-radius:6px; transition:background .3s; }
+        /* red flash when a value over 20 is snapped back */
+        #parsing-container .crosspost-limits input.cp-err { border-color:#dc2626 !important; background:#fdecec; }
+    </style>
+
     <h2 style="margin-top:2.5rem;">'.$flagEu.$flagKr.$t['commission_title'].'</h2>
     <p class="muted">'.$t['commission_hint'].'</p>
 

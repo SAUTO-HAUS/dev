@@ -381,49 +381,49 @@ function publishFacebookAlbum($pageId, $accessToken, $message, $mediaPaths) {
         echo "[" . date('Y-m-d H:i:s') . "] Photo " . ($index + 1) . " uploaded with ID: {$data['id']}\n";
     }
     
-    // Step 2: Create post with attached media
-    echo "[" . date('Y-m-d H:i:s') . "] Creating post with " . count($photoIds) . " attached photos\n";
-    
+    // Step 2: Create post with attached media. Facebook's /feed sometimes returns
+    // HTTP 500 "Please reduce the amount of data you're asking for" when too many
+    // photos are attached at once. Retry with progressively fewer photos (10 → 6 →
+    // 4) so the post still goes out (with fewer images) instead of failing outright.
     $postUrl = "https://graph.facebook.com/v22.0/{$pageId}/feed";
-    $postData = [
-        'message' => $message,
-        'attached_media' => json_encode($photoIds),
-        'access_token' => $accessToken
-    ];
-    
-    $ch = curl_init();
-    curl_setopt_array($ch, [
-        CURLOPT_URL => $postUrl,
-        CURLOPT_POST => true,
-        CURLOPT_POSTFIELDS => $postData,
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_SSL_VERIFYPEER => true,
-        CURLOPT_CONNECTTIMEOUT => 30,
-        CURLOPT_TIMEOUT => 60
-    ]);
-    
-    $response = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    
-    echo "[" . date('Y-m-d H:i:s') . "] Facebook album API response code: {$httpCode}\n";
-    
-    if (curl_errno($ch)) {
-        $error = curl_error($ch);
+    $tryCounts = [count($photoIds), 6, 4];
+    $tryCounts = array_values(array_unique(array_filter($tryCounts, fn($n) => $n >= 1 && $n <= count($photoIds))));
+    $lastErr = 'Unknown Facebook API error';
+
+    foreach ($tryCounts as $n) {
+        $subset = array_slice($photoIds, 0, $n);
+        echo "[" . date('Y-m-d H:i:s') . "] Creating post with {$n} attached photos\n";
+        $postData = [
+            'message' => $message,
+            'attached_media' => json_encode($subset),
+            'access_token' => $accessToken
+        ];
+        $ch = curl_init();
+        curl_setopt_array($ch, [
+            CURLOPT_URL => $postUrl,
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => $postData,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_CONNECTTIMEOUT => 30,
+            CURLOPT_TIMEOUT => 60
+        ]);
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if (curl_errno($ch)) { $err = curl_error($ch); curl_close($ch); throw new Exception("cURL Error creating album: {$err}"); }
         curl_close($ch);
-        throw new Exception("cURL Error creating album: {$error}");
+
+        $data = json_decode($response, true);
+        echo "[" . date('Y-m-d H:i:s') . "] Facebook album API response ({$n} photos): " . json_encode($data) . "\n";
+        if ($httpCode === 200 && isset($data['id'])) {
+            echo "[" . date('Y-m-d H:i:s') . "] Facebook album created with ID: {$data['id']} ({$n} photos)\n";
+            return $data['id'];
+        }
+        $lastErr = $data['error']['message'] ?? 'Unknown Facebook API error';
+        // Only worth retrying with fewer photos for the "reduce data" 500; other
+        // errors won't be fixed by fewer photos.
+        if (stripos($lastErr, 'reduce the amount') === false) break;
     }
-    
-    curl_close($ch);
-    
-    $data = json_decode($response, true);
-    echo "[" . date('Y-m-d H:i:s') . "] Facebook album API response: " . json_encode($data) . "\n";
-    
-    if ($httpCode !== 200 || !isset($data['id'])) {
-        $errorMsg = isset($data['error']['message']) ? $data['error']['message'] : 'Unknown Facebook API error';
-        throw new Exception("Facebook Album API Error (HTTP {$httpCode}): {$errorMsg}");
-    }
-    
-    echo "[" . date('Y-m-d H:i:s') . "] Facebook album created successfully with ID: {$data['id']}\n";
-    return $data['id'];
+    throw new Exception("Facebook Album API Error: {$lastErr}");
 }
 ?>

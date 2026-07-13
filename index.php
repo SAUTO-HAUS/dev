@@ -68,11 +68,16 @@ if (isset($t_mp[2])&&$t_mp[2]==$admin_dir){ // If request to admin panel (admin_
 	if (!empty($_COOKIE['sess'])) {  include(_ADM.'/action/adm_chk.php'); }
 }
 
-//---err 404
-if( ( isset($t_mp[2]) && !in_array( $t_mp[2], $url_arr ) ) || ( isset($t_mp[2]) && $t_mp[2]=='' && isset($t_mp[3]) ) ) { 
+//---err 404 — unknown top-level route. Flag it and let body.php render the styled 404
+// inside the normal layout (menu/footer). Admin panel keeps the old standalone 404.
+if( ( isset($t_mp[2]) && !in_array( $t_mp[2], $url_arr ) ) || ( isset($t_mp[2]) && $t_mp[2]=='' && isset($t_mp[3]) ) ) {
     http_response_code(404);
-    include_once(_DEFAULT.'/404.php'); 
-    die(); 
+    if (isset($t_mp[2]) && $t_mp[2] === $admin_dir) {
+        include_once(_DEFAULT.'/404.php');
+        die();
+    }
+    $GLOBALS['page_is_404'] = true;
+    
 }
 //---OLD Internet Explorer
 if ( checkBrowser() == 'old_ie' ){include(_DEFAULT.'/ie_sorry.php'); die(); }

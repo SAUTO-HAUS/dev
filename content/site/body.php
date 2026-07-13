@@ -42,7 +42,7 @@ if (isset($_GET['srt']) && in_array($_GET['srt'], ['in_stock','on_order'], true)
     }
 }
 
-$GLOBALS['page_is_404'] = false;
+if (!isset($GLOBALS['page_is_404'])) { $GLOBALS['page_is_404'] = false; }
 
 
 if (isset($t_mp[2]) && $t_mp[2] == 'cars' && isset($t_mp[3]) && !isset($_GET['tg'])) {
@@ -168,6 +168,7 @@ if (isset($t_mp[2]) && $t_mp[2] == 'ordercars' && isset($t_mp[3]) && !isset($_GE
 echo '
 	<div id="show_img">
 		<div class="status"></div>
+		<button type="button" class="card-share-btn show-img-share" data-share-url="" data-copied-text="'.htmlspecialchars($lng['w']['link_copied'] ?? 'Link copiat', ENT_QUOTES).'" aria-label="'.htmlspecialchars($lng['w']['share'] ?? 'Distribuie', ENT_QUOTES).'" title="'.htmlspecialchars($lng['w']['share'] ?? 'Distribuie', ENT_QUOTES).'"><svg class="csb-ico" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="7" cy="12" r="2" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="17" cy="6" r="2" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="17" cy="18" r="2" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M15 7L8.5 11" stroke="currentColor" stroke-width="2"/><path d="M8.5 13.5L15 17" stroke="currentColor" stroke-width="2"/></svg><span class="csb-label"></span></button>
 		<button type="button" class="card-fav-btn show-img-fav" data-fav-id="" data-fav-add="'.htmlspecialchars($lng['w']['fav_add'] ?? 'Adaugă în favorite', ENT_QUOTES).'" data-fav-remove="'.htmlspecialchars($lng['w']['fav_remove'] ?? 'Scoate din favorite', ENT_QUOTES).'" title="'.htmlspecialchars($lng['w']['fav_add'] ?? 'Adaugă în favorite', ENT_QUOTES).'"><svg class="cfb-ico" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg></button>
 		<div class="close"></div>
 		<div class="left"></div>
@@ -298,16 +299,26 @@ $_show_links_pages = ['', 'cars', 'ordercars', 'services', 'calculator'];
 $_cur_page = isset($t_mp[2]) ? $t_mp[2] : '';
 $_on_services_main = ($_cur_page == 'services' && (!isset($t_mp[3]) || $t_mp[3] == ''));
 $_hide_nav_on_mobile = $isMobile == '1' && in_array($_cur_page, ['cars', 'ordercars', 'services']);
-if ( in_array($_cur_page, $_show_links_pages) && ($_cur_page != 'services' || $_on_services_main) && !$_hide_nav_on_mobile ):
+if ( in_array($_cur_page, $_show_links_pages) && ($_cur_page != 'services' || $_on_services_main) && !$_hide_nav_on_mobile && empty($GLOBALS['page_is_404']) ):
 ?>
 <?php if ($_cur_page == ''): 
     $_hb_lang = $_COOKIE['lang'] ?? 'ro';
     $_hb_txt = [
-        'ro' => ['import' => 'Import auto din', 'see' => 'Vezi catalog auto', 'tagline' => ['Transparență', 'Calitate', 'Livrare Sigură']],
-        'ru' => ['import' => 'Импорт авто из',  'see' => 'Смотреть каталог авто', 'tagline' => ['Прозрачность', 'Качество', 'Безопасная доставка']],
-        'en' => ['import' => 'Car import from', 'see' => 'See car catalog', 'tagline' => ['Transparency', 'Quality', 'Safe Delivery']],
+        'ro' => ['import' => 'Import auto din', 'see' => 'Vezi catalog auto', 'tagline' => ['Transparență', 'Calitate', 'Livrare Sigură'], 'available' => ['Oferte', 'disponibile']],
+        'ru' => ['import' => 'Импорт авто из',  'see' => 'Смотреть каталог авто', 'tagline' => ['Прозрачность', 'Качество', 'Безопасная доставка'], 'available' => ['Доступные', 'предложения']],
+        'en' => ['import' => 'Car import from', 'see' => 'See car catalog', 'tagline' => ['Transparency', 'Quality', 'Safe Delivery'], 'available' => ['Available', 'offers']],
     ];
     $_hb = $_hb_txt[$_hb_lang] ?? $_hb_txt['ro'];
+
+    // Total available cars (in-stock + on-order) with an active, non-expired status.
+    // EFFECTIVE_NA_SQL also treats an expired offer timer as unavailable (same as the cards).
+    $_hb_count = 0;
+    try {
+        $_hb_sql = 'SELECT COUNT(*) FROM '.$prefx.'_car_ctlg
+            WHERE catalog_type IN ("in_stock","on_order") AND `vis`="1" AND `act`="1"
+              AND '.EFFECTIVE_NA_SQL.' = 0';
+        $_hb_count = (int)$db->query($_hb_sql)->fetchColumn();
+    } catch (Exception $e) { $_hb_count = 0; }
     $_hb_regions = [
         'korea'  => ['ro' => 'Coreea', 'ru' => 'Кореи', 'en' => 'Korea'],
         'europe' => ['ro' => 'Europa', 'ru' => 'Европы', 'en' => 'Europe'],
@@ -317,23 +328,25 @@ if ( in_array($_cur_page, $_show_links_pages) && ($_cur_page != 'services' || $_
 <div id="home_banner">
     <img src="/media/images/site/banner-home.jpg" alt="">
     <div class="hb_overlay">
-        <div class="hb_main">
-            <div class="hb_title"><?php echo $_hb['import']; ?></div>
-            <div class="hb_regions">
-                <?php foreach ($_hb_regions as $_rk => $_rv):
-                    $_rlabel = $_rv[$_hb_lang] ?? $_rv['ro'];
-                ?>
-                <a class="hb_region_btn" href="/<?php echo $_hb_lang; ?>/ordercars?tg=fltr&amp;ic=<?php echo $_rk; ?>" title="<?php echo $_hb['see'].' '.$_rlabel; ?>"><?php echo $_rlabel; ?></a>
-                <?php endforeach; ?>
-            </div>
+        <div class="hb_title"><?php echo $_hb['import']; ?></div>
+        <div class="hb_regions">
+            <?php foreach ($_hb_regions as $_rk => $_rv):
+                $_rlabel = $_rv[$_hb_lang] ?? $_rv['ro'];
+            ?>
+            <a class="hb_region_btn" href="/<?php echo $_hb_lang; ?>/ordercars/<?php echo $_rk; ?>" title="<?php echo $_hb['see'].' '.$_rlabel; ?>"><?php echo $_rlabel; ?></a>
+            <?php endforeach; ?>
         </div>
-        <div class="hb_tagline"><?php
-            foreach ($_hb['tagline'] as $_ti => $_tword) {
-                if ($_ti > 0) echo '<span class="hb_dot">·</span>';
-                echo $_tword;
-            }
-        ?></div>
     </div>
+    <a class="hb_right hb_region_btn" href="/<?php echo $_hb_lang; ?>/ordercars" title="<?php echo $_hb['see']; ?>">
+        <span class="hb_avail"><span><?php echo $_hb['available'][0]; ?></span><span><?php echo $_hb['available'][1]; ?></span></span>
+        <span class="hb_count"><?php echo number_format($_hb_count, 0, '', '.'); ?></span>
+    </a>
+    <div class="hb_tagline"><?php
+        foreach ($_hb['tagline'] as $_ti => $_tword) {
+            if ($_ti > 0) echo '<span class="hb_dot">·</span>';
+            echo $_tword;
+        }
+    ?></div>
 </div>
 <?php endif; ?>
 <div id="nav_links">
@@ -396,7 +409,10 @@ elseif ( $t_mp[2]=='ordercars' && (!isset($t_mp[3]) || $t_mp[3]=='' || !is_numer
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ion-rangeslider/2.3.1/js/ion.rangeSlider.min.js"></script>
     <?php }
 
-    if ( !isset($t_mp[2]) || $t_mp[2]=='') {
+    if ( !empty($GLOBALS['page_is_404']) && !(isset($t_mp[2]) && in_array($t_mp[2], ['cars','ordercars'], true) && isset($t_mp[3]) && is_numeric($t_mp[3])) ) {
+        include(_SITE_INCL.'/page_404.php');
+    }
+    elseif ( !isset($t_mp[2]) || $t_mp[2]=='') {
         // On home, if a filter/sort is active, render the cars listing instead of the home landing page
         if (isset($_GET['tg']) && $_GET['tg']=='fltr') {
             include (_SITE_PAGE.'/cars.php');
@@ -433,6 +449,15 @@ elseif ( $t_mp[2]=='ordercars' && (!isset($t_mp[3]) || $t_mp[3]=='' || !is_numer
                 else {echo 'Games';}
             }
         }
+    }
+
+    else {
+        if (isset($_GET['r404dbg'])) {
+            echo '<!-- R404DBG: t_mp2='.htmlspecialchars($t_mp[2] ?? 'UNSET')
+                .' page_is_404='.(!empty($GLOBALS['page_is_404'])?'1':'0')
+                .' info_arr='.htmlspecialchars(json_encode($info_arr ?? null)).' -->';
+        }
+        include(_SITE_INCL.'/page_404.php');
     }
 
     ?>
@@ -1364,6 +1389,20 @@ SVG
                         fb.container.appendChild(fav);
                         fb._favBtn = fav;
                         updateFavBtn(fb);
+
+                        // Share button in the Fancybox viewer (above the heart) — copies the car URL.
+                        const shr = document.createElement('button');
+                        shr.className = 'share-btn';
+                        shr.type = 'button';
+                        shr.innerHTML = '<svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="7" cy="12" r="2" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="17" cy="6" r="2" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="17" cy="18" r="2" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M15 7L8.5 11" stroke="currentColor" stroke-width="2"/><path d="M8.5 13.5L15 17" stroke="currentColor" stroke-width="2"/></svg>';
+                        shr.setAttribute('aria-label', 'Distribuie');
+                        shr.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            const url = location.origin + location.pathname;
+                            if (navigator.share) { try { navigator.share({ url: url }); } catch(err){} }
+                            else if (navigator.clipboard) { navigator.clipboard.writeText(url).then(function(){ shr.classList.add('is-copied'); setTimeout(function(){ shr.classList.remove('is-copied'); }, 1500); }).catch(function(){}); }
+                        });
+                        fb.container.appendChild(shr);
 
                         const el = fb.container;
 

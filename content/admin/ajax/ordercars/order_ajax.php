@@ -135,16 +135,17 @@ elseif ( __post('fn')=='edit' ){
 }
 //---------------------------------------------NOT AVAILABLE ITEM
 elseif ( __post('fn')=='av0' ) {
-    $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `n_a`=1 WHERE `id`=:id');
-    $pdo->execute([ 'id' => __post('id') ]);
+    // Flag out of stock (n_a=1) + drop the offer timer so it reads correctly. The
+    // cleanup cron then deletes on_order + n_a=1 cars; in_stock stay flagged.
+    $carId = (int)__post('id');
+    $pdo = $db->prepare('UPDATE '.$prefx.'_car_ctlg SET `n_a`=1, `offer_timer_end`=0 WHERE `id`=:id');
+    $pdo->execute([ 'id' => $carId ]);
 
-    // Out of stock → postpone the car's pending 999 schedules (reversible).
-    na_postpone_schedules($db, $prefx, (int)__post('id'));
-
-    $car = (new Car())->getCarById(__post('id'));
+    na_postpone_schedules($db, $prefx, $carId);
+    $car = (new Car())->getCarById($carId);
     if (!empty($car['999_id'])) {
         (new Api999Service($car['999_api_id']))->changeAccessPolicy($car);
-        (new Adverts())->changeActiveStatus(__post('id'), 0);
+        (new Adverts())->changeActiveStatus($carId, 0);
     }
 }
 //---------------------------------------------AVAILABLE ITEM

@@ -188,6 +188,12 @@ $(document).on("change", "#fltr .srch", function(e){
 	var zHref = "";
 	var zData = $("#fltr > .ctrl > .btns > .sbmt").data();
 	var zCnt = 0;
+	// Import regions (ordercars) live on a clean path like brand does: /ordercars/korea.
+	// BUT the path can only hold ONE thing: if a brand is selected, the region must go to
+	// the query string (?ic=korea) instead, otherwise it would be lost.
+	var ocRegionSlugs = ["korea", "europe", "usa"];
+	var icIsRegion = zData.ic && ocRegionSlugs.indexOf(String(zData.ic).toLowerCase()) !== -1;
+	var icInPath = icIsRegion && !zData.br; // region on the path only when there's no brand
 	if (zData.br) {
 		var brand = zData.br.replace(/_/g, '-');
 		zHref = zData.link + brand;
@@ -196,6 +202,9 @@ $(document).on("change", "#fltr .srch", function(e){
 			zHref += "/" + model;
 		}
 		zCnt++;
+	} else if (icInPath) {
+		// Region on a clean path; filters/sorting still go in the query string below.
+		zHref = zData.link + String(zData.ic).toLowerCase();
 	} else {
 		zHref = $("#fltr > .ctrl > .btns").data("def");
 	}
@@ -219,10 +228,16 @@ $(document).on("change", "#fltr .srch", function(e){
 		zData.clr = clrMatch[1];
 	}
 
-	// Preserve import region (ic=korea|usa|europe) selected via the ordercars buttons
-	var icMatch = fullUrl.match(/[?&]ic=([^&#]*)/i);
-	if (icMatch && icMatch[1] && !zData.ic) {
-		zData.ic = icMatch[1];
+	// Preserve import region (korea|usa|europe) selected via the ordercars buttons.
+	// It can arrive either as a clean path (/ordercars/korea) or a legacy ?ic= query.
+	if (!zData.ic) {
+		var icPathMatch = window.location.pathname.match(/\/ordercars\/(korea|europe|usa)(?:\/|$)/i);
+		var icMatch = fullUrl.match(/[?&]ic=([^&#]*)/i);
+		if (icPathMatch && icPathMatch[1]) {
+			zData.ic = icPathMatch[1].toLowerCase();
+		} else if (icMatch && icMatch[1]) {
+			zData.ic = icMatch[1];
+		}
 	}
 	
 	// Ensure all filter parameters are captured
@@ -260,19 +275,27 @@ $(document).on("change", "#fltr .srch", function(e){
 	
 	queryParams.push("tg=fltr");
 	hasDetailedFilters = true;
-	
+
+	// Re-evaluate region-in-path AFTER zData.ic has been fully resolved (from data-ic OR
+	// the path above). Region goes on the path ONLY when there's no brand (path holds one
+	// thing); with a brand, icInPath stays false so ?ic= is kept in the query below.
+	icIsRegion = zData.ic && ocRegionSlugs.indexOf(String(zData.ic).toLowerCase()) !== -1;
+	icInPath = icIsRegion && !zData.br;
+	if (icInPath && zHref.indexOf("/" + String(zData.ic).toLowerCase()) === -1) {
+		zHref = zData.link + String(zData.ic).toLowerCase();
+	}
+
 	// Add all filter parameters to the URL, now properly merged
 	$.each(zData, function(key, value) {
-		// Skip brand and model (in path) and link (internal)
-		if (key !== 'br' && key !== 'mo' && key !== 'link' && value !== "") {
+		// Skip brand and model (in path), link (internal), and the region when it is
+		// already carried on the clean path (/ordercars/korea) to avoid a duplicate ?ic=.
+		if (key === 'br' || key === 'mo' || key === 'link') { return; }
+		if (key === 'ic' && icInPath) { return; }
+		if (value !== "") {
 			queryParams.push(key + "=" + value);
 		}
 	});
 	
-	// Log the data being used (for debugging)
-	console.log("Filter data:", zData);
-	
-
 	zHref += "?" + queryParams.join("&");
 	
 	// Ensure URL has no duplicate parameters or multiple question marks
@@ -389,10 +412,20 @@ $(document).on("click", "#fltr > .ctrl > .btns > .unst", function(){
 	$("#fltr .rad").prop("checked", false).attr("checked", false);
 	//$("#fltr [type=\"checkbox\"]").prop("checked", false).attr("checked", false);
 	$("#fltr .srch.inp").val("");
-	
+
+	// Clearing filters should keep the current import region: reset to /ordercars/<region>
+	// instead of the bare /ordercars, so we don't drop out of Korea/Europe/USA.
+	var unsetRegionSlugs = ["korea", "europe", "usa"];
+	var unsetIcMatch = window.location.pathname.match(/\/ordercars\/(korea|europe|usa)(?:\/|$)/i);
+	var unsetRegion = unsetIcMatch ? unsetIcMatch[1].toLowerCase() : "";
+
 	$.each( $("#fltr > .ctrl > .btns > .sbmt").data(), function(k, v) {
-		$("#fltr > .ctrl > .btns > .sbmt").attr("data-"+k, "").data(k, "").trigger("change").attr("href", $("#fltr > .ctrl > .btns").data("def") );
+		$("#fltr > .ctrl > .btns > .sbmt").attr("data-"+k, "").data(k, "").trigger("change");
 	});
+	var unsetHref = unsetRegion
+		? ($("#fltr > .ctrl > .btns").data("link") + unsetRegion)
+		: $("#fltr > .ctrl > .btns").data("def");
+	$("#fltr > .ctrl > .btns > .sbmt").attr("href", unsetHref);
 })
 
 if ( $('#fltr').length ){
@@ -412,7 +445,17 @@ if ( $('#fltr').length ){
 	
 	var initData = $("#fltr > .ctrl > .btns > .sbmt").data();
 	var initHref = "";
-	
+	// Region (korea|europe|usa) lives on the clean path, same as brand.
+	var initRegionSlugs = ["korea", "europe", "usa"];
+	var initIc = initData.ic ? String(initData.ic).toLowerCase() : "";
+	if (initIc && initRegionSlugs.indexOf(initIc) === -1) { initIc = ""; }
+	if (!initIc) {
+		var initIcPath = window.location.pathname.match(/\/ordercars\/(korea|europe|usa)(?:\/|$)/i);
+		if (initIcPath) { initIc = initIcPath[1].toLowerCase(); }
+	}
+
+	// Region goes on the path only when there's no brand; with a brand it stays in the query.
+	var initIcInPath = initIc && !(initData.br && initData.br !== "");
 	if (initData.br && initData.br !== "") {
 		var brand = initData.br.replace(/_/g, '-');
 		initHref = $("#fltr > .ctrl > .btns").data("link") + brand;
@@ -420,13 +463,21 @@ if ( $('#fltr').length ){
 			var model = initData.mo.replace(/_/g, '-');
 			initHref += "/" + model;
 		}
+	} else if (initIcInPath) {
+		initHref = $("#fltr > .ctrl > .btns").data("link") + initIc;
 	} else {
 		initHref = $("#fltr > .ctrl > .btns").data("def");
 	}
-	
+
 	var initParams = ["tg=fltr"];
+	// When a brand+region combo is active, make sure ?ic= is present even if data-ic was empty.
+	if (initIc && !initIcInPath && (!initData.ic || initData.ic === "")) {
+		initParams.push("ic=" + initIc);
+	}
 	$.each(initData, function(key, value) {
-		if (key !== 'br' && key !== 'mo' && key !== 'link' && value !== "" && value !== undefined) {
+		if (key === 'br' || key === 'mo' || key === 'link') { return; }
+		if (key === 'ic' && initIcInPath) { return; } // region is already in the path
+		if (value !== "" && value !== undefined) {
 			initParams.push(key + "=" + value);
 		}
 	});
@@ -868,7 +919,9 @@ $(document).on("click", "main > .pht_bx > .list > .phts > .item", function(){
 
 var $activePhtBx = null;
 
-$(document).on('click', 'main > .pht_bx > .big_pht', function(){
+$(document).on('click', 'main > .pht_bx > .big_pht', function(e){
+	// Ignore clicks on the in-place nav arrows / the share/fav buttons — they have their own handlers.
+	if ($(e.target).closest('.bp-nav, .card-share-btn, .card-fav-btn').length) { return; }
 	$activePhtBx = $(this).closest('.pht_bx');
 	var dataPos = $(this).data("pos"); var dataCnt = $(this).data("cnt"); var dataSrc = $(this).data("src");
 
@@ -921,6 +974,30 @@ $('#show_img > .right').click(function(){
 })
 
 $('#show_img > .close').click(function(){ $('#show_img').removeClass('act').css('background-image','none'); })
+
+// Keyboard: Escape closes the fullscreen viewer; arrows change the photo.
+$(document).on('keydown', function(e){
+	if (!$('#show_img').hasClass('act')) return;
+	if (e.key === 'Escape' || e.keyCode === 27) { $('#show_img').removeClass('act').css('background-image','none'); }
+	else if (e.key === 'ArrowLeft'  || e.keyCode === 37) { $('#show_img > .left').click(); }
+	else if (e.key === 'ArrowRight' || e.keyCode === 39) { $('#show_img > .right').click(); }
+})
+
+// In-place arrows on the desktop big photo (change the image without opening fullscreen).
+$(document).on('click', '.big_pht > .bp-nav', function(e){
+	e.stopPropagation(); // don't open the fullscreen viewer
+	var bP = $(this).closest('.big_pht');
+	var $phtBx = bP.closest('.pht_bx');
+	var it = $phtBx.find('.list .phts .item');
+	var dataPos = bP.data('pos'); var dataCnt = bP.data('cnt');
+	if (dataCnt <= 1) return;
+	if ($(this).hasClass('bp-left')) { dataPos = (dataPos > 1) ? dataPos - 1 : dataCnt; }
+	else { dataPos = (dataPos < dataCnt) ? dataPos + 1 : 1; }
+	var newIt = it.filter("[data-pos='"+dataPos+"']");
+	var dataSrc = newIt.data('high') || newIt.attr('src').replace('/med/', '/high/');
+	it.removeClass('act'); newIt.addClass('act');
+	bP.css('background-image', 'url('+dataSrc+')').data({ 'pos': dataPos, 'src': dataSrc });
+})
 
 $("main > .inf_bx > .menu > .btn").on("click", function(){
 	var zName = $(this).data("name");

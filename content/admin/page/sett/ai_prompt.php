@@ -42,9 +42,8 @@ $currentCarTypeStock = $settings['car_type_stock'] ?? $defaultCarTypeStock;
 $currentImagePrompt = $settings['image_prompt'] ?? $defaultImagePrompt;
 $currentAnalyzePhotos = $settings['analyze_photos'] ?? '0';
 $currentPhotoPositions = $settings['photo_positions'] ?? '';
-$currentAiProvider = $settings['ai_provider'] ?? 'openai';
+$currentAiProvider = 'openai';
 $currentOpenaiModel = $settings['openai_model'] ?? 'gpt-4o-mini';
-$currentGroqModel = $settings['groq_model'] ?? 'llama-3.3-70b-versatile';
 
 $rtrn = '
 <style>
@@ -78,20 +77,14 @@ $rtrn = '
 <div class="ai-settings">
     <h2>🤖 Настройки AI для описаний автомобилей</h2>
     <div style="background:#e8f5e9;padding:8px 12px;border-radius:5px;margin-bottom:1rem;font-size:13px;">
-        <strong>Текущий AI:</strong> '.($currentAiProvider === 'openai' ? 'OpenAI / '.$currentOpenaiModel : 'Groq / '.$currentGroqModel).' | 
-        <strong>Фото:</strong> '.($currentAiProvider === 'openai' ? ($currentAnalyzePhotos === '1' ? '✅ ВКЛ' : '❌ ВЫКЛ') : '⛔ не поддерживается').'
+        <strong>Текущий AI:</strong> OpenAI / '.$currentOpenaiModel.' |
+        <strong>Фото:</strong> '.($currentAnalyzePhotos === '1' ? '✅ ВКЛ' : '❌ ВЫКЛ').'
     </div>
 
     <form onsubmit="return false;">
-        <div class="model-select">
-            <label>AI Provider:</label>
-            <select name="ai_provider" onchange="toggleProvider()">
-                <option value="openai" '.($currentAiProvider === 'openai' ? 'selected' : '').'>OpenAI (платный)</option>
-                <option value="groq" '.($currentAiProvider === 'groq' ? 'selected' : '').'>Groq (бесплатный)</option>
-            </select>
-        </div>
-        
-        <div class="model-select" id="openai-models" style="'.($currentAiProvider !== 'openai' ? 'display:none;' : '').'">
+        <input type="hidden" name="ai_provider" value="openai">
+
+        <div class="model-select" id="openai-models">
             <label>OpenAI Model:</label>
             <select name="openai_model">
                 <option value="gpt-4.1-mini" '.($currentOpenaiModel === 'gpt-4.1-mini' ? 'selected' : '').'>⭐ GPT-4.1 Mini (рекомендуется — дёшево + качество)</option>
@@ -105,14 +98,6 @@ $rtrn = '
             </select>
         </div>
         
-        <div class="model-select" id="groq-models" style="'.($currentAiProvider !== 'groq' ? 'display:none;' : '').'">
-            <label>Groq Model:</label>
-            <select name="groq_model">
-                <option value="llama-3.3-70b-versatile" '.($currentGroqModel === 'llama-3.3-70b-versatile' ? 'selected' : '').'>Llama 3.3 70B (мощный)</option>
-                <option value="llama-3.1-8b-instant" '.($currentGroqModel === 'llama-3.1-8b-instant' ? 'selected' : '').'>Llama 3.1 8B (быстрый)</option>
-            </select>
-        </div>
-        
         <div class="form-group">
             <label>Текст для авто ПОД ЗАКАЗ:</label>
             <textarea name="car_type_order">'.htmlspecialchars($currentCarTypeOrder).'</textarea>
@@ -123,7 +108,7 @@ $rtrn = '
             <textarea name="car_type_stock">'.htmlspecialchars($currentCarTypeStock).'</textarea>
         </div>
         
-        <div class="form-group" id="photo-analysis-section" style="'.($currentAiProvider !== 'openai' ? 'display:none;' : '').'">
+        <div class="form-group" id="photo-analysis-section">
             <div class="checkbox-group">
                 <input type="checkbox" name="analyze_photos" id="analyze_photos" value="1" '.($currentAnalyzePhotos === '1' ? 'checked' : '').'>
                 <label for="analyze_photos">Анализировать фотографии автомобиля (OpenAI Vision)</label>
@@ -146,21 +131,13 @@ $rtrn = '
     </form>
 </div>
 <script>
-function toggleProvider() {
-    var provider = document.querySelector("select[name=ai_provider]").value;
-    document.getElementById("openai-models").style.display = provider === "openai" ? "" : "none";
-    document.getElementById("groq-models").style.display = provider === "groq" ? "" : "none";
-    document.getElementById("photo-analysis-section").style.display = provider === "openai" ? "" : "none";
-}
-
 function saveAiSettings() {
     var formData = new FormData();
     formData.append("tp", "adm");
     formData.append("pg", "cars");
     formData.append("fn", "save_ai_settings");
-    formData.append("ai_provider", document.querySelector("select[name=ai_provider]").value);
+    formData.append("ai_provider", "openai");
     formData.append("openai_model", document.querySelector("select[name=openai_model]").value);
-    formData.append("groq_model", document.querySelector("select[name=groq_model]").value);
     formData.append("analyze_photos", document.querySelector("input[name=analyze_photos]").checked ? "1" : "0");
     formData.append("photo_positions", document.querySelector("input[name=photo_positions]").value);
     formData.append("car_type_order", document.querySelector("textarea[name=car_type_order]").value);

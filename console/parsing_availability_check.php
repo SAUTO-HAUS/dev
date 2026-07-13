@@ -67,9 +67,8 @@ if (empty($cars)) {
 
 $markAvailable   = $db->prepare("UPDATE {$prefx}_parsing_cars SET last_checked_at = NOW() WHERE id = ?");
 $markUnavailable = $db->prepare("UPDATE {$prefx}_parsing_cars SET status = 'unavailable', last_checked_at = NOW() WHERE id = ?");
-// Sold on the source -> flag the sauto ad "not available" (n_a=1) AND zero the
-// running offer timer (offer_timer_end) so it stops counting down on the product
-// page. Keeps the page/SEO/photos, shows the "sold" badge, sinks it to the bottom.
+// Sold on the source: flag the sauto ad out of stock (n_a=1) AND drop the timer to 0.
+// The cleanup cron then permanently deletes on_order + n_a=1 cars. in_stock stay.
 $markSautoNa     = $db->prepare("UPDATE {$prefx}_car_ctlg SET n_a = 1, offer_timer_end = 0 WHERE id = ? AND (n_a <> 1 OR offer_timer_end <> 0)");
 // And POSTPONE the car's still-pending 999 republish schedules (the already-posted
 // ad stays). Postponed (not cancelled) so they resume automatically if the car comes
@@ -91,17 +90,14 @@ foreach ($cars as $car) {
         } else {
             $markUnavailable->execute([$car['id']]);
             $unavailable++;
-            // Propagate to the published ad (sauto + 999) when it exists.
+            // Sold on source → flag the sauto ad out of stock (n_a=1) + drop timer.
+            // The cleanup cron deletes on_order n_a=1 cars; in_stock stay flagged.
             $ctlgId = (int)($car['car_ctlg_id'] ?? 0);
             if ($ctlgId > 0) {
                 $markSautoNa->execute([$ctlgId]);
                 $cancelled = 0;
-                try {
-                    $cancel999->execute([$ctlgId]);
-                    $cancelled = $cancel999->rowCount();
-                } catch (Throwable $e) {
-                    // schedules table may not exist on some installs — non-fatal
-                }
+                try { $cancel999->execute([$ctlgId]); $cancelled = $cancel999->rowCount(); }
+                catch (Throwable $e) {}
                 echo "  Sold #{$car['id']} (ctlg {$ctlgId}): n_a=1"
                     . ($cancelled > 0 ? ", {$cancelled} x 999 schedule cancelled" : '') . "\n";
             }
@@ -115,8 +111,8 @@ foreach ($cars as $car) {
     }
 }
 
-// Simple rule: any car that is SOLD in /parsing/published (status=unavailable)
-// and is published on sauto must be out of stock there. Align it in one query.
+// Reconcile: any car SOLD in /parsing/published (status=unavailable) that is still
+// on sauto → flag out of stock (n_a=1) + drop timer. Cleanup cron deletes on_order.
 $reconcileNa = $db->prepare("UPDATE {$prefx}_car_ctlg c
     INNER JOIN {$prefx}_parsing_cars pc ON pc.car_ctlg_id = c.id
     SET c.n_a = 1, c.offer_timer_end = 0
@@ -125,12 +121,8 @@ $reconcileNa = $db->prepare("UPDATE {$prefx}_car_ctlg c
 $reconcileNa->execute();
 $reconciled = $reconcileNa->rowCount();
 if ($reconciled > 0) {
-    // Postpone leftover 999 schedules for those cars too (resume on restock).
-    $db->exec("UPDATE gh3sp_sauto_personal_schedules s
-        INNER JOIN {$prefx}_parsing_cars pc ON pc.car_ctlg_id = s.car_id
-        SET s.status = 'postponed'
-        WHERE pc.status = 'unavailable' AND s.status = 'pending'");
-    echo "[" . date('Y-m-d H:i:s') . "] 🔁 {$reconciled} sold car(s) set out of stock on sauto\n";
+    echo "[" . date('Y-m-d H:i:s') . "] 🔁 {$reconciled} sold car(s) set out of stock\n";
 }
+// Deletion of on_order + n_a=1 cars is handled by the dedicated cleanup cron.
 
 echo "[" . date('Y-m-d H:i:s') . "] Checked: {$checked}, marked unavailable: {$unavailable}\n";

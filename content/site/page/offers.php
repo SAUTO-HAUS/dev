@@ -1,11 +1,5 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
-// If this is a 404 page, show 404 content and exit
-if (isset($GLOBALS['page_is_404']) && $GLOBALS['page_is_404'] === true) {
-    include(_DEFAULT.'/404.php');
-    exit;
-}
-	
 echo '
 <style>
 	#offers {display:flex; flex-flow:row wrap; justify-content:space-between;}

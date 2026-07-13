@@ -1,5 +1,5 @@
-<?php 
-defined( '_DOIT' ) or die( 'Restricted access' ); 
+<?php
+defined( '_DOIT' ) or die( 'Restricted access' );
 // Set 404 response code (in case of direct call)
 http_response_code(404);
 
@@ -20,19 +20,19 @@ Error404Logger::log();
 	<meta name="application-name" content="Sauto">
 	<meta name="msapplication-config" content="/<?php echo _SITE_IMG;?>/favicon/browserconfig.xml">
 	<meta name="theme-color" content="#ffffff">
-	
+
 	<meta http-equiv="Content-type" content="text/html; charset=UTF-8" />
 	<meta name="description" content="Page not found. Error 404.">
 	<meta name="keywords" content="Error, 404">
 	<meta name="robots" content="noindex, nofollow">
 	<meta name="viewport" content="width=800"/>
-	
+
 	<link rel="stylesheet" type="text/css" href="/<?php echo _DEFAULT;?>/css/default.css?d=<?php echo date("GYimsd", filemtime(_DEFAULT.'/css/default.css')); ?>">
-	
+
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 	<script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
 	<link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css">
-	
+
     <title><?php echo '404 - '.$lang_404.', '.$site_name; ?></title>
 
 

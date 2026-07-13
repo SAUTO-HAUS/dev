@@ -326,13 +326,13 @@ if (in_array($_z2, ['cars', 'ordercars'], true) && isset($t_mp[3]) && !is_numeri
 
 <style>
 /* Share button on car cards (top-right corner): black icon only, no label. */
-.card-share-btn{position:absolute;top:8px;right:8px;z-index:5;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:0;width:36px;height:36px;padding:0;background:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.6);border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.12);color:#111;cursor:pointer;line-height:1;transition:background .15s,transform .12s,box-shadow .15s;-webkit-tap-highlight-color:transparent;}
+.card-share-btn{position:absolute;top:4px;right:4px;z-index:5;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:0;width:44px;height:44px;padding:0;background:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.6);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.12);color:#111;cursor:pointer;line-height:1;transition:background .15s,transform .12s,box-shadow .15s;-webkit-tap-highlight-color:transparent;}
 .card-share-btn:hover{background:#000;border-color:#000;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.25);transform:translateY(-1px);}
 .card-share-btn:active{transform:scale(.96);}
 /* Label is hidden by default — only shown (as "Copiat") after a successful copy. */
 .card-share-btn .csb-label{display:none;font-size:.62rem;font-weight:700;letter-spacing:.01em;color:#fff;}
-.card-share-btn .csb-ico{width:18px;height:18px;display:block;fill:currentColor;}
-.card-share-btn .csb-ico path{fill:currentColor;}
+.card-share-btn .csb-ico{width:26px;height:26px;display:block;fill:none;}
+.card-share-btn .csb-ico path,.card-share-btn .csb-ico circle{fill:none;stroke:currentColor;}
 /* After copy: red pill with white "Copiat", icon hidden, auto width for the text. */
 .card-share-btn.is-copied{width:auto;min-width:36px;padding:0 10px;background:#d30909;border-color:#d30909;color:#fff;border-radius:10px;}
 .card-share-btn.is-copied .csb-label{display:inline;color:#fff;}
@@ -353,28 +353,45 @@ if (in_array($_z2, ['cars', 'ordercars'], true) && isset($t_mp[3]) && !is_numeri
 @media (max-width:767px){
 	.card-share-btn{top:12px;right:12px;width:44px;height:44px;border-radius:12px;}
 	.card-share-btn .csb-label{font-size:.72rem;}
-	.card-share-btn .csb-ico{width:22px;height:22px;}
+	.card-share-btn .csb-ico{width:26px;height:26px;}
 	.card-share-btn.is-copied{width:auto;border-radius:12px;}
 }
 /* Favorite (heart) button — same white box as the share button, top-right of the image. */
-.card-fav-btn{position:absolute;top:4px;right:4px;z-index:6;box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:36px;height:36px;padding:0;background:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.6);border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.12);cursor:pointer;line-height:1;transition:background .15s,transform .12s,box-shadow .15s;-webkit-tap-highlight-color:transparent;}
+.card-fav-btn{position:absolute;top:54px;right:4px;z-index:6;box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;background:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.6);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.12);cursor:pointer;line-height:1;transition:background .15s,transform .12s,box-shadow .15s;-webkit-tap-highlight-color:transparent;}
 .card-fav-btn:hover{background:#fff;transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.25);}
 .card-fav-btn:active{transform:scale(.92);}
 /* Heart icon: outline (empty) by default, fully red-filled when favorited. */
-.card-fav-btn .cfb-ico{width:20px;height:20px;display:block;fill:none;stroke:#111;stroke-width:2;transition:fill .15s,stroke .15s;}
+.card-fav-btn .cfb-ico{width:26px;height:26px;display:block;fill:none;stroke:#111;stroke-width:2;transition:fill .15s,stroke .15s;}
 .card-fav-btn:hover .cfb-ico{stroke:#e2001a;}
 .card-fav-btn.is-fav .cfb-ico{fill:#e2001a;stroke:#e2001a;}
 .card-fav-btn.fav-pop{animation:favPop .28s ease;}
 @keyframes favPop{0%{transform:scale(1);}45%{transform:scale(1.28);}100%{transform:scale(1);}}
-/* Product page carousel + fullscreen slider hearts */
-.wrapf-carousel > .card-fav-btn{top:12px;right:12px;width:44px;height:44px;border-radius:12px;z-index:8;}
-.wrapf-carousel > .card-fav-btn .cfb-ico{width:24px;height:24px;}
+/* Product page carousel + fullscreen slider — share on top, heart below. */
+.wrapf-carousel > .card-share-btn{top:12px;right:12px;width:44px;height:44px;border-radius:12px;z-index:8;}
+.wrapf-carousel > .card-share-btn .csb-ico{width:26px;height:26px;}
+.wrapf-carousel > .card-fav-btn{top:64px;right:12px;width:44px;height:44px;border-radius:12px;z-index:8;}
+.wrapf-carousel > .card-fav-btn .cfb-ico{width:26px;height:26px;}
 /* Desktop product gallery big photo */
 main > .pht_bx > .big_pht{position:relative;}
-main > .pht_bx > .big_pht > .card-fav-btn{top:12px;right:12px;width:44px;height:44px;border-radius:12px;z-index:8;}
-main > .pht_bx > .big_pht > .card-fav-btn .cfb-ico{width:24px;height:24px;}
-#show_img .show-img-fav{position:absolute;top:10%;right:20%;width:44px;height:44px;border-radius:12px;z-index:3;}
-#show_img .show-img-fav .cfb-ico{width:24px;height:24px;}
+main > .pht_bx > .big_pht > .card-share-btn{top:12px;right:12px;width:44px;height:44px;border-radius:12px;z-index:8;}
+main > .pht_bx > .big_pht > .card-share-btn .csb-ico{width:26px;height:26px;}
+main > .pht_bx > .big_pht > .card-fav-btn{top:64px;right:12px;width:44px;height:44px;border-radius:12px;z-index:8;}
+main > .pht_bx > .big_pht > .card-fav-btn .cfb-ico{width:26px;height:26px;}
+/* In-place prev/next arrows on the big photo (change image without fullscreen). */
+.big_pht > .bp-nav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:44px;z-index:7;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(255,255,255,0.78);box-shadow:0 1px 4px rgba(0,0,0,.18);cursor:pointer;opacity:0;transition:opacity .2s,background .15s,transform .12s;-webkit-tap-highlight-color:transparent;}
+.big_pht:hover > .bp-nav{opacity:1;}
+.big_pht > .bp-nav:hover{background:#fff;}
+.big_pht > .bp-nav:active{transform:translateY(-50%) scale(.92);}
+.big_pht > .bp-nav::before{content:"";width:14px;height:14px;border-right:3px solid #111;border-bottom:3px solid #111;box-sizing:border-box;}
+.big_pht > .bp-left{left:12px;}
+.big_pht > .bp-left::before{transform:rotate(135deg);margin-left:5px;}
+.big_pht > .bp-right{right:12px;}
+.big_pht > .bp-right::before{transform:rotate(-45deg);margin-right:5px;}
+@media (max-width:767px){ .big_pht > .bp-nav{opacity:1;} }
+#show_img .show-img-share{position:absolute;top:10%;right:20%;width:44px;height:44px;border-radius:12px;z-index:3;}
+#show_img .show-img-share .csb-ico{width:26px;height:26px;}
+#show_img .show-img-fav{position:absolute;top:calc(10% + 52px);right:20%;width:44px;height:44px;border-radius:12px;z-index:3;}
+#show_img .show-img-fav .cfb-ico{width:26px;height:26px;}
 #fav_float{position:fixed;right:40px;top:40px;z-index:11;display:none;flex-direction:column;align-items:center;gap:5px;text-decoration:none;cursor:pointer;}
 #fav_float.has-favs{display:flex;}
 #fav_float > .fav-float-ico{position:relative;display:block;width:50px;height:50px;}
@@ -394,8 +411,8 @@ main .gr.fav-page > h1{margin-top:1vw;margin-bottom:0.5vw;}
 .fav-loading{padding:2rem 0;text-align:center;color:#888;font-size:1.5rem;}
 .fav-empty{padding:2rem 1rem;text-align:center;color:#555;font-size:1.1rem;}
 @media (max-width:767px){
-	.card-fav-btn{top:12px;right:12px;width:44px;height:44px;border-radius:12px;}
-	.card-fav-btn .cfb-ico{width:24px;height:24px;}
+	.card-fav-btn{top:62px;right:12px;width:44px;height:44px;border-radius:12px;}
+	.card-fav-btn .cfb-ico{width:26px;height:26px;}
 }
 </style>
 <script data-cfasync="false">
@@ -605,11 +622,14 @@ $(document).ready(function(){
 		}
 	}, true);
 
-	// When opening the fullscreen viewer, point its heart at the current car.
+	// When opening the fullscreen viewer, point its heart + share button at the current car.
 	document.addEventListener('click', function(e){
 		if (e.target.closest && e.target.closest('.big_pht')) {
 			var fav = document.querySelector('#show_img .show-img-fav');
 			if (fav) { fav.setAttribute('data-fav-id', currentCarId()); setTimeout(syncUI, 0); }
+			var sh = document.querySelector('#show_img .show-img-share');
+			// The product page URL IS the car's share URL (strip any query/hash).
+			if (sh) { sh.setAttribute('data-share-url', location.origin + location.pathname); }
 		}
 	});
 

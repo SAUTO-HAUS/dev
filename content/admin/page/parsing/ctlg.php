@@ -81,8 +81,16 @@ try {
     $pageSize = parsing_page_size();
     $offset   = (parsing_current_page() - 1) * $pageSize;
 
-    $stmt = $db->prepare('SELECT pc.*, pf.name AS filter_name FROM '.$prefx.'_parsing_cars pc
+    // brand/model come from car_list (the single canonical sauto list) via the
+    // car''s sauto_br/sauto_mo mapping, falling back to the raw source name for
+    // not-yet-mapped cars. This keeps the card data-brand/data-model identical to
+    // the filter dropdown so client-side filtering matches.
+    $stmt = $db->prepare('SELECT pc.*, pf.name AS filter_name,
+            COALESCE(NULLIF(cl.br_nm, ""), pc.brand) AS brand,
+            COALESCE(NULLIF(cl.mo_nm, ""), pc.model) AS model
+        FROM '.$prefx.'_parsing_cars pc
         LEFT JOIN '.$prefx.'_parsing_filters pf ON pf.id = pc.filter_id
+        LEFT JOIN '.$prefx.'_car_list cl ON cl.br = pc.sauto_br AND cl.mo = pc.sauto_mo
         WHERE '.$where.'
         ORDER BY DATE_FORMAT(pc.found_at, "%Y-%m-%d %H:%i") DESC,
                  pc.price_final_eur IS NULL, pc.price_final_eur ASC,
@@ -315,6 +323,7 @@ if (empty($cars)) {
                     : '<div class="ol-countdown ol-countdown-placeholder" aria-hidden="true"></div>').'
                 <div class="car-price">
                     <span class="car-price-val">'.$priceFinal.'</span>
+                    <button type="button" class="car-price-edit" title="'.($t['edit_price'] ?? 'Editează prețul').'" onclick="parsingEditPrice('.(int)$c['id'].', this)">✎</button>
                     <span class="car-price-md"></span>
                 </div>
                 <div class="car-actions">

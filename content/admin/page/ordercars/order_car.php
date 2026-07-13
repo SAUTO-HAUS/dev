@@ -1832,13 +1832,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 let bestMatch = null;
                 let bestMatchScore = 0;
 
+                // Raw tokens of the 999 option, to allow a whole-word match for very
+                // short model names (NX, UX, RX, GT, iX, i4, Q3…) that the >=3 length
+                // guard used to reject — that's why "Lexus NX" never synced.
                 options.forEach(option => {
                     if (!option.value) return;
                     const optN = norm999(option.textContent);
+                    // Whole-word check: does the option name START with the model as a
+                    // discrete token? "NX" matches "NX 300"/"NX Series", not "Phoenix".
+                    const optWords = String(option.textContent).toLowerCase()
+                        .normalize('NFD').replace(/[̀-ͯ]/g, '')
+                        .split(/[\s\-_]+/).map(w => w.replace(/[^a-z0-9]/g, '')).filter(Boolean);
+                    const startsWithModel = optWords.length > 0 && optWords[0] === needN;
                     let score = 0;
 
                     if (optN === needN) {
                         score = 100; // Exact match (normalized) — highest priority
+                    } else if (startsWithModel) {
+                        // First word IS the model (handles 2-char names safely). Prefer
+                        // the shortest such option (closest to the bare model).
+                        score = 90 - optN.length;
                     } else if (optN.length >= 3 && needN.length >= 3 && optN.includes(needN)) {
                         // Option contains the whole model word, prefer the SHORTEST
                         // such option (closest to the model, avoids over-long trims).
@@ -2571,11 +2584,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // autopublish flow (sauto / 999 / fb / tg) — must return to the parsing
     // "Published" page, not the default /ordercars/ctlg. finishProcess() reads
     // this back-url after publishing.
-    if (/[?&](parsing_id=|autopublish(=1|999=1|fb=1|tg=1))\b/.test(window.location.search)) {
+    if (/[?&](parsing_id=|autopublish(=1|999=1|fb=1|tg=1)|from=published)\b/.test(window.location.search)) {
         const _lang = (document.cookie.split('; ').find(c => c.startsWith('lang=')) || 'lang=ro').split('=')[1];
         const _adminDir = <?= json_encode($admin_dir ?? 'adm') ?>;
         const _cb = document.getElementById('content_box');
-        if (_cb) _cb.setAttribute('back-url', '/' + _lang + '/' + _adminDir + '/parsing/published');
+        // If the caller passed an exact return URL (e.g. published WITH its filters),
+        // use it so we land back on the same filtered view. Only accept an internal
+        // path ("/…", not "//" or a full URL) so it can't become an open redirect.
+        const _ret = new URLSearchParams(window.location.search).get('return');
+        const _retOk = _ret && /^\/[^/]/.test(_ret);
+        const _backUrl = _retOk ? _ret : '/' + _lang + '/' + _adminDir + '/parsing/published';
+        if (_cb) _cb.setAttribute('back-url', _backUrl);
 
         // Pre-load the 999 form on Edit too (not just on autopublish), so its
         // fields fill from sauto right away. The 999 .features only load when the
@@ -3289,9 +3308,9 @@ function generateWithGemini() {
             if (urls.length) {
                 const CONCURRENT = 6;
                 // eCarsTrade/OpenLane: cap at 10 photos for sauto (their galleries
-                // are large and we don't need them all); Encar keeps up to 30.
+                // are large and we don't need them all); Encar keeps up to 20.
                 const _src = (data.source || data.parsing_source || '');
-                const _maxImgs = (_src === 'ecarstrade' || _src === 'openlane') ? 10 : 30;
+                const _maxImgs = (_src === 'ecarstrade' || _src === 'openlane') ? 10 : 20;
                 const list = urls.slice(0, _maxImgs);
                 const results = new Array(list.length).fill(null);
 
@@ -3405,13 +3424,13 @@ function generateWithGemini() {
         const form = document.querySelector('#content_box form, #content_box');
 
         // How many photos do we expect? (from the parsing entry, capped the same
-        // way as the downloader: 10 for eCarsTrade/OpenLane, 30 otherwise). We must
+        // way as the downloader: 10 for eCarsTrade/OpenLane, 20 for Encar). We must
         // wait for ALL of them, not just the first.
         let expectedImages = 0;
         try {
             const imgs = typeof data.images_local === 'string' ? JSON.parse(data.images_local) : data.images_local;
             const _src = (data.source || data.parsing_source || '');
-            const _maxImgs = (_src === 'ecarstrade' || _src === 'openlane') ? 10 : 30;
+            const _maxImgs = (_src === 'ecarstrade' || _src === 'openlane') ? 10 : 20;
             expectedImages = Math.min((Array.isArray(imgs) ? imgs.length : 0), _maxImgs);
         } catch (e) { expectedImages = 0; }
 

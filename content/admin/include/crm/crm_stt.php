@@ -91,16 +91,12 @@ function stt_download_audio(string $url, string $dest): bool {
     return file_put_contents($dest, $data) !== false;
 }
 
-/**
- * Send audio file to OpenAI Whisper API.
- * Returns transcript text or empty string on error.
- */
 function stt_whisper_api(string $file_path, string $api_key, ?string $language = null): string {
     if (!file_exists($file_path)) return '';
 
     $post_fields = [
         'file'  => new CURLFile($file_path, 'audio/mpeg', basename($file_path)),
-        'model' => 'whisper-1',
+        'model' => 'gpt-4o-mini-transcribe',
     ];
     if ($language) {
         $post_fields['language'] = $language;

@@ -4,12 +4,6 @@ use App\Helper\PhoneHelper;
 
 require_once($_SERVER['DOCUMENT_ROOT'] . '/content/default/includes/contact_form.php');
 
-// If this is a 404 page, show 404 content and exit
-if (isset($GLOBALS['page_is_404']) && $GLOBALS['page_is_404'] === true) {
-    include(_DEFAULT.'/404.php');
-    exit;
-}
-
 $rtrn = ''; $card = '';
 $cr_lmt = $isMobile=='1' ? 910 : 960;
 

@@ -66,7 +66,16 @@ function buildImagesFeature14($carId, $accountId, $db, $prefx, &$rateLimited = f
         return [];
     }
 
-    $maxImages = ($accountId == 4) ? 10 : 20;
+    // Image cap on 999: every parsing car (Encar/OpenLane/eCarsTrade) publishes max
+    // 10 photos here — regardless of the higher sauto cap (Encar 20 there). Account 4
+    // (Korea) is always 10. Everything else keeps 20. Detect parsing by parsing_id.
+    $isParsing = false;
+    try {
+        $pchk = $db->prepare("SELECT parsing_id FROM {$prefx}_car_ctlg WHERE id = :id");
+        $pchk->execute(['id' => $carId]);
+        $isParsing = !empty($pchk->fetchColumn());
+    } catch (\Throwable $e) { /* column may be absent on old installs */ }
+    $maxImages = ($accountId == 4 || $isParsing) ? 10 : 20;
     $photos = array_slice($photos, 0, $maxImages);
 
     $api = new \App\Services\Api999Service($accountId);
@@ -146,14 +155,46 @@ function isAccountOnCooldown($accountId, $db, $prefx) {
     return $until > time() ? $until : 0;
 }
 
+// Roughly how many images this account has uploaded TODAY = cars it published today
+// × the per-car image cap (10 parsing / 20 otherwise). Used to tell a real daily-limit
+// 403 (near the 1200 quota) from a transient throttle 403 (well below it).
+function imagesUploadedToday($accountId, $db, $prefx) {
+    $perCar = ((int)$accountId === 4) ? 10 : 20;
+    $stmt = $db->prepare("SELECT COUNT(*) FROM {$prefx}_sauto_personal_schedules s
+        JOIN {$prefx}_car_ctlg c ON c.id = s.car_id
+        WHERE c.`999_api_id` = ? AND s.status = 'published'
+          AND DATE(s.published_at) = CURDATE()");
+    $stmt->execute([$accountId]);
+    return (int)$stmt->fetchColumn() * $perCar;
+}
+
+// A 403 on image upload can mean TWO different things:
+//   (a) the real daily 1200-image quota is exhausted → cool down until tomorrow;
+//   (b) a transient throttle (999/nginx "too many requests right now") that hits
+//       well below 1200 → a full-day cooldown wrongly parks the account and loses
+//       the ~200-400 images of headroom it still has.
+// So: only cool down until tomorrow when we're actually near the quota; otherwise
+// back off a few minutes and let the next cron run retry.
 function setAccountCooldownUntilTomorrow($accountId, $db, $prefx) {
-    // Reset at the start of the next day (server time) — that's when the daily
-    // 1200-image quota rolls over.
+    $uploadedToday = imagesUploadedToday($accountId, $db, $prefx);
+    $DAILY_QUOTA = 1200;
+
+    if ($uploadedToday < $DAILY_QUOTA - 150) {
+        // Well under the quota → transient throttle, not the daily cap. Short cooldown.
+        $until = time() + 600; // 10 min
+        $stmt = $db->prepare("INSERT INTO {$prefx}_settings (name, value) VALUES (?, ?)
+            ON DUPLICATE KEY UPDATE value = VALUES(value)");
+        $stmt->execute(["999md_upload_cooldown_{$accountId}", (string)$until]);
+        echo "[" . date('Y-m-d H:i:s') . "] Account {$accountId} got a 403 at ~{$uploadedToday}/{$DAILY_QUOTA} images (transient throttle) — short 10-min cooldown\n";
+        return $until;
+    }
+
+    // Near/at the quota → real daily limit. Reset at the start of the next day.
     $until = strtotime('tomorrow 00:05');
     $stmt = $db->prepare("INSERT INTO {$prefx}_settings (name, value) VALUES (?, ?)
         ON DUPLICATE KEY UPDATE value = VALUES(value)");
     $stmt->execute(["999md_upload_cooldown_{$accountId}", (string)$until]);
-    echo "[" . date('Y-m-d H:i:s') . "] Account {$accountId} hit daily image limit — cooldown until " . date('Y-m-d H:i', $until) . "\n";
+    echo "[" . date('Y-m-d H:i:s') . "] Account {$accountId} hit daily image limit (~{$uploadedToday}/{$DAILY_QUOTA}) — cooldown until " . date('Y-m-d H:i', $until) . "\n";
     return $until;
 }
 
@@ -689,26 +730,31 @@ try {
                         echo "[" . date('Y-m-d H:i:s') . "] Added feature 2553 with value: {$optionId}\n";
                     }
 
-                    $hasFeature585 = false;
-                    $model585 = '';
-                    if (!empty($carData['br']) && !empty($carData['mo'])) {
-                        $mStmt = $db->prepare("SELECT mo_nm FROM {$prefx}_car_list WHERE br = ? AND mo = ? LIMIT 1");
-                        $mStmt->execute([$carData['br'], $carData['mo']]);
-                        $model585 = trim((string)$mStmt->fetchColumn());
-                    }
-                    foreach ($featuresData['features'] as $idx585 => $f585) {
-                        if (($f585['id'] ?? '') === '585') {
-                            $hasFeature585 = true;
-                            if (empty($f585['value']) && $model585 !== '') {
-                                $featuresData['features'][$idx585]['value'] = $model585;
-                                echo "[" . date('Y-m-d H:i:s') . "] Filled feature 585 (model): {$model585}\n";
-                            }
-                            break;
+                    // Feature 585 (model as TEXT) belongs ONLY to commercial ads
+                    // (subcategory 660). Normal cars (659) carry the model on feature
+                    // 21 (a select), so 585 must NOT be added there.
+                    if ((string)($featuresData['subcategory_id'] ?? '') === '660') {
+                        $hasFeature585 = false;
+                        $model585 = '';
+                        if (!empty($carData['br']) && !empty($carData['mo'])) {
+                            $mStmt = $db->prepare("SELECT mo_nm FROM {$prefx}_car_list WHERE br = ? AND mo = ? LIMIT 1");
+                            $mStmt->execute([$carData['br'], $carData['mo']]);
+                            $model585 = trim((string)$mStmt->fetchColumn());
                         }
-                    }
-                    if (!$hasFeature585 && $model585 !== '') {
-                        $featuresData['features'][] = ['id' => '585', 'value' => $model585];
-                        echo "[" . date('Y-m-d H:i:s') . "] Added feature 585 (model): {$model585}\n";
+                        foreach ($featuresData['features'] as $idx585 => $f585) {
+                            if (($f585['id'] ?? '') === '585') {
+                                $hasFeature585 = true;
+                                if (empty($f585['value']) && $model585 !== '') {
+                                    $featuresData['features'][$idx585]['value'] = $model585;
+                                    echo "[" . date('Y-m-d H:i:s') . "] Filled feature 585 (model): {$model585}\n";
+                                }
+                                break;
+                            }
+                        }
+                        if (!$hasFeature585 && $model585 !== '') {
+                            $featuresData['features'][] = ['id' => '585', 'value' => $model585];
+                            echo "[" . date('Y-m-d H:i:s') . "] Added feature 585 (model): {$model585}\n";
+                        }
                     }
 
                     echo "[" . date('Y-m-d H:i:s') . "] Final check - hasFeature103: " . ($hasFeature103 ? 'YES' : 'NO') . ", hasFeature2553: " . ($hasFeature2553 ? 'YES' : 'NO') . ", optionId: " . ($optionId ?? 'NULL') . "\n";

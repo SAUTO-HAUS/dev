@@ -50,6 +50,9 @@ try {
         case 'save_filter':
             $response = parsing_save_filter($db, $prefx, $user_id ?? 0, $_POST);
             break;
+        case 'check_duplicate_filter':
+            $response = parsing_check_duplicate_filter($db, $prefx, $_POST);
+            break;
         case 'get_filter':
             $response = parsing_get_filter($db, $prefx, $user_id ?? 0, $_POST);
             break;
@@ -61,9 +64,6 @@ try {
             break;
         case 'set_publish_limit':
             $response = parsing_set_publish_limit($db, $prefx, $user_id ?? 0, $_POST);
-            break;
-        case 'run_filter':
-            $response = parsing_run_filter($db, $prefx, $user_id ?? 0, $_POST);
             break;
         case 'filter_publish_stats':
             $response = parsing_filter_publish_stats($db, $prefx, $_POST);
@@ -115,6 +115,9 @@ try {
             break;
         case 'save_car_edits':
             $response = parsing_save_car_edits($db, $prefx, $_POST);
+            break;
+        case 'save_price':
+            $response = parsing_save_price($db, $prefx, $_POST);
             break;
         case 'ai_enrich_specs':
             $response = parsing_ai_enrich_specs($db, $prefx, $_POST);
@@ -234,6 +237,40 @@ function parsing_set_publish_limit($db, $prefx, $userId, $p) {
     return ['success' => true, 'id' => $id, 'publish_limit' => $limit];
 }
 
+// Find an EXISTING filter that duplicates a new one: same brand + same model (both
+// trimmed + case-insensitive; brand-only counts, both without a model) AND at least
+// one shared source. Different sources are unrelated catalogs (BMW on Encar vs BMW on
+// eCarsTrade), so those are NOT duplicates. Returns the row [id, name, sources] or null.
+function parsing_find_duplicate_filter($db, $prefx, $brand, $model, $sourcesCsv) {
+    $newBrand = mb_strtolower(trim((string)$brand));
+    $newModel = mb_strtolower(trim((string)$model));
+    $newSources = array_filter(array_map('trim', explode(',', mb_strtolower((string)$sourcesCsv))));
+    if ($newBrand === '' || !$newSources) return null;
+
+    $stmt = $db->prepare('SELECT id, name, sources FROM '.$prefx.'_parsing_filters
+        WHERE LOWER(TRIM(COALESCE(brand, ""))) = ?
+          AND LOWER(TRIM(COALESCE(model, ""))) = ?');
+    $stmt->execute([$newBrand, $newModel]);
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $cand) {
+        $candSources = array_filter(array_map('trim', explode(',', mb_strtolower((string)$cand['sources']))));
+        if (array_intersect($newSources, $candSources)) return $cand;
+    }
+    return null;
+}
+
+// Pre-check (before asking for a filter name): does a matching filter already exist?
+// Lets the UI show the "already exists" dialog immediately on "Save as filter", so the
+// operator doesn't type a name for nothing.
+function parsing_check_duplicate_filter($db, $prefx, $p) {
+    $sources = is_array($p['sources'] ?? null) ? implode(',', $p['sources']) : (string)($p['sources'] ?? '');
+    $dup = parsing_find_duplicate_filter($db, $prefx, $p['brand'] ?? '', $p['model'] ?? '', $sources);
+    if ($dup) {
+        return ['success' => true, 'duplicate' => true,
+                'existing_id' => (int)$dup['id'], 'existing_name' => $dup['name']];
+    }
+    return ['success' => true, 'duplicate' => false];
+}
+
 function parsing_save_filter($db, $prefx, $userId, $p) {
     $id = (int)($p['id'] ?? 0);
     $name = trim($p['name'] ?? '');
@@ -291,6 +328,30 @@ function parsing_save_filter($db, $prefx, $userId, $p) {
         if ($brandChanged || $modelChanged) {
             $id = 0; // fall through to INSERT below — keep the original filter as-is
         }
+    }
+
+    // Anti-duplicate guard: refuse to CREATE a second filter for the same brand+model
+    // on the same source (see parsing_find_duplicate_filter). Block and point the
+    // operator at the existing filter.
+    if ($id === 0) {
+        $dup = parsing_find_duplicate_filter($db, $prefx, $data['brand'] ?? '', $data['model'] ?? '', $sources);
+        if ($dup) {
+            return [
+                'success'      => false,
+                'duplicate'    => true,
+                'existing_id'  => (int)$dup['id'],
+                'existing_name'=> $dup['name'],
+                'error'        => 'duplicate_filter',
+            ];
+        }
+    }
+
+    // Default publish cap on NEW filters (when the form didn't set one explicitly):
+    // brand-only filters cast a wide net → 200; brand+model are narrower → 100.
+    // The operator can still edit the number on the filter card afterwards.
+    if ($id === 0 && !array_key_exists('publish_limit', $data)) {
+        $hasModel = trim((string)($data['model'] ?? '')) !== '';
+        $data['publish_limit'] = $hasModel ? 100 : 200;
     }
 
     if ($id > 0) {
@@ -511,62 +572,6 @@ function parsing_filter_publish_stats($db, $prefx, $p) {
         'success' => true,
         'stats'   => $queue->statsByFilter($id),
         'failed'  => $queue->failedJobsByFilter($id, 50),
-    ];
-}
-
-function parsing_run_filter($db, $prefx, $userId, $p) {
-    $id = (int)($p['id'] ?? 0);
-    if ($id <= 0) return ['success' => false, 'error' => 'Invalid filter ID'];
-
-    if (parsing_is_encar_only($userId)) {
-        // Filters are shared, so look it up by id only; the encar-only check below
-        // still restricts which filters this user may actually run.
-        $chk = $db->prepare('SELECT sources FROM '.$prefx.'_parsing_filters WHERE id = ? LIMIT 1');
-        $chk->execute([$id]);
-        $row = $chk->fetch(PDO::FETCH_ASSOC);
-        $srcs = $row ? array_filter(array_map('trim', explode(',', (string)$row['sources']))) : [];
-        if (!$row || array_diff($srcs, ['encar'])) {
-            return ['success' => false, 'error' => 'Access denied'];
-        }
-    }
-
-    $orchestrator = new \App\Services\Parsing\ParsingOrchestrator();
-    $summary = $orchestrator->runFilter($id, true, 'manual');
-
-    if (isset($summary['error'])) {
-        return ['success' => false, 'error' => $summary['error']];
-    }
-
-    $totalFound = 0;
-    $totalImported = 0;
-    $totalDuplicates = 0;
-    $totalCount = 0;
-    $catalogOffset = 0;
-    foreach ($summary as $stats) {
-        $totalFound += $stats['found'] ?? 0;
-        $totalImported += $stats['imported'] ?? 0;
-        $totalDuplicates += $stats['duplicates'] ?? 0;
-        $totalCount = max($totalCount, (int)($stats['total_count'] ?? 0));
-        $catalogOffset = max($catalogOffset, (int)($stats['catalog_offset'] ?? 0));
-    }
-
-    // Detail fields (gearbox, color, VIN, seats, drive type, full gallery) aren't
-    // in Encar's search list — only in the per-car detail endpoint. Doing 100
-    // detail requests inline would hang this AJAX call, so we launch the enrich
-    // worker DETACHED in the background. The import responds instantly; the rows
-    // get completed a few seconds later (the user just refreshes the list).
-    if ($totalImported > 0) {
-        parsing_spawn_enrich_worker();
-    }
-
-    return [
-        'success'    => true,
-        'found'      => $totalFound,
-        'imported'   => $totalImported,
-        'duplicates' => $totalDuplicates,
-        // Progress in the source catalog: how far we've scanned vs the total.
-        'total_count'    => $totalCount,
-        'catalog_offset' => min($catalogOffset, $totalCount ?: $catalogOffset),
     ];
 }
 
@@ -936,6 +941,28 @@ function parsing_save_car_edits($db, $prefx, $p) {
     return ['success' => true];
 }
 
+// Edit the SOURCE price (price_eur) of an imported car. The MD/landed total is
+// always recomputed FROM price_eur — on the card (parsingCalcMd in JS) and at
+// publish (parsing_md_breakdown_kr/eu). So changing price_eur is enough; we also
+// sync price_final_eur (the card's displayed source price) to it. Local DB only —
+// never touches the source site (no bid, no write-back to OpenLane/Encar/eCarsTrade).
+function parsing_save_price($db, $prefx, $p) {
+    $carId = (int)($p['car_id'] ?? 0);
+    if ($carId <= 0) return ['success' => false, 'error' => 'Invalid id'];
+
+    // Accept "26 500", "26500", "26500.0" → integer euros.
+    $raw = (string)($p['price_eur'] ?? '');
+    $clean = preg_replace('/[^0-9.]/', '', str_replace(',', '.', $raw));
+    $price = (int)round((float)$clean);
+    if ($price <= 0) return ['success' => false, 'error' => 'Invalid price'];
+
+    $stmt = $db->prepare("UPDATE {$prefx}_parsing_cars
+        SET price_eur = ?, price_final_eur = ? WHERE id = ?");
+    $stmt->execute([$price, $price, $carId]);
+
+    return ['success' => true, 'price_eur' => $price];
+}
+
 function parsing_ai_enrich_specs($db, $prefx, $p) {
     // Logic lives in SpecEnricher (shared with the publish queue's auto-publish).
     return \App\Services\Parsing\SpecEnricher::enrich($db, $prefx, (int)($p['car_id'] ?? 0));
@@ -1007,17 +1034,9 @@ function parsing_ai_enrich_specs_OLD($db, $prefx, $p) {
     $category = $rawData['category'] ?? [];
     $grade = $category['gradeEnglishName'] ?? $category['gradeName'] ?? ($raw['title'] ?? '');
 
-    // Spec verification uses Groq's llama-3.3-70b-versatile — the most capable model
-    // on Groq's free tier for factual car knowledge. The old llama-4-scout-17b was
-    // too small and hallucinated (Mercedes C300 → 2996cc/367hp; flipped diesel→
-    // petrol). 70b is ~5/6 correct on the hard cases (close to gpt-4o), free, and
-    // runs only on the 3 buttons (on-demand) so volume stays within the daily limit.
-    $apiKey = defined('GROQ_API_KEY') ? GROQ_API_KEY : '';
-    if (empty($apiKey)) {
-        return ['success' => false, 'error' => 'No Groq API key configured'];
+    if (\App\Services\Parsing\ParsingAI::apiKey() === '') {
+        return ['success' => false, 'error' => 'No OpenAI API key configured'];
     }
-    $apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
-    $model  = 'llama-3.3-70b-versatile';
 
     $need = [
         'hp'            => empty($car['power_hp'])     || ($forceVerify && in_array('power_hp', $forceFields, true)),
@@ -1094,39 +1113,12 @@ function parsing_ai_enrich_specs_OLD($db, $prefx, $p) {
             . implode(' | ', $facts);
     }
 
-    $payload = [
-        'model'    => $model,
-        'messages' => [
-            ['role' => 'system', 'content' => 'You output only valid JSON. No markdown, no commentary.'],
-            ['role' => 'user',   'content' => $prompt],
-        ],
-        'temperature' => 0,
-        'max_tokens'  => 150,
-    ];
-
-    $ch = curl_init($apiUrl);
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_POST           => true,
-        CURLOPT_POSTFIELDS     => json_encode($payload),
-        CURLOPT_TIMEOUT        => 40, // gpt-4o is slower than Groq
-        CURLOPT_HTTPHEADER     => [
-            'Authorization: Bearer ' . $apiKey,
-            'Content-Type: application/json',
-        ],
-    ]);
-    $body  = curl_exec($ch);
-    $code  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    $err   = curl_error($ch);
-    curl_close($ch);
-
-    if ($code !== 200) {
-        return ['success' => false, 'error' => "AI HTTP {$code}: " . substr($body, 0, 200) . " | curl: {$err}"];
+    $content = \App\Services\Parsing\ParsingAI::chat(
+        'You output only valid JSON. No markdown, no commentary.', $prompt, 150, 40
+    );
+    if ($content === null) {
+        return ['success' => false, 'error' => 'AI request failed'];
     }
-
-    $aiResp = json_decode($body, true);
-    $content = $aiResp['choices'][0]['message']['content'] ?? '';
-    $content = trim(preg_replace('/^```(?:json)?|```$/m', '', $content));
     $parsed = json_decode($content, true);
     if (!is_array($parsed)) {
         return ['success' => false, 'error' => 'AI returned unparseable output: ' . substr($content, 0, 200)];
@@ -1879,10 +1871,9 @@ function parsing_match_model($db, $prefx, $p) {
     if ($rawModel === '') return ['success' => false, 'error' => 'No raw model'];
 
     // Disk cache: <tmp>/parsing_model_match/v<N>_<brand>_<raw>.json. Bump the
-    // version when the model or prompt changes so stale answers (e.g. an old 8b
-    // "530 -> 3 Series" mis-map) are never reused. v4 = switched to llama-3.3-70b
-    // (scout-17b was unstable: same 316 sometimes mapped, sometimes injected new).
-    $cacheVer = 'v4';
+    // version when the model or prompt changes so stale answers are never reused.
+    // v6 = switched to OpenAI gpt-4.1-mini.
+    $cacheVer = 'v6';
     $cacheDir = sys_get_temp_dir() . '/parsing_model_match';
     $ck = $cacheDir . '/' . $cacheVer . '_' . preg_replace('/[^a-z0-9]+/i', '_', mb_strtolower($brand . '_' . $rawModel, 'UTF-8')) . '.json';
     if (is_file($ck)) {
@@ -1895,9 +1886,7 @@ function parsing_match_model($db, $prefx, $p) {
         }
     }
 
-    // Parsing uses Groq only (cost). No OpenAI fallback here on purpose.
-    $groqKey = defined('GROQ_API_KEY') ? GROQ_API_KEY : '';
-    if (empty($groqKey)) return ['success' => false, 'error' => 'No Groq key'];
+    if (\App\Services\Parsing\ParsingAI::apiKey() === '') return ['success' => false, 'error' => 'No OpenAI key'];
 
     // Give the AI just the texts; it returns the chosen text, we map back to value.
     $optTexts = [];
@@ -1915,33 +1904,10 @@ function parsing_match_model($db, $prefx, $p) {
         . "series model over an exact trim code. Return ONLY JSON: {\"match\": \"<exact text from "
         . "the list>\"}. If truly nothing fits, return {\"match\": \"\"}. List:\n" . $listJson;
 
-    $payload = [
-        // 70b is far more reliable for series mapping (316 -> Seria 3) than the
-        // small scout-17b, which mapped inconsistently. Same model used by the
-        // spec-verification step.
-        'model' => 'llama-3.3-70b-versatile',
-        'messages' => [
-            ['role' => 'system', 'content' => 'You output only valid JSON. No markdown, no commentary.'],
-            ['role' => 'user',   'content' => $prompt],
-        ],
-        'temperature' => 0,
-        'max_tokens'  => 60,
-    ];
-    $ch = curl_init('https://api.groq.com/openai/v1/chat/completions');
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_POST           => true,
-        CURLOPT_POSTFIELDS     => json_encode($payload),
-        CURLOPT_TIMEOUT        => 20,
-        CURLOPT_HTTPHEADER     => ['Authorization: Bearer ' . $groqKey, 'Content-Type: application/json'],
-    ]);
-    $body = curl_exec($ch);
-    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    if ($code !== 200 || !$body) return ['success' => false, 'error' => "Groq HTTP {$code}"];
-
-    $resp = json_decode($body, true);
-    $content = trim(preg_replace('/^```(?:json)?|```$/m', '', $resp['choices'][0]['message']['content'] ?? ''));
+    $content = \App\Services\Parsing\ParsingAI::chat(
+        'You output only valid JSON. No markdown, no commentary.', $prompt, 60, 20
+    );
+    if ($content === null) return ['success' => false, 'error' => 'AI request failed'];
     $parsed = json_decode($content, true);
     $matchText = is_array($parsed) ? trim((string)($parsed['match'] ?? '')) : '';
     if ($matchText === '') return ['success' => false, 'error' => 'No match'];
@@ -1992,11 +1958,7 @@ function parsing_ai_translate_equipment(array $items, string $lang, int $carId, 
         }
     }
 
-    // Parsing uses Groq only (cost). No OpenAI fallback on purpose.
-    $groqKey = defined('GROQ_API_KEY') ? GROQ_API_KEY : '';
-    if (empty($groqKey)) return $items; // no key → keep originals
-    $apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
-    $apiKey = $groqKey; $model = 'meta-llama/llama-4-scout-17b-16e-instruct';
+    if (\App\Services\Parsing\ParsingAI::apiKey() === '') return $items; // no key → keep originals
 
     $langName = ['ro' => 'Romanian', 'ru' => 'Russian', 'en' => 'English'][$lang] ?? 'Romanian';
     // Number the labels so the AI returns a clean, order-preserving JSON array.
@@ -2010,32 +1972,10 @@ function parsing_ai_translate_equipment(array $items, string $lang, int $carId, 
         . "(LED, Bluetooth, ABS, ISOFIX, HUD, CD, MP3) as-is. Return ONLY a JSON array of "
         . "strings, SAME length and SAME order as the input. Input:\n" . $listJson;
 
-    $payload = [
-        'model' => $model,
-        'messages' => [
-            ['role' => 'system', 'content' => 'You output only a valid JSON array of strings. No markdown, no commentary.'],
-            ['role' => 'user',   'content' => $prompt],
-        ],
-        'temperature' => 0,
-        'max_tokens'  => 2000,
-    ];
-
-    $ch = curl_init($apiUrl);
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_POST           => true,
-        CURLOPT_POSTFIELDS     => json_encode($payload),
-        CURLOPT_TIMEOUT        => 30,
-        CURLOPT_HTTPHEADER     => ['Authorization: Bearer ' . $apiKey, 'Content-Type: application/json'],
-    ]);
-    $body = curl_exec($ch);
-    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    if ($code !== 200 || !$body) return $items;
-
-    $resp = json_decode($body, true);
-    $content = $resp['choices'][0]['message']['content'] ?? '';
-    $content = trim(preg_replace('/^```(?:json)?|```$/m', '', $content));
+    $content = \App\Services\Parsing\ParsingAI::chat(
+        'You output only a valid JSON array of strings. No markdown, no commentary.', $prompt, 2000, 30
+    );
+    if ($content === null) return $items;
     $tr = json_decode($content, true);
     if (!is_array($tr) || count($tr) !== count($items)) return $items; // mismatch → originals
 
@@ -2231,43 +2171,24 @@ function parsing_translate_trims($db, $prefx) {
         else { $todo[] = $kr; }
     }
 
-    // Translate the uncached ones with Groq (one call, JSON array in/out).
+    // Translate the uncached ones (one call, JSON array in/out).
     if ($todo) {
-        $groqKey = defined('GROQ_API_KEY') ? GROQ_API_KEY : '';
-        if (!empty($groqKey)) {
-            $listJson = json_encode(array_values($todo), JSON_UNESCAPED_UNICODE);
-            $prompt = "These are Korean car TRIM / grade names (complectație) from Encar. "
-                . "Transliterate/translate each into its standard Latin marketing name. "
-                . "Translate EVERY Korean word, including multi-word trims "
-                . "(e.g. 노블레스→Noblesse, 시그니처→Signature, 그래비티→Gravity, 프레스티지→Prestige, "
-                . "인텐스 파노라믹→Intense Panoramic, 캘리그래피→Calligraphy). The result MUST contain no "
-                . "Korean characters. Return ONLY a JSON array of strings, SAME length and order. Input:\n" . $listJson;
-            $payload = [
-                'model' => 'meta-llama/llama-4-scout-17b-16e-instruct',
-                'messages' => [
-                    ['role' => 'system', 'content' => 'You output only a valid JSON array of strings. No markdown.'],
-                    ['role' => 'user', 'content' => $prompt],
-                ],
-                'temperature' => 0, 'max_tokens' => 1500,
-            ];
-            $ch = curl_init('https://api.groq.com/openai/v1/chat/completions');
-            curl_setopt_array($ch, [
-                CURLOPT_RETURNTRANSFER => true, CURLOPT_POST => true,
-                CURLOPT_POSTFIELDS => json_encode($payload), CURLOPT_TIMEOUT => 30,
-                CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . $groqKey, 'Content-Type: application/json'],
-            ]);
-            $body = curl_exec($ch);
-            $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
-            if ($code === 200 && $body) {
-                $content = $resp = json_decode($body, true)['choices'][0]['message']['content'] ?? '';
-                $content = trim(preg_replace('/^```(?:json)?|```$/m', '', $content));
-                $tr = json_decode($content, true);
-                if (is_array($tr) && count($tr) === count($todo)) {
-                    foreach ($todo as $i => $kr) {
-                        $latin = trim((string)($tr[$i] ?? ''));
-                        if ($latin !== '') { $cache[$kr] = $latin; $put->execute(['trimkr_' . $kr, $latin]); }
-                    }
+        $listJson = json_encode(array_values($todo), JSON_UNESCAPED_UNICODE);
+        $prompt = "These are Korean car TRIM / grade names (complectație) from Encar. "
+            . "Transliterate/translate each into its standard Latin marketing name. "
+            . "Translate EVERY Korean word, including multi-word trims "
+            . "(e.g. 노블레스→Noblesse, 시그니처→Signature, 그래비티→Gravity, 프레스티지→Prestige, "
+            . "인텐스 파노라믹→Intense Panoramic, 캘리그래피→Calligraphy). The result MUST contain no "
+            . "Korean characters. Return ONLY a JSON array of strings, SAME length and order. Input:\n" . $listJson;
+        $content = \App\Services\Parsing\ParsingAI::chat(
+            'You output only a valid JSON array of strings. No markdown.', $prompt, 1500, 30
+        );
+        if ($content !== null) {
+            $tr = json_decode($content, true);
+            if (is_array($tr) && count($tr) === count($todo)) {
+                foreach ($todo as $i => $kr) {
+                    $latin = trim((string)($tr[$i] ?? ''));
+                    if ($latin !== '') { $cache[$kr] = $latin; $put->execute(['trimkr_' . $kr, $latin]); }
                 }
             }
         }
@@ -2301,17 +2222,31 @@ function parsing_save_settings($db, $prefx, $userId, $p) {
         'cron_frequency_minutes', 'default_target_999', 'default_target_facebook',
         'default_target_telegram', 'notification_email', 'notification_telegram_chat_id',
         'moderation_required', 'libretranslate_url', 'libretranslate_enabled',
-        'sync_nocturn_hour'
+        'sync_nocturn_hour',
+        // Cross-post per-channel on/off toggles.
+        'crosspost_999_enabled', 'crosspost_fb_enabled', 'crosspost_tg_enabled',
+        // Cross-post rate limits (per filter, sliding window): N cars / H hours.
+        // (The global per-run cap is fixed in the cron, not user-editable.)
+        'crosspost_999_count', 'crosspost_999_hours',
+        'crosspost_fb_count',  'crosspost_fb_hours',
+        'crosspost_tg_count',  'crosspost_tg_hours',
     ];
     $stmt = $db->prepare('INSERT INTO '.$prefx.'_parsing_settings (setting_key, setting_value, updated_by)
         VALUES (:k, :v, :uid)
         ON DUPLICATE KEY UPDATE setting_value = :v2, updated_by = :uid2');
     foreach ($allowed as $key) {
         if (isset($p[$key])) {
+            $val = (string)$p[$key];
+            // Hard cap the per-window car counts even if the client bypassed the UI:
+            // 999 → 5, FB/TG → 20.
+            if (preg_match('/^crosspost_(999|fb|tg)_count$/', $key, $m)) {
+                $cap = $m[1] === '999' ? 5 : 20;
+                if ((int)$val > $cap) $val = (string)$cap;
+            }
             $stmt->execute([
                 ':k' => $key,
-                ':v' => (string)$p[$key],
-                ':v2' => (string)$p[$key],
+                ':v' => $val,
+                ':v2' => $val,
                 ':uid' => $userId,
                 ':uid2' => $userId,
             ]);

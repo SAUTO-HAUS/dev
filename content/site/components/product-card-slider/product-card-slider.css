@@ -54,6 +54,10 @@
     overflow: hidden;
 }
 
+.mobile-card-slider > .offer-timer {
+    bottom: 22px !important;
+}
+
 .mobile-card-slider__container {
     position: relative;
     width: 100%;

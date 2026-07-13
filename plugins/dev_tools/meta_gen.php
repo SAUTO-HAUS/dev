@@ -12,7 +12,7 @@ if (isset($GLOBALS['page_is_404']) && $GLOBALS['page_is_404'] === true) {
     echo '<meta name="description" content="Page not found. Error 404.">';
     echo '<meta name="keywords" content="Error, 404">';
     echo '<meta name="robots" content="noindex, nofollow">';
-    echo '<meta name="viewport" content="width=800"/>';
+    echo '<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" id="mobile_viewport" />';
     echo '<title>404 - '.$lang_404.'</title>';
     return;
 }
@@ -106,22 +106,22 @@ $sa['meta']['kwd'] = 'auto moldova, masini moldova, auto rulate moldova, auto bu
 if ($z2 === '' || $z2 === 'home') {
     switch ($current_lang) {
         case 'ru':
-            $sa['meta']['ttl'] = 'Авто бу из Европы в Молдове ['.$cy.'] — Наличие и под заказ';
-            $sa['meta']['dsc'] = '✓ Авто бу из Европы в наличии и под заказ. Проверенные, с гарантией. Кредит, лизинг, trade-in. Доставка по всей Молдове.';
-            $sa['meta']['kwd'] = 'авто бу молдова, авто с пробегом молдова, купить машину в молдове, автосалон молдова, авто из европы, авто из германии, продажа авто молдова, недорогие авто молдова, авто без пробега по рм, кредит авто молдова, лизинг авто, trade in молдова, бу авто молдова, авто в рассрочку';
-            $sa['meta']['h1'] =  'Авто бу из Европы, США и Кореи в Молдове';
+            $sa['meta']['ttl'] = 'Авто бу Корея, Европа, США — Молдова ['.$cy.']';
+            $sa['meta']['dsc'] = 'Авто бу из Кореи, Европы и США, в наличии и под заказ. Проверенные, с гарантией. Кредит, лизинг, trade-in. Доставка по всей Молдове.';
+            $sa['meta']['kwd'] = 'авто бу молдова, авто с пробегом молдова, купить машину в молдове, автосалон молдова, авто из кореи, авто из европы, авто из германии, авто из сша, продажа авто молдова, недорогие авто молдова, авто без пробега по рм, кредит авто молдова, лизинг авто, trade in молдова, бу авто молдова, авто в рассрочку';
+            $sa['meta']['h1'] =  'Авто бу из Кореи, Европы и США в Молдове';
             break;
         case 'en':
-            $sa['meta']['ttl'] = 'Used Cars in Moldova ['.$cy.'] — In Stock & On Order';
-            $sa['meta']['dsc'] = '✓ Used cars from Europe, in stock and on order. No mileage in Moldova, inspected, with warranty. Credit, leasing, trade-in. Delivery across Moldova.';
-            $sa['meta']['kwd'] = 'used cars moldova, buy car moldova, car dealership moldova, european cars moldova, cars from germany, second hand cars moldova, cheap cars moldova, car loan moldova, car leasing moldova, trade in moldova, cars for sale moldova, auto sales moldova, car import moldova';
-            $sa['meta']['h1'] =  'Used Cars from Europe, USA and Korea in Moldova';
+            $sa['meta']['ttl'] = 'Used Cars from Korea, Europe, USA — Moldova ['.$cy.']';
+            $sa['meta']['dsc'] = 'Used cars from Korea, Europe and USA, in stock and on order. Inspected, with warranty. Credit, leasing, trade-in. Delivery across Moldova.';
+            $sa['meta']['kwd'] = 'used cars moldova, buy car moldova, car dealership moldova, cars from korea, european cars moldova, cars from germany, cars from usa, second hand cars moldova, cheap cars moldova, car loan moldova, car leasing moldova, trade in moldova, cars for sale moldova, auto sales moldova, car import moldova';
+            $sa['meta']['h1'] =  'Used Cars from Korea, Europe and USA in Moldova';
             break;
         default: // ro
-            $sa['meta']['ttl'] = 'Auto rulate din Europa în Moldova ['.$cy.'] — Stoc și comandă';
-            $sa['meta']['dsc'] = '✓ Auto rulate din Europa, în stoc și la comandă. Verificate, cu garanție. Credit, leasing, trade-in. Livrare în toată Moldova.';
-            $sa['meta']['kwd'] = 'auto rulate moldova, masini rulate moldova, masini second hand moldova, auto bu moldova, vanzare auto moldova, cumpara masina moldova, salon auto moldova, dealer auto moldova, auto din germania, auto din europa, auto fara parcurs prin rm, credit auto moldova, leasing auto moldova, trade in moldova, autoturisme rulate, pret masini moldova';
-            $sa['meta']['h1'] =  'Auto rulate din Europa, SUA și Coreea în Moldova';
+            $sa['meta']['ttl'] = 'Auto rulate Coreea, Europa, SUA în Moldova ['.$cy.']';
+            $sa['meta']['dsc'] = 'Auto rulate din Coreea, Europa și SUA, în stoc și la comandă. Verificate, cu garanție. Credit, leasing, trade-in. Livrare în toată Moldova.';
+            $sa['meta']['kwd'] = 'auto rulate moldova, masini rulate moldova, masini second hand moldova, auto bu moldova, vanzare auto moldova, cumpara masina moldova, salon auto moldova, dealer auto moldova, auto din coreea, auto din europa, auto din germania, auto din sua, auto fara parcurs prin rm, credit auto moldova, leasing auto moldova, trade in moldova, autoturisme rulate, pret masini moldova';
+            $sa['meta']['h1'] =  'Auto rulate din Coreea, Europa și SUA în Moldova';
             break;
     }
 }
@@ -133,19 +133,19 @@ if ($z2 === 'cars' && $z3 === '' && !isset($q_mp[1])) {
     switch ($current_lang) {
         case 'ru':
             $sa['meta']['ttl'] = 'Каталог авто бу в Молдове ['.$cy.'] — Авто в наличии';
-            $sa['meta']['dsc'] = '✓ Каталог авто бу из Европы в наличии. Проверенные, с гарантией. Кредит, лизинг, trade-in. Бесплатный тест-драйв в салоне.';
+            $sa['meta']['dsc'] = 'Каталог авто бу из Европы в наличии. Проверенные, с гарантией. Кредит, лизинг, trade-in. Бесплатный тест-драйв в салоне.';
             $sa['meta']['kwd'] = 'каталог авто молдова, авто бу молдова, авто с пробегом молдова, купить машину в молдове, авто в наличии молдова, авто из европы, авто из германии, авто без пробега по рм, бу авто молдова, недорогие авто, продажа автомобилей молдова, автосалон молдова, авто в рассрочку молдова, машины из европы цены';
             $sa['meta']['h1'] = 'Каталог авто бу в наличии';
             break;
         case 'en':
             $sa['meta']['ttl'] = 'Used Cars Catalog in Moldova ['.$cy.'] — Cars in Stock';
-            $sa['meta']['dsc'] = '✓ Used cars catalog from Europe, in stock. Inspected, with warranty. Credit, leasing, trade-in. Free test drive at our showroom.';
+            $sa['meta']['dsc'] = 'Used cars catalog from Europe, in stock. Inspected, with warranty. Credit, leasing, trade-in. Free test drive at our showroom.';
             $sa['meta']['kwd'] = 'car catalog moldova, used cars moldova, second hand cars moldova, buy car moldova, cars in stock moldova, european cars moldova, cars from germany, cheap cars moldova, car sales moldova, car dealership moldova, cars for sale moldova, no mileage in moldova';
             $sa['meta']['h1'] = 'Used Cars Catalog in Stock';
             break;
         default: // ro
             $sa['meta']['ttl'] = 'Catalog auto rulate în Moldova ['.$cy.'] — Mașini în stoc';
-            $sa['meta']['dsc'] = '✓ Catalog auto rulate din Europa, în stoc. Verificate, cu garanție. Credit, leasing, trade-in. Test-drive gratuit la salon.';
+            $sa['meta']['dsc'] = 'Catalog auto rulate din Europa, în stoc. Verificate, cu garanție. Credit, leasing, trade-in. Test-drive gratuit la salon.';
             $sa['meta']['kwd'] = 'catalog auto moldova, auto rulate moldova, masini rulate moldova, masini second hand moldova, auto bu moldova, cumpara masina moldova, auto in stoc moldova, masini din europa, auto din germania, auto fara parcurs prin rm, vanzare auto moldova, automobile rulate, dealer auto moldova, masini ieftine moldova, pret auto moldova';
             $sa['meta']['h1'] = 'Catalog auto rulate în stoc';
             break;
@@ -158,22 +158,22 @@ if ($z2 === 'cars' && $z3 === '' && !isset($q_mp[1])) {
 if ($z2 === 'ordercars' && $z3 === '' && !isset($q_mp[1])) {
     switch ($current_lang) {
         case 'ru':
-            $sa['meta']['ttl'] = 'Авто под заказ из Европы в Молдову ['.$cy.'] — Экономия 45%';
-            $sa['meta']['dsc'] = '✓ Авто под заказ из Европы под ключ. Экономия до 45% vs салон. Подбор, проверка, доставка за 14 дней, растаможка. Гарантия. Доставка по всей Молдове.';
-            $sa['meta']['kwd'] = 'авто под заказ молдова, заказать машину из европы, импорт авто молдова, авто из германии под заказ, авто из бельгии, авто из америки молдова, авто из кореи, привезти авто из европы, доставка авто молдова, растаможка авто, авто из европы цена, заказ авто из германии молдова';
-            $sa['meta']['h1'] = 'Авто под заказ из Европы, США и Кореи в Молдову';
+            $sa['meta']['ttl'] = 'Авто под заказ Корея, Европа, США — Экономия до 45%';
+            $sa['meta']['dsc'] = 'Авто под заказ из Кореи, Европы и США под ключ ['.$cy.']. Экономия до 45% vs салон. Подбор, проверка, доставка за 14 дней, растаможка. Гарантия. Доставка по всей Молдове.';
+            $sa['meta']['kwd'] = 'авто под заказ молдова, заказать машину из европы, импорт авто молдова, авто из кореи, авто из германии под заказ, авто из бельгии, авто из америки молдова, привезти авто из европы, доставка авто молдова, растаможка авто, авто из европы цена, заказ авто из германии молдова';
+            $sa['meta']['h1'] = 'Авто под заказ из Кореи, Европы и США в Молдову';
             break;
         case 'en':
-            $sa['meta']['ttl'] = 'Cars on Order from Europe to Moldova ['.$cy.'] — Save 45%';
-            $sa['meta']['dsc'] = '✓ Cars on order from Europe, turnkey. Save up to 45% vs showroom. Selection, inspection, 14-day delivery, customs. Warranty. Delivery across Moldova.';
-            $sa['meta']['kwd'] = 'cars on order moldova, order car from europe, car import moldova, cars from germany on order, cars from belgium, cars from usa moldova, cars from korea, bring car from europe, car delivery moldova, customs clearance moldova';
-            $sa['meta']['h1'] = 'Cars on Order from Europe, USA and Korea to Moldova';
+            $sa['meta']['ttl'] = 'Cars on Order from Korea, Europe, USA — Save up to 45%';
+            $sa['meta']['dsc'] = 'Cars on order from Korea, Europe and USA, turnkey ['.$cy.']. Save up to 45% vs showroom. Selection, inspection, 14-day delivery, customs. Warranty. Delivery across Moldova.';
+            $sa['meta']['kwd'] = 'cars on order moldova, order car from europe, car import moldova, cars from korea, cars from germany on order, cars from belgium, cars from usa moldova, bring car from europe, car delivery moldova, customs clearance moldova';
+            $sa['meta']['h1'] = 'Cars on Order from Korea, Europe and USA to Moldova';
             break;
         default: // ro
-            $sa['meta']['ttl'] = 'Auto la comandă din Europa în Moldova ['.$cy.'] — Economie 45%';
-            $sa['meta']['dsc'] = '✓ Auto la comandă din Europa la cheie. Economie până la 45%. Verificare, livrare în 14 zile, vămuire. Garanție inclusă.';
-            $sa['meta']['kwd'] = 'auto la comanda moldova, comanda masina din europa, import auto moldova, auto din germania la comanda, auto din belgia, auto din sua moldova, auto din coreea, aducem auto din europa, livrare auto moldova, vamuire auto moldova, auto la comanda din germania pret';
-            $sa['meta']['h1'] = 'Auto la comandă din Europa, SUA și Coreea în Moldova';
+            $sa['meta']['ttl'] = 'Auto la comandă Coreea, Europa, SUA — Economie până la 45%';
+            $sa['meta']['dsc'] = 'Auto la comandă din Coreea, Europa și SUA la cheie ['.$cy.']. Economie până la 45%. Verificare, livrare în 14 zile, vămuire. Garanție inclusă.';
+            $sa['meta']['kwd'] = 'auto la comanda moldova, comanda masina din europa, import auto moldova, auto din coreea, auto din germania la comanda, auto din belgia, auto din sua moldova, aducem auto din europa, livrare auto moldova, vamuire auto moldova, auto la comanda din germania pret';
+            $sa['meta']['h1'] = 'Auto la comandă din Coreea, Europa și SUA în Moldova';
             break;
     }
 }
@@ -185,19 +185,19 @@ if ($z2 === 'credit') {
     switch ($current_lang) {
         case 'ru':
             $sa['meta']['ttl'] = 'Автокредит и лизинг в Молдове ['.$cy.'] — Одобрение за 1 час';
-            $sa['meta']['dsc'] = '✓ Автокредит и лизинг до 5 лет. Одобрение за 1 час по паспорту. Аванс от 10%, без скрытых комиссий. Авто в наличии. Бесплатная консультация эксперта.';
+            $sa['meta']['dsc'] = 'Автокредит и лизинг до 5 лет. Одобрение за 1 час по паспорту. Аванс от 10%, без скрытых комиссий. Авто в наличии. Бесплатная консультация эксперта.';
             $sa['meta']['kwd'] = 'автокредит молдова, кредит на авто молдова, кредит на машину молдова, финансирование авто, лизинг авто молдова, авто в рассрочку молдова, авто в кредит без первоначального взноса, рассрочка на авто, одобрение автокредита, кредит на бу авто';
             $sa['meta']['h1'] = 'Автокредит в Молдове';
             break;
         case 'en':
             $sa['meta']['ttl'] = 'Car Loan & Leasing in Moldova ['.$cy.'] — Approved in 1 Hour';
-            $sa['meta']['dsc'] = '✓ Car loan and leasing up to 5 years. Approval in 1 hour with passport only. Down payment from 10%, no hidden fees. Cars in stock. Free expert consultation.';
+            $sa['meta']['dsc'] = 'Car loan and leasing up to 5 years. Approval in 1 hour with passport only. Down payment from 10%, no hidden fees. Cars in stock. Free expert consultation.';
             $sa['meta']['kwd'] = 'car loan moldova, auto financing moldova, car credit moldova, auto leasing moldova, vehicle financing, car loan no down payment, car installments moldova, used car loan moldova';
             $sa['meta']['h1'] = 'Car Loan in Moldova';
             break;
         default: // ro
             $sa['meta']['ttl'] = 'Credit auto și leasing Moldova ['.$cy.'] — Aprobare 1 oră';
-            $sa['meta']['dsc'] = '✓ Credit auto și leasing până la 5 ani. Aprobare în 1 oră cu buletinul. Avans de la 10%, fără comisioane. Mașini în stoc.';
+            $sa['meta']['dsc'] = 'Credit auto și leasing până la 5 ani. Aprobare în 1 oră cu buletinul. Avans de la 10%, fără comisioane. Mașini în stoc.';
             $sa['meta']['kwd'] = 'credit auto moldova, finantare auto, credit masina moldova, leasing auto moldova, credit auto fara avans, rate auto moldova, dobanda credit auto, aprobare credit auto, credit auto rulate, auto in rate moldova, credit pentru masina';
             $sa['meta']['h1'] = 'Credit auto în Moldova';
             break;
@@ -210,22 +210,22 @@ if ($z2 === 'credit') {
 if ($z2 === 'order') {
     switch ($current_lang) {
         case 'ru':
-            $sa['meta']['ttl'] = 'Заказ авто из Европы, США, Кореи ['.$cy.'] — Экономия 45%';
-            $sa['meta']['dsc'] = '✓ Доставка авто из Европы, США и Кореи. Экономия до 45% vs автосалон. Подбор, проверка VIN, доставка за 14 дней, полная растаможка. Гарантия включена.';
-            $sa['meta']['kwd'] = 'автомобили под заказ молдова, заказ авто из европы, импорт автомобилей молдова, автомобили из сша, автомобили из кореи, авто из германии под заказ, авто из бельгии молдова, привезти авто из европы, доставка авто из европы, растаможка авто молдова, заказ авто из европы цена';
-            $sa['meta']['h1'] = 'Автомобили под заказ из Европы, США и Кореи';
+            $sa['meta']['ttl'] = 'Заказ авто из Кореи, Европы, США — Экономия до 45%';
+            $sa['meta']['dsc'] = 'Доставка авто из Кореи, Европы и США ['.$cy.']. Экономия до 45% vs автосалон. Подбор, проверка VIN, доставка за 14 дней, полная растаможка. Гарантия включена.';
+            $sa['meta']['kwd'] = 'автомобили под заказ молдова, заказ авто из европы, импорт автомобилей молдова, автомобили из кореи, автомобили из сша, авто из германии под заказ, авто из бельгии молдова, привезти авто из европы, доставка авто из европы, растаможка авто молдова, заказ авто из европы цена';
+            $sa['meta']['h1'] = 'Автомобили под заказ из Кореи, Европы и США';
             break;
         case 'en':
-            $sa['meta']['ttl'] = 'Order Cars from Europe, USA, Korea ['.$cy.'] — Save 45%';
-            $sa['meta']['dsc'] = '✓ Car delivery from Europe, USA and Korea. Save up to 45% vs dealership. Selection, VIN check, 14-day delivery, full customs. Warranty included.';
-            $sa['meta']['kwd'] = 'order cars moldova, import cars moldova, cars from europe, cars from usa moldova, cars from korea, cars from germany on order, cars from belgium moldova, bring car from europe, car delivery from europe, customs clearance moldova';
-            $sa['meta']['h1'] = 'Order Cars from Europe, USA and Korea';
+            $sa['meta']['ttl'] = 'Order Cars from Korea, Europe, USA — Save up to 45%';
+            $sa['meta']['dsc'] = 'Car delivery from Korea, Europe and USA ['.$cy.']. Save up to 45% vs dealership. Selection, VIN check, 14-day delivery, full customs. Warranty included.';
+            $sa['meta']['kwd'] = 'order cars moldova, import cars moldova, cars from korea, cars from europe, cars from usa moldova, cars from germany on order, cars from belgium moldova, bring car from europe, car delivery from europe, customs clearance moldova';
+            $sa['meta']['h1'] = 'Order Cars from Korea, Europe and USA';
             break;
         default: // ro
-            $sa['meta']['ttl'] = 'Auto la comandă Europa, SUA, Coreea ['.$cy.'] — Economie 45%';
-            $sa['meta']['dsc'] = '✓ Livrare auto din Europa, SUA și Coreea. Economie până la 45% vs salon. Selecție, verificare VIN, livrare în 14 zile, vămuire completă. Garanție inclusă.';
-            $sa['meta']['kwd'] = 'automobile la comanda moldova, import auto moldova, masini din europa, masini din sua moldova, masini din coreea, auto din germania la comanda, auto din belgia moldova, aducem auto din europa, livrare auto din europa, vamuire auto moldova';
-            $sa['meta']['h1'] = 'Automobile la comandă din Europa, SUA și Coreea';
+            $sa['meta']['ttl'] = 'Auto la comandă Coreea, Europa, SUA — Economie până la 45%';
+            $sa['meta']['dsc'] = 'Livrare auto din Coreea, Europa și SUA ['.$cy.']. Economie până la 45% vs salon. Selecție, verificare VIN, livrare în 14 zile, vămuire completă. Garanție inclusă.';
+            $sa['meta']['kwd'] = 'automobile la comanda moldova, import auto moldova, masini din coreea, masini din europa, masini din sua moldova, auto din germania la comanda, auto din belgia moldova, aducem auto din europa, livrare auto din europa, vamuire auto moldova';
+            $sa['meta']['h1'] = 'Automobile la comandă din Coreea, Europa și SUA';
             break;
     }
 }
@@ -237,19 +237,19 @@ if ($z2 === 'calculator') {
     switch ($current_lang) {
         case 'ru':
             $sa['meta']['ttl'] = 'Калькулятор растаможки авто Молдова ['.$cy.'] — Бесплатно';
-            $sa['meta']['dsc'] = '✓ Расчёт растаможки авто онлайн за 30 секунд. Акцизы '.$cy.', курс EUR от НБМ. Бесплатно, без регистрации. Проверено экспертами.';
+            $sa['meta']['dsc'] = 'Расчёт растаможки авто онлайн за 30 секунд. Акцизы '.$cy.', курс EUR от НБМ. Бесплатно, без регистрации. Проверено экспертами.';
             $sa['meta']['kwd'] = 'калькулятор растаможки молдова, растаможка авто молдова, акцизы авто молдова, таможенный калькулятор, расчет растаможки авто, стоимость растаможки молдова, таможенные пошлины авто, растаможка из европы молдова';
             $sa['meta']['h1'] = 'Калькулятор растаможки авто в Молдове';
             break;
         case 'en':
             $sa['meta']['ttl'] = 'Customs Calculator Moldova ['.$cy.'] — Free Online';
-            $sa['meta']['dsc'] = '✓ Car customs calculation online in 30 seconds. '.$cy.' excise duties, EUR rate from NBM. Free, no registration. Expert-verified.';
+            $sa['meta']['dsc'] = 'Car customs calculation online in 30 seconds. '.$cy.' excise duties, EUR rate from NBM. Free, no registration. Expert-verified.';
             $sa['meta']['kwd'] = 'customs calculator moldova, car import tax moldova, excise duty calculator moldova, vehicle customs moldova, customs clearance cost moldova, import duties cars moldova';
             $sa['meta']['h1'] = 'Car Customs Calculator Moldova';
             break;
         default: // ro
             $sa['meta']['ttl'] = 'Calculator devamare (vămuire) auto Moldova ['.$cy.'] — Gratuit';
-            $sa['meta']['dsc'] = '✓ Calculator vămuire auto online în 30 secunde. Accize '.$cy.', curs EUR de la BNM. Gratuit, fără înregistrare. Verificat de experți.';
+            $sa['meta']['dsc'] = 'Calculator vămuire auto online în 30 secunde. Accize '.$cy.', curs EUR de la BNM. Gratuit, fără înregistrare. Verificat de experți.';
             $sa['meta']['kwd'] = 'calculator vamuire auto moldova, calculator devamare auto moldova, devamare auto moldova, vamuire auto moldova, accize auto moldova, calculator taxe vamale, calcul vama auto, cost vamuire moldova, cost devamare auto, taxe vamale auto, vamuire auto din europa, devamare auto din europa';
             $sa['meta']['h1'] = 'Calculator vămuire auto Moldova';
             break;
@@ -263,19 +263,19 @@ if ($z2 === 'tradein') {
     switch ($current_lang) {
         case 'ru':
             $sa['meta']['ttl'] = 'Trade-in авто в Молдове ['.$cy.'] — Обмен авто за 1 день';
-            $sa['meta']['dsc'] = '✓ Trade-in авто за 1 день: бесплатная оценка по рынку, авто бу на выбор, доплата или возврат разницы. Без скрытых комиссий. Гарантия. Услуга по всей Молдове.';
+            $sa['meta']['dsc'] = 'Trade-in авто за 1 день: бесплатная оценка по рынку, авто бу на выбор, доплата или возврат разницы. Без скрытых комиссий. Гарантия. Услуга по всей Молдове.';
             $sa['meta']['kwd'] = 'trade in авто молдова, обмен авто молдова, trade in молдова, обменять машину молдова, оценка авто молдова, покупка авто с доплатой, автосалон trade in молдова, быстрый обмен авто, сдать авто в трейд ин, выкуп авто молдова, сдать машину автосалону, обмен бу авто';
             $sa['meta']['h1'] = 'Trade-in авто в Молдове';
             break;
         case 'en':
             $sa['meta']['ttl'] = 'Trade-In Car in Moldova ['.$cy.'] — Car Swap in 1 Day';
-            $sa['meta']['dsc'] = '✓ Car trade-in in 1 day: free market valuation, used cars to choose, top-up or refund difference. No hidden fees. Warranty included. Service across Moldova.';
+            $sa['meta']['dsc'] = 'Car trade-in in 1 day: free market valuation, used cars to choose, top-up or refund difference. No hidden fees. Warranty included. Service across Moldova.';
             $sa['meta']['kwd'] = 'trade in moldova, car trade in moldova, swap my car moldova, car valuation moldova, exchange car with cash top-up, buy car with trade in, fast car exchange moldova, dealership trade in service, sell car to dealer moldova, used car exchange';
             $sa['meta']['h1'] = 'Trade-in Cars in Moldova';
             break;
         default: // ro
             $sa['meta']['ttl'] = 'Trade-in auto Moldova ['.$cy.'] — Schimb auto în 1 zi';
-            $sa['meta']['dsc'] = '✓ Trade-in auto în 1 zi: evaluare gratuită la prețul pieței, auto la alegere, plată diferență. Garanție. Serviciu în Moldova.';
+            $sa['meta']['dsc'] = 'Trade-in auto în 1 zi: evaluare gratuită la prețul pieței, auto la alegere, plată diferență. Garanție. Serviciu în Moldova.';
             $sa['meta']['kwd'] = 'trade in auto moldova, schimb auto moldova, evaluare masina moldova, trade in moldova, cumpara masina cu avans, schimb masina cu diferenta, autoturisme rulate moldova, servicii trade in moldova, schimb rapid auto, vinde masina la dealer, cumparare auto rulate moldova, schimb auto bu, evaluare auto gratuita moldova';
             $sa['meta']['h1'] = 'Trade-in auto în Moldova';
             break;
@@ -289,19 +289,19 @@ if ($z2 === 'rent') {
     switch ($current_lang) {
         case 'ru':
             $sa['meta']['ttl'] = 'Аренда авто в Молдове ['.$cy.'] — Прокат авто с доставкой';
-            $sa['meta']['dsc'] = '✓ Аренда авто в Молдове. КАСКО и ОСАГО включены, поддержка 24/7. Без залога. Бесплатная доставка. Краткосрочно и долгосрочно. Доставка по всей Молдове.';
+            $sa['meta']['dsc'] = 'Аренда авто в Молдове. КАСКО и ОСАГО включены, поддержка 24/7. Без залога. Бесплатная доставка. Краткосрочно и долгосрочно. Доставка по всей Молдове.';
             $sa['meta']['kwd'] = 'аренда авто молдова, прокат автомобилей молдова, аренда машины молдова, car rental moldova, аренда авто на сутки, аренда авто без залога, прокат авто молдова, аренда авто посуточно, аренда авто аэропорт молдова, аренда авто долгосрочно молдова, дешевая аренда авто молдова';
             $sa['meta']['h1'] = 'Аренда авто в Молдове';
             break;
         case 'en':
             $sa['meta']['ttl'] = 'Car Rental in Moldova ['.$cy.'] — Rent a Car with Delivery';
-            $sa['meta']['dsc'] = '✓ Car rental in Moldova. CASCO and RCA insurance included, 24/7 support. No deposit. Free delivery. Short and long-term. Delivery across Moldova.';
+            $sa['meta']['dsc'] = 'Car rental in Moldova. CASCO and RCA insurance included, 24/7 support. No deposit. Free delivery. Short and long-term. Delivery across Moldova.';
             $sa['meta']['kwd'] = 'car rental moldova, rent a car moldova, car hire moldova, daily car rental moldova, car rental airport moldova, no deposit car rental, long term car rental moldova, cheap car rental moldova';
             $sa['meta']['h1'] = 'Car Rental in Moldova';
             break;
         default: // ro
             $sa['meta']['ttl'] = 'Închiriere auto Moldova ['.$cy.'] — Rent a car cu livrare';
-            $sa['meta']['dsc'] = '✓ Închiriere auto în Moldova. CASCO și RCA incluse, suport 24/7. Fără gaj. Livrare gratuită. Pe termen scurt și lung. Livrare în toată Moldova.';
+            $sa['meta']['dsc'] = 'Închiriere auto în Moldova. CASCO și RCA incluse, suport 24/7. Fără gaj. Livrare gratuită. Pe termen scurt și lung. Livrare în toată Moldova.';
             $sa['meta']['kwd'] = 'inchiriere auto moldova, rent a car moldova, inchiriere masina moldova, inchiriere auto pe zi, inchiriere auto fara gaj, inchiriere auto aeroport moldova, inchiriere auto pe termen lung moldova, inchiriere auto ieftin moldova, chirie auto moldova';
             $sa['meta']['h1'] = 'Închiriere auto Moldova';
             break;
@@ -341,19 +341,19 @@ if ($z2 === 'tyres' && $z3 === '' && !isset($q_mp[1])) {
     switch ($current_lang) {
         case 'ru':
             $sa['meta']['ttl'] = 'Шины в Молдове ['.$cy.'] — Летние, зимние, всесезонные';
-            $sa['meta']['dsc'] = '✓ Большой выбор шин: летние, зимние, всесезонные. Размеры R13-R22. Бесплатный шиномонтаж, гарантия 2 года. Доставка по Молдове.';
+            $sa['meta']['dsc'] = 'Большой выбор шин: летние, зимние, всесезонные. Размеры R13-R22. Бесплатный шиномонтаж, гарантия 2 года. Доставка по Молдове.';
             $sa['meta']['kwd'] = 'шины молдова, купить шины молдова, автошины молдова, летние шины молдова, зимние шины молдова, всесезонные шины, шиномонтаж молдова, шины 205 55 r16, шины 225 45 r17, шины r17, шины r18, недорогие шины молдова, резина молдова, купить резину молдова, шины со склада молдова';
             $sa['meta']['h1'] = 'Каталог шин в Молдове';
             break;
         case 'en':
             $sa['meta']['ttl'] = 'Tyres in Moldova ['.$cy.'] — Summer, Winter, All-Season';
-            $sa['meta']['dsc'] = '✓ Wide tyre selection in stock: summer, winter, all-season. Sizes R13-R22, popular brands. Free fitting, 2-year warranty. Delivery across Moldova.';
+            $sa['meta']['dsc'] = 'Wide tyre selection in stock: summer, winter, all-season. Sizes R13-R22, popular brands. Free fitting, 2-year warranty. Delivery across Moldova.';
             $sa['meta']['kwd'] = 'tyres moldova, buy tyres moldova, car tyres moldova, summer tyres moldova, winter tyres moldova, all season tyres, tyre fitting moldova, tyres 205 55 r16, tyres 225 45 r17, tyres r17, tyres r18, cheap tyres moldova, tires moldova';
             $sa['meta']['h1'] = 'Tyre Catalog in Moldova';
             break;
         default: // ro
             $sa['meta']['ttl'] = 'Anvelope Moldova ['.$cy.'] — Vară, iarnă, all-season';
-            $sa['meta']['dsc'] = '✓ Selecție mare de anvelope în stoc: vară, iarnă, all-season. Dimensiuni R13-R22, branduri populare. Montaj gratuit, garanție 2 ani. Livrare în toată Moldova.';
+            $sa['meta']['dsc'] = 'Selecție mare de anvelope în stoc: vară, iarnă, all-season. Dimensiuni R13-R22, branduri populare. Montaj gratuit, garanție 2 ani. Livrare în toată Moldova.';
             $sa['meta']['kwd'] = 'anvelope moldova, cumpara anvelope moldova, cauciucuri moldova, anvelope vara moldova, anvelope iarna moldova, anvelope all season, vulcanizare moldova, anvelope 205 55 r16, anvelope 225 45 r17, anvelope r17, anvelope r18, anvelope ieftine moldova, anvelope auto moldova, anvelope din stoc moldova';
             $sa['meta']['h1'] = 'Catalog anvelope Moldova';
             break;
@@ -367,19 +367,19 @@ if ($z2 === 'services' && !isset($t_mp[3])) {
     switch ($current_lang) {
         case 'ru':
             $sa['meta']['ttl'] = 'Услуги Sauto в Молдове ['.$cy.'] — Trade-in, страховка';
-            $sa['meta']['dsc'] = '✓ Услуги: продажа авто бу, Trade-in за 1 день, оценка, тест-драйв, КАСКО/ОСАГО, заказ из Европы. Сервис по всей Молдове.';
+            $sa['meta']['dsc'] = 'Услуги: продажа авто бу, Trade-in за 1 день, оценка, тест-драйв, КАСКО/ОСАГО, заказ из Европы. Сервис по всей Молдове.';
             $sa['meta']['kwd'] = 'услуги автосалона молдова, услуги sauto, trade in молдова, оценка авто молдова, страхование авто молдова, тест драйв молдова, заказ авто из европы, выкуп авто молдова, осаго каско молдова, услуги дилера авто';
             $sa['meta']['h1'] = 'Услуги Sauto в Молдове';
             break;
         case 'en':
             $sa['meta']['ttl'] = 'Sauto Services in Moldova ['.$cy.'] — Trade-in, Insurance';
-            $sa['meta']['dsc'] = '✓ Full service range: used car sales, 1-day Trade-in, free valuation, test drive, CASCO/RCA, order from Europe. Professional service across Moldova.';
+            $sa['meta']['dsc'] = 'Full service range: used car sales, 1-day Trade-in, free valuation, test drive, CASCO/RCA, order from Europe. Professional service across Moldova.';
             $sa['meta']['kwd'] = 'dealership services moldova, sauto services moldova, trade in moldova, car valuation moldova, car insurance moldova, test drive moldova, car order europe, car buy back moldova, rca casco moldova, auto dealer services';
             $sa['meta']['h1'] = 'Sauto Services in Moldova';
             break;
         default: // ro
             $sa['meta']['ttl'] = 'Servicii Sauto Moldova ['.$cy.'] — Trade-in, asigurări';
-            $sa['meta']['dsc'] = '✓ Gamă completă: vânzare auto rulate, Trade-in în 1 zi, evaluare gratuită, test-drive, CASCO/RCA, comandă din Europa. Servicii profesioniste în toată Moldova.';
+            $sa['meta']['dsc'] = 'Gamă completă: vânzare auto rulate, Trade-in în 1 zi, evaluare gratuită, test-drive, CASCO/RCA, comandă din Europa. Servicii profesioniste în toată Moldova.';
             $sa['meta']['kwd'] = 'servicii dealer auto moldova, sauto servicii moldova, trade in moldova, evaluare auto moldova, asigurari auto moldova, test drive moldova, comanda auto din europa, vinde masina moldova, rca casco moldova, servicii salon auto';
             $sa['meta']['h1'] = 'Servicii Sauto în Moldova';
             break;
@@ -393,33 +393,33 @@ if ($z2 === 'services' && isset($t_mp[3]) && !empty($t_mp[3])) {
     $service_slug = $t_mp[3];
     $service_titles = [
         'ro' => [
-            'sale'           => ['ttl' => 'Vinde mașina rapid în Chișinău ['.$cy.'] — Plată pe loc', 'dsc' => '✓ Vinde-ți mașina către Sauto în 1 oră. Evaluare gratuită, plată pe loc, fără comisioane ascunse. Cel mai bun preț pe piață, garantat. Cumpărăm orice marcă.', 'h1' => 'Vinde-ți mașina către Sauto'],
-            'estimation'     => ['ttl' => 'Evaluare auto gratuită Chișinău ['.$cy.'] — În 15 min', 'dsc' => '✓ Evaluare gratuită a mașinii în 15 minute. Estimare exactă la prețul pieței, raport detaliat, consultanță expert. 100% fără obligații. Programare online.', 'h1' => 'Evaluare auto'],
-            'tradein'        => ['ttl' => 'Trade-in auto Chișinău ['.$cy.'] — Schimb în 1 zi', 'dsc' => '✓ Trade-in la Sauto în 1 zi: evaluare corectă, mașini la schimb, plata diferenței pe loc, acte rapide. Garanție inclusă. Fără bătăi de cap.', 'h1' => 'Trade-in auto'],
-            'insurance'      => ['ttl' => 'Asigurări auto RCA și CASCO în Moldova ['.$cy.']', 'dsc' => '✓ RCA, CASCO, asigurare verde. Eliberare rapidă, fără comisioane ascunse. Prețuri avantajoase, consultanță gratuită. Asigurări pentru orice tip de auto.', 'h1' => 'Asigurări auto'],
-            'testdrive'      => ['ttl' => 'Test-drive auto gratuit Chișinău ['.$cy.']', 'dsc' => '✓ Test-drive gratuit la mașinile din stoc. Programare online în 2 minute, consultant expert, fără obligații. Probează înainte să cumperi.', 'h1' => 'Test-drive auto'],
-            'transportation' => ['ttl' => 'Transport auto Europa-Moldova ['.$cy.'] — În 14 zile', 'dsc' => '✓ Transport auto din Europa în 14 zile: livrare sigură, vămuire completă, asigurare pe traseu. Prețuri transparente, fără surprize. Servicii profesionale.', 'h1' => 'Transport auto'],
-            'payment'        => ['ttl' => 'Modalități de plată ['.$cy.'] — Cash, card, credit', 'dsc' => '✓ 5 modalități de plată: cash, card, transfer, credit auto, leasing. Procesare în 1 oră, fără comisioane ascunse. Cumpărare sigură și rapidă.', 'h1' => 'Modalități de plată'],
+            'sale'           => ['ttl' => 'Vinde mașina rapid în Chișinău ['.$cy.'] — Plată pe loc', 'dsc' => 'Vinde-ți mașina către Sauto în 1 oră. Evaluare gratuită, plată pe loc, fără comisioane ascunse. Cel mai bun preț pe piață, garantat. Cumpărăm orice marcă.', 'h1' => 'Vinde-ți mașina către Sauto'],
+            'estimation'     => ['ttl' => 'Evaluare auto gratuită Chișinău ['.$cy.'] — În 15 min', 'dsc' => 'Evaluare gratuită a mașinii în 15 minute. Estimare exactă la prețul pieței, raport detaliat, consultanță expert. 100% fără obligații. Programare online.', 'h1' => 'Evaluare auto'],
+            'tradein'        => ['ttl' => 'Trade-in auto Chișinău ['.$cy.'] — Schimb în 1 zi', 'dsc' => 'Trade-in la Sauto în 1 zi: evaluare corectă, mașini la schimb, plata diferenței pe loc, acte rapide. Garanție inclusă. Fără bătăi de cap.', 'h1' => 'Trade-in auto'],
+            'insurance'      => ['ttl' => 'Asigurări auto RCA și CASCO în Moldova ['.$cy.']', 'dsc' => 'RCA, CASCO, asigurare verde. Eliberare rapidă, fără comisioane ascunse. Prețuri avantajoase, consultanță gratuită. Asigurări pentru orice tip de auto.', 'h1' => 'Asigurări auto'],
+            'testdrive'      => ['ttl' => 'Test-drive auto gratuit Chișinău ['.$cy.']', 'dsc' => 'Test-drive gratuit la mașinile din stoc. Programare online în 2 minute, consultant expert, fără obligații. Probează înainte să cumperi.', 'h1' => 'Test-drive auto'],
+            'transportation' => ['ttl' => 'Transport auto Europa-Moldova ['.$cy.'] — În 14 zile', 'dsc' => 'Transport auto din Europa în 14 zile: livrare sigură, vămuire completă, asigurare pe traseu. Prețuri transparente, fără surprize. Servicii profesionale.', 'h1' => 'Transport auto'],
+            'payment'        => ['ttl' => 'Modalități de plată ['.$cy.'] — Cash, card, credit', 'dsc' => '5 modalități de plată: cash, card, transfer, credit auto, leasing. Procesare în 1 oră, fără comisioane ascunse. Cumpărare sigură și rapidă.', 'h1' => 'Modalități de plată'],
             'terms'          => ['ttl' => 'Termeni și condiții Sauto.md ['.$cy.'] — Transparenți', 'dsc' => 'Termenii și condițiile de utilizare ale Sauto.md și de cumpărare auto. Transparent, clar, conform legislației Republicii Moldova. Actualizat '.$cy.'.', 'h1' => 'Termeni și condiții'],
         ],
         'ru' => [
-            'sale'           => ['ttl' => 'Продай авто в Кишинёве ['.$cy.'] — Оплата на месте', 'dsc' => '✓ Продай машину в Sauto за 1 час. Бесплатная оценка, оплата на месте, без скрытых комиссий. Лучшая цена на рынке, гарантировано. Выкупаем любую марку.', 'h1' => 'Продай машину в Sauto'],
-            'estimation'     => ['ttl' => 'Оценка авто бесплатно Кишинёв ['.$cy.'] — За 15 мин', 'dsc' => '✓ Бесплатная оценка авто за 15 минут. Точная рыночная стоимость, подробный отчёт, консультация эксперта. 100% без обязательств. Запись онлайн.', 'h1' => 'Оценка авто'],
-            'tradein'        => ['ttl' => 'Trade-in авто Кишинёв ['.$cy.'] — Обмен за 1 день', 'dsc' => '✓ Trade-in в Sauto за 1 день: честная оценка, авто на выбор, доплата разницы на месте, быстрое оформление. Гарантия включена. Без забот.', 'h1' => 'Trade-in авто'],
-            'insurance'      => ['ttl' => 'Страхование авто ОСАГО и КАСКО в Молдове ['.$cy.']', 'dsc' => '✓ ОСАГО, КАСКО, зелёная карта. Быстрое оформление, без скрытых комиссий. Выгодные цены, бесплатная консультация. Страхование для любого типа авто.', 'h1' => 'Страхование авто'],
-            'testdrive'      => ['ttl' => 'Тест-драйв авто бесплатно Кишинёв ['.$cy.']', 'dsc' => '✓ Бесплатный тест-драйв автомобилей со склада. Запись онлайн за 2 минуты, эксперт-консультант, без обязательств. Проверь перед покупкой.', 'h1' => 'Тест-драйв авто'],
-            'transportation' => ['ttl' => 'Доставка авто Европа-Молдова ['.$cy.'] — За 14 дней', 'dsc' => '✓ Доставка авто из Европы за 14 дней: безопасная транспортировка, полная растаможка, страхование в пути. Прозрачные цены. Профессиональные услуги.', 'h1' => 'Транспортировка авто'],
-            'payment'        => ['ttl' => 'Способы оплаты ['.$cy.'] — Наличные, карта, кредит', 'dsc' => '✓ 5 способов оплаты: наличные, карта, перевод, автокредит, лизинг. Оформление за 1 час, без скрытых комиссий. Безопасная и быстрая покупка.', 'h1' => 'Способы оплаты'],
+            'sale'           => ['ttl' => 'Продай авто в Кишинёве ['.$cy.'] — Оплата на месте', 'dsc' => 'Продай машину в Sauto за 1 час. Бесплатная оценка, оплата на месте, без скрытых комиссий. Лучшая цена на рынке, гарантировано. Выкупаем любую марку.', 'h1' => 'Продай машину в Sauto'],
+            'estimation'     => ['ttl' => 'Оценка авто бесплатно Кишинёв ['.$cy.'] — За 15 мин', 'dsc' => 'Бесплатная оценка авто за 15 минут. Точная рыночная стоимость, подробный отчёт, консультация эксперта. 100% без обязательств. Запись онлайн.', 'h1' => 'Оценка авто'],
+            'tradein'        => ['ttl' => 'Trade-in авто Кишинёв ['.$cy.'] — Обмен за 1 день', 'dsc' => 'Trade-in в Sauto за 1 день: честная оценка, авто на выбор, доплата разницы на месте, быстрое оформление. Гарантия включена. Без забот.', 'h1' => 'Trade-in авто'],
+            'insurance'      => ['ttl' => 'Страхование авто ОСАГО и КАСКО в Молдове ['.$cy.']', 'dsc' => 'ОСАГО, КАСКО, зелёная карта. Быстрое оформление, без скрытых комиссий. Выгодные цены, бесплатная консультация. Страхование для любого типа авто.', 'h1' => 'Страхование авто'],
+            'testdrive'      => ['ttl' => 'Тест-драйв авто бесплатно Кишинёв ['.$cy.']', 'dsc' => 'Бесплатный тест-драйв автомобилей со склада. Запись онлайн за 2 минуты, эксперт-консультант, без обязательств. Проверь перед покупкой.', 'h1' => 'Тест-драйв авто'],
+            'transportation' => ['ttl' => 'Доставка авто Европа-Молдова ['.$cy.'] — За 14 дней', 'dsc' => 'Доставка авто из Европы за 14 дней: безопасная транспортировка, полная растаможка, страхование в пути. Прозрачные цены. Профессиональные услуги.', 'h1' => 'Транспортировка авто'],
+            'payment'        => ['ttl' => 'Способы оплаты ['.$cy.'] — Наличные, карта, кредит', 'dsc' => '5 способов оплаты: наличные, карта, перевод, автокредит, лизинг. Оформление за 1 час, без скрытых комиссий. Безопасная и быстрая покупка.', 'h1' => 'Способы оплаты'],
             'terms'          => ['ttl' => 'Условия использования Sauto.md ['.$cy.'] — Прозрачно', 'dsc' => 'Условия использования сайта Sauto.md и покупки авто. Прозрачно, чётко, в соответствии с законодательством РМ. Обновлено в '.$cy.' году.', 'h1' => 'Условия использования'],
         ],
         'en' => [
-            'sale'           => ['ttl' => 'Sell Your Car in Chișinău ['.$cy.'] — Instant Payment', 'dsc' => '✓ Sell your car to Sauto in 1 hour. Free valuation, instant payment, no hidden fees. Best market price, guaranteed. We buy any make.', 'h1' => 'Sell your car to Sauto'],
-            'estimation'     => ['ttl' => 'Free Car Valuation Chișinău ['.$cy.'] — In 15 min', 'dsc' => '✓ Free car valuation in 15 minutes. Accurate market value, detailed report, expert consultation. 100% no obligations. Book online.', 'h1' => 'Car Valuation'],
-            'tradein'        => ['ttl' => 'Trade-in Cars Chișinău ['.$cy.'] — Swap in 1 Day', 'dsc' => '✓ Trade-in at Sauto in 1 day: fair valuation, cars to choose, instant difference payment, fast paperwork. Warranty included. Hassle-free.', 'h1' => 'Trade-in Cars'],
-            'insurance'      => ['ttl' => 'Car Insurance RCA and CASCO in Moldova ['.$cy.']', 'dsc' => '✓ RCA, CASCO, green card. Fast issuance, no hidden fees. Affordable prices, free consultation. Insurance for any type of car.', 'h1' => 'Car Insurance'],
-            'testdrive'      => ['ttl' => 'Free Test-Drive in Chișinău ['.$cy.']', 'dsc' => '✓ Free test-drive on cars in stock. Online booking in 2 minutes, expert consultant, no obligations. Try before you buy.', 'h1' => 'Test-Drive'],
-            'transportation' => ['ttl' => 'Car Transport Europe-Moldova ['.$cy.'] — In 14 Days', 'dsc' => '✓ Car transport from Europe in 14 days: safe delivery, full customs, transit insurance. Transparent prices, no surprises. Professional service.', 'h1' => 'Car Transportation'],
-            'payment'        => ['ttl' => 'Payment Methods ['.$cy.'] — Cash, Card, Credit', 'dsc' => '✓ 5 payment methods: cash, bank card, transfer, car loan, leasing. Processing in 1 hour, no hidden fees. Safe and fast purchase.', 'h1' => 'Payment Methods'],
+            'sale'           => ['ttl' => 'Sell Your Car in Chișinău ['.$cy.'] — Instant Payment', 'dsc' => 'Sell your car to Sauto in 1 hour. Free valuation, instant payment, no hidden fees. Best market price, guaranteed. We buy any make.', 'h1' => 'Sell your car to Sauto'],
+            'estimation'     => ['ttl' => 'Free Car Valuation Chișinău ['.$cy.'] — In 15 min', 'dsc' => 'Free car valuation in 15 minutes. Accurate market value, detailed report, expert consultation. 100% no obligations. Book online.', 'h1' => 'Car Valuation'],
+            'tradein'        => ['ttl' => 'Trade-in Cars Chișinău ['.$cy.'] — Swap in 1 Day', 'dsc' => 'Trade-in at Sauto in 1 day: fair valuation, cars to choose, instant difference payment, fast paperwork. Warranty included. Hassle-free.', 'h1' => 'Trade-in Cars'],
+            'insurance'      => ['ttl' => 'Car Insurance RCA and CASCO in Moldova ['.$cy.']', 'dsc' => 'RCA, CASCO, green card. Fast issuance, no hidden fees. Affordable prices, free consultation. Insurance for any type of car.', 'h1' => 'Car Insurance'],
+            'testdrive'      => ['ttl' => 'Free Test-Drive in Chișinău ['.$cy.']', 'dsc' => 'Free test-drive on cars in stock. Online booking in 2 minutes, expert consultant, no obligations. Try before you buy.', 'h1' => 'Test-Drive'],
+            'transportation' => ['ttl' => 'Car Transport Europe-Moldova ['.$cy.'] — In 14 Days', 'dsc' => 'Car transport from Europe in 14 days: safe delivery, full customs, transit insurance. Transparent prices, no surprises. Professional service.', 'h1' => 'Car Transportation'],
+            'payment'        => ['ttl' => 'Payment Methods ['.$cy.'] — Cash, Card, Credit', 'dsc' => '5 payment methods: cash, bank card, transfer, car loan, leasing. Processing in 1 hour, no hidden fees. Safe and fast purchase.', 'h1' => 'Payment Methods'],
             'terms'          => ['ttl' => 'Terms and Conditions Sauto.md ['.$cy.'] — Transparent', 'dsc' => 'Terms and conditions of using Sauto.md and car purchase. Transparent, clear, compliant with Moldova legislation. Updated '.$cy.'.', 'h1' => 'Terms and Conditions'],
         ],
     ];
@@ -486,22 +486,22 @@ if ($z2 === 'services' && isset($t_mp[3]) && !empty($t_mp[3])) {
 if (in_array($z2, ['about', 'privacy', 'terms', 'warranty'], true)) {
     $info_meta = [
         'ro' => [
-            'about'    => ['ttl' => 'Despre Sauto.md — Dealer auto în Chișinău, Moldova', 'dsc' => '✓ Sauto — dealer auto de încredere din Chișinău, Moldova. Mașini importate din Europa, servicii complete: credit auto, leasing, trade-in, asigurări. Cumpărați cu încredere.', 'h1' => 'Despre Sauto'],
+            'about'    => ['ttl' => 'Despre Sauto.md — Dealer auto în Chișinău, Moldova', 'dsc' => 'Sauto — dealer auto de încredere din Chișinău, Moldova. Mașini importate din Europa, servicii complete: credit auto, leasing, trade-in, asigurări. Cumpărați cu încredere.', 'h1' => 'Despre Sauto'],
             'privacy'  => ['ttl' => 'Politica de confidențialitate Sauto.md [GDPR '.$cy.']', 'dsc' => 'Politica de confidențialitate Sauto.md actualizată '.$cy.'. Cum colectăm, folosim și protejăm datele tale personale conform GDPR și legislației Republicii Moldova.', 'h1' => 'Politica de confidențialitate'],
             'terms'    => ['ttl' => 'Termeni și condiții Sauto.md ['.$cy.'] — Transparenți', 'dsc' => 'Termenii și condițiile de utilizare a site-ului Sauto.md și de cumpărare automobile. Clar, transparent, conform legii. Actualizat '.$cy.'.', 'h1' => 'Termeni și condiții'],
-            'warranty' => ['ttl' => 'Garanție auto Sauto ['.$cy.'] — 100% verificate tehnic', 'dsc' => '✓ Toate mașinile Sauto au garanție și sunt verificate tehnic. Asistență 24/7, condiții transparente. Cumpărați cu încredere — verificat înainte de livrare.', 'h1' => 'Garanție auto Sauto'],
+            'warranty' => ['ttl' => 'Garanție auto Sauto ['.$cy.'] — 100% verificate tehnic', 'dsc' => 'Toate mașinile Sauto au garanție și sunt verificate tehnic. Asistență 24/7, condiții transparente. Cumpărați cu încredere — verificat înainte de livrare.', 'h1' => 'Garanție auto Sauto'],
         ],
         'ru' => [
-            'about'    => ['ttl' => 'О Sauto.md — Автодилер в Кишинёве, Молдова', 'dsc' => '✓ Sauto — надёжный автодилер в Кишинёве, Молдова. Импорт авто из Европы, полный спектр услуг: автокредит, лизинг, trade-in, страхование. Покупайте с уверенностью.', 'h1' => 'О компании Sauto'],
+            'about'    => ['ttl' => 'О Sauto.md — Автодилер в Кишинёве, Молдова', 'dsc' => 'Sauto — надёжный автодилер в Кишинёве, Молдова. Импорт авто из Европы, полный спектр услуг: автокредит, лизинг, trade-in, страхование. Покупайте с уверенностью.', 'h1' => 'О компании Sauto'],
             'privacy'  => ['ttl' => 'Политика конфиденциальности Sauto.md [GDPR '.$cy.']', 'dsc' => 'Политика конфиденциальности Sauto.md обновлена '.$cy.'. Как мы собираем, используем и защищаем ваши данные согласно GDPR и законодательству РМ.', 'h1' => 'Политика конфиденциальности'],
             'terms'    => ['ttl' => 'Условия использования Sauto.md ['.$cy.'] — Прозрачно', 'dsc' => 'Условия использования сайта Sauto.md и покупки автомобилей. Прозрачно, чётко, в соответствии с законом. Обновлено '.$cy.'.', 'h1' => 'Условия использования'],
-            'warranty' => ['ttl' => 'Гарантия авто Sauto ['.$cy.'] — 100% проверены', 'dsc' => '✓ Все авто Sauto имеют гарантию и техническую проверку. Поддержка 24/7, прозрачные условия. Покупайте с уверенностью — проверено до доставки.', 'h1' => 'Гарантия авто Sauto'],
+            'warranty' => ['ttl' => 'Гарантия авто Sauto ['.$cy.'] — 100% проверены', 'dsc' => 'Все авто Sauto имеют гарантию и техническую проверку. Поддержка 24/7, прозрачные условия. Покупайте с уверенностью — проверено до доставки.', 'h1' => 'Гарантия авто Sauto'],
         ],
         'en' => [
-            'about'    => ['ttl' => 'About Sauto.md — Car Dealer in Chișinău, Moldova', 'dsc' => '✓ Sauto — trusted car dealer in Chișinău, Moldova. Cars imported from Europe, full services: car loan, leasing, trade-in, insurance. Buy with confidence.', 'h1' => 'About Sauto'],
+            'about'    => ['ttl' => 'About Sauto.md — Car Dealer in Chișinău, Moldova', 'dsc' => 'Sauto — trusted car dealer in Chișinău, Moldova. Cars imported from Europe, full services: car loan, leasing, trade-in, insurance. Buy with confidence.', 'h1' => 'About Sauto'],
             'privacy'  => ['ttl' => 'Privacy Policy Sauto.md [GDPR '.$cy.']', 'dsc' => 'Sauto.md Privacy Policy updated '.$cy.'. How we collect, use and protect your personal data in accordance with GDPR and Moldova legislation.', 'h1' => 'Privacy Policy'],
             'terms'    => ['ttl' => 'Terms and Conditions Sauto.md ['.$cy.'] — Transparent', 'dsc' => 'Terms and conditions of using Sauto.md website and purchasing cars. Clear, transparent, compliant with the law. Updated '.$cy.'.', 'h1' => 'Terms and Conditions'],
-            'warranty' => ['ttl' => 'Sauto Car Warranty ['.$cy.'] — 100% Inspected', 'dsc' => '✓ All Sauto cars have warranty and technical inspection. 24/7 support, transparent conditions. Buy with confidence — verified before delivery.', 'h1' => 'Sauto Car Warranty'],
+            'warranty' => ['ttl' => 'Sauto Car Warranty ['.$cy.'] — 100% Inspected', 'dsc' => 'All Sauto cars have warranty and technical inspection. 24/7 support, transparent conditions. Buy with confidence — verified before delivery.', 'h1' => 'Sauto Car Warranty'],
         ],
     ];
     $lang_key = isset($info_meta[$current_lang]) ? $current_lang : 'ro';
@@ -594,9 +594,9 @@ if ( in_array($z2, ['cars', 'ordercars', 'tyres'], true) && is_numeric($z3) && !
             $sa['meta']['ttl'] = ($seo_ir == 1 && $seo_r['ttl'] != '') ? $seo_r['ttl'] : $title_built;
             $sa['meta']['h1']  = ($seo_ir == 1 && $seo_r['h1']  != '') ? $seo_r['h1']  : $sa['it']['r']['br_nm'].' '.$sa['it']['r']['mo_nm'].', id-'.$sa['it']['r']['id'];
 
-            // Build a richer description with trigger words (✓ Verified ✓ Warranty ✓ Credit)
+            // Build a richer description with trigger words (Verified Warranty Credit)
             $desc_parts = [];
-            $desc_parts[] = '✓ '.$sa['it']['r']['br_nm'].' '.$sa['it']['r']['mo_nm'];
+            $desc_parts[] = ''.$sa['it']['r']['br_nm'].' '.$sa['it']['r']['mo_nm'];
             if (!empty($sa['it']['r']['yr'])) $desc_parts[] = $sa['it']['r']['yr'];
             if (!empty($sa['it']['r']['clr']) && isset($lng['l']['car']['clr'][$sa['it']['r']['clr']])) $desc_parts[] = $lng['l']['car']['clr'][$sa['it']['r']['clr']];
             if (!empty($sa['it']['r']['prc'])) $desc_parts[] = '— '.$sa['it']['r']['prc'].$cur_sym;
@@ -622,7 +622,7 @@ if ( in_array($z2, ['cars', 'ordercars', 'tyres'], true) && is_numeric($z3) && !
             $sa['meta']['h1']  = ($seo_ir == 1 && $seo_r['h1']  != '') ? $seo_r['h1']  : $sa['it']['r']['br_nm'].' '.$sa['it']['r']['mo_nm'].', id-'.$sa['it']['r']['id'];
 
             $desc_parts = [];
-            $desc_parts[] = '✓ '.$lng['t']['seo']['order_car_dsc'];
+            $desc_parts[] = ''.$lng['t']['seo']['order_car_dsc'];
             $desc_parts[] = $sa['it']['r']['br_nm'].' '.$sa['it']['r']['mo_nm'];
             if (!empty($sa['it']['r']['yr'])) $desc_parts[] = $sa['it']['r']['yr'];
             if (!empty($sa['it']['r']['clr']) && isset($lng['l']['car']['clr'][$sa['it']['r']['clr']])) $desc_parts[] = $lng['l']['car']['clr'][$sa['it']['r']['clr']];
@@ -642,7 +642,7 @@ if ( in_array($z2, ['cars', 'ordercars', 'tyres'], true) && is_numeric($z3) && !
             if (isset($lng['l']['tyre']['ss'][$sa['it']['r']['ss']])) $tyre_attrs[] = $lng['l']['tyre']['ss'][$sa['it']['r']['ss']];
             $tyre_price = !empty($sa['it']['r']['prc']) ? ' — '.$sa['it']['r']['prc'].$sa['it']['r']['cur'] : '';
             $tyre_ttl = sauto_trim_title($tyre_core, $tyre_attrs, $tyre_price);
-            $tyre_dsc = '✓ '.$lng['w']['sale'].' '.(mb_strtolower($lng['w']['tyres'], "UTF-8")).' '.$sa['it']['r']['br'].' '.$tyre_size.' '.$lng['u']['for'].' '.$sa['it']['r']['prc'].$sa['it']['r']['cur'].' '.$lng['u']['in'].' '.$lng['w']['chisinau'].'. Montaj gratuit, garanție 2 ani.';
+            $tyre_dsc = ''.$lng['w']['sale'].' '.(mb_strtolower($lng['w']['tyres'], "UTF-8")).' '.$sa['it']['r']['br'].' '.$tyre_size.' '.$lng['u']['for'].' '.$sa['it']['r']['prc'].$sa['it']['r']['cur'].' '.$lng['u']['in'].' '.$lng['w']['chisinau'].'. Montaj gratuit, garanție 2 ani.';
 
             $sa['meta']['ttl'] = ($seo_ir == 1 && $seo_r['ttl'] != '') ? $seo_r['ttl'] : $tyre_ttl;
             $sa['meta']['h1']  = ($seo_ir == 1 && $seo_r['h1']  != '') ? $seo_r['h1']  : ( $sa['it']['r']['br'].' '.$tyre_size.', id-'.$sa['it']['r']['id'] );
@@ -653,10 +653,47 @@ if ( in_array($z2, ['cars', 'ordercars', 'tyres'], true) && is_numeric($z3) && !
 }
 
 // =====================================================================
+// ORDERCARS - IMPORT REGION pages (clean URL)
+// /ro/ordercars/korea, /ro/ordercars/europe, /ro/ordercars/usa
+// These are dedicated landing pages (own canonical + h1/title/description),
+// not brands. Handled before the brand block so "korea" is not looked up as a brand.
+// =====================================================================
+$oc_region_meta = [
+    'korea'  => ['ro' => 'Coreea', 'ru' => 'Корея',  'en' => 'Korea'],
+    'europe' => ['ro' => 'Europa', 'ru' => 'Европа', 'en' => 'Europe'],
+    'usa'    => ['ro' => 'SUA',    'ru' => 'США',    'en' => 'USA'],
+];
+$oc_region_key = ($z2 === 'ordercars' && !is_numeric($z3)) ? strtolower($z3) : '';
+
+if ($oc_region_key !== '' && isset($oc_region_meta[$oc_region_key])) {
+    $reg = $oc_region_meta[$oc_region_key][$current_lang] ?? $oc_region_meta[$oc_region_key]['ro'];
+    switch ($current_lang) {
+        case 'ru':
+            $sa['meta']['ttl'] = "Авто под заказ из {$reg} — Экономия до 45%";
+            $sa['meta']['dsc'] = "Авто под заказ из {$reg} в Молдову [{$cy}], под ключ. Экономия до 45% vs салон. Подбор, проверка VIN, доставка за 14 дней, растаможка. Гарантия. Доставка по всей Молдове.";
+            $sa['meta']['h1']  = "Авто под заказ из {$reg}";
+            $sa['meta']['kwd'] = mb_strtolower("авто под заказ из {$reg}, заказать авто из {$reg}, импорт авто из {$reg} молдова, авто из {$reg} цена, привезти авто из {$reg} в молдову, доставка авто из {$reg}, растаможка авто {$reg} молдова", "UTF-8");
+            break;
+        case 'en':
+            $sa['meta']['ttl'] = "Cars on Order from {$reg} to Moldova — Save up to 45%";
+            $sa['meta']['dsc'] = "Cars on order from {$reg} to Moldova [{$cy}], turnkey. Save up to 45% vs showroom. Selection, VIN check, 14-day delivery, customs. Warranty. Delivery across Moldova.";
+            $sa['meta']['h1']  = "Cars on Order from {$reg}";
+            $sa['meta']['kwd'] = mb_strtolower("cars on order from {$reg}, order car from {$reg} moldova, import cars from {$reg} moldova, {$reg} car price moldova, bring car from {$reg} to moldova, car delivery from {$reg}, customs clearance {$reg} moldova", "UTF-8");
+            break;
+        default: // ro
+            $sa['meta']['ttl'] = "Auto la comandă din {$reg} — Economie până la 45%";
+            $sa['meta']['dsc'] = "Auto la comandă din {$reg} în Moldova [{$cy}], la cheie. Economie până la 45% vs salon. Selecție, verificare VIN, livrare în 14 zile, vămuire. Garanție inclusă.";
+            $sa['meta']['h1']  = "Auto la comandă din {$reg}";
+            $sa['meta']['kwd'] = mb_strtolower("auto la comanda din {$reg}, comanda auto din {$reg} moldova, import auto din {$reg} moldova, auto din {$reg} pret moldova, aducem auto din {$reg} in moldova, livrare auto din {$reg}, vamuire auto {$reg} moldova", "UTF-8");
+            break;
+    }
+}
+
+// =====================================================================
 // CARS / ORDERCARS - BRAND / BRAND+MODEL pages (clean URL)
 // /ro/cars/ford, /ro/cars/ford/focus, /ro/ordercars/ford, /ro/ordercars/ford/focus
 // =====================================================================
-if ( in_array($z2, ['cars', 'ordercars'], true) && !is_numeric($z3) && isset($t_mp[3]) && !empty($t_mp[3]) ) {
+if ( in_array($z2, ['cars', 'ordercars'], true) && !is_numeric($z3) && isset($t_mp[3]) && !empty($t_mp[3]) && !($z2 === 'ordercars' && isset($oc_region_meta[strtolower($z3)])) ) {
     $brand_code = str_replace('-', '_', $z3);
     $brand_name = '';
     $model_name = '';
@@ -712,21 +749,21 @@ if ( in_array($z2, ['cars', 'ordercars'], true) && !is_numeric($z3) && isset($t_
                 case 'ru':
                     $sa['meta']['ttl'] = "Купить {$brand_name} {$model_name} в Молдове [{$cy}]";
                     $price_txt = $prc_min > 0 ? " Цены от {$prc_min}€." : '';
-                    $sa['meta']['dsc'] = "✓ {$brand_name} {$model_name} в Молдове.{$price_txt} Проверено, с гарантией. Кредит, лизинг, Trade-in, тест-драйв бесплатно.";
+                    $sa['meta']['dsc'] = "{$brand_name} {$model_name} в Молдове.{$price_txt} Проверено, с гарантией. Кредит, лизинг, Trade-in, тест-драйв бесплатно.";
                     $sa['meta']['h1']  = "{$brand_name} {$model_name} в Молдове";
                     $sa['meta']['kwd'] = mb_strtolower("{$brand_name} {$model_name}, купить {$brand_name} {$model_name} молдова, {$brand_name} {$model_name} молдова, {$brand_name} {$model_name} бу, {$brand_name} {$model_name} с пробегом, {$brand_name} {$model_name} цена молдова, {$brand_name} {$model_name} из европы, {$brand_name} {$model_name} в наличии молдова, {$brand_name} {$model_name} без пробега по рм", "UTF-8");
                     break;
                 case 'en':
                     $sa['meta']['ttl'] = "{$brand_name} {$model_name} for Sale in Moldova [{$cy}]";
                     $price_txt = $prc_min > 0 ? " Prices from €{$prc_min}." : '';
-                    $sa['meta']['dsc'] = "✓ {$brand_name} {$model_name} in Moldova.{$price_txt} Inspected, with warranty. Credit, leasing, Trade-in, free test-drive.";
+                    $sa['meta']['dsc'] = "{$brand_name} {$model_name} in Moldova.{$price_txt} Inspected, with warranty. Credit, leasing, Trade-in, free test-drive.";
                     $sa['meta']['h1']  = "{$brand_name} {$model_name} in Moldova";
                     $sa['meta']['kwd'] = mb_strtolower("{$brand_name} {$model_name}, buy {$brand_name} {$model_name} moldova, used {$brand_name} {$model_name}, second hand {$brand_name} {$model_name}, {$brand_name} {$model_name} price moldova, {$brand_name} {$model_name} from europe, {$brand_name} {$model_name} in stock moldova, {$brand_name} {$model_name} no mileage moldova", "UTF-8");
                     break;
                 default: // ro
                     $sa['meta']['ttl'] = "{$brand_name} {$model_name} de vânzare în Moldova [{$cy}]";
                     $price_txt = $prc_min > 0 ? " Prețuri de la {$prc_min}€." : '';
-                    $sa['meta']['dsc'] = "✓ {$brand_name} {$model_name} în Moldova.{$price_txt} Verificat, cu garanție. Credit, leasing, Trade-in, test-drive gratuit.";
+                    $sa['meta']['dsc'] = "{$brand_name} {$model_name} în Moldova.{$price_txt} Verificat, cu garanție. Credit, leasing, Trade-in, test-drive gratuit.";
                     $sa['meta']['h1']  = "{$brand_name} {$model_name} în Moldova";
                     $sa['meta']['kwd'] = mb_strtolower("{$brand_name} {$model_name}, cumpara {$brand_name} {$model_name} moldova, {$brand_name} {$model_name} rulate, {$brand_name} {$model_name} bu, {$brand_name} {$model_name} second hand, {$brand_name} {$model_name} pret moldova, {$brand_name} {$model_name} din europa, {$brand_name} {$model_name} in stoc moldova, {$brand_name} {$model_name} fara parcurs rm, {$brand_name} {$model_name} de vanzare", "UTF-8");
                     break;
@@ -736,21 +773,21 @@ if ( in_array($z2, ['cars', 'ordercars'], true) && !is_numeric($z3) && isset($t_
                 case 'ru':
                     $sa['meta']['ttl'] = "{$brand_name} {$model_name} под заказ [{$cy}]";
                     $price_txt = $prc_min > 0 ? " От {$prc_min}€." : '';
-                    $sa['meta']['dsc'] = "✓ {$brand_name} {$model_name} под заказ из Европы.{$price_txt} Подбор по VIN, проверка, доставка за 14 дней, растаможка. Экономия до 45%. Гарантия.";
+                    $sa['meta']['dsc'] = "{$brand_name} {$model_name} под заказ из Европы.{$price_txt} Подбор по VIN, проверка, доставка за 14 дней, растаможка. Экономия до 45%. Гарантия.";
                     $sa['meta']['h1']  = "{$brand_name} {$model_name} под заказ";
                     $sa['meta']['kwd'] = mb_strtolower("{$brand_name} {$model_name} под заказ, заказать {$brand_name} {$model_name} молдова, {$brand_name} {$model_name} из европы, {$brand_name} {$model_name} из германии, {$brand_name} {$model_name} цена под заказ, привезти {$brand_name} {$model_name} в молдову, {$brand_name} {$model_name} молдова заказ", "UTF-8");
                     break;
                 case 'en':
                     $sa['meta']['ttl'] = "{$brand_name} {$model_name} on Order [{$cy}]";
                     $price_txt = $prc_min > 0 ? " From €{$prc_min}." : '';
-                    $sa['meta']['dsc'] = "✓ {$brand_name} {$model_name} on order from Europe.{$price_txt} VIN check, 14-day delivery, customs. Save up to 45%. Warranty included.";
+                    $sa['meta']['dsc'] = "{$brand_name} {$model_name} on order from Europe.{$price_txt} VIN check, 14-day delivery, customs. Save up to 45%. Warranty included.";
                     $sa['meta']['h1']  = "{$brand_name} {$model_name} on Order";
                     $sa['meta']['kwd'] = mb_strtolower("{$brand_name} {$model_name} on order, order {$brand_name} {$model_name} moldova, {$brand_name} {$model_name} from europe, {$brand_name} {$model_name} from germany, {$brand_name} {$model_name} order price, bring {$brand_name} {$model_name} to moldova, {$brand_name} {$model_name} moldova order", "UTF-8");
                     break;
                 default: // ro
                     $sa['meta']['ttl'] = "{$brand_name} {$model_name} la comandă din Europa [{$cy}]";
                     $price_txt = $prc_min > 0 ? " De la {$prc_min}€." : '';
-                    $sa['meta']['dsc'] = "✓ {$brand_name} {$model_name} la comandă din Europa.{$price_txt} Verificare VIN, livrare în 14 zile, vămuire. Economie până la 45%. Garanție inclusă.";
+                    $sa['meta']['dsc'] = "{$brand_name} {$model_name} la comandă din Europa.{$price_txt} Verificare VIN, livrare în 14 zile, vămuire. Economie până la 45%. Garanție inclusă.";
                     $sa['meta']['h1']  = "{$brand_name} {$model_name} la comandă";
                     $sa['meta']['kwd'] = mb_strtolower("{$brand_name} {$model_name} la comanda, comanda {$brand_name} {$model_name} moldova, {$brand_name} {$model_name} din europa, {$brand_name} {$model_name} din germania, {$brand_name} {$model_name} pret la comanda, aducem {$brand_name} {$model_name} in moldova, {$brand_name} {$model_name} moldova comanda", "UTF-8");
                     break;
@@ -764,21 +801,21 @@ if ( in_array($z2, ['cars', 'ordercars'], true) && !is_numeric($z3) && isset($t_
                 case 'ru':
                     $sa['meta']['ttl'] = "Купить {$brand_name} в Молдове [{$cy}] — Все модели";
                     $price_txt = $prc_min > 0 ? " Цены от {$prc_min}€." : '';
-                    $sa['meta']['dsc'] = "✓ {$brand_name} в Молдове.{$price_txt} Все модели, с гарантией. Кредит, лизинг, Trade-in, тест-драйв бесплатно.";
+                    $sa['meta']['dsc'] = "{$brand_name} в Молдове.{$price_txt} Все модели, с гарантией. Кредит, лизинг, Trade-in, тест-драйв бесплатно.";
                     $sa['meta']['h1']  = "Автомобили {$brand_name}";
                     $sa['meta']['kwd'] = mb_strtolower("{$brand_name} молдова, купить {$brand_name} молдова, {$brand_name} бу молдова, {$brand_name} с пробегом, {$brand_name} в наличии молдова, {$brand_name} из европы, {$brand_name} цена молдова, {$brand_name} без пробега по рм, авто {$brand_name} молдова", "UTF-8");
                     break;
                 case 'en':
                     $sa['meta']['ttl'] = "{$brand_name} for Sale in Moldova [{$cy}] — All Models";
                     $price_txt = $prc_min > 0 ? " Prices from €{$prc_min}." : '';
-                    $sa['meta']['dsc'] = "✓ {$brand_name} in Moldova.{$price_txt} All models, with warranty. Credit, leasing, Trade-in, free test-drive.";
+                    $sa['meta']['dsc'] = "{$brand_name} in Moldova.{$price_txt} All models, with warranty. Credit, leasing, Trade-in, free test-drive.";
                     $sa['meta']['h1']  = "{$brand_name} Cars";
                     $sa['meta']['kwd'] = mb_strtolower("{$brand_name} moldova, buy {$brand_name} moldova, used {$brand_name} moldova, second hand {$brand_name}, {$brand_name} in stock moldova, {$brand_name} from europe, {$brand_name} price moldova, {$brand_name} no mileage moldova, {$brand_name} cars moldova", "UTF-8");
                     break;
                 default: // ro
                     $sa['meta']['ttl'] = "{$brand_name} de vânzare în Moldova [{$cy}] — Toate modelele";
                     $price_txt = $prc_min > 0 ? " Prețuri de la {$prc_min}€." : '';
-                    $sa['meta']['dsc'] = "✓ {$brand_name} în Moldova.{$price_txt} Toate modelele, cu garanție. Credit, leasing, Trade-in, test-drive gratuit.";
+                    $sa['meta']['dsc'] = "{$brand_name} în Moldova.{$price_txt} Toate modelele, cu garanție. Credit, leasing, Trade-in, test-drive gratuit.";
                     $sa['meta']['h1']  = "Automobile {$brand_name}";
                     $sa['meta']['kwd'] = mb_strtolower("{$brand_name} moldova, cumpara {$brand_name} moldova, {$brand_name} rulate moldova, {$brand_name} bu, {$brand_name} second hand, {$brand_name} in stoc moldova, {$brand_name} din europa, {$brand_name} pret moldova, {$brand_name} fara parcurs rm, automobile {$brand_name} moldova", "UTF-8");
                     break;
@@ -788,21 +825,21 @@ if ( in_array($z2, ['cars', 'ordercars'], true) && !is_numeric($z3) && isset($t_
                 case 'ru':
                     $sa['meta']['ttl'] = "{$brand_name} под заказ из Европы [{$cy}]";
                     $price_txt = $prc_min > 0 ? " От {$prc_min}€." : '';
-                    $sa['meta']['dsc'] = "✓ Все модели {$brand_name} под заказ из Европы.{$price_txt} Подбор по VIN, доставка за 14 дней, растаможка. Экономия до 45%. Гарантия включена.";
+                    $sa['meta']['dsc'] = "Все модели {$brand_name} под заказ из Европы.{$price_txt} Подбор по VIN, доставка за 14 дней, растаможка. Экономия до 45%. Гарантия включена.";
                     $sa['meta']['h1']  = "{$brand_name} под заказ";
                     $sa['meta']['kwd'] = mb_strtolower("{$brand_name} под заказ молдова, заказать {$brand_name} молдова, {$brand_name} из европы, {$brand_name} из германии, {$brand_name} цена под заказ, привезти {$brand_name} в молдову, импорт {$brand_name} молдова", "UTF-8");
                     break;
                 case 'en':
                     $sa['meta']['ttl'] = "{$brand_name} on Order from Europe [{$cy}]";
                     $price_txt = $prc_min > 0 ? " From €{$prc_min}." : '';
-                    $sa['meta']['dsc'] = "✓ All {$brand_name} models on order from Europe.{$price_txt} VIN check, 14-day delivery, customs. Save up to 45%. Warranty included.";
+                    $sa['meta']['dsc'] = "All {$brand_name} models on order from Europe.{$price_txt} VIN check, 14-day delivery, customs. Save up to 45%. Warranty included.";
                     $sa['meta']['h1']  = "{$brand_name} on Order";
                     $sa['meta']['kwd'] = mb_strtolower("{$brand_name} on order moldova, order {$brand_name} moldova, {$brand_name} from europe, {$brand_name} from germany, {$brand_name} order price, bring {$brand_name} to moldova, {$brand_name} import moldova", "UTF-8");
                     break;
                 default: // ro
                     $sa['meta']['ttl'] = "{$brand_name} la comandă din Europa [{$cy}]";
                     $price_txt = $prc_min > 0 ? " De la {$prc_min}€." : '';
-                    $sa['meta']['dsc'] = "✓ Toate modelele {$brand_name} la comandă din Europa.{$price_txt} Verificare VIN, livrare în 14 zile, vămuire. Economie până la 45%. Garanție inclusă.";
+                    $sa['meta']['dsc'] = "Toate modelele {$brand_name} la comandă din Europa.{$price_txt} Verificare VIN, livrare în 14 zile, vămuire. Economie până la 45%. Garanție inclusă.";
                     $sa['meta']['h1']  = "{$brand_name} la comandă";
                     $sa['meta']['kwd'] = mb_strtolower("{$brand_name} la comanda moldova, comanda {$brand_name} moldova, {$brand_name} din europa, {$brand_name} din germania, {$brand_name} pret la comanda, aducem {$brand_name} in moldova, import {$brand_name} moldova", "UTF-8");
                     break;
@@ -854,17 +891,17 @@ if ( in_array($z2, ['cars', 'ordercars', 'tyres'], true) && isset($q_mp[1]) && !
         switch ($current_lang) {
             case 'ru':
                 $sa['meta']['ttl'] = "{$brand_name} {$model_name} в Молдове [{$cy}] — Кредит и лизинг";
-                $sa['meta']['dsc'] = "✓ {$brand_name} {$model_name} в Молдове. Проверенные авто, гарантия. Кредит, лизинг, Trade-in за 1 день, тест-драйв бесплатно.";
+                $sa['meta']['dsc'] = "{$brand_name} {$model_name} в Молдове. Проверенные авто, гарантия. Кредит, лизинг, Trade-in за 1 день, тест-драйв бесплатно.";
                 $sa['meta']['h1']  = "{$brand_name} {$model_name}";
                 break;
             case 'en':
                 $sa['meta']['ttl'] = "{$brand_name} {$model_name} in Moldova [{$cy}] — Credit & Leasing";
-                $sa['meta']['dsc'] = "✓ {$brand_name} {$model_name} in Moldova. Inspected cars, warranty. Credit, leasing, 1-day Trade-in, free test-drive.";
+                $sa['meta']['dsc'] = "{$brand_name} {$model_name} in Moldova. Inspected cars, warranty. Credit, leasing, 1-day Trade-in, free test-drive.";
                 $sa['meta']['h1']  = "{$brand_name} {$model_name}";
                 break;
             default:
                 $sa['meta']['ttl'] = "{$brand_name} {$model_name} în Moldova [{$cy}] — Credit & Leasing";
-                $sa['meta']['dsc'] = "✓ {$brand_name} {$model_name} în Moldova. Mașini verificate, garanție. Credit, leasing, Trade-in în 1 zi, test-drive gratuit.";
+                $sa['meta']['dsc'] = "{$brand_name} {$model_name} în Moldova. Mașini verificate, garanție. Credit, leasing, Trade-in în 1 zi, test-drive gratuit.";
                 $sa['meta']['h1']  = "{$brand_name} {$model_name}";
                 break;
         }

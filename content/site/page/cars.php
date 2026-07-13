@@ -11,12 +11,6 @@ require_once(__DIR__ . '/../include/car_description.php');
 // Include similar price cars function
 require_once(__DIR__ . '/../include/similar_price_cars.php');
 
-// If this is a 404 page, show 404 content and exit
-if (isset($GLOBALS['page_is_404']) && $GLOBALS['page_is_404'] === true) {
-    include(_DEFAULT.'/404.php');
-    exit;
-}
-
 /**
  * Get country name by ID in the specified language
  * @param int $countryId - ID of the country
@@ -111,6 +105,16 @@ function getImportCountryName($countryId, $language = 'ro') {
 
 // Initialize variables
 $rtrn = '';
+
+// Sold/removed car (404) — friendly message + similar-car cards inside the normal layout.
+if (!empty($GLOBALS['page_is_404'])) {
+    http_response_code(404);
+    $GLOBALS['is_404_car'] = true;
+    include(_SITE_INCL.'/car_404.php');
+    echo $rtrn;
+    return;
+}
+
 $card = '';
 $trnslt_ar = [
     'clr' => 'exterior_color',
@@ -581,7 +585,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                             </div>';
                 $z_src = isset($img['main'])?'/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/high/'.$img['main'].(!empty($img['main_ff'])?'.'.$img['main_ff']:$img_frmt):'';
                 //$z_src = (@getimagesize($site_url.$z_src)?$z_src:'');
-                $rtrn .= '<div class="big_pht" role="img" aria-label="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' large photo" data-pos="1" data-cnt="'.$img_cnt.'" style="background-image:url('.$z_src.');" data-src="'.$z_src.'">'.car_fav_btn($r['id'], $lng).'</div>';
+                $rtrn .= '<div class="big_pht" role="img" aria-label="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' large photo" data-pos="1" data-cnt="'.$img_cnt.'" style="background-image:url('.$z_src.');" data-src="'.$z_src.'">'.car_share_btn($r['id'], 'cars', $lng).car_fav_btn($r['id'], $lng).($img_cnt>1?'<div class="bp-nav bp-left" role="button" aria-label="Anterior"></div><div class="bp-nav bp-right" role="button" aria-label="Următor"></div>':'').'</div>';
                 $rtrn .= '</div>';
 
                 $cur = $r['cur'];
@@ -599,6 +603,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 ?>
                 <?php // webs25  ?>
                 <div class="wrapf-carousel 11">
+                    <?= car_share_btn($r['id'], 'cars', $lng) ?>
                     <?= car_fav_btn($r['id'], $lng) ?>
                     <div class="f-carousel" id="heroCarousel">
 

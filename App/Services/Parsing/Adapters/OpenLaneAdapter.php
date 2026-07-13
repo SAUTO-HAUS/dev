@@ -796,6 +796,32 @@ class OpenLaneAdapter extends AbstractAdapter
     //   404                   → that car is gone (NOT a cookie problem)
     // We try several recent auctions so one removed car can't fake an expiry.
     // Returns ['logged_in'=>bool, 'vin'=>?string, 'reason'=>string].
+    // Keep-alive: make one cheap authenticated call (a 1-item search) so OpenLane
+    // treats it as ordinary logged-in activity and extends the session, the same way
+    // the eCarsTrade keep-alive cron does. Called from console/openlane_keepalive.php.
+    // Returns ['alive'=>bool, 'status'=>int, 'reason'=>string].
+    public function pingSession(): array
+    {
+        [$cookie] = $this->loadAuth();
+        if (!$cookie) {
+            return ['alive' => false, 'status' => 0, 'reason' => 'no_cookie'];
+        }
+        $response = $this->httpRequest(self::API_SEARCH, [
+            'post'    => $this->buildSearchPayload([], 1, 1, self::BASE_URL . '/en/findcar', $this->uuid4()),
+            'headers' => $this->searchHeaders(self::BASE_URL . '/en/findcar'),
+        ]);
+        $status = (int)($response['status'] ?? 0);
+        $body   = (string)($response['body'] ?? '');
+        if ($status !== 200 || $body === '') {
+            return ['alive' => false, 'status' => $status, 'reason' => 'http_' . $status];
+        }
+        $data = json_decode($body, true);
+        if (!is_array($data) || (!array_key_exists('Auctions', $data) && !array_key_exists('Count', $data))) {
+            return ['alive' => false, 'status' => $status, 'reason' => 'non_json'];
+        }
+        return ['alive' => true, 'status' => $status, 'reason' => 'ok'];
+    }
+
     public function checkSession(array $auctionIds): array
     {
         [$cookie] = $this->loadAuth();
@@ -803,38 +829,51 @@ class OpenLaneAdapter extends AbstractAdapter
             return ['logged_in' => false, 'vin' => null, 'reason' => 'no_cookie'];
         }
 
-        $allGone = true; // every tested auction answered 404
-        foreach ($auctionIds as $aid) {
-            $aid = trim((string)$aid);
-            if ($aid === '') continue;
-
-            $url = self::API_DETAIL . rawurlencode($aid);
-            $response = $this->httpRequest($url, [
-                'headers' => $this->searchHeaders(self::BASE_URL . '/en/car/info?auctionId=' . $aid),
-            ]);
-            $status = (int)($response['status'] ?? 0);
-
-            if ($status === 403) {
-                // Unambiguous: the session is no longer authenticated.
-                return ['logged_in' => false, 'vin' => null, 'reason' => 'http_403'];
-            }
-            if ($status === 404) { continue; } // car gone, try the next
-            $allGone = false;
-            if ($status !== 200 || empty($response['body'])) { continue; } // hiccup
-
-            $d = json_decode($response['body'], true);
-            if (is_array($d) && !empty($d['CarId'])) {
-                $vin = preg_replace('/[^A-HJ-NPR-Z0-9]/i', '', (string)($d['ChassisNumber'] ?? ''));
-                return ['logged_in' => true, 'vin' => strlen($vin) === 17 ? $vin : null, 'reason' => 'ok'];
-            }
-            // 200 but not the expected JSON (e.g. a Cloudflare/login HTML page).
+        // AUTH PROOF FIRST: hit the search endpoint (doesn't depend on any single
+        // car). The old check only tested car detail pages, and when every tested
+        // car was 404 (sold/removed) it wrongly reported the cookie as VALID — so
+        // imports silently ran without VINs. Search returns 200 + a results list
+        // only when the session is really logged in; an expired cookie gets 403 or
+        // a non-JSON login/Cloudflare page.
+        $searchResp = $this->httpRequest(self::API_SEARCH, [
+            'post'    => $this->buildSearchPayload([], 1, 5, self::BASE_URL . '/en/findcar', $this->uuid4()),
+            'headers' => $this->searchHeaders(self::BASE_URL . '/en/findcar'),
+        ]);
+        $searchStatus = (int)($searchResp['status'] ?? 0);
+        if ($searchStatus === 403) {
+            return ['logged_in' => false, 'vin' => null, 'reason' => 'http_403'];
+        }
+        if ($searchStatus !== 200 || empty($searchResp['body'])) {
+            return ['logged_in' => false, 'vin' => null, 'reason' => 'search_http_' . $searchStatus];
+        }
+        $searchData = json_decode($searchResp['body'], true);
+        // A logged-in search returns a JSON object with an "Auctions" array (same key
+        // searchByFilter reads) and usually a "Count". HTML (login page) or a bare
+        // error means the cookie is dead. An authenticated-but-empty result still
+        // carries these keys, so their presence (not their length) proves the session.
+        if (!is_array($searchData)
+            || (!array_key_exists('Auctions', $searchData) && !array_key_exists('Count', $searchData))) {
             return ['logged_in' => false, 'vin' => null, 'reason' => 'non_json'];
         }
 
-        // Never got a conclusive 200/403. If every car was 404 the cookie is
-        // simply untested — keep it visible rather than crying "expired".
-        return ['logged_in' => $allGone, 'vin' => null,
-                'reason' => $allGone ? 'all_404' : 'inconclusive'];
+        // Session confirmed. Best-effort: pull a real VIN from a recent car detail
+        // (nice-to-have for the badge; a 404 here no longer flips the verdict, since
+        // auth is already proven above).
+        $vin = null;
+        foreach ($auctionIds as $aid) {
+            $aid = trim((string)$aid);
+            if ($aid === '') continue;
+            $r = $this->httpRequest(self::API_DETAIL . rawurlencode($aid), [
+                'headers' => $this->searchHeaders(self::BASE_URL . '/en/car/info?auctionId=' . $aid),
+            ]);
+            if ((int)($r['status'] ?? 0) !== 200 || empty($r['body'])) continue;
+            $d = json_decode($r['body'], true);
+            if (is_array($d) && !empty($d['CarId'])) {
+                $v = preg_replace('/[^A-HJ-NPR-Z0-9]/i', '', (string)($d['ChassisNumber'] ?? ''));
+                if (strlen($v) === 17) { $vin = $v; break; }
+            }
+        }
+        return ['logged_in' => true, 'vin' => $vin, 'reason' => 'ok'];
     }
 
     public function checkAvailability(string $sourceId): bool

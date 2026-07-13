@@ -78,28 +78,10 @@ class SpecEnricher
         $category = $rawData['category'] ?? [];
         $grade = $category['gradeEnglishName'] ?? $category['gradeName'] ?? ($raw['title'] ?? '');
 
-        // CLI (publish worker) doesn't always load config.php, so fall back to
-        // reading GROQ_API_KEY straight from .env (same as parsing_trims_helper).
-        $apiKey = defined('GROQ_API_KEY') ? GROQ_API_KEY : '';
-        if (empty($apiKey)) {
-            $root = $_SERVER['DOCUMENT_ROOT'] ?? realpath(__DIR__ . '/../../..');
-            $envFile = rtrim((string)$root, '/\\') . '/.env';
-            if (is_file($envFile)) {
-                $env = file_get_contents($envFile);
-                if (preg_match('/GROQ_API_KEY=(.+)/', $env, $m)) $apiKey = trim($m[1]);
-            }
+        // All parsing AI goes through ParsingAI (model/provider/key defined once there).
+        if (ParsingAI::apiKey() === '') {
+            return ['success' => false, 'error' => 'No OpenAI API key configured'];
         }
-        if (empty($apiKey)) {
-            return ['success' => false, 'error' => 'No Groq API key configured'];
-        }
-        $apiUrl = 'https://api.groq.com/openai/v1/chat/completions';
-        $models = [
-            'llama-3.3-70b-versatile',  
-            'openai/gpt-oss-120b',      
-            'meta-llama/llama-4-scout-17b-16e-instruct', 
-            'llama-3.1-8b-instant',    
-            'groq/compound',          
-        ];
 
         $need = [
             'hp'            => empty($car['power_hp'])     || ($forceVerify && in_array('power_hp', $forceFields, true)),
@@ -174,51 +156,17 @@ class SpecEnricher
                 . implode(' | ', $facts);
         }
 
-        // Try each model in turn. A model is only "good" if it returns HTTP 200 AND
-        // parseable JSON — so a model that's rate-limited (429), errors (5xx), or
-        // answers in an off-format (e.g. groq/compound's tool wrapper) all fall
-        // through to the next one. Only a usable JSON answer stops the loop.
-        $parsed = null; $lastErr = '';
-        foreach ($models as $model) {
-            $payload = [
-                'model'    => $model,
-                'messages' => [
-                    ['role' => 'system', 'content' => 'You output only valid JSON. No markdown, no commentary.'],
-                    ['role' => 'user',   'content' => $prompt],
-                ],
-                'temperature' => 0,
-                'max_tokens'  => 150,
-            ];
-
-            $ch = curl_init($apiUrl);
-            curl_setopt_array($ch, [
-                CURLOPT_RETURNTRANSFER => true,
-                CURLOPT_POST           => true,
-                CURLOPT_POSTFIELDS     => json_encode($payload),
-                CURLOPT_TIMEOUT        => 40,
-                CURLOPT_HTTPHEADER     => [
-                    'Authorization: Bearer ' . $apiKey,
-                    'Content-Type: application/json',
-                ],
-            ]);
-            $body  = curl_exec($ch);
-            $code  = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            $err   = curl_error($ch);
-            curl_close($ch);
-
-            if ($code !== 200) {
-                $lastErr = "AI HTTP {$code} ({$model}): " . substr((string)$body, 0, 140) . " | curl: {$err}";
-                continue;   // rate-limited / error → next model
-            }
-
-            $aiResp  = json_decode($body, true);
-            $content = $aiResp['choices'][0]['message']['content'] ?? '';
-            $content = trim(preg_replace('/^```(?:json)?|```$/m', '', $content));
-            $maybe   = json_decode($content, true);
-            if (is_array($maybe)) { $parsed = $maybe; break; }   // good answer → done
-
-            $lastErr = "Unparseable output ({$model}): " . substr($content, 0, 140);
-            // off-format answer → try the next model
+        // One call through the central ParsingAI helper.
+        $lastErr = '';
+        $content = ParsingAI::chat(
+            'You output only valid JSON. No markdown, no commentary.',
+            $prompt,
+            150,
+            40
+        );
+        $parsed = ($content !== null) ? json_decode($content, true) : null;
+        if (!is_array($parsed)) {
+            $lastErr = $content === null ? 'AI request failed' : 'Unparseable output: ' . substr($content, 0, 140);
         }
 
         if (!is_array($parsed)) {

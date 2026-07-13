@@ -455,10 +455,51 @@ class ParsingOrchestrator
         ];
     }
 
+    // Lazily-built ParsingPublisher, reused across inserts in one run so the model
+    // resolver/creator isn't re-instantiated per car.
+    private $publisherInstance = null;
+    private function publisher(): ParsingPublisher
+    {
+        if ($this->publisherInstance === null) {
+            $this->publisherInstance = new ParsingPublisher();
+        }
+        return $this->publisherInstance;
+    }
+
+    // Make sure parsing_cars has the sauto mapping columns (created on first import
+    // in installs that predate them). Runs once per process.
+    private function ensureSautoMapColumns(): void
+    {
+        static $done = false;
+        if ($done) return;
+        $done = true;
+        try {
+            $has = $this->db->query("SHOW COLUMNS FROM {$this->prefix}_parsing_cars LIKE 'sauto_br'");
+            if ($has && $has->rowCount() === 0) {
+                $this->db->exec("ALTER TABLE {$this->prefix}_parsing_cars
+                    ADD COLUMN `sauto_br` VARCHAR(50) DEFAULT NULL,
+                    ADD COLUMN `sauto_mo` VARCHAR(50) DEFAULT NULL");
+            }
+        } catch (\Throwable $e) { /* best-effort */ }
+    }
+
     private function insertCar(array $row, ?int $filterId): bool
     {
         $row['filter_id'] = $filterId;
         $row['status'] = 'proposed';
+
+        // Map to the single canonical sauto model (car_list) at insert time, so the
+        // /parsing filter — which reads brand/model from car_list via sauto_br/mo —
+        // stays a single deduplicated list. Raw brand/model are kept untouched for
+        // reference. Missing models are created in car_list so the list is complete.
+        // Best-effort: a failure here must not block the import.
+        try {
+            $this->ensureSautoMapColumns();
+            $canon = $this->publisher()->resolveCanonicalNames(
+                (string)($row['brand'] ?? ''), (string)($row['model'] ?? ''), true
+            );
+            if ($canon) { $row['sauto_br'] = $canon['br']; $row['sauto_mo'] = $canon['mo']; }
+        } catch (\Throwable $e) { /* import proceeds with raw names */ }
 
         $jsonCols = ['price_breakdown', 'features_ro', 'report_data', 'images_local', 'raw_data'];
         foreach ($jsonCols as $c) {

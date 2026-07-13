@@ -5,12 +5,6 @@ use App\Helper\PhoneHelper;
 
 require_once($_SERVER['DOCUMENT_ROOT'] . '/content/default/includes/contact_form.php');
 
-// If this is a 404 page, show 404 content and exit
-if (isset($GLOBALS['page_is_404']) && $GLOBALS['page_is_404'] === true) {
-    include(_DEFAULT.'/404.php');
-    exit;
-}
-
 // Include order-specific functions for order cars
 include_once( _SITE_INCL.'/order_functions.php' );
 
@@ -55,6 +49,42 @@ function getImportCountryName($countryId, $language = 'ro') {
     }
 
     return '';
+}
+
+/**
+ * Region quick-filter buttons (Coreea / Europa / SUA) + the "learn more" order button.
+ * Shown on the ordercars landing page AND on each region page; the button matching the
+ * current region ($active) gets the `is-active` class for a distinct style.
+ *
+ * @param string $active  Active region slug ('korea'|'europe'|'usa') or '' for none.
+ * @param string $lang    Current language code.
+ * @param string $orderBtnText  Localized "learn more" label for the trailing order button.
+ */
+function oc_render_regions($active, $lang, $orderBtnText) {
+    $flag_dir = '/content/admin/page/parsing/media-parsing';
+    $regions = [
+        'korea'  => ['ro' => 'Coreea', 'ru' => 'Корея',  'en' => 'Korea',  'flag' => 'south-korea-fl.png'],
+        'europe' => ['ro' => 'Europa', 'ru' => 'Европа',  'en' => 'Europe', 'flag' => 'european-fl.png'],
+        'usa'    => ['ro' => 'SUA',    'ru' => 'США',     'en' => 'USA',    'flag' => 'united-states-fl.png'],
+    ];
+    $out = '<div class="oc_regions">';
+    foreach ($regions as $rk => $rv) {
+        $label = $rv[$lang] ?? $rv['ro'];
+        $cls = 'oc_region_btn' . ($rk === $active ? ' is-active' : '');
+        $aria = ($rk === $active) ? ' aria-current="page"' : '';
+        $out .= '<a class="'.$cls.'" href="/'.$lang.'/ordercars/'.$rk.'" title="'.$label.'"'.$aria.'>';
+        $out .= '<img src="'.$flag_dir.'/'.$rv['flag'].'" alt="'.$label.'" />';
+        $out .= '<span>'.$label.'</span>';
+        $out .= '</a>';
+    }
+    $out .= '<a href="/'.$lang.'/order" class="order-hero-button oc_order_btn" style="white-space: nowrap;">';
+    $out .= $orderBtnText;
+    $out .= '<span class="order-hero-button-circle">';
+    $out .= '<img src="/content/site/page/new_pages/order/order-media/icons/right.svg" alt="Arrow" class="order-hero-button-arrow">';
+    $out .= '</span>';
+    $out .= '</a>';
+    $out .= '</div>';
+    return $out;
 }
 ?>
     <style>
@@ -130,6 +160,17 @@ $trnslt_ar = [
 $cr_lmt = 32; // Cars per page (pagination 1, 2, 3...)
 $per_page = 32;
 $current_page = isset($_GET['page']) ? max(1, (int)$_GET['page']) : 1;
+
+// Sold/removed car (404) — render a friendly message + similar-car cards INSIDE the normal
+// site layout (header/menu/footer stay). Set the 404 status but keep the page usable.
+if (!empty($GLOBALS['page_is_404'])) {
+    http_response_code(404);
+    $GLOBALS['is_404_car'] = true; // so head.php meta can go noindex if it checks this
+    include(_SITE_INCL.'/car_404.php');
+    // car_404.php fills $rtrn; skip the rest of the catalog logic.
+    echo $rtrn;
+    return;
+}
 $page_offset = ($current_page - 1) * $per_page;
 
 // Process query parameters first
@@ -170,16 +211,27 @@ if (isset($_SERVER['QUERY_STRING'])) {
 
 }
 
+// Import regions that live on a clean path (/ordercars/korea) instead of a query string.
+// The path segment carries only the region; all other filters/sorting stay in the query
+// string, so combining works exactly like brand pages (/ordercars/ford?srt=...).
+$oc_region_slugs = ['korea', 'europe', 'usa'];
+
 // Then handle clean URLs for car filters and single car pages
 if (isset($t_mp[3]) && !is_numeric($t_mp[3])) {
     // Remove any query string from the URL segments
-    $brand = explode('?', $t_mp[3])[0];
+    $seg = strtolower(explode('?', $t_mp[3])[0]);
     $_GET['tg'] = 'fltr';
-    $_GET['br'] = str_replace('-', '_', $brand);
 
-    if (isset($t_mp[4])) {
-        $model = explode('?', $t_mp[4])[0];
-        $_GET['mo'] = str_replace('-', '_', $model);
+    if (in_array($seg, $oc_region_slugs, true)) {
+        // Region page: set the import-country filter, NOT a brand.
+        $_GET['ic'] = $seg;
+    } else {
+        $_GET['br'] = str_replace('-', '_', $seg);
+
+        if (isset($t_mp[4])) {
+            $model = explode('?', $t_mp[4])[0];
+            $_GET['mo'] = str_replace('-', '_', $model);
+        }
     }
 
     // Log for debugging
@@ -243,11 +295,11 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
             $ic_label = $ic_names[$ic_key][$ic_lang] ?? $ic_names[$ic_key]['ro'];
             $ic_red = '<span style="color: #ff0000;">'.mb_strtoupper($ic_label, 'UTF-8').'</span>';
             if ($zlng == 'ru') {
-                $sa['meta']['h1'] = 'Авто на заказ из '.$ic_red;
+                $sa['meta']['h1'] = 'Авто под заказ из '.$ic_red.' в Молдову';
             } elseif ($zlng == 'en') {
-                $sa['meta']['h1'] = 'Cars to order from '.$ic_red;
+                $sa['meta']['h1'] = 'Cars on order from '.$ic_red.' to Moldova';
             } else {
-                $sa['meta']['h1'] = 'Auto la comandă din '.$ic_red;
+                $sa['meta']['h1'] = 'Auto la comandă din '.$ic_red.' în Moldova';
             }
         } else {
             $sa['meta']['h1'] = '';
@@ -339,6 +391,18 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
         $rtrn .= '<h1 style="font-size: inherit;">'.$sa['meta']['h1'].'</h1>';
     }
 
+    // On a region page (/ordercars/korea|europe|usa) show the same region buttons as the
+    // landing page, with the current region marked active.
+    $_oc_region = (!isset($_GET['br']) && !isset($_GET['bt']) && !empty($_GET['ic'])) ? strtolower($_GET['ic']) : '';
+    if (in_array($_oc_region, ['korea', 'europe', 'usa'], true)) {
+        include_once(_SITE_PAGE.'/new_pages/order/order_lang.php');
+        $_oc_lang = $_COOKIE['lang'] ?? 'ro';
+        $order_button_text = $lng_order_page[$_oc_lang]['learn_more'] ?? 'Learn more';
+        $rtrn .= '<style>@media (max-width: 767px) { .order-hero-button-circle { margin-left: 0.5rem !important; } }</style>';
+        $rtrn .= '<link rel="stylesheet" type="text/css" href="/content/site/page/new_pages/order/order.css">';
+        $rtrn .= oc_render_regions($_oc_region, $_oc_lang, $order_button_text);
+    }
+
     $rtrn .= '<div class="cnt list" id="brand-cars-container" data-total="'.(int)($card['total'] ?? 0).'" data-loaded="'.(int)$card['qu'].'">';
     $rtrn .= $card['txt'];
     $rtrn .= '</div>';
@@ -384,16 +448,54 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
         $rtrn .= $trnslt_txt;
         $rtrn .= '});</script>';
     } else {
-        // No results found - add a message
-        if (empty($card['txt'])) {
-            $rtrn = '<div class="gr">';
-            $rtrn .= '<h1 style="font-size: inherit;">'.$sa['meta']['h1'].'</h1>';
-            $rtrn .= '<div class="cnt list">';
-            $rtrn .= '<div class="no-results">'.$lng['t']['x']['no_offers'].'</div>';
-            $rtrn .= '</div>';
-            $rtrn .= '</div>';
+        // No results in the current region. If a region (ic) is active, the same filters MAY
+        // match cars in other regions (e.g. RAV4 Plug-in exists in Europe but not Korea).
+        // Retry WITHOUT the region; if that finds cars, show them under an explanatory heading
+        // instead of a dead end. If it's still empty (absurd price etc.), keep "no offers".
+        {
+            $fallback = null;
+            if (!empty($_GET['ic'])) {
+                $fb_get = $_GET;
+                unset($fb_get['ic']);
+                unset($fb_get['tg']); // let car_card treat it as a fresh filtered search
+                $fb_get['tg'] = 'fltr';
+                $fallback = $car_card('fltr', $per_page, $fb_get, 'av', 0, true);
+            }
 
-            // file_put_contents('debug_sql.log', "No results found for filter parameters: " . print_r($_GET, true) . "\n", FILE_APPEND);
+            if ($fallback && !empty($fallback['txt']) && ($fallback['qu'] ?? 0) > 0) {
+                // Region label for the message (Coreea / Europa / SUA in the current language).
+                $ic_names = [
+                    'korea'  => ['ro' => 'Coreea', 'ru' => 'Кореи',  'en' => 'Korea'],
+                    'europe' => ['ro' => 'Europa', 'ru' => 'Европы', 'en' => 'Europe'],
+                    'usa'    => ['ro' => 'SUA',    'ru' => 'США',    'en' => 'USA'],
+                ];
+                $ic_k = strtolower($_GET['ic']);
+                $ic_lbl = $ic_names[$ic_k][$zlng] ?? ($ic_names[$ic_k]['ro'] ?? $_GET['ic']);
+                if ($zlng == 'ru') {
+                    $fb_msg = 'В наличии из '.$ic_lbl.' по этому запросу пока нет. Показываем подходящие авто из других регионов:';
+                } elseif ($zlng == 'en') {
+                    $fb_msg = 'Nothing from '.$ic_lbl.' matches this search yet. Showing matching cars from other regions:';
+                } else {
+                    $fb_msg = 'Din '.$ic_lbl.' nu am găsit pentru această căutare. Îți arătăm mașini potrivite din alte regiuni:';
+                }
+
+                $rtrn = '<div class="gr">';
+                $rtrn .= '<h1 style="font-size: inherit;">'.$sa['meta']['h1'].'</h1>';
+                $rtrn .= '<div class="region-fallback-msg" style="margin:1rem 0;padding:.9rem 1.1rem;background:#fff5f5;border-left:4px solid #e2001a;border-radius:.4rem;color:#333;font-size:1rem;">'.$fb_msg.'</div>';
+                $rtrn .= '<div class="cnt list" id="brand-cars-container" data-total="'.(int)($fallback['total'] ?? 0).'" data-loaded="'.(int)$fallback['qu'].'">';
+                $rtrn .= $fallback['txt'];
+                $rtrn .= '</div>';
+                $rtrn .= render_pagination($current_page, $per_page, (int)($fallback['total'] ?? 0), $fb_get);
+                $rtrn .= '</div>';
+            } else {
+                // Genuinely nothing anywhere (e.g. impossible price) — keep the plain message.
+                $rtrn = '<div class="gr">';
+                $rtrn .= '<h1 style="font-size: inherit;">'.$sa['meta']['h1'].'</h1>';
+                $rtrn .= '<div class="cnt list">';
+                $rtrn .= '<div class="no-results">'.$lng['t']['x']['no_offers'].'</div>';
+                $rtrn .= '</div>';
+                $rtrn .= '</div>';
+            }
         }
     }
 }
@@ -408,30 +510,9 @@ elseif (!isset($t_mp[3])) {
     $rtrn .= '<link rel="stylesheet" type="text/css" href="/content/site/page/new_pages/order/order.css">';
     $rtrn .= '<h1 class="gr-h1">'.$sa['meta']['h1'].'</h1>';
 
-    // Region quick-filter buttons (jump into the on_order catalog filtered by import country)
-    // plus the "order" button at the end of the same row.
+    // Region quick-filter buttons (no active region on the base landing page).
     $_oc_lang = $_COOKIE['lang'] ?? 'ro';
-    $oc_flag_dir = '/content/admin/page/parsing/media-parsing';
-    $oc_regions = [
-        'korea'  => ['ro' => 'Coreea', 'ru' => 'Корея',  'en' => 'Korea',  'flag' => 'south-korea-fl.png'],
-        'europe' => ['ro' => 'Europa', 'ru' => 'Европа',  'en' => 'Europe', 'flag' => 'european-fl.png'],
-        'usa'    => ['ro' => 'SUA',    'ru' => 'США',     'en' => 'USA',    'flag' => 'united-states-fl.png'],
-    ];
-    $rtrn .= '<div class="oc_regions">';
-    foreach ($oc_regions as $rk => $rv) {
-        $label = $rv[$_oc_lang] ?? $rv['ro'];
-        $rtrn .= '<a class="oc_region_btn" href="/'.$_oc_lang.'/ordercars?tg=fltr&ic='.$rk.'" title="'.$label.'">';
-        $rtrn .= '<img src="'.$oc_flag_dir.'/'.$rv['flag'].'" alt="'.$label.'" />';
-        $rtrn .= '<span>'.$label.'</span>';
-        $rtrn .= '</a>';
-    }
-    $rtrn .= '<a href="/'.$_oc_lang.'/order" class="order-hero-button oc_order_btn" style="white-space: nowrap;">';
-    $rtrn .= $order_button_text;
-    $rtrn .= '<span class="order-hero-button-circle">';
-    $rtrn .= '<img src="/content/site/page/new_pages/order/order-media/icons/right.svg" alt="Arrow" class="order-hero-button-arrow">';
-    $rtrn .= '</span>';
-    $rtrn .= '</a>';
-    $rtrn .= '</div>';
+    $rtrn .= oc_render_regions('', $_oc_lang, $order_button_text);
 
     // Use filtered mode with empty filters so pagination works
     $is_brand_page = true;
@@ -654,7 +735,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 $main_ext = !empty($img['main_ff']) ? '.'.$img['main_ff'] : $img_frmt;
                 $z_src = isset($img['main'])?'/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/high/'.$img['main'].$main_ext:'';
                 //$z_src = (@getimagesize($site_url.$z_src)?$z_src:'');
-                $rtrn .= '<div class="big_pht" role="img" aria-label="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' large photo" data-pos="1" data-cnt="'.$img_cnt.'" style="background-image:url('.$z_src.');" data-src="'.$z_src.'">'.car_fav_btn($r['id'], $lng).'</div>';
+                $rtrn .= '<div class="big_pht" role="img" aria-label="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' large photo" data-pos="1" data-cnt="'.$img_cnt.'" style="background-image:url('.$z_src.');" data-src="'.$z_src.'">'.car_share_btn($r['id'], 'ordercars', $lng).car_fav_btn($r['id'], $lng).($img_cnt>1?'<div class="bp-nav bp-left" role="button" aria-label="Anterior"></div><div class="bp-nav bp-right" role="button" aria-label="Următor"></div>':'').'</div>';
                 $rtrn .= '</div>';
                 
                 
@@ -674,6 +755,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 ?>
                 <?php // webs25  ?>
                 <div class="wrapf-carousel 11">
+                    <?= car_share_btn($r['id'], 'ordercars', $lng) ?>
                     <?= car_fav_btn($r['id'], $lng) ?>
                     <div class="f-carousel" id="heroCarousel">
 
@@ -1037,7 +1119,7 @@ $iconTelegramParams = array(
                 
                 $dynamicPhone = ((int)$import_country_id === 41) ? '37368689995' : PhoneHelper::getOrderPhone();
 
-                $waPhone = ((int)$import_country_id === 41) ? '37368689995' : '37362166881';
+                $waPhone = ((int)$import_country_id === 41) ? '37368689995' : '40756656180';
                 $waLang   = $_COOKIE['lang'] ?? 'ro';
                 $waCarUrl = 'https://www.sauto.md/' . $waLang . '/ordercars/' . (int)$r['id'];
                 $waUrl    = 'https://wa.me/' . $waPhone . '?text=' . rawurlencode($waCarUrl);

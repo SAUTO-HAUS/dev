@@ -380,7 +380,7 @@ html.with-fancybox body {
     cursor: pointer;
     transition: background .15s, transform .12s, box-shadow .15s;
 }
-.fancybox__container .fav-btn svg{ width: 24px; height: 24px; display: block; fill: none; stroke: #111; stroke-width: 2; transition: fill .15s, stroke .15s; }
+.fancybox__container .fav-btn svg{ width: 26px; height: 26px; display: block; fill: none; stroke: #111; stroke-width: 2; transition: fill .15s, stroke .15s; }
 .fancybox__container .fav-btn:hover{ background: #fff; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,.25); }
 .fancybox__container .fav-btn:hover svg{ stroke: #e2001a; }
 .fancybox__container .fav-btn.is-active svg{ fill: #e2001a; stroke: #e2001a; }
@@ -388,6 +388,35 @@ html.with-fancybox body {
 
 .fancybox__container .fbx-info{ pointer-events: none; }
 .fancybox__container .fav-btn{ pointer-events: auto; }
+
+/* Share button in the Fancybox viewer — same look as fav-btn, sits above it. */
+.fancybox__container .share-btn{
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 25;
+    pointer-events: auto;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.6);
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 1px 4px rgba(0,0,0,.12);
+    color: #111;
+    line-height: 1;
+    cursor: pointer;
+    transition: background .15s, transform .12s, box-shadow .15s;
+}
+.fancybox__container .share-btn svg{ width: 26px; height: 26px; display: block; fill: none; stroke: currentColor; }
+.fancybox__container .share-btn:hover{ background: #000; border-color:#000; color:#fff; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,.25); }
+.fancybox__container .share-btn:active{ transform: scale(0.92); }
+/* Push the heart below the share button. */
+.fancybox__container .fav-btn{ top: 64px; }
 
 .wrapf-carousel {
     position: relative;
@@ -494,8 +523,10 @@ html.with-fancybox body {
     main .param_b .name {
         font-size: 14px;
     }
-    .fancybox__container .fav-btn{ top: 10px; right: 10px; width: 44px; height: 44px; }
-    .fancybox__container .fav-btn svg{ width: 24px; height: 24px; }
+    .fancybox__container .share-btn{ top: 10px; right: 10px; width: 44px; height: 44px; }
+    .fancybox__container .share-btn svg{ width: 26px; height: 26px; }
+    .fancybox__container .fav-btn{ top: 62px; right: 10px; width: 44px; height: 44px; }
+    .fancybox__container .fav-btn svg{ width: 26px; height: 26px; }
 
     main > .spc_bx, main > .inf_bx {
         margin-top: 10px;
