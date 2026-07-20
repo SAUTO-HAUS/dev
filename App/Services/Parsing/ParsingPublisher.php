@@ -77,6 +77,7 @@ class ParsingPublisher
         if (in_array($target, ['sauto', 'all'], true) && $carCtlgId) {
             $this->processPhotos($carCtlgId, $row);
             $this->bakeOpenlaneReport($parsingCarId, $row);
+            $this->bakeAuto1Report($parsingCarId, $row);
         }
 
         if ($target === 'all' && $carCtlgId) {
@@ -122,6 +123,46 @@ class ParsingPublisher
             }
             $this->db->prepare('UPDATE '.$this->prefix.'_parsing_cars SET report_data = ? WHERE id = ?')
                      ->execute([json_encode(['openlane_report' => $byLang], JSON_UNESCAPED_UNICODE), $parsingCarId]);
+        } catch (\Throwable $e) {
+            // best-effort — publishing must not fail because of the report
+        }
+    }
+
+    // Same idea for Auto1: its report needs a live API call (and a session), which
+    // is too slow/fragile for the public page, so render all three languages ONCE
+    // at publish time and store them in parsing_cars.report_data. ordercars.php
+    // then just prints the baked HTML.
+    private function bakeAuto1Report(int $parsingCarId, array $row): void
+    {
+        try {
+            if (($row['source'] ?? '') !== 'auto1') return;
+            if (!empty($row['report_data']) && strpos((string)$row['report_data'], 'auto1_report') !== false) return;
+
+            $stock = (string)($row['source_id'] ?? '');
+            if ($stock === '') return;
+
+            $adapter = AdapterFactory::create('auto1');
+            if (!$adapter || !method_exists($adapter, 'fetchReportRaw')) return;
+            $rep = $adapter->fetchReportRaw($stock);
+            if (!is_array($rep)) return;
+            // Nothing worth showing (no damages AND no equipment) → don't store an
+            // empty block that the public page would render as a bare heading.
+            if (empty($rep['damages']) && empty($rep['equipment'])) return;
+
+            $helper = dirname(__DIR__, 3) . '/content/admin/page/parsing/parsing_auto1_report.php';
+            if (!function_exists('parsing_auto1_report_html') && is_file($helper)) {
+                require_once $helper;
+            }
+            if (!function_exists('parsing_auto1_report_html')) return;
+
+            // PUBLIC variant: equipment ONLY. The damage report / diagram / paint
+            // stay internal (admin modal renders them live) — product decision.
+            $byLang = [];
+            foreach (['ro', 'ru', 'en'] as $rl) {
+                $byLang[$rl] = parsing_auto1_report_html($rep, $rl, true);
+            }
+            $this->db->prepare('UPDATE '.$this->prefix.'_parsing_cars SET report_data = ? WHERE id = ?')
+                     ->execute([json_encode(['auto1_report' => $byLang], JSON_UNESCAPED_UNICODE), $parsingCarId]);
         } catch (\Throwable $e) {
             // best-effort — publishing must not fail because of the report
         }
@@ -385,9 +426,9 @@ class ParsingPublisher
         if (empty($urls)) return;
 
         $source = (string)($parsingRow['source'] ?? '');
-        // Photo cap per source on sauto: auction sources (eCarsTrade/OpenLane) have
-        // huge galleries we don't need all of → 10; Encar → 20.
-        $cap = in_array($source, ['ecarstrade', 'openlane'], true) ? 10 : 20;
+        // Photo cap per source on sauto: auction sources (eCarsTrade/OpenLane/Auto1)
+        // have huge galleries we don't need all of → 10; Encar → 20.
+        $cap = in_array($source, ['ecarstrade', 'openlane', 'auto1'], true) ? 10 : 20;
         $urls = array_slice($urls, 0, $cap);
 
         $docRoot = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '', '/');
@@ -599,7 +640,7 @@ class ParsingPublisher
             $rvin = strtoupper(preg_replace('/[^A-HJ-NPR-Z0-9]/i', '', (string)$rvin));
             if (strlen($rvin) === 17) $vin = $rvin;
         }
-        if ($vin === '' && in_array($parsingRow['source'] ?? '', ['encar', 'openlane', 'ecarstrade'], true)) {
+        if ($vin === '' && in_array($parsingRow['source'] ?? '', ['encar', 'openlane', 'ecarstrade', 'auto1'], true)) {
             $vin = '00000000000000000';
         }
         return $vin;
@@ -615,7 +656,7 @@ class ParsingPublisher
     {
         $prc = !empty($parsingRow['price_final_eur']) ? (int)round($parsingRow['price_final_eur']) : 0;
         $src = $parsingRow['source'] ?? '';
-        if (in_array($src, ['encar', 'openlane', 'ecarstrade'], true)) {
+        if (in_array($src, ['encar', 'openlane', 'ecarstrade', 'auto1'], true)) {
             $pricingFile = ($_SERVER['DOCUMENT_ROOT'] ?? '') . '/content/admin/page/parsing/parsing_pricing.php';
             if (is_file($pricingFile)) {
                 require_once $pricingFile;
@@ -774,6 +815,9 @@ class ParsingPublisher
     // live-parsing twin of the mergemodels RULES, so fragments can't come back.
     private function canonicalModelName(string $brandId, string $modelName): string
     {
+        // Judgment calls a rule can't make: "Mokka X" IS a Mokka, but "Model X" is
+        // NOT a Model. Everything mechanical is handled by the rules further down,
+        // so this list stays short no matter how many brands a source carries.
         static $map = [
             'mercedes_benz' => [
                 'a' => 'A Class', 'a amg' => 'A Class',
@@ -784,30 +828,68 @@ class ParsingPublisher
                 's long' => 'S Class',
                 'v' => 'V Class', 'v l3' => 'V Class',
             ],
-            'audi' => [
-                'a4 avant' => 'A4', 'a4 allroad' => 'A4',
-                'a6 avant' => 'A6', 'a6 allroad' => 'A6',
-            ],
             'citroen'    => ['c4 picasso' => 'C4'],
             'cupra'      => ['formentor vz' => 'Formentor', 'leon vz' => 'Leon',
-                             'leon sportstourer' => 'Leon', 'leon sportstourer vz' => 'Leon'],
+                             'leon sportstourer vz' => 'Leon'],
             'dacia'      => ['logan mcv' => 'Logan', 'logan van' => 'Logan', 'dokker van' => 'Dokker'],
             'ford'       => ['focus rs' => 'Focus', 'focus wagon' => 'Focus'],
             'honda'      => ['civic hibrid' => 'Civic'],
             'lexus'      => ['nx series' => 'NX', 'ux 250h' => 'UX'],
             'nissan'     => ['qashqai 2' => 'Qashqai', 'qashqai+2' => 'Qashqai'],
+            // Generation/marketing suffixes the maker itself dropped. A single
+            // trailing letter can't be a rule — "Mokka X"→Mokka but "Aygo X" is its
+            // own model — so these stay explicit.
+            'opel'       => [
+                'astra k' => 'Astra',
+                'mokka x' => 'Mokka',
+                'grandland x' => 'Grandland', 'crossland x' => 'Crossland',
+            ],
             'renault'    => ['megane e-tech' => 'Megane', 'megane e tech' => 'Megane'],
             'toyota'     => ['prius+' => 'Prius', 'prius plus' => 'Prius', 'prius c' => 'Prius'],
-            'volkswagen' => ['passat cc' => 'Passat'],
+            // Golf I/V keep a single-letter numeral the generic rule won't touch;
+            // e-Golf is the electric Golf and sauto lists one "Golf".
+            'volkswagen' => [
+                'passat cc' => 'Passat', 'passat alltrack' => 'Passat',
+                'golf i' => 'Golf', 'golf v' => 'Golf',
+                'e golf' => 'Golf', 'e golf vii' => 'Golf',
+            ],
         ];
-        $brandMap = $map[strtolower($brandId)] ?? null;
-        if (!$brandMap) return $modelName;
-        // Normalize the raw name to the map key form: lowercase, dashes/underscores
-        // → spaces, collapse whitespace. "C-Break"/"C_Break"/"C  Break" → "c break".
+
+        $brandId = strtolower($brandId);
+        // Key form: lowercase, dashes/underscores → spaces, collapsed whitespace.
+        // "C-Break"/"C_Break"/"C  Break" → "c break".
         $key = mb_strtolower(trim($modelName), 'UTF-8');
         $key = preg_replace('/[_\-]+/u', ' ', $key);
         $key = preg_replace('/\s+/u', ' ', $key);
-        return $brandMap[$key] ?? $modelName;
+
+        // 1) An explicit fold wins over any rule.
+        if (isset($map[$brandId][$key])) return $map[$brandId][$key];
+
+        // 2) Mechanical rules — these cover EVERY brand a source may list, so a
+        // feed using German-market names needs no per-model table.
+
+        // BMW badge: "5er" → "5 Series".
+        if ($brandId === 'bmw' && preg_match('/^([1-8])er$/', $key, $m)) {
+            return $m[1] . ' Series';
+        }
+        // Mercedes badge: "E-Klasse" → "E Class"; multi-letter keeps the bare code
+        // ("GLC-Klasse" → "GLC"). Trailing words fold in too ("A-Klasse Limousine").
+        if ($brandId === 'mercedes_benz' && preg_match('/^([a-z]{1,3}) klasse\b/u', $key, $m)) {
+            $code = mb_strtoupper($m[1], 'UTF-8');
+            return mb_strlen($code, 'UTF-8') === 1 ? $code . ' Class' : $code;
+        }
+
+        $out = trim($modelName);
+        // Generation numeral: "Golf VII" → "Golf". Multi-character only — a bare
+        // I/V/X is a real model suffix (Tesla "Model X", Toyota "Aygo X", "C4 X").
+        $out = preg_replace('/\s+(?:II|III|IV|VI|VII|VIII|IX)$/u', '', $out);
+        // Body/trim shell of the same car: "A3 Sportback" → "A3", "Astra GTC" → "Astra".
+        $out = preg_replace('/\s+(?:Sportback|Avant|Allroad|All[\s-]*Terrain|Limousine|'
+            . 'Sportstourer|Sports\s*Tourer|Shooting\s*Brake|Grand\s*Sport|Country\s*Tourer|'
+            . 'Tourer|Variant|Touring|GTC)$/iu', '', $out);
+        $out = trim($out);
+
+        return $out !== '' ? $out : $modelName;
     }
 
     // Insert a new model under a brand and return its code. Mirrors the INSERT in
@@ -861,6 +943,7 @@ class ParsingPublisher
     // Matched on brand+model, trimmed + case-insensitive. Add pairs here as they come up.
     private const PASSENGER_PICKUPS = [
         'tesla|cybertruck',
+        'ford|ranger',
     ];
 
     private function resolveGroup(string $bodyLower, string $brand, string $model): string
@@ -908,8 +991,35 @@ class ParsingPublisher
     private function resolveImportCountryId(array $parsingRow): int
     {
         $source = $parsingRow['source'] ?? '';
-        $countryMap = ['encar' => 41, 'openlane' => 11, 'ecarstrade' => 2];
+        $countryMap = ['encar' => 41, 'openlane' => 11, 'ecarstrade' => 2, 'auto1' => 11];
         $importCountryId = $countryMap[$source] ?? 39;
+
+        // Auto1 cars come from many EU countries; the hit carries the real one in
+        // sourceCountry/countryCode (IT, BE, DE...). Resolve it like OpenLane below.
+        if ($source === 'auto1') {
+            $rawData = !empty($parsingRow['raw_data']) ? (json_decode($parsingRow['raw_data'], true) ?: []) : [];
+            $a1 = $rawData['raw_data'] ?? $rawData;
+            $cc = strtolower(trim((string)(
+                $a1['sourceCountry'] ?? $a1['countryCode'] ?? $a1['owningCountry'] ?? ''
+            )));
+            // Detail payload keeps it under details.sourceCountryCode.
+            if ($cc === '' && !empty($a1['details']['sourceCountryCode'])) {
+                $cc = strtolower(trim((string)$a1['details']['sourceCountryCode']));
+            }
+            try {
+                $matched = false;
+                if ($cc !== '') {
+                    $cstmt = $this->db->prepare('SELECT id FROM countries WHERE LOWER(code) = ? LIMIT 1');
+                    $cstmt->execute([$cc]);
+                    $cid = $cstmt->fetchColumn();
+                    if ($cid !== false) { $importCountryId = (int)$cid; $matched = true; }
+                }
+                if (!$matched) {
+                    $eu = $this->db->query("SELECT id FROM countries WHERE code = 'EU' LIMIT 1")->fetchColumn();
+                    if ($eu !== false) $importCountryId = (int)$eu;
+                }
+            } catch (\Throwable $e) { /* keep fallback */ }
+        }
 
         if ($source === 'openlane') {
             $rawData = !empty($parsingRow['raw_data']) ? (json_decode($parsingRow['raw_data'], true) ?: []) : [];

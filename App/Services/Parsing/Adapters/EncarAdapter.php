@@ -458,6 +458,17 @@ class EncarAdapter extends AbstractAdapter
         if (!empty($criteria['category'])) {
             $facets[] = 'Category.' . trim($criteria['category']);
         }
+        // Body colour → Color.<korean> (Encar's own facet, e.g. Color.흰색).
+        if (!empty($criteria['color'])) {
+            $colorKr = $this->colorFacetValue($criteria['color']);
+            if ($colorKr) $facets[] = 'Color.' . $colorKr;
+        }
+        // Interior colour → SeatColor.<korean> + " 계열" (Encar groups these as
+        // tone families: 검정색 계열 = "black tones"), a smaller list than body colour.
+        if (!empty($criteria['interior_color'])) {
+            $seatKr = $this->seatColorFacetValue($criteria['interior_color']);
+            if ($seatKr) $facets[] = 'SeatColor.' . $seatKr;
+        }
 
         $all = array_merge($terms, $facets);
         $q = '(And.Hidden.N._.' . implode('._.', $all) . '.)';
@@ -700,6 +711,42 @@ class EncarAdapter extends AbstractAdapter
         // Unknown Encar colours fall back to "wht" so sauto auto-publish never
         // fails on a missing colour — user can still edit it manually.
         return $map[trim($val)] ?? 'wht';
+    }
+
+    // sauto colour code → the Korean value Encar's Color facet expects.
+    // This is the reverse of normalizeColor() but only its PRIMARY spelling per
+    // colour: the facet takes one exact value, and the two-tone/shade variants
+    // ('흰색투톤', '진주색', …) are separate facet entries we don't split the UI on.
+    // Returns null for a colour Encar has no facet for, so the filter is dropped
+    // rather than silently returning nothing.
+    private function colorFacetValue(?string $code): ?string
+    {
+        if (!$code) return null;
+        static $map = [
+            'blk' => '검정색',  'wht' => '흰색',   'slv' => '은색',   'gra' => '쥐색',
+            'brn' => '갈색',    'gld' => '금색',   'blu' => '청색',   'azr' => '하늘색',
+            'grn' => '녹색',    'd_grn' => '담녹색', 'l_grn' => '연두색',
+            'red' => '빨간색',  'orn' => '주황색', 'ylw' => '노란색',
+            'vns' => '자주색',  'prp' => '보라색', 'pnk' => '분홍색', 'bge' => '베이지',
+        ];
+        return $map[strtolower(trim($code))] ?? null;
+    }
+
+    // sauto colour code → Encar's SeatColor facet value. Encar only offers interior
+    // colour as tone FAMILIES (검정색 계열 = "black tones"), so several sauto colours
+    // fold into one family and the rest have no facet at all.
+    private function seatColorFacetValue(?string $code): ?string
+    {
+        if (!$code) return null;
+        static $map = [
+            'blk' => '검정색 계열',
+            'brn' => '갈색 계열',
+            'gra' => '회색 계열',   // note: 회색, not the body colour's 쥐색
+            'slv' => '회색 계열',
+            'bge' => '베이지색 계열', // note: 베이지색, not the body colour's 베이지
+            'wht' => '흰색 계열',
+        ];
+        return $map[strtolower(trim($code))] ?? null;
     }
 
     // Guess drive type from grade/badge strings since Encar API doesn't return it.

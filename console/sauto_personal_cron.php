@@ -42,20 +42,24 @@ function enforcePhoneForAccount($features, $accountId) {
     return $features;
 }
 
+const IMAGE_UPLOAD_FALLBACKS = [3, 4];
+
 /**
  * Upload the car's photos to 999.md and (re)build feature 14 (images).
  *
  * Mirrors content/admin/ajax/cars/999_catalog.php so the cron never relies on a
  * stale/empty feature 14 in the saved `999` column — it always rebuilds it from
- * gh3sp_car_pht (the source of truth). Images must be uploaded to the SAME account
- * the advert is published with.
+ * gh3sp_car_pht (the source of truth). The advert stays on $accountId; images are
+ * uploaded there, but if that account's upload endpoint is throttled (403) we retry
+ * the upload on a healthy fallback account (image IDs are global — see note above).
  *
- * Stops on the first 403 (Too many requests / blocked account) so we don't hammer
- * a rate-limited or blocked account with 19 more doomed uploads.
+ * Stops re-hammering an account after its first 403 for THIS car, moving to the next
+ * fallback instead. $rateLimited is set true only when the ORIGINAL account 403'd, so
+ * the caller can still cool it down / avoid burning the car's retry_count.
  *
- * @return array List of 999.md image IDs (empty if none could be uploaded).
+ * @return array List of 999.md image IDs (empty if none could be uploaded anywhere).
  */
-function buildImagesFeature14($carId, $accountId, $db, $prefx, &$rateLimited = false) {
+function buildImagesFeature14($carId, $accountId, $db, $prefx, &$rateLimited = false, $skipOwnUpload = false) {
     $rateLimited = false;
     $stmt = $db->prepare("SELECT * FROM {$prefx}_car_pht WHERE `it_id` = :carId ORDER BY `main` DESC, `pos`, `id`");
     $stmt->execute(['carId' => $carId]);
@@ -78,28 +82,75 @@ function buildImagesFeature14($carId, $accountId, $db, $prefx, &$rateLimited = f
     $maxImages = ($accountId == 4 || $isParsing) ? 10 : 20;
     $photos = array_slice($photos, 0, $maxImages);
 
-    $api = new \App\Services\Api999Service($accountId);
-    // Running from CLI cron — $_SERVER['DOCUMENT_ROOT'] is unreliable, so resolve
-    // the media dir relative to this script (console/../media).
+    // Resolve every photo to a real file path once. Running from CLI cron —
+    // $_SERVER['DOCUMENT_ROOT'] is unreliable, so resolve relative to this script.
     $mediaBase = __DIR__ . '/../media/images/upload/car/';
-    $imageIds = [];
+    $paths = [];
     foreach ($photos as $img) {
         $imgPath = $mediaBase . $img['path'] . '/' . $img['it_id'] . '/high/' . $img['name'] . '.' . $img['ff'];
         if (!file_exists($imgPath)) {
             echo "[" . date('Y-m-d H:i:s') . "] Feature 14: missing file {$imgPath}\n";
             continue;
         }
+        $paths[] = $imgPath;
+    }
+    if (empty($paths)) return [];
 
+    $fallbacks = array_values(array_filter(
+        IMAGE_UPLOAD_FALLBACKS, fn($a) => (int)$a !== (int)$accountId
+    ));
+    // Try the advert's OWN account first, UNLESS the caller already knows it's throttled
+    // ($skipOwnUpload) — then go straight to the fallbacks so we don't waste a doomed 403
+    // on the throttled account for every single car. IDs are global, so the advert still
+    // publishes on $accountId either way.
+    if ($skipOwnUpload) {
+        echo "[" . date('Y-m-d H:i:s') . "] Feature 14: account {$accountId} known-throttled — uploading images on a fallback account\n";
+        $rateLimited = true; // keep the account's cooldown fresh for the rest of the run
+        $tryAccounts = $fallbacks;
+    } else {
+        $tryAccounts = array_merge([(int)$accountId], $fallbacks);
+    }
+
+    foreach ($tryAccounts as $uploadAcc) {
+        $got403 = false;
+        $imageIds = uploadPhotoListOnAccount($paths, $uploadAcc, $carId, $got403);
+        // The ORIGINAL account being throttled is what the caller cools down / doesn't
+        // penalise the car for — so only flag $rateLimited for it, not the fallbacks.
+        if ((int)$uploadAcc === (int)$accountId && $got403) $rateLimited = true;
+
+        if (!empty($imageIds)) {
+            if ($uploadAcc != $accountId) {
+                echo "[" . date('Y-m-d H:i:s') . "] Feature 14: uploaded via fallback account {$uploadAcc} (advert stays on account {$accountId})\n";
+            }
+            return $imageIds;
+        }
+        // Only advance to a fallback when the failure was a 403 throttle. A genuine
+        // failure (missing files, other error) would fail identically elsewhere.
+        if (!$got403) break;
+        echo "[" . date('Y-m-d H:i:s') . "] Feature 14: account {$uploadAcc} throttled (403) — trying next account for images\n";
+    }
+
+    return [];
+}
+
+/**
+ * Upload a list of image file paths to one 999.md account. Returns the uploaded image
+ * IDs; sets $got403 when the account's /images endpoint returned 403 (throttle/block),
+ * which tells the caller to try a different account.
+ */
+function uploadPhotoListOnAccount(array $paths, $accountId, $carId, &$got403 = false) {
+    $got403 = false;
+    $api = new \App\Services\Api999Service($accountId);
+    $imageIds = [];
+    foreach ($paths as $imgPath) {
         // Upload one image, retrying on 429 (nginx network rate-limit — temporary,
         // means "slow down") with exponential backoff. A 403 (account blocked) is
-        // NOT retried — bail out, every further upload would fail too.
-        $uploaded = false;
+        // NOT retried — bail out, every further upload on this account would fail too.
         $stop = false;
         for ($attempt = 1; $attempt <= 4; $attempt++) {
             $imageLink = $api->uploadImage($imgPath);
             if (is_array($imageLink) && !empty($imageLink['image_id'])) {
                 $imageIds[] = $imageLink['image_id'];
-                $uploaded = true;
                 break;
             }
             $msg = is_string($imageLink) ? $imageLink : json_encode($imageLink, JSON_UNESCAPED_UNICODE);
@@ -110,17 +161,17 @@ function buildImagesFeature14($carId, $accountId, $db, $prefx, &$rateLimited = f
                 echo "[" . date('Y-m-d H:i:s') . "] Feature 14: 429 from nginx, backing off {$wait}s (attempt {$attempt}/4) for {$imgPath}\n";
                 sleep($wait);
                 if ($attempt === 4) {
-                    // Still 429 after all retries — the IP is throttled. Stop and tell
-                    // the caller so it skips the rest of this account this run.
+                    // Still 429 after all retries — the IP is throttled. Treat like a
+                    // throttle so the caller can try another account.
                     echo "[" . date('Y-m-d H:i:s') . "] Feature 14: still 429 after retries — account {$accountId} rate-limited, stopping uploads\n";
-                    $rateLimited = true;
+                    $got403 = true;
                     $stop = true;
                 }
                 continue;
             }
             if (strpos($msg, '403') !== false) {
                 echo "[" . date('Y-m-d H:i:s') . "] Feature 14: got 403 — account {$accountId} blocked/rate-limited, stopping uploads\n";
-                $rateLimited = true;
+                $got403 = true;
                 $stop = true;
                 break;
             }
@@ -128,9 +179,10 @@ function buildImagesFeature14($carId, $accountId, $db, $prefx, &$rateLimited = f
             echo "[" . date('Y-m-d H:i:s') . "] Feature 14: upload failed for {$imgPath}: {$msg}\n";
             break;
         }
-        if ($stop) {
-            break;
-        }
+        // A 403 on the very first image means the account is throttled — don't keep
+        // half a set uploaded on it; let the caller retry the whole set elsewhere.
+        if ($stop && empty($imageIds)) break;
+        if ($stop) break;
         // Steady pace between every image so we never burst nginx.
         usleep(700000); // 0.7s
     }
@@ -456,8 +508,10 @@ try {
                 $importCountry = (int)($carInfo['import_country_id'] ?? 0);
                 $isCom = ($carInfo['gr'] ?? '') === 'com';
 
-                if ($isCom) {
-                    $expectedAccountId = 2; // Sauto-auto-comerciale (commercial takes priority over country)
+                if ($isCom && $importCountry === 41) {
+                    $expectedAccountId = 4; // Commercial FROM KOREA (Encar) → Encars-MD
+                } elseif ($isCom) {
+                    $expectedAccountId = 2; // Commercial, other origin → Sauto-auto-comerciale
                 } elseif ($importCountry === 41) {
                     $expectedAccountId = 4; // Encars-MD (Korea, non-commercial)
                 } else {
@@ -472,11 +526,13 @@ try {
                 }
             } elseif ($catalogType === 'in_stock') {
                 $isCom = ($carInfo['gr'] ?? '') === 'com';
-                if ($isCom && $apiAccountId != 2) {
-                    echo "[" . date('Y-m-d H:i:s') . "] Auto-correcting 999_api_id {$apiAccountId} → 2 (commercial stock) for car {$schedule['car_id']}\n";
-                    $apiAccountId = 2;
+                $importCountry = (int)($carInfo['import_country_id'] ?? 0);
+                $expectedComAccountId = ($isCom && $importCountry === 41) ? 4 : 2;
+                if ($isCom && $apiAccountId != $expectedComAccountId) {
+                    echo "[" . date('Y-m-d H:i:s') . "] Auto-correcting 999_api_id {$apiAccountId} → {$expectedComAccountId} (commercial stock, country={$importCountry}) for car {$schedule['car_id']}\n";
+                    $apiAccountId = $expectedComAccountId;
                     $fixStmt = $db->prepare("UPDATE {$prefx}_car_ctlg SET `999_api_id` = :acc WHERE id = :car_id");
-                    $fixStmt->execute(['acc' => 2, 'car_id' => $schedule['car_id']]);
+                    $fixStmt->execute(['acc' => $expectedComAccountId, 'car_id' => $schedule['car_id']]);
                 }
             }
             
@@ -774,17 +830,24 @@ try {
                     }
                     $api999Service = new \App\Services\Api999Service($accountIdForApi);
 
-                    // Daily image-upload limit (999.md: ~1200 images/day). If this account
-                    // hit it (403) earlier — this run OR a previous run today — skip it
-                    // entirely until tomorrow, so we don't waste the quota re-uploading
-                    // photos on doomed retries.
+                    // Daily image-upload limit (999.md: ~1200 images/day) OR a persistent
+                    // per-account throttle (account 2 stays 403 even at 0 images). If this
+                    // account is on cooldown we DON'T skip the car when a healthy fallback
+                    // upload account exists — image IDs are global, so we just upload the
+                    // photos on the fallback and still publish on this account. Only skip
+                    // when there's genuinely nowhere left to upload.
                     $cooldownUntil = isAccountOnCooldown($accountIdForApi, $db, $prefx);
-                    if (!empty($rateLimitedAccounts[$accountIdForApi]) || $cooldownUntil) {
-                        // Daily-limit / cooldown is NOT the car's fault — DON'T burn its
-                        // retry_count (otherwise it could hit 72 and vanish from the queue
-                        // while just waiting for the quota to reset). Only set last_retry_at.
+                    $accountThrottled = (!empty($rateLimitedAccounts[$accountIdForApi]) || $cooldownUntil);
+                    $fallbackAvailable = false;
+                    foreach (IMAGE_UPLOAD_FALLBACKS as $fb) {
+                        if ((int)$fb === (int)$accountIdForApi) continue;
+                        if (empty($rateLimitedAccounts[$fb]) && !isAccountOnCooldown($fb, $db, $prefx)) { $fallbackAvailable = true; break; }
+                    }
+                    if ($accountThrottled && !$fallbackAvailable) {
+                        // Throttled AND no healthy fallback — postpone. NOT the car's fault,
+                        // so DON'T burn retry_count; it retries once a quota frees up.
                         $note = $cooldownUntil
-                            ? 'Account daily image limit reached - waiting for reset'
+                            ? 'Account image upload throttled - waiting for reset'
                             : 'Account rate-limited this run (will retry)';
                         $stmt = $db->prepare("
                             UPDATE gh3sp_sauto_personal_schedules
@@ -795,15 +858,19 @@ try {
                         ");
                         $stmt->execute(['note' => $note, 'id' => $schedule['id']]);
                         $when = $cooldownUntil ? ' until ' . date('H:i', $cooldownUntil) : '';
-                        echo "[" . date('Y-m-d H:i:s') . "] ⏸️ Account {$accountIdForApi} on cooldown{$when} - skipping car {$schedule['car_id']}\n";
+                        echo "[" . date('Y-m-d H:i:s') . "] ⏸️ Account {$accountIdForApi} throttled{$when}, no fallback - postponing car {$schedule['car_id']}\n";
                         continue;
                     }
+                    // If the advert's own account is throttled but a fallback is healthy,
+                    // skip uploading on the throttled account entirely (it would just 403
+                    // again) and go straight to the fallback for THIS car's photos.
+                    $skipOwnUpload = $accountThrottled && $fallbackAvailable;
 
                     // (Re)build feature 14 (images) from car_pht — the saved `999` column
                     // for cars created via /parsing has no images, which 999.md rejects
                     // with feature_id 14 "Completați câmpul".
                     $imgRateLimited = false;
-                    $imageIds = buildImagesFeature14($schedule['car_id'], $accountIdForApi, $db, $prefx, $imgRateLimited);
+                    $imageIds = buildImagesFeature14($schedule['car_id'], $accountIdForApi, $db, $prefx, $imgRateLimited, $skipOwnUpload);
                     if ($imgRateLimited) {
                         // Remember for the rest of this run AND persist a cooldown until
                         // tomorrow (the daily quota likely ran out), so future runs skip it.

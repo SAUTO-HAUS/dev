@@ -11,9 +11,9 @@ if (!parsing_has_access($user_id ?? 0)) {
     return;
 }
 
-// Optional source filter: ?source=encar|ecarstrade|openlane
+// Optional source filter: ?source=encar|ecarstrade|openlane|auto1
 $sourceFilter = $_GET['source'] ?? '';
-if (!in_array($sourceFilter, ['encar', 'ecarstrade', 'openlane'], true)) {
+if (!in_array($sourceFilter, ['encar', 'ecarstrade', 'openlane', 'auto1'], true)) {
     $sourceFilter = '';
 }
 // Encar-only users are locked to the Encar source (other tabs hidden below).
@@ -29,7 +29,7 @@ if ($parsingEncarOnly) {
 $cars = [];
 $totalCount = 0;
 // Counts per source for sub-tab badges.
-$sourceCounts = ['' => 0, 'encar' => 0, 'ecarstrade' => 0, 'openlane' => 0];
+$sourceCounts = ['' => 0, 'encar' => 0, 'ecarstrade' => 0, 'openlane' => 0, 'auto1' => 0];
 try {
     $countStmt = $db->query('SELECT source, COUNT(*) AS c FROM '.$prefx.'_parsing_cars WHERE status = "proposed" GROUP BY source');
     foreach ($countStmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
@@ -67,6 +67,20 @@ try {
             ), "T", " "), "Z", ""),
             "%Y-%m-%d %H:%i:%s"
         ) < DATE_SUB(UTC_TIMESTAMP(), INTERVAL 1 HOUR)
+    )';
+    // Auto1 dates its auctions with auctionEndDatetime — a MILLISECOND epoch
+    // number, so it is compared in milliseconds (a FROM_UNIXTIME() here would be
+    // rendered in the session timezone while the cutoff is UTC).
+    $where .= ' AND NOT (
+        pc.source = "auto1"
+        AND COALESCE(
+            JSON_EXTRACT(pc.raw_data, "$.auctionEndDatetime"),
+            JSON_EXTRACT(pc.raw_data, "$.raw_data.auctionEndDatetime")
+        ) IS NOT NULL
+        AND COALESCE(
+            JSON_EXTRACT(pc.raw_data, "$.auctionEndDatetime"),
+            JSON_EXTRACT(pc.raw_data, "$.raw_data.auctionEndDatetime")
+        ) < (UNIX_TIMESTAMP() - 3600) * 1000
     )';
 
     $where .= $flt['sql'];
@@ -136,6 +150,10 @@ $rtrn = '
         <a href="/'.$admin_dir.'/parsing/ctlg?source=openlane" class="src-tab'.($sourceFilter === 'openlane' ? ' active' : '').'">
             <img src="/content/admin/page/parsing/media-parsing/openlane-logo.svg" alt="OpenLane">
             <span class="src-count">'.$sourceCounts['openlane'].'</span>
+        </a>
+        <a href="/'.$admin_dir.'/parsing/ctlg?source=auto1" class="src-tab src-tab-auto1'.($sourceFilter === 'auto1' ? ' active' : '').'">
+            <img src="/content/admin/page/parsing/media-parsing/auto1.png" alt="AUTO1">
+            <span class="src-count">'.$sourceCounts['auto1'].'</span>
         </a>').'
     </div>
 
@@ -307,7 +325,8 @@ if (empty($cars)) {
                     '.($c['source'] === 'encar' ? '<img src="/content/admin/page/parsing/media-parsing/encar-logo.webp" alt="Encar" class="source-logo">' :
                       ($c['source'] === 'ecarstrade' ? '<img src="/content/admin/page/parsing/media-parsing/ecarstrade-logo.svg" alt="e-CarsTrade" class="source-logo source-logo-ecarstrade">' :
                       ($c['source'] === 'openlane' ? '<img src="/content/admin/page/parsing/media-parsing/openlane-logo.svg" alt="OpenLane" class="source-logo source-logo-openlane">' :
-                      strtoupper($c['source'])))).'
+                      ($c['source'] === 'auto1' ? '<img src="/content/admin/page/parsing/media-parsing/auto1.png" alt="AUTO1" class="source-logo source-logo-auto1">' :
+                      strtoupper($c['source']))))).'
                 </div>
                 <h3>'.htmlspecialchars($title).'</h3>
                 <div class="car-meta" data-seats-label="'.htmlspecialchars($t['card_seats'] ?? 'locuri', ENT_QUOTES).'">
@@ -352,7 +371,9 @@ if (empty($cars)) {
                         <span>'.($t['btn_report'] ?? 'Raport').'</span>
                     </button>' : ($c['source'] === 'ecarstrade' ? '<button class="btn-report" onclick="parsingEcarstradeReport('.(int)$c['id'].')" title="'.$t['btn_equipment'].' eCarsTrade">
                         <span>'.$t['btn_equipment'].'</span>
-                    </button>' : ''))).'
+                    </button>' : ($c['source'] === 'auto1' ? '<button class="btn-report" onclick="parsingAuto1Report('.(int)$c['id'].')" title="'.($t['btn_report'] ?? 'Raport').' AUTO1">
+                        <span>'.($t['btn_report'] ?? 'Raport').'</span>
+                    </button>' : '')))).'
                     <button class="btn-reject" onclick="parsingReject('.(int)$c['id'].')">'.$t['btn_reject'].'</button>
                 </div>
             </div>

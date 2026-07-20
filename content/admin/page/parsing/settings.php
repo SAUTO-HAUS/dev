@@ -145,6 +145,19 @@ $rtrn = '
         </div>
     </fieldset>
 
+    <fieldset class="ol-cookie-box" style="margin-top:2rem;">
+        <legend>AUTO1.com — Cookie</legend>
+        <p class="muted">'.($t['a1_cookie_hint'] ?? 'Loghează-te pe auto1.com, deschide DevTools → Network, alege un request către „/v1/car-search/..." și copiază aici antetul „cookie" (trebuie să conțină MPSESSID). Tokenul se reînnoiește automat din cookie.').'</p>
+        <div id="a1-cookie-status" class="ol-cookie-status">…</div>
+        <label style="display:block;margin-top:8px;">'.($t['cookie_label'] ?? 'Cookie').':
+            <textarea id="a1-cookie-input" rows="4" style="width:100%;font-family:monospace;font-size:12px;" placeholder="hl=en; ...; isUserLogged=true; MPSESSID=...; ..."></textarea>
+        </label>
+        <div style="margin-top:10px;display:flex;gap:8px;">
+            <button type="button" class="btn-primary" onclick="parsingAuto1SaveCookie()">'.($t['btn_save'] ?? 'Salvează').'</button>
+            <button type="button" class="btn-secondary" onclick="parsingAuto1CheckCookie()">'.($t['ol_cookie_check'] ?? 'Verifică cookie').'</button>
+        </div>
+    </fieldset>
+
     <div id="parsing-crosspost-box" style="margin-top:2rem;">
         <fieldset class="crosspost-limits">
             <legend>'.($t['settings_crosspost'] ?? 'Publicare automată pe canale').'</legend>

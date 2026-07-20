@@ -322,6 +322,7 @@ class Build999Payload
 
     private const FORCE_CAR_ON_999 = [
         'tesla|cybertruck',
+        'ford|ranger',
     ];
     private static function forceCarOn999(array $car): bool
     {
@@ -398,10 +399,14 @@ class Build999Payload
     // Which 999 account this car publishes under (same logic as sauto_personal_cron).
     private function resolveAccount(array $car, bool $isCom = false): int
     {
-        // Commercial ALWAYS goes to account 2 (Sauto-comerciale) — it carries that
-        // account's phone. This must win even over a stale 999_api_id (imports default
-        // it to 1, which has no forced phone → the ad kept the source phone).
-        if ($isCom) return 2;
+        // Commercial from Korea (Encar, import_country_id=41) → account 4 (Encars-MD),
+        // same as non-commercial Korean cars. Commercial from everywhere else → account
+        // 2 (Sauto-comerciale), which carries that account's phone. This must win even
+        // over a stale 999_api_id (imports default it to 1, which has no forced phone →
+        // the ad kept the source phone).
+        if ($isCom) {
+            return ((int)($car['import_country_id'] ?? 0) === 41) ? 4 : 2;
+        }
         if (!empty($car['999_api_id'])) return (int)$car['999_api_id'];
         $importCountry = (int)($car['import_country_id'] ?? 0);
         if ($importCountry === 41) return 4;        // Korea → Encars-MD

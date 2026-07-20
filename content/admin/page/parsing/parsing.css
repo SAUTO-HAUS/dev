@@ -2,6 +2,10 @@
    PARSING MODULE - ADMIN STYLES
    ============================================================ */
 
+/* The Auto1 report styles itself: parsing_auto1_report.php ships them inline with
+   the markup, because the same HTML is printed on the PUBLIC car page, which
+   never loads this file. Nothing for it here. */
+
 /* OpenLane report (equipment) */
 .ol-report .er-h {
     font-size: 1rem;
@@ -818,6 +822,11 @@
 /* eCarsTrade wordmark is tall — shrink to match the others visually. */
 #parsing-container .car-source .source-logo-ecarstrade {
     height: 20px;
+}
+/* AUTO1 is a solid colour block, not a transparent wordmark like the others, so
+   it reads much heavier at the same height — keep it the smallest of the four. */
+#parsing-container .car-source .source-logo-auto1 {
+    height: 18px;
 }
 #parsing-container .car-info h3 {
     font-size: 0.85rem;
@@ -3420,6 +3429,21 @@
 }
 .pcf-link-msg.ok { color: #1e8e3e; }
 .pcf-link-msg.bad { color: #d23b3b; }
+/* "Sold" state: loud, centered, pulsing red so the operator can't miss it. */
+.pcf-link-msg.sold {
+    color: #e01b1b;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding: 6px 0;
+    animation: pcf-sold-pulse 0.9s ease-in-out infinite;
+}
+@keyframes pcf-sold-pulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.06); }
+}
 
 #parsing-container .pub-link-search {
     display: flex;

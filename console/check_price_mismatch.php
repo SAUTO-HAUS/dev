@@ -34,7 +34,7 @@ $rows = $db->query("SELECT pc.car_ctlg_id, pc.source, pc.price_eur,
         cc.fl, cc.vol, cc.prc card_prc, cc.br_nm, cc.mo_nm, cc.yr
     FROM {$prefx}_parsing_cars pc JOIN {$prefx}_car_ctlg cc ON cc.id = pc.car_ctlg_id
     WHERE pc.status='published' AND pc.car_ctlg_id>0
-      AND pc.source IN ('encar','openlane','ecarstrade') AND pc.price_eur>0")->fetchAll(PDO::FETCH_ASSOC);
+      AND pc.source IN ('encar','openlane','ecarstrade','auto1') AND pc.price_eur>0")->fetchAll(PDO::FETCH_ASSOC);
 
 $fuelMap = ['gsl'=>'benzina','gmn'=>'benzina','gpn'=>'benzina','gas'=>'benzina','dsl'=>'diesel',
             'hbd'=>'hybrid','pih'=>'hybrid_plugin','pid'=>'diesel_hybrid','elc'=>'electric'];

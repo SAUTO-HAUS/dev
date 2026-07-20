@@ -54,10 +54,12 @@
     };
 
     // Refresh the trigger label from the checked boxes (count or "Toate").
+    // Any checkbox inside the dropdown counts — the shell is shared by fuel and
+    // by the Auto1 engine picker.
     window.parsingUpdateFuelDD = function (cb) {
         const dd = cb.closest('.fuel-dd');
         if (!dd) return;
-        const checked = dd.querySelectorAll('input[name="fuel_type[]"]:checked');
+        const checked = dd.querySelectorAll('input[type="checkbox"]:checked');
         const textEl = dd.querySelector('.fuel-dd-text');
         if (!textEl) return;
         if (checked.length === 0) {
@@ -141,6 +143,15 @@
         }
         if (e.target && e.target.id === 'ecarstrade-brand') {
             loadEcarsModels(e.target.value);
+            return;
+        }
+        if (e.target && e.target.id === 'auto1-brand') {
+            loadAuto1Models(e.target.value);
+            return;
+        }
+        if (e.target && e.target.id === 'auto1-model') {
+            const a1b = (document.getElementById('auto1-brand') || {}).value || '';
+            loadAuto1Engines(a1b, e.target.value, []);
             return;
         }
         if (e.target && e.target.matches('.source-search-form .brand')) {
@@ -229,6 +240,62 @@
         });
     }
 
+    // Populate Auto1 model select from window.AUTO1_BRANDS. Keyed by Auto1's
+    // numeric manufacturer code; models carry Auto1's own value ("3er", "X5").
+    function loadAuto1Models(brand, selectedModel, selectedEngine) {
+        const modelSel = document.getElementById('auto1-model');
+        if (!modelSel) return;
+        const defText = modelSel.getAttribute('def_text') || '';
+        modelSel.innerHTML = '<option value="">' + defText + '</option>';
+        if (!brand) { loadAuto1Engines('', '', ''); return; }
+        const models = (window.AUTO1_BRANDS || {})[brand] || [];
+        models.forEach(function (m) {
+            const opt = document.createElement('option');
+            opt.value = m.value;
+            opt.textContent = m.label || m.value;
+            if (selectedModel && m.value === selectedModel) opt.selected = true;
+            modelSel.appendChild(opt);
+        });
+        loadAuto1Engines(brand, selectedModel || '', selectedEngine);
+    }
+
+    // Populate the Auto1 engine picker ("1.5 TDCi") for a chosen model. Engines
+    // only make sense under one model, so the menu stays empty until a model is
+    // picked. Order comes from the taxonomy (most cars in stock first).
+    // Multi-select: Auto1 OR's the checked engines.
+    // selectedEngines: array of engine values to re-check (restoring a filter).
+    function loadAuto1Engines(brand, model, selectedEngines) {
+        const dd = document.getElementById('auto1-engine-dd');
+        if (!dd) return;
+        const menu = dd.querySelector('.fuel-dd-menu');
+        const textEl = dd.querySelector('.fuel-dd-text');
+        if (!menu) return;
+        menu.innerHTML = '';
+        if (textEl) textEl.textContent = dd.dataset.all || '';
+        if (!brand || !model) return;
+
+        const models = (window.AUTO1_BRANDS || {})[brand] || [];
+        const m = models.find(x => x.value === model);
+        const picked = Array.isArray(selectedEngines) ? selectedEngines : [];
+        ((m && m.engines) || []).forEach(function (e) {
+            // Build via DOM, not innerHTML: engine values are Auto1 text and would
+            // otherwise need escaping.
+            const label = document.createElement('label');
+            label.className = 'fuel-check';
+            const cb = document.createElement('input');
+            cb.type = 'checkbox';
+            cb.name = 'engine[]';
+            cb.value = e.value;
+            cb.checked = picked.indexOf(e.value) !== -1;
+            cb.addEventListener('change', function () { parsingUpdateFuelDD(cb); });
+            label.appendChild(cb);
+            label.appendChild(document.createTextNode(' ' + e.value));
+            menu.appendChild(label);
+        });
+        const first = menu.querySelector('input[type="checkbox"]');
+        if (first) parsingUpdateFuelDD(first);
+    }
+
     // Trigger model load on page ready if brand already has a value (e.g. after filter restore).
     document.addEventListener('DOMContentLoaded', function () {
         const brandEl = document.getElementById('encar-brand');
@@ -242,6 +309,10 @@
         const ecBrand = document.getElementById('ecarstrade-brand');
         if (ecBrand && ecBrand.value) {
             loadEcarsModels(ecBrand.value);
+        }
+        const a1Brand = document.getElementById('auto1-brand');
+        if (a1Brand && a1Brand.value) {
+            loadAuto1Models(a1Brand.value);
         }
         // Cached cover images may already be complete before their inline onload
         // attaches (notably on refresh), leaving them stuck invisible. Mark any
@@ -284,7 +355,7 @@
         const fd = new FormData(form);
         const data = {};
         fd.forEach((v, k) => {
-            if (k === 'fuel_type[]') return; // multi-value; collected below
+            if (k === 'fuel_type[]' || k === 'engine[]') return; // multi-value; collected below
             const value = (typeof v === 'string') ? v.trim() : v;
             if (value !== '' && value !== null && value !== undefined) data[k] = value;
         });
@@ -292,6 +363,11 @@
         // ajax() sends fuel_type[]=a&fuel_type[]=b (all sources support multi-fuel).
         const fuels = fd.getAll('fuel_type[]').filter(v => v !== '');
         if (fuels.length) data.fuel_type = fuels;
+        // Auto1 engines: same checkbox-group idea, kept as an array end to end —
+        // two engine values contain a comma ("electric drive 12,6 kW"), so joining
+        // them into a CSV would corrupt them.
+        const engines = fd.getAll('engine[]').filter(v => v !== '');
+        if (engines.length) data.engine = engines;
         // source is already a hidden field in each form, but make sure sources[] is also set.
         data.sources = [src];
         return data;
@@ -468,9 +544,12 @@
             form.dataset.editId = String(id);
             form.dataset.editName = f.name || '';
 
-            // Set scalar fields.
-            ['brand','model','car_sub_model','year_from','year_to','km_max','price_max',
-             'gearbox','drive_type','body_type','country_origin','seats']
+            // Set scalar fields. Anything the panel can send must be listed here, or
+            // editing a saved filter silently drops it (the form re-saves what it
+            // shows) — keep in sync with the panels and parsing_search_now().
+            ['brand','model','car_sub_model','year_from','year_to','km_min','km_max',
+             'price_min','price_max','gearbox','drive_type','body_type','category',
+             'country_origin','seats','color','interior_color']
                 .forEach(k => {
                     const el = form.querySelector('[name="' + k + '"]');
                     if (el && f[k] != null) el.value = f[k];
@@ -483,17 +562,29 @@
             fuelBoxes.forEach(cb => { cb.checked = fuelCodes.indexOf(cb.value) !== -1; });
             if (fuelBoxes.length) parsingUpdateFuelDD(fuelBoxes[0]);
 
-            // Reload models if brand is set.
+            // Reload models if brand is set. Each source must use the SAME loader
+            // its own brand select uses on "change" — encar/openlane/ecarstrade/
+            // auto1 pick brands from their own embedded taxonomy (auto1's brand is
+            // a numeric Auto1 code), so sending those to the sauto AJAX would look
+            // up a sauto brand id and repopulate the model list with the wrong
+            // models — or none at all.
             if (f.brand) {
+                const brandEl = form.querySelector('[name="brand"]');
+                if (brandEl) brandEl.value = f.brand;
                 if (src === 'encar') {
-                    // Encar: instant from taxonomy data embedded in page.
-                    const brandEl = document.getElementById('encar-brand');
-                    if (brandEl) brandEl.value = f.brand;
                     loadEncarModels(f.brand, f.model);
+                    if (f.model) loadEncarGenerations(f.brand, f.model, f.generation);
+                } else if (src === 'auto1') {
+                    // engine is stored as an array; tolerate a bare string too.
+                    const engs = Array.isArray(f.engine) ? f.engine : (f.engine ? [f.engine] : []);
+                    loadAuto1Models(f.brand, f.model, engs);
+                } else if (src === 'openlane') {
+                    loadOpenlaneModels(f.brand, f.model);
+                } else if (src === 'ecarstrade') {
+                    loadEcarsModels(f.brand, f.model);
                 } else {
-                    const brandEl = form.querySelector('[name="brand"]');
                     const modelEl = form.querySelector('[name="model"]');
-                    if (brandEl && modelEl) {
+                    if (modelEl) {
                         loadModelsBySautoBrand(f.brand, modelEl);
                         if (f.model) {
                             setTimeout(() => { modelEl.value = f.model; }, 600);
@@ -1281,6 +1372,60 @@
         ajax('openlane_report', { car_id: carId }).then(res => {
             if (res && res.success) {
                 window._parsingReportCache['ol_' + carId] = res.html || '';
+                show(res.html);
+            } else {
+                body.innerHTML = '<div class="err">' + ((res && res.error) || 'Eroare la raport') + '</div>';
+            }
+        });
+    };
+
+    // Auto1 report — same modal as OpenLane's. The server renders condition +
+    // equipment straight from Auto1's own RO/RU wording (no AI pass), so this only
+    // has to fetch and show it.
+    window.parsingAuto1Report = function (carId) {
+        const modal = document.getElementById('parsing-car-modal');
+        const body = document.getElementById('car-modal-body');
+        const title = document.getElementById('car-modal-title');
+        const saveBtn = document.getElementById('car-modal-save');
+        if (!modal || !body) return;
+
+        const L = (k, fb) => (window.PARSING_LANG && window.PARSING_LANG[k]) || fb;
+        const card = document.querySelector('[data-car-id="' + carId + '"]');
+        let titleTxt = L('btn_report', 'Raport') + ' AUTO1';
+        if (card) {
+            const d = card.dataset;
+            const parts = [];
+            const name = [d.brand, d.model].filter(Boolean).join(' ').trim();
+            if (name) parts.push(name);
+            if (d.year && d.year !== '0') parts.push(d.year);
+            if (parts.length) titleTxt = L('btn_report', 'Raport') + ' ' + parts.join(' · ');
+        }
+        title.textContent = titleTxt;
+        if (saveBtn) {
+            saveBtn.style.display = 'none';
+            saveBtn.classList.add('btn-pdf');
+            saveBtn.textContent = L('btn_download_pdf', 'Descarcă PDF');
+            saveBtn.onclick = function () { parsingReportToPdf(titleTxt); };
+        }
+        modal.style.display = 'flex';
+        parsingRememberViewedCard(carId);
+        modal.querySelector('.car-modal-content')?.classList.add('er-wide');
+        document.body.style.overflow = 'hidden';
+
+        const show = function (htmlStr) {
+            body.innerHTML = '<div class="er-modal-wrap">' + (htmlStr || '<em>(fără date)</em>') + '</div>';
+        };
+
+        window._parsingReportCache = window._parsingReportCache || {};
+        if (window._parsingReportCache['a1_' + carId]) {
+            show(window._parsingReportCache['a1_' + carId]);
+            return;
+        }
+
+        body.innerHTML = '<div class="er-loading"><span class="er-spinner"></span></div>';
+        ajax('auto1_report', { car_id: carId }).then(res => {
+            if (res && res.success) {
+                window._parsingReportCache['a1_' + carId] = res.html || '';
                 show(res.html);
             } else {
                 body.innerHTML = '<div class="err">' + ((res && res.error) || 'Eroare la raport') + '</div>';
@@ -2384,10 +2529,43 @@
         }).catch(() => { if (box && !afterSave) { box.textContent = L('cookie_check_error', 'Eroare verificare'); box.className = 'ol-cookie-status bad'; } });
     };
 
+    window.parsingAuto1SaveCookie = function () {
+        const cookie = (document.getElementById('a1-cookie-input') || {}).value || '';
+        if (!cookie.trim()) { alert(L('cookie_paste_first', 'Lipește cookie-ul întâi.')); return; }
+        const body = new FormData();
+        body.append('action', 'auto1_save_cookie');
+        body.append('cookie', cookie.trim());
+        fetch('/ajax.php?tp=adm&pg=parsing', { method: 'POST', body, credentials: 'same-origin' })
+            .then(r => r.json())
+            .then(res => {
+                if (res && res.success) {
+                    const box = document.getElementById('a1-cookie-status');
+                    if (box) { box.textContent = L('cookie_saved', '✓ Cookie salvat'); box.className = 'ol-cookie-status ok'; }
+                    parsingAuto1CheckCookie(true);
+                } else { alert((res && res.error) || L('save_error', 'Eroare la salvare')); }
+            }).catch(() => alert(L('network_error', 'Eroare rețea')));
+    };
+
+    window.parsingAuto1CheckCookie = function (afterSave) {
+        const box = document.getElementById('a1-cookie-status');
+        if (box && !afterSave) { box.textContent = L('cookie_checking', 'Se verifică…'); box.className = 'ol-cookie-status'; }
+        ajax('auto1_check_cookie', {}).then(res => {
+            if (!box) return;
+            if (res && res.success && res.logged_in) {
+                box.textContent = L('cookie_valid', '✓ Cookie действителен');
+                box.className = 'ol-cookie-status ok';
+            } else {
+                box.textContent = L('cookie_expired', '✗ Cookie expirat') + (res && res.error ? ' (' + res.error + ')' : '');
+                box.className = 'ol-cookie-status bad';
+            }
+        }).catch(() => { if (box && !afterSave) { box.textContent = L('cookie_check_error', 'Eroare verificare'); box.className = 'ol-cookie-status bad'; } });
+    };
+
     // Auto-check on settings page load.
     document.addEventListener('DOMContentLoaded', function () {
         if (document.getElementById('ol-cookie-status')) parsingOpenlaneCheckCookie();
         if (document.getElementById('ec-cookie-status')) parsingEcarstradeCheckCookie();
+        if (document.getElementById('a1-cookie-status')) parsingAuto1CheckCookie();
     });
 
     // Filter page: show a "cookie expired" badge over the OpenLane / eCarsTrade
@@ -2995,7 +3173,7 @@
                 if (msg) { msg.className = 'pcf-link-msg ok'; msg.textContent = L('locate_found_manual', 'Găsită în catalog — o deschid…'); }
                 location.href = '/' + (window.ADMIN_DIR || 'adm') + '/' + res.location + '/ctlg?car=' + res.ctlg_id;
             } else {
-                if (msg) { msg.className = 'pcf-link-msg bad'; msg.textContent = L('locate_not_found', 'Această mașină nu există în catalog.'); }
+                if (msg) { msg.className = 'pcf-link-msg sold'; msg.textContent = L('locate_not_found', 'Mașina este vândută deja!'); }
             }
         }).catch(() => { if (msg) { msg.className = 'pcf-link-msg bad'; msg.textContent = L('locate_error', 'Eroare'); } });
     };

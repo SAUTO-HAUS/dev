@@ -68,3 +68,24 @@
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
+
+.oc-link-search { flex-wrap: wrap; }
+
+.oc-link-msg.sold {
+    flex-basis: 100%;
+    width: 100%;
+    order: 99;                 
+    margin: 8px 0 0 0 !important;
+    padding: 6px 0;
+    text-align: center;
+    color: #e01b1b;
+    font-weight: 700;
+    font-size: 15px !important;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    animation: oc-sold-pulse 0.9s ease-in-out infinite;
+}
+@keyframes oc-sold-pulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.06); }
+}

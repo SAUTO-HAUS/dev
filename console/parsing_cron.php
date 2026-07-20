@@ -106,7 +106,10 @@ if ($argFilterId) {
     // Cap filters per run so dozens of active filters can't turn one cron run
     // into a 20-30 min marathon. Oldest-first rotation means every filter still
     // gets its turn across runs; the overlap lock skips a run that's still busy.
-    $maxFiltersPerRun = 15;
+    // 25/run: with ~83 active filters a full rotation takes ~4 runs (~50 min at
+    // a 15-min cron) instead of ~90 min, so newer sources like Auto1 come round
+    // sooner. The flock above keeps overlapping runs from doubling source traffic.
+    $maxFiltersPerRun = 25;
 
     // Adaptive backoff: a filter that keeps importing 0 new cars is queried less
     // often (idle_runs grows), so we don't hammer Encar for a "full" filter. The

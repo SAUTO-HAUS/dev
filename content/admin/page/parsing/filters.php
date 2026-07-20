@@ -354,6 +354,33 @@ for ($y = (int)date('Y'); $y >= 2015; $y--) {
     $yearOptionsOpenlane .= '<option value="' . $y . '">' . $y . '</option>';
 }
 
+// ── Encar colour filters (Color = body, SeatColor = interior) ──
+// Only the colours Encar's facets actually accept are listed — its body facet has
+// a colour per shade, while the interior one only has tone FAMILIES (검정색 계열 =
+// "black tones"), so that list is much shorter. The labels reuse sauto's own
+// translated colour names ($lng['l']['car']['clr']), keyed by sauto colour code;
+// EncarAdapter maps the code to the Korean facet value.
+$clrLabels = $lng['l']['car']['clr'] ?? [];
+$encarColorCodes = ['wht','blk','slv','gra','brn','gld','blu','azr','grn','d_grn',
+                    'l_grn','red','orn','ylw','vns','prp','pnk','bge'];
+$encarSeatColorCodes = ['blk','brn','gra','bge','wht'];
+$mkColorOptions = function (array $codes) use ($clrLabels, $t): string {
+    $opts = [];
+    foreach ($codes as $c) {
+        $lbl = $clrLabels[$c] ?? $c;
+        $opts[$c] = $lbl;
+    }
+    asort($opts, SORT_NATURAL | SORT_FLAG_CASE);
+    $html = '<option value="">' . ($t['opt_all'] ?? 'Toate') . '</option>';
+    foreach ($opts as $c => $lbl) {
+        $html .= '<option value="' . htmlspecialchars($c, ENT_QUOTES) . '">'
+               . htmlspecialchars($lbl) . '</option>';
+    }
+    return $html;
+};
+$colorOptionsEncar     = $mkColorOptions($encarColorCodes);
+$seatColorOptionsEncar = $mkColorOptions($encarSeatColorCodes);
+
 // Shared year dropdown (current year → 2015) for Encar / eCarsTrade "from/to".
 $yearOptions = '<option value="">' . ($t['opt_all'] ?? 'Toate') . '</option>';
 for ($y = (int)date('Y'); $y >= 2015; $y--) {
@@ -424,12 +451,101 @@ if ($ecarsTaxonomy && !empty($ecarsTaxonomy['brands'])) {
     }
 }
 
+// ── Auto1 brand + model + engine options (from auto1_taxonomy.json) ──
+// Built by console/auto1_taxonomy_dump.php from Auto1's /v1/car-search/filters
+// endpoint. Make VALUE is Auto1's numeric manufacturer code (sent straight to the
+// search API); the display label is the resolved real name (BMW, Audi, ...).
+// Models carry Auto1's own value (German-style badges like "3er", "X5"), and each
+// model carries its engine variants ("1.5 TDCi") with live stock counts.
+$auto1Taxonomy = null;
+$auto1TaxonomyFile = __DIR__ . '/../../../../App/Services/Parsing/Adapters/auto1_taxonomy.json';
+if (file_exists($auto1TaxonomyFile)) {
+    $auto1Taxonomy = json_decode(file_get_contents($auto1TaxonomyFile), true);
+}
+$brandOptionsAuto1 = '<option value="">'.$t['opt_all'].'</option>';
+// { "<code>": [ {value:"3er", label:"3er", engines:[{value:"1.5 TDCi"}]}, ... ] }
+$auto1BrandsForJs = [];
+if ($auto1Taxonomy && !empty($auto1Taxonomy['makes'])) {
+    $a1Makes = $auto1Taxonomy['makes'];
+    // Sort by display name, not by numeric code.
+    uasort($a1Makes, fn($a, $b) => strcasecmp($a['name'] ?? '', $b['name'] ?? ''));
+    foreach ($a1Makes as $code => $info) {
+        $name = trim((string)($info['name'] ?? ''));
+        if ($name === '') continue;
+        $brandOptionsAuto1 .= '<option value="'.htmlspecialchars((string)$code, ENT_QUOTES).'">'
+            . htmlspecialchars($name) . '</option>';
+        $list = [];
+        foreach (($info['models'] ?? []) as $m) {
+            $mv = (string)($m['value'] ?? '');
+            if ($mv === '') continue;
+            // Engines are already ordered by stock (most common first) — keep that
+            // order. Counts stay out of the label, like the other sources.
+            $engines = [];
+            foreach (($m['engines'] ?? []) as $e) {
+                $ev = (string)($e['value'] ?? '');
+                if ($ev !== '') $engines[] = ['value' => $ev];
+            }
+            $list[] = ['value' => $mv, 'label' => (string)($m['label'] ?? $mv), 'engines' => $engines];
+        }
+        $auto1BrandsForJs[(string)$code] = $list;
+    }
+}
+// Auto1 uses the same km/price step dropdowns and year range as OpenLane.
+$kmOptionsAuto1    = $olRangeOptions($olMileageSteps, $t['opt_all'] ?? 'Toate');
+$priceOptionsAuto1 = $olRangeOptions($olPriceSteps,   $t['opt_all'] ?? 'Toate');
+$yearOptionsAuto1  = $yearOptionsOpenlane;
+// Auto1 fuelTypes values (from its filters taxonomy): petrol/diesel/gas/hybrid/electro/other.
+$a1FuelTypes = [
+    'petrol'  => $t['opt_petrol']   ?? 'Benzină',
+    'diesel'  => $t['opt_diesel']   ?? 'Diesel',
+    'hybrid'  => $t['opt_hybrid']   ?? 'Hibrid',
+    'electro' => $t['opt_electric'] ?? 'Electric',
+    'gas'     => $t['opt_ol_lpg']   ?? 'GPL / Gaz',
+];
+$fuelChecksAuto1 = $fuelCheckboxes($a1FuelTypes);
+// Auto1 import-country filter → its branchCountries (where the car physically is,
+// i.e. where you collect it — the same country published as import_country_id).
+// Names come from the dictionary the taxonomy cron builds, so there is no hardcoded
+// country list to maintain. Search-only: nothing on the card is rendered from it.
+$a1CountryCodes = ['AT','BE','CH','DE','DK','ES','FI','FR','IT','LU','NL','PL','PT','SE','SK'];
+$countryOptionsAuto1 = '<option value="">'.$t['opt_all'].'</option>';
+if (!function_exists('parsing_auto1_tr')) {
+    $a1RepFile = __DIR__ . '/parsing_auto1_report.php';
+    if (is_file($a1RepFile)) include_once $a1RepFile;
+}
+$a1Lang = in_array($_COOKIE['lang'] ?? 'ro', ['ro','ru','en'], true) ? $_COOKIE['lang'] : 'ro';
+$a1Countries = [];
+foreach ($a1CountryCodes as $cc) {
+    $nm = function_exists('parsing_auto1_tr')
+        ? parsing_auto1_tr('global.car_details.country_of_origin.'.$cc, $a1Lang)
+        : '';
+    $a1Countries[$cc] = ($nm !== '' ? $nm : $cc);
+}
+asort($a1Countries, SORT_NATURAL | SORT_FLAG_CASE);
+foreach ($a1Countries as $cc => $nm) {
+    $countryOptionsAuto1 .= '<option value="'.htmlspecialchars($cc, ENT_QUOTES).'">'
+        . htmlspecialchars($nm) . '</option>';
+}
+
+// Auto1 bodyTypes values: cabrio/coupe/combi/limo/suv/van/truck/commercial/smallCar.
+$bodyOptionsAuto1 = '
+    <option value="">'.$t['opt_all'].'</option>
+    <option value="suv">'.($t['opt_body_suv'] ?? 'SUV').'</option>
+    <option value="limo">'.($t['opt_body_sedan'] ?? 'Sedan').'</option>
+    <option value="combi">'.($t['opt_body_wagon'] ?? 'Universal').'</option>
+    <option value="smallCar">'.($t['opt_body_hatchback'] ?? 'Hatchback').'</option>
+    <option value="coupe">'.($t['opt_body_coupe'] ?? 'Coupé').'</option>
+    <option value="cabrio">'.($t['opt_body_cabrio'] ?? 'Cabriolet').'</option>
+    <option value="van">'.($t['opt_body_lighttruck'] ?? 'Furgon / Van').'</option>
+    <option value="truck">'.($t['opt_body_pickup'] ?? 'Pickup / Camion').'</option>';
+
 // Source label / logo for filter card tags.
 $sourceLogo = function(string $src): string {
     $logos = [
         'encar'      => '/content/admin/page/parsing/media-parsing/encar-logo.webp',
         'ecarstrade' => '/content/admin/page/parsing/media-parsing/ecarstrade-logo.svg',
         'openlane'   => '/content/admin/page/parsing/media-parsing/openlane-logo.svg',
+        'auto1'      => '/content/admin/page/parsing/media-parsing/auto1.png',
     ];
     if (isset($logos[$src])) {
         return '<span class="ftag ftag-source"><img src="'.$logos[$src].'" alt="'.strtoupper($src).'" class="ftag-logo"></span>';
@@ -565,6 +681,16 @@ $rtrn = '
                                 <option value="승합차">'.$t['opt_cat_van'].'</option>
                                 <option value="화물차">'.$t['opt_cat_truck'].'</option>
                             </select>
+                        </div>
+
+                        <div class="field">
+                            <label>'.($t['field_color'] ?? 'Culoare auto').'</label>
+                            <select name="color">'.$colorOptionsEncar.'</select>
+                        </div>
+
+                        <div class="field">
+                            <label>'.($t['field_interior_color'] ?? 'Culoare salon').'</label>
+                            <select name="interior_color">'.$seatColorOptionsEncar.'</select>
                         </div>
 
                         <div class="field field-range">
@@ -754,6 +880,106 @@ $rtrn = '
             </div>
         </div>
 
+        <div class="source-panel" id="sp-auto1">
+            <div class="source-panel-head" onclick="parsingTogglePanel(\'auto1\')">
+                <img src="/content/admin/page/parsing/media-parsing/auto1.png" class="sp-logo-img" alt="AUTO1">
+            </div>
+            <div class="source-panel-body sp-collapsed" id="spb-auto1">
+                <form id="sf-auto1" class="source-search-form" onsubmit="parsingSearchSource(event, \'auto1\')">
+                    <input type="hidden" name="source" value="auto1">
+                    <div class="search-grid">
+
+                        <div class="field">
+                            <label>'.$t['field_brand'].'</label>
+                            <select class="form-control" name="brand" id="auto1-brand">
+                                '.$brandOptionsAuto1.'
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label>'.$t['field_model'].'</label>
+                            <select class="form-control" name="model" id="auto1-model" def_text="'.$t['opt_all'].'">
+                                <option value="">'.$t['opt_all'].'</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label>'.($t['field_engine'] ?? 'Motorizare').'</label>
+                            <!-- Multi-select, filled by loadAuto1Engines() once a model is
+                                 picked: engines are per-model, so there is nothing to show
+                                 before that. Reuses the fuel checkbox-dropdown shell. -->
+                            <div class="fuel-dd" id="auto1-engine-dd" data-all="'.htmlspecialchars($fuelAllLabel).'">
+                                <button type="button" class="fuel-dd-trigger" onclick="parsingToggleFuelDD(this)">
+                                    <span class="fuel-dd-text">'.htmlspecialchars($fuelAllLabel).'</span>
+                                </button>
+                                <div class="fuel-dd-menu"></div>
+                            </div>
+                        </div>
+
+                        <!-- Fuel sits right after engine (not after Year) so the two
+                             pair up on one row in the 2-col mobile grid — Year is a
+                             full-width range field and would otherwise split them onto
+                             separate rows. Keeps gearbox at nth-child(6). -->
+                        <div class="field">
+                            <label>'.$t['field_fuel'].'</label>
+                            '.$fuelChecksAuto1.'
+                        </div>
+
+                        <div class="field field-range">
+                            <label>'.$t['field_year'].'</label>
+                            <div class="range-inputs">
+                                <select name="year_from">'.$yearOptionsAuto1.'</select>
+                                <select name="year_to">'.$yearOptionsAuto1.'</select>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label>'.$t['field_gearbox'].'</label>
+                            <select name="gearbox">
+                                <option value="">'.$t['opt_all'].'</option>
+                                <option value="automat">'.$t['opt_automatic'].'</option>
+                                <option value="manual">'.$t['opt_manual'].'</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label>'.$t['field_body_type'].'</label>
+                            <select name="body_type">'.$bodyOptionsAuto1.'</select>
+                        </div>
+
+                        <div class="field">
+                            <label>'.($t['field_country_origin'] ?? 'Țara de import').'</label>
+                            <select name="country_origin">'.$countryOptionsAuto1.'</select>
+                        </div>
+
+                        <div class="field field-range">
+                            <label>'.$t['field_km_max'].'</label>
+                            <div class="range-inputs">
+                                <select name="km_min">'.$kmOptionsAuto1.'</select>
+                                <select name="km_max">'.$kmOptionsAuto1.'</select>
+                            </div>
+                        </div>
+
+                        <div class="field field-range">
+                            <label>'.$t['field_price_max'].'</label>
+                            <div class="range-inputs">
+                                <select name="price_min">'.$priceOptionsAuto1.'</select>
+                                <select name="price_max">'.$priceOptionsAuto1.'</select>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="search-actions">
+                        <button type="button" class="btn-search-action" onclick="parsingSaveSourceFilter(\'auto1\')"><img src="/content/admin/page/parsing/media-parsing/save.png" alt="" class="btn-ico"> '.$t['btn_save_as_filter'].'</button>
+                        <button type="reset" class="btn-search-action btn-clear"><img src="/content/admin/page/parsing/media-parsing/clean.png" alt="" class="btn-ico"> '.$t['btn_clear_form'].'</button>
+                        <span class="search-hint">'.$t['search_needs_filter'].'</span>
+                        <button type="submit" class="btn-search-action btn-search-go">'.$t['btn_search_now'].'</button>
+                    </div>
+                </form>
+                <div class="source-search-result" id="ssr-auto1"></div>
+            </div>
+        </div>
+
     </div><!-- /source-panels -->
 
     <!-- ═══════════════════════════════════════════════
@@ -769,9 +995,21 @@ if (empty($savedFilters)) {
         $sources = array_filter(array_map('trim', explode(',', $f['sources'])));
         $isActive = (bool)$f['active'];
         $primarySource = $sources[0] ?? '';
-        $brandModel = $primarySource === 'encar'
-            ? $encarTranslate($f['brand'] ?? null, $f['model'] ?? null)
-            : trim(($f['brand'] ?? '') . ' ' . ($f['model'] ?? ''));
+        // Fields that live inside criteria_extra (engine, generation, ...) are not
+        // columns, so they must be decoded before the card can show them.
+        $fx = !empty($f['criteria_extra']) ? (json_decode($f['criteria_extra'], true) ?: []) : [];
+        // Auto1 stores the make as its numeric code ("060"), so the raw value would
+        // read "060 80" on the card — resolve it through the taxonomy. Encar has its
+        // own Korean→English translator; the rest already store real names.
+        if ($primarySource === 'encar') {
+            $brandModel = $encarTranslate($f['brand'] ?? null, $f['model'] ?? null);
+        } elseif ($primarySource === 'auto1') {
+            $a1Code  = trim((string)($f['brand'] ?? ''));
+            $a1Brand = $auto1Taxonomy['makes'][$a1Code]['name'] ?? $a1Code;
+            $brandModel = trim($a1Brand . ' ' . ($f['model'] ?? ''));
+        } else {
+            $brandModel = trim(($f['brand'] ?? '') . ' ' . ($f['model'] ?? ''));
+        }
         $yearRange = '';
         if (!empty($f['year_from']) || !empty($f['year_to'])) {
             $yearRange = ($f['year_from'] ?? '?') . ' – ' . ($f['year_to'] ?? '?');
@@ -782,6 +1020,14 @@ if (empty($savedFilters)) {
             $tags .= $sourceLogo($s);
         }
         if ($brandModel) $tags .= '<span class="ftag">'.htmlspecialchars($brandModel).'</span>';
+        // Auto1 engine variants — one tag each, as with fuel.
+        if (!empty($fx['engine'])) {
+            $engTags = is_array($fx['engine']) ? $fx['engine'] : [$fx['engine']];
+            foreach ($engTags as $eng) {
+                $eng = trim((string)$eng);
+                if ($eng !== '') $tags .= '<span class="ftag">'.htmlspecialchars($eng).'</span>';
+            }
+        }
         if ($yearRange)  $tags .= '<span class="ftag">'.$yearRange.'</span>';
         if (!empty($f['km_max'])) $tags .= '<span class="ftag">'.number_format($f['km_max'],0,'.',' ').' km</span>';
         if (!empty($f['price_max'])) $tags .= '<span class="ftag">'.number_format($f['price_max'],0,'.',' ').' €</span>';
@@ -803,6 +1049,21 @@ if (empty($savedFilters)) {
             }
         }
         if (!empty($f['gearbox'])) $tags .= '<span class="ftag">'.htmlspecialchars($f['gearbox']).'</span>';
+        // Extras live in criteria_extra (JSON) rather than their own columns — show
+        // the ones an operator picked so a saved filter reads back what was chosen.
+        $fx = !empty($f['criteria_extra']) ? (json_decode($f['criteria_extra'], true) ?: []) : [];
+        if (!empty($fx['country_origin'])) {
+            foreach (explode(',', (string)$fx['country_origin']) as $cc) {
+                $cc = strtoupper(trim($cc));
+                if ($cc === '') continue;
+                $tags .= '<span class="ftag">'.htmlspecialchars($a1Countries[$cc] ?? $cc).'</span>';
+            }
+        }
+        foreach (['color' => $t['field_color'] ?? 'Culoare', 'interior_color' => $t['field_interior_color'] ?? 'Salon'] as $ck => $clbl) {
+            if (empty($fx[$ck])) continue;
+            $cname = $clrLabels[$fx[$ck]] ?? $fx[$ck];
+            $tags .= '<span class="ftag">'.htmlspecialchars($clbl.': '.$cname).'</span>';
+        }
 
         // Operator-facing stat: how many cars from this filter are LIVE on the site
         // right now, plus a "sold" tail only when some have sold (so the count
@@ -898,6 +1159,7 @@ $rtrn .= '
     window.ENCAR_HAS_TAXONOMY = '.(empty($encarBrandsForJs) ? 'false' : 'true').';
     window.OPENLANE_BRANDS = '.json_encode($openlaneBrandsForJs, JSON_UNESCAPED_UNICODE).';
     window.ECARS_BRANDS = '.json_encode($ecarsBrandsForJs, JSON_UNESCAPED_UNICODE).';
+    window.AUTO1_BRANDS = '.json_encode($auto1BrandsForJs, JSON_UNESCAPED_UNICODE).';
 </script>
 <script src="/content/admin/page/parsing/parsing.js?v='.filemtime(_ADM_PAGE.'/parsing/parsing.js').'"></script>
 ';

@@ -192,6 +192,14 @@ foreach ($filters as $f) {
         JSON_UNQUOTE(JSON_EXTRACT(pc.raw_data, '$.raw_data.auction_end')),
         JSON_UNQUOTE(JSON_EXTRACT(pc.raw_data, '$.raw_data.BatchEndDate'))
     ), 'T', ' '), 'Z', ''), '%Y-%m-%d %H:%i:%s')";
+    // Auto1 dates its Instant Purchase auctions with auctionEndDatetime — a
+    // MILLISECOND epoch number, not the ISO text the others use. Compare it in
+    // milliseconds too: FROM_UNIXTIME() would render it in the session timezone
+    // while the right-hand side is UTC, which would silently shift the cutoff.
+    $auto1End = "COALESCE(
+        JSON_EXTRACT(pc.raw_data, '$.auctionEndDatetime'),
+        JSON_EXTRACT(pc.raw_data, '$.raw_data.auctionEndDatetime')
+    )";
     $base = "FROM {$prefx}_parsing_cars pc
              JOIN {$prefx}_car_ctlg cc ON cc.id = pc.car_ctlg_id
              WHERE pc.filter_id = {$fid} AND pc.status = 'published' AND pc.car_ctlg_id > 0
@@ -200,6 +208,11 @@ foreach ($filters as $f) {
                    pc.source IN ('ecarstrade','openlane')
                    AND {$auctionEnd} IS NOT NULL
                    AND {$auctionEnd} <= UTC_TIMESTAMP()
+               )
+               AND NOT (
+                   pc.source = 'auto1'
+                   AND {$auto1End} IS NOT NULL
+                   AND {$auto1End} <= UNIX_TIMESTAMP() * 1000
                )";
 
     $did = ['999' => 0, 'fb' => 0, 'tg' => 0];

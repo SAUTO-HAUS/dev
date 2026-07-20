@@ -203,7 +203,8 @@ if (empty($cars)) {
                     '.($c['source'] === 'encar' ? '<img src="/content/admin/page/parsing/media-parsing/encar-logo.webp" alt="Encar" class="source-logo">' :
                       ($c['source'] === 'ecarstrade' ? '<img src="/content/admin/page/parsing/media-parsing/ecarstrade-logo.svg" alt="e-CarsTrade" class="source-logo source-logo-ecarstrade">' :
                       ($c['source'] === 'openlane' ? '<img src="/content/admin/page/parsing/media-parsing/openlane-logo.svg" alt="OpenLane" class="source-logo source-logo-openlane">' :
-                      strtoupper($c['source'])))).'
+                      ($c['source'] === 'auto1' ? '<img src="/content/admin/page/parsing/media-parsing/auto1.png" alt="AUTO1" class="source-logo source-logo-auto1">' :
+                      strtoupper($c['source']))))).'
                 </div>
                 <h3>'.htmlspecialchars($title).'</h3>
                 <div class="car-meta" data-seats-label="'.htmlspecialchars($t['card_seats'] ?? 'locuri', ENT_QUOTES).'">
@@ -248,7 +249,9 @@ if (empty($cars)) {
                         <span>'.($t['btn_report'] ?? 'Raport').'</span>
                     </button>' : ($c['source'] === 'ecarstrade' ? '<button class="btn-report" onclick="parsingEcarstradeReport('.(int)$c['id'].')" title="'.$t['btn_equipment'].' eCarsTrade">
                         <span>'.$t['btn_equipment'].'</span>
-                    </button>' : ''))).'
+                    </button>' : ($c['source'] === 'auto1' ? '<button class="btn-report" onclick="parsingAuto1Report('.(int)$c['id'].')" title="'.($t['btn_report'] ?? 'Raport').' AUTO1">
+                        <span>'.($t['btn_report'] ?? 'Raport').'</span>
+                    </button>' : '')))).'
                     <button class="btn-reject" onclick="parsingReject('.(int)$c['id'].')">'.$t['btn_reject'].'</button>
                 </div>
             </div>

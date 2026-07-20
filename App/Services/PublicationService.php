@@ -309,54 +309,45 @@ class PublicationService
      */
     public function generateTelegramMessage($carData, $catalogType)
     {
-        // Set language for message generation
-        $_COOKIE['lang'] = 'ro';
-        
-        // Try to include language file from different possible locations
-        $languageFile = null;
-        $possiblePaths = [
-            $_SERVER['DOCUMENT_ROOT'] . '/language.php',
-            __DIR__ . '/../../language.php',
-            __DIR__ . '/../../content/default/language.php'
+        // Romanian labels/values for the caption. They used to be read from $lng,
+        // loaded with require_once inside this method: the include only runs on the
+        // first call of the process, and it assigns $lng in this local scope, so
+        // every later call in the same cron run (it publishes up to 10 posts) saw no
+        // $lng and printed empty labels with raw DB codes ("dsl", "atm", "crv").
+        $specLabels = [
+            'bt'  => 'Tip caroserie',   'mlg' => 'Parcurs', 'vol' => 'Capacitate motor',
+            'hp'  => 'Putere',          'fl'  => 'Tip combustibil', 'tra' => 'Cutia de viteze',
+            'wd'  => 'Tip tracțiune',   'clr' => 'Culoare', 'sts' => 'Numărul de locuri',
+            'loc' => 'Adresă',
         ];
-        
-        foreach ($possiblePaths as $path) {
-            if (file_exists($path)) {
-                $languageFile = $path;
-                break;
-            }
-        }
-        
-        if ($languageFile) {
-            require_once $languageFile;
-        } else {
-            // Fallback - define basic language arrays if language file not found
-            global $lng;
-            $lng = [
-                'l' => [
-                    'car' => [
-                        'spec' => [
-                            'bt' => 'Tip caroserie',
-                            'mlg' => 'Parcurs', 
-                            'vol' => 'Capacitate motor',
-                            'hp' => 'Putere',
-                            'fl' => 'Tip combustibil',
-                            'tra' => 'Cutia de viteze',
-                            'wd' => 'Tip tracțiune',
-                            'clr' => 'Culoare',
-                            'sts' => 'Numărul de locuri',
-                            'loc' => 'Adresă'
-                        ]
-                    ]
-                ],
-                't' => [
-                    'x' => [
-                        'address' => []
-                    ]
-                ]
-            ];
-        }
-        
+        $specValues = [
+            'bt' => [
+                'sdn' => 'Sedan', 'suv' => 'SUV', 'hbk' => 'Hatchback', 'unv' => 'Universal',
+                'cup' => 'Coupe', 'crv' => 'Crossover', 'mnv' => 'Minivan', 'pkp' => 'Pickup',
+                'van' => 'Furgon', 'mbs' => 'Microbus', 'cbr' => 'Cabriolet', 'cmb' => 'Combi',
+                'rod' => 'Roadster', 'frg' => 'Frigider', 'crr' => 'Purtător',
+            ],
+            'fl' => [
+                'gsl' => 'Benzină', 'gmn' => 'Benzină / Gaz (metan)', 'gpn' => 'Benzină / Gaz (propan)',
+                'hbd' => 'Hybrid', 'dsl' => 'Diesel', 'pih' => 'Plug-in Hybrid',
+                'pid' => 'Plug-in Hybrid (diesel)', 'elc' => 'Electricitate', 'gas' => 'Gaz',
+            ],
+            'tra' => [
+                'tpt' => 'Tiptronic', 'atm' => 'Automată', 'mnl' => 'Mecanică',
+                'rbt' => 'Robotizată', 'vrr' => 'Variator',
+            ],
+            'wd' => ['44' => '4x4', 're' => 'Din spate', 'fr' => 'Din față'],
+            'clr' => [
+                'l_grn' => 'Verde deschis', 'blu' => 'Albastru', 'brn' => 'Brun', 'cmn' => 'Purpuriu',
+                'cml' => 'Cameleon', 'bge' => 'Bej', 'wht' => 'Alb', 'vns' => 'Roșu visiniu',
+                'azr' => 'Albastru', 'ylw' => 'Galben', 'grn' => 'Verde', 'gld' => 'Aur',
+                'red' => 'Roșu', 'orn' => 'Portocalie', 'pnk' => 'Roz', 'slv' => 'Argint',
+                'gra' => 'Gri', 'd_grn' => 'Verde inchis', 'prp' => 'Violet', 'blk' => 'Negru',
+                'wap' => 'Asfalt umed', 'snd' => 'Nisip',
+            ],
+        ];
+        $locAddresses = [0 => 'Moldova, Chişinău', 1 => 'str. Calea Moşilor 11', 2 => 'str. Pietrăriei 3'];
+
         // Use local helper functions to avoid redeclaration
         $parseCurr = function($number) {
             return number_format($number, 0, '.', ',');
@@ -397,22 +388,10 @@ class PublicationService
             $caption_lines[] = '✅ Specificații:';
             $caption_lines[] = '▪️ Motor: ' . $carData['vol'] . 'cc ' . $carData['hp'] . 'hp';
             
-            // Fuel type — map the code to a readable name (the $lng lookup failed
-            // and printed the raw "dsl"/"atm"). Same maps as the in_stock block.
-            $fuelTypes = [
-                'gsl' => 'Benzină', 'gmn' => 'Benzină / Gaz (metan)', 'gpn' => 'Benzină / Gaz (propan)',
-                'hbd' => 'Hibrid', 'dsl' => 'Diesel', 'pih' => 'Plug-in Hibrid', 'pid' => 'Plug-in Hibrid (diesel)',
-                'elc' => 'Electricitate', 'gas' => 'Gaz',
-            ];
-            $fuel = $fuelTypes[$carData['fl']] ?? ($carData['fl'] ?? 'Necunoscut');
+            $fuel = $specValues['fl'][$carData['fl']] ?? ($carData['fl'] ?? 'Necunoscut');
             $caption_lines[] = '▪️ Combustibil: ' . $fuel;
 
-            // Transmission.
-            $transTypes = [
-                'atm' => 'Automată', 'mnl' => 'Mecanică', 'tpt' => 'Tiptronic',
-                'rbt' => 'Robotizată', 'vrr' => 'Variator',
-            ];
-            $transmission = $transTypes[$carData['tra']] ?? ($carData['tra'] ?? 'Necunoscut');
+            $transmission = $specValues['tra'][$carData['tra']] ?? ($carData['tra'] ?? 'Necunoscut');
             $caption_lines[] = '▪️ Transmisie: ' . $transmission;
             $caption_lines[] = '';
             
@@ -445,22 +424,26 @@ class PublicationService
             ];
             
             foreach ($spec_ar as $v) {
-                if ($v == 'loc' && $carData[$v] == '0') continue;
-                
-                $v_lng = isset($lng['l']['car'][$v][$carData[$v]]) ? $lng['l']['car'][$v][$carData[$v]] : $carData[$v];
-                $v_lng = $v == 'mlg' ? $parseCurr($carData[$v]) . ' km' : $v_lng;
-                $v_lng = $v == 'vol' ? $carData[$v] . ' cm3' : $v_lng;
-                $v_lng = $v == 'hp' ? $carData[$v] . ' hp (' . round($carData['hp'] * 0.735, 0) . ' kw)' : $v_lng;
-                $v_lng = $v == 'loc' ? $lng['t']['x']['address'][$carData[$v]] : $v_lng;
-                
-                if (isset($carData[$v]) && $carData[$v] != '') {
-                    $v_lng = str_replace("sup", "i", $v_lng);
-                    
-                    if ($v == 'loc') {
-                        $caption_lines[] = $iconParams[$v] . ' ' . $lng['l']['car']['spec'][$v] . ': Chișinău, ' . $v_lng;
-                    } else {
-                        $caption_lines[] = $iconParams[$v] . ' ' . $lng['l']['car']['spec'][$v] . ': ' . $v_lng;
-                    }
+                if (!isset($carData[$v]) || $carData[$v] === '' || $carData[$v] === null) continue;
+                // A zero engine size/power means "unknown", and loc 0 has no street.
+                if (in_array($v, ['vol', 'hp', 'loc'], true) && (int)$carData[$v] === 0) continue;
+
+                if ($v == 'mlg') {
+                    $v_lng = $parseCurr($carData[$v]) . ' km';
+                } elseif ($v == 'vol') {
+                    $v_lng = $carData[$v] . ' cm3';
+                } elseif ($v == 'hp') {
+                    $v_lng = $carData[$v] . ' hp (' . round($carData['hp'] * 0.735, 0) . ' kw)';
+                } elseif ($v == 'loc') {
+                    $v_lng = $locAddresses[$carData[$v]] ?? '';
+                } else {
+                    $v_lng = $specValues[$v][$carData[$v]] ?? $carData[$v];
+                }
+
+                if ($v == 'loc') {
+                    $caption_lines[] = $iconParams[$v] . ' ' . $specLabels[$v] . ': Chișinău, ' . $v_lng;
+                } else {
+                    $caption_lines[] = $iconParams[$v] . ' ' . $specLabels[$v] . ': ' . $v_lng;
                 }
             }
             

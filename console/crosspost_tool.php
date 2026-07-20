@@ -2189,21 +2189,56 @@ if ($do === 'mergemodels') {
     // Grand Kangoo, Corolla vs Corolla Cross, Yaris vs Yaris Cross). Canonical =
     // spelling with the most live cars (matches "as in catalog").
     $RULES = [
+        // Auto1 lists German-market names, so early imports (before
+        // ParsingPublisher::canonicalModelName learned to fold them) created "5er"
+        // beside the real "5 Series", "e_klasse" beside "e_class", "golf_vii"
+        // beside "golf". Same car, different market spelling → fold.
+        'bmw' => [
+            '1_series' => ['1er'], '2_series' => ['2er'], '3_series' => ['3er'],
+            '4_series' => ['4er'], '5_series' => ['5er'], '6_series' => ['6er'],
+            '7_series' => ['7er'], '8_series' => ['8er'],
+        ],
         'mercedes_benz' => [
-            'a_class' => ['a', 'a_amg'],
-            'b_class' => ['b'],
-            'c_class' => ['c', 'c_amg', 'c_break'],
-            'e_class' => ['e', 'e_break'],
-            'g_class' => ['g_amg'],
-            's_class' => ['s_long'],
-            'v_class' => ['v', 'v_l3'],
+            'a_class' => ['a', 'a_amg', 'a_klasse', 'a_klasse_limousine'],
+            'b_class' => ['b', 'b_klasse'],
+            'c_class' => ['c', 'c_amg', 'c_break', 'c_klasse', 'c_klasse_all_terrain'],
+            'e_class' => ['e', 'e_break', 'e_klasse', 'e_klasse_all_terrain'],
+            'g_class' => ['g_amg', 'g_klasse'],
+            'm_class' => ['m_klasse'],
+            'r_class' => ['r_klasse'],
+            's_class' => ['s_long', 's_klasse'],
+            'v_class' => ['v', 'v_l3', 'v_klasse', 'v_klasse_marco_polo'],
+            'x_class' => ['x_klasse'],
+            'cla' => ['cla_klasse'], 'cls' => ['cls_klasse'], 'clk' => ['clk_klasse'],
+            'gla' => ['gla_klasse'], 'glb' => ['glb_klasse'], 'glc' => ['glc_klasse'],
+            'gle' => ['gle_klasse'], 'glk' => ['glk_klasse'], 'gls' => ['gls_klasse'],
+            'sl'  => ['sl_klasse'],  'slk' => ['slk_klasse'],
+            'vito' => ['vito_tourer'],
         ],
         // Audi: Avant/Allroad are wagons of the same series; e-tron variants of a
         // combustion model fold in ONLY where the base model exists as the same car.
         // (Standalone "e-tron"/"e-tron GT" stay — they ARE distinct EV models.)
         'audi' => [
+            'a1' => ['a1_sportback', 'a1_allstreet', 'a1_citycarver'],
+            'a3' => ['a3_sportback', 'a3_allstreet', 'a3_limousine'],
             'a4' => ['a4_avant', 'a4_allroad'],
+            'a5' => ['a5_sportback'],
             'a6' => ['a6_avant', 'a6_allroad'],
+            'a7' => ['a7_sportback'],
+            'q3' => ['q3_sportback'], 'q4' => ['q4_sportback'], 'q5' => ['q5_sportback'],
+            'q6' => ['q6_sportback'], 'q8' => ['q8_sportback'],
+            's3' => ['s3_sportback'], 's5' => ['s5_sportback'], 's7' => ['s7_sportback'],
+            'sq5' => ['sq5_sportback'], 'sq8' => ['sq8_sportback'],
+            'e_tron' => ['e_tron_sportback'],
+        ],
+        // Opel dropped these suffixes itself ("Astra K" is just an Astra).
+        'opel' => [
+            'astra'     => ['astra_k', 'astra_gtc'],
+            'mokka'     => ['mokka_x'],
+            'grandland' => ['grandland_x'],
+            'crossland' => ['crossland_x'],
+            'insignia'  => ['insignia_grand_sport', 'insignia_sports_tourer', 'insignia_country_tourer'],
+            'zafira'    => ['zafira_tourer'],
         ],
         // Citroen: Picasso/CC bodies of the SAME numbered model fold in; different
         // numbers (C3 vs C4 vs C5) never merge. C5 Aircross is its OWN model — keep.
@@ -2237,8 +2272,12 @@ if ($do === 'mergemodels') {
         'toyota' => [
             'prius' => ['prius_plus', 'prius_c'],
         ],
+        // Golf generations are one model on sauto ("Golf VII" → Golf). Golf Plus /
+        // Sportsvan are NOT here: different cars, they keep their own model.
         'volkswagen' => [
-            'passat' => ['passat_cc'],
+            'passat' => ['passat_cc', 'passat_alltrack'],
+            'golf'   => ['golf_i', 'golf_ii', 'golf_iii', 'golf_iv', 'golf_v',
+                         'golf_vi', 'golf_vii', 'golf_viii', 'e_golf_vii', 'e_golf'],
         ],
     ];
     // Empty models (0 cars) safe to delete outright — verified on ?do=dupes.
@@ -2484,6 +2523,132 @@ if ($do === 'brnm') {
     } else {
         echo "\n  (add &fix=1 to correct the flagged spellings in car_list)\n";
     }
+    echo "\nDone.\n"; exit;
+}
+
+// ─────────────────────────── MODE: syncnames ───────────────────────────
+// car_ctlg stores br_nm/mo_nm as a SNAPSHOT taken when the ad is published, so
+// fixing a spelling in car_list afterwards (?do=brnm&fix=1, mergemodels) leaves
+// every already-published car on the old name. That is why /adminsauto/stock can
+// list "BYD" and "Byd" as two brands while ?do=dupes reports car_list is clean.
+// This realigns published ads to the catalog via the br/mo codes. Read-only
+// unless &apply=1.
+if ($do === 'syncnames') {
+    $L = "{$prefx}_car_list";
+    $apply = ($_GET['apply'] ?? '') === '1';
+
+    // car_list is the source of truth; match on the codes, compare the labels.
+    // CAST AS BINARY is required: the table collation is case- and accent-insensitive,
+    // so a plain `<>` rates 'Byd' equal to 'BYD' and 'Citroen' equal to 'Citroën' —
+    // exactly the differences this mode exists to find.
+    $diff = "(CAST(cc.br_nm AS BINARY) <> CAST(cl.br_nm AS BINARY)
+              OR CAST(cc.mo_nm AS BINARY) <> CAST(cl.mo_nm AS BINARY))";
+    $sel = "FROM {$C} cc JOIN {$L} cl ON cl.br = cc.br AND cl.mo = cc.mo WHERE {$diff}";
+
+    // What /adminsauto/stock actually renders: it groups by br_nm in PHP, so any
+    // spelling variant under one br code becomes its own row in the table.
+    hr("VARIANTE DE SCRIERE ÎN car_ctlg (ce sparge tabelul din /stock)");
+    $split = $db->query("SELECT br, COUNT(DISTINCT CAST(br_nm AS BINARY)) v, COUNT(*) c
+        FROM {$C} WHERE br<>'' AND act=1 AND n_a=0
+        GROUP BY br HAVING v > 1 ORDER BY c DESC")->fetchAll(PDO::FETCH_ASSOC);
+    if (!$split) {
+        echo "  ✔ Fiecare cod de marcă are o singură scriere.\n";
+    } else {
+        foreach ($split as $s) {
+            echo "  br={$s['br']} — {$s['v']} scrieri, {$s['c']} mașini:\n";
+            $q = $db->prepare("SELECT br_nm, COUNT(*) c FROM {$C}
+                WHERE br=? AND act=1 AND n_a=0
+                GROUP BY CAST(br_nm AS BINARY) ORDER BY c DESC");
+            $q->execute([$s['br']]);
+            foreach ($q as $r) echo "      \"{$r['br_nm']}\"  {$r['c']} cars\n";
+        }
+    }
+
+    // car_list holds one row per model, each repeating br_nm — so a single brand code
+    // can carry several spellings across its model rows. Cars pointing at a wrong-spelled
+    // model row mirror it faithfully, so the resync below sees no mismatch and the split
+    // survives. car_list has to be fixed first (?do=brnm&fix=1).
+    // Majority spelling wins, same rule ?do=dupes uses to pick a canonical brand.
+    // Generic on purpose: ?do=brnm carries a hand-written map (Byd/Citroen/Mercedes-Benz)
+    // that silently misses anything new, which is how "Kia" survived beside "KIA".
+    // Runs BEFORE the car_ctlg resync below so one &apply=1 fixes source then copies.
+    hr("VARIANTE DE SCRIERE ÎN car_list (sursa adevărului — se repară prima)");
+    $lsplit = $db->query("SELECT br, COUNT(DISTINCT CAST(br_nm AS BINARY)) v
+        FROM {$L} WHERE br_nm<>'' GROUP BY br HAVING v > 1")->fetchAll(PDO::FETCH_ASSOC);
+    if (!$lsplit) {
+        echo "  ✔ car_list e curat — fiecare cod de marcă are o singură scriere.\n";
+    } else {
+        $fixedList = 0;
+        foreach ($lsplit as $s) {
+            $q = $db->prepare("SELECT br_nm, COUNT(*) rows_ FROM {$L} WHERE br=?
+                GROUP BY CAST(br_nm AS BINARY) ORDER BY rows_ DESC");
+            $q->execute([$s['br']]);
+            $variants = $q->fetchAll(PDO::FETCH_ASSOC);
+            $winner = $variants[0]['br_nm'];
+            echo "  br={$s['br']} — {$s['v']} scrieri:\n";
+            foreach ($variants as $i => $r)
+                echo "      \"{$r['br_nm']}\"  {$r['rows_']} rânduri model"
+                   . ($i === 0 ? "   <= PĂSTREAZĂ\n" : "   → \"{$winner}\"\n");
+            if ($apply) {
+                // Rewrite every row of this br: the WHERE is collation-insensitive, so
+                // it sweeps all variants at once and only the differing ones change.
+                $u = $db->prepare("UPDATE {$L} SET br_nm=? WHERE br=?");
+                $u->execute([$winner, $s['br']]);
+                $fixedList += $u->rowCount();
+            }
+        }
+        echo $apply
+            ? "\n  ✔ car_list corectat: {$fixedList} rânduri rescrise.\n"
+            : "\n  (read-only — &apply=1 corectează car_list, apoi propagă în mașini)\n";
+    }
+
+    hr($apply ? "APPLYING car_ctlg name resync" : "DRY-RUN car_ctlg name resync (add &apply=1)");
+    $total = (int)$db->query("SELECT COUNT(*) {$sel}")->fetchColumn();
+    echo "  mașini cu nume desincronizat față de car_list: {$total}\n";
+
+    if ($total) {
+        hr("ce se schimbă (grupat)");
+        // Group on the binary values too — grouping by the plain columns would fold
+        // 'Byd' into 'BYD' under the case-insensitive collation and hide the split.
+        foreach ($db->query("SELECT cc.br_nm old_br, cl.br_nm new_br, cc.mo_nm old_mo, cl.mo_nm new_mo,
+                             COUNT(*) c {$sel}
+                             GROUP BY CAST(cc.br_nm AS BINARY), CAST(cl.br_nm AS BINARY),
+                                      CAST(cc.mo_nm AS BINARY), CAST(cl.mo_nm AS BINARY)
+                             ORDER BY c DESC LIMIT 100") as $r) {
+            $brPart = ($r['old_br'] !== $r['new_br']) ? "\"{$r['old_br']}\" → \"{$r['new_br']}\"" : $r['new_br'];
+            $moPart = ($r['old_mo'] !== $r['new_mo']) ? "\"{$r['old_mo']}\" → \"{$r['new_mo']}\"" : $r['new_mo'];
+            echo "  ".str_pad($brPart, 34)."  ".str_pad($moPart, 34)."  {$r['c']} cars\n";
+        }
+    }
+
+    if ($apply && $total) {
+        $n = $db->exec("UPDATE {$C} cc JOIN {$L} cl ON cl.br = cc.br AND cl.mo = cc.mo
+                        SET cc.br_nm = cl.br_nm, cc.mo_nm = cl.mo_nm
+                        WHERE {$diff}");
+        hr("RESULT");
+        echo "  actualizate: {$n} rânduri car_ctlg\n";
+    } elseif (!$total) {
+        echo "\n  ✔ Nimic de sincronizat — numele publicate coincid cu catalogul.\n";
+    } else {
+        echo "\n  (read-only — adaugă &apply=1 ca să scrie)\n";
+    }
+
+    // Ads whose br/mo no longer exist in car_list keep a stale name forever and the
+    // join above can never reach them.
+    $orphans = (int)$db->query("SELECT COUNT(*) FROM {$C} cc
+        LEFT JOIN {$L} cl ON cl.br = cc.br AND cl.mo = cc.mo
+        WHERE cc.act=1 AND cc.n_a=0 AND cl.br IS NULL")->fetchColumn();
+    if ($orphans) {
+        hr("ATENȚIE — mașini fără corespondent în car_list");
+        echo "  {$orphans} anunțuri active au br/mo care nu mai există în catalog.\n";
+        echo "  Nu pot fi resincronizate automat (marcă/model șters sau redenumit).\n";
+        foreach ($db->query("SELECT cc.br_nm, cc.mo_nm, cc.br, cc.mo, COUNT(*) c FROM {$C} cc
+            LEFT JOIN {$L} cl ON cl.br = cc.br AND cl.mo = cc.mo
+            WHERE cc.act=1 AND cc.n_a=0 AND cl.br IS NULL
+            GROUP BY cc.br, cc.mo ORDER BY c DESC LIMIT 30") as $r)
+            echo "    br={".str_pad($r['br'],16)."} mo={".str_pad($r['mo'],18)."} \"{$r['br_nm']} {$r['mo_nm']}\"  {$r['c']} cars\n";
+    }
+
     echo "\nDone.\n"; exit;
 }
 

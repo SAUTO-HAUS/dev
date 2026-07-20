@@ -1119,7 +1119,7 @@ $iconTelegramParams = array(
                 
                 $dynamicPhone = ((int)$import_country_id === 41) ? '37368689995' : PhoneHelper::getOrderPhone();
 
-                $waPhone = ((int)$import_country_id === 41) ? '37368689995' : '40756656180';
+                $waPhone = ((int)$import_country_id === 41) ? '37368689995' : '37369535167';
                 $waLang   = $_COOKIE['lang'] ?? 'ro';
                 $waCarUrl = 'https://www.sauto.md/' . $waLang . '/ordercars/' . (int)$r['id'];
                 $waUrl    = 'https://wa.me/' . $waPhone . '?text=' . rawurlencode($waCarUrl);
@@ -1173,7 +1173,7 @@ $iconTelegramParams = array(
                 $mdTable = '';
                 $encarReport = ''; // Encar inspection report + equipment (public block)
                 $parsingSrc = $r['parsing_source'] ?? '';
-                if (!empty($r['parsing_id']) && in_array($parsingSrc, ['encar', 'openlane', 'ecarstrade'], true)) {
+                if (!empty($r['parsing_id']) && in_array($parsingSrc, ['encar', 'openlane', 'ecarstrade', 'auto1'], true)) {
                     // The breakdown needs the SOURCE car price (in EUR), not the
                     // car_ctlg `prc` — that already holds the full landed MD price,
                     // so feeding it back would double-count customs/costs. Read the
@@ -1246,6 +1246,22 @@ $iconTelegramParams = array(
                             if (is_array($olRep)) {
                                 $reportLang = $_COOKIE['lang'] ?? 'ro';
                                 $encarReport = $olRep[$reportLang] ?? ($olRep['ro'] ?? '');
+                            }
+                        } catch (Throwable $e) { $encarReport = ''; }
+                    }
+                    // Auto1: condition + equipment, baked in all three languages at
+                    // publish time (ParsingPublisher::bakeAuto1Report) because
+                    // rendering it live needs an authenticated API round-trip.
+                    elseif ($parsingSrc === 'auto1') {
+                        try {
+                            $rps = $db->prepare('SELECT report_data FROM '.$prefx.'_parsing_cars WHERE id = ? LIMIT 1');
+                            $rps->execute([(int)$r['parsing_id']]);
+                            $rpRow = $rps->fetch(PDO::FETCH_ASSOC);
+                            $report = ($rpRow && !empty($rpRow['report_data'])) ? json_decode($rpRow['report_data'], true) : null;
+                            $a1Rep = $report['auto1_report'] ?? null;
+                            if (is_array($a1Rep)) {
+                                $reportLang = $_COOKIE['lang'] ?? 'ro';
+                                $encarReport = $a1Rep[$reportLang] ?? ($a1Rep['ro'] ?? '');
                             }
                         } catch (Throwable $e) { $encarReport = ''; }
                     }

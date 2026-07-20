@@ -53,7 +53,7 @@ function ordercarsLocateByLink() {
 		notfound: (box && box.dataset.msgNotfound) || 'Această mașină nu există în catalog.',
 		error:    (box && box.dataset.msgError)    || 'Eroare'
 	};
-	if (msg) { msg.style.color = ''; msg.textContent = ''; }
+	if (msg) { msg.classList.remove('sold'); msg.style.color = ''; msg.textContent = ''; }
 	if (!link) { if (msg) { msg.style.color = '#c00'; msg.textContent = T.paste; } return; }
 
 	$.ajax({
@@ -77,7 +77,8 @@ function ordercarsLocateByLink() {
 				var base = location.pathname.replace(/\/(?:cars|ordercars)\//, '/' + res.location + '/');
 				location.href = base + '?car=' + res.ctlg_id;
 			} else {
-				if (msg) { msg.style.color = '#c00'; msg.textContent = T.notfound; }
+				// Car gone from the catalog = sold: loud, centered, pulsing red.
+				if (msg) { msg.style.color = ''; msg.classList.add('sold'); msg.textContent = T.notfound; }
 			}
 		},
 		error: function () {

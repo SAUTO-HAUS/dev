@@ -76,14 +76,23 @@ if (isset($_POST['user_management_action']) && $can_manage_users) {
                 }
                 
                 $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-                $pdo = $db->prepare('INSERT INTO '.$prefx.'_adm_usr (name, login, password, type, role, branch_id, act, created_at) VALUES (:name, :login, :password, :type, :role, :branch_id, 1, NOW())');
+                $pdo = $db->prepare('INSERT INTO '.$prefx.'_adm_usr
+                    (name, login, password, email, type, role, branch_id,
+                     last_ip, this_ip, cookie, act, created_at)
+                    VALUES
+                    (:name, :login, :password, :email, :type, :role, :branch_id,
+                     :last_ip, :this_ip, :cookie, 1, NOW())');
                 $pdo->execute([
-                    'name' => $name,
-                    'login' => $login,
-                    'password' => $hashedPassword,
-                    'type' => $role, 
-                    'role' => $role,
-                    'branch_id' => $branch_id
+                    'name'      => $name,
+                    'login'     => $login,
+                    'password'  => $hashedPassword,
+                    'email'     => '',
+                    'type'      => substr($role, 0, 5),
+                    'role'      => $role,
+                    'branch_id' => $branch_id,
+                    'last_ip'   => '',
+                    'this_ip'   => '',
+                    'cookie'    => '',
                 ]);
                 echo 'success';
                 exit;
@@ -353,7 +362,7 @@ if ( isset($t_mp[4]) ){
 							<label for="addUserPassword">Password *</label>
 							<input type="password" id="addUserPassword" name="add_user_password" placeholder="Enter password (min 6 chars)" autocomplete="new-password" value="" required>
 						</div>
-						
+
 						<div class="form-row">
 							<label for="addUserRole">Role *</label>
 							<select id="addUserRole">

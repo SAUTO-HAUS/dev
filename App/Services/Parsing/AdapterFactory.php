@@ -5,6 +5,7 @@ namespace App\Services\Parsing;
 use App\Services\Parsing\Adapters\EncarAdapter;
 use App\Services\Parsing\Adapters\EcarsTradeAdapter;
 use App\Services\Parsing\Adapters\OpenLaneAdapter;
+use App\Services\Parsing\Adapters\Auto1Adapter;
 
 class AdapterFactory
 {
@@ -12,6 +13,7 @@ class AdapterFactory
         'encar' => EncarAdapter::class,
         'ecarstrade' => EcarsTradeAdapter::class,
         'openlane' => OpenLaneAdapter::class,
+        'auto1' => Auto1Adapter::class,
     ];
 
     public static function create(string $sourceCode): ?AdapterInterface

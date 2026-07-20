@@ -1539,3 +1539,64 @@ if (!function_exists('parsing_report_tr')) {
             . '<div class="er-body">'.$vinHtml.'<div class="er-doc">'.$sections.'</div></div></div>';
     }
 }
+
+if (!function_exists('parsing_report_diagram_css')) {
+// CSS for the damage-report CARD that wraps parsing_report_body_diagram(): the
+// white rounded panel, its dark header, section headings and every .erd-* rule
+// the SVG needs (sizing, panel fills, legend, badges).
+//
+// It lives here, next to the diagram it styles, because more than one source
+// renders that diagram: the OpenLane report keeps its own inline copy (older),
+// the Auto1 report calls this. Both the admin modal and the PUBLIC car page use
+// it, and the public page never loads parsing.css — hence inline <style>.
+function parsing_report_diagram_css(): string {
+    return '<style>'
+        . '.er-dmg-report{--er-red:#e2001a;--er-line:#eef0f3;}'
+        . '.encar-report-public .encar-report{margin:0;}'
+        . '.md-price-block + .encar-report-public{margin-top:-20px;}'
+        . '.encar-report-public .encar-report ~ .encar-report{margin-top:12px;}'
+        . '@media (max-width:768px){.md-price-mobile-only > .md-price-block{margin-bottom:0;}.md-price-block + .encar-report-public{margin-top:0;}.encar-report-public{margin:0;padding:12px 0;}}'
+        . '.er-dmg-report.encar-report{background:#fff;border:1px solid #efefef;border-radius:18px;box-shadow:0 10px 30px rgba(20,20,40,.07);overflow:hidden;}'
+        . '.er-dmg-report > .er-head{margin:0 !important;padding:11px 22px !important;font-size:1.05rem !important;font-weight:bold !important;color:#fff !important;text-transform:uppercase;letter-spacing:.4px;background:linear-gradient(135deg,#2b2b2b 0%,#444 100%) !important;display:flex;align-items:center;border:none;width:100%;text-align:left;}'
+        . '.er-dmg-report .er-section + .er-section{border-top:6px solid #f4f6f8;}'
+        . '.er-dmg-report .er-section h4{display:flex;align-items:center;gap:10px;margin:0;padding:14px 20px;font-size:1.02rem;font-weight:700;color:#1f2430;background:linear-gradient(180deg,#fbfcfd,#f4f6f8);border-bottom:1px solid var(--er-line);}'
+        . '.er-dmg-report .er-section h4:before{content:"";width:5px;height:19px;border-radius:3px;background:var(--er-red);flex:none;box-shadow:0 0 0 3px rgba(226,0,26,.10);}'
+        . '.er-dmg-report .erd-section h4{margin-bottom:0;}'
+        . '.er-dmg-report .erd-wrap{display:flex;gap:28px;align-items:flex-start;padding:20px 18px;flex-wrap:wrap;}'
+        . '.er-dmg-report .erd-col{min-width:0;}'
+        . '.er-dmg-report .erd-col-car{flex:0 0 auto;}'
+        . '.er-dmg-report .erd-col-legend{flex:0 1 auto;padding-right:14px;border-right:1px solid #eef0f3;}'
+        . '.er-dmg-report .erd-col-full{flex:1 1 220px;min-width:190px;}'
+        . '.er-dmg-report .erd-svg{width:150px;height:auto;display:block;filter:drop-shadow(0 4px 10px rgba(20,20,40,.08));}'
+        . '.er-dmg-report .erd-body{fill:#f1f3f6;}'
+        . '.er-dmg-report .erd-p{fill:transparent;}'
+        . '.er-dmg-report .erd-seams line,.er-dmg-report .erd-seams path{fill:none;stroke:#aeb6c2;stroke-width:1.8;stroke-linecap:round;}'
+        . '.er-dmg-report .erd-glass path,.er-dmg-report .erd-glass rect{fill:#cdd7e4;stroke:#aeb6c2;stroke-width:1.2;}'
+        . '.er-dmg-report .erd-lamp path{fill:#dfe5ec;stroke:#aeb6c2;stroke-width:1;}.er-dmg-report .erd-lamp-rear path{fill:#f0c9cc;}'
+        . '.er-dmg-report .erd-mirror path{fill:#c4ccd8;}.er-dmg-report .erd-wheel rect{fill:#2c3138;}'
+        . '.er-dmg-report .erd-outline{fill:none;stroke:#7d8694;stroke-width:3;stroke-linejoin:round;}'
+        . '.er-dmg-report .erd-badge circle{stroke:#fff;stroke-width:1.5;}'
+        . '.er-dmg-report .erd-badge text{fill:#fff;font-size:13px;font-weight:800;text-anchor:middle;}'
+        . '.er-dmg-report .erd-legend{display:flex;flex-direction:column;gap:9px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid #e8ebef;}'
+        . '.er-dmg-report .erd-leg{display:inline-flex;align-items:center;gap:8px;font-size:.84rem;color:#525a67;white-space:nowrap;}'
+        . '.er-dmg-report .erd-dot{width:18px;height:18px;border-radius:5px;flex:none;border:1px solid rgba(0,0,0,.10);display:inline-flex;align-items:center;justify-content:center;}'
+        . '.er-dmg-report .erd-dot b{color:#fff;font-size:.66rem;font-weight:800;line-height:1;}'
+        . '.er-dmg-report .erd-affected{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:9px;}'
+        . '.er-dmg-report .erd-affected li{display:flex;align-items:center;gap:10px;font-size:.88rem;color:#2c333f;}'
+        . '.er-dmg-report .erd-num{flex:none;width:22px;height:22px;border-radius:50%;color:#fff;font-size:.78rem;font-weight:800;display:flex;align-items:center;justify-content:center;}'
+        . '.er-dmg-report .erd-clean{margin:0;padding:10px 14px;font-size:.9rem;font-weight:600;color:#444b58;background:#eef0f3;border-radius:10px;}'
+        . '.er-dmg-report .erd-full{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:7px;}'
+        . '.er-dmg-report .erd-full li{display:flex;justify-content:space-between;gap:8px;padding:9px 14px;font-size:.86rem;color:#2c333f;background:#f1f2f4;border-radius:10px;}'
+        . '.er-dmg-report .erd-full-nm{flex:1 1 auto;min-width:0;padding-right:6px;}'
+        . '.er-dmg-report .erd-full-st{flex:0 0 auto;font-size:.74rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px;white-space:nowrap;}'
+        . '.er-dmg-report .erd-st-ok{color:#2c333f;}.er-dmg-report .erd-st-bad{color:#c01425;}'
+        . '.er-dmg-report .er-table{width:100%;border-collapse:collapse;font-size:.93rem;}'
+        . '.er-dmg-report .er-table td{padding:9px 18px;border-bottom:1px solid #f5f6f8;color:#2c333f;}'
+        . '.er-dmg-report .er-table tr:last-child td{border-bottom:none;}'
+        . '.er-dmg-report .er-stcell{width:120px;text-align:right;white-space:nowrap;}'
+        . '.er-dmg-report .er-badge{display:inline-block;min-width:22px;padding:2px 8px;border-radius:8px;font-size:.78rem;font-weight:700;text-align:center;}'
+        . '.er-dmg-report .er-badge.er-bad{background:#fdeaec;color:#c01425;}'
+        . '@media (max-width:600px){.er-dmg-report .erd-wrap{justify-content:center;}.er-dmg-report .erd-col-full{flex-basis:100%;}}'
+        . '</style>';
+}
+}

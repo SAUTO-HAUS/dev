@@ -19,7 +19,7 @@ if (!parsing_has_access($user_id ?? 0)) {
 $action = $_POST['action'] ?? $_GET['action'] ?? '';
 
 // Settings-only actions: full-access ids only.
-$settingsOnlyActions = ['save_settings', 'save_eu_config', 'openlane_save_cookie', 'ecarstrade_save_cookie'];
+$settingsOnlyActions = ['save_settings', 'save_eu_config', 'openlane_save_cookie', 'ecarstrade_save_cookie', 'auto1_save_cookie'];
 if (in_array($action, $settingsOnlyActions, true) && !parsing_is_full($user_id ?? 0)) {
     $response['error'] = 'Access denied';
     echo json_encode($response);
@@ -143,6 +143,9 @@ try {
         case 'openlane_report':
             $response = parsing_openlane_report($db, $prefx, $_POST);
             break;
+        case 'auto1_report':
+            $response = parsing_auto1_report($db, $prefx, $_POST);
+            break;
         case 'ecarstrade_report':
             $response = parsing_ecarstrade_report($db, $prefx, $_POST);
             break;
@@ -157,6 +160,12 @@ try {
             break;
         case 'ecarstrade_check_cookie':
             $response = parsing_ecarstrade_check_cookie($db, $prefx, $_POST);
+            break;
+        case 'auto1_save_cookie':
+            $response = parsing_auto1_save_cookie($db, $prefx, $_POST);
+            break;
+        case 'auto1_check_cookie':
+            $response = parsing_auto1_check_cookie($db, $prefx, $_POST);
             break;
         case 'redownload_images':
             $response = parsing_redownload_images($db, $prefx, $_POST);
@@ -287,9 +296,19 @@ function parsing_save_filter($db, $prefx, $userId, $p) {
     if (!empty($p['seats']))          $extra['seats'] = (int)$p['seats'];
     if (!empty($p['engine_volume']))  $extra['engine_volume'] = (int)$p['engine_volume'];
     if (!empty($p['country_origin'])) $extra['country_origin'] = $p['country_origin'];
+    // Encar colour facets: body (Color) + interior (SeatColor), as sauto colour codes.
+    if (!empty($p['color']))          $extra['color'] = $p['color'];
+    if (!empty($p['interior_color'])) $extra['interior_color'] = $p['interior_color'];
     if (!empty($p['car_sub_model']))  $extra['car_sub_model'] = trim($p['car_sub_model']);
     if (!empty($p['category']))       $extra['category'] = $p['category'];
     if (!empty($p['generation']))     $extra['generation'] = trim($p['generation']);
+    // Auto1 engine variants ("1.5 TDCi") — Auto1's subTypes, nested under a model.
+    // Kept as a JSON array, NOT a CSV: two real values contain a comma
+    // ("electric drive 12,6 kW") and would be split into garbage.
+    $engines = $p['engine'] ?? null;
+    if (!is_array($engines)) $engines = ($engines !== null && trim((string)$engines) !== '') ? [(string)$engines] : [];
+    $engines = array_values(array_unique(array_filter(array_map(fn($e) => trim((string)$e), $engines), fn($e) => $e !== '')));
+    if ($engines) $extra['engine'] = $engines;
     if (!empty($p['km_min']))         $extra['km_min'] = (int)$p['km_min'];
     if (!empty($p['price_min']))      $extra['price_min'] = (int)$p['price_min'];
 
@@ -1302,7 +1321,7 @@ function parsing_image_proxy($url) {
 
     // Whitelist source hosts to avoid being used as an open proxy.
     $allowedHosts = ['ci.encar.com', 'fem.encar.com', 'www.encar.com', 'api.encar.com',
-        'images.openlane.eu', 'ecarstrade.com'];
+        'images.openlane.eu', 'ecarstrade.com', 'img-pa.auto1.com'];
     $host = parse_url($url, PHP_URL_HOST) ?: '';
     $hostOk = false;
     foreach ($allowedHosts as $h) {
@@ -1332,6 +1351,7 @@ function parsing_image_proxy($url) {
     $referer = 'https://www.encar.com/';
     if (stripos($host, 'ecarstrade') !== false) $referer = 'https://ru.ecarstrade.com/';
     if (stripos($host, 'openlane')   !== false) $referer = 'https://www.openlane.eu/';
+    if (stripos($host, 'auto1')      !== false) $referer = 'https://www.auto1.com/';
 
     if (stripos($host, 'encar.com') !== false) {
         $url = preg_replace('/\?.*$/', '', $url);
@@ -1527,7 +1547,9 @@ function parsing_search_now($db, $prefx, $p) {
     // Encar AND OpenLane send brand/model as the exact API strings (from their
     // own taxonomy selects), so pass them through unchanged. Other sources send
     // a sauto internal code that must be resolved to a display name.
-    $taxonomySource = in_array($singleSource, ['encar', 'openlane', 'ecarstrade'], true);
+    // Auto1 also sends brand (numeric manufacturer code) + model (Auto1 value)
+    // straight from its own taxonomy select, so pass them through unchanged.
+    $taxonomySource = in_array($singleSource, ['encar', 'openlane', 'ecarstrade', 'auto1'], true);
     if (!empty($p['brand'])) {
         if ($taxonomySource) {
             $brandName = trim($p['brand']);
@@ -1552,6 +1574,9 @@ function parsing_search_now($db, $prefx, $p) {
         'brand'          => $brandName,
         'model'          => $modelName,
         'generation'     => !empty($p['generation']) ? trim($p['generation']) : null,
+        // Auto1 engines arrive as an array (engine[]=a&engine[]=b); the adapter
+        // normalizes, so pass it through as-is rather than trim()-ing an array.
+        'engine'         => !empty($p['engine']) ? $p['engine'] : null,
         'body_type'      => $p['body_type'] ?? null,
         'category'       => $p['category'] ?? null,
         'seats'          => !empty($p['seats']) ? (int)$p['seats'] : null,
@@ -1566,6 +1591,8 @@ function parsing_search_now($db, $prefx, $p) {
         'price_min'      => !empty($p['price_min']) ? (int)$p['price_min'] : null,
         'price_max'      => !empty($p['price_max']) ? (int)$p['price_max'] : null,
         'country_origin'  => $p['country_origin'] ?? null,
+        'color'           => $p['color'] ?? null,
+        'interior_color'  => $p['interior_color'] ?? null,
         'car_sub_model'   => !empty($p['car_sub_model']) ? trim($p['car_sub_model']) : null,
         'premium_offer'   => !empty($p['premium_offer']) ? trim($p['premium_offer']) : null,
     ];
@@ -1593,6 +1620,13 @@ function parsing_search_now($db, $prefx, $p) {
             // Encar pulls up to 300 cars per manual search (default is 200).
             if ($sourceCode === 'encar') {
                 $srcCriteria['_max_results'] = 300;
+            }
+            // Auto1's Instant Purchase catalog is huge (BMW alone ≈3500), and its
+            // API caps a page at 50 — so one search walks several pages. 500 per
+            // click keeps it responsive; the saved offset advances the next click
+            // deeper into the catalog until everything is imported.
+            if ($sourceCode === 'auto1') {
+                $srcCriteria['_max_results'] = 500;
             }
             $cars = $adapter->searchByFilter($srcCriteria);
             $found += count($cars);
@@ -1767,6 +1801,75 @@ function parsing_ecarstrade_check_cookie($db, $prefx, $p) {
             ? 'Sesiune neautentificată (' . ($res['reason'] ?? 'login') . ')'
             : null,
     ];
+}
+
+// Save the Auto1 session cookie to .env (raw $_POST — the JSON sanitizer would
+// corrupt the cookie string). Auto1 needs only the cookie: the JWT is refreshed
+// automatically by scraping the merchant page.
+function parsing_auto1_save_cookie($db, $prefx, $p) {
+    $cookie = trim((string)($_POST['cookie'] ?? ''));
+    if ($cookie === '') return ['success' => false, 'error' => 'Cookie gol'];
+    $envFile = ($_SERVER['DOCUMENT_ROOT'] ?? dirname(__DIR__, 4)) . '/.env';
+    $env = is_file($envFile) ? file_get_contents($envFile) : '';
+    $line = 'AUTO1_COOKIE=' . $cookie;
+    if (preg_match('/^AUTO1_COOKIE=.*$/m', $env)) {
+        $env = preg_replace('/^AUTO1_COOKIE=.*$/m', $line, $env);
+    } else {
+        $env = rtrim($env) . "\n" . $line . "\n";
+    }
+    if (@file_put_contents($envFile, $env) === false) {
+        return ['success' => false, 'error' => 'Nu pot scrie .env'];
+    }
+    return ['success' => true];
+}
+
+// Test the Auto1 cookie: the adapter refreshes a JWT from the merchant page and
+// runs a 1-item search. A logged-in session returns hits; an expired cookie
+// yields no data-jwt / 401.
+function parsing_auto1_check_cookie($db, $prefx, $p) {
+    $adapter = \App\Services\Parsing\AdapterFactory::create('auto1');
+    if (!$adapter || !method_exists($adapter, 'checkSession')) {
+        return ['success' => false, 'error' => 'Adapter indisponibil'];
+    }
+    $res = $adapter->checkSession();
+    return [
+        'success'   => true,
+        'logged_in' => !empty($res['logged_in']),
+        'error'     => empty($res['logged_in'])
+            ? 'Sesiune neautentificată (' . ($res['reason'] ?? 'login') . ')'
+            : null,
+    ];
+}
+
+// Auto1 vehicle report: condition (damage diagram + list) + equipment.
+// Unlike the OpenLane one this needs no AI pass — Auto1 returns damages as
+// translation keys and publishes its own RO/RU wording, which the dictionary
+// (Adapters/auto1_damage_dict.json) carries. Same renderer as the public page.
+function parsing_auto1_report($db, $prefx, $p) {
+    $carId = (int)($p['car_id'] ?? 0);
+    if ($carId <= 0) return ['success' => false, 'error' => 'Invalid car_id'];
+
+    $stmt = $db->prepare("SELECT source, source_id FROM {$prefx}_parsing_cars WHERE id = ? LIMIT 1");
+    $stmt->execute([$carId]);
+    $car = $stmt->fetch(PDO::FETCH_ASSOC);
+    if (!$car || ($car['source'] ?? '') !== 'auto1') {
+        return ['success' => false, 'error' => 'Not an Auto1 car'];
+    }
+    $stock = (string)($car['source_id'] ?? '');
+    if ($stock === '') return ['success' => false, 'error' => 'Missing stock number'];
+
+    $adapter = \App\Services\Parsing\AdapterFactory::create('auto1');
+    if (!$adapter || !method_exists($adapter, 'fetchReportRaw')) {
+        return ['success' => false, 'error' => 'Adapter unavailable'];
+    }
+    $rep = $adapter->fetchReportRaw($stock);
+    if (!is_array($rep)) {
+        return ['success' => false, 'error' => 'Nu am putut prelua raportul (cookie expirat?)'];
+    }
+
+    $lang = in_array($_COOKIE['lang'] ?? 'ro', ['ro','ru','en'], true) ? $_COOKIE['lang'] : 'ro';
+    require_once(_ADM_PAGE.'/parsing/parsing_auto1_report.php');
+    return ['success' => true, 'html' => parsing_auto1_report_html($rep, $lang)];
 }
 
 // (damages). Data comes from the detail endpoint (EtgOptionList + Damage),
@@ -2457,7 +2560,7 @@ function parsing_resync_card_prices($db, $prefx, int $maxDiff = 500): array {
             FROM {$prefx}_parsing_cars pc
             JOIN {$prefx}_car_ctlg cc ON cc.id = pc.car_ctlg_id
             WHERE pc.status='published' AND pc.car_ctlg_id > 0
-              AND pc.source IN ('encar','openlane','ecarstrade')
+              AND pc.source IN ('encar','openlane','ecarstrade','auto1')
               AND pc.price_eur > 0")->fetchAll(PDO::FETCH_ASSOC);
     } catch (\Throwable $e) {
         return ['checked' => 0, 'updated' => 0, 'skipped_big' => 0, 'error' => $e->getMessage()];

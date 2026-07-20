@@ -52,6 +52,26 @@ if (__post('sub') == 'mo_search') {
         // doesn't exist in car_list yet, we create it from the raw source names.
         $rawBrandNm = trim((string)__post('parsing_brand_nm'));
         $rawModelNm = trim((string)__post('parsing_model_nm'));
+
+        // LAST LINE OF DEFENCE before this file can INSERT a new car_list row:
+        // fold a source's own naming into sauto's ("5er" → "5 Series", "E-Klasse"
+        // → "E Class", "Golf VII" → "Golf"). The publish queue already resolves
+        // this, but a manual Edit/Publish posts these raw names straight here —
+        // without the fold they'd create a duplicate model beside the real one.
+        if ($rawBrandNm !== '' && $rawModelNm !== '') {
+            try {
+                $pub = new \App\Services\Parsing\ParsingPublisher();
+                $canon = $pub->resolveCanonicalNames($rawBrandNm, $rawModelNm, false);
+                if ($canon) {
+                    // Matched a real car_list entry — use its codes AND names.
+                    if ($br === '') $br = (string)$canon['br'];
+                    if ($mo === '') $mo = (string)$canon['mo'];
+                    $rawBrandNm = (string)$canon['br_nm'];
+                    $rawModelNm = (string)$canon['mo_nm'];
+                }
+            } catch (\Throwable $e) { /* fall through with the posted names */ }
+        }
+
         if (($rawBrandNm !== '' || $rawModelNm !== '')) {
             $slugify = function (string $s): string {
                 $s = trim($s);
@@ -617,8 +637,8 @@ if (__post('sub') == 'mo_search') {
                             }
                         }
                         // Photo cap per source (same as ParsingPublisher): auction
-                        // sources (eCarsTrade/OpenLane) → 10, Encar → 20.
-                        $imgCap = in_array($pRow['source'] ?? '', ['ecarstrade', 'openlane'], true) ? 10 : 20;
+                        // sources (eCarsTrade/OpenLane/Auto1) → 10, Encar → 20.
+                        $imgCap = in_array($pRow['source'] ?? '', ['ecarstrade', 'openlane', 'auto1'], true) ? 10 : 20;
                         $urls = array_slice($urls, 0, $imgCap);
 
                         if (!empty($urls)) {

@@ -15,6 +15,8 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 date_default_timezone_set('Europe/Chisinau');
+// A full 2000-car batch runs ~13 min; never let PHP's time limit kill it mid-run.
+set_time_limit(0);
 
 chdir(__DIR__);
 define('_DOIT', 1);
@@ -41,24 +43,46 @@ $prefx = 'gh3sp';
 Container::set('db', $db);
 Container::set('prefix', $prefx);
 
+// Single-instance lock. The cron runs every 5 min but a run can take up to the
+// ~9-min time budget, so runs could overlap and double the request rate.
+// flock lets an already-running instance finish and makes the new one exit
+// immediately — so we can schedule aggressively without ever overlapping.
+$lockFile = sys_get_temp_dir() . '/parsing_availability_check.lock';
+$lockHandle = fopen($lockFile, 'c');
+if ($lockHandle === false || !flock($lockHandle, LOCK_EX | LOCK_NB)) {
+    echo "[" . date('Y-m-d H:i:s') . "] Another run is still in progress — skipping\n";
+    exit(0);
+}
+
 echo "[" . date('Y-m-d H:i:s') . "] Availability check started\n";
 
-// Small batch per run, called hourly — keeps the request rate towards Encar low
-// and steady (no big nightly burst that could look like a bot / trip rate limits).
-// Priority: published + favorite first (those must stay real), then proposed; and
-// within that, the longest-unchecked first so every car rotates through over time.
+// Batch per run, called every 5 min (flock prevents overlap). Measured real rate
+// ~0.8s/car (0.4s pause + ~0.4s Encar latency), so a ~9-min run does ~675 cars;
+// 12 runs/hour = ~8k checks/hour, so a ~17k catalog rotates fully in ~2h instead
+// of ~5 days. Priority: published + favorite first (those must stay real), then
+// proposed; longest-unchecked first so all rotate.
+// Re-check window of 2h: a car sold right after its last check is caught within
+// ~2h. Was 20h — far too slack. The LIMIT here is just a safety cap on how many
+// rows we pull; the actual batch is bounded by the time budget below, so this
+// scales to any catalog size (17k, 30k, 50k+) without manual tuning.
 $sql = "SELECT id, source, source_id, car_ctlg_id FROM {$prefx}_parsing_cars
         WHERE status IN ('proposed', 'published', 'favorite')
           AND (last_checked_at IS NULL
-               OR last_checked_at < DATE_SUB(NOW(), INTERVAL 20 HOUR))
+               OR last_checked_at < DATE_SUB(NOW(), INTERVAL 2 HOUR))
         ORDER BY
           (status = 'proposed') ASC,        -- published/favorite checked first
           last_checked_at IS NULL DESC,      -- never-checked next
           last_checked_at ASC                -- then oldest-checked
-        LIMIT 150";
+        LIMIT 5000";
 $stmt = $db->prepare($sql);
 $stmt->execute();
 $cars = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Time budget: process cars until ~9 min elapse, then stop cleanly (the cron fires
+// again every 5 min; flock guarantees no overlap). This makes the batch auto-size
+// to whatever fits — no need to retune LIMIT as the catalog grows to 30k+.
+$startTs      = microtime(true);
+$timeBudget   = 9 * 60; // seconds
 
 if (empty($cars)) {
     echo "[" . date('Y-m-d H:i:s') . "] Nothing to check\n";
@@ -76,8 +100,14 @@ $markSautoNa     = $db->prepare("UPDATE {$prefx}_car_ctlg SET n_a = 1, offer_tim
 $cancel999       = $db->prepare("UPDATE gh3sp_sauto_personal_schedules
     SET status = 'postponed' WHERE car_id = ? AND status = 'pending'");
 
-$checked = 0; $unavailable = 0;
+$checked = 0; $unavailable = 0; $budgetHit = false;
 foreach ($cars as $car) {
+    // Stop once the time budget is spent — leaves the rest for the next run,
+    // keeping each run inside the 10-min cron window regardless of catalog size.
+    if (microtime(true) - $startTs >= $timeBudget) {
+        $budgetHit = true;
+        break;
+    }
     $adapter = AdapterFactory::create($car['source']);
     if (!$adapter) {
         echo "  Skip #{$car['id']}: no adapter for {$car['source']}\n";
@@ -103,9 +133,10 @@ foreach ($cars as $car) {
             }
         }
         $checked++;
-        // 1.5s between requests — slow, human-like pacing so Encar never sees a
-        // burst. 150 cars/run => ~4 min, well within an hourly schedule.
-        usleep(1500000);
+        // 0.4s between requests — proven safe (probe hit Encar down to 0.2s with
+        // zero throttling), with margin for a sustained hourly run. 2000 cars/run
+        // => ~13 min, well within the hourly schedule; ~17k rotates in ~8h.
+        usleep(400000);
     } catch (Throwable $e) {
         echo "  Error #{$car['id']}: " . $e->getMessage() . "\n";
     }
@@ -125,4 +156,6 @@ if ($reconciled > 0) {
 }
 // Deletion of on_order + n_a=1 cars is handled by the dedicated cleanup cron.
 
-echo "[" . date('Y-m-d H:i:s') . "] Checked: {$checked}, marked unavailable: {$unavailable}\n";
+$elapsed = round(microtime(true) - $startTs);
+echo "[" . date('Y-m-d H:i:s') . "] Checked: {$checked}, marked unavailable: {$unavailable}"
+    . ", elapsed: {$elapsed}s" . ($budgetHit ? " (time budget hit — more cars pending)" : "") . "\n";

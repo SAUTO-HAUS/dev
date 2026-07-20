@@ -103,7 +103,8 @@ $url_arr = [
     'telegram_adv',
     'vin-redirect',
     'vin-check',
-    'calculator'
+    'calculator',
+    'favorites'
 ];
 $sub_urls = [
     '',
@@ -160,6 +161,13 @@ if (file_exists($envFile)) {
     }
     if (preg_match('/OPENAI_API_KEY=(.+)/', $envContent, $matches)) {
         define('OPENAI_API_KEY', trim($matches[1]));
+    }
+
+    if (preg_match('/OPENLANE_USER=(.+)/', $envContent, $matches)) {
+        define('OPENLANE_USER', trim($matches[1]));
+    }
+    if (preg_match('/OPENLANE_PASS=(.+)/', $envContent, $matches)) {
+        define('OPENLANE_PASS', trim($matches[1]));
     }
 }
 

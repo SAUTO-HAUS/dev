@@ -253,13 +253,13 @@ function generateSimilarCarsHTML($cars, $currentSection, $db, $prefx, $lng, $img
 
         $html .= '
         <a class="it car" href="/'.$_COOKIE['lang'].'/'.$page_type.'/'.$car['id'].'">
-            '.car_share_btn($car['id'], $page_type, $lng).'
             <div class="name">'.$car['br_nm'].' '.$car['mo_nm'].'</div>
             <div class="compact-info">
                 <div class="line1">'.$year.' | '.$fuel.' | '.$volume.'</div>
                 <div class="line2">'.$transmission.' | '.$mileage.'</div>
             </div>
             <div class="card-img-wrap">
+                '.car_share_btn($car['id'], $page_type, $lng).'
                 '.car_fav_btn($car['id'], $lng).'
                 '.$image_html.'
             </div>

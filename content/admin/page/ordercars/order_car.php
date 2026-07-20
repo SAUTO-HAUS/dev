@@ -48,7 +48,7 @@ function resolve_parsing_vin(array $pcar): string {
     }
     // No real VIN found → use the 17-zero placeholder for any parsing source
     // (Encar, OpenLane, eCarsTrade). Only kicks in when there's truly no VIN.
-    if (empty($vin) && in_array($pcar['source'] ?? '', ['encar', 'openlane', 'ecarstrade'], true)) {
+    if (empty($vin) && in_array($pcar['source'] ?? '', ['encar', 'openlane', 'ecarstrade', 'auto1'], true)) {
         $vin = '00000000000000000';
     }
     return $vin;
@@ -99,6 +99,7 @@ if ($new && !empty($parsing_id_url)) {
                 'encar' => 41,   // KR
                 'openlane' => 11, // DE (fallback)
                 'ecarstrade' => 2, // BE (fallback)
+                'auto1' => 11,   // EU (fallback; real country resolved below)
             ];
             // Map common Korean colour names (Encar) -> sauto codes.
             $colorMap = [
@@ -127,7 +128,35 @@ if ($new && !empty($parsing_id_url)) {
                 'blue' => 'blu', 'brown' => 'brn',
             ];
 
-            $brandKey = strtolower(str_replace([' ', '-'], '_', (string)($pcar['brand'] ?? '')));
+            // Brand/model for the form MUST be the canonical car_list entry, never
+            // the source's raw text: the hidden parsing_brand_nm/parsing_model_nm
+            // fields below are what the server CREATES a missing make/model from,
+            // so handing it Auto1's German "5er" would add a bogus model next to
+            // the real "5 Series". Prefer sauto_br/sauto_mo (resolved at import),
+            // then resolve on the fly, and only then fall back to the raw name.
+            $brandKey    = strtolower(str_replace([' ', '-'], '_', (string)($pcar['brand'] ?? '')));
+            $modelKey    = '';
+            $canonBrandNm = (string)($pcar['brand'] ?? '');
+            $canonModelNm = (string)($pcar['model'] ?? '');
+            try {
+                $canonBr = (string)($pcar['sauto_br'] ?? '');
+                $canonMo = (string)($pcar['sauto_mo'] ?? '');
+                if ($canonBr === '' || $canonMo === '') {
+                    $pub = new \App\Services\Parsing\ParsingPublisher();
+                    $c = $pub->resolveCanonicalNames($canonBrandNm, $canonModelNm, false);
+                    if ($c) { $canonBr = (string)$c['br']; $canonMo = (string)$c['mo']; }
+                }
+                if ($canonBr !== '' && $canonMo !== '') {
+                    $cn = $db->prepare('SELECT br_nm, mo_nm FROM '.$prefx.'_car_list WHERE br = ? AND mo = ? LIMIT 1');
+                    $cn->execute([$canonBr, $canonMo]);
+                    if ($cr = $cn->fetch(PDO::FETCH_ASSOC)) {
+                        $brandKey     = $canonBr;
+                        $modelKey     = $canonMo;
+                        $canonBrandNm = (string)($cr['br_nm'] ?: $canonBrandNm);
+                        $canonModelNm = (string)($cr['mo_nm'] ?: $canonModelNm);
+                    }
+                }
+            } catch (\Throwable $e) { /* keep the raw fallback */ }
             // Group inferred from body type: vans/trucks/pickups -> commercial (com), rest -> personal (car).
             $bodyLower = strtolower((string)($pcar['body_type'] ?? ''));
             $commercialBodies = ['van','truck','pickup','minivan','microbus'];
@@ -139,7 +168,7 @@ if ($new && !empty($parsing_id_url)) {
             // (road delivery). Falls back to the source price if not computable.
             $parsing_prc = $pcar['price_final_eur'] ? (int)round($pcar['price_final_eur']) : '';
             $pcarSrc = $pcar['source'] ?? '';
-            if (in_array($pcarSrc, ['encar', 'openlane', 'ecarstrade'], true)) {
+            if (in_array($pcarSrc, ['encar', 'openlane', 'ecarstrade', 'auto1'], true)) {
                 include_once _ADM_PAGE.'/parsing/parsing_pricing.php';
                 $bdCar = [
                     'price_eur' => (float)($pcar['price_eur'] ?? 0),
@@ -164,6 +193,29 @@ if ($new && !empty($parsing_id_url)) {
             // guessed id map) so it can't point at the wrong country. Other
             // sources keep the per-source fallback.
             $importCountryId = $countryMap[$pcar['source']] ?? 39;
+            // Auto1: the car's real country is in sourceCountry/countryCode (IT, BE,
+            // DE...). Resolve it against the countries table like OpenLane below.
+            if (($pcar['source'] ?? '') === 'auto1') {
+                $rawData = !empty($pcar['raw_data']) ? (json_decode($pcar['raw_data'], true) ?: []) : [];
+                $a1 = $rawData['raw_data'] ?? $rawData;
+                $cc = strtolower(trim((string)(
+                    $a1['sourceCountry'] ?? $a1['countryCode'] ?? $a1['owningCountry']
+                    ?? ($a1['details']['sourceCountryCode'] ?? '')
+                )));
+                try {
+                    $matched = false;
+                    if ($cc !== '') {
+                        $cstmt = $db->prepare('SELECT id FROM countries WHERE LOWER(code) = ? LIMIT 1');
+                        $cstmt->execute([$cc]);
+                        $cid = $cstmt->fetchColumn();
+                        if ($cid !== false) { $importCountryId = (int)$cid; $matched = true; }
+                    }
+                    if (!$matched) {
+                        $eu = $db->query("SELECT id FROM countries WHERE code = 'EU' LIMIT 1")->fetchColumn();
+                        if ($eu !== false) $importCountryId = (int)$eu;
+                    }
+                } catch (\Throwable $e) { /* keep fallback */ }
+            }
             if (($pcar['source'] ?? '') === 'openlane') {
                 $rawData = !empty($pcar['raw_data']) ? (json_decode($pcar['raw_data'], true) ?: []) : [];
                 // The OpenLane listing item (with CarCountryExtended) may sit at the
@@ -199,9 +251,9 @@ if ($new && !empty($parsing_id_url)) {
                 'parsing_id'        => $pid,
                 'gr'                => $groupCode,
                 'br'                => $brandKey,
-                'br_nm'             => $pcar['brand'] ?? '',
-                'mo'                => '',
-                'mo_nm'             => $pcar['model'] ?? '',
+                'br_nm'             => $canonBrandNm,
+                'mo'                => $modelKey,
+                'mo_nm'             => $canonModelNm,
                 'yr'                => $pcar['year'] ?? '',
                 'mlg'               => $pcar['km'] ?? '',
                 'vol'               => $pcar['engine_volume'] ?? '',
@@ -3310,7 +3362,7 @@ function generateWithGemini() {
                 // eCarsTrade/OpenLane: cap at 10 photos for sauto (their galleries
                 // are large and we don't need them all); Encar keeps up to 20.
                 const _src = (data.source || data.parsing_source || '');
-                const _maxImgs = (_src === 'ecarstrade' || _src === 'openlane') ? 10 : 20;
+                const _maxImgs = (_src === 'ecarstrade' || _src === 'openlane' || _src === 'auto1') ? 10 : 20;
                 const list = urls.slice(0, _maxImgs);
                 const results = new Array(list.length).fill(null);
 
@@ -3430,7 +3482,7 @@ function generateWithGemini() {
         try {
             const imgs = typeof data.images_local === 'string' ? JSON.parse(data.images_local) : data.images_local;
             const _src = (data.source || data.parsing_source || '');
-            const _maxImgs = (_src === 'ecarstrade' || _src === 'openlane') ? 10 : 20;
+            const _maxImgs = (_src === 'ecarstrade' || _src === 'openlane' || _src === 'auto1') ? 10 : 20;
             expectedImages = Math.min((Array.isArray(imgs) ? imgs.length : 0), _maxImgs);
         } catch (e) { expectedImages = 0; }
 

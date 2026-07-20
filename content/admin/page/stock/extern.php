@@ -8,19 +8,17 @@ echo '<div class="page_title">' . $stock_lang['stock_extern'] . '</div>';
 
 // Get brand distribution data with active/inactive breakdown for on_order cars
 try {
-    $sql = "SELECT 
+    // `vis = 1` keeps this in sync with the public /ordercars catalog, which also
+    // requires it — without it the totals counted ads that are hidden on the site.
+    // Columns are kept minimal: this catalog holds ~17k imported cars, so anything
+    // selected here is multiplied by that count.
+    $sql = "SELECT
         br_nm,
         mo_nm,
         id,
-        yr,
-        inf,
-        loc,
-        vis,
-        vol,
-        mlg,
         offer_timer_end
-    FROM {$prefx}_car_ctlg 
-    WHERE act = 1 AND n_a = 0 AND loc IN ('1', '2') AND catalog_type = 'on_order'
+    FROM {$prefx}_car_ctlg
+    WHERE act = 1 AND n_a = 0 AND vis = 1 AND loc IN ('1', '2') AND catalog_type = 'on_order'
     ORDER BY br_nm ASC, mo_nm ASC, yr DESC, id DESC";
     
     $stmt = $db->prepare($sql);
@@ -64,7 +62,6 @@ try {
         if (!isset($brands[$brand]['models'][$model])) {
             $brands[$brand]['models'][$model] = [
                 'mo_nm' => $model,
-                'cars' => [],
                 'cnt_main_active' => 0,
                 'cnt_main_inactive' => 0,
                 'cnt_branch_active' => 0,
@@ -72,9 +69,6 @@ try {
                 'cnt_total' => 0
             ];
         }
-        
-        // Add car to model
-        $brands[$brand]['models'][$model]['cars'][] = $car;
         
         // Add to all cars list
         $cars_all[] = $car['id'];
@@ -170,25 +164,11 @@ try {
                     <td>
                         <?= $model['cnt_total'] ?>
                         <div class="model-links">
-                            <a href="/adminsauto/ordercars/ctlg?br_search=<?= urlencode($brandName) ?>&mo_search=<?= urlencode($model['mo_nm']) ?>" 
+                            <?php // Individual car links are deliberately not rendered here: this
+                                  // catalog holds ~17k imported cars and one <a> per car produced a
+                                  // multi-MB page. The catalog link below lists them, paginated. ?>
+                            <a href="/adminsauto/ordercars/ctlg?br_search=<?= urlencode($brandName) ?>&mo_search=<?= urlencode($model['mo_nm']) ?>"
                                class="show-all-link"><?= $stock_lang['show_all_ads'] ?></a>
-                            <?php
-                            // Use cars already loaded in model data
-                            foreach ($model['cars'] as $car):
-                                $carTitle = $car['yr'] . ' ' . $brandName . ' ' . $model['mo_nm'];
-                                if (!empty($car['inf'])) {
-                                    $carTitle .= ' - ' . substr(strip_tags($car['inf']), 0, 30) . '...';
-                                }
-                                
-                                // Format engine and mileage
-                                $engine = !empty($car['vol']) ? $car['vol'] : 'N/A';
-                                $mileage = !empty($car['mlg']) ? number_format($car['mlg']) . ' km' : 'N/A';
-                            ?>
-                                <a href="/adminsauto/ordercars/detail?id=<?= $car['id'] ?>" 
-                                   class="car-link" title="<?= htmlspecialchars($carTitle, ENT_QUOTES, 'UTF-8') ?>">
-                                   ID <?= $car['id'] ?> - <?= $car['yr'] ?> - <?= $engine ?> - <?= $mileage ?>
-                                </a>
-                            <?php endforeach; ?>
                         </div>
                     </td>
                 </tr>
@@ -436,12 +416,19 @@ try {
 </style>
 
 <script>
-// Car data for displaying lists
+<?php
+// Only the first slice of each category is sent to the browser. The full lists run
+// to ~17k ids here, which bloated the page and froze it while building the links.
+$preview_cap = 200;
+$car_totals  = ['all' => count($cars_all), 'active' => count($cars_active), 'inactive' => count($cars_inactive)];
+?>
+// Car data for displaying lists (capped — see $preview_cap)
 const carData = {
-    all: <?= json_encode($cars_all) ?>,
-    active: <?= json_encode($cars_active) ?>,
-    inactive: <?= json_encode($cars_inactive) ?>
+    all: <?= json_encode(array_slice($cars_all, 0, $preview_cap)) ?>,
+    active: <?= json_encode(array_slice($cars_active, 0, $preview_cap)) ?>,
+    inactive: <?= json_encode(array_slice($cars_inactive, 0, $preview_cap)) ?>
 };
+const carTotals = <?= json_encode($car_totals) ?>;
 
 const lang = '<?= $_COOKIE['lang'] ?? 'ro' ?>';
 const baseUrl = 'https://www.sauto.md';
@@ -469,10 +456,18 @@ document.addEventListener('DOMContentLoaded', function() {
                 title = lang === 'ro' ? 'Timer expirat' : (lang === 'ru' ? 'Таймер истёк' : 'Timer expired');
             }
             
-            carListTitle.textContent = title + ' (' + cars.length + ')';
-            
+            const total = carTotals[category];
+            carListTitle.textContent = title + ' (' + total + ')';
+
             // Generate car links
-            let html = '<div style="display: flex; flex-direction: column; gap: 8px;">';
+            let html = '';
+            if (total > cars.length) {
+                html += '<div style="padding: 8px 10px; margin-bottom: 10px; background: #fff3cd; '
+                      + 'border: 1px solid #ffeaa7; border-radius: 4px; font-size: 13px;">'
+                      + 'Se afișează primele ' + cars.length + ' din ' + total
+                      + '. Pentru lista completă folosiți catalogul.</div>';
+            }
+            html += '<div style="display: flex; flex-direction: column; gap: 8px;">';
             cars.forEach(function(carId) {
                 const url = baseUrl + '/' + lang + '/ordercars/' + carId;
                 html += '<a href="' + url + '" target="_blank" style="color: #dc3545; text-decoration: none; padding: 8px; background: white; border-radius: 4px; border: 1px solid #ddd; transition: all 0.2s;">' + url + '</a>';

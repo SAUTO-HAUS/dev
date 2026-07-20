@@ -283,7 +283,7 @@ class ParsingOrchestrator
         // hold only the remote listing thumbnail (search saved {"url":...}) and
         // need the full gallery pulled from detail.
         $stmt = $this->db->prepare('SELECT id, source, source_id FROM '.$this->prefix.'_parsing_cars
-            WHERE source IN ("encar", "openlane", "ecarstrade")
+            WHERE source IN ("encar", "openlane", "ecarstrade", "auto1")
               AND (vin IS NULL OR vin = "" OR gearbox IS NULL OR seats IS NULL OR images_local IS NULL OR images_local = "[]" OR images_local LIKE \'%"url"%\')
             ORDER BY found_at DESC LIMIT ?');
         $stmt->bindValue(1, $limit, \PDO::PARAM_INT);
@@ -765,8 +765,17 @@ class ParsingOrchestrator
         $model = trim((string)($filter['model'] ?? ''));
         if ($brand === '') return ['', ''];
 
+        if ($source === 'auto1') {
+            // Auto1 filters store the brand as a NUMERIC make code ("860"), but the
+            // imported cars hold the manufacturer NAME ("Toyota"). Translate the code
+            // to the name via the Auto1 taxonomy so orphan adoption can match cars —
+            // otherwise auto1 cars never get a filter_id and never auto-publish.
+            $name = $this->auto1BrandName($brand);
+            return [$name !== '' ? $name : $brand, $model];
+        }
+
         if ($source !== 'encar') {
-            // Non-Encar sources already store display-ish names; use as-is.
+            // Other non-Encar sources already store display-ish names; use as-is.
             return [$brand, $model];
         }
 
@@ -788,6 +797,20 @@ class ParsingOrchestrator
             if ($minfo && !empty($minfo['eng_name'])) $engModel = $minfo['eng_name'];
         }
         return [$engBrand, $engModel];
+    }
+
+    // Auto1 make code ("860") → manufacturer name ("Toyota"), from auto1_taxonomy.json.
+    // Cars store the name, filters store the code, so adoption must bridge the two.
+    private static $auto1MakesCache = null;
+    private function auto1BrandName(string $code): string
+    {
+        if (self::$auto1MakesCache === null) {
+            $file = __DIR__ . '/Adapters/auto1_taxonomy.json';
+            $json = is_file($file) ? json_decode((string)@file_get_contents($file), true) : null;
+            self::$auto1MakesCache = (is_array($json) && !empty($json['makes'])) ? $json['makes'] : [];
+        }
+        $entry = self::$auto1MakesCache[$code] ?? null;
+        return $entry ? trim((string)($entry['name'] ?? '')) : '';
     }
 
     private static $encarTaxCache = null;
@@ -827,6 +850,7 @@ class ParsingOrchestrator
             'brand'          => $filter['brand'] ?? null,
             'model'          => $filter['model'] ?? null,
             'generation'     => $extra['generation'] ?? null,
+            'engine'         => $extra['engine'] ?? null,
             'year_from'      => $filter['year_from'] ?? null,
             'year_to'        => $filter['year_to'] ?? null,
             'km_min'         => $extra['km_min'] ?? null,
@@ -843,6 +867,9 @@ class ParsingOrchestrator
             'country_origin' => $extra['country_origin'] ?? null,
             'car_sub_model'  => $extra['car_sub_model'] ?? null,
             'premium_offer'  => $extra['premium_offer'] ?? null,
+            // Encar colour facets (body + interior).
+            'color'          => $extra['color'] ?? null,
+            'interior_color' => $extra['interior_color'] ?? null,
             'criteria_extra' => $extra,
         ];
     }

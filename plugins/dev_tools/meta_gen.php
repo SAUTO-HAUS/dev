@@ -603,7 +603,20 @@ if ( in_array($z2, ['cars', 'ordercars', 'tyres'], true) && is_numeric($z3) && !
             $desc_parts[] = $lng['t']['seo']['car_inf_dsc'];
 
             $sa['meta']['dsc'] = ($seo_ir == 1 && $seo_r['dsc'] != '') ? $seo_r['dsc'] : implode(' ', $desc_parts);
-            $sa['meta']['kwd'] = ($seo_ir == 1 && $seo_r['kwd'] != '') ? $seo_r['kwd'] : mb_strtolower($lng['w']['moldova'].','.$lng['w']['sale'].','.$lng['w']['auto'].','.$lng['w']['buy'].','.$sa['it']['r']['br'].','.$sa['it']['r']['mo'].','.$lng['l'][$zl]['bt'][$sa['it']['r']['bt']].','.$lng['l'][$zl]['tra'][$sa['it']['r']['tra']].','.$lng['l'][$zl]['fl'][$sa['it']['r']['fl']].','.$lng['l'][$zl]['clr'][$sa['it']['r']['clr']].',id'.$sa['it']['r']['id'], "UTF-8");
+            // Spec keywords (body/gearbox/fuel/colour) are added only when the car
+            // carries that field AND it has a label. A car can be missing one (e.g.
+            // an imported car whose source fuel has no sauto match), which used to
+            // emit "Undefined index:" and leave an empty ",," in the list.
+            $kwd_parts = [$lng['w']['moldova'], $lng['w']['sale'], $lng['w']['auto'], $lng['w']['buy'],
+                          $sa['it']['r']['br'], $sa['it']['r']['mo']];
+            foreach (['bt', 'tra', 'fl', 'clr'] as $spec_k) {
+                $spec_v = $sa['it']['r'][$spec_k] ?? '';
+                if ($spec_v !== '' && isset($lng['l'][$zl][$spec_k][$spec_v])) {
+                    $kwd_parts[] = $lng['l'][$zl][$spec_k][$spec_v];
+                }
+            }
+            $kwd_parts[] = 'id'.$sa['it']['r']['id'];
+            $sa['meta']['kwd'] = ($seo_ir == 1 && $seo_r['kwd'] != '') ? $seo_r['kwd'] : mb_strtolower(implode(',', $kwd_parts), "UTF-8");
         }
         elseif ($z2 == 'ordercars'){
             // Order car title: "[Prefix] Brand Model Year, attrs — Price€"
@@ -630,7 +643,20 @@ if ( in_array($z2, ['cars', 'ordercars', 'tyres'], true) && is_numeric($z3) && !
             $desc_parts[] = $lng['t']['seo']['order_car_dsc_end'];
 
             $sa['meta']['dsc'] = ($seo_ir == 1 && $seo_r['dsc'] != '') ? $seo_r['dsc'] : implode(' ', $desc_parts);
-            $sa['meta']['kwd'] = ($seo_ir == 1 && $seo_r['kwd'] != '') ? $seo_r['kwd'] : mb_strtolower($lng['w']['moldova'].','.$lng['w']['sale'].','.$lng['w']['auto'].','.$lng['w']['buy'].','.$sa['it']['r']['br'].','.$sa['it']['r']['mo'].','.$lng['l'][$zl]['bt'][$sa['it']['r']['bt']].','.$lng['l'][$zl]['tra'][$sa['it']['r']['tra']].','.$lng['l'][$zl]['fl'][$sa['it']['r']['fl']].','.$lng['l'][$zl]['clr'][$sa['it']['r']['clr']].',id'.$sa['it']['r']['id'], "UTF-8");
+            // Spec keywords (body/gearbox/fuel/colour) are added only when the car
+            // carries that field AND it has a label. A car can be missing one (e.g.
+            // an imported car whose source fuel has no sauto match), which used to
+            // emit "Undefined index:" and leave an empty ",," in the list.
+            $kwd_parts = [$lng['w']['moldova'], $lng['w']['sale'], $lng['w']['auto'], $lng['w']['buy'],
+                          $sa['it']['r']['br'], $sa['it']['r']['mo']];
+            foreach (['bt', 'tra', 'fl', 'clr'] as $spec_k) {
+                $spec_v = $sa['it']['r'][$spec_k] ?? '';
+                if ($spec_v !== '' && isset($lng['l'][$zl][$spec_k][$spec_v])) {
+                    $kwd_parts[] = $lng['l'][$zl][$spec_k][$spec_v];
+                }
+            }
+            $kwd_parts[] = 'id'.$sa['it']['r']['id'];
+            $sa['meta']['kwd'] = ($seo_ir == 1 && $seo_r['kwd'] != '') ? $seo_r['kwd'] : mb_strtolower(implode(',', $kwd_parts), "UTF-8");
         }
         elseif ($z2 == 'tyres'){
             // Tyre title: "Brand 205/55 R16 Season — Price€"
