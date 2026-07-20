@@ -956,7 +956,7 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' || $t_mp[2]=='ordercars') ) {
 
         </div>
 
-        <?
+        <?php 
         $ICON_SVG_PARAMS = [
             'year' => '
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -1063,19 +1063,19 @@ SVG
 
         <h2 class="name"> <?=$r['br_nm']?> <?=$r['mo_nm']?> <span class="fl"> <?=$lng['l']['car']['fl'][$r['fl']]?> </span> </h2>
         <div class="block_txt_params">
-            <? if(trim($rseo['params_html']) != '') { ?>
+            <?php  if(trim($rseo['params_html']) != '') { ?>
 
-                <?
+                <?php 
                 foreach ($ICON_SVG_PARAMS AS $code => $svg ) {
                     $rseo['params_html'] = str_replace('#'.$code, $svg, $rseo['params_html']);
                 }
                 ?>
                 <?=$rseo['params_html']?>
-            <? } else {?>
+            <?php  } else {?>
                 <h2> <?=$lng['w']['not_params_w']?> </h2>
 
                 <div class="lng">
-                    <?
+                    <?php 
                     //var_dump( $language);
 
                     foreach($language as $k => $v){
@@ -1089,7 +1089,7 @@ SVG
 
                     ?>
                 </div>
-            <?} ?>
+            <?php } ?>
         </div>
     </div>
 

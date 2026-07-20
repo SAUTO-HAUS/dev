@@ -351,7 +351,7 @@ class Api999Service
      * @return array
      * @throws \Exception
      */
-    private function sendRequest($url, string $method = 'GET', array $data = null)
+    private function sendRequest($url, string $method = 'GET', ?array $data = null)
     {
         try {
             $jsonData = null;
@@ -425,7 +425,7 @@ class Api999Service
         }
     }
 
-    protected function sendCachedRequest(string $url, string $method = 'GET', array $data = null, int $duration = 3600)
+    protected function sendCachedRequest(string $url, string $method = 'GET', ?array $data = null, int $duration = 3600)
     {
         $cacheKey = md5($this->api_key . $method . $url . json_encode($data));
 
@@ -456,7 +456,7 @@ class Api999Service
      * @param array|null $data     — Данные запроса (если есть)
      * @return void
      */
-    public function clearCache(string $url = null, string $method = 'GET', array $data = null): void
+    public function clearCache(?string $url = null, string $method = 'GET', ?array $data = null): void
     {
         $cacheDir = $_SERVER['DOCUMENT_ROOT'] . '/cache';
 

@@ -607,7 +607,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                     <?= car_fav_btn($r['id'], $lng) ?>
                     <div class="f-carousel" id="heroCarousel">
 
-                        <?
+                        <?php 
                         if(empty($img) || empty($img['main']) ) {
                             ?>
                             <div class="f-carousel__slide">
@@ -617,7 +617,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                     <img src="/media/images/placeholder_car.png" loading="lazy" class="lazy" alt="<?=$img_cnt?>">
                                 </a>
                             </div>
-                            <?
+                            <?php 
                         }
 
                         if(!empty($img) ) {
@@ -636,7 +636,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                          <img src="<?=$z_src?>" loading="lazy" class="lazy" alt="<?=$img_cnt?>">
                                     </a>
                                 </div>
-                                <?
+                                <?php 
                             }
                         } ?>
 
@@ -904,7 +904,7 @@ $iconTelegramParams = array(
                 ?>
 
 
-                <?
+                <?php 
                 if ( $r['prc_n']!=0 && $r['prc_n']<$r['prc'] ){
                     $prc = $r['prc_n'];
                     $o_prc = $r['prc'];

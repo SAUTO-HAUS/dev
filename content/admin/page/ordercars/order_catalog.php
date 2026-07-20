@@ -227,10 +227,10 @@ $last_car_id = 0;
                 <?php endif; ?>
             </div>
 
-            <? if($r['telegram_published'] >= 1 || $r['facebook_published'] >= 1) {?>
+            <?php  if($r['telegram_published'] >= 1 || $r['facebook_published'] >= 1) {?>
                 <div class="icon_list_cattg">
 
-                    <? if($r['telegram_published'] >= 1) {?>
+                    <?php  if($r['telegram_published'] >= 1) {?>
                         <div class="icon_tg" title="<?= $r['telegram_published'] == 1 ? 'Опубликовано в Telegram' : 'Запланировано в Telegram' ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512">
                                 <!-- Круг - синий если опубликовано, серый если запланировано -->
@@ -245,9 +245,9 @@ $last_car_id = 0;
                                     a10.452,10.452,0,0,1,3.53,6.716A43.765,43.765,0,0,1,362.952,176.66Z"/>
                             </svg>
                         </div>
-                    <?} ?>
+                    <?php } ?>
 
-                    <? if($r['facebook_published'] >= 1) {?>
+                    <?php  if($r['facebook_published'] >= 1) {?>
                         <div class="icon_tg" title="<?= $r['facebook_published'] == 1 ? 'Опубликовано в Facebook' : 'Запланировано в Facebook' ?>">
                             <svg style="top: 7px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                                 <!-- Круг - синий если опубликовано, серый если запланировано -->
@@ -259,10 +259,10 @@ $last_car_id = 0;
                                 c118.1-19.2 209-121.5 209-245z"/>
                             </svg>
                         </div>
-                    <?} ?>
+                    <?php } ?>
 
                 </div>
-            <?} ?>
+            <?php } ?>
 
 
             <div class="icon comment <?= $z_msg ?>" title="<?= $lng['w']['comment'] ?>"></div>

@@ -970,7 +970,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
 
 
 
-                <? // webs25 ?>
+                <?php  // webs25 ?>
                 <div class="txt">
                     <div class="button"> Характеристики 
                         <button type="button" id="gemini-generate-btn" onclick="generateWithGemini(); event.stopPropagation();" data-text="<?= $adm_lang['ai_generate'] ?>" data-loading="<?= $adm_lang['ai_generating'] ?>" data-success="<?= $adm_lang['ai_success'] ?>" style="background: #4285f4; color: #fff; border: none; padding: 8px 14px; border-radius: 4px; cursor: pointer; font-size: 13px; margin-left: 15px;">
@@ -979,7 +979,7 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                     </div>
                     <div class="content">
 
-                        <?
+                        <?php 
                         $ICON_SVG_PARAMS = [
                             /* Year of manufacture (calendar) */
                             'year' => '
@@ -1277,7 +1277,7 @@ SVG
     flex-wrap: wrap;
     align-content: center;
     align-items: center;">
-                            <?
+                            <?php 
                             foreach ($ICON_SVG_PARAMS AS $code => $svg ) {
 
                                 ?>
@@ -1289,14 +1289,14 @@ SVG
                                         <b>#<?=$code?></b>
                                     </div>
                                 </div>
-                                <?
+                                <?php 
 
                             }
                             ?>
                         </div>
                         <?php foreach($lang_arr as $v) : ?>
 
-                            <?
+                            <?php 
 
                             $html = '';
                             if(@$car) {
@@ -1380,7 +1380,7 @@ SVG
         <div class="btns_fb_tg">
 
             <a class="fb-share adm_tg_btn"
-                <?/* href="https://www.facebook.com/sharer/sharer.php?u=<?= $site_url . '/ro/cars/' . $car['id'] ?>"
+                <?php /* href="https://www.facebook.com/sharer/sharer.php?u=<?= $site_url . '/ro/cars/' . $car['id'] ?>"
                 target="_blank" rel="noopener noreferrer" */?>
             >
                 <div style="display: flex; align-items: center; justify-content: center; gap: 15px;" onclick=" sendToFacebookCars() ">
@@ -1457,7 +1457,7 @@ SVG
                     <?php endif; ?>
                 </div>
 
-                    <?/*
+                    <?php /*
                             <svg aria-hidden="true" width="16" height="16"><!-- иконка FB --></svg>
                             Опубликовать в facebook
 
