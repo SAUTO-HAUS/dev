@@ -326,7 +326,7 @@ if ( in_array($_cur_page, $_show_links_pages) && ($_cur_page != 'services' || $_
     ];
 ?>
 <div id="home_banner">
-    <img src="/media/images/site/banner-home.jpg" alt="">
+    <img src="/media/images/site/banner-home.jpg" alt="" fetchpriority="high" decoding="async" width="2136" height="1280">
     <div class="hb_overlay">
         <div class="hb_title"><?php echo $_hb['import']; ?></div>
         <div class="hb_regions">
@@ -936,14 +936,17 @@ if(isset($t_mp[2]) && ($t_mp[2]=='cars' || $t_mp[2]=='ordercars') ) {
             }
         }
     </script>
+    <?php
+
+    if (isset($r) && is_array($r)) { ?>
     <div class="block_txt_params_pop">
         <?php
         // webs25
         $pdo = $db->prepare('SELECT * FROM ' . $prefx . '_seo2 WHERE `it_id`=:it_id AND lng = :lng LIMIT 1');
         $pdo->execute(['it_id' => $r['id'], 'lng' => $_COOKIE['lang'] ]);
         $rseo = $pdo->fetch();
-        // var_dump( $rseo);
-        $rseo['params_html'] = (html_entity_decode($rseo['params_html']));
+        if (!is_array($rseo)) { $rseo = ['params_html' => '']; }
+        $rseo['params_html'] = html_entity_decode($rseo['params_html'] ?? '');
         ?>
         <div class="param_pop_header">
             <div class="blk_pop_logo">
@@ -1082,7 +1085,7 @@ SVG
                         $pdo = $db->prepare('SELECT * FROM ' . $prefx . '_seo2 WHERE `it_id`=:it_id AND lng = :lng LIMIT 1');
                         $pdo->execute(['it_id' => $r['id'], 'lng' => $k ]);
                         $rseo = $pdo->fetch();
-                        if(trim($rseo['params_html']) != '') {
+                        if(is_array($rseo) && trim($rseo['params_html'] ?? '') != '') {
                             echo '<a href="/'.$k.$lang_mp.'" class="'.$k.' btn '.($t_mp[1]==$k?'act':'').'" title="'.$v.'">'.strtoupper($k).'</a>';
                         }
                     }
@@ -1092,6 +1095,7 @@ SVG
             <?php } ?>
         </div>
     </div>
+    <?php }  ?>
 
 
 
@@ -1138,7 +1142,6 @@ SVG
                 });
             });
 
-
             function createInfoBar(fb){
                 const bar = document.createElement('div');
                 bar.className = 'fbx-info';
@@ -1149,7 +1152,7 @@ SVG
                 </div>
 
                             <div class="call-block">
-                                <a href="tel:<?=$dynamicPhone?>" class="call-link">
+                                <a href="tel:<?= $dynamicPhone ?? '' ?>" class="call-link">
                                   <svg xmlns="http://www.w3.org/2000/svg"
                                        viewBox="0 0 24 24"
                                        width="28" height="28"

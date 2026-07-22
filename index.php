@@ -1,4 +1,7 @@
 <?php
+
+ob_start();
+
 include_once('environment.php');
 
 if ( ( session_id()=='' || !isset($_SESSION) ) ){ session_start(); }

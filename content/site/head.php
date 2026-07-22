@@ -9,12 +9,15 @@ use App\Helper\PhoneHelper;?>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
 <script data-cfasync="false" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<?php
+if (isset($t_mp[2]) && $t_mp[2] === 'rent') { ?>
 <script data-cfasync="false" src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js" defer></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js" defer></script>
 <link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css" media="print" onload="this.media='all'">
 <noscript><link rel="stylesheet" href="//code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css"></noscript>
+<?php } ?>
 
 <script src="/<?php e(_DEFAULT)?>/js/js.cookie.min.js" defer></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jqueryui-touch-punch/0.2.3/jquery.ui.touch-punch.min.js" defer></script>
 
 <script src="/<?php e(_DEFAULT)?>/js/sitescripts.js?d=<?php echo date("GYimsd", filemtime(_DEFAULT.'/js/sitescripts.js')); ?>" defer></script>
 <script src="/<?php e(_SITE)?>/js/sitescripts.js?d=<?php echo date("GYimsd", filemtime(_SITE.'/js/sitescripts.js')); ?>" defer></script>
@@ -74,7 +77,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         clickmap:true,
         trackLinks:true,
         accurateTrackBounce:true,
-        webvisor:true
+        webvisor:false
    });
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/100579107" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
