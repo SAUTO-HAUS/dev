@@ -17,6 +17,7 @@ $rbac_permissions = [
         'stock' => ['read' => true],
         'sett' => ['read' => true, 'update' => true],
         'analytics' => ['read' => true],
+        'viz' => ['read' => true],
         'terminal' => ['read' => true],
         'crm' => ['read' => true, 'update' => true, 'delete' => true, 'settings' => true, 'analytics' => true],
         // Management B2B — Super Admin only (spec §3).
@@ -163,6 +164,7 @@ $rbac_admin_menu = [
         // SEO is edited on the car/tyre form. Uncomment to bring the page back.
         // 'seo' => ['ctlg'],
         'brands_seo' => ['ctlg'],
+        'viz' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'stock' => ['ctlg', 'extern'],
         'sett' => ['info', 'adm_usr', 'roles', 'phone_config', 'publication_settings', 'monitoring', 'ai_prompt', '404_stats', 'changelog', 'analytics', 'terminal']
@@ -202,6 +204,7 @@ $rbac_internal_actions = [
         'tyres' => ['add', 'create', 'detail', 'ctlg'],
         'seo' => ['add', 'create', 'detail', 'ctlg'],
         'brands_seo' => ['ctlg'],
+        'viz' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'docs' => ['add', 'create', 'detail', 'ctlg'],
         'stock' => ['ctlg'],

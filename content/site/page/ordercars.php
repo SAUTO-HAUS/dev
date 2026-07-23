@@ -417,6 +417,10 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
     // landing page, with the current region marked active.
     $_oc_region = (!isset($_GET['br']) && !isset($_GET['bt']) && !empty($_GET['ic'])) ? strtolower($_GET['ic']) : '';
     if (in_array($_oc_region, ['korea', 'europe', 'usa', 'china'], true)) {
+        // Traffic counter for /adminsauto/viz/ctlg.
+        include_once(_SITE_INCL.'/region_stats.php');
+        region_view_log($_oc_region);
+
         include_once(_SITE_PAGE.'/new_pages/order/order_lang.php');
         $_oc_lang = $_COOKIE['lang'] ?? 'ro';
         $order_button_text = $lng_order_page[$_oc_lang]['learn_more'] ?? 'Learn more';

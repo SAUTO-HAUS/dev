@@ -89,7 +89,7 @@ if (!empty($_GET['embed']) && isset($i_counts) && $i_counts == 1) {
 				// Visual grouping only. Low-traffic modules render inside one "rest" box
 				// so the sidebar stays short. $current_menu itself must NOT change: the
 				// access check further down authorises a page via isset($current_menu[...]).
-				$rest_modules = ['tyres', 'brands_seo', 'mail', 'stock'];
+				$rest_modules = ['tyres', 'brands_seo', 'viz', 'mail', 'stock'];
 				$render_menu  = [];
 				$rest_bucket  = [];
 				foreach ($current_menu as $mk => $mv) {
