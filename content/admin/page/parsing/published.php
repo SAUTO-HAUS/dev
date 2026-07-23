@@ -32,6 +32,18 @@ try {
     $pageSize = parsing_page_size();
     $offset   = (parsing_current_page() - 1) * $pageSize;
 
+    // Price sorting. cc.prc is the MD landed price written by ParsingPublisher when
+    // the car went live on sauto, so it is the same number the public page shows.
+    // Cars without a linked ad (or with prc 0) sink to the bottom either way.
+    // Whitelisted map, never interpolated from the request.
+    $sortKeys = [
+        ''        => 'pc.published_at DESC',
+        'md_asc'  => 'CASE WHEN COALESCE(cc.prc, 0) > 0 THEN 0 ELSE 1 END, cc.prc ASC,  pc.published_at DESC',
+        'md_desc' => 'CASE WHEN COALESCE(cc.prc, 0) > 0 THEN 0 ELSE 1 END, cc.prc DESC, pc.published_at DESC',
+    ];
+    $sortKey = isset($_GET['f_sort']) ? (string)$_GET['f_sort'] : '';
+    $orderBy = $sortKeys[$sortKey] ?? $sortKeys[''];
+
     // Join car_ctlg to know if the sauto ad is hidden (vis = 0). Hidden ones
     // are pushed to the end and shown dimmed/red in the list. brand/model come from
     // car_list (single canonical sauto list) via sauto_br/mo, falling back to the
@@ -50,7 +62,7 @@ try {
         LEFT JOIN '.$prefx.'_car_list clc ON clc.br = cc.br AND clc.mo = cc.mo
         LEFT JOIN '.$prefx.'_car_list cl ON cl.br = pc.sauto_br AND cl.mo = pc.sauto_mo
         WHERE '.$where.'
-        ORDER BY pc.published_at DESC
+        ORDER BY '.$orderBy.'
         LIMIT '.$pageSize.' OFFSET '.$offset);
     $stmt->execute($flt['params']);
     $cars = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -184,6 +196,7 @@ $gearLabels = [
 // actually published to sauto (published, or unavailable-but-still-linked) —
 // same condition as the list $where above.
 $pf_extra_where = 'pc.status = "published" OR (pc.status = "unavailable" AND pc.car_ctlg_id IS NOT NULL AND pc.car_ctlg_id > 0)';
+$pf_sort = true;
 ob_start();
 include _ADM_PAGE.'/parsing/parsing_filter_bar.php';
 $rtrn .= ob_get_clean();

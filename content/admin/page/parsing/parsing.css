@@ -2746,6 +2746,118 @@
     gap: 10px;
     grid-column: span 2;   /* room for both buttons next to the fields */
 }
+
+#parsing-catalog-filter .pcf-cell-sort {
+    grid-column: -3 / -1;
+    justify-content: flex-end;
+    align-items: flex-end;
+}
+#parsing-catalog-filter .pcf-srt {
+    position: relative;
+    width: max-content;
+    max-width: 100%;
+    outline: none;
+}
+#parsing-catalog-filter .pcf-srt-btn {
+    display: flex;
+    align-items: center;
+    height: 40px;
+    padding: 0 2.2rem 0 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    box-sizing: border-box;
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #333;
+    line-height: 1.4;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: border-color 0.2s;
+}
+#parsing-catalog-filter .pcf-srt-btn:hover {
+    border-color: #bbb;
+}
+#parsing-catalog-filter .pcf-srt-ico {
+    width: 22px;
+    height: 22px;
+    flex: none;
+    margin-right: 8px;
+    filter: brightness(0);
+}
+#parsing-catalog-filter .pcf-srt-txt {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#parsing-catalog-filter .pcf-srt-arr {
+    position: absolute;
+    right: 14px;
+    top: 20px;
+    width: 9px;
+    height: 9px;
+    transform: translateY(-65%) rotate(45deg);
+    border-right: 2px solid #555;
+    border-bottom: 2px solid #555;
+    transition: transform 0.2s;
+}
+#parsing-catalog-filter .pcf-srt.open .pcf-srt-arr {
+    transform: translateY(-30%) rotate(-135deg);
+}
+
+#parsing-catalog-filter .pcf-srt-list {
+    display: none;
+    list-style: none;
+    margin: 4px 0 0;
+    padding: 0.3rem 0;
+    position: absolute;
+    top: 100%;
+    left: auto;
+    right: 0;             
+    min-width: 100%;
+    width: max-content;
+    max-width: 260px;
+    box-sizing: border-box;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    z-index: 20;
+}
+#parsing-catalog-filter .pcf-srt.open .pcf-srt-list {
+    display: block;
+}
+#parsing-catalog-filter .pcf-srt-list > li {
+    padding: 0.5rem 0.9rem;
+    font-size: 0.86rem;
+    font-weight: 600;
+    color: #333;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    transition: background-color 0.15s, color 0.15s;
+}
+#parsing-catalog-filter .pcf-srt-list > li:hover {
+    background-color: #fdecee;
+    color: #e2001a;
+}
+#parsing-catalog-filter .pcf-srt-list > li.active {
+    background-color: #e2001a;
+    color: #fff;
+}
+
+#parsing-catalog-filter .pcf-cell-sort.has_value .pcf-srt-ico {
+    display: none;
+}
+#parsing-catalog-filter .pcf-cell-sort.has_value .pcf-srt-btn {
+    color: #e2001a;
+}
+#parsing-catalog-filter .pcf-cell-sort.has_value .pcf-srt-arr {
+    border-color: #e2001a;
+}
 #parsing-catalog-filter .pcf-actions .pcf-apply,
 #parsing-catalog-filter .pcf-actions .pcf-reset {
     flex: 1;               /* split the cell evenly so neither button is cramped */
@@ -3362,6 +3474,16 @@
 
     #parsing-catalog-filter .pcf-grid > .pcf-actions {
         flex: 0 0 100%;
+    }
+
+    #parsing-catalog-filter .pcf-grid > .pcf-cell-sort {
+        flex: 0 0 100%;
+        align-items: center;
+    }
+    #parsing-catalog-filter .pcf-srt-list {
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
     }
 
     #parsing-container .parsing-header .pub-link-search {

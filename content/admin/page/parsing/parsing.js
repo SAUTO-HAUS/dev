@@ -3215,7 +3215,44 @@
         if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
+    // Sort dropdown. A native <select> paints its popup through the OS, which
+    // cannot be styled; this is the same custom list the site uses. Picking an
+    // option writes the hidden f_sort input and submits, so the other filters
+    // currently in the form are carried along.
+    function initSortDropdown() {
+        document.addEventListener('click', function (e) {
+            const btn = e.target.closest('#parsing-catalog-filter .pcf-srt-btn');
+            const drop = document.querySelector('#parsing-catalog-filter .pcf-srt');
+            if (!drop) return;
+
+            if (btn) {
+                e.stopPropagation();
+                drop.classList.toggle('open');
+                return;
+            }
+
+            const li = e.target.closest('#parsing-catalog-filter .pcf-srt-list > li');
+            if (li) {
+                const input = document.querySelector('#parsing-catalog-filter input[name="f_sort"]');
+                if (input) input.value = li.dataset.val || '';
+                drop.classList.remove('open');
+                const form = document.getElementById('parsing-catalog-filter');
+                if (form) form.submit();
+                return;
+            }
+
+            drop.classList.remove('open');
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key !== 'Escape') return;
+            document.querySelectorAll('#parsing-catalog-filter .pcf-srt.open')
+                    .forEach(d => d.classList.remove('open'));
+        });
+    }
+
     if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSortDropdown);
         document.addEventListener('DOMContentLoaded', initCatalogFilter);
         document.addEventListener('DOMContentLoaded', renderMdPrices);
         document.addEventListener('DOMContentLoaded', renderAuctionCountdowns);
@@ -3224,6 +3261,7 @@
         document.addEventListener('DOMContentLoaded', highlightLinkedCar);
         document.addEventListener('DOMContentLoaded', initParsingMobileSliders);
     } else {
+        initSortDropdown();
         initCatalogFilter();
         renderMdPrices();
         renderAuctionCountdowns();

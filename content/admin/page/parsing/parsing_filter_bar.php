@@ -228,5 +228,36 @@ $cur_brand_models = $cur_brand && isset($pf_models[$cur_brand]) ? $pf_models[$cu
             <button type="submit" class="pcf-apply"><?= $L('filter_apply', 'Aplică') ?></button>
             <a href="?<?= $cur_source !== '' ? 'source='.urlencode($cur_source) : '' ?>" class="pcf-reset"><?= $L('filter_reset', 'Resetează') ?></a>
         </div>
+
+        <?php
+        // Price sorting is opt-in: only /published sets $pf_sort, because it reads
+        // car_ctlg.prc, which exists only for cars already published to sauto.
+        if (!empty($pf_sort)):
+            $cur_sort = isset($_GET['f_sort']) ? (string)$_GET['f_sort'] : '';
+        ?>
+        <?php
+        $sort_opts = [
+            ''        => $t['sort_none'],
+            'md_asc'  => $t['sort_md_asc'],
+            'md_desc' => $t['sort_md_desc'],
+        ];
+        $sort_label = $sort_opts[$cur_sort] ?? $t['sort_none'];
+        ?>
+        <div class="pcf-cell pcf-cell-sort<?= $cur_sort !== '' ? ' has_value' : '' ?>">
+            <input type="hidden" name="f_sort" value="<?= htmlspecialchars($cur_sort, ENT_QUOTES) ?>">
+            <div class="pcf-srt" tabindex="0">
+                <div class="pcf-srt-btn">
+                    <img class="pcf-srt-ico" src="/media/images/site/v2/sort.svg" alt="sort">
+                    <span class="pcf-srt-txt"><?= htmlspecialchars($sort_label) ?></span>
+                    <span class="pcf-srt-arr"></span>
+                </div>
+                <ul class="pcf-srt-list">
+                    <?php foreach ($sort_opts as $sv => $sl): ?>
+                        <li data-val="<?= htmlspecialchars((string)$sv, ENT_QUOTES) ?>"<?= (string)$sv === $cur_sort ? ' class="active"' : '' ?>><?= htmlspecialchars((string)$sl) ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        </div>
+        <?php endif; ?>
     </div>
 </form>
