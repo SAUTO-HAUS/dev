@@ -11,7 +11,7 @@ $formattedPhone = PhoneHelper::formatPhone($generalPhone, 'display');
 // BITRIX disabled: inline/4/nj2ojp, inline/22/wwqx7u, inline/32/wvx2ou
 $current_lang = $_COOKIE['lang'] ?? 'ro';
 ob_start();
-sauto_contact_form(['lang' => $current_lang, 'source' => 'contacts']);
+sauto_contact_form(['lang' => $current_lang, 'title' => $lng['w']['write2us'], 'source' => 'contacts']);
 $form = ob_get_clean();
 echo '
 <script>
@@ -109,6 +109,23 @@ echo '
 		});	
 	})
 </script>
+
+<style>
+	/* Contact widget inside the white card next to the map */
+	#cnt > .bx > .gr.mlmp > .ml {width:34%; display:flex; flex-flow:column nowrap; justify-content:center; padding:2.5rem 2rem; box-sizing:border-box;}
+	#cnt > .bx > .gr.mlmp > .mp {width:66%;}
+	#cnt > .bx > .gr.mlmp > .ml > .scf-wrap {width:100%; max-width:none;}
+	#cnt > .bx > .gr.mlmp > .ml .scf-title {
+		text-transform:uppercase; font-size:1.35rem; line-height:2rem; min-height:2rem;
+		padding-left:2.6rem; margin-bottom:1.8rem;
+		background:transparent url(/media/images/site/v2/c_send.svg) no-repeat center left / 2rem auto;
+	}
+	@media (max-width:999px), (orientation: portrait) {
+		#cnt > .bx > .gr.mlmp > .ml,
+		#cnt > .bx > .gr.mlmp > .mp {width:100%;}
+		#cnt > .bx > .gr.mlmp > .ml {padding:2rem 1.5rem;}
+	}
+</style>
 
 <?php
 $generalPhone = PhoneHelper::getGeneralPhone();
