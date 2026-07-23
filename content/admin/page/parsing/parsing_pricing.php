@@ -126,6 +126,57 @@ if (!function_exists('parsing_pricing_payload')) {
     }
 }
 
+if (!function_exists('parsing_price_override')) {
+    /**
+     * Applies a per-line price override to a computed amount.
+     *
+     * Used by the B2B module (content/site/include/b2b/b2b_pricing.php) to replace
+     * the fees a dealer does not pay. Passing null (the default everywhere else)
+     * leaves the amount untouched, so the public breakdown is unchanged.
+     *
+     * Modes:
+     *   zero  - fee cancelled; the line stays visible, struck through at 0
+     *   fixed - fee replaced by a flat value
+     *   range - estimate; `min` drives the math (per the spec note on the
+     *           orientation total) and `display` carries the text
+     *
+     * @param array<string, array>|null $overrides
+     * @return array{amount: float, display: ?string, strike: bool}
+     */
+    function parsing_price_override(?array $overrides, string $key, float $amount): array
+    {
+        $out = ['amount' => $amount, 'display' => null, 'strike' => false];
+
+        if (!$overrides || !isset($overrides[$key]) || !is_array($overrides[$key])) {
+            return $out;
+        }
+
+        $rule = $overrides[$key];
+        switch ($rule['mode'] ?? '') {
+            case 'zero':
+                $out['amount'] = 0.0;
+                $out['strike'] = true;
+                break;
+
+            case 'fixed':
+                $out['amount'] = (float)($rule['value'] ?? 0);
+                break;
+
+            case 'range':
+                $min = (float)($rule['min'] ?? 0);
+                $max = (float)($rule['max'] ?? 0);
+                // The customs base and the total must use a concrete number;
+                // the lower bound keeps the estimate honest (never understated
+                // against the customer once the real freight is known).
+                $out['amount']  = $min;
+                $out['display'] = number_format($min, 0, '.', ' ') . ' € - ' . number_format($max, 0, '.', ' ') . ' €';
+                break;
+        }
+
+        return $out;
+    }
+}
+
 if (!function_exists('parsing_md_breakdown_kr')) {
     // Pick the tier whose [price_from, price_to] contains $priceEur.
     function parsing_tier_value(array $tiers, float $priceEur, string $field): float
@@ -239,8 +290,10 @@ if (!function_exists('parsing_md_breakdown_kr')) {
      * as a separate fixed cost.
      *
      * @param array $car ['price_eur','fuel','capacity','year']
+     * @param array<string, array>|null $overrides per-line overrides (B2B pricing);
+     *        null = the standard public breakdown.
      */
-    function parsing_md_breakdown_kr($db, $prefx, array $car): ?array
+    function parsing_md_breakdown_kr($db, $prefx, array $car, ?array $overrides = null): ?array
     {
         $priceEur = (float)($car['price_eur'] ?? 0);
         if ($priceEur <= 0) return null;
@@ -258,31 +311,54 @@ if (!function_exists('parsing_md_breakdown_kr')) {
             if (($p['param_key'] ?? '') === 'sea_freight_roro') { $roro = (float)$p['amount_eur']; break; }
         }
 
+        // Applied BEFORE the customs base is built: sea freight is part of that base,
+        // so overriding the printed line afterwards would leave customs computed on
+        // the old freight and the total would not add up.
+        $roroOv = parsing_price_override($overrides, 'sea_freight_roro', $roro);
+        $roro   = $roroOv['amount'];
+
         $base = $priceEur + $roro;
         $cust = parsing_customs_parts($P, $base, (string)($car['fuel'] ?? ''), (int)($car['capacity'] ?? 0), (int)($car['year'] ?? 0));
         $commission = parsing_tier_value($P['commission'] ?? [], $priceEur, 'commission');
 
         $lines = [];
         $lines[] = ['key' => 'price_car', 'amount' => round($priceEur)];
-        $lines[] = ['key' => 'sea_freight_roro', 'amount' => round($roro)];
+        $lines[] = [
+            'key'     => 'sea_freight_roro',
+            'amount'  => round($roro),
+            'display' => $roroOv['display'],
+            'strike'  => $roroOv['strike'],
+        ];
         $lines[] = ['key' => 'customs', 'amount' => round($cust['customs'])];
         if ($cust['luxury'] > 0) $lines[] = ['key' => 'luxury_tax', 'amount' => round($cust['luxury'])];
 
         // All enabled KR fixed costs except RoRo (already in the base).
         foreach ($P['kr_params'] ?? [] as $p) {
             if ((int)($p['enabled'] ?? 0) !== 1) continue;
-            if (($p['param_key'] ?? '') === 'sea_freight_roro') continue;
+            $key = (string)($p['param_key'] ?? '');
+            if ($key === 'sea_freight_roro') continue;
             $amt = (float)$p['amount_eur'];
             if (($p['value_type'] ?? 'fixed') === 'percent') $amt = $priceEur * ($amt / 100);
-            $lines[] = ['key' => $p['param_key'], 'amount' => round($amt)];
+            $ov = parsing_price_override($overrides, $key, $amt);
+            $lines[] = ['key' => $key, 'amount' => round($ov['amount']), 'display' => $ov['display'], 'strike' => $ov['strike']];
         }
 
-        $lines[] = ['key' => 'commission', 'amount' => round($commission)];
+        $comOv = parsing_price_override($overrides, 'commission', $commission);
+        $lines[] = ['key' => 'commission', 'amount' => round($comOv['amount']), 'display' => $comOv['display'], 'strike' => $comOv['strike']];
 
         $total = 0;
         foreach ($lines as $l) $total += $l['amount'];
 
-        return ['lines' => $lines, 'total' => $total, 'eur_rate' => $P['eur_rate'], 'route' => 'kr'];
+        return [
+            'lines'     => $lines,
+            'total'     => $total,
+            'eur_rate'  => $P['eur_rate'],
+            'route'     => 'kr',
+            // Derived here, not set by the caller, so a call site cannot apply the
+            // dealer prices and forget to label them.
+            'b2b'       => $overrides !== null,
+            'estimated' => $roroOv['display'] !== null, // total is an estimate: freight is a range
+        ];
     }
 
     /**
@@ -291,8 +367,10 @@ if (!function_exists('parsing_md_breakdown_kr')) {
      * road delivery (price-tier), plus customs, EU fixed costs and commission.
      *
      * @param array $car ['price_eur','fuel','capacity','year']
+     * @param array<string, array>|null $overrides per-line overrides (B2B pricing);
+     *        null = the standard public breakdown.
      */
-    function parsing_md_breakdown_eu($db, $prefx, array $car): ?array
+    function parsing_md_breakdown_eu($db, $prefx, array $car, ?array $overrides = null): ?array
     {
         $priceEur = (float)($car['price_eur'] ?? 0);
         if ($priceEur <= 0) return null;
@@ -302,30 +380,50 @@ if (!function_exists('parsing_md_breakdown_kr')) {
         // Europe delivery is a price-based tier (not a flat RoRo fee).
         $delivery = parsing_tier_value($P['eu_delivery'] ?? [], $priceEur, 'delivery');
 
+        // Applied before the base for the same reason as RoRo on the KR route.
+        $delOv    = parsing_price_override($overrides, 'eu_delivery', $delivery);
+        $delivery = $delOv['amount'];
+
         $base = $priceEur + $delivery;
         $cust = parsing_customs_parts($P, $base, (string)($car['fuel'] ?? ''), (int)($car['capacity'] ?? 0), (int)($car['year'] ?? 0));
         $commission = parsing_tier_value($P['commission'] ?? [], $priceEur, 'commission');
 
         $lines = [];
         $lines[] = ['key' => 'price_car', 'amount' => round($priceEur)];
-        $lines[] = ['key' => 'eu_delivery', 'amount' => round($delivery)];
+        $lines[] = [
+            'key'     => 'eu_delivery',
+            'amount'  => round($delivery),
+            'display' => $delOv['display'],
+            'strike'  => $delOv['strike'],
+        ];
         $lines[] = ['key' => 'customs', 'amount' => round($cust['customs'])];
         if ($cust['luxury'] > 0) $lines[] = ['key' => 'luxury_tax', 'amount' => round($cust['luxury'])];
 
         // All enabled EU fixed costs.
         foreach ($P['eu_params'] ?? [] as $p) {
             if ((int)($p['enabled'] ?? 0) !== 1) continue;
+            $key = (string)($p['param_key'] ?? '');
             $amt = (float)$p['amount_eur'];
             if (($p['value_type'] ?? 'fixed') === 'percent') $amt = $priceEur * ($amt / 100);
-            $lines[] = ['key' => $p['param_key'], 'amount' => round($amt)];
+            $ov = parsing_price_override($overrides, $key, $amt);
+            $lines[] = ['key' => $key, 'amount' => round($ov['amount']), 'display' => $ov['display'], 'strike' => $ov['strike']];
         }
 
-        $lines[] = ['key' => 'commission', 'amount' => round($commission)];
+        $comOv = parsing_price_override($overrides, 'commission', $commission);
+        $lines[] = ['key' => 'commission', 'amount' => round($comOv['amount']), 'display' => $comOv['display'], 'strike' => $comOv['strike']];
 
         $total = 0;
         foreach ($lines as $l) $total += $l['amount'];
 
-        return ['lines' => $lines, 'total' => $total, 'eur_rate' => $P['eur_rate'], 'route' => 'eu'];
+        return [
+            'lines'     => $lines,
+            'total'     => $total,
+            'eur_rate'  => $P['eur_rate'],
+            'route'     => 'eu',
+            // See the KR route: derived, never set by the caller.
+            'b2b'       => $overrides !== null,
+            'estimated' => $delOv['display'] !== null,
+        ];
     }
 }
 
@@ -351,6 +449,8 @@ if (!function_exists('parsing_md_price_table')) {
                 'broker_korea' => 'Serviciu broker Coreea', 'interpol_check' => 'Verificare Interpol',
                 'recycling_tax' => 'Taxă de poluare', 'commission' => 'Comision',
                 'total' => 'TOTAL preț până acasă',
+                'estimate_note' => '* Transportul maritim se calculează exact la momentul îmbarcării pe navă. Totalul afișat este estimativ.',
+                'b2b_badge' => 'Preț partener B2B',
             ],
             'ru' => [
                 'title' => 'Цена Молдова',
@@ -364,6 +464,8 @@ if (!function_exists('parsing_md_price_table')) {
                 'broker_korea' => 'Услуга брокера Корея', 'interpol_check' => 'Проверка по Интерполу',
                 'recycling_tax' => 'Налог на загрязнение', 'commission' => 'Комиссия',
                 'total' => 'ИТОГО цена до дома',
+                'estimate_note' => '* Морская доставка рассчитывается точно в момент погрузки на судно. Указанная сумма является ориентировочной.',
+                'b2b_badge' => 'Цена партнёра B2B',
             ],
             'en' => [
                 'title' => 'Price Moldova',
@@ -377,6 +479,8 @@ if (!function_exists('parsing_md_price_table')) {
                 'broker_korea' => 'Korea broker service', 'interpol_check' => 'Interpol check',
                 'recycling_tax' => 'Pollution tax', 'commission' => 'Commission',
                 'total' => 'TOTAL price to your door',
+                'estimate_note' => '* Sea freight is calculated exactly at the moment of loading onto the vessel. The total shown is an estimate.',
+                'b2b_badge' => 'B2B partner price',
             ],
         ];
         $t = $L[$lang] ?? $L['ro'];
@@ -384,10 +488,21 @@ if (!function_exists('parsing_md_price_table')) {
 
         $rows = '';
         foreach ($breakdown['lines'] as $line) {
-            if ((float)$line['amount'] <= 0) continue;
+            $strike = !empty($line['strike']);
+            // Zero lines are normally noise, but a cancelled fee is the point of the
+            // B2B table: keep it struck through so the discount is visible.
+            if ((float)$line['amount'] <= 0 && !$strike) continue;
+
             $label = $t[$line['key']] ?? ucfirst(str_replace('_', ' ', $line['key']));
-            $rows .= '<tr><td class="mdp-label">'.htmlspecialchars($label).'</td>'
-                   . '<td class="mdp-val">'.$fmt($line['amount']).' €</td></tr>';
+
+            // `display` replaces the amount with text, e.g. an estimated range.
+            $value = isset($line['display']) && $line['display'] !== null
+                ? htmlspecialchars((string)$line['display'])
+                : $fmt($line['amount']).' €';
+
+            $rows .= '<tr'.($strike ? ' class="mdp-cancelled"' : '').'>'
+                   . '<td class="mdp-label">'.htmlspecialchars($label).'</td>'
+                   . '<td class="mdp-val">'.$value.'</td></tr>';
         }
 
         // Elegant card: gradient header, soft rows, pill-style values, bold total.
@@ -432,6 +547,26 @@ if (!function_exists('parsing_md_price_table')) {
             .md-price-table .mdp-val{
                 text-align:right;white-space:nowrap;
                 font-weight:700;color:#1a1a1a;
+            }
+            /* Fee cancelled for B2B partners: shown struck through at 0 €. */
+            .md-price-table tr.mdp-cancelled .mdp-label,
+            .md-price-table tr.mdp-cancelled .mdp-val{
+                text-decoration:line-through;
+                color:#9a9a9a;
+            }
+            .md-price-badge{
+                display:inline-block;margin:12px 28px 0;
+                padding:4px 12px;border-radius:999px;
+                background:#eafaf0;color:#0f7a3d;
+                font-size:.78rem;font-weight:700;letter-spacing:.2px;
+            }
+            .md-price-note{
+                margin:0;padding:10px 28px 16px;
+                color:#8a8a8a;font-size:.78rem;line-height:1.4;
+            }
+            @media (max-width:600px){
+                .md-price-badge{margin:10px 18px 0;}
+                .md-price-note{padding:8px 18px 14px;font-size:.72rem;}
             }
             .md-price-table .mdp-total{background:#fff!important;}
             .md-price-table .mdp-total td{
@@ -516,14 +651,25 @@ if (!function_exists('parsing_md_price_table')) {
             . '<img class="mdp-flag" src="/content/admin/page/parsing/media-parsing/flag-md.svg" alt="MD">'
             . '</span>';
 
+        // B2B badge above the table, estimate footnote below.
+        $badge = !empty($breakdown['b2b'])
+            ? '<div class="md-price-badge">'.htmlspecialchars($t['b2b_badge'] ?? '').'</div>'
+            : '';
+        $note = !empty($breakdown['estimated'])
+            ? '<p class="md-price-note">'.htmlspecialchars($t['estimate_note'] ?? '').'</p>'
+            : '';
+
         $tableHtml = '<div class="md-price-block open">'
             . '<div class="md-price-title md-price-title-static">'
             . '<span class="mdp-title-text">'.$route.'</span></div>'
             . '<div class="md-price-body">'
+            . $badge
             . '<table class="md-price-table"><tbody>'.$rows
             . '<tr class="mdp-total"><td class="mdp-label">'.htmlspecialchars($t['total']).'</td>'
             . '<td class="mdp-val">'.$fmt($breakdown['total']).' €</td></tr>'
-            . '</tbody></table></div></div>';
+            . '</tbody></table>'
+            . $note
+            . '</div></div>';
 
         return $css.'<div style="clear:both"></div>'.$tableHtml;
     }

@@ -104,14 +104,31 @@ if (isset($t_mp[2]) && $t_mp[2] == 'offers' && isset($t_mp[3])) {
 if (isset($t_mp[2]) && $t_mp[2] == 'ordercars' && isset($t_mp[3]) && !isset($_GET['tg'])) {
     if (is_numeric($t_mp[3])) {
         $check_id = toNumber($t_mp[3]);
-        
+
         $check_pdo = $db->prepare('SELECT id, catalog_type FROM '.$prefx.'_car_ctlg WHERE `id`= :id AND `vis`="1" AND `act`="1" LIMIT 1');
         $check_pdo->execute(['id' => $check_id]);
         $check_car = $check_pdo->fetch(PDO::FETCH_ASSOC);
-        
+
         // Return 404 if car not found OR catalog_type is not 'on_order' (including NULL or empty values)
         if (!$check_car || empty($check_car['catalog_type']) || $check_car['catalog_type'] !== 'on_order') {
             $GLOBALS['page_is_404'] = true;
+        }
+        // Region access (spec 3.2): hiding the car from the grid is not enough, a
+        // partner typing the URL directly must be refused here too.
+        elseif (function_exists('b2b_is_client') && b2b_is_client()) {
+            $_b2b_region = App\Services\B2b\B2bRegions::regionForCar((int)$check_id);
+            if ($_b2b_region !== null && !b2b_can_see_region($_b2b_region)) {
+                $GLOBALS['b2b_region_blocked'] = true;
+                App\Services\B2b\B2bAudit::log(
+                    b2b_user_id(),
+                    App\Services\B2b\B2bAudit::REGION_DENIED,
+                    ['car_id' => (int)$check_id, 'region' => $_b2b_region],
+                    (int)$check_id
+                );
+            } else {
+                // Audit: every car a partner looks at (acceptance criteria).
+                b2b_log_car_view((int)$check_id);
+            }
         }
     }
 }
@@ -201,12 +218,37 @@ echo '
                         echo '<a class="'.$k.' button '; if( isset($t_mp[2])&&$t_mp[2]==$k ){echo ' active';} echo '" href="/'.$_COOKIE['lang'].'/'.$k.'"><div>'.$lng['l']['menu'][$k].'</div></a>';
                     }
                 }
+
+                // B2B entry point. Registration must be reachable by a dealer who
+                // has no account yet (spec 2.1), so this is always rendered, not
+                // only for an existing session.
+                //
+                // Two placements, one visible at a time: this menu entry shows
+                // inside the burger on mobile, the header button next to "call"
+                // shows on desktop. See .b2b-menu-only / .b2b-header-btn in b2b.css.
+                include_once(_SITE_PAGE.'/b2b/_layout.php');
+                echo b2b_assets(false); // CSS only; B2B pages add the JS themselves
+
+                $_b2b_logged  = function_exists('b2b_is_client') && b2b_is_client();
+                $_b2b_on_page = isset($t_mp[2]) && in_array($t_mp[2], ['b2b', 'b2b-login', 'b2b-register'], true);
+                $_b2b_href    = $_b2b_logged ? '/'.$_COOKIE['lang'].'/b2b/cabinet' : '/'.$_COOKIE['lang'].'/b2b-register';
+                $_b2b_label   = $_b2b_logged ? b2b_t('cabinet') : b2b_t('header_register');
+
+                echo '<a class="b2b button b2b-nav-link b2b-menu-only'.($_b2b_on_page ? ' active' : '').'" href="'.$_b2b_href.'">'
+                   . '<div>'.($_b2b_logged ? '<span class="b2b-nav-dot"></span> ' : '').$_b2b_label.'</div></a>';
                 ?>
             </div>
-            <div class="lang">
+            <?php
+            // data-current drives the desktop dropdown label (style.css renders it
+            // via ::before), because the loop below only prints the OTHER languages.
+            $_lang_cur = strtoupper($_COOKIE['lang'] ?? $default_lang);
+            ?>
+            <div class="lang" data-current="<?php echo htmlspecialchars($_lang_cur, ENT_QUOTES); ?>">
+                <div class="lang_list">
                 <?php foreach( array_reverse($language) as $k => $v ){
                     echo '<a href="/'.$k.$lang_mp.'" hreflang="'.$k.'" class="'.$k.' button '; if($t_mp[1]==$k){echo ' active';} echo'" title="'.$v.'"><div>'.strtoupper($k).'</div></a>';
                 } ?>
+                </div>
             </div>
             <label for="mm_cbx" class="mm_lb" data-close="<?php 
                 $close_text = array(
@@ -262,6 +304,15 @@ echo '
         $contextualPhone = PhoneHelper::getContextualPhone($t_mp, $carData);
         $formattedPhone = PhoneHelper::formatPhone($contextualPhone, 'display');
         ?>
+        <?php
+        // Desktop counterpart of the menu entry above: sits next to "call" so a
+        // dealer finds registration without digging through the menu. Hidden on
+        // mobile, where the burger entry takes over.
+        echo '<a class="b2b-header-btn'.($_b2b_on_page ? ' is-active' : '').'" href="'.$_b2b_href.'" title="'.$_b2b_label.'">'
+           . ($_b2b_logged ? '<span class="b2b-nav-dot"></span>' : '')
+           . '<span class="b2b-header-btn__txt">'.$_b2b_label.'</span></a>';
+        ?>
+
         <a class="call" href="tel:<?php echo $contextualPhone; ?>" title="<?php echo $formattedPhone; ?>">
             <div class="txt"><?php echo $lng['w']['call']; ?></div>
             <div class="img"></div>
@@ -434,6 +485,11 @@ elseif ( $t_mp[2]=='ordercars' && (!isset($t_mp[3]) || $t_mp[3]=='' || !is_numer
     elseif ($t_mp[2]=='contacts') {include (_SITE_PAGE.'/contacts.php');}
     elseif ($t_mp[2]=='calculator') {include (_SITE_PAGE.'/new_pages/calculator/calculator.php');}
     elseif ($t_mp[2]=='telegram') {include (_SITE_PAGE.'/new_pages/telegram/telegram.php');}
+
+    //---B2B module: registration, 2-step login, dealer cabinet
+    elseif ($t_mp[2]=='b2b-register') {include (_SITE_PAGE.'/b2b/register.php');}
+    elseif ($t_mp[2]=='b2b-login')    {include (_SITE_PAGE.'/b2b/login.php');}
+    elseif ($t_mp[2]=='b2b')          {include (_SITE_PAGE.'/b2b/cabinet.php');}
 
     elseif ($t_mp[2]=='dev_tools'){
         if ( !isset($t_mp[3]) ){echo 'What\'s up, doc?';}

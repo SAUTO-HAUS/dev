@@ -1,0 +1,447 @@
+/* ===========================================================================
+   B2B module: partner cabinet, authentication, car-page actions.
+   Palette follows the site brand (#e2001a) and the card styling of the
+   "Pret Moldova" table (parsing_pricing.php) so the module does not look bolted on.
+   =========================================================================== */
+
+.b2b-page{
+    --b2b-brand:#e2001a;
+    --b2b-brand-dark:#b30015;
+    --b2b-ink:#191919;
+    --b2b-muted:#6b6b6b;
+    --b2b-line:#e8e8e8;
+    --b2b-bg:#fafafa;
+
+    max-width:560px;
+    margin:2.5rem auto 4rem;
+    padding:0 1rem;
+    color:var(--b2b-ink);
+    font-size:1rem;
+    line-height:1.5;
+}
+.b2b-page--wide{ max-width:1180px; }
+
+/* Registration: full content width on desktop. Company name takes a full row,
+   the remaining fields sit two per row. Same breakpoint as the burger menu
+   inverse, so it flips with the header. Mobile keeps the single-column card. */
+@media (min-width:1000px) and (orientation:landscape){
+    .b2b-page--form{ max-width:none; }
+    .b2b-page--form .b2b-card{ padding:2.5rem 3rem 2.25rem; }
+
+    /* .b2b-field-row becomes transparent so every field is a direct grid item;
+       the markup stays shared with the mobile layout. */
+    .b2b-page--form .b2b-form{
+        display:grid;
+        grid-template-columns:repeat(2, 1fr);
+        gap:.65rem 1.1rem;
+        align-items:start;
+    }
+    .b2b-page--form .b2b-field-row{ display:contents; }
+
+    /* Company name is the only field outside a .b2b-field-row, so a child
+       selector is enough to give it the full row. */
+    .b2b-page--form .b2b-form > .b2b-field{ grid-column:1 / -1; }
+
+    /* Full-width rows: messages, the submit button and the footer link. */
+    .b2b-page--form .b2b-form__msg,
+    .b2b-page--form .b2b-form > button,
+    .b2b-page--form .b2b-form__foot{ grid-column:1 / -1; }
+
+    /* A full-width button across the card looks broken; keep it centred. */
+    .b2b-page--form .b2b-btn--block{ width:auto; min-width:320px; justify-self:center; }
+}
+
+/* ------------------------------------------------------------------ cards */
+
+.b2b-card{
+    background:#fff;
+    border:1px solid #efefef;
+    border-radius:18px;
+    box-shadow:0 10px 30px rgba(20,20,40,.07);
+    padding:2.25rem 2rem 2rem;
+}
+.b2b-card__head{ margin-bottom:1.75rem; text-align:center; }
+.b2b-card__ttl{
+    margin:0 0 .5rem;
+    font-size:1.5rem; font-weight:700; line-height:1.25;
+}
+.b2b-card__sub{ margin:0; color:var(--b2b-muted); font-size:.92rem; }
+
+/* ------------------------------------------------------------------- form */
+
+.b2b-form{ display:flex; flex-direction:column; gap:1.1rem; }
+.b2b-field{ display:flex; flex-direction:column; gap:.35rem; flex:1 1 0; min-width:0; }
+.b2b-field-row{ display:flex; gap:1rem; flex-wrap:wrap; }
+
+.b2b-field label,
+.b2b-actions__label{
+    font-size:.82rem; font-weight:600;
+    color:var(--b2b-muted);
+    text-transform:uppercase; letter-spacing:.3px;
+}
+.b2b-field input,
+.b2b-field select,
+.b2b-actions__amount input,
+.b2b-actions__amount select{
+    width:100%;
+    padding:.72rem .9rem;
+    border:1.5px solid var(--b2b-line);
+    border-radius:10px;
+    background:#fff;
+    font-family:inherit; font-size:1rem; color:var(--b2b-ink);
+    transition:border-color .15s, box-shadow .15s;
+}
+.b2b-field input:focus,
+.b2b-field select:focus,
+.b2b-actions__amount input:focus,
+.b2b-actions__amount select:focus{
+    outline:none;
+    border-color:var(--b2b-brand);
+    box-shadow:0 0 0 3px rgba(226,0,26,.12);
+}
+.b2b-field input.is-invalid{ border-color:var(--b2b-brand); background:#fff7f8; }
+.b2b-hint{ color:#9a9a9a; font-size:.76rem; }
+/* Phone field: country picker + national number, joined into one control. */
+.b2b-phone{ display:flex; align-items:stretch; }
+.b2b-phone input{
+    border-top-left-radius:0; border-bottom-left-radius:0;
+    border-left:none; min-width:0;
+}
+
+/* Country dialling-code dropdown */
+.b2b-cc{ position:relative; flex:0 0 auto; }
+.b2b-cc__btn{
+    display:flex; align-items:center; gap:.4rem;
+    height:100%; padding:.72rem .7rem .72rem .9rem;
+    border:1.5px solid var(--b2b-line); border-right:none;
+    border-radius:10px 0 0 10px;
+    background:#fff; cursor:pointer;
+    font-family:inherit; font-size:1rem; color:var(--b2b-ink);
+    white-space:nowrap; transition:background .15s;
+}
+.b2b-cc__btn:hover{ background:#fafafa; }
+.b2b-cc__flag{ width:20px; height:20px; border-radius:3px; display:block; flex:0 0 20px; }
+.b2b-cc__code{ font-weight:600; }
+.b2b-cc__arr{
+    width:7px; height:7px; margin-left:.1rem;
+    border-right:2px solid #888; border-bottom:2px solid #888;
+    transform:translateY(-2px) rotate(45deg);
+    transition:transform .2s;
+}
+.b2b-cc.open .b2b-cc__arr{ transform:translateY(1px) rotate(-135deg); }
+
+.b2b-cc__list{
+    display:none; position:absolute; top:calc(100% + 4px); left:0; z-index:20;
+    width:270px; max-height:280px; overflow-y:auto;
+    margin:0; padding:.3rem 0; list-style:none;
+    background:#fff; border:1.5px solid var(--b2b-line); border-radius:10px;
+    box-shadow:0 8px 24px rgba(20,20,40,.14);
+}
+.b2b-cc.open .b2b-cc__list{ display:block; }
+.b2b-cc__list li{
+    display:flex; align-items:center; gap:.6rem;
+    padding:.5rem .9rem; cursor:pointer;
+    font-size:.92rem; transition:background-color .12s;
+}
+.b2b-cc__list li:hover{ background:#fdecee; }
+.b2b-cc__list li.is-active{ background:#fff5f6; font-weight:600; }
+.b2b-cc__list li img{ width:20px; height:20px; border-radius:3px; flex:0 0 20px; }
+.b2b-cc__name{ flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.b2b-cc__dial{ color:var(--b2b-muted); font-style:normal; font-size:.86rem; }
+
+/* The focus ring wraps the whole control, not just the input. */
+.b2b-phone:focus-within{ border-radius:10px; box-shadow:0 0 0 3px rgba(226,0,26,.12); }
+.b2b-phone:focus-within .b2b-cc__btn,
+.b2b-phone:focus-within input{ border-color:var(--b2b-brand); }
+.b2b-phone:focus-within input{ box-shadow:none; }
+
+.b2b-form__msg{ display:none; font-size:.88rem; border-radius:10px; padding:.7rem .9rem; }
+.b2b-form__msg.is-error{ display:block; background:#fdeef0; color:#b30015; }
+.b2b-form__msg.is-ok{ display:block; background:#eafaf0; color:#0f7a3d; }
+
+.b2b-form__foot{ margin:.25rem 0 0; text-align:center; font-size:.9rem; color:var(--b2b-muted); }
+.b2b-form__foot a{ color:var(--b2b-brand); font-weight:600; text-decoration:none; }
+.b2b-form__foot a:hover{ text-decoration:underline; }
+
+/* ---------------------------------------------------------------- buttons */
+
+.b2b-btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+    padding:.8rem 1.5rem;
+    border:1.5px solid transparent; border-radius:10px;
+    font-family:inherit; font-size:.95rem; font-weight:600; line-height:1;
+    text-decoration:none; cursor:pointer;
+    transition:background .15s, color .15s, transform .1s, box-shadow .15s;
+}
+.b2b-btn--primary{ background:var(--b2b-brand); color:#fff; }
+.b2b-btn--primary:hover{ background:var(--b2b-brand-dark); }
+.b2b-btn--ghost{ background:#fff; border-color:var(--b2b-line); color:var(--b2b-ink); }
+.b2b-btn--ghost:hover{ border-color:var(--b2b-brand); color:var(--b2b-brand); }
+.b2b-btn--icon{ padding:.8rem 1rem; background:#fff; border-color:var(--b2b-line); color:#c9a227; font-size:1.05rem; }
+.b2b-btn--icon.is-saved{ background:#fffbe8; border-color:#e8cf6a; }
+.b2b-btn--block{ width:100%; }
+.b2b-btn--sm{ padding:.5rem 1rem; font-size:.85rem; }
+.b2b-btn:active{ transform:translateY(1px); }
+.b2b-btn[disabled]{ opacity:.6; cursor:not-allowed; transform:none; }
+
+.b2b-link{
+    background:none; border:none; padding:0;
+    color:var(--b2b-brand); font-family:inherit; font-size:.88rem; font-weight:600;
+    cursor:pointer; text-decoration:underline;
+}
+.b2b-link[disabled]{ color:#b0b0b0; cursor:not-allowed; text-decoration:none; }
+
+/* ----------------------------------------------------------- success / OTP */
+
+.b2b-success{ text-align:center; padding:1rem 0; }
+.b2b-success__ico{
+    width:64px; height:64px; margin:0 auto 1.25rem;
+    display:flex; align-items:center; justify-content:center;
+    border-radius:50%; background:#eafaf0; color:#0f7a3d; font-size:2rem;
+}
+.b2b-success__ttl{ margin:0 0 .75rem; font-size:1.25rem; font-weight:700; }
+.b2b-success__txt{ margin:0 0 1.75rem; color:var(--b2b-muted); }
+
+.b2b-otp__ttl{ margin:0 0 .5rem; font-size:1.25rem; font-weight:700; text-align:center; }
+.b2b-otp__sub{ margin:0 0 1.5rem; color:var(--b2b-muted); font-size:.9rem; text-align:center; }
+.b2b-otp__cells{ display:flex; gap:.6rem; justify-content:center; margin-bottom:1.25rem; }
+.b2b-otp__cell{
+    width:3rem; height:3.6rem;
+    border:1.5px solid var(--b2b-line); border-radius:10px;
+    background:#fff;
+    font-family:inherit; font-size:1.5rem; font-weight:700; text-align:center; color:var(--b2b-ink);
+    transition:border-color .15s, box-shadow .15s;
+}
+.b2b-otp__cell:focus{
+    outline:none; border-color:var(--b2b-brand);
+    box-shadow:0 0 0 3px rgba(226,0,26,.12);
+}
+.b2b-otp__timer{ margin:0 0 1.25rem; text-align:center; font-size:.88rem; color:var(--b2b-muted); }
+.b2b-otp__countdown{ color:var(--b2b-ink); font-variant-numeric:tabular-nums; }
+.b2b-otp__countdown.is-low{ color:var(--b2b-brand); }
+.b2b-otp__foot{ display:flex; justify-content:space-between; gap:1rem; margin-top:1rem; }
+
+/* --------------------------------------------------------- cabinet header */
+
+.b2b-head{
+    display:flex; justify-content:space-between; align-items:flex-start; gap:2rem; flex-wrap:wrap;
+    padding:1.75rem 2rem;
+    background:#fff; border:1px solid #efefef; border-radius:18px;
+    box-shadow:0 10px 30px rgba(20,20,40,.07);
+}
+.b2b-head__eyebrow{
+    margin:0 0 .25rem;
+    color:var(--b2b-muted); font-size:.78rem; text-transform:uppercase; letter-spacing:.5px;
+}
+.b2b-head__ttl{ margin:0 0 .4rem; font-size:1.5rem; font-weight:700; }
+.b2b-head__meta{ margin:0; color:var(--b2b-muted); font-size:.88rem; }
+.b2b-head__side{ display:flex; flex-direction:column; gap:.6rem; align-items:flex-start; }
+.b2b-head__row{ display:flex; align-items:center; gap:.6rem; flex-wrap:wrap; }
+.b2b-head__label{ color:var(--b2b-muted); font-size:.78rem; text-transform:uppercase; letter-spacing:.4px; }
+
+.b2b-chips{ display:inline-flex; gap:.35rem; flex-wrap:wrap; }
+.b2b-chip{
+    display:inline-block; padding:.22rem .65rem;
+    border-radius:999px; background:#f2f4f7; color:#42484f;
+    font-size:.78rem; font-weight:600;
+}
+.b2b-chip--muted{ color:#9a9a9a; }
+
+.b2b-badge{
+    display:inline-block; padding:.22rem .7rem;
+    border-radius:999px; font-size:.78rem; font-weight:700;
+    background:#f2f4f7; color:#42484f;
+}
+.b2b-badge--active,
+.b2b-badge--approved,
+.b2b-badge--paid{ background:#eafaf0; color:#0f7a3d; }
+.b2b-badge--pending,
+.b2b-badge--new,
+.b2b-badge--issued{ background:#fff6e6; color:#96650a; }
+.b2b-badge--blocked,
+.b2b-badge--rejected,
+.b2b-badge--cancelled{ background:#fdeef0; color:#b30015; }
+.b2b-badge--seen,
+.b2b-badge--sent{ background:#eaf1fd; color:#1b4f9c; }
+
+/* ------------------------------------------------------------------- tabs */
+
+.b2b-tabs{ display:flex; gap:.4rem; margin:1.5rem 0 1rem; flex-wrap:wrap; }
+.b2b-tab{
+    padding:.6rem 1.15rem;
+    border:1.5px solid var(--b2b-line); border-radius:999px;
+    background:#fff; color:var(--b2b-ink);
+    font-size:.9rem; font-weight:600; text-decoration:none;
+    transition:background .15s, color .15s, border-color .15s;
+}
+.b2b-tab:hover{ border-color:var(--b2b-brand); color:var(--b2b-brand); }
+.b2b-tab.is-active{ background:var(--b2b-brand); border-color:var(--b2b-brand); color:#fff; }
+
+.b2b-panel{ min-height:220px; }
+
+.b2b-legend{ display:flex; gap:.5rem; margin-bottom:1rem; flex-wrap:wrap; }
+
+/* -------------------------------------------------------- empty / tables */
+
+.b2b-empty{
+    padding:3rem 1.5rem; text-align:center;
+    background:#fff; border:1px dashed var(--b2b-line); border-radius:18px;
+    color:var(--b2b-muted);
+}
+.b2b-empty p{ margin:0 0 1.25rem; }
+
+/* Tables scroll on their own; the page must never scroll sideways. */
+.b2b-table-wrap{
+    overflow-x:auto;
+    background:#fff; border:1px solid #efefef; border-radius:18px;
+    box-shadow:0 10px 30px rgba(20,20,40,.07);
+}
+.b2b-table{ width:100%; border-collapse:collapse; min-width:680px; }
+.b2b-table th,
+.b2b-table td{ padding:.9rem 1.1rem; text-align:left; border-bottom:1px solid #f2f2f2; font-size:.9rem; }
+.b2b-table th{
+    color:var(--b2b-muted); font-size:.75rem; font-weight:700;
+    text-transform:uppercase; letter-spacing:.4px; background:#fafafa;
+}
+.b2b-table tbody tr:last-child td{ border-bottom:none; }
+.b2b-table tbody tr:hover{ background:#fdfdfd; }
+.b2b-table a{ color:var(--b2b-brand); text-decoration:none; }
+.b2b-table a:hover{ text-decoration:underline; }
+.b2b-td--strong{ font-weight:700; white-space:nowrap; }
+.b2b-td--wrap{ max-width:320px; }
+
+/* -------------------------------------------------------------- timeline */
+
+.b2b-timeline{
+    list-style:none; margin:0; padding:1.5rem 1.75rem;
+    background:#fff; border:1px solid #efefef; border-radius:18px;
+    box-shadow:0 10px 30px rgba(20,20,40,.07);
+}
+.b2b-timeline__item{ display:flex; gap:1rem; padding:.7rem 0; border-bottom:1px solid #f5f5f5; }
+.b2b-timeline__item:last-child{ border-bottom:none; }
+.b2b-timeline__dot{
+    flex:0 0 9px; width:9px; height:9px; margin-top:.5rem;
+    border-radius:50%; background:var(--b2b-brand);
+}
+.b2b-timeline__body{ display:flex; gap:.6rem; align-items:baseline; flex-wrap:wrap; flex:1; }
+.b2b-timeline__action{ font-weight:600; font-size:.9rem; }
+.b2b-timeline__link{ color:var(--b2b-brand); font-size:.85rem; text-decoration:none; }
+.b2b-timeline__time{ margin-left:auto; color:#a0a0a0; font-size:.8rem; white-space:nowrap; }
+
+/* -------------------------------------------- car page action panel ------ */
+
+/* Sits inside .doit on the car page, replacing the call/WhatsApp buttons.
+   Those are floated, so clear before rendering. */
+.doit > .b2b-actions{ clear:both; }
+
+.b2b-actions{
+    margin:0 0 30px;
+    padding:1.25rem 1.5rem 1.5rem;
+    background:#fff; border:1px solid #efefef; border-radius:18px;
+    box-shadow:0 10px 30px rgba(20,20,40,.07);
+    box-sizing:border-box;
+    font-size:1rem; color:#191919;
+}
+.b2b-actions__head{ display:flex; align-items:center; gap:.6rem; margin-bottom:1rem; }
+.b2b-actions__badge{
+    padding:.2rem .6rem; border-radius:999px;
+    background:#eafaf0; color:#0f7a3d;
+    font-size:.72rem; font-weight:800; letter-spacing:.4px;
+}
+.b2b-actions__company{ color:#6b6b6b; font-size:.85rem; font-weight:600; }
+.b2b-actions__row{ display:flex; flex-direction:column; gap:.35rem; margin-bottom:1rem; }
+.b2b-actions__amount{ display:flex; gap:.6rem; }
+.b2b-actions__amount input{ flex:1 1 auto; min-width:0; }
+.b2b-actions__amount select{ flex:0 0 6.5rem; }
+.b2b-actions__btns{ display:flex; gap:.6rem; flex-wrap:wrap; }
+.b2b-actions__btns .b2b-btn{ flex:1 1 auto; }
+.b2b-actions__btns .b2b-btn--icon{ flex:0 0 auto; }
+.b2b-actions__msg{ display:none; margin-top:.9rem; padding:.7rem .9rem; border-radius:10px; font-size:.88rem; }
+.b2b-actions__msg.is-error{ display:block; background:#fdeef0; color:#b30015; }
+.b2b-actions__msg.is-ok{ display:block; background:#eafaf0; color:#0f7a3d; }
+.b2b-actions__msg a{ color:inherit; font-weight:700; }
+
+/* ------------------------------------------------------------------ modal */
+
+.b2b-modal{ position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center; padding:1rem; }
+.b2b-modal[hidden]{ display:none; }
+.b2b-modal__backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.55); }
+.b2b-modal__box{
+    position:relative; width:100%; max-width:460px;
+    padding:1.75rem; background:#fff; border-radius:16px;
+    box-shadow:0 20px 60px rgba(0,0,0,.25);
+}
+.b2b-modal__ttl{ margin:0 0 .5rem; font-size:1.15rem; font-weight:700; }
+.b2b-modal__hint{ margin:0 0 1rem; color:#6b6b6b; font-size:.88rem; }
+.b2b-modal__comment{
+    width:100%; padding:.75rem .9rem;
+    border:1.5px solid #e8e8e8; border-radius:10px;
+    font-family:inherit; font-size:.95rem; resize:vertical;
+}
+.b2b-modal__comment:focus{ outline:none; border-color:#e2001a; box-shadow:0 0 0 3px rgba(226,0,26,.12); }
+.b2b-modal__check{ display:flex; align-items:center; gap:.5rem; margin:.9rem 0 1.25rem; font-size:.88rem; color:#6b6b6b; }
+.b2b-modal__btns{ display:flex; gap:.6rem; justify-content:flex-end; }
+
+/* ----------------------------------------------------------- restricted */
+
+.b2b-restricted{
+    max-width:560px; margin:4rem auto; padding:3rem 2rem;
+    background:#fff; border:1px solid #efefef; border-radius:18px;
+    box-shadow:0 10px 30px rgba(20,20,40,.07);
+    text-align:center; color:#191919;
+}
+.b2b-restricted__ico{ font-size:3rem; line-height:1; margin-bottom:1rem; }
+.b2b-restricted__ttl{ margin:0 0 .75rem; font-size:1.4rem; font-weight:700; }
+.b2b-restricted__txt{ margin:0 0 1.75rem; color:#6b6b6b; }
+
+/* ---------------------------------------------------------- header link */
+
+.b2b-nav-link{ display:inline-flex; align-items:center; gap:.35rem; }
+.b2b-nav-dot{
+    width:7px; height:7px; border-radius:50%;
+    background:#0f7a3d; display:inline-block; flex:0 0 7px;
+}
+
+/* Header button, desktop only: outlined so it does not compete with the filled
+   "call" CTA sitting next to it. */
+.b2b-header-btn{
+    display:inline-flex; align-items:center; gap:.4rem;
+    margin-right:.75rem; padding:.55rem 1.15rem;
+    border:1.5px solid #e2001a; border-radius:.5rem;
+    color:#e2001a; background:#fff;
+    font-size:.95rem; font-weight:600; line-height:1.2;
+    text-decoration:none; white-space:nowrap;
+    transition:background .15s, color .15s;
+}
+.b2b-header-btn:hover{ background:#e2001a; color:#fff; }
+.b2b-header-btn.is-active{ background:#e2001a; color:#fff; }
+.b2b-header-btn.is-active .b2b-nav-dot,
+.b2b-header-btn:hover .b2b-nav-dot{ background:#fff; }
+
+/* One placement visible at a time. Same breakpoint the burger menu uses
+   (content/site/css/media.css). */
+.b2b-menu-only{ display:none !important; }
+
+@media (max-width:999px), (orientation: portrait){
+    .b2b-header-btn{ display:none; }
+    .b2b-menu-only{ display:flex !important; }
+}
+
+/* ------------------------------------------------------------- responsive */
+
+@media (max-width:768px){
+    .b2b-page{ margin:1.5rem auto 3rem; }
+    .b2b-card{ padding:1.75rem 1.25rem 1.5rem; }
+    .b2b-field-row{ flex-direction:column; gap:1.1rem; }
+    .b2b-head{ padding:1.35rem 1.25rem; }
+    .b2b-head__side{ width:100%; }
+    .b2b-otp__cell{ width:2.6rem; height:3.2rem; font-size:1.25rem; }
+    .b2b-otp__cells{ gap:.4rem; }
+    .b2b-actions__btns .b2b-btn{ flex:1 1 100%; }
+    .b2b-timeline{ padding:1rem 1.1rem; }
+    .b2b-timeline__time{ margin-left:0; width:100%; }
+}
+
+@media (max-width:400px){
+    .b2b-otp__cell{ width:2.2rem; height:2.9rem; font-size:1.1rem; }
+}

@@ -71,6 +71,11 @@ if (isset($t_mp[2])&&$t_mp[2]==$admin_dir){ // If request to admin panel (admin_
 	if (!empty($_COOKIE['sess'])) {  include(_ADM.'/action/adm_chk.php'); }
 }
 
+//---B2B client session. Resolved before the AJAX branch and before body.php: the
+// header and the landed-cost pricing both depend on who is logged in, and
+// currentUser() may need to clear a stale cookie while headers are still open.
+require_once(_SITE_INCL.'/b2b/b2b_bootstrap.php');
+
 //---err 404 — unknown top-level route. Flag it and let body.php render the styled 404
 // inside the normal layout (menu/footer). Admin panel keeps the old standalone 404.
 if( ( isset($t_mp[2]) && !in_array( $t_mp[2], $url_arr ) ) || ( isset($t_mp[2]) && $t_mp[2]=='' && isset($t_mp[3]) ) ) {
@@ -103,6 +108,14 @@ if ( isset($_COOKIE['lang']) ){ // if lang cookie exists that is responsible for
                 exit();
         }
         
+        // B2B proforma: standalone print-ready document, no site layout
+        // (same pattern as the telegram pages above).
+        if (isset($t_mp[2]) && $t_mp[2] == 'b2b' && isset($t_mp[3]) && $t_mp[3] == 'invoice') {
+                require_once(_SITE_INCL . '/b2b/invoice_template.php');
+                $db->connection = null;
+                exit();
+        }
+
         if (isset($t_mp[2]) && $t_mp[2] == 'vin-redirect') {
                 require_once(_SITE . '/page/vin_redirect.php');
                 $db->connection = null;

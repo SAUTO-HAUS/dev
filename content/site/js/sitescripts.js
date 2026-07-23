@@ -1414,4 +1414,18 @@ $(document).on('click', function(){
 	$('.srt_drop.open').removeClass('open');
 });
 
+var langIsDropdown = function(){
+	return window.matchMedia('(min-width:1000px) and (orientation:landscape)').matches;
+};
+$(document).on('click', '#main_menu .lang', function(e){
+	if (!langIsDropdown()) return;              // mobile: let the links work normally
+	if ($(e.target).closest('a').length) return; // clicking a language navigates
+	e.stopPropagation();
+	$('.srt_drop.open').removeClass('open');
+	$(this).toggleClass('open');
+});
+$(document).on('click', function(){
+	$('#main_menu .lang.open').removeClass('open');
+});
+
 })

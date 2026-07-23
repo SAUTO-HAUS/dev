@@ -31,7 +31,7 @@ $prefx = 'gh3sp';
 $admin_dir = 'adminsauto';
 //menu permissions
 $admin_menu = [
-	'dev' => ['cars', 'ordercars', 'tyres', 'seo', 'mail', 'slider', 'users', 'docs', 'sett'/*, 'video', 'team'*/],
+	'dev' => ['cars', 'ordercars', 'tyres', 'seo', 'mail', 'slider', 'users', 'docs', 'b2b', 'sett'/*, 'video', 'team'*/],
 	'sad' => ['cars', 'ordercars', 'tyres', 'seo', 'mail', 'docs'],
 	'adm' => ['cars', 'ordercars', 'tyres', 'seo', 'mail', 'docs'],
 	'mod' => ['cars', 'ordercars', 'tyres'],
@@ -45,7 +45,7 @@ $admin_menu = [
 
 $admin_menu_dev1 = [
 	//'dev' => [ 'cars'=>['ctlg','br_lst'], 'tyres'=>['ctlg','br_lst'], 'seo'=>['ctlg'], 'mail'=>['message', 'order', 'favorites', 'archive'], 'slider'=>['ctlg'], 'docs'=>['ctlg', 'arch'], 'users'=>['ctlg'], 'sett'=>['info','adm_usr']/*, 'settings', 'video', 'team'*/ ],
-    'dev' => ['cars' => ['ctlg', 'br_lst'], 'ordercars' => ['ctlg', 'br_lst'], 'tyres' => ['ctlg', 'br_lst'], 'seo' => ['ctlg'], 'mail' => ['message', 'order', 'favorites', 'archive'], 'docs' => ['create', 'ctlg'], 'notcrm' => ['app'], 'sett' => ['info', 'annc', 'adm_usr', 'publication_settings', '404_stats']],
+    'dev' => ['cars' => ['ctlg', 'br_lst'], 'ordercars' => ['ctlg', 'br_lst'], 'tyres' => ['ctlg', 'br_lst'], 'seo' => ['ctlg'], 'mail' => ['message', 'order', 'favorites', 'archive'], 'docs' => ['create', 'ctlg'], 'notcrm' => ['app'], 'b2b' => ['users', 'requests', 'settings'], 'sett' => ['info', 'annc', 'adm_usr', 'publication_settings', '404_stats']],
     'sad' => ['cars' => ['ctlg'], 'ordercars' => ['ctlg'], 'tyres' => ['ctlg'], 'seo' => ['ctlg'], 'mail' => ['message', 'order', 'favorites', 'archive'], 'docs' => ['create', 'ctlg'], 'sett' => ['info', 'publication_settings']],
     'adm' => ['cars' => ['ctlg'], 'ordercars' => ['ctlg'], 'tyres' => ['ctlg'], 'seo' => ['ctlg'], 'mail' => ['message', 'order', 'favorites', 'archive'], 'docs' => ['create', 'ctlg'], 'sett' => ['info', 'publication_settings']],
     'mod' => ['cars' => ['ctlg'], 'ordercars' => ['ctlg'], 'tyres' => ['ctlg']],
@@ -104,7 +104,11 @@ $url_arr = [
     'vin-redirect',
     'vin-check',
     'calculator',
-    'favorites'
+    'favorites',
+    //B2B module (dealer cabinet)
+    'b2b',
+    'b2b-register',
+    'b2b-login'
 ];
 $sub_urls = [
     '',

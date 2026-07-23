@@ -2,6 +2,12 @@
 
 use App\Helper\PhoneHelper;
 
+// Landed-cost calculator + B2B preferential pricing. Included here (not only from
+// ordercars.php) because $car_card is also invoked from the catalog AJAX endpoints,
+// which never load the page file.
+include_once( _ADM_PAGE.'/parsing/parsing_pricing.php' );
+include_once( _SITE_INCL.'/b2b/b2b_pricing.php' );
+
 // Effective "out of stock" flag: 1 when n_a is set OR the offer timer has expired
 // (on_order cars). Lets list sorting push expired-timer cars to the end instantly,
 // without waiting for the 5-min cron that flips n_a in the DB.
@@ -53,16 +59,22 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 	$f_arr = ['bt'=>0, 'gr'=>0, 'br'=>0, 'mo'=>0, 'yr'=>1, 'fl'=>0, 'tra'=>0, 'wd'=>0, 'clr'=>0, 'mlg'=>1, 'vol'=>1, 'sts'=>1, 'prc'=>1];
 	
 	$query_args = ['lmt'=>$lmt];
-	$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE catalog_type = "on_order"';
-	
+
+	// Region access for B2B partners (spec 3.2). Appended to the base WHERE of every
+	// branch: later branches add ORDER BY/LIMIT, so this is the last point where a
+	// condition can still be attached. Empty for guests and full-access partners.
+	$b2b_region_sql = function_exists('b2b_sql_region_filter') ? b2b_sql_region_filter() : '';
+
+	$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE catalog_type = "on_order"'.$b2b_region_sql;
+
 	// For filter searches on /ordercars, restrict to on_order catalog (sort dropdown can switch via redirect on the page level)
 	if ($v1=='fltr') {
-		$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE catalog_type = "on_order"';
+		$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE catalog_type = "on_order"'.$b2b_region_sql;
 	}
-	
+
 	// For similar cars, show both in_stock and on_order cars
 	if ($v1=='smlr') {
-		$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE (catalog_type = "in_stock" OR catalog_type = "on_order" OR catalog_type IS NULL)';
+		$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE (catalog_type = "in_stock" OR catalog_type = "on_order" OR catalog_type IS NULL)'.$b2b_region_sql;
 	}
 	
 	if ($v1=='new'){ $sql .= ' AND `vis`="1" AND `act`="1" '; }
@@ -507,6 +519,25 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 	$card_counter = 0;
 
 	$results = $results ?? [];
+
+	// B2B partners see the preferential landed price on the cards too: `prc` holds
+	// the public landed cost, so leaving it would make the grid contradict the car
+	// page. One batched query for the whole set, written back into the rows so every
+	// downstream render (card value, monthly payment, promo old price) stays consistent.
+	if (function_exists('b2b_prices_for_cars')) {
+		$b2b_prices = b2b_prices_for_cars($results);
+		if ($b2b_prices) {
+			foreach ($results as $ri => $rrow) {
+				$b2b_id = (int)$rrow['id'];
+				if (!isset($b2b_prices[$b2b_id])) { continue; }
+				$results[$ri]['prc']   = $b2b_prices[$b2b_id];
+				$results[$ri]['prc_n'] = $b2b_prices[$b2b_id];
+				// A public promo countdown is meaningless against a B2B price.
+				$results[$ri]['prc_t'] = 0;
+			}
+		}
+	}
+
 	foreach ($results as $r) {
 		// Check if mobile - simple detection
 		$is_mobile = (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/Mobile|Android|iPhone|iPad/', $_SERVER['HTTP_USER_AGENT']));

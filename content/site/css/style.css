@@ -3048,5 +3048,62 @@ footer .columns-wrapper .column-container.col-logo-container {
   main .gr > .oc_regions > .oc_region_btn.is-active:hover {background:#fff5f5; transform:none; box-shadow:0 2px 8px rgba(226,0,26,.18);}
   main .gr > .oc_regions > .oc_order_btn {flex:0 0 auto; margin-left:auto; margin-top:0; border:2px solid #eee; border-radius:.75rem;}
 
+  @media (hover: hover) {
+      header > .def > .call {display:none;}
+  }
 
+  #main_menu .lang_list {display:contents;}
 
+  @media (min-width:1000px) and (orientation:landscape) {
+      #main_menu {overflow:visible;}
+      #main_menu > .mm_lb {display:none;}
+
+      #main_menu .lang {
+          flex:0 0 auto; width:auto;
+          position:relative; margin-right:3%;
+          display:inline-flex; align-items:center;
+          padding:.55rem 2.1rem .55rem 1.15rem;
+          border:1.5px solid #ddd; border-radius:.5rem; background:#fff;
+          font-family:"def_l"; font-size:.95rem; font-weight:600; line-height:1.2;
+          cursor:pointer; user-select:none; -webkit-user-select:none;
+          box-sizing:border-box; transition:border-color .2s;
+      }
+      #main_menu .lang:hover {border-color:#bbb;}
+
+      /* Button label = current language. The list below prints all three, so the
+         active one is hidden from it; this pseudo-element carries the value. */
+      #main_menu .lang::before {content:attr(data-current); color:#e2001a; letter-spacing:.5px;}
+
+      /* Chevron, same geometry as .srt_drop_arr. */
+      #main_menu .lang::after {
+          content:""; position:absolute; right:.85rem; top:50%;
+          width:8px; height:8px;
+          transform:translateY(-65%) rotate(45deg);
+          border-right:2px solid #555; border-bottom:2px solid #555;
+          transition:transform .2s;
+      }
+      #main_menu .lang.open::after {transform:translateY(-30%) rotate(-135deg);}
+
+      /* The list becomes the dropdown panel: one absolute box, links in flow. */
+      #main_menu .lang_list {
+          display:none;
+          position:absolute; top:calc(100% + 4px); left:-1.5px;
+          min-width:calc(100% + 3px); padding:.25rem 0; background:#fff;
+          border:1.5px solid #ddd; border-radius:.5rem;
+          box-shadow:0 4px 12px rgba(0,0,0,.12);
+          z-index:10;
+      }
+      #main_menu .lang.open .lang_list {display:block;}
+
+      #main_menu .lang_list a {
+          display:block; float:none; width:auto; height:auto; padding:0;
+      }
+      #main_menu .lang_list a.active {display:none;} /* already in the label */
+      #main_menu .lang_list a div {
+          padding:.5rem 1.15rem; line-height:1.2;
+          font-size:.95rem; font-weight:600; color:#333; text-align:left;
+          transition:background-color .15s, color .15s;
+      }
+      #main_menu .lang_list a:hover div {background-color:#fdecee; color:#e2001a;}
+      #main_menu .lang_list a:hover {animation:none;} /* kill the inherited shake */
+  }

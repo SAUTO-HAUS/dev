@@ -40,6 +40,8 @@ $trans = new Lang($_COOKIE['lang']);
 Container::set('db', $db);
 Container::set('prefix', $prefx);
 
+require_once (_SITE_INCL.'/b2b/b2b_bootstrap.php');
+
 if (isset($_POST['fn']) && $_POST['fn']=='snd_msg'){
 	require _PLUGINS.'/PHPMailer/src/Exception.php'; require _PLUGINS.'/PHPMailer/src/PHPMailer.php'; require _PLUGINS.'/PHPMailer/src/SMTP.php';
 	$mail = new PHPMailer(true);

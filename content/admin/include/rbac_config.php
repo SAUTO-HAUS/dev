@@ -18,7 +18,9 @@ $rbac_permissions = [
         'sett' => ['read' => true, 'update' => true],
         'analytics' => ['read' => true],
         'terminal' => ['read' => true],
-        'crm' => ['read' => true, 'update' => true, 'delete' => true, 'settings' => true, 'analytics' => true]
+        'crm' => ['read' => true, 'update' => true, 'delete' => true, 'settings' => true, 'analytics' => true],
+        // Management B2B — Super Admin only (spec §3).
+        'b2b' => ['read' => true, 'update' => true, 'delete' => true, 'settings' => true]
     ],
     'admin' => [
         'user_management' => false,
@@ -154,6 +156,7 @@ $rbac_admin_menu = [
         'ordercars' => ['add', 'ctlg'],
         'docs' => ['add', 'ctlg'],
         'crm' => ['calls', 'inbox', 'leads', 'my_leads', 'transaction', 'closed', 'analytics', 'settings'],
+        'b2b' => ['users', 'requests', 'settings'],
         'calculator' => ['calc', 'ctlg', 'usage', 'rates'],
         'tyres' => ['ctlg'],
         'seo' => ['ctlg'],
@@ -201,6 +204,7 @@ $rbac_internal_actions = [
         'docs' => ['add', 'create', 'detail', 'ctlg'],
         'stock' => ['ctlg'],
 		'crm' => ['calls', 'leads', 'my_leads', 'lead', 'inbox', 'inbox_chat', 'analytics', 'transaction', 'closed', 'junk', 'settings'],
+        'b2b' => ['users', 'user', 'requests', 'settings'],
         'sett' => ['info', 'adm_usr', 'roles', 'phone_config', 'publication_settings', 'ai_prompt', '404_stats', 'changelog', 'analytics', 'terminal']
     ],
     'admin' => [

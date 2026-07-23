@@ -149,6 +149,12 @@ elseif  ($_POST['fn']=='calculator'){
     );
 }
 
+//B2B MODULE (register, 2FA login, cabinet actions)-----------------------------
+elseif ( strpos((string)($_POST['fn'] ?? ''), 'b2b_') === 0 ){
+
+	require_once (_SITE_AJAX.'/b2b.php');
+}
+
 else { die( 'Restricted access' ); }
 
 ?>

@@ -2,6 +2,12 @@
 
 use App\Helper\PhoneHelper;
 
+// Landed-cost calculator + B2B preferential pricing. This $car_card serves /cars,
+// the favorites grid and the B2B cabinet, so it needs the same dealer pricing as
+// the ordercars variant, otherwise one car would show two different prices.
+include_once( _ADM_PAGE.'/parsing/parsing_pricing.php' );
+include_once( _SITE_INCL.'/b2b/b2b_pricing.php' );
+
 // Effective "out of stock" flag: 1 when n_a is set OR the offer timer has expired
 // (on_order cars). Lets list sorting push expired-timer cars to the end instantly,
 // without waiting for the 5-min cron that flips n_a in the DB. UNIX_TIMESTAMP() uses
@@ -55,16 +61,21 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 	$f_arr = ['bt'=>0, 'gr'=>0, 'br'=>0, 'mo'=>0, 'yr'=>1, 'fl'=>0, 'tra'=>0, 'wd'=>0, 'clr'=>0, 'mlg'=>1, 'vol'=>1, 'sts'=>1, 'prc'=>1];
 	
 	$query_args = ['lmt'=>$lmt];
-	$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE (catalog_type = "in_stock" OR catalog_type IS NULL)';
-	
+
+	// Region access for B2B partners (spec §3.2). Empty string for ordinary
+	// visitors and for partners entitled to every region.
+	$b2b_region_sql = function_exists('b2b_sql_region_filter') ? b2b_sql_region_filter() : '';
+
+	$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE (catalog_type = "in_stock" OR catalog_type IS NULL)'.$b2b_region_sql;
+
 	// For filter searches on /cars, restrict to in_stock catalog (sort dropdown can switch via redirect on the page level)
 	if ($v1=='fltr') {
-		$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE (catalog_type = "in_stock" OR catalog_type IS NULL)';
+		$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE (catalog_type = "in_stock" OR catalog_type IS NULL)'.$b2b_region_sql;
 	}
-	
+
 	// For similar cars, show both in_stock and on_order cars
 	if ($v1=='smlr') {
-		$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE (catalog_type = "in_stock" OR catalog_type = "on_order" OR catalog_type IS NULL)';
+		$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE (catalog_type = "in_stock" OR catalog_type = "on_order" OR catalog_type IS NULL)'.$b2b_region_sql;
 	}
 
 	// Favorites: render cards for an explicit list of car IDs (across both catalogs)
@@ -78,7 +89,10 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 			$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE 1=0';
 		} else {
 			$in = implode(',', $fav_ids); // already cast to int, safe to inline
-			$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE `id` IN ('.$in.') AND `vis`="1" AND `act`="1" ORDER BY FIELD(`id`, '.$in.')';
+			// Region filter before ORDER BY: a car saved while a region was allowed
+			// must disappear once that permission is revoked.
+			$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE `id` IN ('.$in.') AND `vis`="1" AND `act`="1"'.$b2b_region_sql
+			     . ' ORDER BY FIELD(`id`, '.$in.')';
 		}
 		$query_args = array(); // fav SQL has no bound params
 		$ar['ids'] = $fav_ids;
@@ -490,7 +504,24 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 	}
 	
 	$card_counter = 0;
-	
+
+	// B2B partners see the preferential landed price on the cards too, otherwise the
+	// grid would contradict the car page. One batched query for the whole set, written
+	// back into the rows so every downstream price render stays consistent.
+	if (function_exists('b2b_prices_for_cars')) {
+		$b2b_prices = b2b_prices_for_cars($results);
+		if ($b2b_prices) {
+			foreach ($results as $ri => $rrow) {
+				$b2b_id = (int)$rrow['id'];
+				if (!isset($b2b_prices[$b2b_id])) { continue; }
+				$results[$ri]['prc']   = $b2b_prices[$b2b_id];
+				$results[$ri]['prc_n'] = $b2b_prices[$b2b_id];
+				// A public promo countdown is meaningless against a B2B price.
+				$results[$ri]['prc_t'] = 0;
+			}
+		}
+	}
+
 	foreach ($results as $r) {
 		// Check if mobile - simple detection
 		$is_mobile = (isset($_SERVER['HTTP_USER_AGENT']) && preg_match('/Mobile|Android|iPhone|iPad/', $_SERVER['HTTP_USER_AGENT']));
