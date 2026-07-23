@@ -73,7 +73,7 @@ function oc_render_regions($active, $lang, $orderBtnText) {
         'korea'  => ['ro' => 'Coreea', 'ru' => 'Корея',  'en' => 'Korea',  'flag' => 'south-korea-fl.png'],
         'europe' => ['ro' => 'Europa', 'ru' => 'Европа',  'en' => 'Europe', 'flag' => 'european-fl.png'],
         'usa'    => ['ro' => 'SUA',    'ru' => 'США',     'en' => 'USA',    'flag' => 'united-states-fl.png'],
-        'china'  => ['ro' => 'China',  'ru' => 'Китай',   'en' => 'China',  'flag' => 'china-fl.png'],
+        'china'  => ['ro' => 'China',  'ru' => 'Китай',   'en' => 'China',  'flag' => 'china.png'],
     ];
     $out = '<div class="oc_regions">';
     foreach ($regions as $rk => $rv) {

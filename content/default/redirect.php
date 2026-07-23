@@ -120,7 +120,7 @@ if ((isset($t_mp[2]) && ($t_mp[2]=='cars' || $t_mp[2]=='ordercars')) && isset($t
 
     // Import regions on /ordercars are a clean-path filter (import country), NOT a brand.
     // Set ic here so the later brand-lookup block does not force br=korea (empty catalog).
-    if ($section === 'ordercars' && in_array(strtolower(explode('?', $t_mp[3])[0]), ['korea', 'europe', 'usa'], true)) {
+    if ($section === 'ordercars' && in_array(strtolower(explode('?', $t_mp[3])[0]), ['korea', 'europe', 'usa', 'china'], true)) {
         $_GET['tg'] = 'fltr';
         $_GET['ic'] = strtolower(explode('?', $t_mp[3])[0]);
     } elseif (isset($t_mp[4]) && !empty($t_mp[4])) {

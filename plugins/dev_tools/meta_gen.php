@@ -680,14 +680,16 @@ if ( in_array($z2, ['cars', 'ordercars', 'tyres'], true) && is_numeric($z3) && !
 
 // =====================================================================
 // ORDERCARS - IMPORT REGION pages (clean URL)
-// /ro/ordercars/korea, /ro/ordercars/europe, /ro/ordercars/usa
+// /ro/ordercars/korea, /ro/ordercars/europe, /ro/ordercars/usa, /ro/ordercars/china
 // These are dedicated landing pages (own canonical + h1/title/description),
 // not brands. Handled before the brand block so "korea" is not looked up as a brand.
+// Every label below is used after "din"/"из"/"from", so RU needs the genitive.
 // =====================================================================
 $oc_region_meta = [
     'korea'  => ['ro' => 'Coreea', 'ru' => 'Корея',  'en' => 'Korea'],
     'europe' => ['ro' => 'Europa', 'ru' => 'Европа', 'en' => 'Europe'],
     'usa'    => ['ro' => 'SUA',    'ru' => 'США',    'en' => 'USA'],
+    'china'  => ['ro' => 'China',  'ru' => 'Китая',  'en' => 'China'],
 ];
 $oc_region_key = ($z2 === 'ordercars' && !is_numeric($z3)) ? strtolower($z3) : '';
 

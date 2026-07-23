@@ -191,7 +191,7 @@ $(document).on("change", "#fltr .srch", function(e){
 	// Import regions (ordercars) live on a clean path like brand does: /ordercars/korea.
 	// BUT the path can only hold ONE thing: if a brand is selected, the region must go to
 	// the query string (?ic=korea) instead, otherwise it would be lost.
-	var ocRegionSlugs = ["korea", "europe", "usa"];
+	var ocRegionSlugs = ["korea", "europe", "usa", "china"];
 	var icIsRegion = zData.ic && ocRegionSlugs.indexOf(String(zData.ic).toLowerCase()) !== -1;
 	var icInPath = icIsRegion && !zData.br; // region on the path only when there's no brand
 	if (zData.br) {
@@ -231,7 +231,7 @@ $(document).on("change", "#fltr .srch", function(e){
 	// Preserve import region (korea|usa|europe) selected via the ordercars buttons.
 	// It can arrive either as a clean path (/ordercars/korea) or a legacy ?ic= query.
 	if (!zData.ic) {
-		var icPathMatch = window.location.pathname.match(/\/ordercars\/(korea|europe|usa)(?:\/|$)/i);
+		var icPathMatch = window.location.pathname.match(/\/ordercars\/(korea|europe|usa|china)(?:\/|$)/i);
 		var icMatch = fullUrl.match(/[?&]ic=([^&#]*)/i);
 		if (icPathMatch && icPathMatch[1]) {
 			zData.ic = icPathMatch[1].toLowerCase();
@@ -415,8 +415,8 @@ $(document).on("click", "#fltr > .ctrl > .btns > .unst", function(){
 
 	// Clearing filters should keep the current import region: reset to /ordercars/<region>
 	// instead of the bare /ordercars, so we don't drop out of Korea/Europe/USA.
-	var unsetRegionSlugs = ["korea", "europe", "usa"];
-	var unsetIcMatch = window.location.pathname.match(/\/ordercars\/(korea|europe|usa)(?:\/|$)/i);
+	var unsetRegionSlugs = ["korea", "europe", "usa", "china"];
+	var unsetIcMatch = window.location.pathname.match(/\/ordercars\/(korea|europe|usa|china)(?:\/|$)/i);
 	var unsetRegion = unsetIcMatch ? unsetIcMatch[1].toLowerCase() : "";
 
 	$.each( $("#fltr > .ctrl > .btns > .sbmt").data(), function(k, v) {
@@ -445,12 +445,12 @@ if ( $('#fltr').length ){
 	
 	var initData = $("#fltr > .ctrl > .btns > .sbmt").data();
 	var initHref = "";
-	// Region (korea|europe|usa) lives on the clean path, same as brand.
-	var initRegionSlugs = ["korea", "europe", "usa"];
+	// Region (korea|europe|usa|china) lives on the clean path, same as brand.
+	var initRegionSlugs = ["korea", "europe", "usa", "china"];
 	var initIc = initData.ic ? String(initData.ic).toLowerCase() : "";
 	if (initIc && initRegionSlugs.indexOf(initIc) === -1) { initIc = ""; }
 	if (!initIc) {
-		var initIcPath = window.location.pathname.match(/\/ordercars\/(korea|europe|usa)(?:\/|$)/i);
+		var initIcPath = window.location.pathname.match(/\/ordercars\/(korea|europe|usa|china)(?:\/|$)/i);
 		if (initIcPath) { initIc = initIcPath[1].toLowerCase(); }
 	}
 
