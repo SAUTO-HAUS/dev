@@ -63,7 +63,7 @@ function getImportCountryName($countryId, $language = 'ro') {
  * Shown on the ordercars landing page AND on each region page; the button matching the
  * current region ($active) gets the `is-active` class for a distinct style.
  *
- * @param string $active  Active region slug ('korea'|'europe'|'usa') or '' for none.
+ * @param string $active  Active region slug ('korea'|'europe'|'usa'|'china') or '' for none.
  * @param string $lang    Current language code.
  * @param string $orderBtnText  Localized "learn more" label for the trailing order button.
  */
@@ -73,6 +73,7 @@ function oc_render_regions($active, $lang, $orderBtnText) {
         'korea'  => ['ro' => 'Coreea', 'ru' => 'Корея',  'en' => 'Korea',  'flag' => 'south-korea-fl.png'],
         'europe' => ['ro' => 'Europa', 'ru' => 'Европа',  'en' => 'Europe', 'flag' => 'european-fl.png'],
         'usa'    => ['ro' => 'SUA',    'ru' => 'США',     'en' => 'USA',    'flag' => 'united-states-fl.png'],
+        'china'  => ['ro' => 'China',  'ru' => 'Китай',   'en' => 'China',  'flag' => 'china-fl.png'],
     ];
     $out = '<div class="oc_regions">';
     foreach ($regions as $rk => $rv) {
@@ -234,7 +235,7 @@ if (isset($_SERVER['QUERY_STRING'])) {
 // Import regions that live on a clean path (/ordercars/korea) instead of a query string.
 // The path segment carries only the region; all other filters/sorting stay in the query
 // string, so combining works exactly like brand pages (/ordercars/ford?srt=...).
-$oc_region_slugs = ['korea', 'europe', 'usa'];
+$oc_region_slugs = ['korea', 'europe', 'usa', 'china'];
 
 // Then handle clean URLs for car filters and single car pages
 if (isset($t_mp[3]) && !is_numeric($t_mp[3])) {
@@ -309,6 +310,7 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
             'korea'  => ['ro' => 'Coreea', 'ru' => 'Корея',  'en' => 'Korea'],
             'europe' => ['ro' => 'Europa', 'ru' => 'Европа',  'en' => 'Europe'],
             'usa'    => ['ro' => 'SUA',    'ru' => 'США',     'en' => 'USA'],
+            'china'  => ['ro' => 'China',  'ru' => 'Китай',   'en' => 'China'],
         ];
         if (isset($ic_names[$ic_key])) {
             $ic_lang = $_COOKIE['lang'] ?? 'ro';
@@ -414,7 +416,7 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
     // On a region page (/ordercars/korea|europe|usa) show the same region buttons as the
     // landing page, with the current region marked active.
     $_oc_region = (!isset($_GET['br']) && !isset($_GET['bt']) && !empty($_GET['ic'])) ? strtolower($_GET['ic']) : '';
-    if (in_array($_oc_region, ['korea', 'europe', 'usa'], true)) {
+    if (in_array($_oc_region, ['korea', 'europe', 'usa', 'china'], true)) {
         include_once(_SITE_PAGE.'/new_pages/order/order_lang.php');
         $_oc_lang = $_COOKIE['lang'] ?? 'ro';
         $order_button_text = $lng_order_page[$_oc_lang]['learn_more'] ?? 'Learn more';
@@ -488,6 +490,7 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
                     'korea'  => ['ro' => 'Coreea', 'ru' => 'Кореи',  'en' => 'Korea'],
                     'europe' => ['ro' => 'Europa', 'ru' => 'Европы', 'en' => 'Europe'],
                     'usa'    => ['ro' => 'SUA',    'ru' => 'США',    'en' => 'USA'],
+                    'china'  => ['ro' => 'China',  'ru' => 'Китая',  'en' => 'China'],
                 ];
                 $ic_k = strtolower($_GET['ic']);
                 $ic_lbl = $ic_names[$ic_k][$zlng] ?? ($ic_names[$ic_k]['ro'] ?? $_GET['ic']);

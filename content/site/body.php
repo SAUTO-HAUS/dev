@@ -374,6 +374,7 @@ if ( in_array($_cur_page, $_show_links_pages) && ($_cur_page != 'services' || $_
         'korea'  => ['ro' => 'Coreea', 'ru' => 'Кореи', 'en' => 'Korea'],
         'europe' => ['ro' => 'Europa', 'ru' => 'Европы', 'en' => 'Europe'],
         'usa'    => ['ro' => 'SUA',    'ru' => 'США',    'en' => 'USA'],
+        'china'  => ['ro' => 'China',  'ru' => 'Китая',  'en' => 'China'],
     ];
 ?>
 <div id="home_banner">

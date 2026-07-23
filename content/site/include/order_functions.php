@@ -314,8 +314,11 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 					$sql .= " AND `import_country_id` IN (SELECT id FROM countries WHERE code = 'KR')";
 				} elseif ($ic === 'usa' || $ic === 'us') {
 					$sql .= " AND `import_country_id` IN (SELECT id FROM countries WHERE code = 'US')";
+				} elseif ($ic === 'china' || $ic === 'cn') {
+					$sql .= " AND `import_country_id` IN (SELECT id FROM countries WHERE code = 'CN')";
 				} elseif ($ic === 'europe' || $ic === 'eu') {
-					$sql .= " AND `import_country_id` IN (SELECT id FROM countries WHERE code NOT IN ('KR','US'))";
+					// Europe is "the rest", so every named region must be excluded here.
+					$sql .= " AND `import_country_id` IN (SELECT id FROM countries WHERE code NOT IN ('KR','US','CN'))";
 				}
 			}
 
