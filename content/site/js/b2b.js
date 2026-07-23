@@ -36,12 +36,9 @@
     }
 
     var MESSAGES = {
-        ro: { err_network: 'Eroare de rețea. Încercați din nou.', pass_mismatch: 'Parolele nu coincid.', working: 'Se procesează…',
-              digits: 'cifre', phone_len: 'Numărul pentru {country} trebuie să conțină {expected} după prefixul {dial}.' },
-        ru: { err_network: 'Ошибка сети. Попробуйте ещё раз.', pass_mismatch: 'Пароли не совпадают.', working: 'Обработка…',
-              digits: 'цифр', phone_len: 'Номер для {country} должен содержать {expected} после кода {dial}.' },
-        en: { err_network: 'Network error. Please try again.', pass_mismatch: 'Passwords do not match.', working: 'Processing…',
-              digits: 'digits', phone_len: 'A {country} number needs {expected} after the {dial} prefix.' }
+        ro: { err_network: 'Eroare de rețea. Încercați din nou.', pass_mismatch: 'Parolele nu coincid.', working: 'Se procesează…', phone_len: 'Numărul de telefon trebuie să conțină 8 cifre.' },
+        ru: { err_network: 'Ошибка сети. Попробуйте ещё раз.', pass_mismatch: 'Пароли не совпадают.', working: 'Обработка…', phone_len: 'Номер телефона должен содержать 8 цифр.' },
+        en: { err_network: 'Network error. Please try again.', pass_mismatch: 'Passwords do not match.', working: 'Processing…', phone_len: 'The phone number must contain 8 digits.' }
     };
 
     function lang() {
@@ -88,109 +85,29 @@
 
     // -------------------------------------------------------------- register
 
-    /**
-     * Phone value to submit: dialling code from the picker + the national number.
-     *
-     * If the user types their own + or 00 prefix, that wins and the picker is
-     * ignored. Leading zeros are dropped otherwise, because people type "060..."
-     * out of habit, which would become +3730 60...
-     */
+    /** Digits only, without a leading zero: the +373 prefix is fixed in the markup. */
     function phoneValue(input) {
-        var raw = input.value.trim();
-        if (!raw) return '';
-        if (/^(\+|00)/.test(raw)) return raw;
-
-        var cc = input.closest('.b2b-phone');
-        cc = cc && cc.querySelector('.b2b-cc');
-        var dial = (cc && cc.dataset.dial) || '+373';
-
-        return dial + raw.replace(/\D/g, '').replace(/^0+/, '');
+        return input.value.replace(/\D/g, '').replace(/^0+/, '');
     }
 
     /**
-     * Digit-count check for the selected country. Returns an error string, or ''
-     * when the number is acceptable. Mirrors B2bCountries::validate() on the
+     * Moldova only: exactly 8 digits. Mirrors B2bPhone::normalizeMd() on the
      * server, which is the check that actually protects the account.
      */
     function phoneError(input) {
-        var raw = input.value.trim();
-        if (!raw) return '';
-        if (/^(\+|00)/.test(raw)) return ''; // hand-written prefix: server decides
-
-        var cc = input.closest('.b2b-phone');
-        cc = cc && cc.querySelector('.b2b-cc');
-        if (!cc || !cc.dataset.min) return '';
-
-        var digits = raw.replace(/\D/g, '').replace(/^0+/, '').length;
-        var min = parseInt(cc.dataset.min, 10);
-        var max = parseInt(cc.dataset.max, 10);
-        if (digits >= min && digits <= max) return '';
-
-        var expected = (min === max ? min : min + '-' + max) + ' ' + msg('digits');
-        return msg('phone_len')
-            .replace('{country}', cc.dataset.name || '')
-            .replace('{expected}', expected)
-            .replace('{dial}', cc.dataset.dial || '');
+        var digits = phoneValue(input);
+        if (!digits) return '';
+        return digits.length === 8 ? '' : msg('phone_len');
     }
 
-    /** Country dialling-code dropdown next to the phone input. */
-    function initDialPicker(form) {
-        var cc = form.querySelector('.b2b-cc');
-        if (!cc) return;
-
-        var btn  = cc.querySelector('.b2b-cc__btn');
-        var flag = cc.querySelector('.b2b-cc__flag');
-        var code = cc.querySelector('.b2b-cc__code');
+    /** Clears the error marker as soon as the number becomes valid. */
+    function initPhone(form) {
         var input = form.querySelector('.b2b-phone input');
-
-        // Clear a stale error as soon as the number becomes valid.
-        if (input) {
-            input.addEventListener('input', function () {
-                if (input.classList.contains('is-invalid') && !phoneError(input)) {
-                    input.classList.remove('is-invalid');
-                }
-            });
-        }
-
-        btn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            var open = cc.classList.toggle('open');
-            btn.setAttribute('aria-expanded', open ? 'true' : 'false');
-        });
-
-        cc.addEventListener('click', function (e) {
-            var li = e.target.closest('li[data-dial]');
-            if (!li) return;
-
-            // Carry the whole country over: the length rules move with it.
-            cc.dataset.dial = li.dataset.dial;
-            cc.dataset.min  = li.dataset.min;
-            cc.dataset.max  = li.dataset.max;
-            cc.dataset.name = li.dataset.name;
-
-            flag.src = '/media/images/flags/' + li.dataset.iso + '.svg';
-            flag.alt = li.dataset.name;
-            code.textContent = li.dataset.dial;
-
-            cc.querySelectorAll('li').forEach(function (x) { x.classList.remove('is-active'); });
-            li.classList.add('is-active');
-
-            cc.classList.remove('open');
-            btn.setAttribute('aria-expanded', 'false');
-
-            // A number valid for the old country may not be for the new one.
-            if (input) {
-                input.classList.toggle('is-invalid', !!phoneError(input));
-                input.focus();
+        if (!input) return;
+        input.addEventListener('input', function () {
+            if (input.classList.contains('is-invalid') && !phoneError(input)) {
+                input.classList.remove('is-invalid');
             }
-        });
-
-        document.addEventListener('click', function () {
-            cc.classList.remove('open');
-            btn.setAttribute('aria-expanded', 'false');
-        });
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') cc.classList.remove('open');
         });
     }
 
@@ -202,7 +119,7 @@
         var box     = form.querySelector('.b2b-form__msg');
         var csrf    = form.dataset.csrf;
 
-        initDialPicker(form);
+        initPhone(form);
 
         form.addEventListener('submit', function (e) {
             e.preventDefault();

@@ -66,15 +66,15 @@ class B2bAuth
         if (!filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($email) > 190) {
             return ['ok' => false, 'field' => 'email', 'error' => 'Adresa de email nu este validă.'];
         }
-        $phone = B2bCountries::normalize($phoneRaw);
+        // Moldova only, exactly 8 digits. The browser checks this too, but
+        // client-side validation can be bypassed.
+        $phone = B2bPhone::normalizeMd($phoneRaw);
         if ($phone === '') {
-            return ['ok' => false, 'field' => 'phone_number', 'error' => 'Numărul de telefon nu este valid.'];
-        }
-        // Digit count for the detected country; the browser checks this too,
-        // but client-side validation can be bypassed.
-        $len = B2bCountries::validate($phone);
-        if (!$len['ok']) {
-            return ['ok' => false, 'field' => 'phone_number', 'error' => $len['error']];
+            return [
+                'ok'    => false,
+                'field' => 'phone_number',
+                'error' => 'Numărul de telefon trebuie să conțină 8 cifre, după prefixul '.B2bPhone::MD_DIAL.'.',
+            ];
         }
         if (mb_strlen($password) < 8) {
             return ['ok' => false, 'field' => 'password', 'error' => 'Parola trebuie să aibă minimum 8 caractere.'];

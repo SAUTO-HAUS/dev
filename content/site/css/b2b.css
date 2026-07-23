@@ -54,8 +54,7 @@
        vertical padding can be tighter. The country button must match the input
        exactly or the two halves of the phone control drift apart. */
     .b2b-page--form .b2b-field input,
-    .b2b-page--form .b2b-field select,
-    .b2b-page--form .b2b-cc__btn{ padding-top:.5rem; padding-bottom:.5rem; }
+    .b2b-page--form .b2b-field select{ padding-top:.5rem; padding-bottom:.5rem; }
 }
 
 /* ------------------------------------------------------------------ cards */
@@ -126,57 +125,26 @@
 }
 .b2b-field input.is-invalid{ border-color:var(--b2b-brand); background:#fff7f8; }
 .b2b-hint{ color:#9a9a9a; font-size:.76rem; }
-/* Phone field: country picker + national number, joined into one control. */
+/* Phone field: fixed +373 prefix glued to the national number. */
 .b2b-phone{ display:flex; align-items:stretch; }
+.b2b-phone__dial{
+    display:flex; align-items:center;
+    padding:.72rem .5rem .72rem .9rem;
+    border:1.5px solid var(--b2b-line); border-right:none;
+    border-radius:10px 0 0 10px;
+    background:#fafafa;
+    font-size:1rem; font-weight:600; color:var(--b2b-muted);
+    white-space:nowrap; user-select:none;
+}
 .b2b-phone input{
     border-top-left-radius:0; border-bottom-left-radius:0;
     border-left:none; min-width:0;
+    letter-spacing:.02em;
 }
-
-/* Country dialling-code dropdown */
-.b2b-cc{ position:relative; flex:0 0 auto; }
-.b2b-cc__btn{
-    display:flex; align-items:center; gap:.4rem;
-    height:100%; padding:.72rem .7rem .72rem .9rem;
-    border:1.5px solid var(--b2b-line); border-right:none;
-    border-radius:10px 0 0 10px;
-    background:#fff; cursor:pointer;
-    font-family:inherit; font-size:1rem; color:var(--b2b-ink);
-    white-space:nowrap; transition:background .15s;
-}
-.b2b-cc__btn:hover{ background:#fafafa; }
-.b2b-cc__flag{ width:20px; height:20px; border-radius:3px; display:block; flex:0 0 20px; }
-.b2b-cc__code{ font-weight:600; }
-.b2b-cc__arr{
-    width:7px; height:7px; margin-left:.1rem;
-    border-right:2px solid #888; border-bottom:2px solid #888;
-    transform:translateY(-2px) rotate(45deg);
-    transition:transform .2s;
-}
-.b2b-cc.open .b2b-cc__arr{ transform:translateY(1px) rotate(-135deg); }
-
-.b2b-cc__list{
-    display:none; position:absolute; top:calc(100% + 4px); left:0; z-index:20;
-    width:270px; max-height:280px; overflow-y:auto;
-    margin:0; padding:.3rem 0; list-style:none;
-    background:#fff; border:1.5px solid var(--b2b-line); border-radius:10px;
-    box-shadow:0 8px 24px rgba(20,20,40,.14);
-}
-.b2b-cc.open .b2b-cc__list{ display:block; }
-.b2b-cc__list li{
-    display:flex; align-items:center; gap:.6rem;
-    padding:.5rem .9rem; cursor:pointer;
-    font-size:.92rem; transition:background-color .12s;
-}
-.b2b-cc__list li:hover{ background:#fdecee; }
-.b2b-cc__list li.is-active{ background:#fff5f6; font-weight:600; }
-.b2b-cc__list li img{ width:20px; height:20px; border-radius:3px; flex:0 0 20px; }
-.b2b-cc__name{ flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-.b2b-cc__dial{ color:var(--b2b-muted); font-style:normal; font-size:.86rem; }
 
 /* The focus ring wraps the whole control, not just the input. */
 .b2b-phone:focus-within{ border-radius:10px; box-shadow:0 0 0 3px rgba(226,0,26,.12); }
-.b2b-phone:focus-within .b2b-cc__btn,
+.b2b-phone:focus-within .b2b-phone__dial,
 .b2b-phone:focus-within input{ border-color:var(--b2b-brand); }
 .b2b-phone:focus-within input{ box-shadow:none; }
 

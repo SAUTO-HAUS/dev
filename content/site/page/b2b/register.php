@@ -7,7 +7,8 @@
  */
 
 include_once( __DIR__ . '/_layout.php' );
-include_once( _SITE_INCL . '/b2b/b2b_countries.php' );
+
+use App\Services\B2b\B2bPhone;
 
 $lang = $_COOKIE['lang'] ?? 'ro';
 $t    = b2b_lang($lang);
@@ -44,11 +45,12 @@ $form = '
         </div>
         <div class="b2b-field">
             <label for="b2b-phone">'.b2b_esc($t['phone']).' *</label>
-            <!-- Country picker + national number. The dialling code is prepended
-                 on submit (b2b.js); the server normalises either way. -->
+            <!-- Moldova only: fixed prefix, 8 digits typed by the client. -->
             <div class="b2b-phone">
-                '.b2b_dial_picker('md').'
-                <input type="tel" id="b2b-phone" name="phone" maxlength="32" required autocomplete="tel" placeholder="60 123 456" />
+                <span class="b2b-phone__dial">'.b2b_esc(B2bPhone::MD_DIAL).'</span>
+                <input type="tel" id="b2b-phone" name="phone" inputmode="numeric"
+                       maxlength="'.(int)B2bPhone::MD_DIGITS.'" pattern="\d{'.(int)B2bPhone::MD_DIGITS.'}"
+                       required autocomplete="tel" placeholder="60 123 456" />
             </div>
             <small class="b2b-hint">'.b2b_esc($t['phone_hint']).'</small>
         </div>
