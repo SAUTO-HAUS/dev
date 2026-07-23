@@ -159,13 +159,15 @@ $rbac_admin_menu = [
         'crm' => ['calls', 'inbox', 'leads', 'my_leads', 'transaction', 'closed', 'analytics', 'settings'],
         'b2b' => ['users', 'requests', 'settings'],
         'calculator' => ['calc', 'ctlg', 'usage', 'rates'],
-        'tyres' => ['ctlg'],
+        // 'tyres' => ['ctlg'],
         // Hidden: page-level SEO override is disabled in meta_gen.php and per-item
         // SEO is edited on the car/tyre form. Uncomment to bring the page back.
         // 'seo' => ['ctlg'],
         'brands_seo' => ['ctlg'],
         'viz' => ['ctlg'],
-        'mail' => ['message', 'order', 'favorites', 'archive'],
+        // Hidden on request. Uncomment to bring the four mail folders back; note
+        // this also restores direct /adminsauto/mail/* access, which the menu gates.
+        // 'mail' => ['message', 'order', 'favorites', 'archive'],
         'stock' => ['ctlg', 'extern'],
         'sett' => ['info', 'adm_usr', 'roles', 'phone_config', 'publication_settings', 'monitoring', 'ai_prompt', '404_stats', 'changelog', 'analytics', 'terminal']
     ],
@@ -175,9 +177,9 @@ $rbac_admin_menu = [
         'docs' => ['add', 'ctlg'],
         'crm' => ['calls', 'inbox', 'leads', 'my_leads', 'transaction', 'closed'],
         'calculator' => ['calc', 'ctlg'],
-        'tyres' => ['ctlg'],
+        // 'tyres' => ['ctlg'],
         // 'seo' => ['ctlg'],
-        'mail' => ['message', 'order', 'favorites', 'archive'],
+        // 'mail' => ['message', 'order', 'favorites', 'archive'],
     ],
     'publisher' => [
         'cars' => ['add', 'ctlg'],

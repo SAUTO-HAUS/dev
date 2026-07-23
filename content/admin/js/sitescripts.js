@@ -34,6 +34,18 @@ $(document).ready(function() {
 		$('#menu').removeClass('open');
 		$('#menu-overlay').removeClass('active');
 	});
+
+	var menuBxWasOpen = false;
+	$(document).on('mousedown touchstart', '#menu > .bx > label.nm', function(){
+		var inp = document.getElementById(this.htmlFor);
+		menuBxWasOpen = !!(inp && inp.checked);
+	});
+	$(document).on('click', '#menu > .bx > label.nm', function(e){
+		if (!menuBxWasOpen) return;
+		var inp = document.getElementById(this.htmlFor);
+		if (inp) { e.preventDefault(); inp.checked = false; }
+		menuBxWasOpen = false;
+	});
 	
 	if ( typeof Cookies.get('xtype') !== 'undefined' ){ Cookies.remove('xtype', { path: '/' }) }
 	

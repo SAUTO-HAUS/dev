@@ -103,7 +103,15 @@ if (!empty($_GET['embed']) && isset($i_counts) && $i_counts == 1) {
 					}
 					$render_menu[$mk] = $mv;
 				}
-				if ($rest_bucket) { $render_menu['rest'] = $rest_bucket; }
+				if ($rest_bucket) {
+					$sett_actions = null;
+					if (array_key_exists('sett', $render_menu)) {
+						$sett_actions = $render_menu['sett'];
+						unset($render_menu['sett']);
+					}
+					$render_menu['rest'] = $rest_bucket;
+					if ($sett_actions !== null) { $render_menu['sett'] = $sett_actions; }
+				}
 
 				if (!empty($render_menu)) {
 					foreach($render_menu as $k => $ar){
