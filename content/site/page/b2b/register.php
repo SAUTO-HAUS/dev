@@ -51,7 +51,7 @@ $form = '
                  on submit (b2b.js); the server normalises either way. -->
             <div class="b2b-phone">
                 '.b2b_dial_picker('md').'
-                <input type="tel" id="b2b-phone" name="phone" maxlength="32" required autocomplete="tel" placeholder="79 975 967" />
+                <input type="tel" id="b2b-phone" name="phone" maxlength="32" required autocomplete="tel" placeholder="60 123 456" />
             </div>
             <small class="b2b-hint">'.b2b_esc($t['phone_hint']).'</small>
         </div>

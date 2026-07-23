@@ -198,6 +198,7 @@ SELECT t.`name`, t.`value` FROM (
     UNION ALL SELECT 'b2b_sms_api_user',            ''
     UNION ALL SELECT 'b2b_sms_api_pass',            ''
     UNION ALL SELECT 'b2b_sms_api_key',             ''
+    UNION ALL SELECT 'b2b_sms_api_url',             ''
     UNION ALL SELECT 'b2b_sms_debug_email',         ''
     UNION ALL SELECT 'b2b_whatsapp_driver',         'walink'
     UNION ALL SELECT 'b2b_whatsapp_phone_id',       ''

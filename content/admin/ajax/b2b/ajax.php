@@ -209,7 +209,7 @@ switch ($fn) {
     case 'save_settings': {
         $allowed = [
             'b2b_sms_driver', 'b2b_sms_sender', 'b2b_sms_api_user', 'b2b_sms_api_pass',
-            'b2b_sms_api_key', 'b2b_sms_debug_email',
+            'b2b_sms_api_key', 'b2b_sms_api_url', 'b2b_sms_debug_email',
             'b2b_whatsapp_driver', 'b2b_whatsapp_phone_id', 'b2b_whatsapp_token', 'b2b_whatsapp_template',
             'b2b_superadmin_phone', 'b2b_superadmin_email',
             'b2b_advance_default', 'b2b_advance_mode', 'b2b_advance_percent', 'b2b_advance_max',

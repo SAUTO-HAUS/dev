@@ -49,6 +49,13 @@
 
     /* A full-width button across the card looks broken; keep it centred. */
     .b2b-page--form .b2b-btn--block{ width:auto; min-width:320px; justify-self:center; }
+
+    /* Shorter controls on desktop: the wide card gives horizontal room, so the
+       vertical padding can be tighter. The country button must match the input
+       exactly or the two halves of the phone control drift apart. */
+    .b2b-page--form .b2b-field input,
+    .b2b-page--form .b2b-field select,
+    .b2b-page--form .b2b-cc__btn{ padding-top:.5rem; padding-bottom:.5rem; }
 }
 
 /* ------------------------------------------------------------------ cards */

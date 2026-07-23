@@ -40,6 +40,10 @@ $advMode   = B2bConfig::get('b2b_advance_mode', 'fixed');
                 <span><?= b2b_adm_esc($t['sms_sender']) ?></span>
                 <input type="text" data-setting="b2b_sms_sender" value="<?= b2b_adm_esc(B2bConfig::get('b2b_sms_sender', 'SAUTO')) ?>">
             </label>
+            <label class="b2ba-field b2ba-field--wide">
+                <span><?= b2b_adm_esc($t['sms_api_key']) ?></span>
+                <input type="password" data-setting="b2b_sms_api_key" value="<?= b2b_adm_esc(B2bConfig::get('b2b_sms_api_key')) ?>" autocomplete="new-password">
+            </label>
             <label class="b2ba-field">
                 <span><?= b2b_adm_esc($t['sms_user']) ?></span>
                 <input type="text" data-setting="b2b_sms_api_user" value="<?= b2b_adm_esc(B2bConfig::get('b2b_sms_api_user')) ?>" autocomplete="off">
@@ -50,7 +54,7 @@ $advMode   = B2bConfig::get('b2b_advance_mode', 'fixed');
             </label>
             <label class="b2ba-field b2ba-field--wide">
                 <span><?= b2b_adm_esc($t['sms_endpoint']) ?></span>
-                <input type="url" data-setting="b2b_sms_api_key" value="<?= b2b_adm_esc(B2bConfig::get('b2b_sms_api_key')) ?>" placeholder="https://...">
+                <input type="url" data-setting="b2b_sms_api_url" value="<?= b2b_adm_esc(B2bConfig::get('b2b_sms_api_url')) ?>" placeholder="https://api.sms.md/v1/send">
             </label>
             <label class="b2ba-field b2ba-field--wide">
                 <span><?= b2b_adm_esc($t['sms_debug_email']) ?></span>
