@@ -159,7 +159,9 @@ $rbac_admin_menu = [
         'b2b' => ['users', 'requests', 'settings'],
         'calculator' => ['calc', 'ctlg', 'usage', 'rates'],
         'tyres' => ['ctlg'],
-        'seo' => ['ctlg'],
+        // Hidden: page-level SEO override is disabled in meta_gen.php and per-item
+        // SEO is edited on the car/tyre form. Uncomment to bring the page back.
+        // 'seo' => ['ctlg'],
         'brands_seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
         'stock' => ['ctlg', 'extern'],
@@ -172,7 +174,7 @@ $rbac_admin_menu = [
         'crm' => ['calls', 'inbox', 'leads', 'my_leads', 'transaction', 'closed'],
         'calculator' => ['calc', 'ctlg'],
         'tyres' => ['ctlg'],
-        'seo' => ['ctlg'],
+        // 'seo' => ['ctlg'],
         'mail' => ['message', 'order', 'favorites', 'archive'],
     ],
     'publisher' => [

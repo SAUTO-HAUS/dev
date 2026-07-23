@@ -86,12 +86,32 @@ if (!empty($_GET['embed']) && isset($i_counts) && $i_counts == 1) {
 						}
 					}
 				
-				if (!empty($current_menu)) {
-					foreach($current_menu as $k => $ar){
+				// Visual grouping only. Low-traffic modules render inside one "rest" box
+				// so the sidebar stays short. $current_menu itself must NOT change: the
+				// access check further down authorises a page via isset($current_menu[...]).
+				$rest_modules = ['tyres', 'brands_seo', 'mail', 'stock'];
+				$render_menu  = [];
+				$rest_bucket  = [];
+				foreach ($current_menu as $mk => $mv) {
+					if (in_array($mk, $rest_modules, true) && !empty($mv)) {
+						$acts = (array)$mv;
+						foreach ($acts as $mact) {
+							// Single-action module -> show the module name; otherwise the action name.
+							$rest_bucket[$mk.'/'.$mact] = (count($acts) === 1) ? $mk : $mk.'_'.$mact;
+						}
+						continue;
+					}
+					$render_menu[$mk] = $mv;
+				}
+				if ($rest_bucket) { $render_menu['rest'] = $rest_bucket; }
+
+				if (!empty($render_menu)) {
+					foreach($render_menu as $k => $ar){
 						$menu_name = isset($adm_lang[$k]) ? $adm_lang[$k] : ucfirst($k);
 						
-						// If module has only one option, make the label a direct link
-						if (count($ar) === 1) {
+						// If module has only one option, make the label a direct link.
+						// "rest" always stays a group: its keys are "module/action" paths.
+						if (count($ar) === 1 && $k !== 'rest') {
 							$single_action = $ar[0];
 							$is_active = (isset($t_mp[3]) && $t_mp[3] === $k);
 							echo '
@@ -101,21 +121,36 @@ if (!empty($_GET['embed']) && isset($i_counts) && $i_counts == 1) {
 							</div>';
 						} else {
 							echo '
-							<input id="menu_bx_'.$k.'" type="radio" name="menu_bx" class="radio_inp none" '.( (isset($t_mp[3])&&$t_mp[3]==$k)||(!isset($t_mp[3])&&$k=='sett')?'checked="checked"':'' ).' />
+							<input id="menu_bx_'.$k.'" type="radio" name="menu_bx" class="radio_inp none" '.( (isset($t_mp[3])&&($t_mp[3]==$k||($k=='rest'&&in_array($t_mp[3], $rest_modules, true))))||(!isset($t_mp[3])&&$k=='sett')?'checked="checked"':'' ).' />
 							<div class="bx '.(in_array( $k, $hided_admin_menu, true )?'ghost':'').'">
 								<label for="menu_bx_'.$k.'" class="nm">'.$menu_name.'</label>';
-								foreach ($ar as $v){
-									if ( isset($restrict_admin_menu[$user_id]['page'][$k][$v]) ){continue;}
-									
-									$menu_name = isset($adm_lang[$k.'_'.$v]) ? $adm_lang[$k.'_'.$v] : (isset($adm_lang[$v]) ? $adm_lang[$v] : ucfirst($v));
+								foreach ($ar as $vk => $v){
+									// A grouping bucket (e.g. "rest") points at OTHER modules: the key is
+									// "module/action" and the value is the adm_lang key for the label.
+									// Numeric keys keep the original behaviour (action inside $k).
+									$lbl_key = null;
+									if (is_string($vk) && strpos($vk, '/') !== false) {
+										list($mod, $act) = explode('/', $vk, 2);
+										$lbl_key = $v;
+									} else {
+										$mod = $k; $act = $v;
+									}
+
+									if ( isset($restrict_admin_menu[$user_id]['page'][$mod][$act]) ){continue;}
+
+									$menu_name = ($lbl_key !== null && isset($adm_lang[$lbl_key]))
+										? $adm_lang[$lbl_key]
+										: (isset($adm_lang[$mod.'_'.$act]) ? $adm_lang[$mod.'_'.$act] : (isset($adm_lang[$act]) ? $adm_lang[$act] : ucfirst($act)));
 									echo '
-									<a href="/'.$_COOKIE['lang'].'/'.$admin_dir.($k=='sett'&&$v=='info'?'':'/'.$k.'/'.$v).'" class="'.$k.' '.$v.' btn '.((isset($t_mp[4])&&$t_mp[3]==$k&&$t_mp[4]==$v)||(!isset($t_mp[3])&&$v=='info')?'act':'').'">'; 
-										$qu = 0; $qu_x = 0;
-										if ($k=='mail'){ 
-											$qu = $db->query('SELECT COUNT(*) FROM '.$prefx.'_mail')->fetchColumn();
-											if ( in_array($v, ['message', 'order']) ){ $qu_x = $db->query('SELECT COUNT(*) FROM '.$prefx.'_mail WHERE `seen`=0 AND `folder`="'.$v.'"')->fetchColumn(); }
+									<a href="/'.$_COOKIE['lang'].'/'.$admin_dir.($mod=='sett'&&$act=='info'?'':'/'.$mod.'/'.$act).'" class="'.$mod.' '.$act.' btn '.((isset($t_mp[4])&&$t_mp[3]==$mod&&$t_mp[4]==$act)||(!isset($t_mp[3])&&$act=='info')?'act':'').'">';
+										$qu_x = 0;
+										if ($mod=='mail'){
+											// Collapsed into a single entry: count every unread folder.
+											$qu_x = ($lbl_key !== null)
+												? $db->query('SELECT COUNT(*) FROM '.$prefx.'_mail WHERE `seen`=0 AND `folder` IN ("message","order")')->fetchColumn()
+												: ( in_array($act, ['message', 'order']) ? $db->query('SELECT COUNT(*) FROM '.$prefx.'_mail WHERE `seen`=0 AND `folder`="'.$act.'"')->fetchColumn() : 0 );
 										}
-										echo $menu_name.($k=='mail'&&$qu_x>0?' :'.$qu_x:'').($k=='docs'?'':'').'
+										echo $menu_name.($mod=='mail'&&$qu_x>0?' :'.$qu_x:'').'
 									</a>';
 								}
 							echo '
