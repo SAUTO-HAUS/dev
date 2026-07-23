@@ -2,6 +2,7 @@
 
 /** B2B client list with status filters (spec 3.1, account approval). */
 
+use App\Services\B2b\B2bAuth;
 use App\Services\B2b\B2bConfig;
 use App\Services\B2b\B2bRegions;
 
@@ -33,14 +34,15 @@ if ($filter !== '') {
     $args[':status'] = $filter;
 }
 if ($search !== '') {
-    // Four distinct placeholders: this PDO runs with ATTR_EMULATE_PREPARES=false,
+    // Distinct placeholders: this PDO runs with ATTR_EMULATE_PREPARES=false,
     // where reusing one named placeholder across several positions is not supported.
-    $sql .= ' AND (company_name LIKE :q1 OR idno LIKE :q2 OR email LIKE :q3 OR representative_name LIKE :q4)';
+    $sql .= ' AND (login LIKE :q1 OR full_name LIKE :q2 OR email LIKE :q3 OR phone_number LIKE :q4 OR company_name LIKE :q5)';
     $like = '%'.$search.'%';
     $args[':q1'] = $like;
     $args[':q2'] = $like;
     $args[':q3'] = $like;
     $args[':q4'] = $like;
+    $args[':q5'] = $like;
 }
 $sql .= ' ORDER BY FIELD(status, "pending", "active", "blocked"), id DESC LIMIT 500';
 
@@ -91,9 +93,9 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/users';
             <table class="b2ba-table">
                 <thead>
                     <tr>
-                        <th><?= b2b_adm_esc($t['col_company']) ?></th>
-                        <th><?= b2b_adm_esc($t['col_idno']) ?></th>
-                        <th><?= b2b_adm_esc($t['col_repr']) ?></th>
+                        <th><?= b2b_adm_esc($t['col_login']) ?></th>
+                        <th><?= b2b_adm_esc($t['col_name']) ?></th>
+                        <th><?= b2b_adm_esc($t['col_person_type']) ?></th>
                         <th><?= b2b_adm_esc($t['col_contact']) ?></th>
                         <th><?= b2b_adm_esc($t['col_regions']) ?></th>
                         <th><?= b2b_adm_esc($t['col_status']) ?></th>
@@ -107,9 +109,9 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/users';
                     $regions = B2bRegions::allowed($uid);
                 ?>
                     <tr>
-                        <td class="b2ba-td--strong"><?= b2b_adm_esc($u['company_name']) ?></td>
-                        <td><?= b2b_adm_esc($u['idno']) ?></td>
-                        <td><?= b2b_adm_esc($u['representative_name']) ?></td>
+                        <td class="b2ba-td--strong"><?= b2b_adm_esc($u['login']) ?></td>
+                        <td><?= b2b_adm_esc(B2bAuth::displayName($u)) ?></td>
+                        <td><?= b2b_adm_esc($t['pt_'.$u['person_type']] ?? $u['person_type']) ?></td>
                         <td class="b2ba-td--small">
                             <?= b2b_adm_esc($u['email']) ?><br>
                             <?= b2b_adm_esc($u['phone_number']) ?>

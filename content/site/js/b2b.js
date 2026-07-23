@@ -1,5 +1,5 @@
 /* ===========================================================================
-   B2B module: registration, two-step login (SMS 2FA) and the car-page actions
+   B2B module: registration, login and the car-page actions
    (proforma, send to Super Admin, save).
 
    Every request goes to POST /ajax.php with tp=ste, the site's existing AJAX
@@ -36,11 +36,11 @@
     }
 
     var MESSAGES = {
-        ro: { err_network: 'Eroare de rețea. Încercați din nou.', pass_mismatch: 'Parolele nu coincid.', otp_incomplete: 'Introduceți toate cele 6 cifre.', otp_expired: 'Codul a expirat. Solicitați unul nou.', working: 'Se procesează…',
+        ro: { err_network: 'Eroare de rețea. Încercați din nou.', pass_mismatch: 'Parolele nu coincid.', working: 'Se procesează…',
               digits: 'cifre', phone_len: 'Numărul pentru {country} trebuie să conțină {expected} după prefixul {dial}.' },
-        ru: { err_network: 'Ошибка сети. Попробуйте ещё раз.', pass_mismatch: 'Пароли не совпадают.', otp_incomplete: 'Введите все 6 цифр.', otp_expired: 'Срок действия кода истёк. Запросите новый.', working: 'Обработка…',
+        ru: { err_network: 'Ошибка сети. Попробуйте ещё раз.', pass_mismatch: 'Пароли не совпадают.', working: 'Обработка…',
               digits: 'цифр', phone_len: 'Номер для {country} должен содержать {expected} после кода {dial}.' },
-        en: { err_network: 'Network error. Please try again.', pass_mismatch: 'Passwords do not match.', otp_incomplete: 'Enter all 6 digits.', otp_expired: 'The code has expired. Request a new one.', working: 'Processing…',
+        en: { err_network: 'Network error. Please try again.', pass_mismatch: 'Passwords do not match.', working: 'Processing…',
               digits: 'digits', phone_len: 'A {country} number needs {expected} after the {dial} prefix.' }
     };
 
@@ -232,13 +232,15 @@
             say(box, '');
             busy(btn, true);
 
+            var ptype = form.querySelector('[name="person_type"]:checked');
+
             api('b2b_register', {
-                company_name:        form.querySelector('[name="company_name"]').value.trim(),
-                idno:                form.querySelector('[name="idno"]').value.trim(),
-                representative_name: form.querySelector('[name="representative_name"]').value.trim(),
-                email:               form.querySelector('[name="email"]').value.trim(),
-                phone:               phoneValue(form.querySelector('[name="phone"]')),
-                password:            pass.value
+                person_type: ptype ? ptype.value : '',
+                email:       form.querySelector('[name="email"]').value.trim(),
+                phone:       phoneValue(form.querySelector('[name="phone"]')),
+                full_name:   form.querySelector('[name="full_name"]').value.trim(),
+                login:       form.querySelector('[name="login"]').value.trim(),
+                password:    pass.value
             }, csrf).then(function (res) {
                 busy(btn, false);
                 if (handleCsrf(res)) return;
@@ -260,162 +262,32 @@
         });
     }
 
-    // ------------------------------------------------------- login + 2FA (OTP)
+    // ------------------------------------------------------------------ login
 
     function initLogin() {
         var form = document.getElementById('b2b-login-form');
-        var otp  = document.getElementById('b2b-otp');
-        if (!form || !otp) return;
+        if (!form) return;
 
-        var csrf     = form.dataset.csrf;
-        var ttl      = parseInt(form.dataset.otpTtl, 10) || 300;
-        var formBox  = form.querySelector('.b2b-form__msg');
-        var otpBox   = otp.querySelector('.b2b-form__msg');
-        var cells    = Array.prototype.slice.call(otp.querySelectorAll('.b2b-otp__cell'));
-        var countdown = otp.querySelector('.b2b-otp__countdown');
-        var phoneOut  = otp.querySelector('.b2b-otp__phone');
-        var verifyBtn = otp.querySelector('[data-b2b-action="verify-otp"]');
-        var resendBtn = otp.querySelector('[data-b2b-action="resend-otp"]');
-        var backBtn   = otp.querySelector('[data-b2b-action="otp-back"]');
+        var csrf = form.dataset.csrf;
+        var box  = form.querySelector('.b2b-form__msg');
 
-        var userId = 0;
-        var timer  = null;
-
-        function startTimer() {
-            var left = ttl;
-            clearInterval(timer);
-
-            function tick() {
-                var m = Math.floor(left / 60);
-                var s = left % 60;
-                countdown.textContent = (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
-                countdown.classList.toggle('is-low', left <= 60);
-
-                if (left <= 0) {
-                    clearInterval(timer);
-                    say(otpBox, msg('otp_expired'), 'error');
-                    verifyBtn.disabled = true;
-                }
-                left--;
-            }
-
-            verifyBtn.disabled = false;
-            tick();
-            timer = setInterval(tick, 1000);
-        }
-
-        function showOtp(hint) {
-            form.hidden = true;
-            otp.hidden = false;
-            if (phoneOut) phoneOut.textContent = hint || '';
-            say(otpBox, '');
-            cells.forEach(function (c) { c.value = ''; });
-            startTimer();
-            cells[0].focus();
-        }
-
-        function code() {
-            return cells.map(function (c) { return c.value.replace(/\D/g, ''); }).join('');
-        }
-
-        // Step 1: credentials. The server creates no session here.
         form.addEventListener('submit', function (e) {
             e.preventDefault();
 
             var btn = form.querySelector('button[type="submit"]');
-            say(formBox, '');
+            say(box, '');
             busy(btn, true);
 
             api('b2b_login', {
-                email:    form.querySelector('[name="email"]').value.trim(),
+                login:    form.querySelector('[name="login"]').value.trim(),
                 password: form.querySelector('[name="password"]').value
             }, csrf).then(function (res) {
                 busy(btn, false);
                 if (handleCsrf(res)) return;
 
-                if (!res.ok) { say(formBox, res.error, 'error'); return; }
-
-                userId = res.user_id;
-                if (res.ttl) ttl = res.ttl;
-                showOtp(res.phone_hint);
+                if (!res.ok) { say(box, res.error, 'error'); return; }
+                window.location.href = res.redirect;
             });
-        });
-
-        // OTP cell navigation: one digit per cell, with paste support.
-        cells.forEach(function (cell, i) {
-            cell.addEventListener('input', function () {
-                cell.value = cell.value.replace(/\D/g, '').slice(0, 1);
-                if (cell.value && i < cells.length - 1) cells[i + 1].focus();
-                if (code().length === 6) verify();
-            });
-
-            cell.addEventListener('keydown', function (e) {
-                if (e.key === 'Backspace' && !cell.value && i > 0) cells[i - 1].focus();
-                if (e.key === 'ArrowLeft'  && i > 0) cells[i - 1].focus();
-                if (e.key === 'ArrowRight' && i < cells.length - 1) cells[i + 1].focus();
-            });
-
-            cell.addEventListener('paste', function (e) {
-                e.preventDefault();
-                var digits = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '').slice(0, 6);
-                for (var j = 0; j < digits.length && i + j < cells.length; j++) {
-                    cells[i + j].value = digits[j];
-                }
-                cells[Math.min(i + digits.length, cells.length - 1)].focus();
-                if (code().length === 6) verify();
-            });
-        });
-
-        // Step 2: code validation; only now does the server open the session.
-        function verify() {
-            if (code().length !== 6) { say(otpBox, msg('otp_incomplete'), 'error'); return; }
-
-            say(otpBox, '');
-            busy(verifyBtn, true);
-
-            api('b2b_verify_otp', { user_id: userId, code: code() }, csrf).then(function (res) {
-                busy(verifyBtn, false);
-                if (handleCsrf(res)) return;
-
-                if (!res.ok) {
-                    say(otpBox, res.error, 'error');
-                    cells.forEach(function (c) { c.value = ''; });
-                    cells[0].focus();
-                    return;
-                }
-
-                clearInterval(timer);
-                window.location.href = res.redirect || '/';
-            });
-        }
-
-        verifyBtn.addEventListener('click', verify);
-
-        resendBtn.addEventListener('click', function () {
-            resendBtn.disabled = true;
-            say(otpBox, '');
-
-            api('b2b_resend_otp', { user_id: userId }, csrf).then(function (res) {
-                if (handleCsrf(res)) return;
-
-                if (!res.ok) { say(otpBox, res.error, 'error'); resendBtn.disabled = false; return; }
-
-                if (res.ttl) ttl = res.ttl;
-                cells.forEach(function (c) { c.value = ''; });
-                startTimer();
-                cells[0].focus();
-                say(otpBox, res.message, 'ok');
-
-                // Short cooldown so the button cannot be hammered.
-                setTimeout(function () { resendBtn.disabled = false; }, 30000);
-            });
-        });
-
-        backBtn.addEventListener('click', function () {
-            clearInterval(timer);
-            otp.hidden = true;
-            form.hidden = false;
-            say(formBox, '');
         });
     }
 

@@ -2,6 +2,7 @@
 
 /** "Send to Super Admin" requests across all clients (spec 2.3.3). */
 
+use App\Services\B2b\B2bAuth;
 use App\Services\B2b\B2bConfig;
 use App\Services\B2b\B2bInvoice;
 
@@ -23,7 +24,7 @@ try {
     // not migrated yet
 }
 
-$sql = 'SELECT r.*, u.company_name, u.representative_name, u.phone_number, i.invoice_no, i.access_key, i.advance_amount, i.currency
+$sql = 'SELECT r.*, u.company_name, u.full_name, u.phone_number, i.invoice_no, i.access_key, i.advance_amount, i.currency
           FROM '.B2bConfig::table('requests').' AS r
           JOIN '.B2bConfig::table('users').' AS u ON u.id = r.b2b_user_id
           LEFT JOIN '.B2bConfig::table('invoices').' AS i ON i.id = r.invoice_id
@@ -88,8 +89,8 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/requests';
                     <tr id="b2ba-req-<?= $rid ?>" class="<?= $focusId === $rid ? 'is-focus' : '' ?>">
                         <td>
                             <a href="/<?= b2b_adm_esc($lang) ?>/<?= b2b_adm_esc($admin_dir) ?>/b2b/user?id=<?= (int)$req['b2b_user_id'] ?>"
-                               class="b2ba-td--strong"><?= b2b_adm_esc($req['company_name']) ?></a>
-                            <div class="b2ba-td--small"><?= b2b_adm_esc($req['representative_name']) ?> · <?= b2b_adm_esc($req['phone_number']) ?></div>
+                               class="b2ba-td--strong"><?= b2b_adm_esc(B2bAuth::displayName($req)) ?></a>
+                            <div class="b2ba-td--small"><?= b2b_adm_esc($req['full_name']) ?> · <?= b2b_adm_esc($req['phone_number']) ?></div>
                         </td>
                         <td>
                             <a href="/<?= b2b_adm_esc($lang) ?>/ordercars/<?= (int)$req['car_id'] ?>" target="_blank" rel="noopener">

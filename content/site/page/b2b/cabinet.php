@@ -60,9 +60,9 @@ echo '
     <header class="b2b-head">
         <div class="b2b-head__main">
             <p class="b2b-head__eyebrow">'.b2b_esc($t['welcome']).'</p>
-            <h1 class="b2b-head__ttl">'.b2b_esc($user['company_name']).'</h1>
+            <h1 class="b2b-head__ttl">'.b2b_esc(\App\Services\B2b\B2bAuth::displayName($user)).'</h1>
             <p class="b2b-head__meta">
-                '.b2b_esc($user['representative_name']).' &middot; '.b2b_esc($user['email']).' &middot; '.b2b_esc($user['phone_number']).'
+                '.b2b_esc($user['full_name']).' &middot; '.b2b_esc($user['email']).' &middot; '.b2b_esc($user['phone_number']).'
             </p>
         </div>
         <div class="b2b-head__side">

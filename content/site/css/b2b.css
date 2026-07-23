@@ -21,7 +21,7 @@
 }
 .b2b-page--wide{ max-width:1180px; }
 
-/* Registration: full content width on desktop. Company name takes a full row,
+/* Registration: full content width on desktop. Person type takes a full row,
    the remaining fields sit two per row. Same breakpoint as the burger menu
    inverse, so it flips with the header. Mobile keeps the single-column card. */
 @media (min-width:1000px) and (orientation:landscape){
@@ -38,7 +38,7 @@
     }
     .b2b-page--form .b2b-field-row{ display:contents; }
 
-    /* Company name is the only field outside a .b2b-field-row, so a child
+    /* Person type is the only field outside a .b2b-field-row, so a child
        selector is enough to give it the full row. */
     .b2b-page--form .b2b-form > .b2b-field{ grid-column:1 / -1; }
 
@@ -81,11 +81,29 @@
 .b2b-field-row{ display:flex; gap:1rem; flex-wrap:wrap; }
 
 .b2b-field label,
+.b2b-field__lbl,
 .b2b-actions__label{
     font-size:.82rem; font-weight:600;
     color:var(--b2b-muted);
     text-transform:uppercase; letter-spacing:.3px;
 }
+
+/* Person type: two pill choices instead of a select, so both are visible. */
+.b2b-radios{ display:flex; gap:.6rem; flex-wrap:wrap; }
+.b2b-radio{
+    flex:1 1 0; min-width:9rem;
+    display:flex; align-items:center; gap:.5rem;
+    padding:.72rem .9rem;
+    border:1.5px solid var(--b2b-line);
+    border-radius:10px;
+    background:#fff;
+    cursor:pointer;
+    transition:border-color .15s, background .15s;
+}
+.b2b-radio input{ width:auto; margin:0; accent-color:var(--b2b-accent, #e2001a); }
+.b2b-radio span{ font-size:.95rem; }
+.b2b-radio:hover{ border-color:var(--b2b-muted); }
+.b2b-radio:has(input:checked){ border-color:var(--b2b-accent, #e2001a); background:#fff5f6; }
 .b2b-field input,
 .b2b-field select,
 .b2b-actions__amount input,
@@ -209,24 +227,6 @@
 .b2b-success__ttl{ margin:0 0 .75rem; font-size:1.25rem; font-weight:700; }
 .b2b-success__txt{ margin:0 0 1.75rem; color:var(--b2b-muted); }
 
-.b2b-otp__ttl{ margin:0 0 .5rem; font-size:1.25rem; font-weight:700; text-align:center; }
-.b2b-otp__sub{ margin:0 0 1.5rem; color:var(--b2b-muted); font-size:.9rem; text-align:center; }
-.b2b-otp__cells{ display:flex; gap:.6rem; justify-content:center; margin-bottom:1.25rem; }
-.b2b-otp__cell{
-    width:3rem; height:3.6rem;
-    border:1.5px solid var(--b2b-line); border-radius:10px;
-    background:#fff;
-    font-family:inherit; font-size:1.5rem; font-weight:700; text-align:center; color:var(--b2b-ink);
-    transition:border-color .15s, box-shadow .15s;
-}
-.b2b-otp__cell:focus{
-    outline:none; border-color:var(--b2b-brand);
-    box-shadow:0 0 0 3px rgba(226,0,26,.12);
-}
-.b2b-otp__timer{ margin:0 0 1.25rem; text-align:center; font-size:.88rem; color:var(--b2b-muted); }
-.b2b-otp__countdown{ color:var(--b2b-ink); font-variant-numeric:tabular-nums; }
-.b2b-otp__countdown.is-low{ color:var(--b2b-brand); }
-.b2b-otp__foot{ display:flex; justify-content:space-between; gap:1rem; margin-top:1rem; }
 
 /* --------------------------------------------------------- cabinet header */
 
@@ -442,13 +442,10 @@
     .b2b-field-row{ flex-direction:column; gap:1.1rem; }
     .b2b-head{ padding:1.35rem 1.25rem; }
     .b2b-head__side{ width:100%; }
-    .b2b-otp__cell{ width:2.6rem; height:3.2rem; font-size:1.25rem; }
-    .b2b-otp__cells{ gap:.4rem; }
     .b2b-actions__btns .b2b-btn{ flex:1 1 100%; }
     .b2b-timeline{ padding:1rem 1.1rem; }
     .b2b-timeline__time{ margin-left:0; width:100%; }
 }
 
 @media (max-width:400px){
-    .b2b-otp__cell{ width:2.2rem; height:2.9rem; font-size:1.1rem; }
 }

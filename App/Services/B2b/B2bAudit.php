@@ -20,8 +20,6 @@ class B2bAudit
     public const SAVE_CAR            = 'save_car';
     public const UNSAVE_CAR          = 'unsave_car';
     public const REGISTER            = 'register';
-    public const OTP_SENT            = 'otp_sent';
-    public const OTP_FAILED          = 'otp_failed';
     public const PASSWORD_RESET      = 'password_reset';
     public const STATUS_CHANGED      = 'status_changed';
     public const PERMISSIONS_CHANGED = 'permissions_changed';

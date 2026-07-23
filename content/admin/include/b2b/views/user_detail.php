@@ -7,6 +7,7 @@
  */
 
 use App\Services\B2b\B2bAudit;
+use App\Services\B2b\B2bAuth;
 use App\Services\B2b\B2bConfig;
 use App\Services\B2b\B2bInvoice;
 use App\Services\B2b\B2bRegions;
@@ -57,10 +58,10 @@ try {
 
     <div class="b2ba-head">
         <div>
-            <h1 class="b2ba-h1"><?= b2b_adm_esc($client['company_name']) ?></h1>
+            <h1 class="b2ba-h1"><?= b2b_adm_esc(B2bAuth::displayName($client)) ?></h1>
             <p class="b2ba-sub">
-                IDNO <?= b2b_adm_esc($client['idno']) ?> &middot;
-                <?= b2b_adm_esc($client['representative_name']) ?> &middot;
+                <?= b2b_adm_esc($client['login']) ?> &middot;
+                <?= b2b_adm_esc($t['pt_'.$client['person_type']] ?? $client['person_type']) ?> &middot;
                 <?= b2b_adm_esc($client['email']) ?> &middot;
                 <?= b2b_adm_esc($client['phone_number']) ?>
             </p>
@@ -110,16 +111,20 @@ try {
         <div class="b2ba-card">
             <div class="b2ba-grid">
                 <label class="b2ba-field">
+                    <span><?= b2b_adm_esc($t['person_type']) ?></span>
+                    <select data-field="person_type">
+                        <option value="company"<?= $client['person_type'] === 'company' ? ' selected' : '' ?>><?= b2b_adm_esc($t['pt_company']) ?></option>
+                        <option value="individual"<?= $client['person_type'] === 'individual' ? ' selected' : '' ?>><?= b2b_adm_esc($t['pt_individual']) ?></option>
+                    </select>
+                </label>
+                <label class="b2ba-field">
+                    <span><?= b2b_adm_esc($t['full_name']) ?></span>
+                    <input type="text" data-field="full_name" value="<?= b2b_adm_esc($client['full_name']) ?>" maxlength="190">
+                </label>
+                <!-- Not collected at signup: filled in here when a proforma needs them. -->
+                <label class="b2ba-field">
                     <span><?= b2b_adm_esc($t['company_name']) ?></span>
-                    <input type="text" data-field="company_name" value="<?= b2b_adm_esc($client['company_name']) ?>" maxlength="190">
-                </label>
-                <label class="b2ba-field">
-                    <span><?= b2b_adm_esc($t['idno']) ?></span>
-                    <input type="text" data-field="idno" value="<?= b2b_adm_esc($client['idno']) ?>" maxlength="13">
-                </label>
-                <label class="b2ba-field">
-                    <span><?= b2b_adm_esc($t['representative']) ?></span>
-                    <input type="text" data-field="representative_name" value="<?= b2b_adm_esc($client['representative_name']) ?>" maxlength="190">
+                    <input type="text" data-field="company_name" value="<?= b2b_adm_esc($client['company_name'] ?? '') ?>" maxlength="190">
                 </label>
                 <label class="b2ba-field">
                     <span><?= b2b_adm_esc($t['phone']) ?></span>

@@ -113,14 +113,14 @@ switch ($fn) {
         b2b_adm_out(['ok' => true]);
     }
 
-    // ---- Client legal details (used on the proforma) ------------------------
+    // ---- Client profile (legal details go on the proforma) ------------------
     case 'save_profile': {
         if (!B2bAuth::findById($uid)) {
             b2b_adm_out(['ok' => false, 'error' => 'Client inexistent.']);
         }
 
-        // Whitelist: email, status and password hash are NOT editable here.
-        $allowed = ['company_name', 'representative_name', 'phone_number',
+        // Whitelist: login, email, status and password hash are NOT editable here.
+        $allowed = ['full_name', 'company_name', 'phone_number',
                     'legal_address', 'bank_name', 'bank_iban', 'vat_code', 'admin_note'];
 
         $sets = [];
@@ -134,14 +134,13 @@ switch ($fn) {
             $args[':'.$field] = mb_substr(trim((string)$_POST[$field]), 0, 2000);
         }
 
-        // IDNO is validated separately: it is the fiscal id shown on the proforma.
-        if (array_key_exists('idno', $_POST)) {
-            $idno = trim((string)$_POST['idno']);
-            if (!preg_match('/^\d{13}$/', $idno)) {
-                b2b_adm_out(['ok' => false, 'error' => 'IDNO trebuie să conțină exact 13 cifre.']);
+        if (array_key_exists('person_type', $_POST)) {
+            $ptype = (string)$_POST['person_type'];
+            if (!in_array($ptype, B2bAuth::PERSON_TYPES, true)) {
+                b2b_adm_out(['ok' => false, 'error' => 'Tip de persoană invalid.']);
             }
-            $sets[] = '`idno` = :idno';
-            $args[':idno'] = $idno;
+            $sets[] = '`person_type` = :person_type';
+            $args[':person_type'] = $ptype;
         }
 
         if (!$sets) {
@@ -166,8 +165,8 @@ switch ($fn) {
         }
 
         try {
-            // Foreign keys are ON DELETE CASCADE: sessions, OTPs, permissions,
-            // logs, invoices and requests go with the account.
+            // Foreign keys are ON DELETE CASCADE: sessions, permissions, logs,
+            // invoices and requests go with the account.
             $db->prepare('DELETE FROM '.B2bConfig::table('users').' WHERE id = :id')->execute([':id' => $uid]);
         } catch (Throwable $e) {
             B2bConfig::log('b2b_error.log', 'admin delete_user err='.$e->getMessage());
@@ -208,8 +207,6 @@ switch ($fn) {
     // ---- Module settings -----------------------------------------------------
     case 'save_settings': {
         $allowed = [
-            'b2b_sms_driver', 'b2b_sms_sender', 'b2b_sms_api_user', 'b2b_sms_api_pass',
-            'b2b_sms_api_key', 'b2b_sms_api_url', 'b2b_sms_debug_email',
             'b2b_whatsapp_driver', 'b2b_whatsapp_phone_id', 'b2b_whatsapp_token', 'b2b_whatsapp_template',
             'b2b_superadmin_phone', 'b2b_superadmin_email',
             'b2b_advance_default', 'b2b_advance_mode', 'b2b_advance_percent', 'b2b_advance_max',

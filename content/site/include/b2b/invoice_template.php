@@ -242,8 +242,9 @@ header('Content-Type: text/html; charset=UTF-8');
 
         <div class="party">
             <h3><?= $esc($t['payer']) ?></h3>
-            <div class="nm"><?= $esc($client['company_name'] ?? '') ?></div>
-            <p><span class="lbl"><?= $esc($t['idno']) ?>:</span> <strong><?= $esc($client['idno'] ?? '') ?></strong></p>
+            <!-- Signup collects only the person's name; company details are added
+                 from the admin panel and are shown only once they exist. -->
+            <div class="nm"><?= $esc(\App\Services\B2b\B2bAuth::displayName($client)) ?></div>
             <?php if (!empty($client['vat_code'])): ?>
                 <p><span class="lbl"><?= $esc($t['vat']) ?>:</span> <?= $esc($client['vat_code']) ?></p>
             <?php endif; ?>
@@ -256,7 +257,9 @@ header('Content-Type: text/html; charset=UTF-8');
             <?php if (!empty($client['bank_name'])): ?>
                 <p><span class="lbl"><?= $esc($t['bank']) ?>:</span> <?= $esc($client['bank_name']) ?></p>
             <?php endif; ?>
-            <p><span class="lbl"><?= $esc($t['repr']) ?>:</span> <?= $esc($client['representative_name'] ?? '') ?></p>
+            <?php if (!empty($client['company_name'])): ?>
+                <p><span class="lbl"><?= $esc($t['repr']) ?>:</span> <?= $esc($client['full_name'] ?? '') ?></p>
+            <?php endif; ?>
             <p><?= $esc($client['email'] ?? '') ?> &middot; <?= $esc($client['phone_number'] ?? '') ?></p>
         </div>
     </div>

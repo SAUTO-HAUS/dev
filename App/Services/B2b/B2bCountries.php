@@ -94,11 +94,35 @@ class B2bCountries
     }
 
     /**
+     * Brings any user input to E.164 (+373XXXXXXXX). Returns '' when the result
+     * cannot be a phone number.
+     */
+    public static function normalize(string $phone): string
+    {
+        $digits = preg_replace('/\D+/', '', $phone);
+        if ($digits === '') {
+            return '';
+        }
+
+        if (strpos($digits, '00') === 0) {                   // 00373... -> 373...
+            $digits = substr($digits, 2);
+        }
+        if (strlen($digits) === 9 && $digits[0] === '0') {   // 0XXXXXXXX -> 373XXXXXXXX
+            $digits = '373' . substr($digits, 1);
+        }
+        if (strlen($digits) === 8) {                         // XXXXXXXX -> 373XXXXXXXX
+            $digits = '373' . $digits;
+        }
+
+        return (strlen($digits) < 10 || strlen($digits) > 15) ? '' : '+' . $digits;
+    }
+
+    /**
      * Checks the national part against the country's expected length.
      *
      * A number whose dialling code is not in the list passes: the list covers the
-     * markets we expect, and SmsService::normalize() already enforces a sane
-     * overall length, so an unknown country is not a reason to reject a client.
+     * markets we expect, and normalize() already enforces a sane overall length,
+     * so an unknown country is not a reason to reject a client.
      *
      * @return array{ok: bool, error?: string}
      */

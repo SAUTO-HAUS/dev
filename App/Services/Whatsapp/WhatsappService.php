@@ -3,7 +3,7 @@
 namespace App\Services\Whatsapp;
 
 use App\Services\B2b\B2bConfig;
-use App\Services\Sms\SmsService;
+use App\Services\B2b\B2bCountries;
 
 /**
  * WhatsApp notifications, two modes via the `b2b_whatsapp_driver` setting:
@@ -20,7 +20,7 @@ class WhatsappService
     /** @return array{ok: bool, mode: string, link?: string, error?: string} */
     public static function notifySuperAdmin(string $message): array
     {
-        $phone = SmsService::normalize(B2bConfig::get('b2b_superadmin_phone'));
+        $phone = B2bCountries::normalize(B2bConfig::get('b2b_superadmin_phone'));
 
         if ($phone === '') {
             return ['ok' => false, 'mode' => 'none', 'error' => 'Numărul Super Admin nu este configurat.'];
@@ -45,7 +45,7 @@ class WhatsappService
 
     public static function waLink(string $phone, string $message): string
     {
-        $normalized = SmsService::normalize($phone);
+        $normalized = B2bCountries::normalize($phone);
         $digits = preg_replace('/\D+/', '', $normalized !== '' ? $normalized : $phone);
 
         return 'https://wa.me/' . $digits . '?text=' . rawurlencode($message);

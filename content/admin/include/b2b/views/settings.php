@@ -1,9 +1,9 @@
 <?php defined('_DOIT') or die('Restricted access');
 
 /**
- * B2B module settings: SMS provider (2FA), WhatsApp, Super Admin contact and the
- * default advance. Values live in gh3sp_settings, so switching SMS provider or
- * enabling WhatsApp Cloud API needs no code change.
+ * B2B module settings: WhatsApp, Super Admin contact and the default advance.
+ * Values live in gh3sp_settings, so enabling WhatsApp Cloud API needs no code
+ * change.
  */
 
 use App\Services\B2b\B2bConfig;
@@ -11,7 +11,6 @@ use App\Services\B2b\B2bConfig;
 $lang = $_COOKIE['lang'] ?? 'ro';
 $t    = b2b_adm_lang($lang);
 
-$smsDriver = B2bConfig::get('b2b_sms_driver', 'log');
 $waDriver  = B2bConfig::get('b2b_whatsapp_driver', 'walink');
 $advMode   = B2bConfig::get('b2b_advance_mode', 'fixed');
 ?>
@@ -22,46 +21,6 @@ $advMode   = B2bConfig::get('b2b_advance_mode', 'fixed');
     </div>
 
     <div class="b2ba-msg" id="b2ba-msg" role="status" aria-live="polite"></div>
-
-    <!-- ------------------------------------------------------------- SMS -->
-    <div class="b2ba-card">
-        <h2 class="b2ba-h2"><?= b2b_adm_esc($t['sms_section']) ?></h2>
-
-        <div class="b2ba-grid">
-            <label class="b2ba-field">
-                <span><?= b2b_adm_esc($t['sms_driver']) ?></span>
-                <select data-setting="b2b_sms_driver">
-                    <option value="log"    <?= $smsDriver === 'log'    ? 'selected' : '' ?>><?= b2b_adm_esc($t['sms_driver_log']) ?></option>
-                    <option value="smsmd"  <?= $smsDriver === 'smsmd'  ? 'selected' : '' ?>>SMS.md / gateway local</option>
-                    <option value="twilio" <?= $smsDriver === 'twilio' ? 'selected' : '' ?>>Twilio</option>
-                </select>
-            </label>
-            <label class="b2ba-field">
-                <span><?= b2b_adm_esc($t['sms_sender']) ?></span>
-                <input type="text" data-setting="b2b_sms_sender" value="<?= b2b_adm_esc(B2bConfig::get('b2b_sms_sender', 'SAUTO')) ?>">
-            </label>
-            <label class="b2ba-field b2ba-field--wide">
-                <span><?= b2b_adm_esc($t['sms_api_key']) ?></span>
-                <input type="password" data-setting="b2b_sms_api_key" value="<?= b2b_adm_esc(B2bConfig::get('b2b_sms_api_key')) ?>" autocomplete="new-password">
-            </label>
-            <label class="b2ba-field">
-                <span><?= b2b_adm_esc($t['sms_user']) ?></span>
-                <input type="text" data-setting="b2b_sms_api_user" value="<?= b2b_adm_esc(B2bConfig::get('b2b_sms_api_user')) ?>" autocomplete="off">
-            </label>
-            <label class="b2ba-field">
-                <span><?= b2b_adm_esc($t['sms_pass']) ?></span>
-                <input type="password" data-setting="b2b_sms_api_pass" value="<?= b2b_adm_esc(B2bConfig::get('b2b_sms_api_pass')) ?>" autocomplete="new-password">
-            </label>
-            <label class="b2ba-field b2ba-field--wide">
-                <span><?= b2b_adm_esc($t['sms_endpoint']) ?></span>
-                <input type="url" data-setting="b2b_sms_api_url" value="<?= b2b_adm_esc(B2bConfig::get('b2b_sms_api_url')) ?>" placeholder="https://api.sms.md/v1/send">
-            </label>
-            <label class="b2ba-field b2ba-field--wide">
-                <span><?= b2b_adm_esc($t['sms_debug_email']) ?></span>
-                <input type="email" data-setting="b2b_sms_debug_email" value="<?= b2b_adm_esc(B2bConfig::get('b2b_sms_debug_email')) ?>">
-            </label>
-        </div>
-    </div>
 
     <!-- -------------------------------------------------------- WhatsApp -->
     <div class="b2ba-card">

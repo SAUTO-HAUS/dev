@@ -19,12 +19,6 @@ class B2bConfig
     /** B2B session lifetime, seconds. */
     public const SESSION_TTL = 43200;
 
-    /** OTP lifetime, seconds (spec: 5 minutes). */
-    public const OTP_TTL = 300;
-
-    /** Wrong attempts accepted per OTP before it is burned. */
-    public const OTP_MAX_ATTEMPTS = 5;
-
     /** Failed logins before the account is locked temporarily. */
     public const LOGIN_MAX_ATTEMPTS = 5;
 

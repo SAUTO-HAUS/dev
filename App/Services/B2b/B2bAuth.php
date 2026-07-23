@@ -2,17 +2,13 @@
 
 namespace App\Services\B2b;
 
-use App\Services\Sms\SmsService;
 use PDO;
 
 /**
- * B2B authentication: registration and two-step login (password + SMS OTP).
+ * B2B authentication: registration and login.
  *
- * Security contract (spec 1.2.A + acceptance criteria):
- *   - login() never creates a session, no matter how valid the password is;
- *     it only issues the OTP and returns the user id;
- *   - the session is created exclusively in verifyOtp(), after the code checks out;
- *   - pending / blocked accounts are rejected at login, with no SMS sent.
+ * Approval by the Super Admin is the only gate: an account starts `pending` and
+ * cannot log in until an administrator activates it. There is no second factor.
  *
  * Sessions use a selector/validator pair: the cookie holds `selector.validator`
  * while the DB stores only a hash of the validator, so a leaked table dump
@@ -23,6 +19,20 @@ class B2bAuth
     private const STATUS_PENDING = 'pending';
     private const STATUS_ACTIVE  = 'active';
     private const STATUS_BLOCKED = 'blocked';
+
+    /** Signup asks whether the partner is a legal entity or an individual. */
+    public const PERSON_TYPES = ['company', 'individual'];
+
+    /**
+     * Name to show for a partner. Signup collects only full_name; company_name
+     * is filled in later from the admin panel, and wins when present because
+     * that is the name a proforma has to carry.
+     */
+    public static function displayName(array $user): string
+    {
+        $company = trim((string)($user['company_name'] ?? ''));
+        return $company !== '' ? $company : trim((string)($user['full_name'] ?? ''));
+    }
 
     private static ?array $current = null;
     private static bool $resolved = false;
@@ -36,32 +46,32 @@ class B2bAuth
      */
     public static function register(array $data): array
     {
-        $email    = mb_strtolower(trim((string)($data['email'] ?? '')));
-        $password = (string)($data['password'] ?? '');
-        $company  = trim((string)($data['company_name'] ?? ''));
-        $idno     = trim((string)($data['idno'] ?? ''));
-        $repr     = trim((string)($data['representative_name'] ?? ''));
-        $phoneRaw = trim((string)($data['phone_number'] ?? ''));
+        $personType = (string)($data['person_type'] ?? '');
+        $login      = mb_strtolower(trim((string)($data['login'] ?? '')));
+        $email      = mb_strtolower(trim((string)($data['email'] ?? '')));
+        $password   = (string)($data['password'] ?? '');
+        $fullName   = trim((string)($data['full_name'] ?? ''));
+        $phoneRaw   = trim((string)($data['phone_number'] ?? ''));
 
-        if ($company === '' || mb_strlen($company) > 190) {
-            return ['ok' => false, 'field' => 'company_name', 'error' => 'Denumirea companiei este obligatorie.'];
+        if (!in_array($personType, self::PERSON_TYPES, true)) {
+            return ['ok' => false, 'field' => 'person_type', 'error' => 'Selectați tipul de persoană.'];
         }
-        if (!preg_match('/^\d{13}$/', $idno)) {
-            return ['ok' => false, 'field' => 'idno', 'error' => 'IDNO trebuie să conțină exact 13 cifre.'];
+        if ($fullName === '' || mb_strlen($fullName) > 190) {
+            return ['ok' => false, 'field' => 'full_name', 'error' => 'Numele și prenumele sunt obligatorii.'];
         }
-        if ($repr === '' || mb_strlen($repr) > 190) {
-            return ['ok' => false, 'field' => 'representative_name', 'error' => 'Numele reprezentantului este obligatoriu.'];
+        // Letters, digits, dot, dash and underscore: it goes into URLs and logs.
+        if (!preg_match('/^[a-z0-9._-]{4,64}$/', $login)) {
+            return ['ok' => false, 'field' => 'login', 'error' => 'Login-ul trebuie să aibă 4-64 caractere: litere, cifre, . _ -'];
         }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($email) > 190) {
             return ['ok' => false, 'field' => 'email', 'error' => 'Adresa de email nu este validă.'];
         }
-        $phone = SmsService::normalize($phoneRaw);
+        $phone = B2bCountries::normalize($phoneRaw);
         if ($phone === '') {
             return ['ok' => false, 'field' => 'phone_number', 'error' => 'Numărul de telefon nu este valid.'];
         }
-        // Digit count for the detected country. The browser checks this too, but
-        // a wrong number here means the OTP never arrives and the account is
-        // unusable, so it is re-checked where it cannot be bypassed.
+        // Digit count for the detected country; the browser checks this too,
+        // but client-side validation can be bypassed.
         $len = B2bCountries::validate($phone);
         if (!$len['ok']) {
             return ['ok' => false, 'field' => 'phone_number', 'error' => $len['error']];
@@ -73,34 +83,37 @@ class B2bAuth
         $db = B2bConfig::db();
 
         try {
-            $stmt = $db->prepare('SELECT id FROM ' . B2bConfig::table('users') . ' WHERE email = :email LIMIT 1');
-            $stmt->execute([':email' => $email]);
-            if ($stmt->fetchColumn()) {
-                return ['ok' => false, 'field' => 'email', 'error' => 'Există deja un cont cu această adresă de email.'];
+            $stmt = $db->prepare('SELECT login, email FROM ' . B2bConfig::table('users')
+                . ' WHERE login = :login OR email = :email LIMIT 1');
+            $stmt->execute([':login' => $login, ':email' => $email]);
+            if ($taken = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                return ($taken['login'] === $login)
+                    ? ['ok' => false, 'field' => 'login', 'error' => 'Acest login este deja folosit.']
+                    : ['ok' => false, 'field' => 'email', 'error' => 'Există deja un cont cu această adresă de email.'];
             }
 
             $db->prepare(
                 'INSERT INTO ' . B2bConfig::table('users')
-                . ' (email, password_hash, company_name, idno, representative_name, phone_number, status)
-                   VALUES (:email, :hash, :company, :idno, :repr, :phone, :status)'
+                . ' (person_type, login, email, password_hash, full_name, phone_number, status)
+                   VALUES (:ptype, :login, :email, :hash, :name, :phone, :status)'
             )->execute([
-                ':email'   => $email,
-                ':hash'    => password_hash($password, PASSWORD_DEFAULT),
-                ':company' => $company,
-                ':idno'    => $idno,
-                ':repr'    => $repr,
-                ':phone'   => $phone,
-                ':status'  => self::STATUS_PENDING,
+                ':ptype'  => $personType,
+                ':login'  => $login,
+                ':email'  => $email,
+                ':hash'   => password_hash($password, PASSWORD_DEFAULT),
+                ':name'   => $fullName,
+                ':phone'  => $phone,
+                ':status' => self::STATUS_PENDING,
             ]);
 
             $userId = (int)$db->lastInsertId();
         } catch (\Throwable $e) {
-            // Also covers the UNIQUE(email) race between two concurrent signups.
+            // Also covers the UNIQUE(login/email) race between concurrent signups.
             B2bConfig::log('b2b_error.log', 'register err=' . $e->getMessage());
             return ['ok' => false, 'error' => 'Contul nu a putut fi creat. Încercați din nou.'];
         }
 
-        B2bAudit::log($userId, B2bAudit::REGISTER, ['company' => $company, 'idno' => $idno]);
+        B2bAudit::log($userId, B2bAudit::REGISTER, ['login' => $login, 'person_type' => $personType]);
 
         return ['ok' => true, 'user_id' => $userId];
     }
@@ -108,20 +121,20 @@ class B2bAuth
     // ------------------------------------------------------------------- login
 
     /**
-     * Step 1: verify credentials and send the OTP. Creates no session.
+     * Verifies credentials and opens the session for an approved account.
      *
-     * @return array{ok: bool, error?: string, status?: string, user_id?: int, phone_hint?: string}
+     * @return array{ok: bool, error?: string, status?: string, user_id?: int}
      */
-    public static function login(string $email, string $password): array
+    public static function login(string $login, string $password): array
     {
-        $email   = mb_strtolower(trim($email));
-        $generic = ['ok' => false, 'error' => 'Email sau parolă incorectă.'];
+        $login   = mb_strtolower(trim($login));
+        $generic = ['ok' => false, 'error' => 'Login sau parolă incorectă.'];
 
         try {
             $stmt = B2bConfig::db()->prepare(
-                'SELECT * FROM ' . B2bConfig::table('users') . ' WHERE email = :email LIMIT 1'
+                'SELECT * FROM ' . B2bConfig::table('users') . ' WHERE login = :login LIMIT 1'
             );
-            $stmt->execute([':email' => $email]);
+            $stmt->execute([':login' => $login]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (\Throwable $e) {
             B2bConfig::log('b2b_error.log', 'login err=' . $e->getMessage());
@@ -129,7 +142,7 @@ class B2bAuth
         }
 
         // Unknown account returns the same message as a wrong password, so the
-        // endpoint cannot be used to enumerate registered emails.
+        // endpoint cannot be used to enumerate registered logins.
         if (!$user) {
             return $generic;
         }
@@ -147,7 +160,7 @@ class B2bAuth
             return $generic;
         }
 
-        // Password is correct but the account is not approved yet: refuse, no SMS.
+        // Password is correct but the account is not approved yet.
         if ($user['status'] === self::STATUS_PENDING) {
             B2bAudit::log($userId, B2bAudit::LOGIN_FAILED, ['reason' => 'pending']);
             return [
@@ -167,169 +180,18 @@ class B2bAuth
 
         self::resetFailedLogin($userId);
 
-        $sent = self::issueOtp($userId, (string)$user['phone_number']);
-        if (!$sent['ok']) {
-            return $sent;
-        }
-
-        return [
-            'ok'         => true,
-            'user_id'    => $userId,
-            'phone_hint' => self::maskPhone((string)$user['phone_number']),
-        ];
-    }
-
-    /**
-     * Issues a 6-digit OTP, stores it hashed and sends it by SMS.
-     * Any previous unused code for the same user is burned first.
-     *
-     * @return array{ok: bool, error?: string}
-     */
-    public static function issueOtp(int $userId, string $phone): array
-    {
-        $db = B2bConfig::db();
-
-        try {
-            // Anti-flood: at most 3 codes per 5 minutes.
-            $stmt = $db->prepare(
-                'SELECT COUNT(*) FROM ' . B2bConfig::table('otp_codes')
-                . ' WHERE b2b_user_id = :uid AND created_at > (NOW() - INTERVAL 5 MINUTE)'
-            );
-            $stmt->execute([':uid' => $userId]);
-            if ((int)$stmt->fetchColumn() >= 3) {
-                return ['ok' => false, 'error' => 'Prea multe coduri solicitate. Așteptați câteva minute.'];
-            }
-
-            $db->prepare(
-                'UPDATE ' . B2bConfig::table('otp_codes') . ' SET used = 1 WHERE b2b_user_id = :uid AND used = 0'
-            )->execute([':uid' => $userId]);
-
-            $code = str_pad((string)random_int(0, 999999), 6, '0', STR_PAD_LEFT);
-
-            // OTP_TTL is a class constant, inlined because MySQL does not accept a
-            // placeholder in the INTERVAL quantity with native prepares.
-            $db->prepare(
-                'INSERT INTO ' . B2bConfig::table('otp_codes')
-                . ' (b2b_user_id, code_hash, expires_at, ip_address)
-                   VALUES (:uid, :hash, DATE_ADD(NOW(), INTERVAL ' . (int)B2bConfig::OTP_TTL . ' SECOND), :ip)'
-            )->execute([
-                ':uid'  => $userId,
-                ':hash' => hash('sha256', $code),
-                ':ip'   => B2bConfig::clientIp(),
-            ]);
-        } catch (\Throwable $e) {
-            B2bConfig::log('b2b_error.log', 'issueOtp err=' . $e->getMessage());
-            return ['ok' => false, 'error' => 'Codul nu a putut fi generat. Încercați din nou.'];
-        }
-
-        $minutes = (int)(B2bConfig::OTP_TTL / 60);
-        $res = SmsService::send($phone, 'Codul dvs. de autentificare Sauto B2B: ' . $code . ' (valabil ' . $minutes . ' minute).');
-
-        if (!$res['ok']) {
-            return ['ok' => false, 'error' => $res['error'] ?? 'SMS-ul nu a putut fi trimis.'];
-        }
-
-        B2bAudit::log($userId, B2bAudit::OTP_SENT);
-        return ['ok' => true];
-    }
-
-    public static function resendOtp(int $userId): array
-    {
-        $user = self::findById($userId);
-        if (!$user || $user['status'] !== self::STATUS_ACTIVE) {
-            return ['ok' => false, 'error' => 'Sesiune de autentificare invalidă.'];
-        }
-        return self::issueOtp($userId, (string)$user['phone_number']);
-    }
-
-    /**
-     * Step 2: validate the OTP and open the session.
-     *
-     * @return array{ok: bool, error?: string, user?: array}
-     */
-    public static function verifyOtp(int $userId, string $code): array
-    {
-        $code = preg_replace('/\D+/', '', $code);
-        if (strlen($code) !== 6) {
-            return ['ok' => false, 'error' => 'Codul trebuie să conțină 6 cifre.'];
-        }
-
-        $user = self::findById($userId);
-        if (!$user || $user['status'] !== self::STATUS_ACTIVE) {
-            return ['ok' => false, 'error' => 'Sesiune de autentificare invalidă.'];
-        }
-
-        $db  = B2bConfig::db();
-        $tbl = B2bConfig::table('otp_codes');
-
-        try {
-            $stmt = $db->prepare(
-                'SELECT * FROM ' . $tbl . ' WHERE b2b_user_id = :uid AND used = 0 ORDER BY id DESC LIMIT 1'
-            );
-            $stmt->execute([':uid' => $userId]);
-            $otp = $stmt->fetch(PDO::FETCH_ASSOC);
-
-            if (!$otp) {
-                B2bAudit::log($userId, B2bAudit::OTP_FAILED, ['reason' => 'no_code']);
-                return ['ok' => false, 'error' => 'Nu există un cod activ. Solicitați unul nou.'];
-            }
-
-            if (strtotime((string)$otp['expires_at']) < time()) {
-                $db->prepare('UPDATE ' . $tbl . ' SET used = 1 WHERE id = :id')->execute([':id' => $otp['id']]);
-                B2bAudit::log($userId, B2bAudit::OTP_FAILED, ['reason' => 'expired']);
-                return ['ok' => false, 'error' => 'Codul a expirat. Solicitați unul nou.'];
-            }
-
-            if ((int)$otp['attempts'] >= B2bConfig::OTP_MAX_ATTEMPTS) {
-                $db->prepare('UPDATE ' . $tbl . ' SET used = 1 WHERE id = :id')->execute([':id' => $otp['id']]);
-                B2bAudit::log($userId, B2bAudit::OTP_FAILED, ['reason' => 'max_attempts']);
-                return ['ok' => false, 'error' => 'Prea multe încercări. Solicitați un cod nou.'];
-            }
-
-            if (!hash_equals((string)$otp['code_hash'], hash('sha256', $code))) {
-                $db->prepare('UPDATE ' . $tbl . ' SET attempts = attempts + 1 WHERE id = :id')
-                   ->execute([':id' => $otp['id']]);
-                B2bAudit::log($userId, B2bAudit::OTP_FAILED, ['reason' => 'bad_code']);
-
-                $left = B2bConfig::OTP_MAX_ATTEMPTS - ((int)$otp['attempts'] + 1);
-                return [
-                    'ok'    => false,
-                    'error' => $left > 0
-                        ? 'Cod incorect. Mai aveți ' . $left . ' încercări.'
-                        : 'Cod incorect. Solicitați un cod nou.',
-                ];
-            }
-
-            // Correct: burn it immediately so it cannot be replayed.
-            $db->prepare('UPDATE ' . $tbl . ' SET used = 1 WHERE id = :id')->execute([':id' => $otp['id']]);
-        } catch (\Throwable $e) {
-            B2bConfig::log('b2b_error.log', 'verifyOtp err=' . $e->getMessage());
-            return ['ok' => false, 'error' => 'Serviciu temporar indisponibil.'];
-        }
-
+        // Approval by the Super Admin is the only gate, so an approved account
+        // gets its session right here: no second factor to clear.
         self::createSession($userId);
+        self::touchLogin($userId);
+        B2bAudit::log($userId, B2bAudit::LOGIN, []);
 
-        try {
-            $db->prepare(
-                'UPDATE ' . B2bConfig::table('users')
-                . ' SET last_login_at = NOW(), last_login_ip = :ip, failed_attempts = 0, locked_until = NULL
-                   WHERE id = :id'
-            )->execute([':ip' => B2bConfig::clientIp(), ':id' => $userId]);
-        } catch (\Throwable $e) {
-            // Bookkeeping only; must not fail an otherwise successful login.
-        }
-
-        B2bAudit::log($userId, B2bAudit::LOGIN);
-
-        self::$current  = self::findById($userId);
-        self::$resolved = true;
-
-        return ['ok' => true, 'user' => self::$current];
+        return ['ok' => true, 'user_id' => $userId];
     }
 
     // ----------------------------------------------------------------- session
 
-    /** Called exclusively after a validated OTP. */
+    /** Opens a session for an approved account. */
     private static function createSession(int $userId): void
     {
         $selector  = bin2hex(random_bytes(16));   // 32 hex
@@ -559,13 +421,19 @@ class B2bAuth
         }
     }
 
-    /** +37360123456 -> +3736******56, enough to recognise, not enough to leak. */
-    private static function maskPhone(string $phone): string
+    /** Records the successful login. Bookkeeping: never fails the login itself. */
+    private static function touchLogin(int $userId): void
     {
-        $len = strlen($phone);
-        if ($len <= 6) {
-            return str_repeat('*', $len);
+        try {
+            B2bConfig::db()->prepare(
+                'UPDATE ' . B2bConfig::table('users')
+                . ' SET last_login_at = NOW(), last_login_ip = :ip WHERE id = :id'
+            )->execute([':ip' => B2bConfig::clientIp(), ':id' => $userId]);
+        } catch (\Throwable $e) {
+            // ignored
         }
-        return substr($phone, 0, 5) . str_repeat('*', $len - 7) . substr($phone, -2);
+
+        self::$current  = self::findById($userId);
+        self::$resolved = true;
     }
 }

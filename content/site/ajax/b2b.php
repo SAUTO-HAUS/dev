@@ -49,12 +49,12 @@ switch ($b2b_fn) {
     // ---- Registration (spec 1.2.A POST /api/v1/b2b/register) ----------------
     case 'b2b_register': {
         $res = B2bAuth::register([
-            'email'               => $_POST['email'] ?? '',
-            'password'            => $_POST['password'] ?? '',
-            'company_name'        => $_POST['company_name'] ?? '',
-            'idno'                => $_POST['idno'] ?? '',
-            'representative_name' => $_POST['representative_name'] ?? '',
-            'phone_number'        => $_POST['phone'] ?? '',
+            'person_type'  => $_POST['person_type'] ?? '',
+            'email'        => $_POST['email'] ?? '',
+            'phone_number' => $_POST['phone'] ?? '',
+            'full_name'    => $_POST['full_name'] ?? '',
+            'login'        => $_POST['login'] ?? '',
+            'password'     => $_POST['password'] ?? '',
         ]);
 
         if (!$res['ok']) {
@@ -73,46 +73,16 @@ switch ($b2b_fn) {
         break;
     }
 
-    // ---- Login step 1: credentials + OTP, no session yet ---------------------
+    // ---- Login: credentials checked, session opened -------------------------
     case 'b2b_login': {
-        $res = B2bAuth::login((string)($_POST['email'] ?? ''), (string)($_POST['password'] ?? ''));
+        $res = B2bAuth::login((string)($_POST['login'] ?? ''), (string)($_POST['password'] ?? ''));
 
         if (!$res['ok']) {
             $b2b_fail($res['error'], isset($res['status']) ? ['status' => $res['status']] : []);
             break;
         }
 
-        $b2b_ok([
-            'user_id'    => $res['user_id'],
-            'phone_hint' => $res['phone_hint'] ?? '',
-            'ttl'        => B2bConfig::OTP_TTL,
-            'message'    => 'Codul de verificare a fost trimis prin SMS.',
-        ]);
-        break;
-    }
-
-    // ---- Login step 2: OTP validated -> session created ---------------------
-    case 'b2b_verify_otp': {
-        $res = B2bAuth::verifyOtp((int)($_POST['user_id'] ?? 0), (string)($_POST['code'] ?? ''));
-
-        if (!$res['ok']) {
-            $b2b_fail($res['error']);
-            break;
-        }
-
         $b2b_ok(['redirect' => '/'.$b2b_lang.'/b2b/cabinet']);
-        break;
-    }
-
-    case 'b2b_resend_otp': {
-        $res = B2bAuth::resendOtp((int)($_POST['user_id'] ?? 0));
-
-        if (!$res['ok']) {
-            $b2b_fail($res['error']);
-            break;
-        }
-
-        $b2b_ok(['ttl' => B2bConfig::OTP_TTL, 'message' => 'Un cod nou a fost trimis prin SMS.']);
         break;
     }
 

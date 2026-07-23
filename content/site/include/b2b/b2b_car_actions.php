@@ -29,7 +29,7 @@ if (!function_exists('b2b_car_actions_html')) {
         // Prefilled from the configured rules; the partner can overwrite it.
         $advance = number_format(B2bInvoice::suggestedAdvance($car), 0, '.', '');
         $csrf    = $esc(b2b_csrf_token());
-        $company = $esc($user['company_name'] ?? '');
+        $company = $esc(\App\Services\B2b\B2bAuth::displayName($user));
 
         // The car page is not a B2B page, so it does not load the module assets
         // on its own.

@@ -24,19 +24,16 @@ echo b2b_assets();
 $form = '
 <form class="b2b-form" id="b2b-register-form" data-csrf="'.$csrf.'" novalidate>
     <div class="b2b-field">
-        <label for="b2b-company">'.b2b_esc($t['company_name']).' *</label>
-        <input type="text" id="b2b-company" name="company_name" maxlength="190" required autocomplete="organization" />
-    </div>
-
-    <div class="b2b-field-row">
-        <div class="b2b-field">
-            <label for="b2b-idno">'.b2b_esc($t['idno']).' *</label>
-            <input type="text" id="b2b-idno" name="idno" inputmode="numeric" maxlength="13" pattern="\d{13}" required />
-            <small class="b2b-hint">'.b2b_esc($t['idno_hint']).'</small>
-        </div>
-        <div class="b2b-field">
-            <label for="b2b-repr">'.b2b_esc($t['representative']).' *</label>
-            <input type="text" id="b2b-repr" name="representative_name" maxlength="190" required autocomplete="name" />
+        <span class="b2b-field__lbl">'.b2b_esc($t['person_type']).' *</span>
+        <div class="b2b-radios">
+            <label class="b2b-radio">
+                <input type="radio" name="person_type" value="company" checked />
+                <span>'.b2b_esc($t['person_company']).'</span>
+            </label>
+            <label class="b2b-radio">
+                <input type="radio" name="person_type" value="individual" />
+                <span>'.b2b_esc($t['person_individual']).'</span>
+            </label>
         </div>
     </div>
 
@@ -54,6 +51,18 @@ $form = '
                 <input type="tel" id="b2b-phone" name="phone" maxlength="32" required autocomplete="tel" placeholder="60 123 456" />
             </div>
             <small class="b2b-hint">'.b2b_esc($t['phone_hint']).'</small>
+        </div>
+    </div>
+
+    <div class="b2b-field-row">
+        <div class="b2b-field">
+            <label for="b2b-name">'.b2b_esc($t['full_name']).' *</label>
+            <input type="text" id="b2b-name" name="full_name" maxlength="190" required autocomplete="name" />
+        </div>
+        <div class="b2b-field">
+            <label for="b2b-login">'.b2b_esc($t['login_field']).' *</label>
+            <input type="text" id="b2b-login" name="login" minlength="4" maxlength="64" pattern="[A-Za-z0-9._-]{4,64}" required autocomplete="username" />
+            <small class="b2b-hint">'.b2b_esc($t['login_hint']).'</small>
         </div>
     </div>
 
