@@ -409,6 +409,8 @@ if ( in_array($_cur_page, $_show_links_pages) && ($_cur_page != 'services' || $_
         <div class="hb_title"><?php echo $_hb['import']; ?></div>
         <div class="hb_regions">
             <?php foreach ($_hb_regions as $_rk => $_rv):
+
+                if (function_exists('b2b_can_see_region') && !b2b_can_see_region($_rk)) { continue; }
                 $_rlabel = $_rv[$_hb_lang] ?? $_rv['ro'];
             ?>
             <a class="hb_region_btn" href="/<?php echo $_hb_lang; ?>/ordercars/<?php echo $_rk; ?>" title="<?php echo $_hb['see'].' '.$_rlabel; ?>"><?php echo $_rlabel; ?></a>
