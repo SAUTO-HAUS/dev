@@ -52,10 +52,19 @@ if (!function_exists('parsing_pricing_eur_rate')) {
 }
 
 if (!function_exists('parsing_pricing_payload')) {
-    function parsing_pricing_payload($db, $prefx): array
+    /**
+     * @param bool $b2b when true, the 4 partner-facing tables (commission, EU
+     *   delivery, EU/KR fixed costs) are read from the gh3sp_b2b_* set instead of
+     *   gh3sp_parsing_*. Korea markup, customs config and the EUR rate stay retail.
+     */
+    function parsing_pricing_payload($db, $prefx, bool $b2b = false): array
     {
-        static $cache = null;
-        if ($cache !== null) return $cache;
+        static $cache = [];
+        $ck = $b2b ? 'b2b' : 'retail';
+        if (isset($cache[$ck])) return $cache[$ck];
+
+        // The 4 tables that have a B2B variant; everything else stays retail.
+        $tp = $b2b ? $prefx.'_b2b' : $prefx.'_parsing';
 
         $out = [
             'eur_rate' => parsing_pricing_eur_rate($db, $prefx), // MDL per 1 EUR, live from BNM
@@ -91,27 +100,27 @@ if (!function_exists('parsing_pricing_payload')) {
             $out['excise_rates'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {}
 
-        // Europe delivery tiers.
+        // Europe delivery tiers (B2B variant when $b2b).
         try {
-            $stmt = $db->query('SELECT price_from, price_to, delivery FROM '.$prefx.'_parsing_eu_tiers ORDER BY sort_order, price_from');
+            $stmt = $db->query('SELECT price_from, price_to, delivery FROM '.$tp.'_eu_tiers ORDER BY sort_order, price_from');
             $out['eu_delivery'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {}
 
-        // Shared commission tiers.
+        // Shared commission tiers (B2B variant when $b2b).
         try {
-            $stmt = $db->query('SELECT price_from, price_to, commission FROM '.$prefx.'_parsing_commission_tiers ORDER BY sort_order, price_from');
+            $stmt = $db->query('SELECT price_from, price_to, commission FROM '.$tp.'_commission_tiers ORDER BY sort_order, price_from');
             $out['commission'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {}
 
-        // Europe fixed cost params (only enabled ones matter).
+        // Europe fixed cost params (B2B variant when $b2b; only enabled ones matter).
         try {
-            $stmt = $db->query('SELECT param_key, value_type, amount_eur, enabled FROM '.$prefx.'_parsing_eu_params ORDER BY sort_order, id');
+            $stmt = $db->query('SELECT param_key, value_type, amount_eur, enabled FROM '.$tp.'_eu_params ORDER BY sort_order, id');
             $out['eu_params'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {}
 
-        // Korea fixed cost params.
+        // Korea fixed cost params (B2B variant when $b2b).
         try {
-            $stmt = $db->query('SELECT param_key, value_type, amount_eur, enabled FROM '.$prefx.'_parsing_kr_params ORDER BY sort_order, id');
+            $stmt = $db->query('SELECT param_key, value_type, amount_eur, enabled FROM '.$tp.'_kr_params ORDER BY sort_order, id');
             $out['kr_params'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {}
 
@@ -121,7 +130,7 @@ if (!function_exists('parsing_pricing_payload')) {
             $out['kr_markup'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {}
 
-        $cache = $out;
+        $cache[$ck] = $out;
         return $out;
     }
 }
@@ -293,12 +302,12 @@ if (!function_exists('parsing_md_breakdown_kr')) {
      * @param array<string, array>|null $overrides per-line overrides (B2B pricing);
      *        null = the standard public breakdown.
      */
-    function parsing_md_breakdown_kr($db, $prefx, array $car, ?array $overrides = null): ?array
+    function parsing_md_breakdown_kr($db, $prefx, array $car, ?array $overrides = null, bool $b2b = false): ?array
     {
         $priceEur = (float)($car['price_eur'] ?? 0);
         if ($priceEur <= 0) return null;
 
-        $P = parsing_pricing_payload($db, $prefx);
+        $P = parsing_pricing_payload($db, $prefx, $b2b);
 
         // Korea price markup: a flat amount added on top of the converted car price
         // by price band (e.g. < 10000 → +300). The markup becomes the NEW car price
@@ -355,8 +364,9 @@ if (!function_exists('parsing_md_breakdown_kr')) {
             'eur_rate'  => $P['eur_rate'],
             'route'     => 'kr',
             // Derived here, not set by the caller, so a call site cannot apply the
-            // dealer prices and forget to label them.
-            'b2b'       => $overrides !== null,
+            // dealer prices and forget to label them. True whenever the B2B tables
+            // are used, whether or not a per-client override is also present.
+            'b2b'       => $b2b || $overrides !== null,
             'estimated' => $roroOv['display'] !== null, // total is an estimate: freight is a range
         ];
     }
@@ -370,12 +380,12 @@ if (!function_exists('parsing_md_breakdown_kr')) {
      * @param array<string, array>|null $overrides per-line overrides (B2B pricing);
      *        null = the standard public breakdown.
      */
-    function parsing_md_breakdown_eu($db, $prefx, array $car, ?array $overrides = null): ?array
+    function parsing_md_breakdown_eu($db, $prefx, array $car, ?array $overrides = null, bool $b2b = false): ?array
     {
         $priceEur = (float)($car['price_eur'] ?? 0);
         if ($priceEur <= 0) return null;
 
-        $P = parsing_pricing_payload($db, $prefx);
+        $P = parsing_pricing_payload($db, $prefx, $b2b);
 
         // Europe delivery is a price-based tier (not a flat RoRo fee).
         $delivery = parsing_tier_value($P['eu_delivery'] ?? [], $priceEur, 'delivery');

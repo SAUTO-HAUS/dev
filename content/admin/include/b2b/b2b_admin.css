@@ -90,6 +90,36 @@
     border-top:1px solid #f4f4f4;
 }
 
+/* ---- B2B pricing tables ------------------------------------------------- */
+.b2ba-warn{
+    margin:0 0 1rem; padding:0.85rem 1rem;
+    background:#fff6f6; border:1px solid #f0c8c8; border-radius:10px;
+    color:#a30015; font-size:0.9rem;
+}
+.b2bp-table{ width:100%; border-collapse:collapse; }
+.b2bp-table th{
+    text-align:left; padding:0.5rem 0.6rem; font-size:0.78rem; font-weight:700;
+    text-transform:uppercase; letter-spacing:0.02em; color:var(--b2ba-muted);
+    border-bottom:1px solid var(--b2ba-line);
+}
+.b2bp-table td{ padding:0.4rem 0.6rem; border-bottom:1px solid #f4f4f4; }
+.b2bp-table input[type=number]{
+    width:120px; padding:0.5rem 0.6rem;
+    border:1.5px solid var(--b2ba-line); border-radius:8px;
+    font-size:0.95rem; color:var(--b2ba-ink); box-sizing:border-box;
+}
+.b2bp-table input[type=number]:focus{ outline:none; border-color:var(--b2ba-brand); }
+.b2bp-table .b2bp-label{ font-weight:600; }
+.b2bp-table .b2bp-c{ text-align:center; }
+.b2bp-table .b2bp-en{ width:1.1rem; height:1.1rem; accent-color:var(--b2ba-brand); cursor:pointer; }
+.b2bp-table .b2bp-u{ color:var(--b2ba-muted); margin-left:0.25rem; }
+.b2bp-del{
+    width:2rem; height:2rem; line-height:1; font-size:1.2rem;
+    border:1.5px solid var(--b2ba-line); border-radius:8px;
+    background:#fff; color:var(--b2ba-muted); cursor:pointer;
+}
+.b2bp-del:hover{ border-color:var(--b2ba-brand); color:var(--b2ba-brand); }
+
 .b2ba-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1rem; }
 
 /* Two notification recipients, each in its own panel so phone + email read as
@@ -135,6 +165,8 @@
 
 /* ------------------------------------------------------------- permissions */
 
+.b2ba-perm-ttl{ margin:1.25rem 0 0.6rem; font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; color:var(--b2ba-muted); }
+.b2ba-perm-ttl:first-of-type{ margin-top:0.25rem; }
 .b2ba-perms{ display:flex; gap:1.5rem; flex-wrap:wrap; }
 .b2ba-perm{
     display:inline-flex; align-items:center; gap:0.5rem;

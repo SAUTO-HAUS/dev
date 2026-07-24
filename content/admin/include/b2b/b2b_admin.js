@@ -102,8 +102,33 @@
             var regions = [];
             root.querySelectorAll('.b2ba-region:checked').forEach(function (cb) { regions.push(cb.value); });
 
+            var inStock = root.querySelector('#b2ba-allow-in-stock');
+            var onOrder = root.querySelector('#b2ba-allow-on-order');
+
             busy(btn, true);
-            api('set_permissions', { user_id: userId, regions: regions }).then(function (res) {
+            api('set_permissions', {
+                user_id: userId,
+                regions: regions,
+                allow_in_stock: inStock && inStock.checked ? 1 : 0,
+                allow_on_order: onOrder && onOrder.checked ? 1 : 0
+            }).then(function (res) {
+                busy(btn, false);
+                say(res.ok ? (root.dataset.savedMsg || 'Salvat.') : res.error, res.ok ? 'ok' : 'error');
+            });
+            return;
+        }
+
+        // ---- per-client price overrides -------------------------------------
+        if (action === 'save-prices') {
+            var overrides = {};
+            root.querySelectorAll('[data-price-key]').forEach(function (inp) {
+                // Empty = no override (use the global B2B price); '' is sent so the
+                // server clears any previous row for that key.
+                overrides[inp.dataset.priceKey] = inp.value.trim();
+            });
+
+            busy(btn, true);
+            api('save_price_overrides', { user_id: userId, overrides: JSON.stringify(overrides) }).then(function (res) {
                 busy(btn, false);
                 say(res.ok ? (root.dataset.savedMsg || 'Salvat.') : res.error, res.ok ? 'ok' : 'error');
             });

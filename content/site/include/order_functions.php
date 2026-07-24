@@ -64,12 +64,15 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 	// branch: later branches add ORDER BY/LIMIT, so this is the last point where a
 	// condition can still be attached. Empty for guests and full-access partners.
 	$b2b_region_sql = function_exists('b2b_sql_region_filter') ? b2b_sql_region_filter() : '';
+	// Catalog access: this is the on-order catalog, so a partner barred from it
+	// gets an empty list ('' for guests and permitted partners).
+	$b2b_catalog_sql = function_exists('b2b_sql_catalog_filter') ? b2b_sql_catalog_filter('on_order') : '';
 
-	$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE catalog_type = "on_order"'.$b2b_region_sql;
+	$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE catalog_type = "on_order"'.$b2b_region_sql.$b2b_catalog_sql;
 
 	// For filter searches on /ordercars, restrict to on_order catalog (sort dropdown can switch via redirect on the page level)
 	if ($v1=='fltr') {
-		$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE catalog_type = "on_order"'.$b2b_region_sql;
+		$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE catalog_type = "on_order"'.$b2b_region_sql.$b2b_catalog_sql;
 	}
 
 	// For similar cars, show both in_stock and on_order cars

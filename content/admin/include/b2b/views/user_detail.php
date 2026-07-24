@@ -51,6 +51,19 @@ try {
 } catch (Throwable $e) {
     $requests = [];
 }
+
+// Per-client price overrides (Faza C): flat values that replace the global B2B
+// commission / transport for this partner. Empty = uses the global B2B price.
+$priceOv = [];
+try {
+    $stmt = $db->prepare('SELECT param_key, amount FROM '.$prefx.'_b2b_price_overrides WHERE b2b_user_id = :uid');
+    $stmt->execute([':uid' => $uid]);
+    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+        $priceOv[(string)$r['param_key']] = (string)(int)round((float)$r['amount']);
+    }
+} catch (Throwable $e) {
+    $priceOv = [];
+}
 ?>
 
 <div class="b2ba" data-b2b-user="<?= $uid ?>" data-saved-msg="<?= b2b_adm_esc($t['saved']) ?>">
@@ -101,6 +114,7 @@ try {
     <nav class="b2ba-tabs">
         <button type="button" class="b2ba-tab is-active" data-b2b-tab="data"><?= b2b_adm_esc($t['tab_data']) ?></button>
         <button type="button" class="b2ba-tab" data-b2b-tab="perms"><?= b2b_adm_esc($t['tab_perms']) ?></button>
+        <button type="button" class="b2ba-tab" data-b2b-tab="prices"><?= b2b_adm_esc($t['tab_prices']) ?></button>
         <button type="button" class="b2ba-tab" data-b2b-tab="activity"><?= b2b_adm_esc($t['tab_activity']) ?> <span class="b2ba-tab__n"><?= count($logs) ?></span></button>
         <button type="button" class="b2ba-tab" data-b2b-tab="invoices"><?= b2b_adm_esc($t['tab_invoices']) ?> <span class="b2ba-tab__n"><?= count($invoices) ?></span></button>
         <button type="button" class="b2ba-tab" data-b2b-tab="reqs"><?= b2b_adm_esc($t['tab_reqs']) ?> <span class="b2ba-tab__n"><?= count($requests) ?></span></button>
@@ -183,6 +197,7 @@ try {
         <div class="b2ba-card">
             <p class="b2ba-hint"><?= b2b_adm_esc($t['perms_hint']) ?></p>
 
+            <h3 class="b2ba-perm-ttl"><?= b2b_adm_esc($t['perms_regions']) ?></h3>
             <div class="b2ba-perms">
                 <?php foreach (B2bConfig::REGIONS as $rg): ?>
                     <label class="b2ba-perm">
@@ -193,9 +208,58 @@ try {
                 <?php endforeach; ?>
             </div>
 
+            <h3 class="b2ba-perm-ttl"><?= b2b_adm_esc($t['perms_catalog']) ?></h3>
+            <div class="b2ba-perms">
+                <label class="b2ba-perm">
+                    <input type="checkbox" id="b2ba-allow-in-stock"
+                           <?= (int)($client['allow_in_stock'] ?? 1) === 1 ? 'checked' : '' ?>>
+                    <span><?= b2b_adm_esc($t['cat_in_stock']) ?></span>
+                </label>
+                <label class="b2ba-perm">
+                    <input type="checkbox" id="b2ba-allow-on-order"
+                           <?= (int)($client['allow_on_order'] ?? 1) === 1 ? 'checked' : '' ?>>
+                    <span><?= b2b_adm_esc($t['cat_on_order']) ?></span>
+                </label>
+            </div>
+
             <div class="b2ba-card__foot">
                 <span></span>
                 <button type="button" class="b2ba-btn b2ba-btn--primary" data-b2b-admin="save-perms">
+                    <?= b2b_adm_esc($t['save']) ?>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ------------------------------------------------ Per-client prices -->
+    <section class="b2ba-pane" data-b2b-pane="prices">
+        <div class="b2ba-card">
+            <p class="b2ba-hint"><?= b2b_adm_esc($t['prices_hint']) ?></p>
+
+            <div class="b2ba-grid">
+                <label class="b2ba-field">
+                    <span><?= b2b_adm_esc($t['price_commission']) ?></span>
+                    <input type="number" min="0" step="1" data-price-key="commission"
+                           value="<?= b2b_adm_esc($priceOv['commission'] ?? '') ?>"
+                           placeholder="<?= b2b_adm_esc($t['price_global']) ?>">
+                </label>
+                <label class="b2ba-field">
+                    <span><?= b2b_adm_esc($t['price_eu_delivery']) ?></span>
+                    <input type="number" min="0" step="1" data-price-key="eu_delivery"
+                           value="<?= b2b_adm_esc($priceOv['eu_delivery'] ?? '') ?>"
+                           placeholder="<?= b2b_adm_esc($t['price_global']) ?>">
+                </label>
+                <label class="b2ba-field">
+                    <span><?= b2b_adm_esc($t['price_roro']) ?></span>
+                    <input type="number" min="0" step="1" data-price-key="sea_freight_roro"
+                           value="<?= b2b_adm_esc($priceOv['sea_freight_roro'] ?? '') ?>"
+                           placeholder="<?= b2b_adm_esc($t['price_global']) ?>">
+                </label>
+            </div>
+
+            <div class="b2ba-card__foot">
+                <span></span>
+                <button type="button" class="b2ba-btn b2ba-btn--primary" data-b2b-admin="save-prices">
                     <?= b2b_adm_esc($t['save']) ?>
                 </button>
             </div>

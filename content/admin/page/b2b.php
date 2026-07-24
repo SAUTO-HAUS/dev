@@ -46,6 +46,10 @@ switch ($b2b_action) {
         include(_ADM_INCL.'/b2b/views/settings.php');
         break;
 
+    case 'pricing':
+        include(_ADM_INCL.'/b2b/views/pricing.php');
+        break;
+
     case 'users':
     default:
         include(_ADM_INCL.'/b2b/views/users.php');

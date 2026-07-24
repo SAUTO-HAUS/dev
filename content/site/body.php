@@ -56,6 +56,20 @@ if (isset($t_mp[2]) && $t_mp[2] == 'cars' && isset($t_mp[3]) && !isset($_GET['tg
         if (!$check_car || empty($check_car['catalog_type']) || $check_car['catalog_type'] !== 'in_stock') {
             $GLOBALS['page_is_404'] = true;
         }
+        // A partner barred from the in-stock catalog must not reach the page via a
+        // direct URL either. The in-stock page (cars.php) carries no B2B block, so
+        // a 404 is the honest response; the listing already hides these cars.
+        elseif (function_exists('b2b_is_client') && b2b_is_client() && !b2b_can_see_catalog('in_stock')) {
+            $GLOBALS['page_is_404'] = true;
+            if (function_exists('b2b_user_id')) {
+                App\Services\B2b\B2bAudit::log(
+                    b2b_user_id(),
+                    App\Services\B2b\B2bAudit::REGION_DENIED,
+                    ['car_id' => (int)$check_id, 'catalog_type' => 'in_stock'],
+                    (int)$check_id
+                );
+            }
+        }
     }
 }
 
@@ -113,21 +127,32 @@ if (isset($t_mp[2]) && $t_mp[2] == 'ordercars' && isset($t_mp[3]) && !isset($_GE
         if (!$check_car || empty($check_car['catalog_type']) || $check_car['catalog_type'] !== 'on_order') {
             $GLOBALS['page_is_404'] = true;
         }
-        // Region access (spec 3.2): hiding the car from the grid is not enough, a
-        // partner typing the URL directly must be refused here too.
+        // Access control (spec 3.2): hiding the car from the grid is not enough, a
+        // partner typing the URL directly must be refused here too. Catalog access
+        // (on_order) is checked first, then region.
         elseif (function_exists('b2b_is_client') && b2b_is_client()) {
-            $_b2b_region = App\Services\B2b\B2bRegions::regionForCar((int)$check_id);
-            if ($_b2b_region !== null && !b2b_can_see_region($_b2b_region)) {
+            if (!b2b_can_see_catalog('on_order')) {
                 $GLOBALS['b2b_region_blocked'] = true;
                 App\Services\B2b\B2bAudit::log(
                     b2b_user_id(),
                     App\Services\B2b\B2bAudit::REGION_DENIED,
-                    ['car_id' => (int)$check_id, 'region' => $_b2b_region],
+                    ['car_id' => (int)$check_id, 'catalog_type' => 'on_order'],
                     (int)$check_id
                 );
             } else {
-                // Audit: every car a partner looks at (acceptance criteria).
-                b2b_log_car_view((int)$check_id);
+                $_b2b_region = App\Services\B2b\B2bRegions::regionForCar((int)$check_id);
+                if ($_b2b_region !== null && !b2b_can_see_region($_b2b_region)) {
+                    $GLOBALS['b2b_region_blocked'] = true;
+                    App\Services\B2b\B2bAudit::log(
+                        b2b_user_id(),
+                        App\Services\B2b\B2bAudit::REGION_DENIED,
+                        ['car_id' => (int)$check_id, 'region' => $_b2b_region],
+                        (int)$check_id
+                    );
+                } else {
+                    // Audit: every car a partner looks at (acceptance criteria).
+                    b2b_log_car_view((int)$check_id);
+                }
             }
         }
     }

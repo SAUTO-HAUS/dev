@@ -3,47 +3,58 @@
 /**
  * B2B preferential pricing (spec 2.2 / 1.2.B).
  *
- * SECURITY: the rules are applied server-side, inside the breakdown computation
- * (parsing_md_breakdown_kr / _eu). No request parameter enables them - the only
+ * SECURITY: applied server-side inside the breakdown computation
+ * (parsing_md_breakdown_kr / _eu). No request parameter enables it - the only
  * condition is a valid B2B session - so an ordinary visitor cannot obtain dealer
- * prices and a partner cannot alter them from the browser. Spec note 5 is
- * satisfied by construction, not by hiding values in CSS.
+ * prices and a partner cannot alter them from the browser.
  *
- * Values are exactly the ones in the technical specification.
+ * Two layers:
+ *   - the B2B pricing TABLES (gh3sp_b2b_*), edited in /adminsauto/b2b/pricing,
+ *     applied via the `$b2b = true` flag on the breakdown (global for every partner);
+ *   - optional PER-CLIENT overrides (b2b_price_overrides), layered on top.
  */
 
 if (!defined('B2B_PRICE_RULES_LOADED')) {
     define('B2B_PRICE_RULES_LOADED', 1);
 
     /**
-     * Overrides keyed by the breakdown line `param_key`.
+     * Per-client price overrides for the logged-in partner, keyed by breakdown
+     * `param_key` (commission / eu_delivery / sea_freight_roro). null when there
+     * is no partner or no override — the global B2B tables then apply as-is.
      *
-     * Keys match the rows in gh3sp_parsing_kr_params / _eu_params and the
-     * commission tiers. The Korea route uses all of them; the Europe route only
-     * has `commission` and `pollution_tax`, the rest simply never appear there.
+     * Each override is a flat 'fixed' value that plugs straight into
+     * parsing_price_override(), layered on top of the global B2B tables.
      */
-    function b2b_price_rules(): array
-    {
-        return [
-            // Cancelled fees
-            'auction_fee_encar' => ['mode' => 'zero'],
-            'inspection'        => ['mode' => 'zero'],
-            'broker_korea'      => ['mode' => 'zero'],
-
-            // Fixed overrides
-            'recycling_tax'     => ['mode' => 'fixed', 'value' => 10],   // pollution tax, KR route
-            'pollution_tax'     => ['mode' => 'fixed', 'value' => 10],   // pollution tax, EU route
-            'commission'        => ['mode' => 'fixed', 'value' => 500],
-
-            // Estimated range, settled when the car is loaded onto the vessel
-            'sea_freight_roro'  => ['mode' => 'range', 'min' => 1750, 'max' => 2550],
-        ];
-    }
-
-    /** Full rule set for an authenticated partner, null otherwise. */
     function b2b_price_overrides(): ?array
     {
-        return (function_exists('b2b_is_client') && b2b_is_client()) ? b2b_price_rules() : null;
+        global $db, $prefx;
+
+        if (!function_exists('b2b_is_client') || !b2b_is_client()) {
+            return null;
+        }
+        $uid = b2b_user_id();
+        if ($uid <= 0) {
+            return null;
+        }
+
+        static $cache = [];
+        if (array_key_exists($uid, $cache)) {
+            return $cache[$uid];
+        }
+
+        $out = null;
+        try {
+            $stmt = $db->prepare('SELECT param_key, amount FROM '.$prefx.'_b2b_price_overrides WHERE b2b_user_id = ?');
+            $stmt->execute([$uid]);
+            foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
+                $out[(string)$r['param_key']] = ['mode' => 'fixed', 'value' => (float)$r['amount']];
+            }
+        } catch (\Throwable $e) {
+            // Table not migrated yet: fall back to the global B2B prices.
+            $out = null;
+        }
+
+        return $cache[$uid] = $out;
     }
 
     /**
@@ -58,13 +69,16 @@ if (!defined('B2B_PRICE_RULES_LOADED')) {
     {
         global $db, $prefx;
 
-        $overrides = b2b_price_overrides();
+        // CRITICAL: only a logged-in partner gets B2B pricing. A guest must get
+        // the unchanged retail breakdown, so this is called from the car page for
+        // everyone but only switches tables for a partner. The $b2b flag gates
+        // BOTH the table set and the per-client override.
+        $isClient  = function_exists('b2b_is_client') && b2b_is_client();
+        $overrides = $isClient ? b2b_price_overrides() : null;
 
-        // The breakdown flags its own result with `b2b` when it receives
-        // overrides, so the "B2B partner price" badge cannot be lost here.
         return ($source === 'encar')
-            ? parsing_md_breakdown_kr($db, $prefx, $car, $overrides)
-            : parsing_md_breakdown_eu($db, $prefx, $car, $overrides);
+            ? parsing_md_breakdown_kr($db, $prefx, $car, $overrides, $isClient)
+            : parsing_md_breakdown_eu($db, $prefx, $car, $overrides, $isClient);
     }
 
     /**

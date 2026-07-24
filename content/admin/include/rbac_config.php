@@ -157,7 +157,7 @@ $rbac_admin_menu = [
         'ordercars' => ['add', 'ctlg'],
         'docs' => ['add', 'ctlg'],
         'crm' => ['calls', 'inbox', 'leads', 'my_leads', 'transaction', 'closed', 'analytics', 'settings'],
-        'b2b' => ['users', 'requests', 'settings'],
+        'b2b' => ['users', 'requests', 'pricing', 'settings'],
         'calculator' => ['calc', 'ctlg', 'usage', 'rates'],
         // 'tyres' => ['ctlg'],
         // Hidden: page-level SEO override is disabled in meta_gen.php and per-item
@@ -211,7 +211,7 @@ $rbac_internal_actions = [
         'docs' => ['add', 'create', 'detail', 'ctlg'],
         'stock' => ['ctlg'],
 		'crm' => ['calls', 'leads', 'my_leads', 'lead', 'inbox', 'inbox_chat', 'analytics', 'transaction', 'closed', 'junk', 'settings'],
-        'b2b' => ['users', 'user', 'requests', 'settings'],
+        'b2b' => ['users', 'user', 'requests', 'pricing', 'settings'],
         'sett' => ['info', 'adm_usr', 'roles', 'phone_config', 'publication_settings', 'ai_prompt', '404_stats', 'changelog', 'analytics', 'terminal']
     ],
     'admin' => [

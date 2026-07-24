@@ -82,6 +82,33 @@ if (!function_exists('b2b_user')) {
         }
     }
 
+    /**
+     * Whether the partner may see a catalog type ('in_stock' / 'on_order').
+     * Guests always may. The flags live on the b2b_users row (already loaded).
+     */
+    function b2b_can_see_catalog(string $catalogType): bool
+    {
+        $u = b2b_user();
+        if ($u === null) {
+            return true;
+        }
+        if ($catalogType === 'on_order') {
+            return (int)($u['allow_on_order'] ?? 1) === 1;
+        }
+        // in_stock, plus legacy NULL catalog_type rows, count as in-stock access.
+        return (int)($u['allow_in_stock'] ?? 1) === 1;
+    }
+
+    /**
+     * SQL guard for a listing already restricted to one catalog type: an
+     * impossible condition when the partner has no access, '' otherwise. Mirrors
+     * the "no region" case in B2bRegions::sqlRestriction.
+     */
+    function b2b_sql_catalog_filter(string $catalogType): string
+    {
+        return b2b_can_see_catalog($catalogType) ? '' : ' AND 1=0';
+    }
+
     /** Audit: car viewed by a partner (acceptance criteria). */
     function b2b_log_car_view(int $carId): void
     {

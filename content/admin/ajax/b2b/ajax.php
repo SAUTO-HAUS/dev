@@ -87,14 +87,27 @@ switch ($fn) {
             }
         }
 
+        // Catalog access (in stock / on order) lives on the user row, not in the
+        // region table. Saved together with regions in the same panel.
+        $allowInStock = !empty($_POST['allow_in_stock']) ? 1 : 0;
+        $allowOnOrder = !empty($_POST['allow_on_order']) ? 1 : 0;
+
         try {
             B2bRegions::save($uid, $regions);
+            $db->prepare('UPDATE '.B2bConfig::table('users')
+                .' SET allow_in_stock = :ins, allow_on_order = :ord WHERE id = :id')
+               ->execute([':ins' => $allowInStock, ':ord' => $allowOnOrder, ':id' => $uid]);
         } catch (Throwable $e) {
             B2bConfig::log('b2b_error.log', 'admin set_permissions err='.$e->getMessage());
             b2b_adm_out(['ok' => false, 'error' => 'Permisiunile nu au putut fi salvate.']);
         }
 
-        B2bAudit::log($uid, B2bAudit::PERMISSIONS_CHANGED, ['regions' => $regions, 'by_admin' => (int)$user_id]);
+        B2bAudit::log($uid, B2bAudit::PERMISSIONS_CHANGED, [
+            'regions'        => $regions,
+            'allow_in_stock' => $allowInStock,
+            'allow_on_order' => $allowOnOrder,
+            'by_admin'       => (int)$user_id,
+        ]);
 
         b2b_adm_out(['ok' => true, 'regions' => $regions]);
     }
@@ -227,6 +240,115 @@ switch ($fn) {
         } catch (Throwable $e) {
             B2bConfig::log('b2b_error.log', 'admin save_settings err='.$e->getMessage());
             b2b_adm_out(['ok' => false, 'error' => 'Setările nu au putut fi salvate.']);
+        }
+
+        b2b_adm_out(['ok' => true]);
+    }
+
+    // ---- Per-client price overrides (Faza C) ---------------------------------
+    case 'save_price_overrides': {
+        if (!B2bAuth::findById($uid)) {
+            b2b_adm_out(['ok' => false, 'error' => 'Client inexistent.']);
+        }
+
+        $incoming = json_decode((string)($_POST['overrides'] ?? '{}'), true);
+        if (!is_array($incoming)) {
+            b2b_adm_out(['ok' => false, 'error' => 'Date invalide.']);
+        }
+
+        // Only these lines are overridable per client (commission + transport).
+        $allowedKeys = ['commission', 'eu_delivery', 'sea_freight_roro'];
+        $tbl = B2bConfig::prefix().'_b2b_price_overrides';
+
+        try {
+            $del = $db->prepare('DELETE FROM `'.$tbl.'` WHERE b2b_user_id = :uid AND param_key = :k');
+            $ins = $db->prepare('INSERT INTO `'.$tbl.'` (b2b_user_id, param_key, amount) VALUES (:uid, :k, :a)');
+
+            foreach ($allowedKeys as $key) {
+                if (!array_key_exists($key, $incoming)) {
+                    continue;
+                }
+                $raw = trim((string)$incoming[$key]);
+                // Empty clears the override (fall back to the global B2B price).
+                $del->execute([':uid' => $uid, ':k' => $key]);
+                if ($raw !== '') {
+                    $ins->execute([':uid' => $uid, ':k' => $key, ':a' => (int)$raw]);
+                }
+            }
+        } catch (Throwable $e) {
+            B2bConfig::log('b2b_error.log', 'admin save_price_overrides err='.$e->getMessage());
+            b2b_adm_out(['ok' => false, 'error' => 'Prețurile nu au putut fi salvate.']);
+        }
+
+        B2bAudit::log($uid, B2bAudit::PERMISSIONS_CHANGED, ['price_overrides' => $incoming, 'by_admin' => (int)$user_id]);
+
+        b2b_adm_out(['ok' => true]);
+    }
+
+    // ---- B2B pricing tables (Faza B) -----------------------------------------
+    case 'save_pricing': {
+        $section = (string)($_POST['section'] ?? '');
+        $rows    = json_decode((string)($_POST['rows'] ?? '[]'), true);
+        if (!is_array($rows)) {
+            b2b_adm_out(['ok' => false, 'error' => 'Date invalide.']);
+        }
+
+        // section -> [table, value column]. Tiers are fully replaced; param
+        // tables are updated row by row (fixed rows, never added/removed).
+        $tierMap  = [
+            'commission' => [B2bConfig::prefix().'_b2b_commission_tiers', 'commission'],
+            'delivery'   => [B2bConfig::prefix().'_b2b_eu_tiers',         'delivery'],
+        ];
+        $paramMap = [
+            'eu_params' => B2bConfig::prefix().'_b2b_eu_params',
+            'kr_params' => B2bConfig::prefix().'_b2b_kr_params',
+        ];
+
+        try {
+            if (isset($tierMap[$section])) {
+                [$table, $valCol] = $tierMap[$section];
+
+                // Full replace: the tables are tiny (a handful of price bands),
+                // so rebuilding is simpler and safer than per-row diffing.
+                $db->beginTransaction();
+                $db->prepare('DELETE FROM `'.$table.'`')->execute();
+
+                $ins = $db->prepare('INSERT INTO `'.$table.'`
+                    (`price_from`, `price_to`, `'.$valCol.'`, `sort_order`)
+                    VALUES (:pf, :pt, :val, :so)');
+                $so = 0;
+                foreach ($rows as $r) {
+                    $so++;
+                    $pt = $r['price_to'];
+                    $ins->execute([
+                        ':pf'  => (int)($r['price_from'] ?? 0),
+                        ':pt'  => ($pt === null || $pt === '') ? null : (int)$pt,
+                        ':val' => (int)($r['value'] ?? 0),
+                        ':so'  => $so,
+                    ]);
+                }
+                $db->commit();
+
+            } elseif (isset($paramMap[$section])) {
+                $table = $paramMap[$section];
+                $upd = $db->prepare('UPDATE `'.$table.'`
+                    SET `enabled` = :en, `amount_eur` = :amt WHERE `id` = :id');
+                foreach ($rows as $r) {
+                    $id = (int)($r['id'] ?? 0);
+                    if ($id <= 0) continue;
+                    $upd->execute([
+                        ':en'  => !empty($r['enabled']) ? 1 : 0,
+                        ':amt' => (int)($r['amount'] ?? 0),
+                        ':id'  => $id,
+                    ]);
+                }
+            } else {
+                b2b_adm_out(['ok' => false, 'error' => 'Secțiune necunoscută.']);
+            }
+        } catch (Throwable $e) {
+            if ($db->inTransaction()) { $db->rollBack(); }
+            B2bConfig::log('b2b_error.log', 'admin save_pricing err='.$e->getMessage());
+            b2b_adm_out(['ok' => false, 'error' => 'Prețurile nu au putut fi salvate.']);
         }
 
         b2b_adm_out(['ok' => true]);

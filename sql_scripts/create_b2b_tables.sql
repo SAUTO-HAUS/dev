@@ -1,9 +1,14 @@
 -- =====================================================================
 -- B2B MODULE (sauto.md): partner accounts with Super Admin approval,
--- region permissions, audit trail, proformas and Super Admin requests.
+-- region + catalog permissions, audit trail, proformas, Super Admin requests,
+-- and B2B pricing (global tables + per-client overrides).
 --
 -- Approval by the Super Admin is the only gate: no SMS, no OTP, no 2FA.
--- Idempotent: safe to run more than once.
+-- Single, self-contained migration. Run ONCE per database.
+--
+-- DEPENDENCY: the B2B pricing section seeds from the retail parsing tables
+-- (gh3sp_parsing_*), so create_parsing_tables.sql must have run first. Every
+-- statement is idempotent (IF NOT EXISTS / guarded seed), so re-running is safe.
 -- =====================================================================
 
 
@@ -26,6 +31,10 @@ CREATE TABLE IF NOT EXISTS `gh3sp_b2b_users` (
     `phone_number` VARCHAR(32) NOT NULL,
     `role` ENUM('b2b_client') NOT NULL DEFAULT 'b2b_client',
     `status` ENUM('pending','active','blocked') NOT NULL DEFAULT 'pending',
+    -- Catalog access, alongside the region permissions. 1 = may see that catalog.
+    -- in_stock -> /cars, on_order -> /ordercars. Both on by default.
+    `allow_in_stock` TINYINT(1) NOT NULL DEFAULT 1,
+    `allow_on_order` TINYINT(1) NOT NULL DEFAULT 1,
     -- Not asked at signup. The admin fills these in when a proforma has to
     -- carry company details, hence nullable.
     `company_name` VARCHAR(190) DEFAULT NULL,
@@ -172,6 +181,120 @@ CREATE TABLE IF NOT EXISTS `gh3sp_b2b_saved_cars` (
     CONSTRAINT `fk_b2b_saved_user` FOREIGN KEY (`b2b_user_id`)
         REFERENCES `gh3sp_b2b_users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ---------------------------------------------------------------------
+-- Per-client price overrides (Faza C). A flat value overrides the global B2B
+-- table for one line (commission / transport) for a single partner.
+-- Keyed by breakdown param_key: 'commission', 'eu_delivery', 'sea_freight_roro'.
+-- A missing row = the global B2B value applies.
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gh3sp_b2b_price_overrides` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `b2b_user_id` INT(11) NOT NULL,
+    `param_key` VARCHAR(50) NOT NULL,
+    `amount` DECIMAL(10,2) NOT NULL DEFAULT 0,
+    `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uniq_b2b_ovr` (`b2b_user_id`, `param_key`),
+    CONSTRAINT `fk_b2b_ovr_user` FOREIGN KEY (`b2b_user_id`)
+        REFERENCES `gh3sp_b2b_users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- =====================================================================
+-- B2B pricing tables (Faza B). Same structure as the retail parsing tables,
+-- but a separate set of values shown only to logged-in partners. Covers 4
+-- tables: commission tiers, Europe delivery tiers, Europe/Korea fixed costs.
+-- Korea markup, customs config and the EUR rate are NOT duplicated — B2B reads
+-- those from retail.
+--
+-- The seed copies the current retail values (INSERT ... SELECT), so B2B starts
+-- identical to retail and the admin adjusts the differences. This REQUIRES the
+-- retail parsing tables (create_parsing_tables.sql) to exist first. The seed
+-- only runs when the B2B table is still empty.
+-- =====================================================================
+
+-- ---- Shared commission tiers (Europe + Korea) -----------------------
+CREATE TABLE IF NOT EXISTS `gh3sp_b2b_commission_tiers` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `price_from` DECIMAL(12,2) NOT NULL DEFAULT 0,
+    `price_to` DECIMAL(12,2) DEFAULT NULL COMMENT 'NULL = no upper limit',
+    `commission` DECIMAL(10,2) NOT NULL DEFAULT 0,
+    `sort_order` INT(11) NOT NULL DEFAULT 0,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_by` INT(11) DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    INDEX `idx_sort_order` (`sort_order`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `gh3sp_b2b_commission_tiers` (`price_from`, `price_to`, `commission`, `sort_order`)
+SELECT `price_from`, `price_to`, `commission`, `sort_order`
+  FROM `gh3sp_parsing_commission_tiers`
+ WHERE NOT EXISTS (SELECT 1 FROM (SELECT 1 FROM `gh3sp_b2b_commission_tiers` LIMIT 1) AS x);
+
+
+-- ---- Europe delivery tiers ------------------------------------------
+CREATE TABLE IF NOT EXISTS `gh3sp_b2b_eu_tiers` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `price_from` DECIMAL(12,2) NOT NULL DEFAULT 0,
+    `price_to` DECIMAL(12,2) DEFAULT NULL COMMENT 'NULL = no upper limit',
+    `delivery` DECIMAL(10,2) NOT NULL DEFAULT 0,
+    `commission` DECIMAL(10,2) NOT NULL DEFAULT 0,
+    `sort_order` INT(11) NOT NULL DEFAULT 0,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_by` INT(11) DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    INDEX `idx_sort_order` (`sort_order`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `gh3sp_b2b_eu_tiers` (`price_from`, `price_to`, `delivery`, `commission`, `sort_order`)
+SELECT `price_from`, `price_to`, `delivery`, `commission`, `sort_order`
+  FROM `gh3sp_parsing_eu_tiers`
+ WHERE NOT EXISTS (SELECT 1 FROM (SELECT 1 FROM `gh3sp_b2b_eu_tiers` LIMIT 1) AS x);
+
+
+-- ---- Europe fixed costs ---------------------------------------------
+CREATE TABLE IF NOT EXISTS `gh3sp_b2b_eu_params` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `param_key` VARCHAR(100) NOT NULL,
+    `value_type` ENUM('fixed','percent') NOT NULL DEFAULT 'fixed',
+    `amount_eur` DECIMAL(10,2) NOT NULL DEFAULT 0,
+    `enabled` TINYINT(1) NOT NULL DEFAULT 1,
+    `sort_order` INT(11) NOT NULL DEFAULT 0,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_by` INT(11) DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uq_param_key` (`param_key`),
+    INDEX `idx_sort_order` (`sort_order`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `gh3sp_b2b_eu_params` (`param_key`, `value_type`, `amount_eur`, `enabled`, `sort_order`)
+SELECT `param_key`, `value_type`, `amount_eur`, `enabled`, `sort_order`
+  FROM `gh3sp_parsing_eu_params`
+ WHERE NOT EXISTS (SELECT 1 FROM (SELECT 1 FROM `gh3sp_b2b_eu_params` LIMIT 1) AS x);
+
+
+-- ---- Korea fixed costs ----------------------------------------------
+CREATE TABLE IF NOT EXISTS `gh3sp_b2b_kr_params` (
+    `id` INT(11) NOT NULL AUTO_INCREMENT,
+    `param_key` VARCHAR(100) NOT NULL,
+    `value_type` ENUM('fixed','percent') NOT NULL DEFAULT 'fixed',
+    `amount_eur` DECIMAL(10,2) NOT NULL DEFAULT 0,
+    `enabled` TINYINT(1) NOT NULL DEFAULT 1,
+    `sort_order` INT(11) NOT NULL DEFAULT 0,
+    `updated_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_by` INT(11) DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uq_param_key` (`param_key`),
+    INDEX `idx_sort_order` (`sort_order`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+INSERT INTO `gh3sp_b2b_kr_params` (`param_key`, `value_type`, `amount_eur`, `enabled`, `sort_order`)
+SELECT `param_key`, `value_type`, `amount_eur`, `enabled`, `sort_order`
+  FROM `gh3sp_parsing_kr_params`
+ WHERE NOT EXISTS (SELECT 1 FROM (SELECT 1 FROM `gh3sp_b2b_kr_params` LIMIT 1) AS x);
 
 
 -- ---------------------------------------------------------------------

@@ -1,0 +1,109 @@
+/* ===========================================================================
+   B2B pricing tables editor. One Save button per card (commission / delivery /
+   eu_params / kr_params). Tier cards can add/remove rows; param cards are fixed
+   rows with a toggle + amount. Rows are sent as JSON to fn=save_pricing.
+   =========================================================================== */
+(function () {
+    'use strict';
+
+    var root = document.getElementById('b2ba-pricing');
+    if (!root) return;
+
+    var msgBox = document.getElementById('b2ba-msg');
+
+    function say(text, kind) {
+        if (!msgBox) { if (kind === 'error' && text) alert(text); return; }
+        msgBox.textContent = text || '';
+        msgBox.className = 'b2ba-msg' + (text ? (kind === 'error' ? ' is-error' : ' is-ok') : '');
+        if (text) msgBox.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+    }
+
+    function api(fn, data) {
+        var body = new URLSearchParams();
+        body.set('tp', 'adm');
+        body.set('pg', 'b2b');
+        body.set('fn', fn);
+        Object.keys(data || {}).forEach(function (k) { body.set(k, data[k]); });
+
+        return fetch('/ajax.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+            body: body.toString(),
+            credentials: 'same-origin'
+        }).then(function (r) { return r.json(); })
+          .catch(function () { return { ok: false, error: 'Eroare de rețea.' }; });
+    }
+
+    // ---- Add a tier row (clones the shape of an existing one) ---------------
+    root.querySelectorAll('[data-b2b-tier-add]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var card = btn.closest('.b2bp-card');
+            var tbody = card.querySelector('tbody');
+            var tr = document.createElement('tr');
+            tr.setAttribute('data-row', '');
+            tr.setAttribute('data-id', '0'); // 0 = new row, inserted server-side
+            tr.innerHTML =
+                '<td><input type="number" min="0" step="1" class="b2bp-from" value="0"></td>' +
+                '<td><input type="number" min="0" step="1" class="b2bp-to" value=""></td>' +
+                '<td><input type="number" min="0" step="1" class="b2bp-val" value="0"></td>' +
+                '<td><button type="button" class="b2bp-del">&times;</button></td>';
+            tbody.appendChild(tr);
+        });
+    });
+
+    // ---- Remove a tier row (event delegation) -------------------------------
+    root.addEventListener('click', function (e) {
+        var del = e.target.closest('.b2bp-del');
+        if (!del) return;
+        var tr = del.closest('tr');
+        if (tr) tr.remove();
+    });
+
+    // ---- Collect + save a card ----------------------------------------------
+    function collect(card) {
+        var section = card.dataset.section;
+        var rows = [];
+
+        card.querySelectorAll('tbody tr[data-row]').forEach(function (tr) {
+            var id = parseInt(tr.dataset.id || '0', 10) || 0;
+
+            if (section === 'eu_params' || section === 'kr_params') {
+                var en = tr.querySelector('.b2bp-en');
+                var amt = tr.querySelector('.b2bp-val');
+                rows.push({
+                    id: id,
+                    enabled: en && en.checked ? 1 : 0,
+                    amount: parseInt(amt && amt.value, 10) || 0
+                });
+            } else {
+                var from = tr.querySelector('.b2bp-from');
+                var to   = tr.querySelector('.b2bp-to');
+                var val  = tr.querySelector('.b2bp-val');
+                var toVal = (to && to.value !== '') ? (parseInt(to.value, 10) || 0) : null;
+                rows.push({
+                    id: id,
+                    price_from: parseInt(from && from.value, 10) || 0,
+                    price_to: toVal,
+                    value: parseInt(val && val.value, 10) || 0
+                });
+            }
+        });
+
+        return { section: section, rows: JSON.stringify(rows) };
+    }
+
+    root.querySelectorAll('[data-b2b-pricing-save]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var card = btn.closest('.b2bp-card');
+            btn.disabled = true;
+            api('save_pricing', collect(card)).then(function (res) {
+                btn.disabled = false;
+                if (res && res.ok) {
+                    say(root.dataset.savedMsg || 'Salvat.', 'ok');
+                } else {
+                    say((res && res.error) || 'Eroare.', 'error');
+                }
+            });
+        });
+    });
+})();

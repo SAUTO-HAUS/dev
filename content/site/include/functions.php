@@ -65,12 +65,15 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 	// Region access for B2B partners (spec §3.2). Empty string for ordinary
 	// visitors and for partners entitled to every region.
 	$b2b_region_sql = function_exists('b2b_sql_region_filter') ? b2b_sql_region_filter() : '';
+	// Catalog access: this is the in-stock catalog, so a partner barred from it
+	// gets an empty list ('' for guests and permitted partners).
+	$b2b_catalog_sql = function_exists('b2b_sql_catalog_filter') ? b2b_sql_catalog_filter('in_stock') : '';
 
-	$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE (catalog_type = "in_stock" OR catalog_type IS NULL)'.$b2b_region_sql;
+	$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE (catalog_type = "in_stock" OR catalog_type IS NULL)'.$b2b_region_sql.$b2b_catalog_sql;
 
 	// For filter searches on /cars, restrict to in_stock catalog (sort dropdown can switch via redirect on the page level)
 	if ($v1=='fltr') {
-		$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE (catalog_type = "in_stock" OR catalog_type IS NULL)'.$b2b_region_sql;
+		$sql = 'SELECT * FROM '.$prefx.'_car_ctlg WHERE (catalog_type = "in_stock" OR catalog_type IS NULL)'.$b2b_region_sql.$b2b_catalog_sql;
 	}
 
 	// For similar cars, show both in_stock and on_order cars
