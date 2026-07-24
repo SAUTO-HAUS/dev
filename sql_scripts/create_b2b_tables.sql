@@ -182,12 +182,10 @@ CREATE TABLE IF NOT EXISTS `gh3sp_b2b_saved_cars` (
 -- ---------------------------------------------------------------------
 INSERT INTO `gh3sp_settings` (`name`, `value`)
 SELECT t.`name`, t.`value` FROM (
-              SELECT 'b2b_whatsapp_driver'   AS `name`, 'walink' AS `value`
-    UNION ALL SELECT 'b2b_whatsapp_phone_id',       ''
-    UNION ALL SELECT 'b2b_whatsapp_token',          ''
-    UNION ALL SELECT 'b2b_whatsapp_template',       ''
-    UNION ALL SELECT 'b2b_superadmin_phone',        ''
+              SELECT 'b2b_superadmin_phone'  AS `name`, '' AS `value`
+    UNION ALL SELECT 'b2b_superadmin_phone_2',      ''
     UNION ALL SELECT 'b2b_superadmin_email',        ''
+    UNION ALL SELECT 'b2b_superadmin_email_2',      ''
     UNION ALL SELECT 'b2b_advance_mode',            'fixed'
     UNION ALL SELECT 'b2b_advance_default',         '1000'
     UNION ALL SELECT 'b2b_advance_percent',         '10'

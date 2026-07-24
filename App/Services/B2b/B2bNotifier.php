@@ -21,7 +21,7 @@ class B2bNotifier
     /** Admin panel roles that receive B2B notifications. */
     private const SUPER_ADMIN_ROLES = ['gordon'];
 
-    /** @return array{ok: bool, mode: string, link?: string, error?: string} */
+    /** @return array{ok: bool, links?: string[], error?: string} */
     public static function notifyRequest(array $user, array $car, ?array $invoice, string $comment, int $requestId): array
     {
         $lang    = $_COOKIE['lang'] ?? 'ro';
@@ -58,7 +58,7 @@ class B2bNotifier
             return WhatsappService::notifySuperAdmin($text);
         } catch (\Throwable $e) {
             B2bConfig::log('b2b_error.log', 'notifyRequest whatsapp err=' . $e->getMessage());
-            return ['ok' => false, 'mode' => 'none', 'error' => 'Notificarea WhatsApp nu a putut fi trimisă.'];
+            return ['ok' => false, 'error' => 'Notificarea WhatsApp nu a putut fi trimisă.'];
         }
     }
 

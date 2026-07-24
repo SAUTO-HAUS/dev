@@ -1,9 +1,8 @@
 <?php defined('_DOIT') or die('Restricted access');
 
 /**
- * B2B module settings: WhatsApp, Super Admin contact and the default advance.
- * Values live in gh3sp_settings, so enabling WhatsApp Cloud API needs no code
- * change.
+ * B2B module settings: Super Admin contact (WhatsApp / email) and the default
+ * advance. Values live in gh3sp_settings.
  */
 
 use App\Services\B2b\B2bConfig;
@@ -11,8 +10,7 @@ use App\Services\B2b\B2bConfig;
 $lang = $_COOKIE['lang'] ?? 'ro';
 $t    = b2b_adm_lang($lang);
 
-$waDriver  = B2bConfig::get('b2b_whatsapp_driver', 'walink');
-$advMode   = B2bConfig::get('b2b_advance_mode', 'fixed');
+$advMode = B2bConfig::get('b2b_advance_mode', 'fixed');
 ?>
 
 <div class="b2ba" id="b2ba-settings" data-saved-msg="<?= b2b_adm_esc($t['saved']) ?>">
@@ -22,47 +20,35 @@ $advMode   = B2bConfig::get('b2b_advance_mode', 'fixed');
 
     <div class="b2ba-msg" id="b2ba-msg" role="status" aria-live="polite"></div>
 
-    <!-- -------------------------------------------------------- WhatsApp -->
-    <div class="b2ba-card">
-        <h2 class="b2ba-h2"><?= b2b_adm_esc($t['wa_section']) ?></h2>
-
-        <div class="b2ba-grid">
-            <label class="b2ba-field">
-                <span><?= b2b_adm_esc($t['wa_driver']) ?></span>
-                <select data-setting="b2b_whatsapp_driver">
-                    <option value="walink"    <?= $waDriver === 'walink'    ? 'selected' : '' ?>><?= b2b_adm_esc($t['wa_driver_link']) ?></option>
-                    <option value="cloud_api" <?= $waDriver === 'cloud_api' ? 'selected' : '' ?>><?= b2b_adm_esc($t['wa_driver_api']) ?></option>
-                </select>
-            </label>
-            <label class="b2ba-field">
-                <span><?= b2b_adm_esc($t['wa_phone_id']) ?></span>
-                <input type="text" data-setting="b2b_whatsapp_phone_id" value="<?= b2b_adm_esc(B2bConfig::get('b2b_whatsapp_phone_id')) ?>" autocomplete="off">
-            </label>
-            <label class="b2ba-field b2ba-field--wide">
-                <span><?= b2b_adm_esc($t['wa_token']) ?></span>
-                <input type="password" data-setting="b2b_whatsapp_token" value="<?= b2b_adm_esc(B2bConfig::get('b2b_whatsapp_token')) ?>" autocomplete="new-password">
-            </label>
-            <label class="b2ba-field">
-                <span><?= b2b_adm_esc($t['wa_template']) ?></span>
-                <input type="text" data-setting="b2b_whatsapp_template" value="<?= b2b_adm_esc(B2bConfig::get('b2b_whatsapp_template')) ?>">
-            </label>
-        </div>
-    </div>
-
     <!-- ------------------------------------------------------ Super Admin -->
     <div class="b2ba-card">
         <h2 class="b2ba-h2"><?= b2b_adm_esc($t['admin_section']) ?></h2>
 
-        <div class="b2ba-grid">
-            <label class="b2ba-field">
-                <span><?= b2b_adm_esc($t['admin_phone']) ?></span>
-                <input type="text" data-setting="b2b_superadmin_phone" value="<?= b2b_adm_esc(B2bConfig::get('b2b_superadmin_phone')) ?>" placeholder="+373 60 000 000, +373 61 111 111">
-                <small class="b2ba-hint"><?= b2b_adm_esc($t['admin_phone_hint']) ?></small>
-            </label>
-            <label class="b2ba-field">
-                <span><?= b2b_adm_esc($t['admin_email']) ?></span>
-                <input type="email" data-setting="b2b_superadmin_email" value="<?= b2b_adm_esc(B2bConfig::get('b2b_superadmin_email')) ?>">
-            </label>
+        <p class="b2ba-hint"><?= b2b_adm_esc($t['admin_hint']) ?></p>
+
+        <div class="b2ba-persons">
+            <div class="b2ba-person">
+                <div class="b2ba-person__ttl"><?= b2b_adm_esc($t['admin_recipient']) ?> 1</div>
+                <label class="b2ba-field">
+                    <span><?= b2b_adm_esc($t['phone']) ?></span>
+                    <input type="text" data-setting="b2b_superadmin_phone" value="<?= b2b_adm_esc(B2bConfig::get('b2b_superadmin_phone')) ?>" placeholder="+373 60 000 000">
+                </label>
+                <label class="b2ba-field">
+                    <span><?= b2b_adm_esc($t['email']) ?></span>
+                    <input type="email" data-setting="b2b_superadmin_email" value="<?= b2b_adm_esc(B2bConfig::get('b2b_superadmin_email')) ?>">
+                </label>
+            </div>
+            <div class="b2ba-person">
+                <div class="b2ba-person__ttl"><?= b2b_adm_esc($t['admin_recipient']) ?> 2 <span class="b2ba-person__opt"><?= b2b_adm_esc($t['optional']) ?></span></div>
+                <label class="b2ba-field">
+                    <span><?= b2b_adm_esc($t['phone']) ?></span>
+                    <input type="text" data-setting="b2b_superadmin_phone_2" value="<?= b2b_adm_esc(B2bConfig::get('b2b_superadmin_phone_2')) ?>" placeholder="+373 61 111 111">
+                </label>
+                <label class="b2ba-field">
+                    <span><?= b2b_adm_esc($t['email']) ?></span>
+                    <input type="email" data-setting="b2b_superadmin_email_2" value="<?= b2b_adm_esc(B2bConfig::get('b2b_superadmin_email_2')) ?>">
+                </label>
+            </div>
         </div>
     </div>
 

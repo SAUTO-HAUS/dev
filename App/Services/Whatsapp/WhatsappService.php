@@ -6,58 +6,38 @@ use App\Services\B2b\B2bConfig;
 use App\Services\B2b\B2bPhone;
 
 /**
- * WhatsApp notifications, two modes via the `b2b_whatsapp_driver` setting:
+ * WhatsApp notifications for the Super Admin.
  *
- *   cloud_api - server-side send through the WhatsApp Business Cloud API.
- *               Needs a WABA, a verified number, a Phone Number ID and a
- *               permanent token; business-initiated messages outside the 24h
- *               window also need an approved template.
- *   walink    - zero-config fallback: a prefilled https://wa.me/ link for the
- *               frontend to open, the pattern already used across the CRM.
+ * One channel: a prefilled https://wa.me/ link the frontend opens, so the Super
+ * Admin receives the message with a single tap. No Meta Business onboarding, no
+ * server-side send. The admin bell is the reliable channel; this is convenience.
  */
 class WhatsappService
 {
-    /** @return array{ok: bool, mode: string, links?: string[], error?: string} */
+    /** @return array{ok: bool, links?: string[], error?: string} */
     public static function notifySuperAdmin(string $message): array
     {
         $phones = self::superAdminPhones();
 
         if (!$phones) {
-            return ['ok' => false, 'mode' => 'none', 'error' => 'Numărul Super Admin nu este configurat.'];
+            return ['ok' => false, 'error' => 'Numărul Super Admin nu este configurat.'];
         }
 
-        if (B2bConfig::get('b2b_whatsapp_driver', 'walink') === 'cloud_api') {
-            $error   = null;
-            $allSent = true;
-            foreach ($phones as $phone) {
-                $res = self::sendCloudApi($phone, $message);
-                if (!$res['ok']) {
-                    $allSent = false;
-                    $error   = $res['error'] ?? $error;
-                }
-            }
-            if ($allSent) {
-                return ['ok' => true, 'mode' => 'cloud_api'];
-            }
-            // At least one send failed: hand back the links so the action still completes.
-            return ['ok' => true, 'mode' => 'walink', 'links' => self::waLinks($phones, $message), 'error' => $error];
-        }
-
-        return ['ok' => true, 'mode' => 'walink', 'links' => self::waLinks($phones, $message)];
+        return ['ok' => true, 'links' => self::waLinks($phones, $message)];
     }
 
     /**
-     * The Super Admin numbers, from a comma / semicolon / newline separated list
-     * in the b2b_superadmin_phone setting. Normalised and de-duplicated, so the
-     * same message never goes to one person twice.
+     * The Super Admin numbers, from the two dedicated settings (the second is
+     * optional). Normalised and de-duplicated, so the same message never goes to
+     * one person twice.
      *
      * @return string[]
      */
     private static function superAdminPhones(): array
     {
         $phones = [];
-        foreach (preg_split('/[,;\r\n]+/', (string)B2bConfig::get('b2b_superadmin_phone')) as $part) {
-            $phone = B2bPhone::normalize(trim($part));
+        foreach (['b2b_superadmin_phone', 'b2b_superadmin_phone_2'] as $key) {
+            $phone = B2bPhone::normalize(trim((string)B2bConfig::get($key)));
             if ($phone !== '' && !in_array($phone, $phones, true)) {
                 $phones[] = $phone;
             }
@@ -80,75 +60,5 @@ class WhatsappService
     public static function waLink(string $phone, string $message): string
     {
         return 'https://wa.me/' . preg_replace('/\D+/', '', $phone) . '?text=' . rawurlencode($message);
-    }
-
-    /** @return array{ok: bool, error?: string} */
-    private static function sendCloudApi(string $phone, string $message): array
-    {
-        $phoneId = B2bConfig::get('b2b_whatsapp_phone_id');
-        $token   = B2bConfig::get('b2b_whatsapp_token');
-
-        if ($phoneId === '' || $token === '') {
-            return ['ok' => false, 'error' => 'Credențiale WhatsApp Cloud API incomplete.'];
-        }
-
-        $template = B2bConfig::get('b2b_whatsapp_template');
-        $to = ltrim($phone, '+');
-
-        if ($template !== '') {
-            // Template messages are the only kind Meta accepts outside the 24h
-            // window; the text goes in as body parameter {{1}}.
-            $payload = [
-                'messaging_product' => 'whatsapp',
-                'to'                => $to,
-                'type'              => 'template',
-                'template'          => [
-                    'name'       => $template,
-                    'language'   => ['code' => 'ro'],
-                    'components' => [[
-                        'type'       => 'body',
-                        'parameters' => [['type' => 'text', 'text' => $message]],
-                    ]],
-                ],
-            ];
-        } else {
-            $payload = [
-                'messaging_product' => 'whatsapp',
-                'to'                => $to,
-                'type'              => 'text',
-                'text'              => ['preview_url' => true, 'body' => $message],
-            ];
-        }
-
-        $ch = curl_init();
-        curl_setopt_array($ch, [
-            CURLOPT_URL            => 'https://graph.facebook.com/v22.0/' . rawurlencode($phoneId) . '/messages',
-            CURLOPT_POST           => true,
-            CURLOPT_POSTFIELDS     => json_encode($payload, JSON_UNESCAPED_UNICODE),
-            CURLOPT_HTTPHEADER     => ['Authorization: Bearer ' . $token, 'Content-Type: application/json'],
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_TIMEOUT        => 15,
-            CURLOPT_CONNECTTIMEOUT => 8,
-        ]);
-
-        $body = curl_exec($ch);
-        $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $err  = curl_error($ch);
-        curl_close($ch);
-
-        if ($body === false || $err !== '') {
-            B2bConfig::log('b2b_whatsapp.log', 'CURL ERROR to=' . $to . ' err=' . $err);
-            return ['ok' => false, 'error' => 'Eroare de rețea către WhatsApp.'];
-        }
-
-        if ($code < 200 || $code >= 300) {
-            B2bConfig::log('b2b_whatsapp.log', 'HTTP ' . $code . ' to=' . $to . ' body=' . mb_substr((string)$body, 0, 400));
-            $json = json_decode((string)$body, true);
-            $msg  = is_array($json) ? ($json['error']['message'] ?? '') : '';
-            return ['ok' => false, 'error' => 'WhatsApp: ' . ($msg !== '' ? $msg : 'HTTP ' . $code)];
-        }
-
-        B2bConfig::log('b2b_whatsapp.log', 'OK to=' . $to);
-        return ['ok' => true];
     }
 }

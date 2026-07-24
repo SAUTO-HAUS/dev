@@ -207,8 +207,8 @@ switch ($fn) {
     // ---- Module settings -----------------------------------------------------
     case 'save_settings': {
         $allowed = [
-            'b2b_whatsapp_driver', 'b2b_whatsapp_phone_id', 'b2b_whatsapp_token', 'b2b_whatsapp_template',
-            'b2b_superadmin_phone', 'b2b_superadmin_email',
+            'b2b_superadmin_phone', 'b2b_superadmin_phone_2',
+            'b2b_superadmin_email', 'b2b_superadmin_email_2',
             'b2b_advance_default', 'b2b_advance_mode', 'b2b_advance_percent', 'b2b_advance_max',
         ];
 

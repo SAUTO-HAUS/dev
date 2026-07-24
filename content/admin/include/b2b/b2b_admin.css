@@ -91,6 +91,23 @@
 }
 
 .b2ba-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1rem; }
+
+/* Two notification recipients, each in its own panel so phone + email read as
+   one person, not a 2x2 field grid. */
+.b2ba-persons{ display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:1rem; }
+.b2ba-person{
+    display:flex; flex-direction:column; gap:0.75rem;
+    padding:1.1rem; border:1px solid var(--b2ba-line); border-radius:12px;
+    background:#fafafb;
+}
+.b2ba-person__ttl{
+    display:flex; align-items:center; gap:0.5rem;
+    font-size:0.9rem; font-weight:700; color:var(--b2ba-ink);
+}
+.b2ba-person__opt{
+    font-size:0.72rem; font-weight:600; color:var(--b2ba-muted);
+    text-transform:uppercase; letter-spacing:0.03em;
+}
 .b2ba-field{ display:flex; flex-direction:column; gap:0.3rem; }
 .b2ba-field--wide{ grid-column:1 / -1; }
 .b2ba-field > span{
