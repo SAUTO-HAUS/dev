@@ -56,7 +56,8 @@ $advMode   = B2bConfig::get('b2b_advance_mode', 'fixed');
         <div class="b2ba-grid">
             <label class="b2ba-field">
                 <span><?= b2b_adm_esc($t['admin_phone']) ?></span>
-                <input type="tel" data-setting="b2b_superadmin_phone" value="<?= b2b_adm_esc(B2bConfig::get('b2b_superadmin_phone')) ?>" placeholder="+373 60 000 000">
+                <input type="text" data-setting="b2b_superadmin_phone" value="<?= b2b_adm_esc(B2bConfig::get('b2b_superadmin_phone')) ?>" placeholder="+373 60 000 000, +373 61 111 111">
+                <small class="b2ba-hint"><?= b2b_adm_esc($t['admin_phone_hint']) ?></small>
             </label>
             <label class="b2ba-field">
                 <span><?= b2b_adm_esc($t['admin_email']) ?></span>

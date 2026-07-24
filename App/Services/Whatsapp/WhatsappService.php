@@ -17,38 +17,69 @@ use App\Services\B2b\B2bPhone;
  */
 class WhatsappService
 {
-    /** @return array{ok: bool, mode: string, link?: string, error?: string} */
+    /** @return array{ok: bool, mode: string, links?: string[], error?: string} */
     public static function notifySuperAdmin(string $message): array
     {
-        $phone = B2bPhone::normalize(B2bConfig::get('b2b_superadmin_phone'));
+        $phones = self::superAdminPhones();
 
-        if ($phone === '') {
+        if (!$phones) {
             return ['ok' => false, 'mode' => 'none', 'error' => 'Numărul Super Admin nu este configurat.'];
         }
 
         if (B2bConfig::get('b2b_whatsapp_driver', 'walink') === 'cloud_api') {
-            $res = self::sendCloudApi($phone, $message);
-            if ($res['ok']) {
+            $error   = null;
+            $allSent = true;
+            foreach ($phones as $phone) {
+                $res = self::sendCloudApi($phone, $message);
+                if (!$res['ok']) {
+                    $allSent = false;
+                    $error   = $res['error'] ?? $error;
+                }
+            }
+            if ($allSent) {
                 return ['ok' => true, 'mode' => 'cloud_api'];
             }
-            // API unavailable: still hand back the link so the action can complete.
-            return [
-                'ok'    => true,
-                'mode'  => 'walink',
-                'link'  => self::waLink($phone, $message),
-                'error' => $res['error'] ?? null,
-            ];
+            // At least one send failed: hand back the links so the action still completes.
+            return ['ok' => true, 'mode' => 'walink', 'links' => self::waLinks($phones, $message), 'error' => $error];
         }
 
-        return ['ok' => true, 'mode' => 'walink', 'link' => self::waLink($phone, $message)];
+        return ['ok' => true, 'mode' => 'walink', 'links' => self::waLinks($phones, $message)];
+    }
+
+    /**
+     * The Super Admin numbers, from a comma / semicolon / newline separated list
+     * in the b2b_superadmin_phone setting. Normalised and de-duplicated, so the
+     * same message never goes to one person twice.
+     *
+     * @return string[]
+     */
+    private static function superAdminPhones(): array
+    {
+        $phones = [];
+        foreach (preg_split('/[,;\r\n]+/', (string)B2bConfig::get('b2b_superadmin_phone')) as $part) {
+            $phone = B2bPhone::normalize(trim($part));
+            if ($phone !== '' && !in_array($phone, $phones, true)) {
+                $phones[] = $phone;
+            }
+        }
+        return $phones;
+    }
+
+    /**
+     * @param string[] $phones
+     * @return string[]
+     */
+    private static function waLinks(array $phones, string $message): array
+    {
+        return array_map(
+            static fn (string $phone): string => self::waLink($phone, $message),
+            $phones
+        );
     }
 
     public static function waLink(string $phone, string $message): string
     {
-        $normalized = B2bPhone::normalize($phone);
-        $digits = preg_replace('/\D+/', '', $normalized !== '' ? $normalized : $phone);
-
-        return 'https://wa.me/' . $digits . '?text=' . rawurlencode($message);
+        return 'https://wa.me/' . preg_replace('/\D+/', '', $phone) . '?text=' . rawurlencode($message);
     }
 
     /** @return array{ok: bool, error?: string} */

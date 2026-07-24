@@ -214,7 +214,7 @@ switch ($b2b_fn) {
 
         $b2b_ok([
             'request_id' => $requestId,
-            'wa_link'    => $notify['link'] ?? null,
+            'wa_links'   => $notify['links'] ?? [],
             'message'    => 'Cererea a fost transmisă către Super Admin.',
         ]);
         break;
