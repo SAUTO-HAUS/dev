@@ -46,6 +46,7 @@
                 '<td><input type="number" min="0" step="1" class="b2bp-from" value="0"></td>' +
                 '<td><input type="number" min="0" step="1" class="b2bp-to" value=""></td>' +
                 '<td><input type="number" min="0" step="1" class="b2bp-val" value="0"></td>' +
+                '<td class="b2bp-ref">&mdash;</td>' + // public ref: none for a brand-new band
                 '<td><button type="button" class="b2bp-del">&times;</button></td>';
             tbody.appendChild(tr);
         });

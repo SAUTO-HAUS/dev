@@ -31,24 +31,50 @@ $krParams   = $load('SELECT * FROM '.$pfx.'_b2b_kr_params ORDER BY sort_order, i
 
 $notMigrated = (!$commission && !$delivery && !$euParams && !$krParams);
 
-/** Renders a tier table (price_from / price_to / value). */
-$tierRows = function (array $rows, string $valueField) {
+// Retail values, shown read-only beside the B2B ones so the admin sees what the
+// non-logged visitor pays without opening /adminsauto/parsing/settings.
+$rCommission = $load('SELECT * FROM '.$pfx.'_parsing_commission_tiers ORDER BY sort_order, price_from');
+$rDelivery   = $load('SELECT * FROM '.$pfx.'_parsing_eu_tiers ORDER BY sort_order, price_from');
+$rEuMap = $rKrMap = [];
+foreach ($load('SELECT * FROM '.$pfx.'_parsing_eu_params') as $p) { $rEuMap[(string)$p['param_key']] = $p; }
+foreach ($load('SELECT * FROM '.$pfx.'_parsing_kr_params') as $p) { $rKrMap[(string)$p['param_key']] = $p; }
+
+// Retail value for the price band that contains $priceFrom (read-only reference).
+$retailTierVal = function (array $retailRows, float $priceFrom, string $field): ?int {
+    foreach ($retailRows as $r) {
+        $from = (float)$r['price_from'];
+        $to   = ($r['price_to'] === null || $r['price_to'] === '') ? INF : (float)$r['price_to'];
+        if ($priceFrom >= $from && $priceFrom <= $to) {
+            return (int)round((float)$r[$field]);
+        }
+    }
+    return null;
+};
+
+/** Renders a tier table (price_from / price_to / B2B value / public value). */
+$tierRows = function (array $rows, string $valueField, array $retailRows) use ($pt, $retailTierVal) {
     $out = '';
     foreach ($rows as $r) {
         $id = (int)$r['id'];
         $to = ($r['price_to'] === null || $r['price_to'] === '') ? '' : (int)$r['price_to'];
+
+        // Public price for the same band (matched by the row's starting price).
+        $pub = $retailTierVal($retailRows, (float)$r['price_from'], $valueField);
+        $pubCell = $pub === null ? '&mdash;' : $pub.' &euro;';
+
         $out .= '<tr data-row data-id="'.$id.'">'
               . '<td><input type="number" min="0" step="1" class="b2bp-from" value="'.(int)$r['price_from'].'"></td>'
               . '<td><input type="number" min="0" step="1" class="b2bp-to" value="'.$to.'" placeholder="'.b2b_adm_esc($pt['eu_price_to_unlimited'] ?? '').'"></td>'
               . '<td><input type="number" min="0" step="1" class="b2bp-val" value="'.(int)$r[$valueField].'"></td>'
+              . '<td class="b2bp-ref">'.$pubCell.'</td>'
               . '<td><button type="button" class="b2bp-del" title="'.b2b_adm_esc($pt['tier_remove'] ?? '').'">&times;</button></td>'
               . '</tr>';
     }
     return $out;
 };
 
-/** Renders a param table (label / enabled / amount) with the parsing labels. */
-$paramRows = function (array $rows, string $labelPfx) use ($pt) {
+/** Renders a param table (label / enabled / B2B amount / retail reference). */
+$paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt, $t) {
     $out = '';
     foreach ($rows as $r) {
         $id    = (int)$r['id'];
@@ -56,14 +82,25 @@ $paramRows = function (array $rows, string $labelPfx) use ($pt) {
         $label = $pt[$labelPfx.$key] ?? ucfirst(str_replace('_', ' ', $key));
         $on    = (int)$r['enabled'] === 1 ? ' checked' : '';
         $amt   = (string)(int)round((float)$r['amount_eur']);
+
+        // Retail reference for this exact param (matched by key).
+        $ref = '&mdash;';
+        if (isset($retailMap[$key])) {
+            $rp  = $retailMap[$key];
+            $ref = (string)(int)round((float)$rp['amount_eur']).' &euro;';
+            if ((int)$rp['enabled'] !== 1) { $ref .= ' <span class="b2bp-off">'.b2b_adm_esc($t['pricing_off']).'</span>'; }
+        }
+
         $out  .= '<tr data-row data-id="'.$id.'">'
               . '<td class="b2bp-label">'.b2b_adm_esc($label).'</td>'
               . '<td class="b2bp-c"><input type="checkbox" class="b2bp-en"'.$on.'></td>'
               . '<td><input type="number" min="0" step="1" class="b2bp-val" value="'.$amt.'"> <span class="b2bp-u">&euro;</span></td>'
+              . '<td class="b2bp-ref">'.$ref.'</td>'
               . '</tr>';
     }
     return $out;
 };
+
 ?>
 
 <div class="b2ba" id="b2ba-pricing" data-saved-msg="<?= b2b_adm_esc($t['saved']) ?>">
@@ -87,9 +124,10 @@ $paramRows = function (array $rows, string $labelPfx) use ($pt) {
                 <th><?= b2b_adm_esc($pt['eu_col_price_from']) ?></th>
                 <th><?= b2b_adm_esc($pt['eu_col_price_to']) ?></th>
                 <th><?= b2b_adm_esc($pt['eu_col_commission']) ?></th>
+                <th class="b2bp-ref"><?= b2b_adm_esc($t['pricing_public']) ?></th>
                 <th></th>
             </tr></thead>
-            <tbody><?= $tierRows($commission, 'commission') ?></tbody>
+            <tbody><?= $tierRows($commission, 'commission', $rCommission) ?></tbody>
         </table>
         <div class="b2ba-card__foot">
             <button type="button" class="b2ba-btn b2ba-btn--ghost" data-b2b-tier-add><?= b2b_adm_esc($pt['tier_add'] ?? '+') ?></button>
@@ -105,9 +143,10 @@ $paramRows = function (array $rows, string $labelPfx) use ($pt) {
                 <th><?= b2b_adm_esc($pt['eu_col_price_from']) ?></th>
                 <th><?= b2b_adm_esc($pt['eu_col_price_to']) ?></th>
                 <th><?= b2b_adm_esc($pt['eu_col_delivery']) ?></th>
+                <th class="b2bp-ref"><?= b2b_adm_esc($t['pricing_public']) ?></th>
                 <th></th>
             </tr></thead>
-            <tbody><?= $tierRows($delivery, 'delivery') ?></tbody>
+            <tbody><?= $tierRows($delivery, 'delivery', $rDelivery) ?></tbody>
         </table>
         <div class="b2ba-card__foot">
             <button type="button" class="b2ba-btn b2ba-btn--ghost" data-b2b-tier-add><?= b2b_adm_esc($pt['tier_add'] ?? '+') ?></button>
@@ -123,8 +162,9 @@ $paramRows = function (array $rows, string $labelPfx) use ($pt) {
                 <th><?= b2b_adm_esc($pt['eu_col_param']) ?></th>
                 <th class="b2bp-c"><?= b2b_adm_esc($pt['eu_col_enabled']) ?></th>
                 <th><?= b2b_adm_esc($pt['eu_col_amount']) ?></th>
+                <th class="b2bp-ref"><?= b2b_adm_esc($t['pricing_public']) ?></th>
             </tr></thead>
-            <tbody><?= $paramRows($euParams, 'eu_param_') ?></tbody>
+            <tbody><?= $paramRows($euParams, 'eu_param_', $rEuMap) ?></tbody>
         </table>
         <div class="b2ba-card__foot">
             <span></span>
@@ -140,8 +180,9 @@ $paramRows = function (array $rows, string $labelPfx) use ($pt) {
                 <th><?= b2b_adm_esc($pt['eu_col_param']) ?></th>
                 <th class="b2bp-c"><?= b2b_adm_esc($pt['eu_col_enabled']) ?></th>
                 <th><?= b2b_adm_esc($pt['eu_col_amount']) ?></th>
+                <th class="b2bp-ref"><?= b2b_adm_esc($t['pricing_public']) ?></th>
             </tr></thead>
-            <tbody><?= $paramRows($krParams, 'kr_param_') ?></tbody>
+            <tbody><?= $paramRows($krParams, 'kr_param_', $rKrMap) ?></tbody>
         </table>
         <div class="b2ba-card__foot">
             <span></span>

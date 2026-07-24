@@ -120,6 +120,10 @@
 }
 .b2bp-del:hover{ border-color:var(--b2ba-brand); color:var(--b2ba-brand); }
 
+/* Read-only "public price" column, so the admin sees the guest price in-row. */
+.b2bp-table th.b2bp-ref, .b2bp-table td.b2bp-ref{ color:var(--b2ba-muted); font-weight:600; white-space:nowrap; background:#fafafb; }
+.b2bp-off{ color:#c08a00; font-weight:600; font-size:0.8em; }
+
 .b2ba-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1rem; }
 
 /* Two notification recipients, each in its own panel so phone + email read as
