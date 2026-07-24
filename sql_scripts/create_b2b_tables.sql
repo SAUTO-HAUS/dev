@@ -194,3 +194,4 @@ SELECT t.`name`, t.`value` FROM (
     UNION ALL SELECT 'b2b_advance_max',             '0'
 ) AS t
 WHERE t.`name` NOT IN (SELECT `name` FROM (SELECT `name` FROM `gh3sp_settings`) AS s);
+-- test deploy
