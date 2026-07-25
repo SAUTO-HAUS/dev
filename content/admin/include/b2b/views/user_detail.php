@@ -52,31 +52,6 @@ try {
     $requests = [];
 }
 
-// Per-client pricing status: which of the 4 B2B tables this client has its OWN
-// version of (vs. inheriting the global one). Editing is done on the dedicated
-// editor /adminsauto/b2b/pricing?user=ID; here we only show a summary.
-$priceTables = [
-    'commission' => [$prefx.'_b2b_commission_tiers', $t['pricing_commission']],
-    'delivery'   => [$prefx.'_b2b_eu_tiers',         $t['pricing_delivery']],
-    'eu_params'  => [$prefx.'_b2b_eu_params',        $t['pricing_eu_params']],
-    'kr_params'  => [$prefx.'_b2b_kr_params',        $t['pricing_kr_params']],
-];
-$priceCustom = [];
-$priceHasAny = false;
-foreach ($priceTables as $k => $info) {
-    $priceCustom[$k] = false;
-    try {
-        $q = $db->prepare('SELECT 1 FROM '.$info[0].' WHERE b2b_user_id = :uid LIMIT 1');
-        $q->execute([':uid' => $uid]);
-        if ($q->fetchColumn()) {
-            $priceCustom[$k] = true;
-            $priceHasAny = true;
-        }
-    } catch (Throwable $e) {
-        // Pricing tables not migrated yet: treat as global.
-    }
-}
-$pricingEditUrl = '/'.$lang.'/'.$admin_dir.'/b2b/pricing?user='.$uid;
 ?>
 
 <div class="b2ba" data-b2b-user="<?= $uid ?>" data-saved-msg="<?= b2b_adm_esc($t['saved']) ?>">
@@ -225,29 +200,13 @@ $pricingEditUrl = '/'.$lang.'/'.$admin_dir.'/b2b/pricing?user='.$uid;
 
     <!-- ------------------------------------------------ Per-client prices -->
     <section class="b2ba-pane" data-b2b-pane="prices">
-        <div class="b2ba-card">
-            <p class="b2ba-hint"><?= b2b_adm_esc($t['prices_hint']) ?></p>
-
-            <div class="b2ba-price-status">
-                <?php foreach ($priceTables as $k => $info): $custom = $priceCustom[$k]; ?>
-                    <div class="b2ba-price-row">
-                        <span class="b2ba-price-name"><?= b2b_adm_esc($info[1]) ?></span>
-                        <span class="b2bp-tag b2bp-tag--<?= $custom ? 'custom' : 'global' ?>">
-                            <?= b2b_adm_esc($custom ? $t['pricing_tag_custom'] : $t['pricing_tag_global']) ?>
-                        </span>
-                    </div>
-                <?php endforeach; ?>
-            </div>
-
-            <div class="b2ba-card__foot">
-                <span class="b2ba-meta">
-                    <?= b2b_adm_esc($priceHasAny ? $t['prices_has_custom'] : $t['prices_all_global']) ?>
-                </span>
-                <a class="b2ba-btn b2ba-btn--primary" href="<?= b2b_adm_esc($pricingEditUrl) ?>">
-                    <?= b2b_adm_esc($t['prices_open_editor']) ?>
-                </a>
-            </div>
-        </div>
+        <?php
+        // Reuse the full pricing editor, scoped to this client. It renders its own
+        // 4 cards + save/reset and posts to fn=save_pricing with this user_id.
+        $pricingEmbedded = true;
+        $pricingUserId   = $uid;
+        include _ADM_INCL.'/b2b/views/pricing.php';
+        ?>
     </section>
 
     <!-- ---------------------------------------------------- Activity log -->

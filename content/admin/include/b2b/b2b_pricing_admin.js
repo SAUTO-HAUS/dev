@@ -10,9 +10,18 @@
     if (!root) return;
 
     var msgBox = document.getElementById('b2ba-msg');
-    // Non-empty on /adminsauto/b2b/pricing?user=X: writes go to that client's own
-    // tables instead of the shared global ones.
+    // Non-empty on /adminsauto/b2b/pricing?user=X or when embedded in the client
+    // page tab: writes go to that client's own tables, not the shared global set.
     var pricingUser = root.dataset.b2bPricingUser || '';
+    // Embedded = rendered inside the client page "Prețuri" tab (no own header).
+    var embedded = root.classList.contains('b2bp-embed');
+
+    // After a per-client save/reset we reload to refresh the badges; keep the
+    // Prețuri tab active across that reload when embedded in the client page.
+    function reloadKeepingTab() {
+        if (embedded) { window.location.hash = 'tab-prices'; }
+        window.location.reload();
+    }
 
     function say(text, kind) {
         if (!msgBox) { if (kind === 'error' && text) alert(text); return; }
@@ -108,7 +117,7 @@
                 if (res && res.ok) {
                     // Saving a client card turns it "custom"; reload so the badge
                     // and reset button reflect that.
-                    if (pricingUser) { window.location.reload(); return; }
+                    if (pricingUser) { reloadKeepingTab(); return; }
                     say(root.dataset.savedMsg || 'Salvat.', 'ok');
                 } else {
                     say((res && res.error) || 'Eroare.', 'error');
@@ -125,7 +134,7 @@
 
         btn.disabled = true;
         api('reset_pricing', { section: btn.dataset.section, user_id: pricingUser }).then(function (res) {
-            if (res && res.ok) { window.location.reload(); return; }
+            if (res && res.ok) { reloadKeepingTab(); return; }
             btn.disabled = false;
             say((res && res.error) || 'Eroare.', 'error');
         });

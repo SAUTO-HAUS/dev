@@ -20,25 +20,32 @@ $pt = $parsing_lang;
 
 $pfx = B2bConfig::prefix();
 
-// Per-client mode: /adminsauto/b2b/pricing?user=X edits that client's own tables.
-// Global mode (no ?user): edits the shared rows (b2b_user_id IS NULL).
-$pricingUserId = isset($_GET['user']) ? (int)$_GET['user'] : 0;
-$client = null;
+// Two use contexts:
+//   * standalone page  -> /adminsauto/b2b/pricing (global) or ?user=X (per client);
+//   * embedded         -> included inside the client page "Prețuri" tab, which sets
+//                         $pricingEmbedded = true and $pricingUserId = the client id.
+// Embedded mode drops the own header / message box and reuses the client page's.
+$pricingEmbedded = $pricingEmbedded ?? false;
+$pricingUserId   = $pricingEmbedded
+    ? (int)($pricingUserId ?? 0)
+    : (isset($_GET['user']) ? (int)$_GET['user'] : 0);
+
+$pricingClient = null;
 if ($pricingUserId > 0) {
     try {
         $stmt = $db->prepare('SELECT id, login, full_name, company_name, person_type, email, status
                                 FROM '.B2bConfig::table('users').' WHERE id = :id LIMIT 1');
         $stmt->execute([':id' => $pricingUserId]);
-        $client = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        $pricingClient = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
     } catch (Throwable $e) {
-        $client = null;
+        $pricingClient = null;
     }
-    if (!$client) {
-        echo '<div class="b2ba"><div class="b2ba-empty">404</div></div>';
+    if (!$pricingClient) {
+        echo $pricingEmbedded ? '<div class="b2ba-empty">404</div>' : '<div class="b2ba"><div class="b2ba-empty">404</div></div>';
         return;
     }
 }
-$perUser = ($client !== null);
+$perUser = ($pricingClient !== null);
 
 $load = function (string $sql) use ($db): array {
     try { return $db->query($sql)->fetchAll(PDO::FETCH_ASSOC) ?: []; }
@@ -171,23 +178,25 @@ $paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt
 
 ?>
 
-<div class="b2ba" id="b2ba-pricing"
+<div id="b2ba-pricing" class="<?= $pricingEmbedded ? 'b2bp-embed' : 'b2ba' ?>"
      data-saved-msg="<?= b2b_adm_esc($t['saved']) ?>"
      data-b2b-pricing-user="<?= $perUser ? (int)$pricingUserId : '' ?>"
      data-reset-msg="<?= b2b_adm_esc($t['pricing_reset_done']) ?>">
 
-    <?php if ($perUser): ?>
-        <a class="b2ba-back" href="/<?= b2b_adm_esc($lang) ?>/<?= b2b_adm_esc($admin_dir) ?>/b2b/user?id=<?= (int)$pricingUserId ?>">&larr; <?= b2b_adm_esc(B2bAuth::displayName($client)) ?></a>
+    <?php if (!$pricingEmbedded): ?>
+        <?php if ($perUser): ?>
+            <a class="b2ba-back" href="/<?= b2b_adm_esc($lang) ?>/<?= b2b_adm_esc($admin_dir) ?>/b2b/user?id=<?= (int)$pricingUserId ?>">&larr; <?= b2b_adm_esc(B2bAuth::displayName($pricingClient)) ?></a>
+        <?php endif; ?>
+
+        <div class="b2ba-head">
+            <h1 class="b2ba-h1">
+                <?= b2b_adm_esc($perUser ? $t['pricing_title_user'] : $t['pricing_title']) ?>
+                <?php if ($perUser): ?><span class="b2bp-who"><?= b2b_adm_esc(B2bAuth::displayName($pricingClient)) ?></span><?php endif; ?>
+            </h1>
+        </div>
+
+        <div class="b2ba-msg" id="b2ba-msg" role="status" aria-live="polite"></div>
     <?php endif; ?>
-
-    <div class="b2ba-head">
-        <h1 class="b2ba-h1">
-            <?= b2b_adm_esc($perUser ? $t['pricing_title_user'] : $t['pricing_title']) ?>
-            <?php if ($perUser): ?><span class="b2bp-who"><?= b2b_adm_esc(B2bAuth::displayName($client)) ?></span><?php endif; ?>
-        </h1>
-    </div>
-
-    <div class="b2ba-msg" id="b2ba-msg" role="status" aria-live="polite"></div>
 
     <?php if ($notMigrated): ?>
         <div class="b2ba-warn"><?= b2b_adm_esc($t['pricing_not_migrated']) ?></div>

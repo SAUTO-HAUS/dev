@@ -64,6 +64,15 @@
         });
     });
 
+    // Re-open a tab named in the URL hash (#tab-prices), e.g. after the embedded
+    // pricing editor saves and reloads the page.
+    (function () {
+        var m = (window.location.hash || '').match(/^#tab-(.+)$/);
+        if (!m) return;
+        var tab = root.querySelector('[data-b2b-tab="' + m[1] + '"]');
+        if (tab) tab.click();
+    })();
+
     // ------------------------------------------------------ users list actions
 
     // Accept / block straight from the clients table. Unlike the profile buttons

@@ -134,13 +134,9 @@
 .b2bp-tag--custom{ background:#e6f4ea; color:#0f7a3d; }
 .b2bp-tag--global{ background:#eef1f5; color:#5b6675; }
 
-/* Prices tab on the client page: one row per table + its current status. */
-.b2ba-price-status{ display:flex; flex-direction:column; gap:.55rem; margin:.4rem 0 1rem; }
-.b2ba-price-row{
-    display:flex; align-items:center; justify-content:space-between; gap:1rem;
-    padding:.6rem .85rem; border:1px solid var(--b2ba-line); border-radius:10px; background:#fafafb;
-}
-.b2ba-price-name{ font-weight:600; }
+/* Pricing editor embedded in the client page "Prețuri" tab (no own header). */
+.b2bp-embed{ display:block; }
+.b2bp-embed > .b2ba-hint:first-child{ margin-top:0; }
 
 .b2ba-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1rem; }
 
