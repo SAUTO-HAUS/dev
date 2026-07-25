@@ -113,6 +113,13 @@ if (!empty($_GET['embed']) && isset($i_counts) && $i_counts == 1) {
 					if ($sett_actions !== null) { $render_menu['sett'] = $sett_actions; }
 				}
 
+				$b2b_pending_users = 0;
+				$b2b_new_requests  = 0;
+				try {
+					$b2b_pending_users = (int)$db->query('SELECT COUNT(*) FROM '.$prefx.'_b2b_users WHERE `status`="pending"')->fetchColumn();
+					$b2b_new_requests  = (int)$db->query('SELECT COUNT(*) FROM '.$prefx.'_b2b_requests WHERE `status`="new"')->fetchColumn();
+				} catch (\Throwable $e) { /* tables not migrated yet */ }
+
 				if (!empty($render_menu)) {
 					foreach($render_menu as $k => $ar){
 						$menu_name = isset($adm_lang[$k]) ? $adm_lang[$k] : ucfirst($k);
@@ -130,8 +137,16 @@ if (!empty($_GET['embed']) && isset($i_counts) && $i_counts == 1) {
 						} else {
 							echo '
 							<input id="menu_bx_'.$k.'" type="radio" name="menu_bx" class="radio_inp none" '.( (isset($t_mp[3])&&($t_mp[3]==$k||($k=='rest'&&in_array($t_mp[3], $rest_modules, true))))||(!isset($t_mp[3])&&$k=='sett')?'checked="checked"':'' ).' />
-							<div class="bx '.(in_array( $k, $hided_admin_menu, true )?'ghost':'').'">
-								<label for="menu_bx_'.$k.'" class="nm">'.$menu_name.'</label>';
+							<div class="bx '.(in_array( $k, $hided_admin_menu, true )?'ghost':'').'">';
+								$label_html = $menu_name;
+								if ($k === 'b2b') {
+									$grp_total = $b2b_pending_users + $b2b_new_requests;
+									if ($grp_total > 0) {
+										$label_html = '<span class="nm-badge-wrap">'.$menu_name.'<span class="menu-badge">'.$grp_total.'</span></span>';
+									}
+								}
+								echo '
+								<label for="menu_bx_'.$k.'" class="nm">'.$label_html.'</label>';
 								foreach ($ar as $vk => $v){
 									// A grouping bucket (e.g. "rest") points at OTHER modules: the key is
 									// "module/action" and the value is the adm_lang key for the label.
@@ -158,7 +173,11 @@ if (!empty($_GET['embed']) && isset($i_counts) && $i_counts == 1) {
 												? $db->query('SELECT COUNT(*) FROM '.$prefx.'_mail WHERE `seen`=0 AND `folder` IN ("message","order")')->fetchColumn()
 												: ( in_array($act, ['message', 'order']) ? $db->query('SELECT COUNT(*) FROM '.$prefx.'_mail WHERE `seen`=0 AND `folder`="'.$act.'"')->fetchColumn() : 0 );
 										}
-										echo $menu_name.($mod=='mail'&&$qu_x>0?' :'.$qu_x:'').'
+										
+										$sub_badge = '';
+										if ($mod=='b2b' && $act=='users' && $b2b_pending_users>0) $sub_badge = '<span class="menu-badge menu-badge--sm">'.$b2b_pending_users.'</span>';
+										if ($mod=='b2b' && $act=='requests' && $b2b_new_requests>0) $sub_badge = '<span class="menu-badge menu-badge--sm">'.$b2b_new_requests.'</span>';
+										echo $menu_name.($mod=='mail'&&$qu_x>0?' :'.$qu_x:'').$sub_badge.'
 									</a>';
 								}
 							echo '

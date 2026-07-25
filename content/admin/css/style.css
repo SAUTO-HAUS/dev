@@ -114,7 +114,11 @@
 	  #menu > .bx:hover > .nm {color:var(--clr); text-shadow:0 1px 3px rgba(191, 64, 64, 0.3);}
 	  #menu > .bx > .btn {width:48%; color:inherit; text-align:center; line-height:3rem; margin:.25rem 0; border:1px solid; font-size:.8rem; transition:.3s ease-in-out; border-radius:6px; position:relative; overflow:hidden;}
 	  #menu > .bx > .btn.act, #menu > .bx > .btn:hover {color:#fff; background:linear-gradient(135deg, var(--clr), #a03535); border-color:var(--clr); box-shadow:0 6px 15px rgba(191, 64, 64, 0.4);}
-	  
+	  #menu .menu-badge {display:inline-flex; align-items:center; justify-content:center; min-width:16px; height:16px; padding:0 4px; background:#E61E2D; color:#fff; border-radius:8px; font-size:.62rem; font-weight:700; line-height:1; box-sizing:border-box; vertical-align:middle;}
+	  #menu .nm-badge-wrap {position:relative; display:inline-block; width:auto;}
+	  #menu .nm-badge-wrap > .menu-badge {position:absolute; top:-.5rem; right:-1.15rem;}
+	  #menu .menu-badge.menu-badge--sm {margin-left:.3rem;}
+
   #content {/*min-height:100vh;*/ width:80%; float:left; box-sizing:border-box; padding:20px; margin-left:20vw; animation:showing_up .5s linear 1;}
 	  
 	  #content > .base_info .v {color:var(--clr);}
