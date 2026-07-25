@@ -91,17 +91,17 @@ try {
             <?php endif; ?>
 
             <?php if ($client['status'] === 'blocked'): ?>
-                <button type="button" class="b2ba-btn b2ba-btn--ghost" data-b2b-admin="status" data-value="active">
+                <button type="button" class="b2ba-btn b2ba-btn--ok" data-b2b-admin="status" data-value="active">
                     <?= b2b_adm_esc($t['unblock']) ?>
                 </button>
             <?php else: ?>
-                <button type="button" class="b2ba-btn b2ba-btn--warn" data-b2b-admin="status" data-value="blocked"
+                <button type="button" class="b2ba-btn b2ba-btn--red" data-b2b-admin="status" data-value="blocked"
                         data-confirm="<?= b2b_adm_esc($t['confirm_block']) ?>">
                     <?= b2b_adm_esc($t['block']) ?>
                 </button>
             <?php endif; ?>
 
-            <button type="button" class="b2ba-btn b2ba-btn--danger" data-b2b-admin="delete"
+            <button type="button" class="b2ba-btn b2ba-btn--soft" data-b2b-admin="delete"
                     data-confirm="<?= b2b_adm_esc($t['confirm_delete']) ?>"
                     data-redirect="<?= b2b_adm_esc($listUrl) ?>">
                 <?= b2b_adm_esc($t['delete']) ?>

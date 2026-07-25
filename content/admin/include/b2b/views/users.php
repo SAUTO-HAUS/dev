@@ -97,16 +97,15 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/users';
                         <th><?= b2b_adm_esc($t['col_name']) ?></th>
                         <th><?= b2b_adm_esc($t['col_person_type']) ?></th>
                         <th><?= b2b_adm_esc($t['col_contact']) ?></th>
-                        <th><?= b2b_adm_esc($t['col_regions']) ?></th>
                         <th><?= b2b_adm_esc($t['col_status']) ?></th>
-                        <th><?= b2b_adm_esc($t['col_last_login']) ?></th>
                         <th></th>
                     </tr>
                 </thead>
                 <tbody>
                 <?php foreach ($users as $u):
-                    $uid     = (int)$u['id'];
-                    $regions = B2bRegions::allowed($uid);
+                    $uid    = (int)$u['id'];
+                    $status = (string)$u['status'];
+                    $detail = '/'.b2b_adm_esc($lang).'/'.b2b_adm_esc($admin_dir).'/b2b/user?id='.$uid;
                 ?>
                     <tr>
                         <td class="b2ba-td--strong"><?= b2b_adm_esc($u['login']) ?></td>
@@ -117,29 +116,29 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/users';
                             <?= b2b_adm_esc($u['phone_number']) ?>
                         </td>
                         <td>
-                            <?php if ($regions): ?>
-                                <?php foreach ($regions as $rg): ?>
-                                    <span class="b2ba-chip"><?= b2b_adm_esc($t['rg_'.$rg] ?? $rg) ?></span>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <span class="b2ba-chip b2ba-chip--muted">&mdash;</span>
-                            <?php endif; ?>
-                        </td>
-                        <td>
-                            <span class="b2ba-badge b2ba-badge--<?= b2b_adm_esc($u['status']) ?>">
-                                <?= b2b_adm_esc($t['st_'.$u['status']] ?? $u['status']) ?>
+                            <span class="b2ba-badge b2ba-badge--<?= b2b_adm_esc($status) ?>">
+                                <?= b2b_adm_esc($t['st_'.$status] ?? $status) ?>
                             </span>
                         </td>
-                        <td class="b2ba-td--small">
-                            <?= $u['last_login_at']
-                                ? b2b_adm_esc(date('d.m.Y H:i', strtotime((string)$u['last_login_at'])).' · '.($u['last_login_ip'] ?? ''))
-                                : b2b_adm_esc($t['never']) ?>
-                        </td>
                         <td>
-                            <a class="b2ba-btn b2ba-btn--ghost b2ba-btn--sm"
-                               href="/<?= b2b_adm_esc($lang) ?>/<?= b2b_adm_esc($admin_dir) ?>/b2b/user?id=<?= $uid ?>">
-                                <?= b2b_adm_esc($t['open']) ?>
-                            </a>
+                            <div class="b2ba-row-actions">
+                                <a class="b2ba-btn b2ba-btn--soft b2ba-btn--sm" href="<?= $detail ?>">
+                                    <?= b2b_adm_esc($t['open']) ?>
+                                </a>
+                                <?php if ($status !== 'active'): ?>
+                                    <button type="button" class="b2ba-btn b2ba-btn--ok b2ba-btn--sm"
+                                            data-b2b-list-status data-user="<?= $uid ?>" data-value="active">
+                                        <?= b2b_adm_esc($t['approve']) ?>
+                                    </button>
+                                <?php endif; ?>
+                                <?php if ($status !== 'blocked'): ?>
+                                    <button type="button" class="b2ba-btn b2ba-btn--red b2ba-btn--sm"
+                                            data-b2b-list-status data-user="<?= $uid ?>" data-value="blocked"
+                                            data-confirm="<?= b2b_adm_esc($t['confirm_block']) ?>">
+                                        <?= b2b_adm_esc($t['block']) ?>
+                                    </button>
+                                <?php endif; ?>
+                            </div>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -148,3 +147,5 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/users';
         </div>
     <?php endif; ?>
 </div>
+
+<script src="/content/admin/include/b2b/b2b_admin.js?v=<?= file_exists(_ROOT.'/content/admin/include/b2b/b2b_admin.js') ? date('YmdHis', filemtime(_ROOT.'/content/admin/include/b2b/b2b_admin.js')) : '1' ?>" defer></script>

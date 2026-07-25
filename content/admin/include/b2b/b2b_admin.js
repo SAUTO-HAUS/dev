@@ -64,6 +64,26 @@
         });
     });
 
+    // ------------------------------------------------------ users list actions
+
+    // Accept / block straight from the clients table. Unlike the profile buttons
+    // above, the user id comes from the row's button (many users on this page).
+    root.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-b2b-list-status]');
+        if (!btn) return;
+        if (btn.dataset.confirm && !window.confirm(btn.dataset.confirm)) return;
+
+        busy(btn, true);
+        api('set_status', { user_id: btn.dataset.user, status: btn.dataset.value }).then(function (res) {
+            if (res && res.ok) {
+                window.location.reload();
+            } else {
+                busy(btn, false);
+                say((res && res.error) || 'Eroare.', 'error');
+            }
+        });
+    });
+
     // ----------------------------------------------------------------- actions
 
     root.addEventListener('click', function (e) {

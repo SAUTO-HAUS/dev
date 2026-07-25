@@ -201,8 +201,16 @@
 .b2ba-btn--warn:hover{ background:#fff8ec; }
 .b2ba-btn--danger{ background:#fff; border-color:#e0b4ba; color:#b30015; }
 .b2ba-btn--danger:hover{ background:#fdeef0; }
+/* Solid red (block) and light red toward white (open) — same shape as --ok. */
+.b2ba-btn--red{ background:#e2001a; color:#fff; }
+.b2ba-btn--red:hover{ background:#c4121f; }
+.b2ba-btn--soft{ background:#fde7ea; color:#c4121f; }
+.b2ba-btn--soft:hover{ background:#fbd3d9; }
 .b2ba-btn--sm{ padding:0.35rem 0.7rem; font-size:0.78rem; }
 .b2ba-btn[disabled]{ cursor:not-allowed; }
+
+/* Accept / block buttons inside a clients-table row. */
+.b2ba-row-actions{ display:flex; gap:0.4rem; flex-wrap:wrap; }
 
 /* ------------------------------------------------------------------ badges */
 
@@ -210,18 +218,33 @@
     display:inline-block; padding:0.22rem 0.7rem;
     border-radius:999px; background:#f2f4f7; color:#42484f;
     font-size:0.76rem; font-weight:700; white-space:nowrap;
+    /* Pulsing glow so a status always catches the eye. Ring colour is set
+       per-status below. */
+    animation:b2ba-pulse 1.7s ease-out infinite;
 }
+/* Status colours match the row buttons: active = green (--ok), blocked = red
+   (--red). Pending stays soft yellow. --pulse feeds the glow colour. */
 .b2ba-badge--active,
 .b2ba-badge--approved,
-.b2ba-badge--paid{ background:#eafaf0; color:#0f7a3d; }
+.b2ba-badge--paid{ background:#0f7a3d; color:#fff; --b2ba-pulse:15,122,61; }
 .b2ba-badge--pending,
 .b2ba-badge--new,
-.b2ba-badge--issued{ background:#fff6e6; color:#96650a; }
+.b2ba-badge--issued{ background:#fff6e6; color:#96650a; --b2ba-pulse:214,158,0; }
 .b2ba-badge--blocked,
 .b2ba-badge--rejected,
-.b2ba-badge--cancelled{ background:#fdeef0; color:#b30015; }
+.b2ba-badge--cancelled{ background:#e2001a; color:#fff; --b2ba-pulse:226,0,26; }
 .b2ba-badge--seen,
-.b2ba-badge--sent{ background:#eaf1fd; color:#1b4f9c; }
+.b2ba-badge--sent{ background:#eaf1fd; color:#1b4f9c; --b2ba-pulse:27,79,156; }
+
+@keyframes b2ba-pulse{
+    0%   { box-shadow:0 0 0 0 rgba(var(--b2ba-pulse, 130,130,130), .55); }
+    70%  { box-shadow:0 0 0 7px rgba(var(--b2ba-pulse, 130,130,130), 0); }
+    100% { box-shadow:0 0 0 0 rgba(var(--b2ba-pulse, 130,130,130), 0); }
+}
+/* Respect users who ask for less motion. */
+@media (prefers-reduced-motion: reduce){
+    .b2ba-badge{ animation:none; }
+}
 
 .b2ba-chip{
     display:inline-block; margin:0 0.15rem 0.15rem 0;
