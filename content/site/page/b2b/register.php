@@ -52,7 +52,6 @@ $form = '
                        maxlength="'.(int)B2bPhone::MD_DIGITS.'" pattern="\d{'.(int)B2bPhone::MD_DIGITS.'}"
                        required autocomplete="tel" placeholder="60 123 456" />
             </div>
-            <small class="b2b-hint">'.b2b_esc($t['phone_hint']).'</small>
         </div>
     </div>
 
@@ -63,7 +62,7 @@ $form = '
         </div>
         <div class="b2b-field">
             <label for="b2b-login">'.b2b_esc($t['login_field']).' *</label>
-            <input type="text" id="b2b-login" name="login" minlength="4" maxlength="64" pattern="[A-Za-z0-9._-]{4,64}" required autocomplete="username" />
+            <input type="text" id="b2b-login" name="login" minlength="6" maxlength="64" pattern="[A-Za-z0-9._-]{6,64}" required autocomplete="username" />
             <small class="b2b-hint">'.b2b_esc($t['login_hint']).'</small>
         </div>
     </div>

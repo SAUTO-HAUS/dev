@@ -99,10 +99,16 @@
     cursor:pointer;
     transition:border-color .15s, background .15s;
 }
-.b2b-radio input{ width:auto; margin:0; accent-color:var(--b2b-accent, #e2001a); }
-.b2b-radio span{ font-size:.95rem; }
+.b2b-radio input[type="radio"]{
+    flex:0 0 auto; width:auto; margin:0; padding:0;
+    border:0; border-radius:0; background:none; box-shadow:none;
+    accent-color:var(--b2b-accent, #e2001a);
+}
+.b2b-radio span{ font-size:.95rem; font-weight:600; }
 .b2b-radio:hover{ border-color:var(--b2b-muted); }
 .b2b-radio:has(input:checked){ border-color:var(--b2b-accent, #e2001a); background:#fff5f6; }
+.b2b-radio input[type="radio"]:focus{ outline:none; box-shadow:none; border:0; }
+.b2b-radio:focus-within{ border-color:var(--b2b-accent, #e2001a); box-shadow:0 0 0 3px rgba(226,0,26,.12); }
 .b2b-field input,
 .b2b-field select,
 .b2b-actions__amount input,

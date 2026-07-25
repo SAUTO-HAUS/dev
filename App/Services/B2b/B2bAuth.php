@@ -59,9 +59,13 @@ class B2bAuth
         if ($fullName === '' || mb_strlen($fullName) > 190) {
             return ['ok' => false, 'field' => 'full_name', 'error' => 'Numele și prenumele sunt obligatorii.'];
         }
-        // Letters, digits, dot, dash and underscore: it goes into URLs and logs.
-        if (!preg_match('/^[a-z0-9._-]{4,64}$/', $login)) {
-            return ['ok' => false, 'field' => 'login', 'error' => 'Login-ul trebuie să aibă 4-64 caractere: litere, cifre, . _ -'];
+        // Primary rule shown to the user: at least 6 characters.
+        if (mb_strlen($login) < 6 || mb_strlen($login) > 64) {
+            return ['ok' => false, 'field' => 'login', 'error' => 'Login-ul trebuie să aibă minim 6 caractere.'];
+        }
+        // Charset kept as a safety net (it goes into URLs and logs), not advertised.
+        if (!preg_match('/^[a-z0-9._-]+$/', $login)) {
+            return ['ok' => false, 'field' => 'login', 'error' => 'Login-ul poate conține doar litere, cifre, . _ -'];
         }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($email) > 190) {
             return ['ok' => false, 'field' => 'email', 'error' => 'Adresa de email nu este validă.'];
