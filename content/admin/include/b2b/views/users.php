@@ -107,8 +107,8 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/users';
                     $status = (string)$u['status'];
                     $detail = '/'.b2b_adm_esc($lang).'/'.b2b_adm_esc($admin_dir).'/b2b/user?id='.$uid;
                 ?>
-                    <tr>
-                        <td class="b2ba-td--strong"><?= b2b_adm_esc($u['login']) ?></td>
+                    <tr class="b2ba-row-open" data-b2b-open="<?= $detail ?>">
+                        <td class="b2ba-td--strong"><a class="b2ba-row-link" href="<?= $detail ?>"><?= b2b_adm_esc($u['login']) ?></a></td>
                         <td><?= b2b_adm_esc(B2bAuth::displayName($u)) ?></td>
                         <td><?= b2b_adm_esc($t['pt_'.$u['person_type']] ?? $u['person_type']) ?></td>
                         <td class="b2ba-td--small">
@@ -122,9 +122,6 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/users';
                         </td>
                         <td>
                             <div class="b2ba-row-actions">
-                                <a class="b2ba-btn b2ba-btn--soft b2ba-btn--sm" href="<?= $detail ?>">
-                                    <?= b2b_adm_esc($t['open']) ?>
-                                </a>
                                 <?php if ($status !== 'active'): ?>
                                     <button type="button" class="b2ba-btn b2ba-btn--ok b2ba-btn--sm"
                                             data-b2b-list-status data-user="<?= $uid ?>" data-value="active">

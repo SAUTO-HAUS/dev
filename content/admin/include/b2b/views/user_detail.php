@@ -10,6 +10,7 @@ use App\Services\B2b\B2bAudit;
 use App\Services\B2b\B2bAuth;
 use App\Services\B2b\B2bConfig;
 use App\Services\B2b\B2bInvoice;
+use App\Services\B2b\B2bPhone;
 use App\Services\B2b\B2bRegions;
 
 $lang = $_COOKIE['lang'] ?? 'ro';
@@ -61,10 +62,9 @@ try {
         <div>
             <h1 class="b2ba-h1"><?= b2b_adm_esc(B2bAuth::displayName($client)) ?></h1>
             <p class="b2ba-sub">
-                <?= b2b_adm_esc($client['login']) ?> &middot;
                 <?= b2b_adm_esc($t['pt_'.$client['person_type']] ?? $client['person_type']) ?> &middot;
                 <?= b2b_adm_esc($client['email']) ?> &middot;
-                <?= b2b_adm_esc($client['phone_number']) ?>
+                <?= b2b_adm_esc(B2bPhone::local($client['phone_number'])) ?>
             </p>
         </div>
         <div class="b2ba-head__actions">

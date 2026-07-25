@@ -40,6 +40,20 @@ final class B2bPhone
     }
 
     /**
+     * Stored Moldovan number (+373XXXXXXXX) -> grouped local display form
+     * "0XX XX XX XX". Anything that is not a +373 number is returned unchanged.
+     */
+    public static function local(string $phone): string
+    {
+        $digits = preg_replace('/\D+/', '', $phone);
+        if (strpos($digits, '373') === 0 && strlen($digits) === 11) {
+            $d = substr($digits, 3); // 8 local digits, e.g. 79975967
+            return sprintf('0%s %s %s %s', substr($d, 0, 2), substr($d, 2, 2), substr($d, 4, 2), substr($d, 6, 2));
+        }
+        return $phone;
+    }
+
+    /**
      * Any number -> E.164, for admin-entered contacts. Returns '' when the input
      * cannot be a phone number at all.
      */

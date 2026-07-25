@@ -296,6 +296,11 @@
 .b2ba-table a:hover{ text-decoration:underline; }
 
 .b2ba-td--strong{ font-weight:700; }
+/* Whole client row is the "open" action; login stays a real link for keyboard/no-JS. */
+.b2ba-row-open{ cursor:pointer; }
+.b2ba-row-open:hover{ background:#f4f7fb; }
+.b2ba-table a.b2ba-row-link{ color:inherit; font-weight:700; }
+.b2ba-table a.b2ba-row-link:hover{ text-decoration:underline; }
 .b2ba-td--small{ font-size:0.8rem; color:var(--b2ba-muted); }
 .b2ba-td--wrap{ max-width:280px; word-break:break-word; }
 .b2ba-td--nowrap{ white-space:nowrap; }

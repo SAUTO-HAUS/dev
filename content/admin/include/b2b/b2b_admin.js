@@ -75,6 +75,14 @@
 
     // ------------------------------------------------------ users list actions
 
+    // The whole client row opens the profile. Clicks on the action buttons (or the
+    // login link) are left to their own handlers, so only "empty" row area navigates.
+    root.addEventListener('click', function (e) {
+        if (e.target.closest('a, button, input, select, label')) return;
+        var row = e.target.closest('[data-b2b-open]');
+        if (row && row.dataset.b2bOpen) window.location.href = row.dataset.b2bOpen;
+    });
+
     // Accept / block straight from the clients table. Unlike the profile buttons
     // above, the user id comes from the row's button (many users on this page).
     root.addEventListener('click', function (e) {
