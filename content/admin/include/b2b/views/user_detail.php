@@ -135,30 +135,9 @@ try {
                     <span><?= b2b_adm_esc($t['full_name']) ?></span>
                     <input type="text" data-field="full_name" value="<?= b2b_adm_esc($client['full_name']) ?>" maxlength="190">
                 </label>
-                <!-- Not collected at signup: filled in here when a proforma needs them. -->
-                <label class="b2ba-field">
-                    <span><?= b2b_adm_esc($t['company_name']) ?></span>
-                    <input type="text" data-field="company_name" value="<?= b2b_adm_esc($client['company_name'] ?? '') ?>" maxlength="190">
-                </label>
                 <label class="b2ba-field">
                     <span><?= b2b_adm_esc($t['phone']) ?></span>
                     <input type="text" data-field="phone_number" value="<?= b2b_adm_esc($client['phone_number']) ?>" maxlength="32">
-                </label>
-                <label class="b2ba-field b2ba-field--wide">
-                    <span><?= b2b_adm_esc($t['legal_address']) ?></span>
-                    <input type="text" data-field="legal_address" value="<?= b2b_adm_esc($client['legal_address'] ?? '') ?>" maxlength="255">
-                </label>
-                <label class="b2ba-field">
-                    <span><?= b2b_adm_esc($t['bank_name']) ?></span>
-                    <input type="text" data-field="bank_name" value="<?= b2b_adm_esc($client['bank_name'] ?? '') ?>" maxlength="190">
-                </label>
-                <label class="b2ba-field">
-                    <span><?= b2b_adm_esc($t['bank_iban']) ?></span>
-                    <input type="text" data-field="bank_iban" value="<?= b2b_adm_esc($client['bank_iban'] ?? '') ?>" maxlength="64">
-                </label>
-                <label class="b2ba-field">
-                    <span><?= b2b_adm_esc($t['vat_code']) ?></span>
-                    <input type="text" data-field="vat_code" value="<?= b2b_adm_esc($client['vat_code'] ?? '') ?>" maxlength="32">
                 </label>
                 <label class="b2ba-field b2ba-field--wide">
                     <span><?= b2b_adm_esc($t['admin_note']) ?></span>

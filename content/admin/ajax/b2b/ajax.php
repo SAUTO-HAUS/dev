@@ -126,15 +126,15 @@ switch ($fn) {
         b2b_adm_out(['ok' => true]);
     }
 
-    // ---- Client profile (legal details go on the proforma) ------------------
+    // ---- Client profile -----------------------------------------------------
     case 'save_profile': {
         if (!B2bAuth::findById($uid)) {
             b2b_adm_out(['ok' => false, 'error' => 'Client inexistent.']);
         }
 
         // Whitelist: login, email, status and password hash are NOT editable here.
-        $allowed = ['full_name', 'company_name', 'phone_number',
-                    'legal_address', 'bank_name', 'bank_iban', 'vat_code', 'admin_note'];
+        // Company/legal fields are not collected anywhere, so they are not editable.
+        $allowed = ['full_name', 'phone_number', 'admin_note'];
 
         $sets = [];
         $args = [':id' => $uid];
