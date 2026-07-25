@@ -114,6 +114,11 @@ $cardStatus = function (bool $custom, string $section) use ($perUser, $t) {
     return '<div class="b2bp-status">'.$badge.$reset.'</div>';
 };
 
+// Region flags in the card titles, same assets/style as /adminsauto/parsing/settings.
+$flagStyle = 'height:1.1em;width:auto;vertical-align:-0.15em;margin-right:0.4rem;';
+$flagEu = '<img src="/content/admin/page/parsing/media-parsing/flag-europe.svg" alt="Europa" style="'.$flagStyle.'">';
+$flagKr = '<img src="/content/admin/page/parsing/media-parsing/flag-korea.svg" alt="Coreea" style="'.$flagStyle.'">';
+
 // Retail value for the price band that contains $priceFrom (read-only reference).
 $retailTierVal = function (array $retailRows, float $priceFrom, string $field): ?int {
     foreach ($retailRows as $r) {
@@ -206,7 +211,7 @@ $paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt
 
     <!-- Commission tiers (Europe + Korea) -->
     <div class="b2ba-card b2bp-card" data-section="commission" data-value="commission">
-        <h2 class="b2ba-h2"><?= b2b_adm_esc($t['pricing_commission']) ?></h2>
+        <h2 class="b2ba-h2"><?= $flagEu.$flagKr ?><?= b2b_adm_esc($t['pricing_commission']) ?></h2>
         <?= $cardStatus($commissionCustom, 'commission') ?>
         <table class="b2bp-table">
             <thead><tr>
@@ -226,7 +231,7 @@ $paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt
 
     <!-- Europe delivery tiers -->
     <div class="b2ba-card b2bp-card" data-section="delivery" data-value="delivery">
-        <h2 class="b2ba-h2"><?= b2b_adm_esc($t['pricing_delivery']) ?></h2>
+        <h2 class="b2ba-h2"><?= $flagEu ?><?= b2b_adm_esc($t['pricing_delivery']) ?></h2>
         <?= $cardStatus($deliveryCustom, 'delivery') ?>
         <table class="b2bp-table">
             <thead><tr>
@@ -246,7 +251,7 @@ $paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt
 
     <!-- Europe fixed costs -->
     <div class="b2ba-card b2bp-card" data-section="eu_params">
-        <h2 class="b2ba-h2"><?= b2b_adm_esc($t['pricing_eu_params']) ?></h2>
+        <h2 class="b2ba-h2"><?= $flagEu ?><?= b2b_adm_esc($t['pricing_eu_params']) ?></h2>
         <?= $cardStatus($euParamsCustom, 'eu_params') ?>
         <table class="b2bp-table b2bp-params">
             <thead><tr>
@@ -265,7 +270,7 @@ $paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt
 
     <!-- Korea fixed costs -->
     <div class="b2ba-card b2bp-card" data-section="kr_params">
-        <h2 class="b2ba-h2"><?= b2b_adm_esc($t['pricing_kr_params']) ?></h2>
+        <h2 class="b2ba-h2"><?= $flagKr ?><?= b2b_adm_esc($t['pricing_kr_params']) ?></h2>
         <?= $cardStatus($krParamsCustom, 'kr_params') ?>
         <table class="b2bp-table b2bp-params">
             <thead><tr>
