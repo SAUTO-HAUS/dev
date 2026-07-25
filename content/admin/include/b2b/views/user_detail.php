@@ -64,6 +64,40 @@ try {
 } catch (Throwable $e) {
     $priceOv = [];
 }
+
+// Current GLOBAL B2B base for each override key, shown read-only beside the field
+// so the admin sees what the client pays today before setting an individual value.
+// commission / eu_delivery are tiered (range across price bands); RoRo is a single
+// param. Edited on /adminsauto/b2b/pricing; empty here = table not migrated.
+$b2bBase = ['commission' => '', 'eu_delivery' => '', 'sea_freight_roro' => ''];
+try {
+    $rangeText = function (array $rows, string $field): string {
+        $vals = [];
+        foreach ($rows as $r) {
+            $vals[] = (int)round((float)($r[$field] ?? 0));
+        }
+        if (!$vals) {
+            return '';
+        }
+        $min = min($vals);
+        $max = max($vals);
+        return ($min === $max ? (string)$min : $min.'–'.$max).' €';
+    };
+    $b2bBase['commission']  = $rangeText(
+        $db->query('SELECT commission FROM '.$prefx.'_b2b_commission_tiers')->fetchAll(PDO::FETCH_ASSOC) ?: [],
+        'commission'
+    );
+    $b2bBase['eu_delivery'] = $rangeText(
+        $db->query('SELECT delivery FROM '.$prefx.'_b2b_eu_tiers')->fetchAll(PDO::FETCH_ASSOC) ?: [],
+        'delivery'
+    );
+    $roro = $db->query("SELECT amount_eur FROM ".$prefx."_b2b_kr_params WHERE param_key = 'sea_freight_roro' LIMIT 1")->fetchColumn();
+    if ($roro !== false && $roro !== null) {
+        $b2bBase['sea_freight_roro'] = (int)round((float)$roro).' €';
+    }
+} catch (Throwable $e) {
+    // Pricing tables not migrated yet: references stay blank.
+}
 ?>
 
 <div class="b2ba" data-b2b-user="<?= $uid ?>" data-saved-msg="<?= b2b_adm_esc($t['saved']) ?>">
@@ -214,26 +248,34 @@ try {
     <section class="b2ba-pane" data-b2b-pane="prices">
         <div class="b2ba-card">
             <p class="b2ba-hint"><?= b2b_adm_esc($t['prices_hint']) ?></p>
+            <p class="b2ba-hint">
+                <?= b2b_adm_esc($t['prices_global_note']) ?>
+                <a href="/<?= b2b_adm_esc($lang) ?>/<?= b2b_adm_esc($admin_dir) ?>/b2b/pricing" target="_blank" rel="noopener">
+                    <?= b2b_adm_esc($t['prices_global_link']) ?>
+                </a>
+            </p>
+
+            <?php
+            $priceField = function (string $key, string $label) use ($t, $priceOv, $b2bBase) {
+                $base = $b2bBase[$key] ?? '';
+                ob_start(); ?>
+                <label class="b2ba-field">
+                    <span><?= b2b_adm_esc($label) ?></span>
+                    <input type="number" min="0" step="1" data-price-key="<?= b2b_adm_esc($key) ?>"
+                           value="<?= b2b_adm_esc($priceOv[$key] ?? '') ?>"
+                           placeholder="<?= b2b_adm_esc($t['price_global']) ?>">
+                    <small class="b2ba-ref"><?= b2b_adm_esc($t['price_base']) ?>:
+                        <strong><?= $base !== '' ? b2b_adm_esc($base) : '&mdash;' ?></strong>
+                    </small>
+                </label>
+                <?php return ob_get_clean();
+            };
+            ?>
 
             <div class="b2ba-grid">
-                <label class="b2ba-field">
-                    <span><?= b2b_adm_esc($t['price_commission']) ?></span>
-                    <input type="number" min="0" step="1" data-price-key="commission"
-                           value="<?= b2b_adm_esc($priceOv['commission'] ?? '') ?>"
-                           placeholder="<?= b2b_adm_esc($t['price_global']) ?>">
-                </label>
-                <label class="b2ba-field">
-                    <span><?= b2b_adm_esc($t['price_eu_delivery']) ?></span>
-                    <input type="number" min="0" step="1" data-price-key="eu_delivery"
-                           value="<?= b2b_adm_esc($priceOv['eu_delivery'] ?? '') ?>"
-                           placeholder="<?= b2b_adm_esc($t['price_global']) ?>">
-                </label>
-                <label class="b2ba-field">
-                    <span><?= b2b_adm_esc($t['price_roro']) ?></span>
-                    <input type="number" min="0" step="1" data-price-key="sea_freight_roro"
-                           value="<?= b2b_adm_esc($priceOv['sea_freight_roro'] ?? '') ?>"
-                           placeholder="<?= b2b_adm_esc($t['price_global']) ?>">
-                </label>
+                <?= $priceField('commission', $t['price_commission']) ?>
+                <?= $priceField('eu_delivery', $t['price_eu_delivery']) ?>
+                <?= $priceField('sea_freight_roro', $t['price_roro']) ?>
             </div>
 
             <div class="b2ba-card__foot">

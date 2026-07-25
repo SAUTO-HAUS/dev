@@ -31,6 +31,8 @@
 .b2ba-sub{ margin:0; color:var(--b2ba-muted); font-size:0.85rem; }
 .b2ba-hint{ margin:0 0 1rem; color:var(--b2ba-muted); font-size:0.85rem; }
 .b2ba-meta{ margin:0; color:#9ca3af; font-size:0.8rem; }
+.b2ba-ref{ display:block; margin-top:.3rem; color:var(--b2ba-muted); font-size:0.78rem; }
+.b2ba-ref strong{ color:#374151; font-weight:700; }
 
 /* --------------------------------------------------------- search / filters */
 
