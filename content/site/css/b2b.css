@@ -221,8 +221,9 @@
 /* --------------------------------------------------------- cabinet header */
 
 .b2b-head{
+    width:auto; margin:0; float:none; position:static;
     display:flex; justify-content:space-between; align-items:flex-start; gap:2rem; flex-wrap:wrap;
-    padding:1.75rem 2rem;
+    padding:1.1rem 1.4rem;
     background:#fff; border:1px solid #efefef; border-radius:18px;
     box-shadow:0 10px 30px rgba(20,20,40,.07);
 }
@@ -232,7 +233,7 @@
 }
 .b2b-head__ttl{ margin:0 0 .4rem; font-size:1.5rem; font-weight:700; }
 .b2b-head__meta{ margin:0; color:var(--b2b-muted); font-size:.88rem; }
-.b2b-head__side{ display:flex; flex-direction:column; gap:.6rem; align-items:flex-start; }
+.b2b-head__side{ display:flex; flex-direction:row; align-items:center; gap:.9rem; flex-wrap:wrap; }
 .b2b-head__row{ display:flex; align-items:center; gap:.6rem; flex-wrap:wrap; }
 .b2b-head__label{ color:var(--b2b-muted); font-size:.78rem; text-transform:uppercase; letter-spacing:.4px; }
 
@@ -263,7 +264,7 @@
 
 /* ------------------------------------------------------------------- tabs */
 
-.b2b-tabs{ display:flex; gap:.4rem; margin:1.5rem 0 1rem; flex-wrap:wrap; }
+.b2b-tabs{ display:flex; justify-content:center; gap:.4rem; margin:1.5rem 0 1rem; flex-wrap:wrap; }
 .b2b-tab{
     padding:.6rem 1.15rem;
     border:1.5px solid var(--b2b-line); border-radius:999px;

@@ -15,6 +15,7 @@ if (!function_exists('b2b_lang')) {
                 // nav
                 'brand'            => 'Partener B2B',
                 'cabinet'          => 'Cabinet B2B',
+                'cabinet_short'    => 'Cabinet',
                 'header_register'  => 'Înregistrare',
                 'login'            => 'Autentificare B2B',
                 'register'         => 'Înregistrare B2B',
@@ -116,6 +117,7 @@ if (!function_exists('b2b_lang')) {
             'ru' => [
                 'brand'            => 'B2B партнёр',
                 'cabinet'          => 'Кабинет B2B',
+                'cabinet_short'    => 'Кабинет',
                 'header_register'  => 'Регистрация',
                 'login'            => 'Вход B2B',
                 'register'         => 'Регистрация B2B',
@@ -210,6 +212,7 @@ if (!function_exists('b2b_lang')) {
             'en' => [
                 'brand'            => 'B2B partner',
                 'cabinet'          => 'B2B cabinet',
+                'cabinet_short'    => 'Cabinet',
                 'header_register'  => 'Register',
                 'login'            => 'B2B login',
                 'register'         => 'B2B registration',

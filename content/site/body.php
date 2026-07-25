@@ -257,7 +257,16 @@ echo '
                 $_b2b_logged  = function_exists('b2b_is_client') && b2b_is_client();
                 $_b2b_on_page = isset($t_mp[2]) && in_array($t_mp[2], ['b2b', 'b2b-login', 'b2b-register'], true);
                 $_b2b_href    = $_b2b_logged ? '/'.$_COOKIE['lang'].'/b2b/cabinet' : '/'.$_COOKIE['lang'].'/b2b-register';
-                $_b2b_label   = $_b2b_logged ? b2b_t('cabinet') : b2b_t('header_register');
+
+                // Logged in: "Cabinet <first name>" (e.g. "Cabinet Grigore"); fall
+                // back to the plain "Cabinet B2B" label if the name is missing.
+                $_b2b_label = b2b_t('header_register');
+                if ($_b2b_logged) {
+                    $_b2b_user  = function_exists('b2b_user') ? b2b_user() : null;
+                    $_b2b_fname = $_b2b_user ? trim((string)($_b2b_user['full_name'] ?? '')) : '';
+                    $_b2b_fname = $_b2b_fname !== '' ? htmlspecialchars(explode(' ', $_b2b_fname)[0], ENT_QUOTES, 'UTF-8') : '';
+                    $_b2b_label = $_b2b_fname !== '' ? (b2b_t('cabinet_short').' '.$_b2b_fname) : b2b_t('cabinet');
+                }
 
                 echo '<a class="b2b button b2b-nav-link b2b-menu-only'.($_b2b_on_page ? ' active' : '').'" href="'.$_b2b_href.'">'
                    . '<div>'.($_b2b_logged ? '<span class="b2b-nav-dot"></span> ' : '').$_b2b_label.'</div></a>';

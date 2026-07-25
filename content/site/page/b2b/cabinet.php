@@ -18,7 +18,6 @@ include_once( __DIR__ . '/_layout.php' );
 use App\Services\B2b\B2bAudit;
 use App\Services\B2b\B2bConfig;
 use App\Services\B2b\B2bInvoice;
-use App\Services\B2b\B2bRegions;
 
 $lang   = $_COOKIE['lang'] ?? 'ro';
 $t      = b2b_lang($lang);
@@ -38,7 +37,7 @@ $user   = b2b_user();
 $userId = (int)$user['id'];
 $csrf   = b2b_esc(b2b_csrf_token());
 
-$tabs = ['cabinet' => 'tab_cars', 'invoices' => 'tab_invoices', 'requests' => 'tab_requests', 'activity' => 'tab_activity'];
+$tabs = ['cabinet' => 'tab_cars', 'invoices' => 'tab_invoices', 'requests' => 'tab_requests'];
 if (!isset($tabs[$action])) {
     $action = 'cabinet';
 }
@@ -47,32 +46,17 @@ echo b2b_assets();
 
 // ------------------------------------------------------------------- header
 
-$regionBadges = '';
-foreach (B2bRegions::allowed($userId) as $region) {
-    $regionBadges .= '<span class="b2b-chip">'.b2b_region_label($region).'</span>';
-}
-if ($regionBadges === '') {
-    $regionBadges = '<span class="b2b-chip b2b-chip--muted">&mdash;</span>';
-}
-
 echo '
 <div class="b2b-page b2b-page--wide">
     <header class="b2b-head">
         <div class="b2b-head__main">
             <p class="b2b-head__eyebrow">'.b2b_esc($t['welcome']).'</p>
             <h1 class="b2b-head__ttl">'.b2b_esc(\App\Services\B2b\B2bAuth::displayName($user)).'</h1>
-            <p class="b2b-head__meta">
-                '.b2b_esc($user['full_name']).' &middot; '.b2b_esc($user['email']).' &middot; '.b2b_esc($user['phone_number']).'
-            </p>
         </div>
         <div class="b2b-head__side">
             <div class="b2b-head__row">
                 <span class="b2b-head__label">'.b2b_esc($t['status']).'</span>
                 <span class="b2b-badge b2b-badge--'.b2b_esc($user['status']).'">'.b2b_status_label((string)$user['status']).'</span>
-            </div>
-            <div class="b2b-head__row">
-                <span class="b2b-head__label">'.b2b_esc($t['regions']).'</span>
-                <span class="b2b-chips">'.$regionBadges.'</span>
             </div>
             <a class="b2b-btn b2b-btn--ghost b2b-btn--sm" href="/'.b2b_esc($lang).'/b2b/logout">'.b2b_esc($t['logout']).'</a>
         </div>
