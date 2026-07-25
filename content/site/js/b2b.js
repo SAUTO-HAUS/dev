@@ -8,6 +8,20 @@
 (function () {
     'use strict';
 
+    // ------------------------------------------------ password visibility
+    // Eye toggle on password fields: flip the input between password and text.
+    document.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-b2b-pass-toggle]');
+        if (!btn) return;
+        var wrap  = btn.closest('.b2b-pass-wrap');
+        var input = wrap && wrap.querySelector('input');
+        if (!input) return;
+        var show = input.type === 'password';
+        input.type = show ? 'text' : 'password';
+        btn.classList.toggle('is-on', show);
+        btn.setAttribute('aria-label', (show ? btn.dataset.hide : btn.dataset.show) || '');
+    });
+
     // ------------------------------------------------------------------ utils
 
     /**

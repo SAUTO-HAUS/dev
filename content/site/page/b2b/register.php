@@ -22,6 +22,15 @@ $csrf = b2b_esc(b2b_csrf_token());
 
 echo b2b_assets();
 
+// Show/hide toggle reused by both password fields (eye + eye-off, one shown by CSS).
+$eyeIcons =
+    '<svg class="b2b-eye ico-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>'
+  . '<svg class="b2b-eye ico-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/><line x1="3" y1="3" x2="21" y2="21"/></svg>';
+$passToggle =
+    '<button type="button" class="b2b-pass-toggle" data-b2b-pass-toggle'
+  . ' data-show="'.b2b_esc($t['pass_show']).'" data-hide="'.b2b_esc($t['pass_hide']).'"'
+  . ' aria-label="'.b2b_esc($t['pass_show']).'">'.$eyeIcons.'</button>';
+
 $form = '
 <form class="b2b-form" id="b2b-register-form" data-csrf="'.$csrf.'" novalidate>
     <div class="b2b-field">
@@ -70,12 +79,18 @@ $form = '
     <div class="b2b-field-row">
         <div class="b2b-field">
             <label for="b2b-pass">'.b2b_esc($t['password']).' *</label>
-            <input type="password" id="b2b-pass" name="password" minlength="8" required autocomplete="new-password" />
+            <div class="b2b-pass-wrap">
+                <input type="password" id="b2b-pass" name="password" minlength="8" required autocomplete="new-password" />
+                '.$passToggle.'
+            </div>
             <small class="b2b-hint">'.b2b_esc($t['password_hint']).'</small>
         </div>
         <div class="b2b-field">
             <label for="b2b-pass2">'.b2b_esc($t['password_repeat']).' *</label>
-            <input type="password" id="b2b-pass2" name="password_repeat" minlength="8" required autocomplete="new-password" />
+            <div class="b2b-pass-wrap">
+                <input type="password" id="b2b-pass2" name="password_repeat" minlength="8" required autocomplete="new-password" />
+                '.$passToggle.'
+            </div>
         </div>
     </div>
 
