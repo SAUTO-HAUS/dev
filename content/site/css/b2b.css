@@ -218,24 +218,73 @@
 .b2b-success__txt{ margin:0 0 1.75rem; color:var(--b2b-muted); }
 
 
-/* --------------------------------------------------------- cabinet header */
+/* -------------------------------------------------- cabinet hero + nav cards */
 
-.b2b-head{
-    width:auto; margin:0; float:none; position:static;
-    display:flex; justify-content:space-between; align-items:flex-start; gap:2rem; flex-wrap:wrap;
-    padding:1.1rem 1.4rem;
-    background:#fff; border:1px solid #efefef; border-radius:18px;
-    box-shadow:0 10px 30px rgba(20,20,40,.07);
+/* Hero: a normal block (NOT a <header>, which the site-wide header{} rule would
+   hijack with an 80vw width + 10vw margin). Avatar + greeting + name + status. */
+.b2b-hero{
+    position:relative;
+    display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap;
+    padding:1.35rem 1.6rem;
+    background:#fff; border:1px solid #efefef; border-radius:20px;
+    box-shadow:0 12px 34px rgba(20,20,40,.08);
 }
-.b2b-head__eyebrow{
-    margin:0 0 .25rem;
-    color:var(--b2b-muted); font-size:.78rem; text-transform:uppercase; letter-spacing:.5px;
+.b2b-hero__id{ display:flex; align-items:center; gap:1rem; min-width:0; padding-right:2.5rem; }
+
+/* Logout: a small exit-icon button tucked into the top-right corner. */
+.b2b-hero__out{
+    position:absolute; top:.85rem; right:.85rem;
+    display:inline-flex; align-items:center; justify-content:center;
+    width:38px; height:38px;
+    border:1px solid var(--b2b-line); border-radius:11px;
+    background:#fff; color:var(--b2b-muted);
+    text-decoration:none;
+    transition:color .15s, border-color .15s, background .15s;
 }
-.b2b-head__ttl{ margin:0 0 .4rem; font-size:1.5rem; font-weight:700; }
-.b2b-head__meta{ margin:0; color:var(--b2b-muted); font-size:.88rem; }
-.b2b-head__side{ display:flex; flex-direction:row; align-items:center; gap:.9rem; flex-wrap:wrap; }
-.b2b-head__row{ display:flex; align-items:center; gap:.6rem; flex-wrap:wrap; }
-.b2b-head__label{ color:var(--b2b-muted); font-size:.78rem; text-transform:uppercase; letter-spacing:.4px; }
+.b2b-hero__out:hover{ color:var(--b2b-brand); border-color:var(--b2b-brand); background:#fff5f6; }
+.b2b-hero__out:focus-visible{ outline:2px solid var(--b2b-brand); outline-offset:2px; }
+.b2b-hero__out svg{ width:18px; height:18px; }
+.b2b-hero__avatar{
+    flex:0 0 auto; width:56px; height:56px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg, #e2001a, #a1000f); color:#fff;
+    font-weight:800; font-size:1.2rem; letter-spacing:.02em;
+    box-shadow:0 6px 16px rgba(226,0,26,.30);
+}
+.b2b-hero__text{ min-width:0; }
+.b2b-hero__greet{ margin:0 0 .15rem; color:var(--b2b-muted); font-size:.76rem; font-weight:600; text-transform:uppercase; letter-spacing:.6px; }
+.b2b-hero__name{ margin:0 0 .5rem; font-size:1.55rem; font-weight:800; line-height:1.05; letter-spacing:-.01em; }
+.b2b-hero__out{ flex:0 0 auto; }
+
+/* Nav cards double as section counters (Cars / Requests / Invoices). */
+.b2b-nav{ display:grid; grid-template-columns:repeat(3, 1fr); gap:.9rem; margin:1.1rem 0 1.4rem; }
+.b2b-navcard{
+    display:flex; align-items:center; gap:.95rem;
+    padding:1rem 1.15rem;
+    background:#fff; border:1px solid #efefef; border-radius:16px;
+    box-shadow:0 6px 20px rgba(20,20,40,.05);
+    text-decoration:none; color:var(--b2b-ink);
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.b2b-navcard:hover{ transform:translateY(-3px); box-shadow:0 16px 34px rgba(20,20,40,.12); }
+.b2b-navcard.is-active{ border-color:var(--b2b-brand); box-shadow:0 12px 30px rgba(226,0,26,.16); }
+.b2b-navcard__ico{
+    flex:0 0 auto; width:46px; height:46px; border-radius:13px;
+    display:flex; align-items:center; justify-content:center;
+    background:#fff1f2; color:var(--b2b-brand);
+    transition:background .15s ease, color .15s ease;
+}
+.b2b-navcard.is-active .b2b-navcard__ico{ background:var(--b2b-brand); color:#fff; }
+.b2b-navcard__ico svg{ width:22px; height:22px; }
+.b2b-navcard__meta{ display:flex; flex-direction:column; gap:.12rem; min-width:0; }
+.b2b-navcard__num{ font-size:1.4rem; font-weight:800; line-height:1; font-variant-numeric:tabular-nums; }
+.b2b-navcard__label{ color:var(--b2b-muted); font-size:.82rem; font-weight:600; }
+
+@media (max-width:768px){
+    .b2b-nav{ grid-template-columns:1fr; }
+    .b2b-hero{ padding:1.1rem 1.2rem; }
+    .b2b-hero__name{ font-size:1.35rem; }
+}
 
 .b2b-chips{ display:inline-flex; gap:.35rem; flex-wrap:wrap; }
 .b2b-chip{
@@ -398,20 +447,28 @@
 .b2b-nav-dot{
     width:7px; height:7px; border-radius:50%;
     background:#0f7a3d; display:inline-block; flex:0 0 7px;
+    /* "Online" pulse while a partner is logged in. */
+    animation:b2b-dot-pulse 1.8s ease-out infinite;
 }
+@keyframes b2b-dot-pulse{
+    0%   { box-shadow:0 0 0 0 rgba(15,122,61,.55); }
+    70%  { box-shadow:0 0 0 6px rgba(15,122,61,0); }
+    100% { box-shadow:0 0 0 0 rgba(15,122,61,0); }
+}
+@media (prefers-reduced-motion:reduce){ .b2b-nav-dot{ animation:none; } }
 
 /* Header button, desktop only: outlined so it does not compete with the filled
    "call" CTA sitting next to it. */
 .b2b-header-btn{
-    display:inline-flex; align-items:center; gap:.4rem;
-    margin-right:.75rem; padding:.55rem 1.15rem;
-    border:1.5px solid #e2001a; border-radius:.5rem;
+    display:inline-flex; align-items:center; gap:.45rem;
+    margin-left:.75rem; padding:.5rem 1.15rem;
+    border:1.5px solid #e2001a; border-radius:999px;
     color:#e2001a; background:#fff;
-    font-size:.95rem; font-weight:600; line-height:1.2;
+    font-size:.92rem; font-weight:700; line-height:1.2;
     text-decoration:none; white-space:nowrap;
-    transition:background .15s, color .15s;
+    transition:background .15s, color .15s, box-shadow .15s;
 }
-.b2b-header-btn:hover{ background:#e2001a; color:#fff; }
+.b2b-header-btn:hover{ background:#e2001a; color:#fff; box-shadow:0 6px 16px rgba(226,0,26,.25); }
 .b2b-header-btn.is-active{ background:#e2001a; color:#fff; }
 .b2b-header-btn.is-active .b2b-nav-dot,
 .b2b-header-btn:hover .b2b-nav-dot{ background:#fff; }

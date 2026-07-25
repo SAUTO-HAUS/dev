@@ -338,19 +338,18 @@ echo '
         $contextualPhone = PhoneHelper::getContextualPhone($t_mp, $carData);
         $formattedPhone = PhoneHelper::formatPhone($contextualPhone, 'display');
         ?>
-        <?php
-        // Desktop counterpart of the menu entry above: sits next to "call" so a
-        // dealer finds registration without digging through the menu. Hidden on
-        // mobile, where the burger entry takes over.
-        echo '<a class="b2b-header-btn'.($_b2b_on_page ? ' is-active' : '').'" href="'.$_b2b_href.'" title="'.$_b2b_label.'">'
-           . ($_b2b_logged ? '<span class="b2b-nav-dot"></span>' : '')
-           . '<span class="b2b-header-btn__txt">'.$_b2b_label.'</span></a>';
-        ?>
-
         <a class="call" href="tel:<?php echo $contextualPhone; ?>" title="<?php echo $formattedPhone; ?>">
             <div class="txt"><?php echo $lng['w']['call']; ?></div>
             <div class="img"></div>
         </a>
+        <?php
+        // Desktop counterpart of the menu entry above: placed to the RIGHT of "call"
+        // so a dealer finds registration/cabinet without digging through the menu.
+        // Hidden on mobile, where the burger entry takes over.
+        echo '<a class="b2b-header-btn'.($_b2b_on_page ? ' is-active' : '').'" href="'.$_b2b_href.'" title="'.$_b2b_label.'">'
+           . ($_b2b_logged ? '<span class="b2b-nav-dot"></span>' : '')
+           . '<span class="b2b-header-btn__txt">'.$_b2b_label.'</span></a>';
+        ?>
     </div>
 </header>
 
