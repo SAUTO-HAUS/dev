@@ -138,23 +138,6 @@
             return;
         }
 
-        // ---- per-client price overrides -------------------------------------
-        if (action === 'save-prices') {
-            var overrides = {};
-            root.querySelectorAll('[data-price-key]').forEach(function (inp) {
-                // Empty = no override (use the global B2B price); '' is sent so the
-                // server clears any previous row for that key.
-                overrides[inp.dataset.priceKey] = inp.value.trim();
-            });
-
-            busy(btn, true);
-            api('save_price_overrides', { user_id: userId, overrides: JSON.stringify(overrides) }).then(function (res) {
-                busy(btn, false);
-                say(res.ok ? (root.dataset.savedMsg || 'Salvat.') : res.error, res.ok ? 'ok' : 'error');
-            });
-            return;
-        }
-
         // ---- client legal details -------------------------------------------
         if (action === 'save-profile') {
             var payload = { user_id: userId };

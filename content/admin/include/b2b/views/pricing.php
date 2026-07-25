@@ -8,6 +8,7 @@
  * Saved through fn=save_pricing in ajax/b2b/ajax.php (gordon only).
  */
 
+use App\Services\B2b\B2bAuth;
 use App\Services\B2b\B2bConfig;
 
 $lang = $_COOKIE['lang'] ?? 'ro';
@@ -19,25 +20,92 @@ $pt = $parsing_lang;
 
 $pfx = B2bConfig::prefix();
 
+// Per-client mode: /adminsauto/b2b/pricing?user=X edits that client's own tables.
+// Global mode (no ?user): edits the shared rows (b2b_user_id IS NULL).
+$pricingUserId = isset($_GET['user']) ? (int)$_GET['user'] : 0;
+$client = null;
+if ($pricingUserId > 0) {
+    try {
+        $stmt = $db->prepare('SELECT id, login, full_name, company_name, person_type, email, status
+                                FROM '.B2bConfig::table('users').' WHERE id = :id LIMIT 1');
+        $stmt->execute([':id' => $pricingUserId]);
+        $client = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+    } catch (Throwable $e) {
+        $client = null;
+    }
+    if (!$client) {
+        echo '<div class="b2ba"><div class="b2ba-empty">404</div></div>';
+        return;
+    }
+}
+$perUser = ($client !== null);
+
 $load = function (string $sql) use ($db): array {
     try { return $db->query($sql)->fetchAll(PDO::FETCH_ASSOC) ?: []; }
     catch (Throwable $e) { return []; }
 };
 
-$commission = $load('SELECT * FROM '.$pfx.'_b2b_commission_tiers ORDER BY sort_order, price_from');
-$delivery   = $load('SELECT * FROM '.$pfx.'_b2b_eu_tiers ORDER BY sort_order, price_from');
-$euParams   = $load('SELECT * FROM '.$pfx.'_b2b_eu_params ORDER BY sort_order, id');
-$krParams   = $load('SELECT * FROM '.$pfx.'_b2b_kr_params ORDER BY sort_order, id');
+// A B2B table in the current scope. Per-user: the client's own rows if any (then
+// it is "custom"), otherwise the global rows as an editable starting point.
+$loadScoped = function (string $table, string $orderBy) use ($db, $pfx, $perUser, $pricingUserId): array {
+    $t = $pfx.'_'.$table;
+    if ($perUser) {
+        try {
+            $own = $db->prepare('SELECT * FROM '.$t.' WHERE b2b_user_id = :uid ORDER BY '.$orderBy);
+            $own->execute([':uid' => $pricingUserId]);
+            $rows = $own->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        } catch (Throwable $e) {
+            $rows = [];
+        }
+        if ($rows) {
+            return [$rows, true];  // custom: the client has its own table
+        }
+    }
+    try {
+        $rows = $db->query('SELECT * FROM '.$t.' WHERE b2b_user_id IS NULL ORDER BY '.$orderBy)->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    } catch (Throwable $e) {
+        $rows = [];
+    }
+    return [$rows, false];
+};
+
+[$commission, $commissionCustom] = $loadScoped('b2b_commission_tiers', 'sort_order, price_from');
+[$delivery,   $deliveryCustom]   = $loadScoped('b2b_eu_tiers',         'sort_order, price_from');
+[$euParams,   $euParamsCustom]   = $loadScoped('b2b_eu_params',        'sort_order, id');
+[$krParams,   $krParamsCustom]   = $loadScoped('b2b_kr_params',        'sort_order, id');
 
 $notMigrated = (!$commission && !$delivery && !$euParams && !$krParams);
 
-// Retail values, shown read-only beside the B2B ones so the admin sees what the
-// non-logged visitor pays without opening /adminsauto/parsing/settings.
-$rCommission = $load('SELECT * FROM '.$pfx.'_parsing_commission_tiers ORDER BY sort_order, price_from');
-$rDelivery   = $load('SELECT * FROM '.$pfx.'_parsing_eu_tiers ORDER BY sort_order, price_from');
-$rEuMap = $rKrMap = [];
-foreach ($load('SELECT * FROM '.$pfx.'_parsing_eu_params') as $p) { $rEuMap[(string)$p['param_key']] = $p; }
-foreach ($load('SELECT * FROM '.$pfx.'_parsing_kr_params') as $p) { $rKrMap[(string)$p['param_key']] = $p; }
+// Reference column shown read-only beside the edited values:
+//   global mode   -> the retail (non-logged) price, from gh3sp_parsing_*;
+//   per-client mode -> the global B2B price (what every other partner pays).
+if ($perUser) {
+    $refLabel    = $t['pricing_global_b2b'];
+    $rCommission = $load('SELECT * FROM '.$pfx.'_b2b_commission_tiers WHERE b2b_user_id IS NULL ORDER BY sort_order, price_from');
+    $rDelivery   = $load('SELECT * FROM '.$pfx.'_b2b_eu_tiers WHERE b2b_user_id IS NULL ORDER BY sort_order, price_from');
+    $rEuMap = $rKrMap = [];
+    foreach ($load('SELECT * FROM '.$pfx.'_b2b_eu_params WHERE b2b_user_id IS NULL') as $p) { $rEuMap[(string)$p['param_key']] = $p; }
+    foreach ($load('SELECT * FROM '.$pfx.'_b2b_kr_params WHERE b2b_user_id IS NULL') as $p) { $rKrMap[(string)$p['param_key']] = $p; }
+} else {
+    $refLabel    = $t['pricing_public'];
+    $rCommission = $load('SELECT * FROM '.$pfx.'_parsing_commission_tiers ORDER BY sort_order, price_from');
+    $rDelivery   = $load('SELECT * FROM '.$pfx.'_parsing_eu_tiers ORDER BY sort_order, price_from');
+    $rEuMap = $rKrMap = [];
+    foreach ($load('SELECT * FROM '.$pfx.'_parsing_eu_params') as $p) { $rEuMap[(string)$p['param_key']] = $p; }
+    foreach ($load('SELECT * FROM '.$pfx.'_parsing_kr_params') as $p) { $rKrMap[(string)$p['param_key']] = $p; }
+}
+
+// Per-card status strip (badge + reset), shown only in per-client mode.
+$cardStatus = function (bool $custom, string $section) use ($perUser, $t) {
+    if (!$perUser) return '';
+    $badge = '<span class="b2bp-tag b2bp-tag--'.($custom ? 'custom' : 'global').'">'
+           . b2b_adm_esc($custom ? $t['pricing_tag_custom'] : $t['pricing_tag_global']).'</span>';
+    $reset = $custom
+        ? '<button type="button" class="b2ba-btn b2ba-btn--soft b2ba-btn--sm" data-b2b-pricing-reset data-section="'
+          . b2b_adm_esc($section).'">'.b2b_adm_esc($t['pricing_reset']).'</button>'
+        : '';
+    return '<div class="b2bp-status">'.$badge.$reset.'</div>';
+};
 
 // Retail value for the price band that contains $priceFrom (read-only reference).
 $retailTierVal = function (array $retailRows, float $priceFrom, string $field): ?int {
@@ -91,7 +159,7 @@ $paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt
             if ((int)$rp['enabled'] !== 1) { $ref .= ' <span class="b2bp-off">'.b2b_adm_esc($t['pricing_off']).'</span>'; }
         }
 
-        $out  .= '<tr data-row data-id="'.$id.'">'
+        $out  .= '<tr data-row data-id="'.$id.'" data-key="'.b2b_adm_esc($key).'">'
               . '<td class="b2bp-label">'.b2b_adm_esc($label).'</td>'
               . '<td class="b2bp-c"><input type="checkbox" class="b2bp-en"'.$on.'></td>'
               . '<td><input type="number" min="0" step="1" class="b2bp-val" value="'.$amt.'"> <span class="b2bp-u">&euro;</span></td>'
@@ -103,9 +171,20 @@ $paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt
 
 ?>
 
-<div class="b2ba" id="b2ba-pricing" data-saved-msg="<?= b2b_adm_esc($t['saved']) ?>">
+<div class="b2ba" id="b2ba-pricing"
+     data-saved-msg="<?= b2b_adm_esc($t['saved']) ?>"
+     data-b2b-pricing-user="<?= $perUser ? (int)$pricingUserId : '' ?>"
+     data-reset-msg="<?= b2b_adm_esc($t['pricing_reset_done']) ?>">
+
+    <?php if ($perUser): ?>
+        <a class="b2ba-back" href="/<?= b2b_adm_esc($lang) ?>/<?= b2b_adm_esc($admin_dir) ?>/b2b/user?id=<?= (int)$pricingUserId ?>">&larr; <?= b2b_adm_esc(B2bAuth::displayName($client)) ?></a>
+    <?php endif; ?>
+
     <div class="b2ba-head">
-        <h1 class="b2ba-h1"><?= b2b_adm_esc($t['pricing_title']) ?></h1>
+        <h1 class="b2ba-h1">
+            <?= b2b_adm_esc($perUser ? $t['pricing_title_user'] : $t['pricing_title']) ?>
+            <?php if ($perUser): ?><span class="b2bp-who"><?= b2b_adm_esc(B2bAuth::displayName($client)) ?></span><?php endif; ?>
+        </h1>
     </div>
 
     <div class="b2ba-msg" id="b2ba-msg" role="status" aria-live="polite"></div>
@@ -114,17 +193,18 @@ $paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt
         <div class="b2ba-warn"><?= b2b_adm_esc($t['pricing_not_migrated']) ?></div>
     <?php endif; ?>
 
-    <p class="b2ba-hint"><?= b2b_adm_esc($t['pricing_hint']) ?></p>
+    <p class="b2ba-hint"><?= b2b_adm_esc($perUser ? $t['pricing_hint_user'] : $t['pricing_hint']) ?></p>
 
     <!-- Commission tiers (Europe + Korea) -->
     <div class="b2ba-card b2bp-card" data-section="commission" data-value="commission">
         <h2 class="b2ba-h2"><?= b2b_adm_esc($t['pricing_commission']) ?></h2>
+        <?= $cardStatus($commissionCustom, 'commission') ?>
         <table class="b2bp-table">
             <thead><tr>
                 <th><?= b2b_adm_esc($pt['eu_col_price_from']) ?></th>
                 <th><?= b2b_adm_esc($pt['eu_col_price_to']) ?></th>
                 <th><?= b2b_adm_esc($pt['eu_col_commission']) ?></th>
-                <th class="b2bp-ref"><?= b2b_adm_esc($t['pricing_public']) ?></th>
+                <th class="b2bp-ref"><?= b2b_adm_esc($refLabel) ?></th>
                 <th></th>
             </tr></thead>
             <tbody><?= $tierRows($commission, 'commission', $rCommission) ?></tbody>
@@ -138,12 +218,13 @@ $paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt
     <!-- Europe delivery tiers -->
     <div class="b2ba-card b2bp-card" data-section="delivery" data-value="delivery">
         <h2 class="b2ba-h2"><?= b2b_adm_esc($t['pricing_delivery']) ?></h2>
+        <?= $cardStatus($deliveryCustom, 'delivery') ?>
         <table class="b2bp-table">
             <thead><tr>
                 <th><?= b2b_adm_esc($pt['eu_col_price_from']) ?></th>
                 <th><?= b2b_adm_esc($pt['eu_col_price_to']) ?></th>
                 <th><?= b2b_adm_esc($pt['eu_col_delivery']) ?></th>
-                <th class="b2bp-ref"><?= b2b_adm_esc($t['pricing_public']) ?></th>
+                <th class="b2bp-ref"><?= b2b_adm_esc($refLabel) ?></th>
                 <th></th>
             </tr></thead>
             <tbody><?= $tierRows($delivery, 'delivery', $rDelivery) ?></tbody>
@@ -157,12 +238,13 @@ $paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt
     <!-- Europe fixed costs -->
     <div class="b2ba-card b2bp-card" data-section="eu_params">
         <h2 class="b2ba-h2"><?= b2b_adm_esc($t['pricing_eu_params']) ?></h2>
+        <?= $cardStatus($euParamsCustom, 'eu_params') ?>
         <table class="b2bp-table b2bp-params">
             <thead><tr>
                 <th><?= b2b_adm_esc($pt['eu_col_param']) ?></th>
                 <th class="b2bp-c"><?= b2b_adm_esc($pt['eu_col_enabled']) ?></th>
                 <th><?= b2b_adm_esc($pt['eu_col_amount']) ?></th>
-                <th class="b2bp-ref"><?= b2b_adm_esc($t['pricing_public']) ?></th>
+                <th class="b2bp-ref"><?= b2b_adm_esc($refLabel) ?></th>
             </tr></thead>
             <tbody><?= $paramRows($euParams, 'eu_param_', $rEuMap) ?></tbody>
         </table>
@@ -175,12 +257,13 @@ $paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt
     <!-- Korea fixed costs -->
     <div class="b2ba-card b2bp-card" data-section="kr_params">
         <h2 class="b2ba-h2"><?= b2b_adm_esc($t['pricing_kr_params']) ?></h2>
+        <?= $cardStatus($krParamsCustom, 'kr_params') ?>
         <table class="b2bp-table b2bp-params">
             <thead><tr>
                 <th><?= b2b_adm_esc($pt['eu_col_param']) ?></th>
                 <th class="b2bp-c"><?= b2b_adm_esc($pt['eu_col_enabled']) ?></th>
                 <th><?= b2b_adm_esc($pt['eu_col_amount']) ?></th>
-                <th class="b2bp-ref"><?= b2b_adm_esc($t['pricing_public']) ?></th>
+                <th class="b2bp-ref"><?= b2b_adm_esc($refLabel) ?></th>
             </tr></thead>
             <tbody><?= $paramRows($krParams, 'kr_param_', $rKrMap) ?></tbody>
         </table>

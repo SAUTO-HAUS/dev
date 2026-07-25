@@ -10,6 +10,9 @@
     if (!root) return;
 
     var msgBox = document.getElementById('b2ba-msg');
+    // Non-empty on /adminsauto/b2b/pricing?user=X: writes go to that client's own
+    // tables instead of the shared global ones.
+    var pricingUser = root.dataset.b2bPricingUser || '';
 
     function say(text, kind) {
         if (!msgBox) { if (kind === 'error' && text) alert(text); return; }
@@ -73,6 +76,7 @@
                 var amt = tr.querySelector('.b2bp-val');
                 rows.push({
                     id: id,
+                    key: tr.dataset.key || '', // param_key: the server saves by key, not id
                     enabled: en && en.checked ? 1 : 0,
                     amount: parseInt(amt && amt.value, 10) || 0
                 });
@@ -90,7 +94,9 @@
             }
         });
 
-        return { section: section, rows: JSON.stringify(rows) };
+        var payload = { section: section, rows: JSON.stringify(rows) };
+        if (pricingUser) payload.user_id = pricingUser;
+        return payload;
     }
 
     root.querySelectorAll('[data-b2b-pricing-save]').forEach(function (btn) {
@@ -100,11 +106,28 @@
             api('save_pricing', collect(card)).then(function (res) {
                 btn.disabled = false;
                 if (res && res.ok) {
+                    // Saving a client card turns it "custom"; reload so the badge
+                    // and reset button reflect that.
+                    if (pricingUser) { window.location.reload(); return; }
                     say(root.dataset.savedMsg || 'Salvat.', 'ok');
                 } else {
                     say((res && res.error) || 'Eroare.', 'error');
                 }
             });
+        });
+    });
+
+    // ---- Reset a client card back to the global table -----------------------
+    root.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-b2b-pricing-reset]');
+        if (!btn || !pricingUser) return;
+        if (!window.confirm(btn.dataset.confirm || root.dataset.resetMsg || 'Revenire la global?')) return;
+
+        btn.disabled = true;
+        api('reset_pricing', { section: btn.dataset.section, user_id: pricingUser }).then(function (res) {
+            if (res && res.ok) { window.location.reload(); return; }
+            btn.disabled = false;
+            say((res && res.error) || 'Eroare.', 'error');
         });
     });
 })();

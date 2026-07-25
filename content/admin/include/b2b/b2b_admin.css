@@ -31,8 +31,6 @@
 .b2ba-sub{ margin:0; color:var(--b2ba-muted); font-size:0.85rem; }
 .b2ba-hint{ margin:0 0 1rem; color:var(--b2ba-muted); font-size:0.85rem; }
 .b2ba-meta{ margin:0; color:#9ca3af; font-size:0.8rem; }
-.b2ba-ref{ display:block; margin-top:.3rem; color:var(--b2ba-muted); font-size:0.78rem; }
-.b2ba-ref strong{ color:#374151; font-weight:700; }
 
 /* --------------------------------------------------------- search / filters */
 
@@ -122,9 +120,27 @@
 }
 .b2bp-del:hover{ border-color:var(--b2ba-brand); color:var(--b2ba-brand); }
 
-/* Read-only "public price" column, so the admin sees the guest price in-row. */
+/* Read-only reference column (guest price globally, global-B2B price per client). */
 .b2bp-table th.b2bp-ref, .b2bp-table td.b2bp-ref{ color:var(--b2ba-muted); font-weight:600; white-space:nowrap; background:#fafafb; }
 .b2bp-off{ color:#c08a00; font-weight:600; font-size:0.8em; }
+
+/* Per-client pricing: card status strip + custom/global tags. */
+.b2bp-who{ font-weight:600; color:var(--b2ba-muted); margin-left:.35rem; }
+.b2bp-status{ display:flex; align-items:center; gap:.6rem; margin:-.4rem 0 .9rem; }
+.b2bp-tag{
+    display:inline-block; padding:.12rem .55rem; border-radius:999px;
+    font-size:.74rem; font-weight:700; letter-spacing:.02em; text-transform:uppercase;
+}
+.b2bp-tag--custom{ background:#e6f4ea; color:#0f7a3d; }
+.b2bp-tag--global{ background:#eef1f5; color:#5b6675; }
+
+/* Prices tab on the client page: one row per table + its current status. */
+.b2ba-price-status{ display:flex; flex-direction:column; gap:.55rem; margin:.4rem 0 1rem; }
+.b2ba-price-row{
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding:.6rem .85rem; border:1px solid var(--b2ba-line); border-radius:10px; background:#fafafb;
+}
+.b2ba-price-name{ font-weight:600; }
 
 .b2ba-grid{ display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:1rem; }
 

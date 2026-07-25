@@ -52,52 +52,31 @@ try {
     $requests = [];
 }
 
-// Per-client price overrides (Faza C): flat values that replace the global B2B
-// commission / transport for this partner. Empty = uses the global B2B price.
-$priceOv = [];
-try {
-    $stmt = $db->prepare('SELECT param_key, amount FROM '.$prefx.'_b2b_price_overrides WHERE b2b_user_id = :uid');
-    $stmt->execute([':uid' => $uid]);
-    foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $r) {
-        $priceOv[(string)$r['param_key']] = (string)(int)round((float)$r['amount']);
-    }
-} catch (Throwable $e) {
-    $priceOv = [];
-}
-
-// Current GLOBAL B2B base for each override key, shown read-only beside the field
-// so the admin sees what the client pays today before setting an individual value.
-// commission / eu_delivery are tiered (range across price bands); RoRo is a single
-// param. Edited on /adminsauto/b2b/pricing; empty here = table not migrated.
-$b2bBase = ['commission' => '', 'eu_delivery' => '', 'sea_freight_roro' => ''];
-try {
-    $rangeText = function (array $rows, string $field): string {
-        $vals = [];
-        foreach ($rows as $r) {
-            $vals[] = (int)round((float)($r[$field] ?? 0));
+// Per-client pricing status: which of the 4 B2B tables this client has its OWN
+// version of (vs. inheriting the global one). Editing is done on the dedicated
+// editor /adminsauto/b2b/pricing?user=ID; here we only show a summary.
+$priceTables = [
+    'commission' => [$prefx.'_b2b_commission_tiers', $t['pricing_commission']],
+    'delivery'   => [$prefx.'_b2b_eu_tiers',         $t['pricing_delivery']],
+    'eu_params'  => [$prefx.'_b2b_eu_params',        $t['pricing_eu_params']],
+    'kr_params'  => [$prefx.'_b2b_kr_params',        $t['pricing_kr_params']],
+];
+$priceCustom = [];
+$priceHasAny = false;
+foreach ($priceTables as $k => $info) {
+    $priceCustom[$k] = false;
+    try {
+        $q = $db->prepare('SELECT 1 FROM '.$info[0].' WHERE b2b_user_id = :uid LIMIT 1');
+        $q->execute([':uid' => $uid]);
+        if ($q->fetchColumn()) {
+            $priceCustom[$k] = true;
+            $priceHasAny = true;
         }
-        if (!$vals) {
-            return '';
-        }
-        $min = min($vals);
-        $max = max($vals);
-        return ($min === $max ? (string)$min : $min.'–'.$max).' €';
-    };
-    $b2bBase['commission']  = $rangeText(
-        $db->query('SELECT commission FROM '.$prefx.'_b2b_commission_tiers')->fetchAll(PDO::FETCH_ASSOC) ?: [],
-        'commission'
-    );
-    $b2bBase['eu_delivery'] = $rangeText(
-        $db->query('SELECT delivery FROM '.$prefx.'_b2b_eu_tiers')->fetchAll(PDO::FETCH_ASSOC) ?: [],
-        'delivery'
-    );
-    $roro = $db->query("SELECT amount_eur FROM ".$prefx."_b2b_kr_params WHERE param_key = 'sea_freight_roro' LIMIT 1")->fetchColumn();
-    if ($roro !== false && $roro !== null) {
-        $b2bBase['sea_freight_roro'] = (int)round((float)$roro).' €';
+    } catch (Throwable $e) {
+        // Pricing tables not migrated yet: treat as global.
     }
-} catch (Throwable $e) {
-    // Pricing tables not migrated yet: references stay blank.
 }
+$pricingEditUrl = '/'.$lang.'/'.$admin_dir.'/b2b/pricing?user='.$uid;
 ?>
 
 <div class="b2ba" data-b2b-user="<?= $uid ?>" data-saved-msg="<?= b2b_adm_esc($t['saved']) ?>">
@@ -248,41 +227,25 @@ try {
     <section class="b2ba-pane" data-b2b-pane="prices">
         <div class="b2ba-card">
             <p class="b2ba-hint"><?= b2b_adm_esc($t['prices_hint']) ?></p>
-            <p class="b2ba-hint">
-                <?= b2b_adm_esc($t['prices_global_note']) ?>
-                <a href="/<?= b2b_adm_esc($lang) ?>/<?= b2b_adm_esc($admin_dir) ?>/b2b/pricing" target="_blank" rel="noopener">
-                    <?= b2b_adm_esc($t['prices_global_link']) ?>
-                </a>
-            </p>
 
-            <?php
-            $priceField = function (string $key, string $label) use ($t, $priceOv, $b2bBase) {
-                $base = $b2bBase[$key] ?? '';
-                ob_start(); ?>
-                <label class="b2ba-field">
-                    <span><?= b2b_adm_esc($label) ?></span>
-                    <input type="number" min="0" step="1" data-price-key="<?= b2b_adm_esc($key) ?>"
-                           value="<?= b2b_adm_esc($priceOv[$key] ?? '') ?>"
-                           placeholder="<?= b2b_adm_esc($t['price_global']) ?>">
-                    <small class="b2ba-ref"><?= b2b_adm_esc($t['price_base']) ?>:
-                        <strong><?= $base !== '' ? b2b_adm_esc($base) : '&mdash;' ?></strong>
-                    </small>
-                </label>
-                <?php return ob_get_clean();
-            };
-            ?>
-
-            <div class="b2ba-grid">
-                <?= $priceField('commission', $t['price_commission']) ?>
-                <?= $priceField('eu_delivery', $t['price_eu_delivery']) ?>
-                <?= $priceField('sea_freight_roro', $t['price_roro']) ?>
+            <div class="b2ba-price-status">
+                <?php foreach ($priceTables as $k => $info): $custom = $priceCustom[$k]; ?>
+                    <div class="b2ba-price-row">
+                        <span class="b2ba-price-name"><?= b2b_adm_esc($info[1]) ?></span>
+                        <span class="b2bp-tag b2bp-tag--<?= $custom ? 'custom' : 'global' ?>">
+                            <?= b2b_adm_esc($custom ? $t['pricing_tag_custom'] : $t['pricing_tag_global']) ?>
+                        </span>
+                    </div>
+                <?php endforeach; ?>
             </div>
 
             <div class="b2ba-card__foot">
-                <span></span>
-                <button type="button" class="b2ba-btn b2ba-btn--primary" data-b2b-admin="save-prices">
-                    <?= b2b_adm_esc($t['save']) ?>
-                </button>
+                <span class="b2ba-meta">
+                    <?= b2b_adm_esc($priceHasAny ? $t['prices_has_custom'] : $t['prices_all_global']) ?>
+                </span>
+                <a class="b2ba-btn b2ba-btn--primary" href="<?= b2b_adm_esc($pricingEditUrl) ?>">
+                    <?= b2b_adm_esc($t['prices_open_editor']) ?>
+                </a>
             </div>
         </div>
     </section>
