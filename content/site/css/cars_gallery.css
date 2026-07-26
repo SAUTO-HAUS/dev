@@ -47,10 +47,6 @@ main > .spc_bx > .status {
     display: flex !important;
     flex-flow: row wrap;
     gap: 15px !important;
-    /* Bottom-align so the "Expiră peste:" label and the timer DIGITS (which sit
-       below the decorative canvas) share one line; items keep their natural
-       height instead of stretching to the tallest item (the timer). */
-    align-items: flex-end !important;
 }
 main > .spc_bx > .status > .stat {
     margin: 0 !important;
@@ -59,9 +55,14 @@ main > .spc_bx > .status > .stat {
 main > .spc_bx > .status > .stat.stat-onorder {
     background-color: #CE3226;
     font-weight: bold;
-    /* The pill has .3rem bottom padding, so bottom-aligned its text sits higher
-       than the plain-text label/digits; drop it so the pill centres on that line. */
-    margin-bottom: -0.3rem !important;
+}
+
+/* Desktop only: bottom-align the status row so the "Expiră peste:" label and the
+   timer digits share one line, and drop the on-order pill (which has .3rem bottom
+   padding) so it centres on that line. Mobile keeps its own top-aligned layout. */
+@media (min-width:641px){
+    main > .spc_bx > .status { align-items: flex-end; }
+    main > .spc_bx > .status > .stat.stat-onorder { margin-bottom: -0.3rem !important; }
 }
 
 /* LED Digital Timer Styles */
@@ -544,19 +545,23 @@ html.with-fancybox body {
         margin-top: 10px;
         padding-top: 5px;
     }
-    /* Show all status badges on mobile too, same as desktop. */
+    /* Show all status badges on mobile too, same as desktop. Bottom-align so the
+       "Expiră peste:" label and the timer digits share a line (like desktop). */
     main > .spc_bx > .status {
         display: flex;
         flex-flow: row wrap;
         justify-content: flex-start;
-        align-items: flex-start;
+        align-items: flex-end;
         margin-top: 10px;
     }
 
     main > .spc_bx > .status > .stat {
         font-weight: 800 !important;
         margin: 0 !important;
-        align-self: flex-start;
+        align-self: flex-end;
+    }
+    main > .spc_bx > .status > .stat.stat-onorder {
+        margin-bottom: -0.3rem !important; /* centre the pill on the text line */
     }
 
     .mobile-only-timer {
