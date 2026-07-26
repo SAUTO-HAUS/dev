@@ -217,7 +217,7 @@ $invoices = B2bInvoice::forUser($uid, 200);
                         <tr>
                             <td class="b2ba-td--strong"><?= b2b_adm_esc($inv['invoice_no']) ?></td>
                             <td><a href="/<?= b2b_adm_esc($lang) ?>/ordercars/<?= (int)$inv['car_id'] ?>" target="_blank" rel="noopener"><?= b2b_adm_esc($snap['title'] ?? ('#'.(int)$inv['car_id'])) ?></a></td>
-                            <td><?= b2b_adm_esc(number_format((float)$inv['advance_amount'], 2, '.', ' ').' '.$inv['currency']) ?></td>
+                            <td><?= b2b_adm_esc(number_format((float)$inv['advance_amount'], 0, '.', '').' '.$inv['currency']) ?></td>
                             <td><span class="b2ba-badge b2ba-badge--<?= b2b_adm_esc($invSt) ?>"><?= b2b_adm_esc($t['st_'.$invSt] ?? $invSt) ?></span></td>
                             <td class="b2ba-td--small"><?= b2b_adm_esc(date('d.m.Y', strtotime((string)$inv['created_at']))) ?></td>
                             <td><a class="b2ba-btn b2ba-btn--ghost b2ba-btn--sm" href="<?= b2b_adm_esc(B2bInvoice::path($inv)) ?>" target="_blank" rel="noopener"><?= b2b_adm_esc($t['open']) ?></a></td>

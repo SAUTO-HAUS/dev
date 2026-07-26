@@ -170,9 +170,9 @@ elseif ($action === 'invoices') {
             echo '<tr>
                     <td class="b2b-td--strong">'.b2b_esc($inv['invoice_no']).'</td>
                     <td><a href="/'.b2b_esc($lang).'/ordercars/'.(int)$inv['car_id'].'">'.b2b_esc($snap['title'] ?? ('#'.(int)$inv['car_id'])).'</a></td>
-                    <td>'.b2b_esc(number_format((float)$inv['advance_amount'], 2, '.', ' ')).' '.b2b_esc($inv['currency']).'</td>
+                    <td>'.b2b_esc(number_format((float)$inv['advance_amount'], 0, '.', '')).' '.b2b_esc($inv['currency']).'</td>
                     <td><span class="b2b-badge b2b-badge--'.b2b_esc($dispStatus).'">'.b2b_status_label($dispStatus).'</span></td>
-                    <td>'.b2b_esc(date('d.m.Y H:i', strtotime((string)$inv['created_at']))).'</td>
+                    <td>'.b2b_esc(date('d.m.Y', strtotime((string)$inv['created_at']))).'</td>
                     <td><a class="b2b-btn b2b-btn--ghost b2b-btn--sm" href="'.b2b_esc(B2bInvoice::path($inv)).'" target="_blank" rel="noopener">'.b2b_esc($t['invoice_open']).'</a></td>
                   </tr>';
         }

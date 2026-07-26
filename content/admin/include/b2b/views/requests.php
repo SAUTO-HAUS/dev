@@ -100,7 +100,7 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/requests';
                             <?php if (!empty($req['invoice_no'])): ?>
                                 <a href="/<?= b2b_adm_esc($lang) ?>/b2b/invoice/<?= (int)$req['invoice_id'] ?>?k=<?= b2b_adm_esc($req['access_key']) ?>"
                                    target="_blank" rel="noopener"><?= b2b_adm_esc($req['invoice_no']) ?></a>
-                                <div><?= b2b_adm_esc(number_format((float)$req['advance_amount'], 2, '.', ' ').' '.$req['currency']) ?></div>
+                                <div><?= b2b_adm_esc(number_format((float)$req['advance_amount'], 0, '.', '').' '.$req['currency']) ?></div>
                             <?php else: ?>
                                 &mdash;
                             <?php endif; ?>
