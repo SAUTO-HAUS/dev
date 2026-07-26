@@ -10,6 +10,7 @@
  */
 
 use App\Services\B2b\B2bInvoice;
+use App\Services\B2b\B2bMoney;
 use App\Services\B2b\B2bRegions;
 use App\Services\B2b\B2bPhone;
 
@@ -22,7 +23,8 @@ $T = [
         'title' => 'Creează cont de plată', 'sub' => 'Verifică datele și apasă Creează. Documentul se generează și administratorul e anunțat.',
         'doc' => 'Document', 'auto' => 'Auto', 'buyer' => 'Cumpărător',
         'date' => 'Data', 'brand' => 'Marca', 'model' => 'Model', 'vin' => 'Cod VIN',
-        'price' => 'Suma', 'currency' => 'Moneda', 'type' => 'Tip', 'fiz' => 'Persoană fizică', 'jur' => 'Persoană juridică',
+        'price' => 'Suma avansului', 'mdl_hint' => 'Suma este în lei (MDL), convertită automat la cursul BNM.',
+        'type' => 'Tip', 'fiz' => 'Persoană fizică', 'jur' => 'Persoană juridică',
         'name' => 'Nume / Denumire', 'idno' => 'IDNO / IDNP', 'phone' => 'Telefon',
         'submit' => 'Creează cont de plată', 'back' => '← Înapoi la mașină',
         'not_found' => 'Mașina nu a fost găsită.', 'restricted' => 'Restricționat conform planului B2B.',
@@ -31,7 +33,8 @@ $T = [
         'title' => 'Создать счёт на оплату', 'sub' => 'Проверьте данные и нажмите Создать. Документ сформируется, администратор получит уведомление.',
         'doc' => 'Документ', 'auto' => 'Авто', 'buyer' => 'Покупатель',
         'date' => 'Дата', 'brand' => 'Марка', 'model' => 'Модель', 'vin' => 'VIN-код',
-        'price' => 'Сумма', 'currency' => 'Валюта', 'type' => 'Тип', 'fiz' => 'Физическое лицо', 'jur' => 'Юридическое лицо',
+        'price' => 'Сумма аванса', 'mdl_hint' => 'Сумма в леях (MDL), пересчитана автоматически по курсу НБМ.',
+        'type' => 'Тип', 'fiz' => 'Физическое лицо', 'jur' => 'Юридическое лицо',
         'name' => 'Имя / Название', 'idno' => 'IDNO / IDNP', 'phone' => 'Телефон',
         'submit' => 'Создать счёт на оплату', 'back' => '← Назад к авто',
         'not_found' => 'Автомобиль не найден.', 'restricted' => 'Ограничено по плану B2B.',
@@ -40,7 +43,8 @@ $T = [
         'title' => 'Create payment invoice', 'sub' => 'Check the details and press Create. The document is generated and the administrator is notified.',
         'doc' => 'Document', 'auto' => 'Car', 'buyer' => 'Buyer',
         'date' => 'Date', 'brand' => 'Brand', 'model' => 'Model', 'vin' => 'VIN code',
-        'price' => 'Amount', 'currency' => 'Currency', 'type' => 'Type', 'fiz' => 'Individual', 'jur' => 'Legal entity',
+        'price' => 'Advance amount', 'mdl_hint' => 'Amount is in lei (MDL), converted automatically at the NBM rate.',
+        'type' => 'Type', 'fiz' => 'Individual', 'jur' => 'Legal entity',
         'name' => 'Name / Company', 'idno' => 'IDNO / IDNP', 'phone' => 'Phone',
         'submit' => 'Create payment invoice', 'back' => '← Back to the car',
         'not_found' => 'Car not found.', 'restricted' => 'Restricted by the B2B plan.',
@@ -66,7 +70,11 @@ if ($region !== null && !B2bRegions::isAllowed($userId, $region)) {
 $brand = trim((string)($car['br_nm'] ?: str_replace('_', ' ', (string)$car['br'])));
 $model = trim((string)($car['mo_nm'] ?: str_replace('_', ' ', (string)$car['mo'])));
 $vin   = (string)($car['vin'] ?? '');
-$price = (int)round(B2bInvoice::suggestedAdvance($car));
+
+// The document is always issued in MDL: convert the suggested advance from the
+// car's currency at the official BNM rate (same source as the public calculator).
+$carCur = strtoupper(trim((string)($car['cur'] ?? 'EUR')));
+$price  = (int)round(B2bMoney::toMdl(B2bInvoice::suggestedAdvance($car), $carCur));
 
 $buyerType  = ($user['person_type'] ?? 'individual') === 'company' ? 'jur' : 'fiz';
 $buyerName  = (string)($user['full_name'] ?? '');
@@ -108,19 +116,13 @@ $e    = fn($v) => b2b_esc($v);
                 <label for="cp-vin"><?= $e($t['vin']) ?></label>
                 <input type="text" id="cp-vin" name="vin" value="<?= $e($vin) ?>" maxlength="32" />
             </div>
-            <div class="b2b-field-row">
-                <div class="b2b-field">
-                    <label for="cp-price"><?= $e($t['price']) ?></label>
+            <div class="b2b-field">
+                <label for="cp-price"><?= $e($t['price']) ?></label>
+                <div class="b2b-money">
                     <input type="number" id="cp-price" name="price" min="1" step="1" value="<?= (int)$price ?>" required />
+                    <span class="b2b-money__cur">MDL</span>
                 </div>
-                <div class="b2b-field">
-                    <label for="cp-cur"><?= $e($t['currency']) ?></label>
-                    <select id="cp-cur" name="currency">
-                        <option value="EUR">EUR</option>
-                        <option value="MDL">MDL</option>
-                        <option value="USD">USD</option>
-                    </select>
-                </div>
+                <span class="b2b-hint"><?= $e($t['mdl_hint']) ?></span>
             </div>
 
             <h2 class="b2b-cp-sec"><?= $e($t['buyer']) ?></h2>
@@ -183,7 +185,7 @@ $e    = fn($v) => b2b_esc($v);
         body.set('csrf', form.dataset.csrf);
         body.set('car_id', form.dataset.car);
         body.set('advance', form.querySelector('[name="price"]').value);
-        body.set('currency', form.querySelector('[name="currency"]').value);
+        body.set('currency', 'MDL'); // the document is always issued in MDL
         ['date', 'br', 'mo', 'vin', 'buyer_type', 'buyer_name', 'buyer_idno', 'buyer_phone'].forEach(function (n) {
             var el = form.querySelector('[name="' + n + '"]:checked') || form.querySelector('[name="' + n + '"]');
             body.set(n, el ? el.value : '');

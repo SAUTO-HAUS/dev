@@ -131,6 +131,16 @@
 .b2b-field input.is-invalid{ border-color:var(--b2b-brand); background:#fff7f8; }
 .b2b-hint{ color:#9a9a9a; font-size:.76rem; }
 
+/* Amount field with a fixed MDL suffix (the document is always issued in lei). */
+.b2b-money{ position:relative; display:block; }
+.b2b-money input{ padding-right:3.4rem; }
+.b2b-money__cur{
+    position:absolute; top:0; right:0; height:100%;
+    display:flex; align-items:center; padding:0 .9rem;
+    font-weight:800; font-size:.9rem; color:var(--b2b-muted, #8a8a8a);
+    pointer-events:none;
+}
+
 /* Password field: eye toggle to show/hide the value. */
 .b2b-pass-wrap{ position:relative; display:block; }
 .b2b-pass-wrap input{ padding-right:2.7rem; }

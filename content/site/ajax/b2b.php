@@ -153,7 +153,7 @@ switch ($b2b_fn) {
             $userId,
             $carId,
             (float)str_replace(',', '.', (string)($_POST['advance'] ?? '0')),
-            (string)($_POST['currency'] ?? 'EUR'),
+            'MDL', // payment invoices are always issued in MDL (converted at the BNM rate on the form)
             $docMeta
         );
 

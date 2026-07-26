@@ -42,7 +42,12 @@ $brand = ($dm['br'] ?? '') !== '' ? (string)$dm['br'] : trim((string)($car['br_n
 $model = ($dm['mo'] ?? '') !== '' ? (string)$dm['mo'] : trim((string)($car['mo_nm'] ?? $car['mo'] ?? ''));
 $vin   = ($dm['vin'] ?? '') !== '' ? (string)$dm['vin'] : (string)($car['vin'] ?? '');
 $amount   = (float)$invoice['advance_amount'];
-$sumTxt   = number_format($amount, 2, '.', ' ');
+// Same money format as the admin doc: parseCurr() (comma thousands) + ".00".
+$sumTxt   = function_exists('parseCurr')
+    ? parseCurr($amount) . '.00'
+    : ((int)$amount == $amount
+        ? number_format($amount, 0, '.', ',') . '.00'
+        : number_format($amount, 2, '.', ','));
 $docDate  = ($dm['date'] ?? '') !== '' ? (string)$dm['date'] : (string)$invoice['created_at'];
 $zdate    = date('d.m.Y', strtotime($docDate));
 $invNo    = (string)$invoice['invoice_no'];
