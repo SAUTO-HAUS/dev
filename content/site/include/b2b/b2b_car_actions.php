@@ -2,7 +2,8 @@
 
 /**
  * B2B action panel on the car page (spec 2.3.2 / 2.3.3):
- * generate proforma, send to Super Admin, save to cabinet.
+ * generate proforma, send to Super Admin. Saving to the cabinet is done via the
+ * site favourites heart, which mirrors into gh3sp_b2b_saved_cars for a partner.
  * Renders only for an authenticated partner; guests see the page unchanged.
  */
 
@@ -21,10 +22,6 @@ if (!function_exists('b2b_car_actions_html')) {
         $t    = b2b_actions_lang($lang);
         $user = b2b_user();
         $esc  = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
-
-        // The star must start in the right state, otherwise the first click would
-        // try to save an already saved car.
-        $isSaved = b2b_car_is_saved($carId);
 
         // Prefilled from the configured rules; the partner can overwrite it.
         $advance = number_format(B2bInvoice::suggestedAdvance($car), 0, '.', '');
@@ -59,7 +56,6 @@ if (!function_exists('b2b_car_actions_html')) {
     <div class="b2b-actions__btns">
         <button type="button" class="b2b-btn b2b-btn--primary" data-b2b-action="invoice">'.$esc($t['invoice']).'</button>
         <button type="button" class="b2b-btn b2b-btn--ghost" data-b2b-action="request">'.$esc($t['send']).'</button>
-        <button type="button" class="b2b-btn b2b-btn--icon'.($isSaved ? ' is-saved' : '').'" data-b2b-action="save" title="'.$esc($t['save']).'" aria-label="'.$esc($t['save']).'">&#9733;</button>
     </div>
 
     <div class="b2b-actions__msg" role="status" aria-live="polite"></div>

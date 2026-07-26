@@ -109,6 +109,8 @@ echo '
 // ------------------------------------------------------- Tab 1: saved cars
 
 if ($action === 'cabinet') {
+    // Only the partner's favourites (the hearted cars, mirrored into saved_cars),
+    // shown as plain cards like the guest /favorites page. No "viewed", no legend.
     $savedIds = [];
     try {
         $stmt = $db->prepare(
@@ -120,13 +122,7 @@ if ($action === 'cabinet') {
         $savedIds = [];
     }
 
-    // Spec 2.3: cars the partner looked at OR saved. Saved ones come first
-    // (explicit intent), then recently viewed, deduplicated.
-    $viewedIds = B2bAudit::recentlyViewedCarIds($userId, 50);
-    $carIds    = array_values(array_unique(array_merge($savedIds, $viewedIds)));
-    $savedLookup = array_flip($savedIds);
-
-    if (!$carIds) {
+    if (!$savedIds) {
         echo '<div class="b2b-empty">
                 <p>'.b2b_esc($t['no_cars']).'</p>
                 <a class="b2b-btn b2b-btn--primary" href="/'.b2b_esc($lang).'/ordercars">'.b2b_esc($t['browse_catalog']).'</a>
@@ -134,12 +130,7 @@ if ($action === 'cabinet') {
     } else {
         // Same cards as the catalog, so B2B prices apply automatically
         // (b2b_prices_for_cars runs inside $car_card).
-        $card = $car_card('fav', count($carIds), $carIds, 'av', 0, true);
-
-        echo '<div class="b2b-legend">'
-           . '<span class="b2b-chip">'.b2b_esc($t['saved_cars']).': '.count($savedLookup).'</span>'
-           . '<span class="b2b-chip b2b-chip--muted">'.b2b_esc($t['viewed_cars']).': '.max(0, count($carIds) - count($savedLookup)).'</span>'
-           . '</div>';
+        $card = $car_card('fav', count($savedIds), $savedIds, 'av', 0, true);
         echo '<div class="cars b2b-cars">'.$card['txt'].'</div>';
     }
 }

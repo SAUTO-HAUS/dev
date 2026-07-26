@@ -221,7 +221,12 @@ echo '
 
 <div id="to_top" title="<?php echo $lang_to_top; ?>"></div>
 
-<?php $fav_lbl = ['ro'=>'Favorite','ru'=>'Избранное','en'=>'Favorites'][$_COOKIE['lang']] ?? 'Favorite'; ?>
+<?php
+// Floating favourites shortcut points to /favorites (localStorage). A logged-in
+// B2B partner has their saved cars in the cabinet instead, so hide it for them.
+if (!(function_exists('b2b_is_client') && b2b_is_client())):
+    $fav_lbl = ['ro'=>'Favorite','ru'=>'Избранное','en'=>'Favorites'][$_COOKIE['lang']] ?? 'Favorite';
+?>
 <a id="fav_float" href="/<?php echo $_COOKIE['lang']; ?>/favorites" title="<?php echo $fav_lbl; ?>" aria-label="<?php echo $fav_lbl; ?>">
 	<span class="fav-float-ico">
 		<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
@@ -229,6 +234,7 @@ echo '
 	</span>
 	<span class="fav-float-lbl"><?php echo $fav_lbl; ?></span>
 </a>
+<?php endif; ?>
 
 <header>
     <div class="def">
@@ -277,6 +283,13 @@ echo '
                 $_b2b_logout_href = '/'.$_COOKIE['lang'].'/b2b/logout';
                 $_b2b_logout_lbl  = htmlspecialchars(b2b_t('logout'), ENT_QUOTES, 'UTF-8');
                 $_b2b_ico_exit    = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
+
+                // Expose the CSRF token so the favourites heart can mirror a saved
+                // car into the partner's cabinet (gh3sp_b2b_saved_cars). Guests get
+                // nothing here, so the heart stays localStorage-only for them.
+                if ($_b2b_logged && function_exists('b2b_csrf_token')) {
+                    echo '<script>window.B2B_FAV={csrf:'.json_encode(b2b_csrf_token(), JSON_UNESCAPED_SLASHES | JSON_HEX_TAG).'};</script>';
+                }
 
                 echo '<a class="b2b button b2b-nav-link b2b-menu-only'.($_b2b_on_page ? ' active' : '').'" href="'.$_b2b_href.'">'
                    . '<div>'.$_b2b_label.'</div></a>';

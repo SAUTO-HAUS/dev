@@ -617,6 +617,22 @@ $(document).ready(function(){
 		var nowFav = toggleFav(id);
 		btn.classList.remove('fav-pop'); void btn.offsetWidth; btn.classList.add('fav-pop');
 		syncUI();
+		// B2B partner: mirror the favourite into their cabinet (gh3sp_b2b_saved_cars),
+		// so saved cars show up under /b2b/cabinet. Fire-and-forget; localStorage
+		// (above) stays the source of truth for the /favorites page.
+		if (window.B2B_FAV && window.B2B_FAV.csrf) {
+			var favBody = new URLSearchParams();
+			favBody.set('tp', 'ste');
+			favBody.set('fn', nowFav ? 'b2b_save_car' : 'b2b_unsave_car');
+			favBody.set('car_id', id);
+			favBody.set('csrf', window.B2B_FAV.csrf);
+			fetch('/ajax.php', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+				body: favBody.toString(),
+				credentials: 'same-origin'
+			}).catch(function(){});
+		}
 		// On the /favorites page, removing a fav should drop its card.
 		if (!nowFav && document.getElementById('fav_container')) {
 			var card = document.querySelector('#fav_container [data-fav-id="'+id+'"]');
