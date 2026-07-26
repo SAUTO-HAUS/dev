@@ -258,14 +258,19 @@ echo '
                 $_b2b_on_page = isset($t_mp[2]) && in_array($t_mp[2], ['b2b', 'b2b-login', 'b2b-register'], true);
                 $_b2b_href    = $_b2b_logged ? '/'.$_COOKIE['lang'].'/b2b/cabinet' : '/'.$_COOKIE['lang'].'/b2b-register';
 
-                // Logged in: "Cabinet <first name>" (e.g. "Cabinet Grigore"); fall
-                // back to the plain "Cabinet B2B" label if the name is missing.
-                $_b2b_label = b2b_t('header_register');
+                // Logged in: "Cabinetul meu" + an initials avatar (e.g. "GB"), like
+                // the cabinet hero. Not logged in: the plain "Register" label.
+                $_b2b_label    = b2b_t('header_register');
+                $_b2b_initials = '';
                 if ($_b2b_logged) {
-                    $_b2b_user  = function_exists('b2b_user') ? b2b_user() : null;
-                    $_b2b_fname = $_b2b_user ? trim((string)($_b2b_user['full_name'] ?? '')) : '';
-                    $_b2b_fname = $_b2b_fname !== '' ? htmlspecialchars(explode(' ', $_b2b_fname)[0], ENT_QUOTES, 'UTF-8') : '';
-                    $_b2b_label = $_b2b_fname !== '' ? (b2b_t('cabinet_short').' '.$_b2b_fname) : b2b_t('cabinet');
+                    $_b2b_user = function_exists('b2b_user') ? b2b_user() : null;
+                    $_b2b_full = $_b2b_user ? trim((string)($_b2b_user['full_name'] ?? '')) : '';
+                    foreach (preg_split('/\s+/', $_b2b_full) ?: [] as $w) {
+                        if ($w !== '') { $_b2b_initials .= mb_strtoupper(mb_substr($w, 0, 1)); if (mb_strlen($_b2b_initials) >= 2) break; }
+                    }
+                    if ($_b2b_initials === '') { $_b2b_initials = 'B'; }
+                    $_b2b_initials = htmlspecialchars($_b2b_initials, ENT_QUOTES, 'UTF-8');
+                    $_b2b_label    = b2b_t('cabinet_mine');
                 }
 
                 // Logout sits next to the cabinet button, only while logged in.
@@ -355,7 +360,8 @@ echo '
         // Desktop counterpart of the menu entry above: placed to the RIGHT of "call"
         // so a dealer finds registration/cabinet without digging through the menu.
         // Hidden on mobile, where the burger entry takes over.
-        echo '<a class="b2b-header-btn'.($_b2b_on_page ? ' is-active' : '').'" href="'.$_b2b_href.'" title="'.$_b2b_label.'">'
+        echo '<a class="b2b-header-btn'.($_b2b_logged ? ' b2b-header-btn--user' : '').($_b2b_on_page ? ' is-active' : '').'" href="'.$_b2b_href.'" title="'.$_b2b_label.'">'
+           . ($_b2b_logged ? '<span class="b2b-header-btn__avatar">'.$_b2b_initials.'</span>' : '')
            . '<span class="b2b-header-btn__txt">'.$_b2b_label.'</span></a>';
         if ($_b2b_logged) {
             echo '<a class="b2b-header-out" href="'.$_b2b_logout_href.'" title="'.$_b2b_logout_lbl.'" aria-label="'.$_b2b_logout_lbl.'">'.$_b2b_ico_exit.'</a>';

@@ -3062,7 +3062,7 @@ footer .columns-wrapper .column-container.col-logo-container {
           flex:0 0 auto; width:auto;
           position:relative; margin-right:3%;
           display:inline-flex; align-items:center;
-          padding:.55rem 2.1rem .55rem 1.15rem;
+          height:40px; padding:0 2.1rem 0 1.15rem;
           border:1.5px solid #ddd; border-radius:999px; background:#fff;
           font-family:"def_l"; font-size:.95rem; font-weight:600; line-height:1.2;
           cursor:pointer; user-select:none; -webkit-user-select:none;
