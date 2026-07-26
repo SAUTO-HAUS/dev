@@ -393,7 +393,7 @@ if ($_b2b_logged):
        . '<span class="b2b-header-btn__txt">'.$_b2b_label.'</span></a>'
        . '<a class="b2b-header-out" href="'.$_b2b_logout_href.'" title="'.$_b2b_logout_lbl.'" aria-label="'.$_b2b_logout_lbl.'">'.$_b2b_ico_exit.'</a>'
        . '</div>';
-    echo '<script>(function(){var f=document.querySelector(".b2b-float");if(!f)return;var on=false;function u(){var s=(window.pageYOffset||document.documentElement.scrollTop)>260;if(s!==on){on=s;f.classList.toggle("is-shown",s);}}window.addEventListener("scroll",u,{passive:true});u();})();</script>';
+    echo '<script>(function(){var f=document.querySelector(".b2b-float");var a=document.querySelector("header .b2b-header-btn");var o=document.querySelector("header .b2b-header-out")||a;var anchor=a||document.querySelector("header");if(!f||!anchor)return;function align(){var el=o||a;if(!el)return;var r=el.getBoundingClientRect();var vw=document.documentElement.clientWidth;if(r.width)f.style.right=Math.max(0,Math.round(vw-r.right))+"px";}align();window.addEventListener("resize",align,{passive:true});if("IntersectionObserver" in window){new IntersectionObserver(function(e){f.classList.toggle("is-shown",!e[0].isIntersecting);},{threshold:0}).observe(anchor);}else{var on=false;function u(){var s=(window.pageYOffset||document.documentElement.scrollTop)>(anchor.offsetHeight||120);if(s!==on){on=s;f.classList.toggle("is-shown",s);}}window.addEventListener("scroll",u,{passive:true});u();}})();</script>';
 endif;
 ?>
 
