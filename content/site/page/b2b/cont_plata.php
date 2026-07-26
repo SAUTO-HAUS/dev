@@ -11,7 +11,6 @@
 
 use App\Services\B2b\B2bConfig;
 use App\Services\B2b\B2bInvoice;
-use App\Services\B2b\B2bMoney;
 use App\Services\B2b\B2bRegions;
 use App\Services\B2b\B2bPhone;
 
@@ -27,7 +26,7 @@ $T = [
         'price' => 'Suma avansului', 'mdl_hint' => 'Suma este în lei (MDL).',
         'pct_hint' => 'Avansul reprezintă %s%% din prețul mașinii.',
         'type' => 'Tip', 'fiz' => 'Persoană fizică', 'jur' => 'Persoană juridică',
-        'name' => 'Nume / Denumire', 'idno' => 'IDNO / IDNP', 'phone' => 'Telefon',
+        'name' => 'Nume, prenume', 'idno' => 'IDNP / IDNO', 'phone' => 'Telefon',
         'submit' => 'Creează cont de plată', 'back' => '← Înapoi la mașină',
         'not_found' => 'Mașina nu a fost găsită.', 'restricted' => 'Restricționat conform planului B2B.',
     ],
@@ -38,7 +37,7 @@ $T = [
         'price' => 'Сумма аванса', 'mdl_hint' => 'Сумма в леях (MDL).',
         'pct_hint' => 'Аванс — %s%% от цены авто.',
         'type' => 'Тип', 'fiz' => 'Физическое лицо', 'jur' => 'Юридическое лицо',
-        'name' => 'Имя / Название', 'idno' => 'IDNO / IDNP', 'phone' => 'Телефон',
+        'name' => 'Имя, фамилия', 'idno' => 'IDNP / IDNO', 'phone' => 'Телефон',
         'submit' => 'Создать счёт на оплату', 'back' => '← Назад к авто',
         'not_found' => 'Автомобиль не найден.', 'restricted' => 'Ограничено по плану B2B.',
     ],
@@ -49,7 +48,7 @@ $T = [
         'price' => 'Advance amount', 'mdl_hint' => 'Amount is in lei (MDL).',
         'pct_hint' => 'The advance is %s%% of the car price.',
         'type' => 'Type', 'fiz' => 'Individual', 'jur' => 'Legal entity',
-        'name' => 'Name / Company', 'idno' => 'IDNO / IDNP', 'phone' => 'Phone',
+        'name' => 'Name, surname', 'idno' => 'IDNP / IDNO', 'phone' => 'Phone',
         'submit' => 'Create payment invoice', 'back' => '← Back to the car',
         'not_found' => 'Car not found.', 'restricted' => 'Restricted by the B2B plan.',
     ],
@@ -75,10 +74,10 @@ $brand = trim((string)($car['br_nm'] ?: str_replace('_', ' ', (string)$car['br']
 $model = trim((string)($car['mo_nm'] ?: str_replace('_', ' ', (string)$car['mo'])));
 $vin   = (string)($car['vin'] ?? '');
 
-// The document is always issued in MDL: convert the suggested advance from the
-// car's currency at the official BNM rate (same source as the public calculator).
-$carCur = strtoupper(trim((string)($car['cur'] ?? 'EUR')));
-$price  = (int)round(B2bMoney::toMdl(B2bInvoice::suggestedAdvance($car), $carCur));
+// The document is always issued in MDL. The advance is computed directly in MDL:
+// the fixed amount is already MDL; the percentage is converted from the car's
+// currency at the BNM rate (same source as the public calculator).
+$price = (int)round(B2bInvoice::suggestedAdvanceMdl($car));
 
 // Explain how the number was reached: in percent mode, "X% of the car price".
 if (B2bConfig::get('b2b_advance_mode', 'fixed') === 'percent') {
@@ -96,6 +95,10 @@ $buyerPhone = B2bPhone::local((string)($user['phone_number'] ?? ''));
 
 $csrf = b2b_esc(b2b_csrf_token());
 $e    = fn($v) => b2b_esc($v);
+
+// Only the buyer section is editable; the document + car data come from the
+// listing and are locked. The padlock marks the read-only sections.
+$lockIco = '<svg class="b2b-cp-lock" viewBox="0 0 24 24" aria-hidden="true"><path d="M17 8h-1V6a4 4 0 1 0-8 0v2H7a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-9a2 2 0 0 0-2-2zm-7-2a2 2 0 1 1 4 0v2h-4V6z"/></svg>';
 ?>
 <div class="b2b-page b2b-cp">
     <a class="b2b-cp-back" href="/<?= $e($lang) ?>/ordercars/<?= (int)$carId ?>"><?= $e($t['back']) ?></a>
@@ -108,31 +111,31 @@ $e    = fn($v) => b2b_esc($v);
 
         <form class="b2b-form" id="b2b-cp-form" data-csrf="<?= $csrf ?>" data-car="<?= (int)$carId ?>" novalidate>
 
-            <h2 class="b2b-cp-sec"><?= $e($t['doc']) ?></h2>
+            <h2 class="b2b-cp-sec"><?= $lockIco.$e($t['doc']) ?></h2>
             <div class="b2b-field">
                 <label for="cp-date"><?= $e($t['date']) ?></label>
-                <input type="date" id="cp-date" name="date" value="<?= $e(date('Y-m-d')) ?>" />
+                <input type="date" id="cp-date" name="date" value="<?= $e(date('Y-m-d')) ?>" readonly tabindex="-1" />
             </div>
 
-            <h2 class="b2b-cp-sec"><?= $e($t['auto']) ?></h2>
+            <h2 class="b2b-cp-sec"><?= $lockIco.$e($t['auto']) ?></h2>
             <div class="b2b-field-row">
                 <div class="b2b-field">
                     <label for="cp-br"><?= $e($t['brand']) ?></label>
-                    <input type="text" id="cp-br" name="br" value="<?= $e($brand) ?>" maxlength="120" />
+                    <input type="text" id="cp-br" name="br" value="<?= $e($brand) ?>" maxlength="120" readonly tabindex="-1" />
                 </div>
                 <div class="b2b-field">
                     <label for="cp-mo"><?= $e($t['model']) ?></label>
-                    <input type="text" id="cp-mo" name="mo" value="<?= $e($model) ?>" maxlength="120" />
+                    <input type="text" id="cp-mo" name="mo" value="<?= $e($model) ?>" maxlength="120" readonly tabindex="-1" />
                 </div>
             </div>
             <div class="b2b-field">
                 <label for="cp-vin"><?= $e($t['vin']) ?></label>
-                <input type="text" id="cp-vin" name="vin" value="<?= $e($vin) ?>" maxlength="32" />
+                <input type="text" id="cp-vin" name="vin" value="<?= $e($vin) ?>" maxlength="32" readonly tabindex="-1" />
             </div>
             <div class="b2b-field">
                 <label for="cp-price"><?= $e($t['price']) ?></label>
                 <div class="b2b-money">
-                    <input type="number" id="cp-price" name="price" min="1" step="1" value="<?= (int)$price ?>" required />
+                    <input type="number" id="cp-price" name="price" min="1" step="1" value="<?= (int)$price ?>" readonly tabindex="-1" required />
                     <span class="b2b-money__cur">MDL</span>
                 </div>
                 <span class="b2b-hint"><?= $e($priceHint) ?></span>

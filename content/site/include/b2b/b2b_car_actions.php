@@ -9,7 +9,6 @@
 
 use App\Services\B2b\B2bConfig;
 use App\Services\B2b\B2bInvoice;
-use App\Services\B2b\B2bMoney;
 
 if (!function_exists('b2b_car_actions_html')) {
 
@@ -31,10 +30,9 @@ if (!function_exists('b2b_car_actions_html')) {
         // generates the proforma AND notifies the Super Admin — the merged flow).
         $formUrl = '/'.$esc($lang).'/b2b/cont-plata?car='.(int)$carId;
 
-        // Advance figure, same basis as the form: percent of the car price (or the
-        // flat amount), converted to MDL at the BNM rate.
-        $carCur = strtoupper(trim((string)($car['cur'] ?? 'EUR')));
-        $advMdl = (int)round(B2bMoney::toMdl(B2bInvoice::suggestedAdvance($car), $carCur));
+        // Advance figure, same basis as the form: a flat MDL amount, or a percent
+        // of the car price converted to MDL at the BNM rate.
+        $advMdl = (int)round(B2bInvoice::suggestedAdvanceMdl($car));
         $advTxt = number_format($advMdl, 0, '.', ' ').' MDL';
 
         $advNote = '';

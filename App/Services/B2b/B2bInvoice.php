@@ -302,4 +302,38 @@ class B2bInvoice
     {
         return self::suggestedAdvance(null);
     }
+
+    /**
+     * Suggested advance already expressed in MDL — the only currency a payment
+     * invoice is issued in. The admin settings are read as MDL:
+     *   fixed mode   -> b2b_advance_default is a flat MDL amount;
+     *   percent mode -> b2b_advance_percent of the car price, converted from the
+     *                   car's currency to MDL at the BNM rate, with the flat MDL
+     *                   amount acting as the floor.
+     */
+    public static function suggestedAdvanceMdl(?array $car = null): float
+    {
+        $flatMdl = (float)B2bConfig::get('b2b_advance_default', '1000');
+
+        if (B2bConfig::get('b2b_advance_mode', 'fixed') !== 'percent') {
+            return round($flatMdl, 2);
+        }
+
+        $price = (float)($car['prc'] ?? 0);
+        if ($price <= 0) {
+            return round($flatMdl, 2); // no usable price: fall back to the flat amount
+        }
+
+        $percent = (float)B2bConfig::get('b2b_advance_percent', '10');
+        $carCur  = strtoupper(trim((string)($car['cur'] ?? 'EUR')));
+        $amount  = B2bMoney::toMdl($price * ($percent / 100), $carCur);
+
+        // The flat MDL amount is the floor so a cheap car still carries a
+        // meaningful advance.
+        if ($amount < $flatMdl) {
+            $amount = $flatMdl;
+        }
+
+        return round($amount, 2);
+    }
 }

@@ -410,7 +410,7 @@
     background:#fff; border:1px solid rgba(226,0,26,.18); border-radius:12px;
 }
 .b2b-actions__adv-lbl{ font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--b2b-muted); }
-.b2b-actions__adv-val{ font-size:1.45rem; font-weight:800; color:var(--b2b-brand); line-height:1; }
+.b2b-actions__adv-val{ font-size:1.2rem; font-weight:800; color:var(--b2b-brand); line-height:1; }
 .b2b-actions__adv-note{ flex-basis:100%; font-size:.82rem; color:var(--b2b-muted); }
 .b2b-actions__cta{ width:100%; }
 .b2b-actions__row{ display:flex; flex-direction:column; gap:.35rem; margin-bottom:1rem; }
@@ -420,6 +420,18 @@
 .b2b-cp-back{ display:inline-block; margin-bottom:.9rem; color:var(--b2b-muted); font-size:.9rem; font-weight:600; text-decoration:none; }
 .b2b-cp-back:hover{ color:var(--b2b-brand); }
 .b2b-cp-sec{ margin:1.5rem 0 .1rem; padding-bottom:.35rem; border-bottom:1px solid var(--b2b-line); font-size:.78rem; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--b2b-brand); }
+.b2b-cp-lock{ width:13px; height:13px; fill:currentColor; vertical-align:-2px; margin-right:.4rem; opacity:.8; }
+
+/* Locked fields: only the buyer section is editable, so the document + car
+   fields are read-only and clearly greyed out (no info text, just the effect). */
+.b2b-cp .b2b-field input[readonly]{
+    background:#f1f1f4;
+    color:var(--b2b-muted);
+    border-color:var(--b2b-line);
+    cursor:not-allowed;
+}
+.b2b-cp .b2b-field input[readonly]:focus{ border-color:var(--b2b-line); box-shadow:none; }
+.b2b-cp .b2b-money:has(input[readonly]) .b2b-money__cur{ color:#b8b8bf; }
 .b2b-actions__amount{ display:flex; gap:.6rem; }
 .b2b-actions__amount input{ flex:1 1 auto; min-width:0; }
 .b2b-actions__amount select{ flex:0 0 6.5rem; }
