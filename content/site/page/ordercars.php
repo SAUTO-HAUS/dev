@@ -658,16 +658,16 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                     if (isset($r['catalog_type']) && $r['catalog_type'] === 'on_order') {
                         // Add "On Order" status with same style as in cards
                         $on_order_text = $lng['w']['on_order'] ?? 'On Order';
-                        $z_stat .= '<div class="stat stat-onorder" style="background-color: #CE3226; color: #fff; font-weight: bold; display: inline-flex; align-items: center; justify-content: center; vertical-align: top; padding: 0.3rem 0.5rem !important; margin: 0.3rem 0.3rem 0 0 !important;"><span class="stock-status on-order">'.$on_order_text.'</span></div>';
+                        $z_stat .= '<div class="stat stat-onorder">'.$on_order_text.'</div>';
 
                         // Add offer timer if it exists and is still running
                         if (!empty($r['offer_timer_end'])) {
                             $time_remaining = $r['offer_timer_end'] - time();
-                            // Add "Offer expires in:" text with line break
-                            $expires_text = 'Oferta expiră<br>peste:';
+                            // "Expires in:" label (short form, no "Offer" prefix).
+                            $expires_text = 'Expiră peste:';
                             if (isset($_COOKIE['lang'])) {
-                                if ($_COOKIE['lang'] == 'ru') $expires_text = 'Предложение<br>истекает через:';
-                                elseif ($_COOKIE['lang'] == 'en') $expires_text = 'Offer expires<br>in:';
+                                if ($_COOKIE['lang'] == 'ru') $expires_text = 'Истекает через:';
+                                elseif ($_COOKIE['lang'] == 'en') $expires_text = 'Expires in:';
                             }
                             $z_stat .= '<div class="stat" style="padding: 0.3rem 0.5rem 0 0.5rem !important; margin: 0.3rem 0.3rem 0 0 !important; background: transparent; font-weight: 600; color: #333; font-size: 1rem; display: inline-block; vertical-align: top; line-height: 1.3;">'.$expires_text.'</div>';
                             $days = floor($time_remaining / 86400);

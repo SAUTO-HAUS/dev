@@ -47,9 +47,21 @@ main > .spc_bx > .status {
     display: flex !important;
     flex-flow: row wrap;
     gap: 15px !important;
+    /* Bottom-align so the "Expiră peste:" label and the timer DIGITS (which sit
+       below the decorative canvas) share one line; items keep their natural
+       height instead of stretching to the tallest item (the timer). */
+    align-items: flex-end !important;
 }
 main > .spc_bx > .status > .stat {
     margin: 0 !important;
+}
+
+main > .spc_bx > .status > .stat.stat-onorder {
+    background-color: #CE3226;
+    font-weight: bold;
+    /* The pill has .3rem bottom padding, so bottom-aligned its text sits higher
+       than the plain-text label/digits; drop it so the pill centres on that line. */
+    margin-bottom: -0.3rem !important;
 }
 
 /* LED Digital Timer Styles */
