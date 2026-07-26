@@ -76,11 +76,6 @@ $advMode = B2bConfig::get('b2b_advance_mode', 'fixed');
                 <input type="number" min="0" max="100" step="0.1" data-setting="b2b_advance_percent"
                        value="<?= b2b_adm_esc(B2bConfig::get('b2b_advance_percent', '10')) ?>">
             </label>
-            <label class="b2ba-field">
-                <span><?= b2b_adm_esc($t['advance_max']) ?></span>
-                <input type="number" min="0" step="1" data-setting="b2b_advance_max"
-                       value="<?= b2b_adm_esc(B2bConfig::get('b2b_advance_max', '0')) ?>">
-            </label>
         </div>
 
         <div class="b2ba-card__foot">

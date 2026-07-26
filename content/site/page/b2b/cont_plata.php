@@ -9,6 +9,7 @@
  * notifies the Super Admin. The generated document reuses invoice_template.php.
  */
 
+use App\Services\B2b\B2bConfig;
 use App\Services\B2b\B2bInvoice;
 use App\Services\B2b\B2bMoney;
 use App\Services\B2b\B2bRegions;
@@ -24,6 +25,7 @@ $T = [
         'doc' => 'Document', 'auto' => 'Auto', 'buyer' => 'Cumpărător',
         'date' => 'Data', 'brand' => 'Marca', 'model' => 'Model', 'vin' => 'Cod VIN',
         'price' => 'Suma avansului', 'mdl_hint' => 'Suma este în lei (MDL), convertită automat la cursul BNM.',
+        'pct_hint' => 'Avansul reprezintă %s%% din prețul mașinii.',
         'type' => 'Tip', 'fiz' => 'Persoană fizică', 'jur' => 'Persoană juridică',
         'name' => 'Nume / Denumire', 'idno' => 'IDNO / IDNP', 'phone' => 'Telefon',
         'submit' => 'Creează cont de plată', 'back' => '← Înapoi la mașină',
@@ -34,6 +36,7 @@ $T = [
         'doc' => 'Документ', 'auto' => 'Авто', 'buyer' => 'Покупатель',
         'date' => 'Дата', 'brand' => 'Марка', 'model' => 'Модель', 'vin' => 'VIN-код',
         'price' => 'Сумма аванса', 'mdl_hint' => 'Сумма в леях (MDL), пересчитана автоматически по курсу НБМ.',
+        'pct_hint' => 'Аванс — %s%% от цены авто.',
         'type' => 'Тип', 'fiz' => 'Физическое лицо', 'jur' => 'Юридическое лицо',
         'name' => 'Имя / Название', 'idno' => 'IDNO / IDNP', 'phone' => 'Телефон',
         'submit' => 'Создать счёт на оплату', 'back' => '← Назад к авто',
@@ -44,6 +47,7 @@ $T = [
         'doc' => 'Document', 'auto' => 'Car', 'buyer' => 'Buyer',
         'date' => 'Date', 'brand' => 'Brand', 'model' => 'Model', 'vin' => 'VIN code',
         'price' => 'Advance amount', 'mdl_hint' => 'Amount is in lei (MDL), converted automatically at the NBM rate.',
+        'pct_hint' => 'The advance is %s%% of the car price.',
         'type' => 'Type', 'fiz' => 'Individual', 'jur' => 'Legal entity',
         'name' => 'Name / Company', 'idno' => 'IDNO / IDNP', 'phone' => 'Phone',
         'submit' => 'Create payment invoice', 'back' => '← Back to the car',
@@ -75,6 +79,15 @@ $vin   = (string)($car['vin'] ?? '');
 // car's currency at the official BNM rate (same source as the public calculator).
 $carCur = strtoupper(trim((string)($car['cur'] ?? 'EUR')));
 $price  = (int)round(B2bMoney::toMdl(B2bInvoice::suggestedAdvance($car), $carCur));
+
+// Explain how the number was reached: in percent mode, "X% of the car price".
+if (B2bConfig::get('b2b_advance_mode', 'fixed') === 'percent') {
+    $pct       = (float)B2bConfig::get('b2b_advance_percent', '10');
+    $pctTxt    = rtrim(rtrim(sprintf('%.1f', $pct), '0'), '.');
+    $priceHint = sprintf($t['pct_hint'], $pctTxt);
+} else {
+    $priceHint = $t['mdl_hint'];
+}
 
 $buyerType  = ($user['person_type'] ?? 'individual') === 'company' ? 'jur' : 'fiz';
 $buyerName  = (string)($user['full_name'] ?? '');
@@ -122,7 +135,7 @@ $e    = fn($v) => b2b_esc($v);
                     <input type="number" id="cp-price" name="price" min="1" step="1" value="<?= (int)$price ?>" required />
                     <span class="b2b-money__cur">MDL</span>
                 </div>
-                <span class="b2b-hint"><?= $e($t['mdl_hint']) ?></span>
+                <span class="b2b-hint"><?= $e($priceHint) ?></span>
             </div>
 
             <h2 class="b2b-cp-sec"><?= $e($t['buyer']) ?></h2>
