@@ -474,6 +474,19 @@
 .b2b-header-out:hover{ background:#e2001a; color:#fff; box-shadow:0 6px 16px rgba(226,0,26,.25); }
 .b2b-header-out svg{ width:18px; height:18px; }
 
+/* Fixed cabinet + logout cluster (desktop, logged-in): fades in once the header
+   scrolls out of view, so those two actions are always one tap away. */
+.b2b-float{
+    position:fixed; top:14px; right:26px; z-index:9990;
+    display:flex; align-items:center;
+    opacity:0; transform:translateY(-14px); pointer-events:none;
+    transition:opacity .25s ease, transform .25s ease;
+}
+.b2b-float.is-shown{ opacity:1; transform:none; pointer-events:auto; }
+.b2b-float .b2b-header-btn{ margin-left:0; box-shadow:0 6px 18px rgba(0,0,0,.14); }
+.b2b-float .b2b-header-out{ box-shadow:0 6px 18px rgba(0,0,0,.14); }
+@media (max-width:999px), (orientation: portrait){ .b2b-float{ display:none !important; } }
+
 /* One placement visible at a time. Same breakpoint the burger menu uses
    (content/site/css/media.css). */
 .b2b-menu-only{ display:none !important; }

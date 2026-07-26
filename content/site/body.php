@@ -383,6 +383,20 @@ if (!(function_exists('b2b_is_client') && b2b_is_client())):
     </div>
 </header>
 
+<?php
+// Logged-in partners keep quick access to their cabinet + logout while scrolling:
+// a small fixed cluster (desktop only) that fades in once the header scrolls away.
+if ($_b2b_logged):
+    echo '<div class="b2b-float" aria-hidden="true">'
+       . '<a class="b2b-header-btn b2b-header-btn--user'.($_b2b_on_page ? ' is-active' : '').'" href="'.$_b2b_href.'" title="'.$_b2b_label.'">'
+       . '<span class="b2b-header-btn__avatar">'.$_b2b_initials.'</span>'
+       . '<span class="b2b-header-btn__txt">'.$_b2b_label.'</span></a>'
+       . '<a class="b2b-header-out" href="'.$_b2b_logout_href.'" title="'.$_b2b_logout_lbl.'" aria-label="'.$_b2b_logout_lbl.'">'.$_b2b_ico_exit.'</a>'
+       . '</div>';
+    echo '<script>(function(){var f=document.querySelector(".b2b-float");if(!f)return;var on=false;function u(){var s=(window.pageYOffset||document.documentElement.scrollTop)>260;if(s!==on){on=s;f.classList.toggle("is-shown",s);}}window.addEventListener("scroll",u,{passive:true});u();})();</script>';
+endif;
+?>
+
 <div id="crumbs" data-lng-c="<?php echo $lng['w']['copied']; ?>">
     <?php
     if ( isset($t_mp[2])&&$t_mp[2]!='' ){
