@@ -421,6 +421,7 @@
 .b2b-cp-back:hover{ color:var(--b2b-brand); }
 .b2b-cp-sec{ margin:1.5rem 0 .1rem; padding-bottom:.35rem; border-bottom:1px solid var(--b2b-line); font-size:.78rem; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--b2b-brand); }
 .b2b-cp-lock{ width:13px; height:13px; fill:currentColor; vertical-align:-2px; margin-right:.4rem; opacity:.8; }
+.b2b-cp-note{ margin:.85rem 0 0; text-align:center; color:var(--b2b-muted); font-size:.82rem; line-height:1.4; }
 
 /* Locked fields: only the buyer section is editable, so the document + car
    fields are read-only and clearly greyed out (no info text, just the effect). */

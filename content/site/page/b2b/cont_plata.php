@@ -28,6 +28,7 @@ $T = [
         'type' => 'Tip', 'fiz' => 'Persoană fizică', 'jur' => 'Persoană juridică',
         'name' => 'Nume, prenume', 'idno' => 'IDNP / IDNO', 'phone' => 'Telefon',
         'submit' => 'Creează cont de plată', 'back' => '← Înapoi la mașină',
+        'submit_note' => 'După ce creezi contul de plată, cererea ajunge instant la echipa Sauto și te contactăm în scurt timp pentru confirmare.',
         'not_found' => 'Mașina nu a fost găsită.', 'restricted' => 'Restricționat conform planului B2B.',
     ],
     'ru' => [
@@ -39,6 +40,7 @@ $T = [
         'type' => 'Тип', 'fiz' => 'Физическое лицо', 'jur' => 'Юридическое лицо',
         'name' => 'Имя, фамилия', 'idno' => 'IDNP / IDNO', 'phone' => 'Телефон',
         'submit' => 'Создать счёт на оплату', 'back' => '← Назад к авто',
+        'submit_note' => 'После создания счёта заявка мгновенно поступает команде Sauto — мы свяжемся с вами в ближайшее время для подтверждения.',
         'not_found' => 'Автомобиль не найден.', 'restricted' => 'Ограничено по плану B2B.',
     ],
     'en' => [
@@ -50,6 +52,7 @@ $T = [
         'type' => 'Type', 'fiz' => 'Individual', 'jur' => 'Legal entity',
         'name' => 'Name, surname', 'idno' => 'IDNP / IDNO', 'phone' => 'Phone',
         'submit' => 'Create payment invoice', 'back' => '← Back to the car',
+        'submit_note' => 'Once you create the payment invoice, your request reaches the Sauto team instantly and we\'ll contact you shortly to confirm.',
         'not_found' => 'Car not found.', 'restricted' => 'Restricted by the B2B plan.',
     ],
 ];
@@ -173,6 +176,8 @@ $lockIco = '<svg class="b2b-cp-lock" viewBox="0 0 24 24" aria-hidden="true"><pat
             <div class="b2b-form__msg" role="alert" aria-live="polite"></div>
 
             <button type="submit" class="b2b-btn b2b-btn--primary b2b-btn--block"><?= $e($t['submit']) ?></button>
+
+            <p class="b2b-cp-note"><?= $e($t['submit_note']) ?></p>
         </form>
     </div>
 </div>
