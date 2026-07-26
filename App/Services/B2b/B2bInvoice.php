@@ -210,10 +210,17 @@ class B2bInvoice
     public static function forUser(int $userId, int $limit = 100): array
     {
         $limit = max(1, min(500, $limit)); // inlined below: no placeholder in LIMIT
+        // `req_status` = the latest linked request's status (the Super Admin's
+        // approve/reject decision). That is what a client cares about, not the
+        // invoice's internal billing status, so it drives the status shown.
         try {
             $stmt = B2bConfig::db()->prepare(
-                'SELECT * FROM ' . B2bConfig::table('invoices')
-                . ' WHERE b2b_user_id = :uid ORDER BY id DESC LIMIT ' . $limit
+                'SELECT i.*, ('
+                . 'SELECT r.status FROM ' . B2bConfig::table('requests') . ' r'
+                . ' WHERE r.invoice_id = i.id ORDER BY r.id DESC LIMIT 1'
+                . ') AS req_status'
+                . ' FROM ' . B2bConfig::table('invoices') . ' i'
+                . ' WHERE i.b2b_user_id = :uid ORDER BY i.id DESC LIMIT ' . $limit
             );
             $stmt->execute([':uid' => $userId]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];

@@ -51,6 +51,7 @@ $sumTxt   = function_exists('parseCurr')
 $docDate  = ($dm['date'] ?? '') !== '' ? (string)$dm['date'] : (string)$invoice['created_at'];
 $zdate    = date('d.m.Y', strtotime($docDate));
 $invNo    = (string)$invoice['invoice_no'];
+$pdfName  = 'Cont_de_plata_' . preg_replace('/[^\w\-]+/', '-', $invNo) . '.pdf';
 
 $buyerName = ($dm['buyer_name'] ?? '') !== '' ? (string)$dm['buyer_name'] : B2bAuth::displayName($client);
 $buyerType = ($dm['buyer_type'] ?? '') === 'jur' ? 'jur' : 'fiz';
@@ -115,24 +116,26 @@ header('Content-Type: text/html; charset=UTF-8');
     .sign > .s1 { float:left; position:relative; }
     .sign > .s2 { float:right; position:relative; }
 
+    /* Mobile squeeze is disabled during PDF export (body.pdf-export) so the file
+       always renders as the full A4 sheet, exactly like the admin document. */
     @media screen and (max-width:767px), screen and (orientation:portrait) and (max-width:900px) {
-        .base > .pg { width:100% !important; min-height:auto !important; padding:5mm 5mm !important; }
-        .base > .pg.bg { background-size:cover; }
-        .cont { font-size:0.72rem; }
-        .logo { max-width:90px; }
-        .logo img { max-width:100%; height:auto; }
-        .ttl { font-size:1.1rem; padding-top:8mm; }
-        .sign > * { width:48%; }
-        .sign { margin-top:10mm; }
-        table { font-size:0.72rem; }
+        body:not(.pdf-export) .base > .pg { width:100% !important; min-height:auto !important; padding:5mm 5mm !important; }
+        body:not(.pdf-export) .base > .pg.bg { background-size:cover; }
+        body:not(.pdf-export) .cont { font-size:0.72rem; }
+        body:not(.pdf-export) .logo { max-width:90px; }
+        body:not(.pdf-export) .logo img { max-width:100%; height:auto; }
+        body:not(.pdf-export) .ttl { font-size:1.1rem; padding-top:8mm; }
+        body:not(.pdf-export) .sign > * { width:48%; }
+        body:not(.pdf-export) .sign { margin-top:10mm; }
+        body:not(.pdf-export) table { font-size:0.72rem; }
     }
 </style>
 </head>
 <body>
 
 <div class="inv-actions">
-    <button type="button" class="inv-btn" onclick="window.print()"><?= $lang === 'ru' ? 'Печать' : ($lang === 'en' ? 'Print' : 'Printează') ?></button>
-    <a class="inv-btn inv-btn--ghost" href="/<?= $esc($lang) ?>/b2b/invoices"><?= $lang === 'ru' ? 'В кабинет' : ($lang === 'en' ? 'To cabinet' : 'La cabinet') ?></a>
+    <a class="inv-btn inv-btn--ghost" href="/<?= $esc($lang) ?>/b2b/invoices">&larr; <?= $lang === 'ru' ? 'В кабинет' : ($lang === 'en' ? 'To cabinet' : 'La cabinet') ?></a>
+    <button type="button" class="inv-btn" id="inv-pdf"><?= $lang === 'ru' ? 'Экспорт PDF' : ($lang === 'en' ? 'Export PDF' : 'Exportă PDF') ?></button>
 </div>
 
 <div id="p_cont" class="base">
@@ -177,6 +180,40 @@ header('Content-Type: text/html; charset=UTF-8');
         </div>
     </div>
 </div>
+
+<!-- Same PDF export as the admin document system (content/admin/include/docs_print.php). -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+(function () {
+    var btn = document.getElementById('inv-pdf');
+    if (!btn) return;
+
+    btn.addEventListener('click', function () {
+        var element = document.getElementById('p_cont');
+        if (!element || typeof html2pdf === 'undefined') { return; }
+
+        btn.disabled = true;
+        document.body.classList.add('pdf-export'); // full A4, not the mobile squeeze
+
+        var opt = {
+            margin:      0,
+            filename:    <?= json_encode($pdfName, JSON_UNESCAPED_UNICODE) ?>,
+            image:       { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF:       { orientation: 'portrait', unit: 'mm', format: 'a4' },
+            pagebreak:   { mode: 'avoid-all' }
+        };
+
+        html2pdf().set(opt).from(element).save().then(function () {
+            document.body.classList.remove('pdf-export');
+            btn.disabled = false;
+        }).catch(function () {
+            document.body.classList.remove('pdf-export');
+            btn.disabled = false;
+        });
+    });
+})();
+</script>
 
 </body>
 </html>
