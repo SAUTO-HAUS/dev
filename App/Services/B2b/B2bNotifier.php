@@ -31,15 +31,15 @@ class B2bNotifier
         $carName = $carName !== '' ? $carName : ('#' . (int)$car['id']);
 
         self::notifyAdmins(
-            '<b>Cerere B2B nouă</b> de la ' . self::esc(B2bAuth::displayName($user))
+            '<b>Cont de plată nou</b> de la ' . self::esc(B2bAuth::displayName($user))
             . '<br>Mașină: ' . self::esc($carName)
             . ($invoice ? '<br>Proformă: ' . self::esc((string)$invoice['invoice_no']) : '')
             . ($comment !== '' ? '<br>Comentariu: ' . self::esc(mb_substr($comment, 0, 200)) : '')
-            . '<br><a href="' . self::esc($reqUrl) . '" style="color:#E61E2D;">Deschide cererea</a>'
+            . '<br><a href="' . self::esc($reqUrl) . '" style="color:#E61E2D;">Deschide</a>'
         );
 
         // WhatsApp gets plain text, no HTML.
-        $text = "Cerere B2B noua\n"
+        $text = "Cont de plata nou\n"
               . 'Partener: ' . B2bAuth::displayName($user) . "\n"
               . 'Telefon: ' . $user['phone_number'] . "\n"
               . 'Masina: ' . $carName . "\n"

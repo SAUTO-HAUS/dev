@@ -76,7 +76,7 @@ if (!function_exists('b2b_adm_lang')) {
                 'cat_on_order'    => 'La comandă',
 
                 // requests
-                'requests_title'  => 'Cereri de inițiere a tranzacției',
+                'requests_title'  => 'Conturi de plată',
                 'col_client'      => 'Client',
                 'col_car'         => 'Mașină',
                 'col_invoice'     => 'Proformă',
@@ -224,7 +224,7 @@ if (!function_exists('b2b_adm_lang')) {
                 'cat_in_stock'    => 'В наличии',
                 'cat_on_order'    => 'Под заказ',
 
-                'requests_title'  => 'Заявки на инициирование сделки',
+                'requests_title'  => 'Счета на оплату',
                 'col_client'      => 'Клиент',
                 'col_car'         => 'Автомобиль',
                 'col_invoice'     => 'Счёт',
@@ -370,7 +370,7 @@ if (!function_exists('b2b_adm_lang')) {
                 'cat_in_stock'    => 'In stock',
                 'cat_on_order'    => 'On order',
 
-                'requests_title'  => 'Transaction initiation requests',
+                'requests_title'  => 'Payment invoices',
                 'col_client'      => 'Client',
                 'col_car'         => 'Car',
                 'col_invoice'     => 'Invoice',

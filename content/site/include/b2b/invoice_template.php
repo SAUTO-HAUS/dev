@@ -1,31 +1,23 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
 /**
- * B2B proforma - print-ready document served standalone, without the site layout.
+ * B2B proforma — served standalone (Route: /{lang}/b2b/invoice/{id}?k={access_key}).
  *
- * Route: /{lang}/b2b/invoice/{id}?k={access_key}, intercepted in index.php the
- * same way the telegram pages are.
- *
- * Layout follows the "Cont de plata" document already used by the admin panel
- * (content/admin/include/docs/cars/con_plata.php) and reuses the bank details
- * from content/admin/include/docs_print.php, so a dealer proforma looks the same
- * as one issued from the back office.
- *
- * "Download PDF" uses the browser print dialog (@media print): plugins/mpdf has
- * no dependencies installed.
+ * IDENTICAL to the "Cont de plata" the admin panel issues:
+ * content/admin/include/docs/cars/con_plata.php + the print CSS from
+ * content/admin/include/docs_print.php. Only the data comes from the B2B
+ * invoice (frozen doc_meta), not from an admin form.
  */
 
 use App\Services\B2b\B2bInvoice;
+use App\Services\B2b\B2bAuth;
 
 $lang = $_COOKIE['lang'] ?? 'ro';
 
 $invoiceId = isset($t_mp[4]) ? (int)preg_replace('/\D+/', '', (string)$t_mp[4]) : 0;
 $accessKey = isset($_GET['k']) ? (string)$_GET['k'] : '';
+$invoice   = $invoiceId > 0 ? B2bInvoice::findSigned($invoiceId, $accessKey) : null;
 
-$invoice = $invoiceId > 0 ? B2bInvoice::findSigned($invoiceId, $accessKey) : null;
-
-// A wrong key and a missing id return the same response, so proformas cannot be
-// discovered by trial and error.
 if (!$invoice) {
     http_response_code(404);
     header('Content-Type: text/html; charset=UTF-8');
@@ -35,105 +27,35 @@ if (!$invoice) {
     return;
 }
 
-$client = App\Services\B2b\B2bAuth::findById((int)$invoice['b2b_user_id']);
+$client = B2bAuth::findById((int)$invoice['b2b_user_id']);
 $car    = B2bInvoice::carSnapshot($invoice);
-$dm     = B2bInvoice::docMeta($invoice); // frozen form data (date, auto, buyer)
+$dm     = B2bInvoice::docMeta($invoice);
 
 $esc = fn($v) => htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
-$fmt = fn($n) => number_format((float)$n, 2, '.', ' ');
 
-$currency = (string)$invoice['currency'];
+$currency = strtoupper((string)$invoice['currency']);
+$iban = $currency === 'EUR' ? 'MD51VI022512000000094EUR'
+      : ($currency === 'USD' ? 'MD51VI022512000000094USD' : 'MD64VI022512000000171MDL');
 
-// SAUTO SRL details, identical to docs_print.php. The IBAN depends on the
-// document currency, as for documents issued from the admin panel.
-$company = [
-    'name'    => '“SAUTO” SRL',
-    'address' => 'Republica Moldova, MD-2084, mun. Chişinău, or. Cricova, str. Chişinăului 84, ap. (of.) 39',
-    'iban'    => $currency === 'EUR' ? 'MD51VI022512000000094EUR'
-              : ($currency === 'USD' ? 'MD51VI022512000000094USD' : 'MD64VI022512000000171MDL'),
-    'bank'    => 'B.C. “VICTORIABANK” S.A., VICBMD2XXXX',
-    'cf'      => '1017600006845',
-    'tva'     => '0609417',
-];
+// Document fields, frozen on doc_meta; fall back to the car snapshot / profile.
+$brand = ($dm['br'] ?? '') !== '' ? (string)$dm['br'] : trim((string)($car['br_nm'] ?? $car['br'] ?? ''));
+$model = ($dm['mo'] ?? '') !== '' ? (string)$dm['mo'] : trim((string)($car['mo_nm'] ?? $car['mo'] ?? ''));
+$vin   = ($dm['vin'] ?? '') !== '' ? (string)$dm['vin'] : (string)($car['vin'] ?? '');
+$amount   = (float)$invoice['advance_amount'];
+$sumTxt   = number_format($amount, 2, '.', ' ');
+$docDate  = ($dm['date'] ?? '') !== '' ? (string)$dm['date'] : (string)$invoice['created_at'];
+$zdate    = date('d.m.Y', strtotime($docDate));
+$invNo    = (string)$invoice['invoice_no'];
 
-$L = [
-    'ro' => [
-        'doc'       => 'Cont de plată nr.',
-        'date'      => 'Data',
-        'supplier'  => 'Furnizor',
-        'payer'     => 'Plătitor',
-        'nr'        => '№',
-        'goods'     => 'Denumirea mărfurilor (serviciilor)',
-        'price'     => 'Preț',
-        'row'       => 'Plata în avans pentru automobilul',
-        'total'     => 'TOTAL',
-        'sign'      => 'Semnătura',
-        'stamp'     => 'L. Ş.',
-        'print'     => 'Descarcă PDF',
-        'back'      => 'Înapoi la cabinet',
-        'idno'      => 'IDNO',
-        'vat'       => 'c/TVA',
-        'iban'      => 'IBAN',
-        'bank'      => 'Banca',
-        'repr'      => 'Reprezentant',
-        'note'      => 'Documentul este generat automat și este valabil fără semnătură și ștampilă.',
-    ],
-    'ru' => [
-        'doc'       => 'Счёт на оплату №',
-        'date'      => 'Дата',
-        'supplier'  => 'Поставщик',
-        'payer'     => 'Плательщик',
-        'nr'        => '№',
-        'goods'     => 'Наименование товаров (услуг)',
-        'price'     => 'Цена',
-        'row'       => 'Авансовый платёж за автомобиль',
-        'total'     => 'ИТОГО',
-        'sign'      => 'Подпись',
-        'stamp'     => 'М. П.',
-        'print'     => 'Скачать PDF',
-        'back'      => 'Назад в кабинет',
-        'idno'      => 'IDNO',
-        'vat'       => 'НДС',
-        'iban'      => 'IBAN',
-        'bank'      => 'Банк',
-        'repr'      => 'Представитель',
-        'note'      => 'Документ сформирован автоматически и действителен без подписи и печати.',
-    ],
-    'en' => [
-        'doc'       => 'Payment invoice no.',
-        'date'      => 'Date',
-        'supplier'  => 'Supplier',
-        'payer'     => 'Payer',
-        'nr'        => 'No.',
-        'goods'     => 'Description of goods (services)',
-        'price'     => 'Price',
-        'row'       => 'Advance payment for the vehicle',
-        'total'     => 'TOTAL',
-        'sign'      => 'Signature',
-        'stamp'     => 'Stamp',
-        'print'     => 'Download PDF',
-        'back'      => 'Back to cabinet',
-        'idno'      => 'IDNO',
-        'vat'       => 'VAT code',
-        'iban'      => 'IBAN',
-        'bank'      => 'Bank',
-        'repr'      => 'Representative',
-        'note'      => 'This document is generated automatically and is valid without signature or stamp.',
-    ],
-];
-$t = $L[$lang] ?? $L['ro'];
+$buyerName = ($dm['buyer_name'] ?? '') !== '' ? (string)$dm['buyer_name'] : B2bAuth::displayName($client);
+$buyerType = ($dm['buyer_type'] ?? '') === 'jur' ? 'jur' : 'fiz';
+$buyerIdno = (string)($dm['buyer_idno'] ?? '');
 
-// Prefer the values frozen on the document; fall back to the car snapshot.
-if (($dm['br'] ?? '') !== '' || ($dm['mo'] ?? '') !== '') {
-    $carLabel = trim(($dm['br'] ?? '') . ' ' . ($dm['mo'] ?? ''));
-} else {
-    $carLabel = trim((string)($car['title'] ?? ''));
-}
-if ($carLabel === '') {
-    $carLabel = '#' . (int)$invoice['car_id'];
-}
-$vin     = trim((string)(($dm['vin'] ?? '') !== '' ? $dm['vin'] : ($car['vin'] ?? '')));
-$docDate = ($dm['date'] ?? '') !== '' ? (string)$dm['date'] : (string)$invoice['created_at'];
+// "cp" = persoană fizică, "cf" = persoană juridică (as in con_plata.php).
+$buyerCode = $buyerType === 'fiz' ? 'cp' : 'cf';
+
+$brandTxt = $brand !== '' ? ucwords(strtolower(str_replace('_', ' ', $brand))) : '';
+$modelTxt = $model !== '' ? ucwords(str_replace('_', ' ', $model)) : '';
 
 header('Content-Type: text/html; charset=UTF-8');
 ?>
@@ -141,169 +63,114 @@ header('Content-Type: text/html; charset=UTF-8');
 <html lang="<?= $esc($lang) ?>">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title><?= $esc($t['doc'].' '.$invoice['invoice_no']) ?></title>
+<title>Cont de plata nr. <?= $esc($invNo) ?></title>
+<link rel="stylesheet" type="text/css" href="/content/default/css/default.css">
 <style>
-    :root { --ink:#191919; --muted:#6b6b6b; --line:#e2e2e2; --brand:#e2001a; }
-    *{ box-sizing:border-box; }
-    body{
-        margin:0; padding:24px 16px;
-        background:#f4f5f7; color:var(--ink);
-        font-family:"Helvetica Neue",Arial,sans-serif; font-size:14px; line-height:1.5;
+    @media print {
+        @page { size:auto; size:A4 portrait; margin:0; }
+        * { -webkit-print-color-adjust:exact !important; color-adjust:exact !important; print-color-adjust:exact !important; }
+        .inv-actions { display:none !important; }
     }
-    .inv-actions{
-        max-width:820px; margin:0 auto 16px;
-        display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap;
-    }
-    .inv-btn{
-        display:inline-block; padding:10px 20px; border-radius:8px;
-        font-size:14px; font-weight:600; text-decoration:none; cursor:pointer;
-        border:1px solid var(--brand); background:var(--brand); color:#fff;
-    }
-    .inv-btn--ghost{ background:#fff; color:var(--brand); }
-    .sheet{
-        max-width:820px; margin:0 auto; padding:40px;
-        background:#fff; border-radius:6px;
-        box-shadow:0 8px 30px rgba(20,20,40,.08);
-    }
-    .inv-top{ display:flex; justify-content:space-between; align-items:flex-start; gap:24px; }
-    .inv-logo{ width:190px; height:auto; }
-    .inv-date{ color:var(--muted); font-size:13px; text-align:right; }
-    .inv-ttl{
-        margin:28px 0 24px; padding-bottom:12px;
-        border-bottom:2px solid var(--brand);
-        font-size:20px; font-weight:700; text-align:center; text-transform:uppercase;
-    }
-    .parties{ display:flex; gap:32px; flex-wrap:wrap; }
-    .party{ flex:1 1 260px; min-width:240px; }
-    .party h3{
-        margin:0 0 8px; font-size:12px; font-weight:700;
-        text-transform:uppercase; letter-spacing:.6px; color:var(--muted);
-    }
-    .party .nm{ font-weight:700; font-size:15px; margin-bottom:4px; }
-    .party p{ margin:2px 0; font-size:13px; }
-    .party .lbl{ color:var(--muted); }
-    table.items{ width:100%; border-collapse:collapse; margin:28px 0 0; }
-    table.items th, table.items td{
-        padding:12px 10px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top;
-    }
-    table.items th{
-        font-size:11px; text-transform:uppercase; letter-spacing:.5px;
-        color:var(--muted); border-bottom:2px solid var(--line);
-    }
-    table.items .num{ width:44px; }
-    table.items .amt{ text-align:right; white-space:nowrap; }
-    table.items tr.total td{
-        border-bottom:none; border-top:2px solid var(--brand);
-        font-size:17px; font-weight:700; padding-top:16px;
-    }
-    table.items tr.total .amt{ color:var(--brand); }
-    .vin{ display:block; margin-top:4px; font-size:12px; color:var(--muted); }
-    .signs{ display:flex; gap:48px; margin-top:56px; }
-    .signs div{ flex:1; font-size:13px; color:var(--muted); }
-    .signs .ln{ margin-top:34px; border-bottom:1px solid var(--ink); }
-    .note{ margin-top:32px; font-size:11px; color:var(--muted); text-align:center; }
 
-    @media print{
-        body{ background:#fff; padding:0; }
-        .inv-actions{ display:none; }
-        .sheet{ max-width:none; margin:0; padding:0; box-shadow:none; border-radius:0; }
-        @page{ size:A4; margin:18mm 16mm; }
-    }
-    @media (max-width:640px){
-        body{ padding:12px 8px; }
-        .sheet{ padding:22px 18px; }
-        .inv-top{ flex-direction:column; }
-        .inv-date{ text-align:left; }
-        .signs{ flex-direction:column; gap:24px; }
+    html, body { min-height:auto !important; height:auto !important; margin:0; padding:0; }
+    body { background:#f4f5f7; }
+
+    .inv-actions { max-width:210mm; margin:14px auto 8px; display:flex; gap:10px; justify-content:flex-end; flex-wrap:wrap; padding:0 6px; }
+    .inv-btn { display:inline-block; padding:10px 20px; border-radius:8px; font:600 14px/1 Arial,sans-serif; text-decoration:none; cursor:pointer; border:1px solid #e2001a; background:#e2001a; color:#fff; }
+    .inv-btn--ghost { background:#fff; color:#e2001a; }
+
+    .base { font-family:"def_l"; color:#000; filter:grayscale(1); -webkit-filter:grayscale(1); }
+    .base > .pg { width:210mm; min-height:296mm; margin:0 auto; padding:5mm 10mm; background:#fff; position:relative; box-sizing:border-box; box-shadow:0 8px 30px rgba(20,20,40,.10); }
+    .base > .pg.bg { background:#fffc url("/media/images/site/print/bg_pg.webp") repeat center / contain; background-blend-mode:soft-light; }
+
+    .date { text-align:center; padding:15mm 0 0; float:left; }
+    .logo { float:right; }
+    .ln { border-bottom:1px solid; clear:both; padding:2mm; }
+    .cont { width:100%; float:left; padding:5mm 0 0; font-size:0.8rem; margin:0; }
+    .ttl { text-align:center; padding:15mm 0 0; clear:both; font-size:1.4rem; font-weight:bold; }
+
+    .flx { display:flex; flex-flow:column wrap; justify-content:space-evenly; }
+    .flx > .ws { flex-grow:1; }
+
+    table { width:100%; border-collapse:collapse; margin-top:5mm; }
+    tr { border:1px solid; }
+    tr > td { text-align:center; padding:3mm 0; }
+    tr > td:not(:first-child) { border-left:1px solid; }
+    tr > td.id { width:10%; } tr > td.nm { width:50%; } tr > td.prc { width:40%; }
+
+    .txt_up { text-transform:uppercase; }
+    .txt_cpt { text-transform:capitalize; }
+    .buyer { margin-top:1rem; }
+
+    .sign { margin-top:20mm; }
+    .sign > * { width:40%; display:flex; flex-flow:row; justify-content:space-between; align-items:center; }
+    .sign > * > .ln { flex-grow:1; line-height:0; text-align:center; position:relative; }
+    .sign > .s1 { float:left; position:relative; }
+    .sign > .s2 { float:right; position:relative; }
+
+    @media screen and (max-width:767px), screen and (orientation:portrait) and (max-width:900px) {
+        .base > .pg { width:100% !important; min-height:auto !important; padding:5mm 5mm !important; }
+        .base > .pg.bg { background-size:cover; }
+        .cont { font-size:0.72rem; }
+        .logo { max-width:90px; }
+        .logo img { max-width:100%; height:auto; }
+        .ttl { font-size:1.1rem; padding-top:8mm; }
+        .sign > * { width:48%; }
+        .sign { margin-top:10mm; }
+        table { font-size:0.72rem; }
     }
 </style>
 </head>
 <body>
 
 <div class="inv-actions">
-    <button type="button" class="inv-btn" onclick="window.print()"><?= $esc($t['print']) ?></button>
-    <a class="inv-btn inv-btn--ghost" href="/<?= $esc($lang) ?>/b2b/invoices"><?= $esc($t['back']) ?></a>
+    <button type="button" class="inv-btn" onclick="window.print()"><?= $lang === 'ru' ? 'Печать' : ($lang === 'en' ? 'Print' : 'Printează') ?></button>
+    <a class="inv-btn inv-btn--ghost" href="/<?= $esc($lang) ?>/b2b/invoices"><?= $lang === 'ru' ? 'В кабинет' : ($lang === 'en' ? 'To cabinet' : 'La cabinet') ?></a>
 </div>
 
-<div class="sheet">
-    <div class="inv-top">
-        <img class="inv-logo" src="/media/images/site/v2/logo_b.svg" alt="Sauto" />
-        <div class="inv-date">
-            <?= $esc($t['date']) ?>: <strong><?= $esc(date('d.m.Y', strtotime($docDate))) ?></strong>
+<div id="p_cont" class="base">
+    <div class="pg bg">
+        <div class="date"><?= $esc($zdate) ?></div>
+        <img class="logo" src="/media/images/site/v2/logo_b.svg" width="33%" />
+        <div class="ln"></div>
+        <span class="cont">
+            <b>“SAUTO” SRL</b><br/>
+            <span>Republica Moldova, MD-2084, mun.Chişinau</span><br/>
+            <span>or.Cricova, str.Chisinaului 84, ap.(of.) 39</span><br/>
+            <span>IBAN: <b><?= $esc($iban) ?></b></span><br/>
+            <span>în B.C.“VICTORIABANK S.A.”, <b>VICBMD2XXXX</b></span><br/>
+            <span>c/f <b>1017600006845</b>, c/TVA <b>0609417</b></span>
+        </span>
+        <div class="cont"></div>
+        <div class="ttl">Cont de plata nr. <?= $esc($invNo) ?></div>
+        <div class="flx">
+            <table>
+                <tr>
+                    <td class="id">№</td>
+                    <td class="nm txt_up">Denumirea marfuri (serviciilor)<br/>Название товара (услуг)</td>
+                    <td class="prc">Pret pentru o unitate<br/>Цена за единицу<br/><?= $esc($currency) ?></td>
+                </tr>
+                <tr>
+                    <td class="id">1</td>
+                    <td class="nm txt_up"><span>Plata in avans pentru automobilul </span><?= $esc(trim($brandTxt.' '.$modelTxt)) ?><?= $vin !== '' ? '<br/>VIN: '.$esc($vin) : '' ?></td>
+                    <td class="prc"><?= $esc($sumTxt) ?></td>
+                </tr>
+                <tr>
+                    <td class="id"></td>
+                    <td class="nm txt_up">TOTAL</td>
+                    <td class="prc"><?= $esc($sumTxt) ?></td>
+                </tr>
+            </table>
+            <div class="buyer">Platitor: <span class="txt_cpt"><?= $esc(mb_strtolower($buyerName)) ?></span>, <?= $esc($buyerCode) ?> <span class="txt_up"><?= $esc($buyerIdno) ?></span></div>
+            <div class="ws"></div>
+            <div class="sign">
+                <div class="s1">Semnatura<div class="ln"></div></div>
+                <div class="s2">L. Ş.<div class="ln"></div></div>
+            </div>
         </div>
     </div>
-
-    <h1 class="inv-ttl"><?= $esc($t['doc'].' '.$invoice['invoice_no']) ?></h1>
-
-    <div class="parties">
-        <div class="party">
-            <h3><?= $esc($t['supplier']) ?></h3>
-            <div class="nm"><?= $esc($company['name']) ?></div>
-            <p><?= $esc($company['address']) ?></p>
-            <p><span class="lbl"><?= $esc($t['iban']) ?>:</span> <strong><?= $esc($company['iban']) ?></strong></p>
-            <p><span class="lbl"><?= $esc($t['bank']) ?>:</span> <?= $esc($company['bank']) ?></p>
-            <p><span class="lbl"><?= $esc($t['idno']) ?>:</span> <?= $esc($company['cf']) ?>
-               &nbsp; <span class="lbl"><?= $esc($t['vat']) ?>:</span> <?= $esc($company['tva']) ?></p>
-        </div>
-
-        <div class="party">
-            <h3><?= $esc($t['payer']) ?></h3>
-            <?php
-            // Buyer data as typed on the form (frozen); fall back to the profile.
-            $buyerName  = ($dm['buyer_name'] ?? '') !== '' ? (string)$dm['buyer_name'] : \App\Services\B2b\B2bAuth::displayName($client);
-            $buyerIdno  = (string)($dm['buyer_idno'] ?? '');
-            $buyerPhone = ($dm['buyer_phone'] ?? '') !== '' ? (string)$dm['buyer_phone'] : (string)($client['phone_number'] ?? '');
-            ?>
-            <div class="nm"><?= $esc($buyerName) ?></div>
-            <?php if ($buyerIdno !== ''): ?>
-                <p><span class="lbl"><?= $esc($t['idno']) ?>:</span> <?= $esc($buyerIdno) ?></p>
-            <?php endif; ?>
-            <?php if (!empty($client['legal_address'])): ?>
-                <p><?= $esc($client['legal_address']) ?></p>
-            <?php endif; ?>
-            <?php if (!empty($client['bank_iban'])): ?>
-                <p><span class="lbl"><?= $esc($t['iban']) ?>:</span> <?= $esc($client['bank_iban']) ?></p>
-            <?php endif; ?>
-            <?php if (!empty($client['bank_name'])): ?>
-                <p><span class="lbl"><?= $esc($t['bank']) ?>:</span> <?= $esc($client['bank_name']) ?></p>
-            <?php endif; ?>
-            <p><?= $esc($client['email'] ?? '') ?> &middot; <?= $esc($buyerPhone) ?></p>
-        </div>
-    </div>
-
-    <table class="items">
-        <thead>
-            <tr>
-                <th class="num"><?= $esc($t['nr']) ?></th>
-                <th><?= $esc($t['goods']) ?></th>
-                <th class="amt"><?= $esc($t['price']) ?>, <?= $esc($currency) ?></th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td class="num">1</td>
-                <td>
-                    <?= $esc($t['row']) ?> <strong><?= $esc($carLabel) ?></strong>
-                    <?php if ($vin !== ''): ?><span class="vin">VIN: <?= $esc($vin) ?></span><?php endif; ?>
-                </td>
-                <td class="amt"><?= $esc($fmt($invoice['advance_amount'])) ?></td>
-            </tr>
-            <tr class="total">
-                <td></td>
-                <td><?= $esc($t['total']) ?></td>
-                <td class="amt"><?= $esc($fmt($invoice['advance_amount'])) ?> <?= $esc($currency) ?></td>
-            </tr>
-        </tbody>
-    </table>
-
-    <div class="signs">
-        <div><?= $esc($t['sign']) ?><div class="ln"></div></div>
-        <div><?= $esc($t['stamp']) ?><div class="ln"></div></div>
-    </div>
-
-    <p class="note"><?= $esc($t['note']) ?></p>
 </div>
 
 </body>

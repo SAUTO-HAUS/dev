@@ -76,7 +76,6 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/requests';
                     <th><?= b2b_adm_esc($t['col_client']) ?></th>
                     <th><?= b2b_adm_esc($t['col_car']) ?></th>
                     <th><?= b2b_adm_esc($t['col_invoice']) ?></th>
-                    <th><?= b2b_adm_esc($t['col_comment']) ?></th>
                     <th><?= b2b_adm_esc($t['col_status']) ?></th>
                     <th><?= b2b_adm_esc($t['col_date']) ?></th>
                     <th><?= b2b_adm_esc($t['col_actions']) ?></th>
@@ -106,7 +105,6 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/requests';
                                 &mdash;
                             <?php endif; ?>
                         </td>
-                        <td class="b2ba-td--wrap"><?= b2b_adm_esc($req['comment'] ?? '—') ?></td>
                         <td>
                             <span class="b2ba-badge b2ba-badge--<?= b2b_adm_esc($req['status']) ?>" data-b2b-req-badge="<?= $rid ?>">
                                 <?= b2b_adm_esc($t['st_'.$req['status']] ?? $req['status']) ?>

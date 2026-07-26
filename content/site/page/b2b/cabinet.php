@@ -43,7 +43,7 @@ if ($action === 'cont-plata') {
     return;
 }
 
-$tabs = ['cabinet' => 'tab_cars', 'invoices' => 'tab_invoices', 'requests' => 'tab_requests'];
+$tabs = ['cabinet' => 'tab_cars', 'invoices' => 'tab_invoices'];
 if (!isset($tabs[$action])) {
     $action = 'cabinet';
 }
@@ -53,12 +53,10 @@ echo b2b_assets();
 // ------------------------------------------------------------------- header
 
 // Summary counts for the dashboard nav cards (cheap COUNTs, one per section).
-$countSaved = $countRequests = $countInvoices = 0;
+$countSaved = $countInvoices = 0;
 try {
     $q = $db->prepare('SELECT COUNT(*) FROM '.B2bConfig::table('saved_cars').' WHERE b2b_user_id = :uid');
     $q->execute([':uid' => $userId]); $countSaved = (int)$q->fetchColumn();
-    $q = $db->prepare('SELECT COUNT(*) FROM '.B2bConfig::table('requests').' WHERE b2b_user_id = :uid');
-    $q->execute([':uid' => $userId]); $countRequests = (int)$q->fetchColumn();
     $q = $db->prepare('SELECT COUNT(*) FROM '.B2bConfig::table('invoices').' WHERE b2b_user_id = :uid');
     $q->execute([':uid' => $userId]); $countInvoices = (int)$q->fetchColumn();
 } catch (Throwable $e) {}
@@ -73,14 +71,11 @@ if ($initials === '') { $initials = 'B'; }
 
 // Feather-style icons for the nav cards.
 $icoHeart = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>';
-$icoBell  = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>';
 $icoDoc   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>';
 
-// Nav cards double as the section counters. Order = the dealer's flow:
-// browse saved cars -> send a request -> pay the proforma.
+// Nav cards double as the section counters: saved cars + payment invoices.
 $navItems = [
     'cabinet'  => [$t['tab_cars'],     $countSaved,    $icoHeart],
-    'requests' => [$t['tab_requests'], $countRequests, $icoBell],
     'invoices' => [$t['tab_invoices'], $countInvoices, $icoDoc],
 ];
 
@@ -183,52 +178,7 @@ elseif ($action === 'invoices') {
     }
 }
 
-// -------------------------------------------------------- Tab 3: requests
-
-elseif ($action === 'requests') {
-    $requests = [];
-    try {
-        $stmt = $db->prepare(
-            'SELECT r.*, i.invoice_no
-               FROM '.B2bConfig::table('requests').' AS r
-               LEFT JOIN '.B2bConfig::table('invoices').' AS i ON i.id = r.invoice_id
-              WHERE r.b2b_user_id = :uid
-              ORDER BY r.id DESC LIMIT 100'
-        );
-        $stmt->execute([':uid' => $userId]);
-        $requests = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
-    } catch (Throwable $e) {
-        $requests = [];
-    }
-
-    if (!$requests) {
-        echo '<div class="b2b-empty"><p>'.b2b_esc($t['no_requests']).'</p></div>';
-    } else {
-        echo '<div class="b2b-table-wrap"><table class="b2b-table">
-                <thead><tr>
-                    <th>'.b2b_esc($t['invoice_car']).'</th>
-                    <th>'.b2b_esc($t['invoice_no']).'</th>
-                    <th>'.b2b_esc($t['req_comment']).'</th>
-                    <th>'.b2b_esc($t['req_status']).'</th>
-                    <th>'.b2b_esc($t['invoice_date']).'</th>
-                </tr></thead><tbody>';
-
-        foreach ($requests as $req) {
-            $car = B2bInvoice::loadCar((int)$req['car_id']);
-            echo '<tr>
-                    <td><a href="/'.b2b_esc($lang).'/ordercars/'.(int)$req['car_id'].'">'.b2b_esc($car['title'] ?? ('#'.(int)$req['car_id'])).'</a></td>
-                    <td>'.b2b_esc($req['invoice_no'] ?? '—').'</td>
-                    <td class="b2b-td--wrap">'.b2b_esc($req['comment'] ?? '—').'</td>
-                    <td><span class="b2b-badge b2b-badge--'.b2b_esc($req['status']).'">'.b2b_status_label((string)$req['status']).'</span></td>
-                    <td>'.b2b_esc(date('d.m.Y H:i', strtotime((string)$req['created_at']))).'</td>
-                  </tr>';
-        }
-
-        echo '</tbody></table></div>';
-    }
-}
-
-// ------------------------------------------------------- Tab 4: activity
+// ------------------------------------------------------- (legacy) activity
 
 elseif ($action === 'activity') {
     $logs = B2bAudit::forUser($userId, 100);
