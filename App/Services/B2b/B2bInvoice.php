@@ -238,7 +238,7 @@ class B2bInvoice
 
         try {
             $stmt = B2bConfig::db()->prepare(
-                'SELECT id, br, mo, br_nm, mo_nm, yr, vin, prc, cur, vol, fl, mlg, catalog_type
+                'SELECT id, br, mo, br_nm, mo_nm, yr, vin, prc, cur, vol, fl, mlg, catalog_type, parsing_id, parsing_source
                    FROM ' . B2bConfig::prefix() . '_car_ctlg
                   WHERE id = :id AND `vis` = "1" AND `act` = "1" LIMIT 1'
             );
@@ -337,9 +337,10 @@ class B2bInvoice
      * Suggested advance already expressed in MDL — the only currency a payment
      * invoice is issued in. The admin settings are read as MDL:
      *   fixed mode   -> b2b_advance_default is a flat MDL amount;
-     *   percent mode -> b2b_advance_percent of the car price, converted from the
-     *                   car's currency to MDL at the BNM rate, with the flat MDL
-     *                   amount acting as the floor.
+     *   percent mode -> b2b_advance_percent of the price THIS client pays (the
+     *                   preferential B2B price, which can differ per client),
+     *                   converted to MDL at the BNM rate, with the flat MDL amount
+     *                   acting as the floor.
      */
     public static function suggestedAdvanceMdl(?array $car = null): float
     {
@@ -349,14 +350,27 @@ class B2bInvoice
             return round($flatMdl, 2);
         }
 
-        $price = (float)($car['prc'] ?? 0);
+        // Base = the price THIS client actually pays. For a B2B partner that is the
+        // preferential B2B price (which can differ from client to client), not the
+        // public list price; fall back to the list price when no B2B price applies.
+        $priceCur = strtoupper(trim((string)($car['cur'] ?? 'EUR')));
+        $price    = (float)($car['prc'] ?? 0);
+
+        if (is_array($car) && function_exists('b2b_prices_for_cars')) {
+            $cid   = (int)($car['id'] ?? 0);
+            $b2b   = $cid > 0 ? \b2b_prices_for_cars([$car]) : [];
+            if ($cid > 0 && !empty($b2b[$cid])) {
+                $price    = (float)$b2b[$cid]; // B2B total for this client, in EUR
+                $priceCur = 'EUR';
+            }
+        }
+
         if ($price <= 0) {
             return round($flatMdl, 2); // no usable price: fall back to the flat amount
         }
 
         $percent = (float)B2bConfig::get('b2b_advance_percent', '10');
-        $carCur  = strtoupper(trim((string)($car['cur'] ?? 'EUR')));
-        $amount  = B2bMoney::toMdl($price * ($percent / 100), $carCur);
+        $amount  = B2bMoney::toMdl($price * ($percent / 100), $priceCur);
 
         // The flat MDL amount is the floor so a cheap car still carries a
         // meaningful advance.
