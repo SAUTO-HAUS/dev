@@ -619,7 +619,7 @@ if (!function_exists('parsing_md_price_table')) {
                 padding-top:16px;padding-bottom:18px;
             }
             .md-price-table .mdp-total .mdp-label{color:#e2001a;text-transform:uppercase;letter-spacing:.3px;}
-            .md-price-table .mdp-total .mdp-val{color:#e2001a;font-size:1.4rem;}
+            .md-price-table .mdp-total .mdp-val{color:#1a1a1a;font-size:1.4rem;}
             /* Standard price struck through beside the partner B2B price
                (on every modified line and on the total). */
             .md-price-table .mdp-old{

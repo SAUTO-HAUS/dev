@@ -431,6 +431,9 @@
       position:relative; display:inline-block; vertical-align:middle;
       color:#CE3226; font-size:0.95rem; font-weight:700; letter-spacing:0.02em;
       padding:0.05rem 0.15rem; margin-left:0.55rem;
+      /* In the mobile price row (flex, justify-content:space-between) this keeps
+         the struck price next to the current one instead of the far right edge. */
+      margin-right:auto;
   }
   .o_val--b2b::after{
       content:''; position:absolute; left:0; right:0; top:50%;
