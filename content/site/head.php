@@ -603,6 +603,53 @@ $(document).ready(function(){
 		empty.style.display = box.querySelector('.it') ? 'none' : 'block';
 	}
 
+	// The cabinet button currently on screen: the floating one while scrolled,
+	// otherwise the header one. null if neither is visible.
+	function cabinetTarget(){
+		var fb = document.querySelector('.b2b-float.is-shown .b2b-header-btn--user');
+		if (fb && fb.getBoundingClientRect().width) return fb;
+		var hb = document.querySelector('header .b2b-header-btn--user');
+		if (hb){ var r = hb.getBoundingClientRect(); if (r.width && r.bottom > 4 && r.top < (window.innerHeight||0)) return hb; }
+		return fb || hb || null;
+	}
+
+	// Fly a red heart from the heart button to that cabinet button (no shrink),
+	// then bump its avatar.
+	function flyToCabinet(originBtn){
+		if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		var target = cabinetTarget();
+		if (!target) return;
+		var tRect = target.getBoundingClientRect();
+		if (!tRect.width) return;
+
+		var sRect = originBtn.getBoundingClientRect();
+		var S = 32; // constant size the whole way
+		var fly = document.createElement('div');
+		fly.className = 'fav-fly';
+		fly.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+		fly.style.left   = (sRect.left + sRect.width / 2 - S / 2) + 'px';
+		fly.style.top    = (sRect.top + sRect.height / 2 - S / 2) + 'px';
+		fly.style.width  = S + 'px';
+		fly.style.height = S + 'px';
+		document.body.appendChild(fly);
+		fly.getBoundingClientRect(); // reflow so the transition runs
+
+		var dx = (tRect.left + tRect.width / 2) - (sRect.left + sRect.width / 2);
+		var dy = (tRect.top + tRect.height / 2) - (sRect.top + sRect.height / 2);
+		fly.style.transform = 'translate(' + dx + 'px,' + dy + 'px)'; // move only, no scale
+		fly.style.opacity = '0.35';
+
+		var done = false;
+		function finish(){
+			if (done) return; done = true;
+			if (fly.parentNode) fly.remove();
+			var av = target.querySelector('.b2b-header-btn__avatar') || target;
+			av.classList.remove('b2b-cart-bump'); void av.offsetWidth; av.classList.add('b2b-cart-bump');
+		}
+		fly.addEventListener('transitionend', finish, { once: true });
+		setTimeout(finish, 1400); // safety net; must exceed the CSS transition
+	}
+
 
 	document.addEventListener('click', function(e){
 		var btn = e.target.closest && e.target.closest('.card-fav-btn');
@@ -639,6 +686,8 @@ $(document).ready(function(){
 				var n = (parseInt(savedNum.textContent, 10) || 0) + (nowFav ? 1 : -1);
 				savedNum.textContent = n < 0 ? 0 : n;
 			}
+			// On add, fly the car photo into the cabinet button so it's obvious where it went.
+			if (nowFav) { try { flyToCabinet(btn); } catch(e){} }
 		}
 		// On a favourites-style list — the guest /favorites page (#fav_container) or
 		// the B2B cabinet grid (.b2b-cars) — removing a fav drops its card at once,
