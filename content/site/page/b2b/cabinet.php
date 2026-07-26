@@ -89,9 +89,8 @@ echo '
                 <span class="b2b-badge b2b-badge--'.b2b_esc($user['status']).'">'.b2b_status_label((string)$user['status']).'</span>
             </div>
         </div>
-    </div>
 
-    <div class="b2b-nav">';
+        <div class="b2b-nav">';
         foreach ($navItems as $slug => [$label, $count, $ico]) {
             $href = '/'.b2b_esc($lang).'/b2b/'.$slug;
             // The favourites heart updates this counter live (see head.php).
@@ -104,6 +103,7 @@ echo '
                . '</span></a>';
         }
         echo '
+        </div>
     </div>
 
     <div class="b2b-panel" data-csrf="'.$csrf.'">';

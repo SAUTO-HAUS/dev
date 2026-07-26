@@ -223,12 +223,12 @@
 /* Hero: a normal block (NOT a <header>, which the site-wide header{} rule would
    hijack with an 80vw width + 10vw margin). Avatar + greeting + name + status. */
 .b2b-hero{
-    display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap;
-    padding:1.35rem 1.6rem;
+    display:flex; flex-direction:row; align-items:center; gap:1.5rem; flex-wrap:wrap;
+    padding:1.2rem 1.6rem;
     background:#fff; border:1px solid #efefef; border-radius:20px;
     box-shadow:0 12px 34px rgba(20,20,40,.08);
 }
-.b2b-hero__id{ display:flex; align-items:center; gap:1rem; min-width:0; }
+.b2b-hero__id{ display:flex; align-items:center; gap:1rem; min-width:0; flex:0 1 auto; }
 .b2b-hero__avatar{
     flex:0 0 auto; width:56px; height:56px; border-radius:50%;
     display:flex; align-items:center; justify-content:center;
@@ -240,18 +240,19 @@
 .b2b-hero__greet{ margin:0 0 .15rem; color:var(--b2b-muted); font-size:.76rem; font-weight:600; text-transform:uppercase; letter-spacing:.6px; }
 .b2b-hero__name{ margin:0 0 .5rem; font-size:1.55rem; font-weight:800; line-height:1.05; letter-spacing:-.01em; }
 
-/* Nav cards double as section counters (Cars / Requests / Invoices). */
-.b2b-nav{ display:grid; grid-template-columns:repeat(3, 1fr); gap:.9rem; margin:1.1rem 0 1.4rem; }
+/* Nav cards double as section counters (Cars / Requests / Invoices). They sit on
+   the same row as the identity (taking the remaining width), flat segments so it
+   does not read as card-in-card. */
+.b2b-nav{ flex:1 1 380px; display:grid; grid-template-columns:repeat(3, 1fr); gap:.75rem; }
 .b2b-navcard{
     display:flex; align-items:center; gap:.95rem;
-    padding:1rem 1.15rem;
-    background:#fff; border:1px solid #efefef; border-radius:16px;
-    box-shadow:0 6px 20px rgba(20,20,40,.05);
+    padding:.85rem 1rem;
+    background:#fafafb; border:1px solid #eef0f3; border-radius:14px;
     text-decoration:none; color:var(--b2b-ink);
-    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+    transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease, background .15s ease;
 }
-.b2b-navcard:hover{ transform:translateY(-3px); box-shadow:0 16px 34px rgba(20,20,40,.12); }
-.b2b-navcard.is-active{ border-color:var(--b2b-brand); box-shadow:0 12px 30px rgba(226,0,26,.16); }
+.b2b-navcard:hover{ background:#fff; transform:translateY(-2px); box-shadow:0 10px 24px rgba(20,20,40,.10); }
+.b2b-navcard.is-active{ background:#fff; border-color:var(--b2b-brand); box-shadow:0 8px 22px rgba(226,0,26,.14); }
 .b2b-navcard__ico{
     flex:0 0 auto; width:46px; height:46px; border-radius:13px;
     display:flex; align-items:center; justify-content:center;
