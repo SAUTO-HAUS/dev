@@ -424,7 +424,21 @@
       background:linear-gradient(90deg, transparent, #1a1a1a 18%, #1a1a1a 82%, transparent);
       transform:rotate(-16deg); transform-origin:center;
   }
-  
+
+  /* B2B "old price" (public price struck through in red) — self-contained so it
+     also styles the main price on the car page, not only the catalog grid. */
+  .o_val--b2b{
+      position:relative; display:inline-block; vertical-align:middle;
+      color:#CE3226; font-size:0.95rem; font-weight:700; letter-spacing:0.02em;
+      padding:0.05rem 0.15rem; margin-left:0.55rem;
+  }
+  .o_val--b2b::after{
+      content:''; position:absolute; left:0; right:0; top:50%;
+      height:1.5px; border-radius:1px; margin-top:-0.75px;
+      background:linear-gradient(90deg, transparent, #CE3226 18%, #CE3226 82%, transparent);
+      transform:rotate(-16deg); transform-origin:center;
+  }
+
   main .gr > .cnt > .it > .txt > .specs2 {width:100%; margin-top:1rem; float:left;}
   main .gr > .cnt > .it > .txt > .specs2 > .ar {width:50%; height:3rem; float:left;}
   main .gr > .cnt > .it > .txt > .specs2 > .ar.s {margin:1rem 0;}

@@ -536,10 +536,18 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 			foreach ($results as $ri => $rrow) {
 				$b2b_id = (int)$rrow['id'];
 				if (!isset($b2b_prices[$b2b_id])) { continue; }
-				$results[$ri]['prc']   = $b2b_prices[$b2b_id];
-				$results[$ri]['prc_n'] = $b2b_prices[$b2b_id];
+				$b2bP   = (int)$b2b_prices[$b2b_id];
+				$retail = (int)$rrow['prc'];
+				// prc drives the card value + monthly payment, so it must be the B2B price.
+				$results[$ri]['prc']   = $b2bP;
+				$results[$ri]['prc_n'] = $b2bP;
 				// A public promo countdown is meaningless against a B2B price.
 				$results[$ri]['prc_t'] = 0;
+				// The public price struck through beside it (same .o_val visual as a
+				// promo old price), only when the B2B price is actually lower.
+				if ($b2bP > 0 && $retail > $b2bP) {
+					$results[$ri]['b2b_old_bl'] = '<span class="o_val o_val--b2b" title="'.$lng['w']['o_prc'].'"><span class="i">'.number_format($retail, 0, ',', ' ').'</span> &#8364;</span>';
+				}
 			}
 		}
 	}
@@ -657,7 +665,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 		}else{
 			$prc = number_format($r['prc'], 0, ',', ' ');
 			$o_prc = 0;
-			$o_prc_bl = '';
+			$o_prc_bl = $r['b2b_old_bl'] ?? '';
 		}
 		
 		// Generate timer HTML if exists (only for desktop). Skip for sold cars.
@@ -720,7 +728,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 					}else{
 						$prc = number_format($r['prc'], 0, ',', ' ');
 						$o_prc = 0;
-						$o_prc_bl = '';
+						$o_prc_bl = $r['b2b_old_bl'] ?? '';
 					}
 					
 					// Add import country to specs if available
@@ -936,7 +944,7 @@ function tyre_card($prefx, $db, $img_frmt, $lng, $v1='', $lmt='4', $zreq=null){
 					}else{
 						$prc = number_format($r['prc'], 0, ',', ' ');
 						$o_prc = 0;
-						$o_prc_bl = '';
+						$o_prc_bl = $r['b2b_old_bl'] ?? '';
 					}
 					
 				$ar['txt'] .= '
@@ -1178,7 +1186,7 @@ $fn_card = function ($gr='x', $v1='', $lmt='4', $zreq=null, $stts='av') use (&$p
 					}else{
 						$prc = number_format($r['prc'], 0, ',', ' ');
 						$o_prc = 0;
-						$o_prc_bl = '';
+						$o_prc_bl = $r['b2b_old_bl'] ?? '';
 					}
 					
 				$ar['txt'] .= '

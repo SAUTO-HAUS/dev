@@ -532,6 +532,17 @@ if (!function_exists('parsing_md_price_table')) {
                 ? htmlspecialchars((string)$line['display'])
                 : $fmt($line['amount']).' €';
 
+            // B2B: on a modified line, show the standard price beside this client's
+            // own price. A cancelled fee (struck row) shows what it used to cost.
+            if (isset($line['std_amount']) && !isset($line['display'])) {
+                $std = (float)$line['std_amount'];
+                if ($strike) {
+                    if ($std > 0) { $value = $fmt($std).' €'; }
+                } elseif ($std > 0 && $std != (float)$line['amount']) {
+                    $value = '<span class="mdp-old">'.$fmt($std).' €</span> '.$value;
+                }
+            }
+
             $rows .= '<tr'.($strike ? ' class="mdp-cancelled"' : '').'>'
                    . '<td class="mdp-label">'.htmlspecialchars($label).'</td>'
                    . '<td class="mdp-val">'.$value.'</td></tr>';
@@ -609,6 +620,14 @@ if (!function_exists('parsing_md_price_table')) {
             }
             .md-price-table .mdp-total .mdp-label{color:#e2001a;text-transform:uppercase;letter-spacing:.3px;}
             .md-price-table .mdp-total .mdp-val{color:#e2001a;font-size:1.4rem;}
+            /* Standard price struck through beside this client's own B2B price
+               (on every modified line and on the total). */
+            .md-price-table .mdp-old{
+                color:#9a9a9a;font-weight:600;font-size:.82rem;
+                text-decoration:line-through;text-decoration-color:#e2001a;
+                margin-right:7px;white-space:nowrap;
+            }
+            .md-price-table .mdp-total .mdp-old{font-size:.9rem;}
             @media (max-width:600px){
                 .md-price-block{border-radius:14px;}
                 .md-price-title{font-size:1.05rem;padding:16px 18px;}
@@ -698,7 +717,10 @@ if (!function_exists('parsing_md_price_table')) {
             . $badge
             . '<table class="md-price-table"><tbody>'.$rows
             . '<tr class="mdp-total"><td class="mdp-label">'.htmlspecialchars($t['total']).'</td>'
-            . '<td class="mdp-val">'.$fmt($breakdown['total']).' €</td></tr>'
+            . '<td class="mdp-val">'
+            . ((!empty($breakdown['retail_total']) && (float)$breakdown['retail_total'] > (float)$breakdown['total'])
+                ? '<span class="mdp-old">'.$fmt($breakdown['retail_total']).' €</span> ' : '')
+            . $fmt($breakdown['total']).' €</td></tr>'
             . '</tbody></table>'
             . $note
             . '</div></div>';

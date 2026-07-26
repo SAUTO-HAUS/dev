@@ -768,7 +768,19 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 
 
                 $cur = $r['cur'];
-                if ( $r['prc_t']!=0 && $r['prc_t']>time() ){
+                // B2B partner: show the preferential price as the current price with
+                // the public price struck through beside it (reusing the promo old/new
+                // visual, .o_val). Guests fall through to the normal promo / plain price.
+                $b2bPrc = null;
+                if (function_exists('b2b_prices_for_cars')) {
+                    $bp = b2b_prices_for_cars([$r]);
+                    if (!empty($bp[(int)$r['id']])) { $b2bPrc = (int)$bp[(int)$r['id']]; }
+                }
+                if ( $b2bPrc !== null && $b2bPrc > 0 && $b2bPrc < (int)$r['prc'] ){
+                    $prc = $b2bPrc;
+                    $o_prc = (int)$r['prc'];
+                    $o_prc_bl = '<span class="o_val o_val--b2b" title="'.$lng['w']['o_prc'].'"><span class="i">'.parseCurr($o_prc).'</span> '.( symb_rplc($r['cur']) ).'</span>';
+                }elseif ( $r['prc_t']!=0 && $r['prc_t']>time() ){
                     $prc = $r['prc_n'];
                     $o_prc = $r['prc'];
                     $o_prc_bl = '<span class="o_val" title="'.$lng['w']['o_prc'].'"><span class="i">'.parseCurr($o_prc).'</span> '.( symb_rplc($r['cur']) ).'</span>';
@@ -1233,6 +1245,24 @@ $iconTelegramParams = array(
                         // Applies the preferential fee structure server-side for a
                         // logged-in partner; the unchanged public breakdown otherwise.
                         $bd = b2b_breakdown_for($parsingSrc, $carForBd);
+                        // For a B2B partner, attach the STANDARD (non-B2B) figures so the
+                        // breakdown shows, on every modified line and on the total, the
+                        // standard price struck through beside this client's own price.
+                        if (is_array($bd) && function_exists('b2b_is_client') && b2b_is_client()) {
+                            if ((int)$r['prc'] > 0) { $bd['retail_total'] = (int)$r['prc']; }
+
+                            $bdStd = ($parsingSrc === 'encar')
+                                ? parsing_md_breakdown_kr($db, $prefx, $carForBd, null, false, null)
+                                : parsing_md_breakdown_eu($db, $prefx, $carForBd, null, false, null);
+                            if (is_array($bdStd) && !empty($bdStd['lines']) && !empty($bd['lines'])) {
+                                $stdByKey = [];
+                                foreach ($bdStd['lines'] as $sl) { $stdByKey[(string)$sl['key']] = $sl['amount']; }
+                                foreach ($bd['lines'] as $bi => $bl) {
+                                    $bk = (string)$bl['key'];
+                                    if (isset($stdByKey[$bk])) { $bd['lines'][$bi]['std_amount'] = $stdByKey[$bk]; }
+                                }
+                            }
+                        }
                         $mdTable = parsing_md_price_table($bd, $_COOKIE['lang']);
                     }
 
