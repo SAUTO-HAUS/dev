@@ -445,20 +445,6 @@
 .b2b-header-btn:hover{ background:#e2001a; color:#fff; box-shadow:0 6px 16px rgba(226,0,26,.25); }
 .b2b-header-btn.is-active{ background:#e2001a; color:#fff; }
 
-/* "Fly to cabinet": the car photo animates from the card to this button on save. */
-.fav-fly{
-    position:fixed; z-index:99999; pointer-events:none;
-    border-radius:12px;
-    background-size:cover; background-position:center;
-    box-shadow:0 10px 26px rgba(0,0,0,.35);
-    transition:transform 1.25s cubic-bezier(.45,-0.1,.25,1), opacity 1.25s ease;
-    will-change:transform, opacity;
-}
-.fav-fly--heart{ background:#e2001a; border-radius:50%; }
-@keyframes b2bCartBump{ 0%{transform:scale(1)} 30%{transform:scale(1.22)} 55%{transform:scale(.9)} 100%{transform:scale(1)} }
-.b2b-cart-bump{ animation:b2bCartBump .5s ease; }
-@media (prefers-reduced-motion:reduce){ .fav-fly{ display:none; } .b2b-cart-bump{ animation:none; } }
-
 /* Logged-in variant: an initials avatar (like the hero) sits before the label. */
 .b2b-header-btn--user{ padding-left:.35rem; }
 .b2b-header-btn__avatar{
