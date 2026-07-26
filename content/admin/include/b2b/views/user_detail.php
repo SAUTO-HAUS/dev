@@ -2,11 +2,10 @@
 
 /**
  * B2B client profile (spec 3.1 / 3.2 / 3.3).
- * Tabs: details, region permissions, activity log, invoices, requests.
+ * Tabs: details, region permissions, pricing, invoices.
  * Every action goes through content/admin/ajax/b2b/ajax.php.
  */
 
-use App\Services\B2b\B2bAudit;
 use App\Services\B2b\B2bAuth;
 use App\Services\B2b\B2bConfig;
 use App\Services\B2b\B2bInvoice;
@@ -36,22 +35,7 @@ if (!$client) {
 
 $listUrl  = '/'.$lang.'/'.$admin_dir.'/b2b/users';
 $regions  = B2bRegions::allowed($uid);
-$logs     = B2bAudit::forUser($uid, 200);
 $invoices = B2bInvoice::forUser($uid, 200);
-
-$requests = [];
-try {
-    $stmt = $db->prepare(
-        'SELECT r.*, i.invoice_no
-           FROM '.B2bConfig::table('requests').' AS r
-           LEFT JOIN '.B2bConfig::table('invoices').' AS i ON i.id = r.invoice_id
-          WHERE r.b2b_user_id = :uid ORDER BY r.id DESC LIMIT 200'
-    );
-    $stmt->execute([':uid' => $uid]);
-    $requests = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
-} catch (Throwable $e) {
-    $requests = [];
-}
 
 ?>
 
@@ -104,9 +88,7 @@ try {
         <button type="button" class="b2ba-tab is-active" data-b2b-tab="data"><?= b2b_adm_esc($t['tab_data']) ?></button>
         <button type="button" class="b2ba-tab" data-b2b-tab="perms"><?= b2b_adm_esc($t['tab_perms']) ?></button>
         <button type="button" class="b2ba-tab" data-b2b-tab="prices"><?= b2b_adm_esc($t['tab_prices']) ?></button>
-        <button type="button" class="b2ba-tab" data-b2b-tab="activity"><?= b2b_adm_esc($t['tab_activity']) ?> <span class="b2ba-tab__n"><?= count($logs) ?></span></button>
         <button type="button" class="b2ba-tab" data-b2b-tab="invoices"><?= b2b_adm_esc($t['tab_invoices']) ?> <span class="b2ba-tab__n"><?= count($invoices) ?></span></button>
-        <button type="button" class="b2ba-tab" data-b2b-tab="reqs"><?= b2b_adm_esc($t['tab_reqs']) ?> <span class="b2ba-tab__n"><?= count($requests) ?></span></button>
     </nav>
 
     <!-- --------------------------------------------------------- Details -->
@@ -210,47 +192,6 @@ try {
         ?>
     </section>
 
-    <!-- ---------------------------------------------------- Activity log -->
-    <section class="b2ba-pane" data-b2b-pane="activity">
-        <?php if (!$logs): ?>
-            <div class="b2ba-empty"><?= b2b_adm_esc($t['no_activity']) ?></div>
-        <?php else: ?>
-            <div class="b2ba-table-wrap">
-                <table class="b2ba-table">
-                    <thead><tr>
-                        <th><?= b2b_adm_esc($t['col_date']) ?></th>
-                        <th><?= b2b_adm_esc($t['col_action']) ?></th>
-                        <th><?= b2b_adm_esc($t['col_details']) ?></th>
-                        <th><?= b2b_adm_esc($t['col_ip']) ?></th>
-                    </tr></thead>
-                    <tbody>
-                    <?php foreach ($logs as $log):
-                        $details = $log['details'] ? json_decode((string)$log['details'], true) : null;
-                        $carId   = is_array($details) ? (int)($details['car_id'] ?? 0) : 0;
-                    ?>
-                        <tr>
-                            <td class="b2ba-td--small"><?= b2b_adm_esc(date('d.m.Y H:i:s', strtotime((string)$log['created_at']))) ?></td>
-                            <td><?= b2b_adm_esc($t['ac_'.$log['action_type']] ?? $log['action_type']) ?></td>
-                            <td class="b2ba-td--small">
-                                <?php if ($carId > 0): ?>
-                                    <a href="/<?= b2b_adm_esc($lang) ?>/ordercars/<?= $carId ?>" target="_blank" rel="noopener">#<?= $carId ?></a>
-                                <?php endif; ?>
-                                <?php if (is_array($details)): ?>
-                                    <?php foreach ($details as $dk => $dv): ?>
-                                        <?php if ($dk === 'car_id') continue; ?>
-                                        <span class="b2ba-kv"><?= b2b_adm_esc($dk) ?>: <?= b2b_adm_esc(is_scalar($dv) ? $dv : json_encode($dv)) ?></span>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </td>
-                            <td class="b2ba-td--small"><?= b2b_adm_esc($log['ip_address'] ?? '') ?></td>
-                        </tr>
-                    <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php endif; ?>
-    </section>
-
     <!-- -------------------------------------------------------- Invoices -->
     <section class="b2ba-pane" data-b2b-pane="invoices">
         <?php if (!$invoices): ?>
@@ -277,36 +218,6 @@ try {
                             <td><span class="b2ba-badge b2ba-badge--<?= b2b_adm_esc($inv['status']) ?>"><?= b2b_adm_esc($t['st_'.$inv['status']] ?? $inv['status']) ?></span></td>
                             <td class="b2ba-td--small"><?= b2b_adm_esc(date('d.m.Y H:i', strtotime((string)$inv['created_at']))) ?></td>
                             <td><a class="b2ba-btn b2ba-btn--ghost b2ba-btn--sm" href="<?= b2b_adm_esc(B2bInvoice::path($inv)) ?>" target="_blank" rel="noopener"><?= b2b_adm_esc($t['open']) ?></a></td>
-                        </tr>
-                    <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-        <?php endif; ?>
-    </section>
-
-    <!-- -------------------------------------------------------- Requests -->
-    <section class="b2ba-pane" data-b2b-pane="reqs">
-        <?php if (!$requests): ?>
-            <div class="b2ba-empty"><?= b2b_adm_esc($t['no_requests']) ?></div>
-        <?php else: ?>
-            <div class="b2ba-table-wrap">
-                <table class="b2ba-table">
-                    <thead><tr>
-                        <th><?= b2b_adm_esc($t['col_car']) ?></th>
-                        <th><?= b2b_adm_esc($t['col_invoice']) ?></th>
-                        <th><?= b2b_adm_esc($t['col_comment']) ?></th>
-                        <th><?= b2b_adm_esc($t['col_status']) ?></th>
-                        <th><?= b2b_adm_esc($t['col_date']) ?></th>
-                    </tr></thead>
-                    <tbody>
-                    <?php foreach ($requests as $req): ?>
-                        <tr>
-                            <td><a href="/<?= b2b_adm_esc($lang) ?>/ordercars/<?= (int)$req['car_id'] ?>" target="_blank" rel="noopener">#<?= (int)$req['car_id'] ?></a></td>
-                            <td><?= b2b_adm_esc($req['invoice_no'] ?? '—') ?></td>
-                            <td class="b2ba-td--wrap"><?= b2b_adm_esc($req['comment'] ?? '—') ?></td>
-                            <td><span class="b2ba-badge b2ba-badge--<?= b2b_adm_esc($req['status']) ?>"><?= b2b_adm_esc($t['st_'.$req['status']] ?? $req['status']) ?></span></td>
-                            <td class="b2ba-td--small"><?= b2b_adm_esc(date('d.m.Y H:i', strtotime((string)$req['created_at']))) ?></td>
                         </tr>
                     <?php endforeach; ?>
                     </tbody>
