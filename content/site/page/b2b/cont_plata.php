@@ -29,6 +29,8 @@ $T = [
         'name' => 'Nume, prenume', 'idno' => 'IDNP / IDNO', 'phone' => 'Telefon',
         'submit' => 'Creează cont de plată', 'back' => '← Înapoi la mașină',
         'submit_note' => 'După ce creezi contul de plată, cererea ajunge instant la echipa Sauto și te contactăm în scurt timp pentru confirmare.',
+        'req_msg' => 'Completează câmpurile obligatorii: nume, IDNP/IDNO și telefon.',
+        'idno_msg' => 'IDNP/IDNO trebuie să conțină exact 13 cifre.',
         'not_found' => 'Mașina nu a fost găsită.', 'restricted' => 'Restricționat conform planului B2B.',
     ],
     'ru' => [
@@ -41,6 +43,8 @@ $T = [
         'name' => 'Имя, фамилия', 'idno' => 'IDNP / IDNO', 'phone' => 'Телефон',
         'submit' => 'Создать счёт на оплату', 'back' => '← Назад к авто',
         'submit_note' => 'После создания счёта заявка мгновенно поступает команде Sauto — мы свяжемся с вами в ближайшее время для подтверждения.',
+        'req_msg' => 'Заполните обязательные поля: имя, IDNP/IDNO и телефон.',
+        'idno_msg' => 'IDNP/IDNO должен содержать ровно 13 цифр.',
         'not_found' => 'Автомобиль не найден.', 'restricted' => 'Ограничено по плану B2B.',
     ],
     'en' => [
@@ -53,6 +57,8 @@ $T = [
         'name' => 'Name, surname', 'idno' => 'IDNP / IDNO', 'phone' => 'Phone',
         'submit' => 'Create payment invoice', 'back' => '← Back to the car',
         'submit_note' => 'Once you create the payment invoice, your request reaches the Sauto team instantly and we\'ll contact you shortly to confirm.',
+        'req_msg' => 'Please fill in the required fields: name, IDNP/IDNO and phone.',
+        'idno_msg' => 'IDNP/IDNO must be exactly 13 digits.',
         'not_found' => 'Car not found.', 'restricted' => 'Restricted by the B2B plan.',
     ],
 ];
@@ -112,7 +118,7 @@ $lockIco = '<svg class="b2b-cp-lock" viewBox="0 0 24 24" aria-hidden="true"><pat
             <p class="b2b-card__sub"><?= $e($t['sub']) ?></p>
         </div>
 
-        <form class="b2b-form" id="b2b-cp-form" data-csrf="<?= $csrf ?>" data-car="<?= (int)$carId ?>" novalidate>
+        <form class="b2b-form" id="b2b-cp-form" data-csrf="<?= $csrf ?>" data-car="<?= (int)$carId ?>" data-req-msg="<?= $e($t['req_msg']) ?>" data-idno-msg="<?= $e($t['idno_msg']) ?>" novalidate>
 
             <h2 class="b2b-cp-sec"><?= $lockIco.$e($t['doc']) ?></h2>
             <div class="b2b-field">
@@ -165,11 +171,11 @@ $lockIco = '<svg class="b2b-cp-lock" viewBox="0 0 24 24" aria-hidden="true"><pat
             <div class="b2b-field-row">
                 <div class="b2b-field">
                     <label for="cp-idno"><?= $e($t['idno']) ?></label>
-                    <input type="text" id="cp-idno" name="buyer_idno" value="<?= $e($buyerIdno) ?>" maxlength="20" inputmode="numeric" />
+                    <input type="text" id="cp-idno" name="buyer_idno" value="<?= $e($buyerIdno) ?>" maxlength="13" inputmode="numeric" pattern="\d{13}" required />
                 </div>
                 <div class="b2b-field">
                     <label for="cp-phone"><?= $e($t['phone']) ?></label>
-                    <input type="text" id="cp-phone" name="buyer_phone" value="<?= $e($buyerPhone) ?>" maxlength="32" />
+                    <input type="text" id="cp-phone" name="buyer_phone" value="<?= $e($buyerPhone) ?>" maxlength="32" required />
                 </div>
             </div>
 
@@ -195,9 +201,55 @@ $lockIco = '<svg class="b2b-cp-lock" viewBox="0 0 24 24" aria-hidden="true"><pat
         msg.className = 'b2b-form__msg' + (text ? (ok ? ' is-ok' : ' is-error') : '');
     }
 
+    // Clear the invalid mark as soon as the client fixes a mandatory field.
+    ['buyer_name', 'buyer_idno', 'buyer_phone'].forEach(function (n) {
+        var el = form.querySelector('[name="' + n + '"]');
+        if (el) el.addEventListener('input', function () { el.classList.remove('is-invalid'); });
+    });
+
+    // IDNP / IDNO is strictly a 13-digit numeric code — no letters or symbols.
+    var idnoEl = form.querySelector('[name="buyer_idno"]');
+    if (idnoEl) {
+        // Block non-digit keystrokes outright so nothing even flashes;
+        // paste / autofill / drop are sanitised by the input handler below.
+        idnoEl.addEventListener('beforeinput', function (e) {
+            if (e.inputType === 'insertText' && e.data && /\D/.test(e.data)) {
+                e.preventDefault();
+            }
+        });
+        idnoEl.addEventListener('input', function () {
+            var digits = idnoEl.value.replace(/\D/g, '').slice(0, 13);
+            if (digits !== idnoEl.value) idnoEl.value = digits;
+        });
+    }
+
     form.addEventListener('submit', function (e) {
         e.preventDefault();
         say('');
+
+        // Buyer name / IDNP-IDNO / phone are mandatory.
+        var firstBad = null;
+        ['buyer_name', 'buyer_idno', 'buyer_phone'].forEach(function (n) {
+            var el = form.querySelector('[name="' + n + '"]');
+            var empty = !el || el.value.trim() === '';
+            if (el) el.classList.toggle('is-invalid', empty);
+            if (empty && !firstBad) firstBad = el;
+        });
+        if (firstBad) {
+            say(form.dataset.reqMsg || 'Completați câmpurile obligatorii.', false);
+            firstBad.focus();
+            return;
+        }
+
+        // IDNP / IDNO must be exactly 13 digits.
+        var idno = form.querySelector('[name="buyer_idno"]');
+        if (idno && !/^\d{13}$/.test(idno.value.trim())) {
+            idno.classList.add('is-invalid');
+            say(form.dataset.idnoMsg || 'IDNP/IDNO: 13 cifre.', false);
+            idno.focus();
+            return;
+        }
+
         btn.disabled = true;
 
         var body = new URLSearchParams();

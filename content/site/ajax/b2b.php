@@ -149,6 +149,20 @@ switch ($b2b_fn) {
             'buyer_phone' => (string)($_POST['buyer_phone'] ?? ''),
         ];
 
+        // Buyer name / IDNP-IDNO / phone are mandatory on an issued document.
+        if (trim($docMeta['buyer_name']) === ''
+            || trim($docMeta['buyer_idno']) === ''
+            || trim($docMeta['buyer_phone']) === '') {
+            $b2b_fail('Completați câmpurile obligatorii: nume, IDNP/IDNO și telefon.');
+            break;
+        }
+
+        // IDNP (individuals) / IDNO (companies) are both 13-digit numeric codes.
+        if (!preg_match('/^\d{13}$/', trim($docMeta['buyer_idno']))) {
+            $b2b_fail('IDNP/IDNO trebuie să conțină exact 13 cifre.');
+            break;
+        }
+
         $res = B2bInvoice::create(
             $userId,
             $carId,
