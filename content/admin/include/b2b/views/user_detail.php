@@ -202,7 +202,7 @@ $invoices = B2bInvoice::forUser($uid, 200);
                     <thead><tr>
                         <th><?= b2b_adm_esc($t['col_invoice']) ?></th>
                         <th><?= b2b_adm_esc($t['col_car']) ?></th>
-                        <th>&Sigma;</th>
+                        <th><?= b2b_adm_esc($t['col_advance']) ?></th>
                         <th><?= b2b_adm_esc($t['col_status']) ?></th>
                         <th><?= b2b_adm_esc($t['col_date']) ?></th>
                         <th></th>
@@ -216,7 +216,7 @@ $invoices = B2bInvoice::forUser($uid, 200);
                             <td><a href="/<?= b2b_adm_esc($lang) ?>/ordercars/<?= (int)$inv['car_id'] ?>" target="_blank" rel="noopener"><?= b2b_adm_esc($snap['title'] ?? ('#'.(int)$inv['car_id'])) ?></a></td>
                             <td><?= b2b_adm_esc(number_format((float)$inv['advance_amount'], 2, '.', ' ').' '.$inv['currency']) ?></td>
                             <td><span class="b2ba-badge b2ba-badge--<?= b2b_adm_esc($inv['status']) ?>"><?= b2b_adm_esc($t['st_'.$inv['status']] ?? $inv['status']) ?></span></td>
-                            <td class="b2ba-td--small"><?= b2b_adm_esc(date('d.m.Y H:i', strtotime((string)$inv['created_at']))) ?></td>
+                            <td class="b2ba-td--small"><?= b2b_adm_esc(date('d.m.Y', strtotime((string)$inv['created_at']))) ?></td>
                             <td><a class="b2ba-btn b2ba-btn--ghost b2ba-btn--sm" href="<?= b2b_adm_esc(B2bInvoice::path($inv)) ?>" target="_blank" rel="noopener"><?= b2b_adm_esc($t['open']) ?></a></td>
                         </tr>
                     <?php endforeach; ?>

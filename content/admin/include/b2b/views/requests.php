@@ -89,7 +89,7 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/requests';
                         <td>
                             <a href="/<?= b2b_adm_esc($lang) ?>/<?= b2b_adm_esc($admin_dir) ?>/b2b/user?id=<?= (int)$req['b2b_user_id'] ?>"
                                class="b2ba-td--strong"><?= b2b_adm_esc(B2bAuth::displayName($req)) ?></a>
-                            <div class="b2ba-td--small"><?= b2b_adm_esc($req['full_name']) ?> · <?= b2b_adm_esc($req['phone_number']) ?></div>
+                            <div class="b2ba-td--small"><?= b2b_adm_esc($req['phone_number']) ?></div>
                         </td>
                         <td>
                             <a href="/<?= b2b_adm_esc($lang) ?>/ordercars/<?= (int)$req['car_id'] ?>" target="_blank" rel="noopener">
@@ -110,7 +110,7 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/requests';
                                 <?= b2b_adm_esc($t['st_'.$req['status']] ?? $req['status']) ?>
                             </span>
                         </td>
-                        <td class="b2ba-td--small"><?= b2b_adm_esc(date('d.m.Y H:i', strtotime((string)$req['created_at']))) ?></td>
+                        <td class="b2ba-td--small"><?= b2b_adm_esc(date('d.m.Y', strtotime((string)$req['created_at']))) ?></td>
                         <td class="b2ba-td--nowrap">
                             <button type="button" class="b2ba-btn b2ba-btn--ghost b2ba-btn--sm"
                                     data-b2b-admin="request-status" data-request="<?= $rid ?>" data-value="seen"><?= b2b_adm_esc($t['mark_seen']) ?></button>
