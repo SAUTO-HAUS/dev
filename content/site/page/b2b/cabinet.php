@@ -124,18 +124,22 @@ if ($action === 'cabinet') {
         $savedIds = [];
     }
 
-    if (!$savedIds) {
-        echo '<div class="b2b-empty">
-                <p>'.b2b_esc($t['no_cars']).'</p>
-                <a class="b2b-btn b2b-btn--primary" href="/'.b2b_esc($lang).'/ordercars">'.b2b_esc($t['browse_catalog']).'</a>
-              </div>';
-    } else {
+    $hasCars = (bool)$savedIds;
+
+    // Empty state is ALWAYS in the DOM (hidden when there are cars): when the last
+    // card is removed client-side, the JS just reveals it — no refresh needed.
+    echo '<div class="b2b-empty" id="b2b_cabinet_empty"'.($hasCars ? ' style="display:none;"' : '').'>
+            <p>'.b2b_esc($t['no_cars']).'</p>
+            <a class="b2b-btn b2b-btn--primary" href="/'.b2b_esc($lang).'/ordercars">'.b2b_esc($t['browse_catalog']).'</a>
+          </div>';
+
+    if ($hasCars) {
         // Identical to the guest /favorites page. The whole card grid CSS is scoped
         // to "main .gr > .cnt > .it", so the .gr > .cnt.list wrapper is required or
         // the cards render unstyled. The extra .b2b-cars class only marks the grid
         // for the unfavorite card removal.
         $card = $car_card('fav', count($savedIds), $savedIds, 'av', 0, true);
-        echo '<div class="gr"><div class="cnt list b2b-cars">'.$card['txt'].'</div></div>';
+        echo '<div class="gr" id="b2b_cabinet_grid"><div class="cnt list b2b-cars">'.$card['txt'].'</div></div>';
     }
 }
 

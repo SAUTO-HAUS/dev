@@ -693,6 +693,14 @@ $(document).ready(function(){
 				if (it) it.remove();
 			});
 			renderFavEmptyIfNeeded();
+			// Cabinet: when the grid empties, reveal the (always-present) empty state.
+			var cabGrid = document.querySelector('.b2b-cars');
+			if (cabGrid && !cabGrid.querySelector('.it')) {
+				var cabEmpty = document.getElementById('b2b_cabinet_empty');
+				if (cabEmpty) cabEmpty.style.display = '';
+				var cabWrap = document.getElementById('b2b_cabinet_grid') || cabGrid;
+				cabWrap.style.display = 'none';
+			}
 		}
 	}, true);
 
