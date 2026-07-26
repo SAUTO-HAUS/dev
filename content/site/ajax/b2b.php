@@ -137,6 +137,20 @@ switch ($b2b_fn) {
         $user   = b2b_user();
         $carId  = (int)($_POST['car_id'] ?? 0);
 
+        // One payment invoice per car per partner: if it already exists, reopen it
+        // instead of issuing a duplicate (and re-notifying the admin).
+        $existing = B2bInvoice::findForCar($userId, $carId);
+        if ($existing) {
+            $b2b_ok([
+                'invoice_id' => (int)$existing['id'],
+                'invoice_no' => $existing['invoice_no'],
+                'url'        => B2bInvoice::path($existing),
+                'existing'   => true,
+                'message'    => 'Aveți deja un cont de plată pentru această mașină.',
+            ]);
+            break;
+        }
+
         // Document fields typed on the payment-invoice form (frozen onto the doc).
         $docMeta = [
             'date'        => (string)($_POST['date'] ?? ''),

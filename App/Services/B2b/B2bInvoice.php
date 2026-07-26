@@ -156,6 +156,29 @@ class B2bInvoice
     }
 
     /**
+     * The partner's own invoice for a car, if any (latest first). Used to keep a
+     * client to a single payment invoice per car — a second attempt reopens this
+     * one instead of issuing a duplicate.
+     */
+    public static function findForCar(int $userId, int $carId): ?array
+    {
+        if ($userId <= 0 || $carId <= 0) {
+            return null;
+        }
+
+        try {
+            $stmt = B2bConfig::db()->prepare(
+                'SELECT * FROM ' . B2bConfig::table('invoices')
+                . ' WHERE b2b_user_id = :uid AND car_id = :car ORDER BY id DESC LIMIT 1'
+            );
+            $stmt->execute([':uid' => $userId, ':car' => $carId]);
+            return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+    /**
      * Loads a proforma only if the key matches. Returns null for both a missing
      * id and a wrong key, so the two cases are indistinguishable from outside.
      */

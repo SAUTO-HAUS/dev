@@ -26,6 +26,21 @@ if (!function_exists('b2b_car_actions_html')) {
         // on its own.
         include_once( _SITE_PAGE.'/b2b/_layout.php' );
 
+        // One payment invoice per car per partner: if it already exists, the panel
+        // links to it instead of offering to create a duplicate.
+        $existing = B2bInvoice::findForCar(b2b_user_id(), $carId);
+        if ($existing) {
+            return b2b_assets().'
+<div class="b2b-actions">
+    <div class="b2b-actions__head">
+        <h3 class="b2b-actions__ttl">'.$esc($t['title']).'</h3>
+    </div>
+    <p class="b2b-actions__hint">'.$esc($t['already_hint']).'</p>
+
+    <a class="b2b-btn b2b-btn--primary b2b-actions__cta" href="'.$esc(B2bInvoice::path($existing)).'">'.$esc($t['invoice_view']).'</a>
+</div>';
+        }
+
         // One clear action: open the payment-invoice form (fills in the details,
         // generates the proforma AND notifies the Super Admin — the merged flow).
         $formUrl = '/'.$esc($lang).'/b2b/cont-plata?car='.(int)$carId;
@@ -89,6 +104,8 @@ if (!function_exists('b2b_car_actions_html')) {
                 'advance'   => 'Suma avansului',
                 'adv_label' => 'Avans',
                 'pct_note'  => '%s%% din prețul mașinii',
+                'invoice_view' => 'Vezi contul de plată',
+                'already_hint' => 'Aveți deja un cont de plată pentru această mașină.',
                 'currency'  => 'Moneda',
                 'invoice'   => 'Creează cont de plată',
                 'send'      => 'Trimite cerere',
@@ -105,6 +122,8 @@ if (!function_exists('b2b_car_actions_html')) {
                 'advance'   => 'Сумма аванса',
                 'adv_label' => 'Аванс',
                 'pct_note'  => '%s%% от цены авто',
+                'invoice_view' => 'Смотреть счёт на оплату',
+                'already_hint' => 'У вас уже есть счёт на оплату для этого авто.',
                 'currency'  => 'Валюта',
                 'invoice'   => 'Создать счёт на оплату',
                 'send'      => 'Отправить заявку',
@@ -121,6 +140,8 @@ if (!function_exists('b2b_car_actions_html')) {
                 'advance'   => 'Advance amount',
                 'adv_label' => 'Advance',
                 'pct_note'  => '%s%% of the car price',
+                'invoice_view' => 'View payment invoice',
+                'already_hint' => 'You already have a payment invoice for this car.',
                 'currency'  => 'Currency',
                 'invoice'   => 'Create payment invoice',
                 'send'      => 'Send request',

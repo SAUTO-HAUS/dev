@@ -32,6 +32,7 @@ $T = [
         'req_msg' => 'Completează câmpurile obligatorii: nume, IDNP/IDNO și telefon.',
         'idno_msg' => 'IDNP/IDNO trebuie să conțină exact 13 cifre.',
         'not_found' => 'Mașina nu a fost găsită.', 'restricted' => 'Restricționat conform planului B2B.',
+        'already' => 'Aveți deja un cont de plată pentru această mașină.', 'view_invoice' => 'Vezi contul de plată',
     ],
     'ru' => [
         'title' => 'Создать счёт на оплату', 'sub' => 'Проверьте данные и нажмите Создать. Документ сформируется, администратор получит уведомление.',
@@ -46,6 +47,7 @@ $T = [
         'req_msg' => 'Заполните обязательные поля: имя, IDNP/IDNO и телефон.',
         'idno_msg' => 'IDNP/IDNO должен содержать ровно 13 цифр.',
         'not_found' => 'Автомобиль не найден.', 'restricted' => 'Ограничено по плану B2B.',
+        'already' => 'У вас уже есть счёт на оплату для этого авто.', 'view_invoice' => 'Смотреть счёт на оплату',
     ],
     'en' => [
         'title' => 'Create payment invoice', 'sub' => 'Check the details and press Create. The document is generated and the administrator is notified.',
@@ -60,6 +62,7 @@ $T = [
         'req_msg' => 'Please fill in the required fields: name, IDNP/IDNO and phone.',
         'idno_msg' => 'IDNP/IDNO must be exactly 13 digits.',
         'not_found' => 'Car not found.', 'restricted' => 'Restricted by the B2B plan.',
+        'already' => 'You already have a payment invoice for this car.', 'view_invoice' => 'View payment invoice',
     ],
 ];
 $t = $T[$lang] ?? $T['ro'];
@@ -75,6 +78,21 @@ if (!$car) {
 $region = B2bRegions::regionForCar($carId);
 if ($region !== null && !B2bRegions::isAllowed($userId, $region)) {
     echo '<div class="b2b-page b2b-cp"><div class="b2b-card"><p class="b2b-card__sub" style="text-align:center;">'.b2b_esc($t['restricted']).'</p></div></div>';
+    return;
+}
+
+// One payment invoice per car per partner: if it already exists, link to it
+// instead of showing the form again (direct-link guard; the panel already hides
+// the create button once an invoice is issued).
+$existingInv = B2bInvoice::findForCar($userId, $carId);
+if ($existingInv) {
+    echo '<div class="b2b-page b2b-cp">'
+       . '<a class="b2b-cp-back" href="/'.b2b_esc($lang).'/ordercars/'.(int)$carId.'">'.b2b_esc($t['back']).'</a>'
+       . '<div class="b2b-card"><div class="b2b-card__head">'
+       . '<h1 class="b2b-card__ttl">'.b2b_esc($t['title']).'</h1>'
+       . '<p class="b2b-card__sub">'.b2b_esc($t['already']).'</p></div>'
+       . '<a class="b2b-btn b2b-btn--primary b2b-btn--block" href="'.b2b_esc(B2bInvoice::path($existingInv)).'">'.b2b_esc($t['view_invoice']).'</a>'
+       . '</div></div>';
     return;
 }
 
