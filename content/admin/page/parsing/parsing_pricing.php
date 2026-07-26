@@ -623,9 +623,17 @@ if (!function_exists('parsing_md_price_table')) {
             /* Standard price struck through beside the partner B2B price
                (on every modified line and on the total). */
             .md-price-table .mdp-old{
+                position:relative;display:inline-block;
                 color:#9a9a9a;font-weight:600;font-size:.82rem;
-                text-decoration:line-through;text-decoration-color:#e2001a;
                 margin-right:7px;white-space:nowrap;
+            }
+            /* Diagonal red strike, same as the .o_val--b2b old price (not a plain
+               horizontal line-through). */
+            .md-price-table .mdp-old::after{
+                content:"";position:absolute;left:0;right:0;top:50%;
+                height:1.5px;border-radius:1px;margin-top:-.75px;
+                background:linear-gradient(90deg, transparent, #CE3226 18%, #CE3226 82%, transparent);
+                transform:rotate(-16deg);transform-origin:center;
             }
             .md-price-table .mdp-total .mdp-old{font-size:.9rem;}
             @media (max-width:600px){
@@ -702,10 +710,7 @@ if (!function_exists('parsing_md_price_table')) {
             . '<img class="mdp-flag" src="/content/admin/page/parsing/media-parsing/flag-md.svg" alt="MD">'
             . '</span>';
 
-        // B2B badge above the table, estimate footnote below.
-        $badge = !empty($breakdown['b2b'])
-            ? '<div class="md-price-badge">'.htmlspecialchars($t['b2b_badge'] ?? '').'</div>'
-            : '';
+        // Estimate footnote below the table.
         $note = !empty($breakdown['estimated'])
             ? '<p class="md-price-note">'.htmlspecialchars($t['estimate_note'] ?? '').'</p>'
             : '';
@@ -714,7 +719,6 @@ if (!function_exists('parsing_md_price_table')) {
             . '<div class="md-price-title md-price-title-static">'
             . '<span class="mdp-title-text">'.$route.'</span></div>'
             . '<div class="md-price-body">'
-            . $badge
             . '<table class="md-price-table"><tbody>'.$rows
             . '<tr class="mdp-total"><td class="mdp-label">'.htmlspecialchars($t['total']).'</td>'
             . '<td class="mdp-val">'

@@ -1485,7 +1485,7 @@ $iconTelegramParams = array(
                                 var $input_suma_creditului = $("#view_suma_creditului");
                                 // Credit amount slider
                                 // Get car price from PHP
-                                const carPrice = '.($r['prc'] > 2000 ? $r['prc'] : 2000).';
+                                const carPrice = '.($prc > 2000 ? $prc : 2000).'; // $prc = the effective price (B2B for a partner), not the public one
                                 const sliderSuma = $("#suma-creditului").ionRangeSlider({
                                     skin: "round",
                                     min: 2000,
