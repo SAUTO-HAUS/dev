@@ -268,8 +268,17 @@ echo '
                     $_b2b_label = $_b2b_fname !== '' ? (b2b_t('cabinet_short').' '.$_b2b_fname) : b2b_t('cabinet');
                 }
 
+                // Logout sits next to the cabinet button, only while logged in.
+                $_b2b_logout_href = '/'.$_COOKIE['lang'].'/b2b/logout';
+                $_b2b_logout_lbl  = htmlspecialchars(b2b_t('logout'), ENT_QUOTES, 'UTF-8');
+                $_b2b_ico_exit    = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>';
+
                 echo '<a class="b2b button b2b-nav-link b2b-menu-only'.($_b2b_on_page ? ' active' : '').'" href="'.$_b2b_href.'">'
-                   . '<div>'.($_b2b_logged ? '<span class="b2b-nav-dot"></span> ' : '').$_b2b_label.'</div></a>';
+                   . '<div>'.$_b2b_label.'</div></a>';
+                if ($_b2b_logged) {
+                    echo '<a class="b2b button b2b-nav-link b2b-menu-only b2b-menu-out" href="'.$_b2b_logout_href.'">'
+                       . '<div>'.$_b2b_logout_lbl.'</div></a>';
+                }
                 ?>
             </div>
             <?php
@@ -347,8 +356,10 @@ echo '
         // so a dealer finds registration/cabinet without digging through the menu.
         // Hidden on mobile, where the burger entry takes over.
         echo '<a class="b2b-header-btn'.($_b2b_on_page ? ' is-active' : '').'" href="'.$_b2b_href.'" title="'.$_b2b_label.'">'
-           . ($_b2b_logged ? '<span class="b2b-nav-dot"></span>' : '')
            . '<span class="b2b-header-btn__txt">'.$_b2b_label.'</span></a>';
+        if ($_b2b_logged) {
+            echo '<a class="b2b-header-out" href="'.$_b2b_logout_href.'" title="'.$_b2b_logout_lbl.'" aria-label="'.$_b2b_logout_lbl.'">'.$_b2b_ico_exit.'</a>';
+        }
         ?>
     </div>
 </header>

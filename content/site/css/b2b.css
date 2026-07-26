@@ -223,27 +223,12 @@
 /* Hero: a normal block (NOT a <header>, which the site-wide header{} rule would
    hijack with an 80vw width + 10vw margin). Avatar + greeting + name + status. */
 .b2b-hero{
-    position:relative;
     display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap;
     padding:1.35rem 1.6rem;
     background:#fff; border:1px solid #efefef; border-radius:20px;
     box-shadow:0 12px 34px rgba(20,20,40,.08);
 }
-.b2b-hero__id{ display:flex; align-items:center; gap:1rem; min-width:0; padding-right:2.5rem; }
-
-/* Logout: a small exit-icon button tucked into the top-right corner. */
-.b2b-hero__out{
-    position:absolute; top:.85rem; right:.85rem;
-    display:inline-flex; align-items:center; justify-content:center;
-    width:38px; height:38px;
-    border:1px solid var(--b2b-line); border-radius:11px;
-    background:#fff; color:var(--b2b-muted);
-    text-decoration:none;
-    transition:color .15s, border-color .15s, background .15s;
-}
-.b2b-hero__out:hover{ color:var(--b2b-brand); border-color:var(--b2b-brand); background:#fff5f6; }
-.b2b-hero__out:focus-visible{ outline:2px solid var(--b2b-brand); outline-offset:2px; }
-.b2b-hero__out svg{ width:18px; height:18px; }
+.b2b-hero__id{ display:flex; align-items:center; gap:1rem; min-width:0; }
 .b2b-hero__avatar{
     flex:0 0 auto; width:56px; height:56px; border-radius:50%;
     display:flex; align-items:center; justify-content:center;
@@ -254,7 +239,6 @@
 .b2b-hero__text{ min-width:0; }
 .b2b-hero__greet{ margin:0 0 .15rem; color:var(--b2b-muted); font-size:.76rem; font-weight:600; text-transform:uppercase; letter-spacing:.6px; }
 .b2b-hero__name{ margin:0 0 .5rem; font-size:1.55rem; font-weight:800; line-height:1.05; letter-spacing:-.01em; }
-.b2b-hero__out{ flex:0 0 auto; }
 
 /* Nav cards double as section counters (Cars / Requests / Invoices). */
 .b2b-nav{ display:grid; grid-template-columns:repeat(3, 1fr); gap:.9rem; margin:1.1rem 0 1.4rem; }
@@ -444,18 +428,6 @@
 /* ---------------------------------------------------------- header link */
 
 .b2b-nav-link{ display:inline-flex; align-items:center; gap:.35rem; }
-.b2b-nav-dot{
-    width:7px; height:7px; border-radius:50%;
-    background:#0f7a3d; display:inline-block; flex:0 0 7px;
-    /* "Online" pulse while a partner is logged in. */
-    animation:b2b-dot-pulse 1.8s ease-out infinite;
-}
-@keyframes b2b-dot-pulse{
-    0%   { box-shadow:0 0 0 0 rgba(15,122,61,.55); }
-    70%  { box-shadow:0 0 0 6px rgba(15,122,61,0); }
-    100% { box-shadow:0 0 0 0 rgba(15,122,61,0); }
-}
-@media (prefers-reduced-motion:reduce){ .b2b-nav-dot{ animation:none; } }
 
 /* Header button, desktop only: outlined so it does not compete with the filled
    "call" CTA sitting next to it. */
@@ -470,15 +442,31 @@
 }
 .b2b-header-btn:hover{ background:#e2001a; color:#fff; box-shadow:0 6px 16px rgba(226,0,26,.25); }
 .b2b-header-btn.is-active{ background:#e2001a; color:#fff; }
-.b2b-header-btn.is-active .b2b-nav-dot,
-.b2b-header-btn:hover .b2b-nav-dot{ background:#fff; }
+
+/* Logout icon, next to the cabinet button when logged in (desktop). */
+.b2b-header-out{
+    box-sizing:border-box;
+    flex:0 0 auto; align-self:center;
+    display:inline-flex; align-items:center; justify-content:center;
+    margin-left:.45rem;
+    width:38px; height:38px; min-width:38px;
+    aspect-ratio:1 / 1;
+    padding:0;
+    border:1.5px solid #e2001a; border-radius:50%;
+    color:#e2001a; background:#fff;
+    text-decoration:none;
+    transition:background .15s, color .15s, box-shadow .15s;
+}
+.b2b-header-out:hover{ background:#e2001a; color:#fff; box-shadow:0 6px 16px rgba(226,0,26,.25); }
+.b2b-header-out svg{ width:18px; height:18px; }
 
 /* One placement visible at a time. Same breakpoint the burger menu uses
    (content/site/css/media.css). */
 .b2b-menu-only{ display:none !important; }
 
 @media (max-width:999px), (orientation: portrait){
-    .b2b-header-btn{ display:none; }
+    .b2b-header-btn,
+    .b2b-header-out{ display:none; }
     .b2b-menu-only{ display:flex !important; }
 }
 
