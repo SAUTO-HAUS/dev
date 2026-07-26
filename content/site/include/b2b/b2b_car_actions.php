@@ -9,6 +9,7 @@
 
 use App\Services\B2b\B2bConfig;
 use App\Services\B2b\B2bInvoice;
+use App\Services\B2b\B2bMoney;
 
 if (!function_exists('b2b_car_actions_html')) {
 
@@ -30,12 +31,31 @@ if (!function_exists('b2b_car_actions_html')) {
         // generates the proforma AND notifies the Super Admin — the merged flow).
         $formUrl = '/'.$esc($lang).'/b2b/cont-plata?car='.(int)$carId;
 
+        // Advance figure, same basis as the form: percent of the car price (or the
+        // flat amount), converted to MDL at the BNM rate.
+        $carCur = strtoupper(trim((string)($car['cur'] ?? 'EUR')));
+        $advMdl = (int)round(B2bMoney::toMdl(B2bInvoice::suggestedAdvance($car), $carCur));
+        $advTxt = number_format($advMdl, 0, '.', ' ').' MDL';
+
+        $advNote = '';
+        if (B2bConfig::get('b2b_advance_mode', 'fixed') === 'percent') {
+            $pct     = (float)B2bConfig::get('b2b_advance_percent', '10');
+            $pctTxt  = rtrim(rtrim(sprintf('%.1f', $pct), '0'), '.');
+            $advNote = sprintf($t['pct_note'], $pctTxt);
+        }
+
         return b2b_assets().'
 <div class="b2b-actions">
     <div class="b2b-actions__head">
         <h3 class="b2b-actions__ttl">'.$esc($t['title']).'</h3>
     </div>
     <p class="b2b-actions__hint">'.$esc($t['hint']).'</p>
+
+    <div class="b2b-actions__adv">
+        <span class="b2b-actions__adv-lbl">'.$esc($t['adv_label']).'</span>
+        <span class="b2b-actions__adv-val">'.$esc($advTxt).'</span>
+        '.($advNote !== '' ? '<span class="b2b-actions__adv-note">'.$esc($advNote).'</span>' : '').'
+    </div>
 
     <a class="b2b-btn b2b-btn--primary b2b-actions__cta" href="'.$formUrl.'">'.$esc($t['invoice']).'</a>
 </div>';
@@ -69,6 +89,8 @@ if (!function_exists('b2b_car_actions_html')) {
                 'title'     => 'Rezervă această mașină',
                 'hint'      => 'Creează contul de plată și mașina e rezervată pentru tine. Fii primul!',
                 'advance'   => 'Suma avansului',
+                'adv_label' => 'Avans',
+                'pct_note'  => '%s%% din prețul mașinii',
                 'currency'  => 'Moneda',
                 'invoice'   => 'Creează cont de plată',
                 'send'      => 'Trimite cerere',
@@ -83,6 +105,8 @@ if (!function_exists('b2b_car_actions_html')) {
                 'title'     => 'Забронируйте это авто',
                 'hint'      => 'Создайте счёт на оплату — и машина закреплена за вами. Успейте первым!',
                 'advance'   => 'Сумма аванса',
+                'adv_label' => 'Аванс',
+                'pct_note'  => '%s%% от цены авто',
                 'currency'  => 'Валюта',
                 'invoice'   => 'Создать счёт на оплату',
                 'send'      => 'Отправить заявку',
@@ -97,6 +121,8 @@ if (!function_exists('b2b_car_actions_html')) {
                 'title'     => 'Reserve this car',
                 'hint'      => 'Create the payment invoice and the car is reserved for you. Be the first!',
                 'advance'   => 'Advance amount',
+                'adv_label' => 'Advance',
+                'pct_note'  => '%s%% of the car price',
                 'currency'  => 'Currency',
                 'invoice'   => 'Create payment invoice',
                 'send'      => 'Send request',

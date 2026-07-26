@@ -402,6 +402,16 @@
 .b2b-actions__company{ color:#6b6b6b; font-size:.85rem; font-weight:600; }
 .b2b-actions__ttl{ margin:0; font-size:1.15rem; font-weight:800; line-height:1.2; color:#191919; }
 .b2b-actions__hint{ margin:0 0 1rem; color:#6b6b6b; font-size:.9rem; line-height:1.35; }
+
+/* Advance figure: "Аванс  70 800 MDL" with a small "10% of the car price" note. */
+.b2b-actions__adv{
+    display:flex; flex-wrap:wrap; align-items:baseline; gap:.55rem;
+    margin:0 0 1.1rem; padding:.7rem .9rem;
+    background:#fff; border:1px solid rgba(226,0,26,.18); border-radius:12px;
+}
+.b2b-actions__adv-lbl{ font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.4px; color:var(--b2b-muted); }
+.b2b-actions__adv-val{ font-size:1.45rem; font-weight:800; color:var(--b2b-brand); line-height:1; }
+.b2b-actions__adv-note{ flex-basis:100%; font-size:.82rem; color:var(--b2b-muted); }
 .b2b-actions__cta{ width:100%; }
 .b2b-actions__row{ display:flex; flex-direction:column; gap:.35rem; margin-bottom:1rem; }
 
