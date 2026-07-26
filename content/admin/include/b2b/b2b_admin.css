@@ -27,6 +27,8 @@
 }
 .b2ba-head__actions{ display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; }
 .b2ba-h1{ margin:0 0 0.25rem; font-size:1.4rem; font-weight:700; }
+.b2ba-title-row{ display:flex; align-items:center; gap:0.6rem; flex-wrap:wrap; margin-bottom:0.25rem; }
+.b2ba-title-row .b2ba-h1{ margin:0; }
 .b2ba-h2{ margin:0 0 1rem; font-size:1.05rem; font-weight:700; }
 .b2ba-sub{ margin:0; color:var(--b2ba-muted); font-size:0.85rem; }
 .b2ba-hint{ margin:0 0 1rem; color:var(--b2ba-muted); font-size:0.85rem; }

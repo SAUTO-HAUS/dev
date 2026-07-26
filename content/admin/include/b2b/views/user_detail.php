@@ -60,7 +60,12 @@ try {
 
     <div class="b2ba-head">
         <div>
-            <h1 class="b2ba-h1"><?= b2b_adm_esc(B2bAuth::displayName($client)) ?></h1>
+            <div class="b2ba-title-row">
+                <h1 class="b2ba-h1"><?= b2b_adm_esc(B2bAuth::displayName($client)) ?></h1>
+                <span class="b2ba-badge b2ba-badge--<?= b2b_adm_esc($client['status']) ?>" id="b2ba-status-badge">
+                    <?= b2b_adm_esc($t['st_'.$client['status']] ?? $client['status']) ?>
+                </span>
+            </div>
             <p class="b2ba-sub">
                 <?= b2b_adm_esc($t['pt_'.$client['person_type']] ?? $client['person_type']) ?> &middot;
                 <?= b2b_adm_esc($client['email']) ?> &middot;
@@ -68,10 +73,6 @@ try {
             </p>
         </div>
         <div class="b2ba-head__actions">
-            <span class="b2ba-badge b2ba-badge--<?= b2b_adm_esc($client['status']) ?>" id="b2ba-status-badge">
-                <?= b2b_adm_esc($t['st_'.$client['status']] ?? $client['status']) ?>
-            </span>
-
             <?php if ($client['status'] !== 'active'): ?>
                 <button type="button" class="b2ba-btn b2ba-btn--ok" data-b2b-admin="status" data-value="active">
                     <?= b2b_adm_esc($t['approve']) ?>
