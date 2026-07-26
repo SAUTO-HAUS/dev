@@ -399,7 +399,26 @@ endif;
 
 <div id="crumbs" data-lng-c="<?php echo $lng['w']['copied']; ?>">
     <?php
-    if ( isset($t_mp[2])&&$t_mp[2]!='' ){
+    if ( isset($t_mp[2]) && $t_mp[2] === 'b2b' ){
+        // Friendly, localized crumbs for the partner cabinet — clients do not know
+        // the raw "b2b" / "invoices" URL words.
+        $_bcl  = $_COOKIE['lang'] ?? 'ro';
+        $_b2bc = [
+            'ro' => ['root'=>'Cabinet', 'invoices'=>'Conturi de plată', 'cont-plata'=>'Cont de plată'],
+            'ru' => ['root'=>'Кабинет', 'invoices'=>'Счета на оплату', 'cont-plata'=>'Счёт на оплату'],
+            'en' => ['root'=>'Cabinet', 'invoices'=>'Payment invoices', 'cont-plata'=>'Payment invoice'],
+        ];
+        $_bm  = $_b2bc[$_bcl] ?? $_b2bc['ro'];
+        $_sub = (isset($t_mp[3]) && $t_mp[3] !== '' && $t_mp[3] !== 'cabinet') ? $t_mp[3] : '';
+        echo '<a href="/'.$_bcl.'/">'.$lng['w']['home_page'].'</a>';
+        if ($_sub !== ''){
+            echo ' - <a href="/'.$_bcl.'/b2b/cabinet">'.$_bm['root'].'</a>';
+            echo ' - <span class="crnt cp_url" title="'.$lng['w']['copy'].' URL">'.($_bm[$_sub] ?? $_sub).'</span>';
+        }else{
+            echo ' - <span class="crnt cp_url" title="'.$lng['w']['copy'].' URL">'.$_bm['root'].'</span>';
+        }
+    }
+    elseif ( isset($t_mp[2])&&$t_mp[2]!='' ){
         echo '<a href="/'.$_COOKIE['lang'].'/">'.$lng['w']['home_page'].'</a>';
         $t_2_val = isset( $lng['l']['menu'][ $t_mp[2] ] ) ? $lng['l']['menu'][ $t_mp[2] ] : $t_mp[2];
 
