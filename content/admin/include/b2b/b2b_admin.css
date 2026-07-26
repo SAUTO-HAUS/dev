@@ -122,8 +122,13 @@
 }
 .b2bp-del:hover{ border-color:var(--b2ba-brand); color:var(--b2ba-brand); }
 
-/* Read-only reference column (guest price globally, global-B2B price per client). */
-.b2bp-table th.b2bp-ref, .b2bp-table td.b2bp-ref{ color:var(--b2ba-muted); font-weight:600; white-space:nowrap; background:#fafafb; }
+/* Read-only reference column (guest price globally, global-B2B price per client):
+   accented as a distinct panel so it does not get lost next to the inputs. */
+.b2bp-table th.b2bp-ref, .b2bp-table td.b2bp-ref{
+    color:#33415c; font-weight:700; white-space:nowrap;
+    background:#eaf0f9; border-left:2px solid #cfd9ea;
+}
+.b2bp-table th.b2bp-ref{ color:#26324a; }
 .b2bp-off{ color:#c08a00; font-weight:600; font-size:0.8em; }
 
 /* Per-client pricing: card status strip + custom/global tags. */
@@ -135,6 +140,14 @@
 }
 .b2bp-tag--custom{ background:#e6f4ea; color:#0f7a3d; }
 .b2bp-tag--global{ background:#eef1f5; color:#5b6675; }
+
+/* Per-client value that differs from the global B2B price: make it unmistakable. */
+.b2bp-table tr.b2bp-diff > td{ background:#fffaef; }
+.b2bp-table tr.b2bp-diff > td:first-child{ box-shadow:inset 3px 0 0 #e0a200; }
+.b2bp-table td.b2bp-vcell.is-diff input.b2bp-val,
+.b2bp-table td.b2bp-vcell.is-diff input.b2bp-val:focus{
+    border-color:#e0a200; background:#fff3cf; color:#7a5200; font-weight:700;
+}
 
 /* Pricing editor embedded in the client page "Prețuri" tab (no own header). */
 .b2bp-embed{ display:block; }

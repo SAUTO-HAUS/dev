@@ -132,20 +132,25 @@ $retailTierVal = function (array $retailRows, float $priceFrom, string $field): 
 };
 
 /** Renders a tier table (price_from / price_to / B2B value / public value). */
-$tierRows = function (array $rows, string $valueField, array $retailRows) use ($pt, $retailTierVal) {
+$tierRows = function (array $rows, string $valueField, array $retailRows) use ($pt, $retailTierVal, $perUser) {
     $out = '';
     foreach ($rows as $r) {
         $id = (int)$r['id'];
         $to = ($r['price_to'] === null || $r['price_to'] === '') ? '' : (int)$r['price_to'];
 
-        // Public price for the same band (matched by the row's starting price).
+        // Reference price for the same band (matched by the row's starting price):
+        // retail globally, global B2B per client.
         $pub = $retailTierVal($retailRows, (float)$r['price_from'], $valueField);
         $pubCell = $pub === null ? '&mdash;' : $pub.' &euro;';
 
-        $out .= '<tr data-row data-id="'.$id.'">'
+        // Per client: flag the value when it differs from the global B2B price.
+        $val  = (int)$r[$valueField];
+        $diff = $perUser && ($pub === null || $val !== $pub);
+
+        $out .= '<tr data-row data-id="'.$id.'"'.($diff ? ' class="b2bp-diff"' : '').'>'
               . '<td><input type="number" min="0" step="1" class="b2bp-from" value="'.(int)$r['price_from'].'"></td>'
               . '<td><input type="number" min="0" step="1" class="b2bp-to" value="'.$to.'" placeholder="'.b2b_adm_esc($pt['eu_price_to_unlimited'] ?? '').'"></td>'
-              . '<td><input type="number" min="0" step="1" class="b2bp-val" value="'.(int)$r[$valueField].'"></td>'
+              . '<td class="b2bp-vcell'.($diff ? ' is-diff' : '').'"><input type="number" min="0" step="1" class="b2bp-val" value="'.$val.'" data-ref="'.($pub === null ? '' : $pub).'"></td>'
               . '<td class="b2bp-ref">'.$pubCell.'</td>'
               . '<td><button type="button" class="b2bp-del" title="'.b2b_adm_esc($pt['tier_remove'] ?? '').'">&times;</button></td>'
               . '</tr>';
@@ -154,27 +159,37 @@ $tierRows = function (array $rows, string $valueField, array $retailRows) use ($
 };
 
 /** Renders a param table (label / enabled / B2B amount / retail reference). */
-$paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt, $t) {
+$paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt, $t, $perUser) {
     $out = '';
     foreach ($rows as $r) {
-        $id    = (int)$r['id'];
-        $key   = (string)$r['param_key'];
-        $label = $pt[$labelPfx.$key] ?? ucfirst(str_replace('_', ' ', $key));
-        $on    = (int)$r['enabled'] === 1 ? ' checked' : '';
-        $amt   = (string)(int)round((float)$r['amount_eur']);
+        $id     = (int)$r['id'];
+        $key    = (string)$r['param_key'];
+        $label  = $pt[$labelPfx.$key] ?? ucfirst(str_replace('_', ' ', $key));
+        $onBool = (int)$r['enabled'] === 1;
+        $on     = $onBool ? ' checked' : '';
+        $amtI   = (int)round((float)$r['amount_eur']);
 
-        // Retail reference for this exact param (matched by key).
-        $ref = '&mdash;';
+        // Reference for this exact param (matched by key): retail globally,
+        // global B2B per client. Per client, flag amount / on-off differences.
+        $ref    = '&mdash;';
+        $refAmt = '';
+        $refOn  = '';
+        $diff   = $perUser; // no global counterpart => custom by definition
         if (isset($retailMap[$key])) {
-            $rp  = $retailMap[$key];
-            $ref = (string)(int)round((float)$rp['amount_eur']).' &euro;';
-            if ((int)$rp['enabled'] !== 1) { $ref .= ' <span class="b2bp-off">'.b2b_adm_esc($t['pricing_off']).'</span>'; }
+            $rp      = $retailMap[$key];
+            $refAmtI = (int)round((float)$rp['amount_eur']);
+            $refOnB  = (int)$rp['enabled'] === 1;
+            $refAmt  = (string)$refAmtI;
+            $refOn   = $refOnB ? '1' : '0';
+            $ref     = $refAmtI.' &euro;';
+            if (!$refOnB) { $ref .= ' <span class="b2bp-off">'.b2b_adm_esc($t['pricing_off']).'</span>'; }
+            $diff = $perUser && ($amtI !== $refAmtI || $onBool !== $refOnB);
         }
 
-        $out  .= '<tr data-row data-id="'.$id.'" data-key="'.b2b_adm_esc($key).'">'
+        $out  .= '<tr data-row data-id="'.$id.'" data-key="'.b2b_adm_esc($key).'"'.($diff ? ' class="b2bp-diff"' : '').'>'
               . '<td class="b2bp-label">'.b2b_adm_esc($label).'</td>'
               . '<td class="b2bp-c"><input type="checkbox" class="b2bp-en"'.$on.'></td>'
-              . '<td><input type="number" min="0" step="1" class="b2bp-val" value="'.$amt.'"> <span class="b2bp-u">&euro;</span></td>'
+              . '<td class="b2bp-vcell'.($diff ? ' is-diff' : '').'"><input type="number" min="0" step="1" class="b2bp-val" value="'.$amtI.'" data-ref="'.$refAmt.'" data-ref-en="'.$refOn.'"> <span class="b2bp-u">&euro;</span></td>'
               . '<td class="b2bp-ref">'.$ref.'</td>'
               . '</tr>';
     }

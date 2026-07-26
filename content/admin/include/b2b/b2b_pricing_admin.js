@@ -46,6 +46,43 @@
           .catch(function () { return { ok: false, error: 'Eroare de rețea.' }; });
     }
 
+    // ---- Per-client: flag values differing from the global B2B price --------
+    // Keeps the highlight live while the admin edits (server render sets the
+    // initial state; a save reloads and re-renders authoritatively).
+    function markDiff(input) {
+        var cell = input.closest('.b2bp-vcell');
+        if (!cell) return;
+        var tr = input.closest('tr');
+        var ref = input.dataset.ref;
+        var differs;
+        if (ref === undefined || ref === '') {
+            differs = true; // no global counterpart => custom by definition
+        } else {
+            differs = (parseInt(input.value, 10) || 0) !== (parseInt(ref, 10) || 0);
+        }
+        // Param rows also differ when the on/off toggle differs from global.
+        if (input.dataset.refEn !== undefined && input.dataset.refEn !== '') {
+            var en = tr && tr.querySelector('.b2bp-en');
+            if (en && en.checked !== (input.dataset.refEn === '1')) differs = true;
+        }
+        cell.classList.toggle('is-diff', differs);
+        if (tr) tr.classList.toggle('b2bp-diff', differs);
+    }
+
+    if (pricingUser) {
+        root.addEventListener('input', function (e) {
+            var val = e.target.closest('.b2bp-val');
+            if (val) markDiff(val);
+        });
+        root.addEventListener('change', function (e) {
+            var en = e.target.closest('.b2bp-en');
+            if (!en) return;
+            var tr = en.closest('tr');
+            var val = tr && tr.querySelector('.b2bp-val');
+            if (val) markDiff(val);
+        });
+    }
+
     // ---- Add a tier row (clones the shape of an existing one) ---------------
     root.querySelectorAll('[data-b2b-tier-add]').forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -57,10 +94,11 @@
             tr.innerHTML =
                 '<td><input type="number" min="0" step="1" class="b2bp-from" value="0"></td>' +
                 '<td><input type="number" min="0" step="1" class="b2bp-to" value=""></td>' +
-                '<td><input type="number" min="0" step="1" class="b2bp-val" value="0"></td>' +
-                '<td class="b2bp-ref">&mdash;</td>' + // public ref: none for a brand-new band
+                '<td class="b2bp-vcell"><input type="number" min="0" step="1" class="b2bp-val" value="0" data-ref=""></td>' +
+                '<td class="b2bp-ref">&mdash;</td>' + // ref: none for a brand-new band
                 '<td><button type="button" class="b2bp-del">&times;</button></td>';
             tbody.appendChild(tr);
+            if (pricingUser) markDiff(tr.querySelector('.b2bp-val')); // new band => differs
         });
     });
 
