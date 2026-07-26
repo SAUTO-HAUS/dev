@@ -24,6 +24,10 @@
 }
 .b2b-page--wide{ max-width:1180px; }
 
+@media (min-width:1000px) and (orientation:landscape){
+    #b2b_cabinet_grid{ width:80vw; margin-left:calc(50% - 40vw); }
+}
+
 /* Registration on desktop: a wider (but capped) centered card. Person type takes
    a full row, the remaining fields sit two per row. Same breakpoint as the burger
    menu inverse, so it flips with the header. Mobile keeps the single-column card. */
