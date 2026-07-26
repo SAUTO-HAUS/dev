@@ -20,61 +20,24 @@ if (!function_exists('b2b_car_actions_html')) {
 
         $lang = $_COOKIE['lang'] ?? 'ro';
         $t    = b2b_actions_lang($lang);
-        $user = b2b_user();
         $esc  = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
-
-        // Prefilled from the configured rules; the partner can overwrite it.
-        $advance = number_format(B2bInvoice::suggestedAdvance($car), 0, '.', '');
-        $csrf    = $esc(b2b_csrf_token());
-        $company = $esc(\App\Services\B2b\B2bAuth::displayName($user));
 
         // The car page is not a B2B page, so it does not load the module assets
         // on its own.
         include_once( _SITE_PAGE.'/b2b/_layout.php' );
 
+        // One clear action: open the payment-invoice form (fills in the details,
+        // generates the proforma AND notifies the Super Admin — the merged flow).
+        $formUrl = '/'.$esc($lang).'/b2b/cont-plata?car='.(int)$carId;
+
         return b2b_assets().'
-<div class="b2b-actions" data-car-id="'.$carId.'" data-csrf="'.$csrf.'">
+<div class="b2b-actions">
     <div class="b2b-actions__head">
-        <span class="b2b-actions__badge">B2B</span>
-        <span class="b2b-actions__company">'.$company.'</span>
+        <h3 class="b2b-actions__ttl">'.$esc($t['title']).'</h3>
     </div>
+    <p class="b2b-actions__hint">'.$esc($t['hint']).'</p>
 
-    <div class="b2b-actions__row">
-        <span class="b2b-actions__label">'.$esc($t['advance']).'</span>
-        <div class="b2b-actions__amount">
-            <!-- Class-based, no ids: the JS scopes every lookup to the closest
-                 .b2b-actions, so the panel stays safe to render more than once. -->
-            <input type="number" class="b2b-advance" min="1" step="1" value="'.$advance.'" aria-label="'.$esc($t['advance']).'" />
-            <select class="b2b-currency" aria-label="'.$esc($t['currency']).'">
-                <option value="EUR">EUR</option>
-                <option value="MDL">MDL</option>
-                <option value="USD">USD</option>
-            </select>
-        </div>
-    </div>
-
-    <div class="b2b-actions__btns">
-        <button type="button" class="b2b-btn b2b-btn--primary" data-b2b-action="invoice">'.$esc($t['invoice']).'</button>
-        <button type="button" class="b2b-btn b2b-btn--ghost" data-b2b-action="request">'.$esc($t['send']).'</button>
-    </div>
-
-    <div class="b2b-actions__msg" role="status" aria-live="polite"></div>
-
-    <div class="b2b-modal" hidden>
-        <div class="b2b-modal__backdrop" data-b2b-close></div>
-        <div class="b2b-modal__box" role="dialog" aria-modal="true" aria-label="'.$esc($t['send']).'">
-            <h3 class="b2b-modal__ttl">'.$esc($t['send']).'</h3>
-            <p class="b2b-modal__hint">'.$esc($t['send_hint']).'</p>
-            <textarea class="b2b-modal__comment" rows="4" maxlength="1000" placeholder="'.$esc($t['comment']).'"></textarea>
-            <label class="b2b-modal__check">
-                <input type="checkbox" class="b2b-attach-invoice" checked /> '.$esc($t['attach']).'
-            </label>
-            <div class="b2b-modal__btns">
-                <button type="button" class="b2b-btn b2b-btn--ghost" data-b2b-close>'.$esc($t['cancel']).'</button>
-                <button type="button" class="b2b-btn b2b-btn--primary" data-b2b-action="request-confirm">'.$esc($t['send_now']).'</button>
-            </div>
-        </div>
-    </div>
+    <a class="b2b-btn b2b-btn--primary b2b-actions__cta" href="'.$formUrl.'">'.$esc($t['invoice']).'</a>
 </div>';
     }
 
@@ -103,40 +66,46 @@ if (!function_exists('b2b_car_actions_html')) {
     {
         $L = [
             'ro' => [
+                'title'     => 'Rezervă această mașină',
+                'hint'      => 'Creează contul de plată și mașina e rezervată pentru tine. Fii primul!',
                 'advance'   => 'Suma avansului',
                 'currency'  => 'Moneda',
-                'invoice'   => 'Generează cont plată (Avans)',
-                'send'      => 'Transmite la Super Admin',
+                'invoice'   => 'Creează cont de plată',
+                'send'      => 'Trimite cerere',
                 'send_now'  => 'Trimite',
                 'save'      => 'Salvează în cabinet',
                 'comment'   => 'Comentariu (opțional)',
-                'attach'    => 'Atașează ultima proformă generată',
+                'attach'    => 'Atașează ultimul cont de plată',
                 'cancel'    => 'Anulează',
-                'send_hint' => 'Cererea ajunge instant la Super Admin pentru validarea achiziției.',
+                'send_hint' => 'Cererea ajunge instant la administrator pentru confirmare.',
             ],
             'ru' => [
+                'title'     => 'Забронируйте это авто',
+                'hint'      => 'Создайте счёт на оплату — и машина закреплена за вами. Успейте первым!',
                 'advance'   => 'Сумма аванса',
                 'currency'  => 'Валюта',
-                'invoice'   => 'Сформировать счёт (аванс)',
-                'send'      => 'Отправить Супер Админу',
+                'invoice'   => 'Создать счёт на оплату',
+                'send'      => 'Отправить заявку',
                 'send_now'  => 'Отправить',
                 'save'      => 'Сохранить в кабинет',
                 'comment'   => 'Комментарий (необязательно)',
                 'attach'    => 'Приложить последний счёт',
                 'cancel'    => 'Отмена',
-                'send_hint' => 'Заявка мгновенно поступит Супер Админу для подтверждения покупки.',
+                'send_hint' => 'Заявка мгновенно поступит администратору для подтверждения.',
             ],
             'en' => [
+                'title'     => 'Reserve this car',
+                'hint'      => 'Create the payment invoice and the car is reserved for you. Be the first!',
                 'advance'   => 'Advance amount',
                 'currency'  => 'Currency',
-                'invoice'   => 'Generate payment invoice (advance)',
-                'send'      => 'Send to Super Admin',
+                'invoice'   => 'Create payment invoice',
+                'send'      => 'Send request',
                 'send_now'  => 'Send',
                 'save'      => 'Save to cabinet',
                 'comment'   => 'Comment (optional)',
-                'attach'    => 'Attach the latest generated invoice',
+                'attach'    => 'Attach the latest payment invoice',
                 'cancel'    => 'Cancel',
-                'send_hint' => 'The request reaches the Super Admin instantly for purchase validation.',
+                'send_hint' => 'The request reaches the administrator instantly for confirmation.',
             ],
         ];
 

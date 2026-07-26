@@ -37,6 +37,12 @@ $user   = b2b_user();
 $userId = (int)$user['id'];
 $csrf   = b2b_esc(b2b_csrf_token());
 
+// Payment-invoice form is its own page (not a cabinet tab).
+if ($action === 'cont-plata') {
+    include __DIR__ . '/cont_plata.php';
+    return;
+}
+
 $tabs = ['cabinet' => 'tab_cars', 'invoices' => 'tab_invoices', 'requests' => 'tab_requests'];
 if (!isset($tabs[$action])) {
     $action = 'cabinet';

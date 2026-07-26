@@ -21,8 +21,13 @@ class B2bInvoice
     /** Guard against absurd manually entered amounts. */
     private const MAX_ADVANCE = 500000.0;
 
-    /** @return array{ok: bool, error?: string, invoice?: array} */
-    public static function create(int $userId, int $carId, float $advance, string $currency = 'EUR'): array
+    /**
+     * @param array<string,mixed>|null $docMeta the payment-invoice form data typed
+     *   by the client (date, br, mo, vin, buyer_type/name/idno/phone). Frozen onto
+     *   the document so it never changes if the client later edits their profile.
+     * @return array{ok: bool, error?: string, invoice?: array}
+     */
+    public static function create(int $userId, int $carId, float $advance, string $currency = 'EUR', ?array $docMeta = null): array
     {
         $user = B2bAuth::findById($userId);
         if (!$user) {
@@ -52,6 +57,23 @@ class B2bInvoice
             return ['ok' => false, 'error' => 'Suma avansului nu este validă.'];
         }
 
+        // Whitelist the document fields the client may set; everything else is
+        // ignored, and each value is trimmed + length-capped.
+        $meta = null;
+        if (is_array($docMeta)) {
+            $allowed = ['date', 'br', 'mo', 'vin', 'buyer_type', 'buyer_name', 'buyer_idno', 'buyer_phone'];
+            $meta = [];
+            foreach ($allowed as $k) {
+                if (isset($docMeta[$k]) && $docMeta[$k] !== '') {
+                    $meta[$k] = mb_substr(trim((string)$docMeta[$k]), 0, 190);
+                }
+            }
+            if (isset($meta['buyer_type']) && !in_array($meta['buyer_type'], ['fiz', 'jur'], true)) {
+                $meta['buyer_type'] = 'fiz';
+            }
+            $meta = $meta ?: null;
+        }
+
         $db = B2bConfig::db();
 
         try {
@@ -62,8 +84,8 @@ class B2bInvoice
 
             $db->prepare(
                 'INSERT INTO ' . B2bConfig::table('invoices')
-                . ' (b2b_user_id, car_id, invoice_no, advance_amount, currency, access_key, car_snapshot)
-                   VALUES (:uid, :car, :no, :amount, :cur, :key, :snap)'
+                . ' (b2b_user_id, car_id, invoice_no, advance_amount, currency, access_key, car_snapshot, doc_meta)
+                   VALUES (:uid, :car, :no, :amount, :cur, :key, :snap, :meta)'
             )->execute([
                 ':uid'    => $userId,
                 ':car'    => $carId,
@@ -72,6 +94,7 @@ class B2bInvoice
                 ':cur'    => $currency,
                 ':key'    => $accessKey,
                 ':snap'   => json_encode($car, JSON_UNESCAPED_UNICODE),
+                ':meta'   => $meta ? json_encode($meta, JSON_UNESCAPED_UNICODE) : null,
             ]);
 
             $id = (int)$db->lastInsertId();
@@ -216,6 +239,18 @@ class B2bInvoice
             }
         }
         return self::loadCar((int)$invoice['car_id']) ?? ['id' => (int)$invoice['car_id'], 'title' => ''];
+    }
+
+    /** Frozen document data typed on the payment-invoice form (empty if none). */
+    public static function docMeta(array $invoice): array
+    {
+        if (!empty($invoice['doc_meta'])) {
+            $m = json_decode((string)$invoice['doc_meta'], true);
+            if (is_array($m)) {
+                return $m;
+            }
+        }
+        return [];
     }
 
     /**

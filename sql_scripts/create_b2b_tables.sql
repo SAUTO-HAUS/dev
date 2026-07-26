@@ -136,6 +136,7 @@ CREATE TABLE IF NOT EXISTS `gh3sp_b2b_invoices` (
     `currency` VARCHAR(3) NOT NULL DEFAULT 'EUR',
     `access_key` CHAR(40) NOT NULL,
     `car_snapshot` JSON DEFAULT NULL,
+    `doc_meta` JSON DEFAULT NULL,
     `status` ENUM('issued','sent','paid','cancelled') NOT NULL DEFAULT 'issued',
     `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`),

@@ -37,6 +37,7 @@ if (!$invoice) {
 
 $client = App\Services\B2b\B2bAuth::findById((int)$invoice['b2b_user_id']);
 $car    = B2bInvoice::carSnapshot($invoice);
+$dm     = B2bInvoice::docMeta($invoice); // frozen form data (date, auto, buyer)
 
 $esc = fn($v) => htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8');
 $fmt = fn($n) => number_format((float)$n, 2, '.', ' ');
@@ -48,7 +49,8 @@ $currency = (string)$invoice['currency'];
 $company = [
     'name'    => '“SAUTO” SRL',
     'address' => 'Republica Moldova, MD-2084, mun. Chişinău, or. Cricova, str. Chişinăului 84, ap. (of.) 39',
-    'iban'    => $currency === 'EUR' ? 'MD51VI022512000000094EUR' : 'MD64VI022512000000171MDL',
+    'iban'    => $currency === 'EUR' ? 'MD51VI022512000000094EUR'
+              : ($currency === 'USD' ? 'MD51VI022512000000094USD' : 'MD64VI022512000000171MDL'),
     'bank'    => 'B.C. “VICTORIABANK” S.A., VICBMD2XXXX',
     'cf'      => '1017600006845',
     'tva'     => '0609417',
@@ -121,11 +123,17 @@ $L = [
 ];
 $t = $L[$lang] ?? $L['ro'];
 
-$carLabel = trim((string)($car['title'] ?? ''));
+// Prefer the values frozen on the document; fall back to the car snapshot.
+if (($dm['br'] ?? '') !== '' || ($dm['mo'] ?? '') !== '') {
+    $carLabel = trim(($dm['br'] ?? '') . ' ' . ($dm['mo'] ?? ''));
+} else {
+    $carLabel = trim((string)($car['title'] ?? ''));
+}
 if ($carLabel === '') {
     $carLabel = '#' . (int)$invoice['car_id'];
 }
-$vin = trim((string)($car['vin'] ?? ''));
+$vin     = trim((string)(($dm['vin'] ?? '') !== '' ? $dm['vin'] : ($car['vin'] ?? '')));
+$docDate = ($dm['date'] ?? '') !== '' ? (string)$dm['date'] : (string)$invoice['created_at'];
 
 header('Content-Type: text/html; charset=UTF-8');
 ?>
@@ -223,7 +231,7 @@ header('Content-Type: text/html; charset=UTF-8');
     <div class="inv-top">
         <img class="inv-logo" src="/media/images/site/v2/logo_b.svg" alt="Sauto" />
         <div class="inv-date">
-            <?= $esc($t['date']) ?>: <strong><?= $esc(date('d.m.Y', strtotime((string)$invoice['created_at']))) ?></strong>
+            <?= $esc($t['date']) ?>: <strong><?= $esc(date('d.m.Y', strtotime($docDate))) ?></strong>
         </div>
     </div>
 
@@ -242,11 +250,15 @@ header('Content-Type: text/html; charset=UTF-8');
 
         <div class="party">
             <h3><?= $esc($t['payer']) ?></h3>
-            <!-- Signup collects only the person's name; company details are added
-                 from the admin panel and are shown only once they exist. -->
-            <div class="nm"><?= $esc(\App\Services\B2b\B2bAuth::displayName($client)) ?></div>
-            <?php if (!empty($client['vat_code'])): ?>
-                <p><span class="lbl"><?= $esc($t['vat']) ?>:</span> <?= $esc($client['vat_code']) ?></p>
+            <?php
+            // Buyer data as typed on the form (frozen); fall back to the profile.
+            $buyerName  = ($dm['buyer_name'] ?? '') !== '' ? (string)$dm['buyer_name'] : \App\Services\B2b\B2bAuth::displayName($client);
+            $buyerIdno  = (string)($dm['buyer_idno'] ?? '');
+            $buyerPhone = ($dm['buyer_phone'] ?? '') !== '' ? (string)$dm['buyer_phone'] : (string)($client['phone_number'] ?? '');
+            ?>
+            <div class="nm"><?= $esc($buyerName) ?></div>
+            <?php if ($buyerIdno !== ''): ?>
+                <p><span class="lbl"><?= $esc($t['idno']) ?>:</span> <?= $esc($buyerIdno) ?></p>
             <?php endif; ?>
             <?php if (!empty($client['legal_address'])): ?>
                 <p><?= $esc($client['legal_address']) ?></p>
@@ -257,10 +269,7 @@ header('Content-Type: text/html; charset=UTF-8');
             <?php if (!empty($client['bank_name'])): ?>
                 <p><span class="lbl"><?= $esc($t['bank']) ?>:</span> <?= $esc($client['bank_name']) ?></p>
             <?php endif; ?>
-            <?php if (!empty($client['company_name'])): ?>
-                <p><span class="lbl"><?= $esc($t['repr']) ?>:</span> <?= $esc($client['full_name'] ?? '') ?></p>
-            <?php endif; ?>
-            <p><?= $esc($client['email'] ?? '') ?> &middot; <?= $esc($client['phone_number'] ?? '') ?></p>
+            <p><?= $esc($client['email'] ?? '') ?> &middot; <?= $esc($buyerPhone) ?></p>
         </div>
     </div>
 

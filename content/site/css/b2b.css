@@ -374,14 +374,23 @@
     box-sizing:border-box;
     font-size:1rem; color:#191919;
 }
-.b2b-actions__head{ display:flex; align-items:center; gap:.6rem; margin-bottom:1rem; }
+.b2b-actions__head{ display:flex; align-items:center; gap:.6rem; margin-bottom:.35rem; }
 .b2b-actions__badge{
     padding:.2rem .6rem; border-radius:999px;
     background:#eafaf0; color:#0f7a3d;
     font-size:.72rem; font-weight:800; letter-spacing:.4px;
 }
 .b2b-actions__company{ color:#6b6b6b; font-size:.85rem; font-weight:600; }
+.b2b-actions__ttl{ margin:0; font-size:1.15rem; font-weight:800; line-height:1.2; color:#191919; }
+.b2b-actions__hint{ margin:0 0 1rem; color:#6b6b6b; font-size:.9rem; line-height:1.35; }
+.b2b-actions__cta{ width:100%; }
 .b2b-actions__row{ display:flex; flex-direction:column; gap:.35rem; margin-bottom:1rem; }
+
+/* Payment-invoice form page (/b2b/cont-plata). */
+.b2b-cp{ max-width:640px; }
+.b2b-cp-back{ display:inline-block; margin-bottom:.9rem; color:var(--b2b-muted); font-size:.9rem; font-weight:600; text-decoration:none; }
+.b2b-cp-back:hover{ color:var(--b2b-brand); }
+.b2b-cp-sec{ margin:1.5rem 0 .1rem; padding-bottom:.35rem; border-bottom:1px solid var(--b2b-line); font-size:.78rem; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--b2b-brand); }
 .b2b-actions__amount{ display:flex; gap:.6rem; }
 .b2b-actions__amount input{ flex:1 1 auto; min-width:0; }
 .b2b-actions__amount select{ flex:0 0 6.5rem; }

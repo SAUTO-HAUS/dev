@@ -133,11 +133,28 @@ switch ($b2b_fn) {
 
     // ---- Proforma (spec 2.3.2) ----------------------------------------------
     case 'b2b_create_invoice': {
+        $userId = b2b_user_id();
+        $user   = b2b_user();
+        $carId  = (int)($_POST['car_id'] ?? 0);
+
+        // Document fields typed on the payment-invoice form (frozen onto the doc).
+        $docMeta = [
+            'date'        => (string)($_POST['date'] ?? ''),
+            'br'          => (string)($_POST['br'] ?? ''),
+            'mo'          => (string)($_POST['mo'] ?? ''),
+            'vin'         => (string)($_POST['vin'] ?? ''),
+            'buyer_type'  => (string)($_POST['buyer_type'] ?? ''),
+            'buyer_name'  => (string)($_POST['buyer_name'] ?? ''),
+            'buyer_idno'  => (string)($_POST['buyer_idno'] ?? ''),
+            'buyer_phone' => (string)($_POST['buyer_phone'] ?? ''),
+        ];
+
         $res = B2bInvoice::create(
-            b2b_user_id(),
-            (int)($_POST['car_id'] ?? 0),
+            $userId,
+            $carId,
             (float)str_replace(',', '.', (string)($_POST['advance'] ?? '0')),
-            (string)($_POST['currency'] ?? 'EUR')
+            (string)($_POST['currency'] ?? 'EUR'),
+            $docMeta
         );
 
         if (!$res['ok']) {
@@ -145,10 +162,31 @@ switch ($b2b_fn) {
             break;
         }
 
+        $invoice = $res['invoice'];
+
+        // Merge (spec 2.3.3): creating a payment invoice IS the reservation, so
+        // record a Super Admin request with the proforma attached and notify him
+        // (bell + WhatsApp), the same as the old separate "send to admin" button.
+        $car = B2bInvoice::loadCar($carId);
+        if ($car) {
+            $requestId = 0;
+            try {
+                $db->prepare(
+                    'INSERT INTO '.B2bConfig::table('requests').' (b2b_user_id, car_id, invoice_id, comment)
+                     VALUES (:uid, :car, :inv, NULL)'
+                )->execute([':uid' => $userId, ':car' => $carId, ':inv' => (int)$invoice['id']]);
+                $requestId = (int)$db->lastInsertId();
+            } catch (Throwable $e) {
+                B2bConfig::log('b2b_error.log', 'invoice->request err='.$e->getMessage());
+            }
+            B2bAudit::log($userId, B2bAudit::SEND_TO_ADMIN, ['car_id' => $carId, 'invoice_id' => (int)$invoice['id'], 'request_id' => $requestId], $carId);
+            try { B2bNotifier::notifyRequest($user, $car, $invoice, '', $requestId); } catch (Throwable $e) {}
+        }
+
         $b2b_ok([
-            'invoice_id' => (int)$res['invoice']['id'],
-            'invoice_no' => $res['invoice']['invoice_no'],
-            'url'        => B2bInvoice::path($res['invoice']),
+            'invoice_id' => (int)$invoice['id'],
+            'invoice_no' => $invoice['invoice_no'],
+            'url'        => B2bInvoice::path($invoice),
             'message'    => 'Contul de plată a fost generat.',
         ]);
         break;
