@@ -603,6 +603,48 @@ $(document).ready(function(){
 		empty.style.display = box.querySelector('.it') ? 'none' : 'block';
 	}
 
+	// "Add to cabinet" flourish: fly the car photo from the card to the cabinet
+	// button in the header, then bump the avatar. Desktop + logged-in only (the
+	// button is hidden on mobile, so there is simply no target there).
+	function flyToCabinet(originBtn){
+		if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+		var target = document.querySelector('.b2b-header-btn--user');
+		if (!target) return;
+		var tRect = target.getBoundingClientRect();
+		if (!tRect.width) return; // hidden (mobile) -> no target
+
+		var card = originBtn.closest('.it') || originBtn.closest('.big_pht') || originBtn.closest('.pht_bx');
+		var img  = card ? card.querySelector('.imgX img, img') : null;
+		var sRect = (img && img.getBoundingClientRect().width) ? img.getBoundingClientRect() : originBtn.getBoundingClientRect();
+		var url   = img ? (img.currentSrc || img.src || img.getAttribute('data-src') || '') : '';
+
+		var W = Math.min(sRect.width || 90, 110), H = Math.round(W * 0.72);
+		var fly = document.createElement('div');
+		fly.className = 'fav-fly' + (url ? '' : ' fav-fly--heart');
+		if (url) fly.style.backgroundImage = 'url("' + url + '")';
+		fly.style.left   = (sRect.left + sRect.width / 2 - W / 2) + 'px';
+		fly.style.top    = (sRect.top + sRect.height / 2 - H / 2) + 'px';
+		fly.style.width  = W + 'px';
+		fly.style.height = H + 'px';
+		document.body.appendChild(fly);
+		fly.getBoundingClientRect(); // reflow, so the transition below runs
+
+		var dx = (tRect.left + tRect.width / 2) - (sRect.left + sRect.width / 2);
+		var dy = (tRect.top + tRect.height / 2) - (sRect.top + sRect.height / 2);
+		fly.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(.12) rotate(8deg)';
+		fly.style.opacity = '0.2';
+
+		var done = false;
+		function finish(){
+			if (done) return; done = true;
+			if (fly.parentNode) fly.remove();
+			var av = target.querySelector('.b2b-header-btn__avatar') || target;
+			av.classList.remove('b2b-cart-bump'); void av.offsetWidth; av.classList.add('b2b-cart-bump');
+		}
+		fly.addEventListener('transitionend', finish, { once: true });
+		setTimeout(finish, 1600); // safety net; must exceed the CSS transition
+	}
+
 	document.addEventListener('click', function(e){
 		var btn = e.target.closest && e.target.closest('.card-fav-btn');
 		if (!btn) return;
@@ -638,6 +680,9 @@ $(document).ready(function(){
 				var n = (parseInt(savedNum.textContent, 10) || 0) + (nowFav ? 1 : -1);
 				savedNum.textContent = n < 0 ? 0 : n;
 			}
+			// On add, show the car flying into the cabinet button so it's obvious
+			// the car landed there.
+			if (nowFav) { try { flyToCabinet(btn); } catch(e){} }
 		}
 		// On a favourites-style list — the guest /favorites page (#fav_container) or
 		// the B2B cabinet grid (.b2b-cars) — removing a fav drops its card at once,
