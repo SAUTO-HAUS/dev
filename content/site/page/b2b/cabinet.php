@@ -94,10 +94,12 @@ echo '
     <div class="b2b-nav">';
         foreach ($navItems as $slug => [$label, $count, $ico]) {
             $href = '/'.b2b_esc($lang).'/b2b/'.$slug;
+            // The favourites heart updates this counter live (see head.php).
+            $numAttr = $slug === 'cabinet' ? ' data-b2b-count="saved"' : '';
             echo '<a class="b2b-navcard'.($slug === $action ? ' is-active' : '').'" href="'.$href.'">'
                . '<span class="b2b-navcard__ico">'.$ico.'</span>'
                . '<span class="b2b-navcard__meta">'
-               . '<span class="b2b-navcard__num">'.(int)$count.'</span>'
+               . '<span class="b2b-navcard__num"'.$numAttr.'>'.(int)$count.'</span>'
                . '<span class="b2b-navcard__label">'.b2b_esc($label).'</span>'
                . '</span></a>';
         }
@@ -128,10 +130,12 @@ if ($action === 'cabinet') {
                 <a class="b2b-btn b2b-btn--primary" href="/'.b2b_esc($lang).'/ordercars">'.b2b_esc($t['browse_catalog']).'</a>
               </div>';
     } else {
-        // Same cards as the catalog, so B2B prices apply automatically
-        // (b2b_prices_for_cars runs inside $car_card).
+        // Identical to the guest /favorites page. The whole card grid CSS is scoped
+        // to "main .gr > .cnt > .it", so the .gr > .cnt.list wrapper is required or
+        // the cards render unstyled. The extra .b2b-cars class only marks the grid
+        // for the unfavorite card removal.
         $card = $car_card('fav', count($savedIds), $savedIds, 'av', 0, true);
-        echo '<div class="cars b2b-cars">'.$card['txt'].'</div>';
+        echo '<div class="gr"><div class="cnt list b2b-cars">'.$card['txt'].'</div></div>';
     }
 }
 

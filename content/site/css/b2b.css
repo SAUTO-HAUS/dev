@@ -308,7 +308,7 @@
 .b2b-tab:hover{ border-color:var(--b2b-brand); color:var(--b2b-brand); }
 .b2b-tab.is-active{ background:var(--b2b-brand); border-color:var(--b2b-brand); color:#fff; }
 
-.b2b-panel{ min-height:220px; }
+.b2b-panel{ min-height:220px; display:flow-root; }  /* contains the .gr float from the cars grid */
 
 .b2b-legend{ display:flex; gap:.5rem; margin-bottom:1rem; flex-wrap:wrap; }
 

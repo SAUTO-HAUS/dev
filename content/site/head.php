@@ -632,12 +632,22 @@ $(document).ready(function(){
 				body: favBody.toString(),
 				credentials: 'same-origin'
 			}).catch(function(){});
+			// Live-update the cabinet "saved" counter (present only on the cabinet page).
+			var savedNum = document.querySelector('[data-b2b-count="saved"]');
+			if (savedNum) {
+				var n = (parseInt(savedNum.textContent, 10) || 0) + (nowFav ? 1 : -1);
+				savedNum.textContent = n < 0 ? 0 : n;
+			}
 		}
-		// On the /favorites page, removing a fav should drop its card.
-		if (!nowFav && document.getElementById('fav_container')) {
-			var card = document.querySelector('#fav_container [data-fav-id="'+id+'"]');
-			var it = card ? card.closest('.it') : null;
-			if (it) { it.remove(); renderFavEmptyIfNeeded(); }
+		// On a favourites-style list — the guest /favorites page (#fav_container) or
+		// the B2B cabinet grid (.b2b-cars) — removing a fav drops its card at once,
+		// no refresh. The catalog is NOT one of these, so its cards stay put.
+		if (!nowFav) {
+			document.querySelectorAll('#fav_container [data-fav-id="'+id+'"], .b2b-cars [data-fav-id="'+id+'"]').forEach(function(card){
+				var it = card.closest('.it');
+				if (it) it.remove();
+			});
+			renderFavEmptyIfNeeded();
 		}
 	}, true);
 
