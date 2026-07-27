@@ -624,7 +624,7 @@ if (!function_exists('parsing_md_price_table')) {
                (on every modified line and on the total). */
             .md-price-table .mdp-old{
                 position:relative;display:inline-block;
-                color:#9a9a9a;font-weight:600;font-size:.82rem;
+                color:#6b6b6b;font-weight:600;font-size:.82rem;
                 margin-right:7px;white-space:nowrap;
             }
             /* Diagonal red strike, same as the .o_val--b2b old price (not a plain
