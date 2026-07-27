@@ -500,6 +500,21 @@
 .b2b-header-btn:hover{ background:#e2001a; color:#fff; box-shadow:0 6px 16px rgba(226,0,26,.25); }
 .b2b-header-btn.is-active{ background:#e2001a; color:#fff; }
 
+/* Secondary auth action shown for guests: a plain text link before the outlined
+   "register" pill, so the pair reads as login | register without two competing
+   buttons. Desktop only, like .b2b-header-btn. */
+.b2b-header-login{
+    box-sizing:border-box;
+    display:inline-flex; align-items:center;
+    margin-left:.75rem; height:40px; padding:0 .45rem;
+    color:#e2001a; background:transparent;
+    font-size:.92rem; font-weight:700; line-height:1.2;
+    text-decoration:none; white-space:nowrap;
+    transition:color .15s, opacity .15s;
+}
+.b2b-header-login:hover{ text-decoration:underline; }
+.b2b-header-login.is-active{ text-decoration:underline; text-underline-offset:3px; }
+
 /* "Fly to cabinet": the red heart flies from the card to the cabinet button (the
    floating one while scrolled, the header one at the top) on save. No shrink. */
 .fav-fly{
@@ -562,6 +577,7 @@
 
 @media (max-width:999px), (orientation: portrait){
     .b2b-header-btn,
+    .b2b-header-login,
     .b2b-header-out{ display:none; }
     .b2b-menu-only{ display:flex !important; }
 }

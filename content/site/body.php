@@ -323,6 +323,15 @@ if (!(function_exists('b2b_is_client') && b2b_is_client())):
                 $_b2b_on_page = isset($t_mp[2]) && in_array($t_mp[2], ['b2b', 'b2b-login', 'b2b-register'], true);
                 $_b2b_href    = $_b2b_logged ? '/'.$_COOKIE['lang'].'/b2b/cabinet' : '/'.$_COOKIE['lang'].'/b2b-register';
 
+                // Guests get two entry points: log in (returning dealer) then
+                // register (new one). Each highlights only on its own page.
+                $_on_login       = isset($t_mp[2]) && $t_mp[2] === 'b2b-login';
+                $_on_register    = isset($t_mp[2]) && $t_mp[2] === 'b2b-register';
+                $_b2b_login_href = '/'.$_COOKIE['lang'].'/b2b-login';
+                $_b2b_login_lbl  = b2b_t('login');
+                $_b2b_reg_href   = '/'.$_COOKIE['lang'].'/b2b-register';
+                $_b2b_reg_lbl    = b2b_t('header_register');
+
                 // Logged in: "Cabinetul meu" + an initials avatar (e.g. "GB"), like
                 // the cabinet hero. Not logged in: the plain "Register" label.
                 $_b2b_label    = b2b_t('header_register');
@@ -350,11 +359,16 @@ if (!(function_exists('b2b_is_client') && b2b_is_client())):
                     echo '<script>window.B2B_FAV={csrf:'.json_encode(b2b_csrf_token(), JSON_UNESCAPED_SLASHES | JSON_HEX_TAG).'};</script>';
                 }
 
-                echo '<a class="b2b button b2b-nav-link b2b-menu-only'.($_b2b_on_page ? ' active' : '').'" href="'.$_b2b_href.'">'
-                   . '<div>'.$_b2b_label.'</div></a>';
                 if ($_b2b_logged) {
+                    echo '<a class="b2b button b2b-nav-link b2b-menu-only'.($_b2b_on_page ? ' active' : '').'" href="'.$_b2b_href.'">'
+                       . '<div>'.$_b2b_label.'</div></a>';
                     echo '<a class="b2b button b2b-nav-link b2b-menu-only b2b-menu-out" href="'.$_b2b_logout_href.'">'
                        . '<div>'.$_b2b_logout_lbl.'</div></a>';
+                } else {
+                    echo '<a class="b2b button b2b-nav-link b2b-menu-only'.($_on_login ? ' active' : '').'" href="'.$_b2b_login_href.'">'
+                       . '<div>'.$_b2b_login_lbl.'</div></a>';
+                    echo '<a class="b2b button b2b-nav-link b2b-menu-only'.($_on_register ? ' active' : '').'" href="'.$_b2b_reg_href.'">'
+                       . '<div>'.$_b2b_reg_lbl.'</div></a>';
                 }
                 ?>
             </div>
@@ -432,11 +446,16 @@ if (!(function_exists('b2b_is_client') && b2b_is_client())):
         // Desktop counterpart of the menu entry above: placed to the RIGHT of "call"
         // so a dealer finds registration/cabinet without digging through the menu.
         // Hidden on mobile, where the burger entry takes over.
-        echo '<a class="b2b-header-btn'.($_b2b_logged ? ' b2b-header-btn--user' : '').($_b2b_on_page ? ' is-active' : '').'" href="'.$_b2b_href.'" title="'.$_b2b_label.'">'
-           . ($_b2b_logged ? '<span class="b2b-header-btn__avatar">'.$_b2b_initials.'</span>' : '')
-           . '<span class="b2b-header-btn__txt">'.$_b2b_label.'</span></a>';
         if ($_b2b_logged) {
+            echo '<a class="b2b-header-btn b2b-header-btn--user'.($_b2b_on_page ? ' is-active' : '').'" href="'.$_b2b_href.'" title="'.$_b2b_label.'">'
+               . '<span class="b2b-header-btn__avatar">'.$_b2b_initials.'</span>'
+               . '<span class="b2b-header-btn__txt">'.$_b2b_label.'</span></a>';
             echo '<a class="b2b-header-out" href="'.$_b2b_logout_href.'" title="'.$_b2b_logout_lbl.'" aria-label="'.$_b2b_logout_lbl.'">'.$_b2b_ico_exit.'</a>';
+        } else {
+            // Login = secondary text link, Register = primary outlined pill.
+            echo '<a class="b2b-header-login'.($_on_login ? ' is-active' : '').'" href="'.$_b2b_login_href.'" title="'.$_b2b_login_lbl.'">'.$_b2b_login_lbl.'</a>';
+            echo '<a class="b2b-header-btn'.($_on_register ? ' is-active' : '').'" href="'.$_b2b_reg_href.'" title="'.$_b2b_reg_lbl.'">'
+               . '<span class="b2b-header-btn__txt">'.$_b2b_reg_lbl.'</span></a>';
         }
         ?>
     </div>
