@@ -16,7 +16,6 @@ use PDO;
  */
 class B2bAuth
 {
-    private const STATUS_PENDING = 'pending';
     private const STATUS_ACTIVE  = 'active';
     private const STATUS_BLOCKED = 'blocked';
 
@@ -74,11 +73,10 @@ class B2bAuth
                 'phone_taken'       => 'Există deja un cont cu acest număr de telefon.',
                 'email_phone_taken' => 'Există deja un cont cu acest număr de telefon și această adresă de email.',
                 'register_failed'   => 'Contul nu a putut fi creat. Încercați din nou.',
-                'register_ok'       => 'Contul a fost creat cu succes și este în așteptarea validării de către administrator. Veți primi un email când contul este activat.',
+                'register_ok'       => 'Contul a fost creat cu succes. Te poți autentifica acum.',
                 'login_bad'         => 'Login sau parolă incorectă.',
                 'service_down'      => 'Serviciu temporar indisponibil.',
                 'locked'            => 'Cont blocat temporar. Reîncercați peste %d minute.',
-                'pending'           => 'Contul este în așteptarea validării de către administrator.',
                 'blocked'           => 'Contul este blocat. Contactați administratorul.',
                 'password_failed'   => 'Parola nu a putut fi schimbată.',
                 'csrf_expired'      => 'Sesiune expirată. Reîncărcați pagina și încercați din nou.',
@@ -97,11 +95,10 @@ class B2bAuth
                 'phone_taken'       => 'Учётная запись с этим номером телефона уже существует.',
                 'email_phone_taken' => 'Учётная запись с этим номером телефона и адресом email уже существует.',
                 'register_failed'   => 'Не удалось создать учётную запись. Попробуйте снова.',
-                'register_ok'       => 'Учётная запись успешно создана и ожидает подтверждения администратором. Вы получите письмо, когда она будет активирована.',
+                'register_ok'       => 'Учётная запись успешно создана. Теперь вы можете войти.',
                 'login_bad'         => 'Неверный логин или пароль.',
                 'service_down'      => 'Сервис временно недоступен.',
                 'locked'            => 'Учётная запись временно заблокирована. Повторите через %d мин.',
-                'pending'           => 'Учётная запись ожидает подтверждения администратором.',
                 'blocked'           => 'Учётная запись заблокирована. Обратитесь к администратору.',
                 'password_failed'   => 'Не удалось изменить пароль.',
                 'csrf_expired'      => 'Сессия истекла. Обновите страницу и попробуйте снова.',
@@ -120,11 +117,10 @@ class B2bAuth
                 'phone_taken'       => 'An account with this phone number already exists.',
                 'email_phone_taken' => 'An account with this phone number and email address already exists.',
                 'register_failed'   => 'The account could not be created. Please try again.',
-                'register_ok'       => 'The account was created successfully and is awaiting administrator approval. You will receive an email once it is activated.',
+                'register_ok'       => 'Your account was created successfully. You can log in now.',
                 'login_bad'         => 'Incorrect login or password.',
                 'service_down'      => 'Service temporarily unavailable.',
                 'locked'            => 'Account temporarily locked. Try again in %d minutes.',
-                'pending'           => 'The account is awaiting administrator approval.',
                 'blocked'           => 'The account is blocked. Contact the administrator.',
                 'password_failed'   => 'The password could not be changed.',
                 'csrf_expired'      => 'Session expired. Reload the page and try again.',
@@ -223,7 +219,7 @@ class B2bAuth
                 ':hash'   => password_hash($password, PASSWORD_DEFAULT),
                 ':name'   => $fullName,
                 ':phone'  => $phone,
-                ':status' => self::STATUS_PENDING,
+                ':status' => self::STATUS_ACTIVE,
             ]);
 
             $userId = (int)$db->lastInsertId();
@@ -280,15 +276,8 @@ class B2bAuth
             return $generic;
         }
 
-        // Password is correct but the account is not approved yet.
-        if ($user['status'] === self::STATUS_PENDING) {
-            B2bAudit::log($userId, B2bAudit::LOGIN_FAILED, ['reason' => 'pending']);
-            return [
-                'ok'     => false,
-                'status' => self::STATUS_PENDING,
-                'error'  => self::msg('pending'),
-            ];
-        }
+        // Accounts are active on sign-up now (no admin approval); only a blocked
+        // account is refused here.
         if ($user['status'] === self::STATUS_BLOCKED) {
             B2bAudit::log($userId, B2bAudit::LOGIN_FAILED, ['reason' => 'blocked']);
             return [

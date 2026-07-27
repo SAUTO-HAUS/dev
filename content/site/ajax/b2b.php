@@ -116,11 +116,7 @@ switch ($b2b_fn) {
             break;
         }
 
-        $user = B2bAuth::findById((int)$res['user_id']);
-        if ($user) {
-            B2bNotifier::notifyNewAccount($user);
-        }
-
+        // Accounts are active immediately (no admin approval), so nothing to notify.
         $b2b_ok([
             'message' => B2bAuth::msg('register_ok'),
         ]);
@@ -379,11 +375,10 @@ switch ($b2b_fn) {
         ], $carId);
 
         // Already stored and audited, so a notification failure cannot lose it.
-        $notify = B2bNotifier::notifyRequest($user, $car, $invoice, $comment, $requestId);
+        B2bNotifier::notifyRequest($user, $car, $invoice, $comment, $requestId);
 
         $b2b_ok([
             'request_id' => $requestId,
-            'wa_links'   => $notify['links'] ?? [],
             'message'    => $b2b_msg('request_sent'),
         ]);
         break;

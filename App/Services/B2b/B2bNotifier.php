@@ -2,7 +2,6 @@
 
 namespace App\Services\B2b;
 
-use App\Services\Whatsapp\WhatsappService;
 use PDO;
 
 /**
@@ -21,11 +20,13 @@ class B2bNotifier
     /** Admin panel roles that receive B2B notifications. */
     private const SUPER_ADMIN_ROLES = ['gordon'];
 
-    /** @return array{ok: bool, links?: string[], error?: string} */
-    public static function notifyRequest(array $user, array $car, ?array $invoice, string $comment, int $requestId): array
+    /**
+     * A new payment invoice / reservation request: written to the admin bell only.
+     * (WhatsApp to the Super Admin was removed together with the approval flow.)
+     */
+    public static function notifyRequest(array $user, array $car, ?array $invoice, string $comment, int $requestId): void
     {
         $lang    = $_COOKIE['lang'] ?? 'ro';
-        $carUrl  = self::siteUrl() . '/' . $lang . '/ordercars/' . (int)$car['id'];
         $reqUrl  = '/' . $lang . '/adminsauto/b2b/requests?id=' . $requestId;
         $carName = trim((string)($car['title'] ?? ''));
         $carName = $carName !== '' ? $carName : ('#' . (int)$car['id']);
@@ -36,42 +37,6 @@ class B2bNotifier
             . ($invoice ? '<br>Proformă: ' . self::esc((string)$invoice['invoice_no']) : '')
             . ($comment !== '' ? '<br>Comentariu: ' . self::esc(mb_substr($comment, 0, 200)) : '')
             . '<br><a href="' . self::esc($reqUrl) . '" style="color:#E61E2D;">Deschide</a>'
-        );
-
-        // WhatsApp gets plain text, no HTML.
-        $text = "Cont de plata nou\n"
-              . 'Partener: ' . B2bAuth::displayName($user) . "\n"
-              . 'Telefon: ' . $user['phone_number'] . "\n"
-              . 'Masina: ' . $carName . "\n"
-              . 'Link: ' . $carUrl . "\n";
-
-        if ($invoice) {
-            $text .= 'Proforma: ' . $invoice['invoice_no']
-                   . ' (' . number_format((float)$invoice['advance_amount'], 2, '.', ' ') . ' ' . $invoice['currency'] . ")\n"
-                   . B2bInvoice::publicUrl($invoice) . "\n";
-        }
-        if ($comment !== '') {
-            $text .= 'Comentariu: ' . $comment . "\n";
-        }
-
-        try {
-            return WhatsappService::notifySuperAdmin($text);
-        } catch (\Throwable $e) {
-            B2bConfig::log('b2b_error.log', 'notifyRequest whatsapp err=' . $e->getMessage());
-            return ['ok' => false, 'error' => 'Notificarea WhatsApp nu a putut fi trimisă.'];
-        }
-    }
-
-    /** New account awaiting approval. */
-    public static function notifyNewAccount(array $user): void
-    {
-        $lang = $_COOKIE['lang'] ?? 'ro';
-        $url  = '/' . $lang . '/adminsauto/b2b/user?id=' . (int)$user['id'];
-
-        self::notifyAdmins(
-            '<b>Cont B2B nou</b> în așteptarea validării<br>'
-            . self::esc(B2bAuth::displayName($user)) . ' (' . self::esc((string)$user['login']) . ')'
-            . '<br><a href="' . self::esc($url) . '" style="color:#E61E2D;">Verifică contul</a>'
         );
     }
 

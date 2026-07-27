@@ -50,9 +50,9 @@
     }
 
     var MESSAGES = {
-        ro: { err_network: 'Eroare de rețea. Încercați din nou.', pass_mismatch: 'Parolele nu coincid.', working: 'Se procesează…', phone_len: 'Numărul de telefon trebuie să conțină 8 cifre.', wa_open: 'Deschide WhatsApp {n}' },
-        ru: { err_network: 'Ошибка сети. Попробуйте ещё раз.', pass_mismatch: 'Пароли не совпадают.', working: 'Обработка…', phone_len: 'Номер телефона должен содержать 8 цифр.', wa_open: 'Открыть WhatsApp {n}' },
-        en: { err_network: 'Network error. Please try again.', pass_mismatch: 'Passwords do not match.', working: 'Processing…', phone_len: 'The phone number must contain 8 digits.', wa_open: 'Open WhatsApp {n}' }
+        ro: { err_network: 'Eroare de rețea. Încercați din nou.', pass_mismatch: 'Parolele nu coincid.', working: 'Se procesează…', phone_len: 'Numărul de telefon trebuie să conțină 8 cifre.' },
+        ru: { err_network: 'Ошибка сети. Попробуйте ещё раз.', pass_mismatch: 'Пароли не совпадают.', working: 'Обработка…', phone_len: 'Номер телефона должен содержать 8 цифр.' },
+        en: { err_network: 'Network error. Please try again.', pass_mismatch: 'Passwords do not match.', working: 'Processing…', phone_len: 'The phone number must contain 8 digits.' }
     };
 
     function lang() {
@@ -319,24 +319,9 @@
                         if (!res.ok) { say(box, res.error, 'error'); return; }
 
                         if (comment) comment.value = '';
-
-                        // Without Cloud API, WhatsApp is opened with the prefilled
-                        // message for each Super Admin. The request is already stored
-                        // server-side, so this is a convenience, not a dependency.
-                        var links = res.wa_links || [];
-                        if (links.length) {
-                            window.open(links[0], '_blank', 'noopener');
-                            // Show every recipient as a clickable link too: a popup
-                            // blocker may swallow the auto-open, and there can be more
-                            // than one number.
-                            var extra = links.map(function (url, i) {
-                                return '<a href="' + url + '" target="_blank" rel="noopener">'
-                                     + msg('wa_open').replace('{n}', i + 1) + '</a>';
-                            }).join(' &middot; ');
-                            say(box, res.message + '<br>' + extra, 'ok', true);
-                        } else {
-                            say(box, res.message, 'ok');
-                        }
+                        // The request is recorded and the admin is notified via the
+                        // admin bell; the client just gets a confirmation.
+                        say(box, res.message, 'ok');
                     });
                     return;
                 }

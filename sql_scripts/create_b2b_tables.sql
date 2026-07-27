@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `gh3sp_b2b_users` (
     `full_name` VARCHAR(190) NOT NULL,
     `phone_number` VARCHAR(32) NOT NULL,
     `role` ENUM('b2b_client') NOT NULL DEFAULT 'b2b_client',
-    `status` ENUM('pending','active','blocked') NOT NULL DEFAULT 'pending',
+    `status` ENUM('active','blocked') NOT NULL DEFAULT 'active',
     -- Catalog access, alongside the region permissions. 1 = may see that catalog.
     -- in_stock -> /cars, on_order -> /ordercars. Both on by default.
     `allow_in_stock` TINYINT(1) NOT NULL DEFAULT 1,
@@ -308,11 +308,7 @@ SELECT `param_key`, `value_type`, `amount_eur`, `enabled`, `sort_order`
 -- ---------------------------------------------------------------------
 INSERT INTO `gh3sp_settings` (`name`, `value`)
 SELECT t.`name`, t.`value` FROM (
-              SELECT 'b2b_superadmin_phone'  AS `name`, '' AS `value`
-    UNION ALL SELECT 'b2b_superadmin_phone_2',      ''
-    UNION ALL SELECT 'b2b_superadmin_email',        ''
-    UNION ALL SELECT 'b2b_superadmin_email_2',      ''
-    UNION ALL SELECT 'b2b_advance_mode',            'fixed'
+              SELECT 'b2b_advance_mode'     AS `name`, 'fixed' AS `value`
     UNION ALL SELECT 'b2b_advance_default',         '1000'
     UNION ALL SELECT 'b2b_advance_percent',         '10'
     UNION ALL SELECT 'b2b_advance_max',             '0'

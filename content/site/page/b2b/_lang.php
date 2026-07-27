@@ -43,7 +43,7 @@ if (!function_exists('b2b_lang')) {
                 'reg_submit'       => 'Creează cont',
                 'reg_have_account' => 'Aveți deja cont?',
                 'reg_success_ttl'  => 'Cont creat cu succes',
-                'reg_success'      => 'Contul a fost trimis spre verificare. Veți fi contactat când Super Adminul validează accesul.',
+                'reg_success'      => 'Contul a fost creat cu succes. Te poți autentifica acum.',
                 'pass_mismatch'    => 'Parolele nu coincid.',
 
                 // login
@@ -145,7 +145,7 @@ if (!function_exists('b2b_lang')) {
                 'reg_submit'       => 'Создать аккаунт',
                 'reg_have_account' => 'Уже есть аккаунт?',
                 'reg_success_ttl'  => 'Аккаунт создан',
-                'reg_success'      => 'Аккаунт отправлен на проверку. С вами свяжутся, когда Супер Админ подтвердит доступ.',
+                'reg_success'      => 'Аккаунт успешно создан. Теперь вы можете войти.',
                 'pass_mismatch'    => 'Пароли не совпадают.',
 
                 'login_title'      => 'Вход в кабинет Sauto',
@@ -241,7 +241,7 @@ if (!function_exists('b2b_lang')) {
                 'reg_submit'       => 'Create account',
                 'reg_have_account' => 'Already have an account?',
                 'reg_success_ttl'  => 'Account created',
-                'reg_success'      => 'Your account was submitted for review. You will be contacted once the Super Admin validates access.',
+                'reg_success'      => 'Your account was created successfully. You can log in now.',
                 'pass_mismatch'    => 'Passwords do not match.',
 
                 'login_title'      => 'Sauto cabinet login',

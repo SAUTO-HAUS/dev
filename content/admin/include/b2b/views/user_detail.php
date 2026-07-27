@@ -57,12 +57,6 @@ $invoices = B2bInvoice::forUser($uid, 200);
             </p>
         </div>
         <div class="b2ba-head__actions">
-            <?php if ($client['status'] !== 'active'): ?>
-                <button type="button" class="b2ba-btn b2ba-btn--ok" data-b2b-admin="status" data-value="active">
-                    <?= b2b_adm_esc($t['approve']) ?>
-                </button>
-            <?php endif; ?>
-
             <?php if ($client['status'] === 'blocked'): ?>
                 <button type="button" class="b2ba-btn b2ba-btn--ok" data-b2b-admin="status" data-value="active">
                     <?= b2b_adm_esc($t['unblock']) ?>

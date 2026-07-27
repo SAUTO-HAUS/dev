@@ -9,12 +9,12 @@ use App\Services\B2b\B2bRegions;
 $lang = $_COOKIE['lang'] ?? 'ro';
 $t    = b2b_adm_lang($lang);
 
-$statuses = ['pending', 'active', 'blocked'];
+$statuses = ['active', 'blocked'];
 $filter   = isset($_GET['status']) && in_array($_GET['status'], $statuses, true) ? $_GET['status'] : '';
 $search   = trim((string)($_GET['q'] ?? ''));
 
 // Per-status counts for the filter badges.
-$counts = ['' => 0, 'pending' => 0, 'active' => 0, 'blocked' => 0];
+$counts = ['' => 0, 'active' => 0, 'blocked' => 0];
 try {
     $rows = $db->query('SELECT status, COUNT(*) AS n FROM '.B2bConfig::table('users').' GROUP BY status')
                ->fetchAll(PDO::FETCH_ASSOC);
@@ -44,7 +44,7 @@ if ($search !== '') {
     $args[':q4'] = $like;
     $args[':q5'] = $like;
 }
-$sql .= ' ORDER BY FIELD(status, "pending", "active", "blocked"), id DESC LIMIT 500';
+$sql .= ' ORDER BY FIELD(status, "active", "blocked"), id DESC LIMIT 500';
 
 $users = [];
 try {
@@ -73,7 +73,7 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/users';
 
     <nav class="b2ba-filters">
         <?php
-        $filterLabels = ['' => $t['filter_all'], 'pending' => $t['st_pending'], 'active' => $t['st_active'], 'blocked' => $t['st_blocked']];
+        $filterLabels = ['' => $t['filter_all'], 'active' => $t['st_active'], 'blocked' => $t['st_blocked']];
         foreach ($filterLabels as $key => $label) {
             $href = $baseUrl.($key !== '' ? '?status='.$key : '');
             if ($search !== '') {
@@ -122,10 +122,10 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/users';
                         </td>
                         <td>
                             <div class="b2ba-row-actions">
-                                <?php if ($status !== 'active'): ?>
+                                <?php if ($status === 'blocked'): ?>
                                     <button type="button" class="b2ba-btn b2ba-btn--ok b2ba-btn--sm"
                                             data-b2b-list-status data-user="<?= $uid ?>" data-value="active">
-                                        <?= b2b_adm_esc($t['approve']) ?>
+                                        <?= b2b_adm_esc($t['unblock']) ?>
                                     </button>
                                 <?php endif; ?>
                                 <?php if ($status !== 'blocked'): ?>

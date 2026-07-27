@@ -20,38 +20,6 @@ $advMode = B2bConfig::get('b2b_advance_mode', 'fixed');
 
     <div class="b2ba-msg" id="b2ba-msg" role="status" aria-live="polite"></div>
 
-    <!-- ------------------------------------------------------ Super Admin -->
-    <div class="b2ba-card">
-        <h2 class="b2ba-h2"><?= b2b_adm_esc($t['admin_section']) ?></h2>
-
-        <p class="b2ba-hint"><?= b2b_adm_esc($t['admin_hint']) ?></p>
-
-        <div class="b2ba-persons">
-            <div class="b2ba-person">
-                <div class="b2ba-person__ttl"><?= b2b_adm_esc($t['admin_recipient']) ?> 1</div>
-                <label class="b2ba-field">
-                    <span><?= b2b_adm_esc($t['phone']) ?></span>
-                    <input type="text" data-setting="b2b_superadmin_phone" value="<?= b2b_adm_esc(B2bConfig::get('b2b_superadmin_phone')) ?>" placeholder="+373 60 000 000">
-                </label>
-                <label class="b2ba-field">
-                    <span><?= b2b_adm_esc($t['email']) ?></span>
-                    <input type="email" data-setting="b2b_superadmin_email" value="<?= b2b_adm_esc(B2bConfig::get('b2b_superadmin_email')) ?>">
-                </label>
-            </div>
-            <div class="b2ba-person">
-                <div class="b2ba-person__ttl"><?= b2b_adm_esc($t['admin_recipient']) ?> 2 <span class="b2ba-person__opt"><?= b2b_adm_esc($t['optional']) ?></span></div>
-                <label class="b2ba-field">
-                    <span><?= b2b_adm_esc($t['phone']) ?></span>
-                    <input type="text" data-setting="b2b_superadmin_phone_2" value="<?= b2b_adm_esc(B2bConfig::get('b2b_superadmin_phone_2')) ?>" placeholder="+373 61 111 111">
-                </label>
-                <label class="b2ba-field">
-                    <span><?= b2b_adm_esc($t['email']) ?></span>
-                    <input type="email" data-setting="b2b_superadmin_email_2" value="<?= b2b_adm_esc(B2bConfig::get('b2b_superadmin_email_2')) ?>">
-                </label>
-            </div>
-        </div>
-    </div>
-
     <!-- --------------------------------------------------------- Invoices -->
     <div class="b2ba-card">
         <h2 class="b2ba-h2"><?= b2b_adm_esc($t['invoice_section']) ?></h2>

@@ -12,7 +12,6 @@ use App\Core\Container;
 use App\Services\B2b\B2bAudit;
 use App\Services\B2b\B2bAuth;
 use App\Services\B2b\B2bConfig;
-use App\Services\B2b\B2bMailer;
 use App\Services\B2b\B2bRegions;
 
 header('Content-Type: application/json; charset=UTF-8');
@@ -41,17 +40,17 @@ function b2b_adm_out(array $payload): void
 
 switch ($fn) {
 
-    // ---- Approve / block account (spec 3.1) ---------------------------------
+    // ---- Block / unblock account (spec 3.1) ---------------------------------
+    // Accounts are active on sign-up (no approval), so the admin only toggles
+    // between active and blocked.
     case 'set_status': {
         $status = (string)($_POST['status'] ?? '');
-        if (!in_array($status, ['pending', 'active', 'blocked'], true)) {
+        if (!in_array($status, ['active', 'blocked'], true)) {
             b2b_adm_out(['ok' => false, 'error' => 'Status invalid.']);
         }
-        $client = B2bAuth::findById($uid);
-        if (!$client) {
+        if (!B2bAuth::findById($uid)) {
             b2b_adm_out(['ok' => false, 'error' => 'Client inexistent.']);
         }
-        $wasActive = ($client['status'] ?? '') === 'active';
 
         try {
             $db->prepare('UPDATE '.B2bConfig::table('users').' SET status = :s WHERE id = :id')
@@ -61,18 +60,12 @@ switch ($fn) {
             b2b_adm_out(['ok' => false, 'error' => 'Statusul nu a putut fi schimbat.']);
         }
 
-        // A non-active account must not keep open sessions.
+        // A blocked account must not keep open sessions.
         if ($status !== 'active') {
             B2bAuth::destroyAllSessions($uid);
         }
 
         B2bAudit::log($uid, B2bAudit::STATUS_CHANGED, ['status' => $status, 'by_admin' => (int)$user_id]);
-
-        // Tell the partner by email when the account becomes active (they otherwise
-        // only find out by trying to log in). Best-effort — never blocks the change.
-        if ($status === 'active' && !$wasActive) {
-            try { B2bMailer::sendActivation($client); } catch (Throwable $e) {}
-        }
 
         b2b_adm_out(['ok' => true, 'status' => $status]);
     }
@@ -229,8 +222,6 @@ switch ($fn) {
     // ---- Module settings -----------------------------------------------------
     case 'save_settings': {
         $allowed = [
-            'b2b_superadmin_phone', 'b2b_superadmin_phone_2',
-            'b2b_superadmin_email', 'b2b_superadmin_email_2',
             'b2b_advance_default', 'b2b_advance_mode', 'b2b_advance_percent', 'b2b_advance_max',
         ];
 
