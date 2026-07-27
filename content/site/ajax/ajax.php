@@ -66,13 +66,14 @@ elseif ($_POST['fn']=='compare_cars'){
 		foreach ($raw as $rid) { $rid = (int)$rid; if ($rid > 0) { $ids[] = $rid; } }
 	}
 
-	$html = function_exists('compare_table_html') ? compare_table_html($db, $prefx, $lng, $ids) : '';
+	$validIds = array();
+	$html = function_exists('compare_table_html') ? compare_table_html($db, $prefx, $lng, $ids, $validIds) : '';
 
 	$returnIt = array(
 		'fn'   => 'compare_cars',
 		'html' => $html,
-		'count'=> ($html !== '' ? count($ids) : 0),
-		'ids'  => $ids
+		'count'=> count($validIds),   // only the cars that still exist
+		'ids'  => $validIds           // client prunes localStorage to these
 	);
 }
 

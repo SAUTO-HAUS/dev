@@ -7,7 +7,11 @@
  * fn=compare_cars.
  */
 if (!function_exists('compare_table_html')) {
-	function compare_table_html($db, $prefx, $lng, array $ids) {
+	// $validIds is filled (by reference) with the ids that were actually rendered —
+	// existing, visible, active cars — so the caller can prune stale ids (deleted or
+	// deactivated cars) from the client's localStorage, keeping the counter honest.
+	function compare_table_html($db, $prefx, $lng, array $ids, &$validIds = null) {
+		$validIds = array();
 		$ids = array_values(array_unique(array_map('intval', array_filter($ids))));
 		if (!$ids) { return ''; }
 
@@ -24,6 +28,9 @@ if (!function_exists('compare_table_html')) {
 		$cars = array();
 		foreach ($ids as $id) { if (isset($byId[$id])) { $cars[] = $byId[$id]; } }
 		if (!$cars) { return ''; }
+
+		// Ids actually rendered, in display order (for localStorage pruning).
+		$validIds = array_map(function ($r) { return (int)$r['id']; }, $cars);
 
 		// Client sees their B2B price where applicable.
 		$b2b = function_exists('b2b_prices_for_cars') ? b2b_prices_for_cars($cars) : array();

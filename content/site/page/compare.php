@@ -90,6 +90,11 @@ if (function_exists('b2b_is_client') && b2b_is_client()) {
 			.then(function(r){ return r.json(); })
 			.then(function(data){
 				if (loading) loading.style.display = 'none';
+				// Prune stale ids (deleted/inactive cars) so the counters match the table.
+				if (data && Array.isArray(data.ids)) {
+					saveIds(data.ids.map(Number).filter(Boolean));
+					if (window.SautoCompare) window.SautoCompare.sync();
+				}
 				if (data && data.html && data.count > 0) { box.innerHTML = data.html; }
 				else { if (empty) empty.style.display = 'block'; }
 			})
