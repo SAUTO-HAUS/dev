@@ -55,6 +55,26 @@ elseif ($_POST['fn']=='fav_cars'){
 	);
 }
 
+// COMPARE CARS (localStorage list -> cards, same grid as favorites) -----------
+elseif ($_POST['fn']=='compare_cars'){
+	require_once(_SITE_INCL.'/functions.php');
+
+	$ids = array();
+	if (isset($_POST['ids'])) {
+		$raw = is_array($_POST['ids']) ? $_POST['ids'] : explode(',', (string)$_POST['ids']);
+		foreach ($raw as $rid) { $rid = (int)$rid; if ($rid > 0) { $ids[] = $rid; } }
+	}
+
+	$card = $car_card('fav', count($ids) ?: 1, $ids, 'av', 0, true);
+
+	$returnIt = array(
+		'fn'   => 'compare_cars',
+		'html' => $card['txt'],
+		'count'=> $card['qu'],
+		'ids'  => $card['ids'] ?? array()
+	);
+}
+
 //SEND MESSAGE------------------------------------------------------------------
 elseif ($_POST['fn']=='snd_msg'){
 	

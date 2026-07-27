@@ -234,7 +234,53 @@ if (!(function_exists('b2b_is_client') && b2b_is_client())):
 	</span>
 	<span class="fav-float-lbl"><?php echo $fav_lbl; ?></span>
 </a>
+<?php $cmp_lbl = ['ro'=>'Comparare','ru'=>'Сравнение','en'=>'Compare'][$_COOKIE['lang']] ?? 'Comparare'; ?>
+<a id="compare_float" href="/<?php echo $_COOKIE['lang']; ?>/compare" title="<?php echo $cmp_lbl; ?>" aria-label="<?php echo $cmp_lbl; ?>">
+	<span class="cmp-float-ico">
+		<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M7 20h10"/><path d="M6 6l6-1 6 1"/><path d="M12 3v17"/><path d="M9 12L6 6l-3 6a3 3 0 0 0 6 0"/><path d="M21 12l-3-6-3 6a3 3 0 0 0 6 0"/></svg>
+		<span class="cmp-nav-count" style="display:none;">0</span>
+	</span>
+	<span class="cmp-float-lbl"><?php echo $cmp_lbl; ?></span>
+</a>
 <?php endif; ?>
+
+<script>
+(function(){
+	var KEY='sauto_compare';
+	function get(){ try{ return (JSON.parse(localStorage.getItem(KEY))||[]).map(Number).filter(Boolean); }catch(e){ return []; } }
+	function save(a){ try{ localStorage.setItem(KEY, JSON.stringify(a)); }catch(e){} }
+	function syncFloat(){
+		var n=get().length, f=document.getElementById('compare_float');
+		if(f){ f.classList.toggle('has-cmp', n>0); var c=f.querySelector('.cmp-nav-count'); if(c){ c.textContent=n; c.style.display=n>0?'inline-block':'none'; } }
+		document.querySelectorAll('[data-cmp-count]').forEach(function(el){ el.textContent=n; });
+	}
+	function syncBtns(){
+		var list=get();
+		document.querySelectorAll('.card-compare-btn[data-compare-id]').forEach(function(b){
+			var on=list.indexOf(parseInt(b.dataset.compareId,10))!==-1;
+			b.classList.toggle('is-cmp', on);
+			var lbl=on?b.dataset.cmpRemove:b.dataset.cmpAdd;
+			if(lbl){ b.title=lbl; b.setAttribute('aria-label',lbl); }
+		});
+	}
+	function toggle(id){
+		id=parseInt(id,10); if(!id) return;
+		var a=get(), i=a.indexOf(id);
+		if(i===-1) a.push(id); else a.splice(i,1);
+		save(a); syncBtns(); syncFloat();
+	}
+	document.addEventListener('click', function(e){
+		var b=e.target.closest ? e.target.closest('.card-compare-btn') : null;
+		if(!b) return;
+		e.preventDefault(); e.stopPropagation();
+		toggle(b.dataset.compareId);
+		b.classList.remove('cmp-pop'); void b.offsetWidth; b.classList.add('cmp-pop');
+	}, true);
+	function init(){ syncBtns(); syncFloat(); }
+	if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded', init);
+	window.SautoCompare={ get:get, toggle:toggle, clear:function(){ save([]); syncBtns(); syncFloat(); }, sync:init };
+})();
+</script>
 
 <header>
     <div class="def">
@@ -591,6 +637,7 @@ elseif ( $t_mp[2]=='ordercars' && (!isset($t_mp[3]) || $t_mp[3]=='' || !is_numer
     elseif ($t_mp[2]=='rent'&&(!isset($t_mp[3])&&!isset($q_mp[1]))) {include (_SITE_PAGE.'/rent.php');}
     elseif ( in_array( $t_mp[2], $info_arr ) ) {include (_SITE_PAGE.'/information.php');}
     elseif ($t_mp[2]=='favorites') {include (_SITE_PAGE.'/favorites.php');}
+    elseif ($t_mp[2]=='compare')   {include (_SITE_PAGE.'/compare.php');}
     elseif ($t_mp[2]=='contacts') {include (_SITE_PAGE.'/contacts.php');}
     elseif ($t_mp[2]=='calculator') {include (_SITE_PAGE.'/new_pages/calculator/calculator.php');}
     elseif ($t_mp[2]=='telegram') {include (_SITE_PAGE.'/new_pages/telegram/telegram.php');}

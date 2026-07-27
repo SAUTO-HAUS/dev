@@ -73,6 +73,11 @@ if ($initials === '') { $initials = 'B'; }
 $icoHeart = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 1 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/></svg>';
 $icoDoc   = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>';
 
+// Compare (balance) icon + label — the list is client-side (localStorage), so this
+// card links to /compare and its counter is filled by the compare JS in body.php.
+$icoCompare = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 20h10"/><path d="M6 6l6-1 6 1"/><path d="M12 3v17"/><path d="M9 12L6 6l-3 6a3 3 0 0 0 6 0"/><path d="M21 12l-3-6-3 6a3 3 0 0 0 6 0"/></svg>';
+$cmpLabel   = ['ro' => 'Comparare', 'ru' => 'Сравнение', 'en' => 'Compare'][$lang] ?? 'Comparare';
+
 // Nav cards double as the section counters: saved cars + payment invoices.
 $navItems = [
     'cabinet'  => [$t['tab_cars'],     $countSaved,    $icoHeart],
@@ -103,6 +108,13 @@ echo '
                . '<span class="b2b-navcard__label">'.b2b_esc($label).'</span>'
                . '</span></a>';
         }
+        // Compare card: links to /compare, counter filled from localStorage by JS.
+        echo '<a class="b2b-navcard" href="/'.b2b_esc($lang).'/compare">'
+           . '<span class="b2b-navcard__ico">'.$icoCompare.'</span>'
+           . '<span class="b2b-navcard__meta">'
+           . '<span class="b2b-navcard__num" data-cmp-count>0</span>'
+           . '<span class="b2b-navcard__label">'.b2b_esc($cmpLabel).'</span>'
+           . '</span></a>';
         echo '
         </div>
     </div>

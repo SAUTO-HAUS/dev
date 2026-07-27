@@ -105,7 +105,7 @@ $url_arr = [
     'vin-check',
     'calculator',
     'favorites',
-    //B2B module (dealer cabinet)
+    'compare',
     'b2b',
     'b2b-register',
     'b2b-login'

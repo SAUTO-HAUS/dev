@@ -48,6 +48,19 @@ if (!function_exists('car_fav_btn')) {
 	}
 }
 
+// Compare (balance) button — localStorage collection like favorites; JS in head.php.
+if (!function_exists('car_compare_btn')) {
+	function car_compare_btn($id, $lng = null) {
+		$id = (int)$id;
+		$add = 'Adaugă la comparare'; $rem = 'Scoate din comparare';
+		if (is_array($lng) && isset($lng['w']['cmp_add'])) { $add = $lng['w']['cmp_add']; }
+		if (is_array($lng) && isset($lng['w']['cmp_remove'])) { $rem = $lng['w']['cmp_remove']; }
+		$add = htmlspecialchars($add, ENT_QUOTES); $rem = htmlspecialchars($rem, ENT_QUOTES);
+		$ico = '<svg class="ccb-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M7 20h10"/><path d="M6 6l6-1 6 1"/><path d="M12 3v17"/><path d="M9 12L6 6l-3 6a3 3 0 0 0 6 0"/><path d="M21 12l-3-6-3 6a3 3 0 0 0 6 0"/></svg>';
+		return '<button type="button" class="card-compare-btn" data-compare-id="'.$id.'" data-cmp-add="'.$add.'" data-cmp-remove="'.$rem.'" aria-label="'.$add.'" title="'.$add.'">'.$ico.'</button>';
+	}
+}
+
 $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_brand_page=false) use (&$prefx, &$db, &$img_frmt, &$lng){
 	/** @var PDO $db */
 	$ar = [ 'ids'=>[], 'txt'=>'', 'qu'=>0, 'total'=>0 ];
@@ -695,6 +708,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 			<div class="card-img-wrap">
 				'.car_share_btn($r['id'], $page_type, $lng).'
 					'.car_fav_btn($r['id'], $lng).'
+					'.car_compare_btn($r['id'], $lng).'
 				'.$image_html.'
 				'.$timer_html.'
 			</div>

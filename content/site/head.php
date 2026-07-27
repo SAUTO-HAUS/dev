@@ -417,6 +417,27 @@ main .gr.fav-page > h1{margin-top:1vw;margin-bottom:0.5vw;}
 	.card-fav-btn{top:62px;right:12px;width:44px;height:44px;border-radius:12px;}
 	.card-fav-btn .cfb-ico{width:26px;height:26px;}
 }
+/* Compare (balance) button — same white box, stacked directly below the heart. */
+.card-compare-btn{position:absolute;top:104px;right:4px;z-index:6;box-sizing:border-box;display:flex;align-items:center;justify-content:center;width:44px;height:44px;padding:0;background:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.6);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.12);cursor:pointer;line-height:1;transition:background .15s,transform .12s,box-shadow .15s;-webkit-tap-highlight-color:transparent;}
+.card-compare-btn:hover{background:#fff;transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.25);}
+.card-compare-btn:active{transform:scale(.92);}
+.card-compare-btn .ccb-ico{width:24px;height:24px;display:block;stroke:#111;transition:stroke .15s;}
+.card-compare-btn:hover .ccb-ico{stroke:#e2001a;}
+.card-compare-btn.is-cmp{background:#e2001a;border-color:#e2001a;}
+.card-compare-btn.is-cmp .ccb-ico{stroke:#fff;}
+.card-compare-btn.cmp-pop{animation:favPop .28s ease;}
+.wrapf-carousel > .card-compare-btn{top:116px;right:12px;z-index:8;}
+main > .pht_bx > .big_pht > .card-compare-btn{top:116px;right:12px;z-index:8;}
+@media (max-width:767px){ .card-compare-btn{top:112px;right:12px;} }
+/* Compare float — below the favorites float. */
+#compare_float{position:fixed;right:40px;top:135px;z-index:11;display:none;flex-direction:column;align-items:center;gap:5px;text-decoration:none;cursor:pointer;}
+#compare_float.has-cmp{display:flex;}
+#compare_float > .cmp-float-ico{position:relative;display:block;width:50px;height:50px;}
+#compare_float > .cmp-float-ico > svg{width:50px;height:50px;padding:12px;box-sizing:border-box;stroke:#e2001a;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;background:#fff;border-radius:50%;box-shadow:0 2px 8px rgba(0,0,0,.2);transition:transform .15s,box-shadow .15s;}
+#compare_float:hover > .cmp-float-ico > svg{transform:translateY(-2px);box-shadow:0 5px 14px rgba(0,0,0,.3);}
+#compare_float > .cmp-float-lbl{font-family:"def_l";font-size:.95rem;font-weight:700;color:#000;line-height:1;text-align:center;}
+#compare_float > .cmp-float-ico > .cmp-nav-count{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;line-height:18px;padding:0 5px;background:#e2001a;color:#fff;border-radius:9px;font-size:.7rem;font-weight:700;text-align:center;box-sizing:border-box;}
+@media (max-width:999px), (orientation: portrait){ #compare_float{top:auto;right:auto;left:10px;bottom:170px;} #compare_float > .cmp-float-lbl{display:none;} }
 </style>
 <script data-cfasync="false">
 // Google Consent Mode v2

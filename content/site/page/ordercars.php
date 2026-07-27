@@ -762,7 +762,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 $main_ext = !empty($img['main_ff']) ? '.'.$img['main_ff'] : $img_frmt;
                 $z_src = isset($img['main'])?'/media/images/upload/car/'.$r['p_path'].'/'.$r['id'].'/high/'.$img['main'].$main_ext:'';
                 //$z_src = (@getimagesize($site_url.$z_src)?$z_src:'');
-                $rtrn .= '<div class="big_pht" role="img" aria-label="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' large photo" data-pos="1" data-cnt="'.$img_cnt.'" style="background-image:url('.$z_src.');" data-src="'.$z_src.'">'.car_share_btn($r['id'], 'ordercars', $lng).car_fav_btn($r['id'], $lng).($img_cnt>1?'<div class="bp-nav bp-left" role="button" aria-label="Anterior"></div><div class="bp-nav bp-right" role="button" aria-label="Următor"></div>':'').'</div>';
+                $rtrn .= '<div class="big_pht" role="img" aria-label="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' large photo" data-pos="1" data-cnt="'.$img_cnt.'" style="background-image:url('.$z_src.');" data-src="'.$z_src.'">'.car_share_btn($r['id'], 'ordercars', $lng).car_fav_btn($r['id'], $lng).car_compare_btn($r['id'], $lng).($img_cnt>1?'<div class="bp-nav bp-left" role="button" aria-label="Anterior"></div><div class="bp-nav bp-right" role="button" aria-label="Următor"></div>':'').'</div>';
                 $rtrn .= '</div>';
                 
                 
@@ -796,6 +796,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 <div class="wrapf-carousel 11">
                     <?= car_share_btn($r['id'], 'ordercars', $lng) ?>
                     <?= car_fav_btn($r['id'], $lng) ?>
+                    <?= car_compare_btn($r['id'], $lng) ?>
                     <div class="f-carousel" id="heroCarousel">
 
                         <?php 
