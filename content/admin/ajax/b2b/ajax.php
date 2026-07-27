@@ -12,6 +12,7 @@ use App\Core\Container;
 use App\Services\B2b\B2bAudit;
 use App\Services\B2b\B2bAuth;
 use App\Services\B2b\B2bConfig;
+use App\Services\B2b\B2bMailer;
 use App\Services\B2b\B2bRegions;
 
 header('Content-Type: application/json; charset=UTF-8');
@@ -46,9 +47,11 @@ switch ($fn) {
         if (!in_array($status, ['pending', 'active', 'blocked'], true)) {
             b2b_adm_out(['ok' => false, 'error' => 'Status invalid.']);
         }
-        if (!B2bAuth::findById($uid)) {
+        $client = B2bAuth::findById($uid);
+        if (!$client) {
             b2b_adm_out(['ok' => false, 'error' => 'Client inexistent.']);
         }
+        $wasActive = ($client['status'] ?? '') === 'active';
 
         try {
             $db->prepare('UPDATE '.B2bConfig::table('users').' SET status = :s WHERE id = :id')
@@ -64,6 +67,12 @@ switch ($fn) {
         }
 
         B2bAudit::log($uid, B2bAudit::STATUS_CHANGED, ['status' => $status, 'by_admin' => (int)$user_id]);
+
+        // Tell the partner by email when the account becomes active (they otherwise
+        // only find out by trying to log in). Best-effort — never blocks the change.
+        if ($status === 'active' && !$wasActive) {
+            try { B2bMailer::sendActivation($client); } catch (Throwable $e) {}
+        }
 
         b2b_adm_out(['ok' => true, 'status' => $status]);
     }

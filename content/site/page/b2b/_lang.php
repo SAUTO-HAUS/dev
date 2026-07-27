@@ -25,7 +25,7 @@ if (!function_exists('b2b_lang')) {
 
                 // registration form
                 'reg_title'        => 'Cont de partener B2B',
-                'reg_sub'          => 'Completați datele de contact. Contul devine activ după validarea de către administrator.',
+                'reg_sub'          => 'Completați datele de contact. Contul devine activ după validarea de către administrator — veți fi anunțat pe email.',
                 'person_type'       => 'Tip persoană',
                 'person_company'    => 'Persoană juridică',
                 'person_individual' => 'Persoană fizică',
@@ -127,7 +127,7 @@ if (!function_exists('b2b_lang')) {
                 'back_to_site'     => 'Вернуться на сайт',
 
                 'reg_title'        => 'Аккаунт B2B партнёра',
-                'reg_sub'          => 'Заполните контактные данные. Аккаунт активируется после проверки администратором.',
+                'reg_sub'          => 'Заполните контактные данные. Аккаунт активируется после проверки администратором — мы уведомим вас по email.',
                 'person_type'       => 'Тип лица',
                 'person_company'    => 'Юридическое лицо',
                 'person_individual' => 'Физическое лицо',
@@ -223,7 +223,7 @@ if (!function_exists('b2b_lang')) {
                 'back_to_site'     => 'Back to site',
 
                 'reg_title'        => 'B2B partner account',
-                'reg_sub'          => 'Fill in your contact details. The account is activated after an administrator validates it.',
+                'reg_sub'          => 'Fill in your contact details. The account is activated after an administrator validates it — you will be notified by email.',
                 'person_type'       => 'Person type',
                 'person_company'    => 'Legal entity',
                 'person_individual' => 'Individual',

@@ -68,7 +68,7 @@ switch ($b2b_fn) {
         }
 
         $b2b_ok([
-            'message' => 'Contul a fost creat cu succes și este în așteptarea validării de către administrator.',
+            'message' => 'Contul a fost creat cu succes și este în așteptarea validării de către administrator. Veți primi un email când contul este activat.',
         ]);
         break;
     }
