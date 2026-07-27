@@ -301,6 +301,25 @@ SELECT `param_key`, `value_type`, `amount_eur`, `enabled`, `sort_order`
 
 
 -- ---------------------------------------------------------------------
+-- Self-service password reset: one-time, hashed, expiring tokens.
+-- ---------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS `gh3sp_b2b_password_resets` (
+    `id`          INT(11)     NOT NULL AUTO_INCREMENT,
+    `b2b_user_id` INT(11)     NOT NULL,
+    `token_hash`  CHAR(64)    NOT NULL,
+    `expires_at`  DATETIME    NOT NULL,
+    `used_at`     DATETIME    DEFAULT NULL,
+    `ip_address`  VARCHAR(45) DEFAULT NULL,
+    `created_at`  DATETIME    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uniq_b2b_reset_token` (`token_hash`),
+    KEY `idx_b2b_reset_user` (`b2b_user_id`),
+    CONSTRAINT `fk_b2b_reset_user` FOREIGN KEY (`b2b_user_id`)
+        REFERENCES `gh3sp_b2b_users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ---------------------------------------------------------------------
 -- Module settings, reusing the existing gh3sp_settings key-value store.
 -- The nested sub-select is deliberate: MySQL refuses to read the target table
 -- of an INSERT directly in the WHERE clause, so re-running stays safe whether

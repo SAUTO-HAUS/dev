@@ -81,6 +81,12 @@ class B2bAuth
                 'password_failed'   => 'Parola nu a putut fi schimbată.',
                 'csrf_expired'      => 'Sesiune expirată. Reîncărcați pagina și încercați din nou.',
                 'auth_required'     => 'Autentificare necesară.',
+                'password_current_bad' => 'Parola curentă este incorectă.',
+                'password_changed'  => 'Parola a fost schimbată cu succes.',
+                'password_mismatch' => 'Parolele nu coincid.',
+                'forgot_sent'       => 'Dacă există un cont cu acest email, ai primit un link de resetare.',
+                'reset_invalid'     => 'Link de resetare invalid sau expirat.',
+                'reset_done'        => 'Parola a fost modificată cu succes. Te poți autentifica.',
             ],
             'ru' => [
                 'person_type'       => 'Выберите тип лица.',
@@ -103,6 +109,12 @@ class B2bAuth
                 'password_failed'   => 'Не удалось изменить пароль.',
                 'csrf_expired'      => 'Сессия истекла. Обновите страницу и попробуйте снова.',
                 'auth_required'     => 'Требуется авторизация.',
+                'password_current_bad' => 'Текущий пароль неверен.',
+                'password_changed'  => 'Пароль успешно изменён.',
+                'password_mismatch' => 'Пароли не совпадают.',
+                'forgot_sent'       => 'Если аккаунт с таким email существует, вы получили ссылку для сброса.',
+                'reset_invalid'     => 'Недействительная или просроченная ссылка сброса.',
+                'reset_done'        => 'Пароль успешно изменён. Теперь вы можете войти.',
             ],
             'en' => [
                 'person_type'       => 'Select the person type.',
@@ -125,6 +137,12 @@ class B2bAuth
                 'password_failed'   => 'The password could not be changed.',
                 'csrf_expired'      => 'Session expired. Reload the page and try again.',
                 'auth_required'     => 'Authentication required.',
+                'password_current_bad' => 'The current password is incorrect.',
+                'password_changed'  => 'Your password was changed successfully.',
+                'password_mismatch' => 'Passwords do not match.',
+                'forgot_sent'       => 'If an account with this email exists, a reset link has been sent.',
+                'reset_invalid'     => 'Invalid or expired reset link.',
+                'reset_done'        => 'Your password was changed successfully. You can log in now.',
             ],
         ];
     }
@@ -477,6 +495,48 @@ class B2bAuth
         } catch (\Throwable $e) {
             return null;
         }
+    }
+
+    public static function findByEmail(string $email): ?array
+    {
+        $email = mb_strtolower(trim($email));
+        if ($email === '') {
+            return null;
+        }
+        try {
+            $stmt = B2bConfig::db()->prepare(
+                'SELECT * FROM ' . B2bConfig::table('users') . ' WHERE email = :email LIMIT 1'
+            );
+            $stmt->execute([':email' => $email]);
+            return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        } catch (\Throwable $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Self-service password change from the cabinet: verifies the current
+     * password first and keeps the caller's session (unlike setPassword, the
+     * admin reset, which drops every session).
+     */
+    public static function changePassword(int $userId, string $current, string $new): array
+    {
+        if (mb_strlen($new) < 8) {
+            return ['ok' => false, 'error' => self::msg('password_short')];
+        }
+        $user = self::findById($userId);
+        if (!$user || !password_verify($current, (string)$user['password_hash'])) {
+            return ['ok' => false, 'error' => self::msg('password_current_bad')];
+        }
+        try {
+            B2bConfig::db()->prepare(
+                'UPDATE ' . B2bConfig::table('users') . ' SET password_hash = :hash WHERE id = :id'
+            )->execute([':hash' => password_hash($new, PASSWORD_DEFAULT), ':id' => $userId]);
+        } catch (\Throwable $e) {
+            return ['ok' => false, 'error' => self::msg('password_failed')];
+        }
+        B2bAudit::log($userId, B2bAudit::PASSWORD_RESET);
+        return ['ok' => true];
     }
 
     /** Admin-set password; drops every open session for that partner. */
