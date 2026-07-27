@@ -110,7 +110,14 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/users';
                     <tr class="b2ba-row-open" data-b2b-open="<?= $detail ?>">
                         <td class="b2ba-td--strong"><a class="b2ba-row-link" href="<?= $detail ?>"><?= b2b_adm_esc($u['login']) ?></a></td>
                         <td><?= b2b_adm_esc(B2bAuth::displayName($u)) ?></td>
-                        <td><?= b2b_adm_esc($t['pt_'.$u['person_type']] ?? $u['person_type']) ?></td>
+                        <td>
+                            <?php // Super Admin can correct a mistyped type inline (saves on change, no reload). ?>
+                            <select class="b2ba-ptype" data-b2b-list-ptype data-user="<?= $uid ?>"
+                                    data-prev="<?= b2b_adm_esc($u['person_type']) ?>" aria-label="<?= b2b_adm_esc($t['person_type']) ?>">
+                                <option value="individual"<?= $u['person_type'] === 'individual' ? ' selected' : '' ?>><?= b2b_adm_esc($t['pt_individual']) ?></option>
+                                <option value="company"<?= $u['person_type'] === 'company' ? ' selected' : '' ?>><?= b2b_adm_esc($t['pt_company']) ?></option>
+                            </select>
+                        </td>
                         <td class="b2ba-td--small">
                             <?= b2b_adm_esc($u['email']) ?><br>
                             <?= b2b_adm_esc($u['phone_number']) ?>

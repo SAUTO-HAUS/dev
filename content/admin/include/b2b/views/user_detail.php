@@ -114,9 +114,6 @@ $invoices = B2bInvoice::forUser($uid, 200);
                 <p class="b2ba-meta">
                     <?= b2b_adm_esc($t['registered_at']) ?>:
                     <?= b2b_adm_esc(date('d.m.Y H:i', strtotime((string)$client['created_at']))) ?>
-                    <?php if (!empty($client['last_login_ip'])): ?>
-                        &middot; <?= b2b_adm_esc($t['last_ip']) ?>: <?= b2b_adm_esc($client['last_login_ip']) ?>
-                    <?php endif; ?>
                 </p>
                 <button type="button" class="b2ba-btn b2ba-btn--primary" data-b2b-admin="save-profile">
                     <?= b2b_adm_esc($t['save']) ?>

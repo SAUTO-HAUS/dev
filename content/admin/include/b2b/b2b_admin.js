@@ -101,6 +101,24 @@
         });
     });
 
+    // Correct a mistyped person type (individual <-> company) inline. Reuses the
+    // save_profile handler (it accepts person_type); saves on change, no reload.
+    root.addEventListener('change', function (e) {
+        var sel = e.target.closest('[data-b2b-list-ptype]');
+        if (!sel) return;
+        sel.disabled = true;
+        api('save_profile', { user_id: sel.dataset.user, person_type: sel.value }).then(function (res) {
+            sel.disabled = false;
+            if (res && res.ok) {
+                sel.dataset.prev = sel.value;
+                sel.classList.remove('is-saved'); void sel.offsetWidth; sel.classList.add('is-saved');
+            } else {
+                if (sel.dataset.prev) sel.value = sel.dataset.prev;
+                say((res && res.error) || 'Eroare.', 'error');
+            }
+        });
+    });
+
     // ----------------------------------------------------------------- actions
 
     root.addEventListener('click', function (e) {
