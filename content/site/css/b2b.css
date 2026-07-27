@@ -330,14 +330,6 @@
 
 .b2b-panel{ min-height:220px; display:flow-root; }  /* contains the .gr float from the cars grid */
 
-/* Self-service "change password" card in the cabinet: a narrow form so the
-   fields don't stretch across the full-width cabinet panel. Hidden until the
-   hero button reveals it — the [hidden] rule needs a class to beat
-   .b2b-panel{display:flow-root}. */
-.b2b-pw-panel{ margin-top:1.2rem; min-height:0; }
-.b2b-pw-panel[hidden]{ display:none; }
-.b2b-pw{ max-width:460px; }
-.b2b-pw__ttl{ margin:0 0 1rem; font-size:1.15rem; font-weight:800; }
 .b2b-form__foot--forgot{ margin-bottom:.35rem; }
 
 /* "Change password" toggle button in the hero identity block. */
@@ -477,6 +469,8 @@
 
 .b2b-modal{ position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center; padding:1rem; }
 .b2b-modal[hidden]{ display:none; }
+/* Lock the page scroll while a modal is open (class set on <html> by b2b.js). */
+.b2b-modal-open{ overflow:hidden; }
 .b2b-modal__backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.55); }
 .b2b-modal__box{
     position:relative; width:100%; max-width:460px;
@@ -493,6 +487,14 @@
 .b2b-modal__comment:focus{ outline:none; border-color:#e2001a; box-shadow:0 0 0 3px rgba(226,0,26,.12); }
 .b2b-modal__check{ display:flex; align-items:center; gap:.5rem; margin:.9rem 0 1.25rem; font-size:.88rem; color:#6b6b6b; }
 .b2b-modal__btns{ display:flex; gap:.6rem; justify-content:flex-end; }
+/* Close (×) button, top-right of the modal box. */
+.b2b-modal__x{
+    position:absolute; top:.55rem; right:.6rem;
+    width:32px; height:32px; padding:0; border:0; border-radius:8px;
+    background:transparent; color:#9a9a9a; font-size:24px; line-height:1; cursor:pointer;
+    transition:background .15s, color .15s;
+}
+.b2b-modal__x:hover{ background:#f4f4f4; color:#111; }
 
 /* ----------------------------------------------------------- restricted */
 

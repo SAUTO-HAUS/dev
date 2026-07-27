@@ -22,25 +22,28 @@
         btn.setAttribute('aria-label', (show ? btn.dataset.hide : btn.dataset.show) || '');
     });
 
-    // Hero "change password" button: reveal/hide the change-password card and
-    // scroll to it when opening.
-    document.addEventListener('click', function (e) {
-        var btn = e.target.closest('[data-b2b-pw-toggle]');
-        if (!btn) return;
-        e.preventDefault();
-        var panel = document.querySelector('.b2b-pw-panel');
-        if (!panel) return;
-        var opening = panel.hasAttribute('hidden');
-        if (opening) {
-            panel.removeAttribute('hidden');
-            btn.classList.add('is-open');
-            panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            var first = panel.querySelector('input');
-            if (first) setTimeout(function () { first.focus(); }, 300);
-        } else {
-            panel.setAttribute('hidden', '');
-            btn.classList.remove('is-open');
+    // Hero "change password" opens a modal (centered, dimmed backdrop); the ×,
+    // the backdrop and Escape close it.
+    function pwModal(open) {
+        var modal = document.getElementById('b2b-pw-modal');
+        if (!modal) return;
+        modal.hidden = !open;
+        // Lock the page scroll behind the modal while it's open.
+        document.documentElement.classList.toggle('b2b-modal-open', !!open);
+        var trg = document.querySelector('[data-b2b-pw-toggle]');
+        if (trg) trg.classList.toggle('is-open', !!open);
+        if (open) {
+            var first = modal.querySelector('input');
+            if (first) setTimeout(function () { first.focus(); }, 60);
         }
+    }
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('[data-b2b-pw-toggle]')) { e.preventDefault(); pwModal(true); }
+        else if (e.target.closest('[data-b2b-pw-close]')) { e.preventDefault(); pwModal(false); }
+    });
+    document.addEventListener('keydown', function (e) {
+        var modal = document.getElementById('b2b-pw-modal');
+        if (e.key === 'Escape' && modal && !modal.hidden) pwModal(false);
     });
 
     // ------------------------------------------------------------------ utils

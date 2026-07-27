@@ -159,12 +159,15 @@ echo '
     </div>';
 
 // ------------------------------------------------- Security: change password
-// Hidden by default; opened by the "change password" button in the hero
-// (data-b2b-pw-toggle, handled in b2b.js). Reset-by-email (b2b-forgot) covers
-// the case where the partner cannot log in at all.
-echo '<div class="b2b-panel b2b-pw-panel" hidden>
-    <div class="b2b-pw">
-        <h2 class="b2b-pw__ttl">'.b2b_esc($t['pw_change_title']).'</h2>
+// A modal, closed by default; opened by the "change password" button in the hero
+// (data-b2b-pw-toggle) and closed by the ×/backdrop/Escape (data-b2b-pw-close),
+// all handled in b2b.js. Reset-by-email (b2b-forgot) covers the case where the
+// partner cannot log in at all.
+echo '<div class="b2b-modal b2b-pw-modal" id="b2b-pw-modal" hidden>
+    <div class="b2b-modal__backdrop" data-b2b-pw-close></div>
+    <div class="b2b-modal__box">
+        <button type="button" class="b2b-modal__x" data-b2b-pw-close aria-label="'.b2b_esc($t['pw_close']).'">&times;</button>
+        <h2 class="b2b-modal__ttl">'.b2b_esc($t['pw_change_title']).'</h2>
         <form class="b2b-form" id="b2b-change-password-form" data-csrf="'.$csrf.'" novalidate>
             <div class="b2b-field">
                 <label for="b2b-pw-cur">'.b2b_esc($t['pw_current']).'</label>
@@ -189,7 +192,7 @@ echo '<div class="b2b-panel b2b-pw-panel" hidden>
                 </div>
             </div>
             <div class="b2b-form__msg" role="alert" aria-live="polite"></div>
-            <button type="submit" class="b2b-btn b2b-btn--primary">'.b2b_esc($t['pw_save']).'</button>
+            <button type="submit" class="b2b-btn b2b-btn--primary b2b-btn--block">'.b2b_esc($t['pw_save']).'</button>
         </form>
     </div>
 </div>';
