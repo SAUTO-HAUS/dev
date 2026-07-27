@@ -44,7 +44,8 @@ class B2bInvoice
         $region = B2bRegions::regionForCar($carId);
         if ($region !== null && !B2bRegions::isAllowed($userId, $region)) {
             B2bAudit::log($userId, B2bAudit::REGION_DENIED, ['car_id' => $carId, 'region' => $region, 'via' => 'invoice'], $carId);
-            return ['ok' => false, 'error' => 'Restricționat conform planului B2B.'];
+            // Do not reveal a plan restriction — behave as if the car does not exist.
+            return ['ok' => false, 'error' => 'Mașina nu a fost găsită.'];
         }
 
         $currency = strtoupper(trim($currency));

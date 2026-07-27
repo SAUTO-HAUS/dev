@@ -132,7 +132,7 @@ if (isset($t_mp[2]) && $t_mp[2] == 'ordercars' && isset($t_mp[3]) && !isset($_GE
         // (on_order) is checked first, then region.
         elseif (function_exists('b2b_is_client') && b2b_is_client()) {
             if (!b2b_can_see_catalog('on_order')) {
-                $GLOBALS['b2b_region_blocked'] = true;
+                $GLOBALS['page_is_404'] = true; // silent 404, same as in-stock — no "restricted" hint
                 App\Services\B2b\B2bAudit::log(
                     b2b_user_id(),
                     App\Services\B2b\B2bAudit::REGION_DENIED,
@@ -142,7 +142,7 @@ if (isset($t_mp[2]) && $t_mp[2] == 'ordercars' && isset($t_mp[3]) && !isset($_GE
             } else {
                 $_b2b_region = App\Services\B2b\B2bRegions::regionForCar((int)$check_id);
                 if ($_b2b_region !== null && !b2b_can_see_region($_b2b_region)) {
-                    $GLOBALS['b2b_region_blocked'] = true;
+                    $GLOBALS['page_is_404'] = true; // silent 404, same as in-stock — no "restricted" hint
                     App\Services\B2b\B2bAudit::log(
                         b2b_user_id(),
                         App\Services\B2b\B2bAudit::REGION_DENIED,

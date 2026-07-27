@@ -74,10 +74,11 @@ if (!$car) {
     return;
 }
 
-// Same region guard as the invoice/request flow.
+// Same region guard as the invoice/request flow. A restricted car must not reveal
+// that it was restricted — show "not found", like the 404 on the car page.
 $region = B2bRegions::regionForCar($carId);
 if ($region !== null && !B2bRegions::isAllowed($userId, $region)) {
-    echo '<div class="b2b-page b2b-cp"><div class="b2b-card"><p class="b2b-card__sub" style="text-align:center;">'.b2b_esc($t['restricted']).'</p></div></div>';
+    echo '<div class="b2b-page b2b-cp"><div class="b2b-card"><p class="b2b-card__sub" style="text-align:center;">'.b2b_esc($t['not_found']).'</p></div></div>';
     return;
 }
 

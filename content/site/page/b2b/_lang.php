@@ -13,7 +13,7 @@ if (!function_exists('b2b_lang')) {
         return [
             'ro' => [
                 // nav
-                'brand'            => 'Partener',
+                'brand'            => 'Cabinet Sauto',
                 'cabinet'          => 'Cabinet',
                 'cabinet_short'    => 'Cabinet',
                 'cabinet_mine'     => 'Cabinetul meu',
@@ -24,7 +24,7 @@ if (!function_exists('b2b_lang')) {
                 'back_to_site'     => 'Înapoi la site',
 
                 // registration form
-                'reg_title'        => 'Cont de partener',
+                'reg_title'        => 'Cont Sauto.md',
                 'reg_sub'          => 'Completați datele de contact. Contul devine activ după validarea de către administrator — veți fi anunțat pe email.',
                 'person_type'       => 'Tip persoană',
                 'person_company'    => 'Persoană juridică',
@@ -47,8 +47,8 @@ if (!function_exists('b2b_lang')) {
                 'pass_mismatch'    => 'Parolele nu coincid.',
 
                 // login
-                'login_title'      => 'Autentificare partener',
-                'login_sub'        => 'Introduceți datele de acces în contul de partener.',
+                'login_title'      => 'Autentificare cabinet Sauto',
+                'login_sub'        => 'Introduceți datele de acces în contul Sauto.md.',
                 'login_submit'     => 'Continuă',
                 'login_no_account' => 'Nu aveți cont?',
 
@@ -116,7 +116,7 @@ if (!function_exists('b2b_lang')) {
             ],
 
             'ru' => [
-                'brand'            => 'Партнёр',
+                'brand'            => 'Кабинет Sauto',
                 'cabinet'          => 'Кабинет',
                 'cabinet_short'    => 'Кабинет',
                 'cabinet_mine'     => 'Мой кабинет',
@@ -126,7 +126,7 @@ if (!function_exists('b2b_lang')) {
                 'logout'           => 'Выход',
                 'back_to_site'     => 'Вернуться на сайт',
 
-                'reg_title'        => 'Аккаунт партнёра',
+                'reg_title'        => 'Аккаунт Sauto.md',
                 'reg_sub'          => 'Заполните контактные данные. Аккаунт активируется после проверки администратором — мы уведомим вас по email.',
                 'person_type'       => 'Тип лица',
                 'person_company'    => 'Юридическое лицо',
@@ -148,8 +148,8 @@ if (!function_exists('b2b_lang')) {
                 'reg_success'      => 'Аккаунт отправлен на проверку. С вами свяжутся, когда Супер Админ подтвердит доступ.',
                 'pass_mismatch'    => 'Пароли не совпадают.',
 
-                'login_title'      => 'Вход для партнёров',
-                'login_sub'        => 'Введите данные доступа к партнёрскому аккаунту.',
+                'login_title'      => 'Вход в кабинет Sauto',
+                'login_sub'        => 'Введите данные доступа к аккаунту Sauto.md.',
                 'login_submit'     => 'Продолжить',
                 'login_no_account' => 'Нет аккаунта?',
 
@@ -212,7 +212,7 @@ if (!function_exists('b2b_lang')) {
             ],
 
             'en' => [
-                'brand'            => 'Partner',
+                'brand'            => 'Sauto cabinet',
                 'cabinet'          => 'Cabinet',
                 'cabinet_short'    => 'Cabinet',
                 'cabinet_mine'     => 'My cabinet',
@@ -222,7 +222,7 @@ if (!function_exists('b2b_lang')) {
                 'logout'           => 'Log out',
                 'back_to_site'     => 'Back to site',
 
-                'reg_title'        => 'Partner account',
+                'reg_title'        => 'Sauto.md account',
                 'reg_sub'          => 'Fill in your contact details. The account is activated after an administrator validates it — you will be notified by email.',
                 'person_type'       => 'Person type',
                 'person_company'    => 'Legal entity',
@@ -244,8 +244,8 @@ if (!function_exists('b2b_lang')) {
                 'reg_success'      => 'Your account was submitted for review. You will be contacted once the Super Admin validates access.',
                 'pass_mismatch'    => 'Passwords do not match.',
 
-                'login_title'      => 'Partner login',
-                'login_sub'        => 'Enter your partner account credentials.',
+                'login_title'      => 'Sauto cabinet login',
+                'login_sub'        => 'Enter your Sauto.md account credentials.',
                 'login_submit'     => 'Continue',
                 'login_no_account' => 'No account yet?',
 
