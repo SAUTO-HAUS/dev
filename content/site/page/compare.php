@@ -42,7 +42,7 @@ if (function_exists('b2b_is_client') && b2b_is_client()) {
 }
 ?>
 <style>
-.cmp-wrap{ width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; border:1px solid #eee; border-radius:14px; background:#fff; }
+.cmp-wrap{ width:100%; margin-top:1rem; overflow-x:auto; -webkit-overflow-scrolling:touch; border:1px solid #eee; border-radius:14px; background:#fff; }
 .cmp-table{ border-collapse:collapse; width:100%; min-width:560px; font-family:"def_l"; font-size:.95rem; }
 .cmp-table th, .cmp-table td{ padding:.7rem 1rem; text-align:center; border-bottom:1px solid #f0f0f0; vertical-align:middle; }
 .cmp-table th{ text-align:left; color:#666; font-weight:700; white-space:nowrap; background:#fafafa; position:sticky; left:0; z-index:1; min-width:110px; }

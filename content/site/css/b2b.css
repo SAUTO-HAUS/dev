@@ -350,6 +350,9 @@
 
 /* Tables scroll on their own; the page must never scroll sideways. */
 .b2b-table-wrap{
+    /* Match the saved-cars grid gap from the hero (its .it cards use margin:1rem 0),
+       so the invoices table isn't glued to the hero. */
+    margin-top:1rem;
     overflow-x:auto;
     background:#fff; border:1px solid #efefef; border-radius:18px;
     box-shadow:0 10px 30px rgba(20,20,40,.07);
