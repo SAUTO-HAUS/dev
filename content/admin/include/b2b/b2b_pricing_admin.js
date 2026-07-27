@@ -56,7 +56,7 @@
         var ref = input.dataset.ref;
         var differs;
         if (ref === undefined || ref === '') {
-            differs = true; // no global counterpart => custom by definition
+            differs = !!pricingUser; // per client: custom; global: nothing to compare
         } else {
             differs = (parseInt(input.value, 10) || 0) !== (parseInt(ref, 10) || 0);
         }
@@ -69,19 +69,18 @@
         if (tr) tr.classList.toggle('b2bp-diff', differs);
     }
 
-    if (pricingUser) {
-        root.addEventListener('input', function (e) {
-            var val = e.target.closest('.b2bp-val');
-            if (val) markDiff(val);
-        });
-        root.addEventListener('change', function (e) {
-            var en = e.target.closest('.b2bp-en');
-            if (!en) return;
-            var tr = en.closest('tr');
-            var val = tr && tr.querySelector('.b2bp-val');
-            if (val) markDiff(val);
-        });
-    }
+    // Live highlight on both pages: vs global B2B per client, vs retail globally.
+    root.addEventListener('input', function (e) {
+        var val = e.target.closest('.b2bp-val');
+        if (val) markDiff(val);
+    });
+    root.addEventListener('change', function (e) {
+        var en = e.target.closest('.b2bp-en');
+        if (!en) return;
+        var tr = en.closest('tr');
+        var val = tr && tr.querySelector('.b2bp-val');
+        if (val) markDiff(val);
+    });
 
     // ---- Add a tier row (clones the shape of an existing one) ---------------
     root.querySelectorAll('[data-b2b-tier-add]').forEach(function (btn) {
@@ -98,7 +97,7 @@
                 '<td class="b2bp-ref">&mdash;</td>' + // ref: none for a brand-new band
                 '<td><button type="button" class="b2bp-del">&times;</button></td>';
             tbody.appendChild(tr);
-            if (pricingUser) markDiff(tr.querySelector('.b2bp-val')); // new band => differs
+            markDiff(tr.querySelector('.b2bp-val')); // new band: differs per client, nothing to compare globally
         });
     });
 

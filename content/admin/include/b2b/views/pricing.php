@@ -143,9 +143,11 @@ $tierRows = function (array $rows, string $valueField, array $retailRows) use ($
         $pub = $retailTierVal($retailRows, (float)$r['price_from'], $valueField);
         $pubCell = $pub === null ? '&mdash;' : $pub.' &euro;';
 
-        // Per client: flag the value when it differs from the global B2B price.
+        // Flag the value when it differs from its reference: retail (public) on
+        // the global page, global B2B on the per-client page. A missing reference
+        // counts as "custom" only per client (globally there's nothing to compare).
         $val  = (int)$r[$valueField];
-        $diff = $perUser && ($pub === null || $val !== $pub);
+        $diff = ($pub !== null && $val !== $pub) || ($perUser && $pub === null);
 
         $out .= '<tr data-row data-id="'.$id.'"'.($diff ? ' class="b2bp-diff"' : '').'>'
               . '<td><input type="number" min="0" step="1" class="b2bp-from" value="'.(int)$r['price_from'].'"></td>'
@@ -170,11 +172,12 @@ $paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt
         $amtI   = (int)round((float)$r['amount_eur']);
 
         // Reference for this exact param (matched by key): retail globally,
-        // global B2B per client. Per client, flag amount / on-off differences.
+        // global B2B per client. Flag amount / on-off differences from it (both
+        // pages); a missing reference counts as custom only per client.
         $ref    = '&mdash;';
         $refAmt = '';
         $refOn  = '';
-        $diff   = $perUser; // no global counterpart => custom by definition
+        $diff   = $perUser; // no reference counterpart => custom by definition (per client)
         if (isset($retailMap[$key])) {
             $rp      = $retailMap[$key];
             $refAmtI = (int)round((float)$rp['amount_eur']);
@@ -183,7 +186,7 @@ $paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt
             $refOn   = $refOnB ? '1' : '0';
             $ref     = $refAmtI.' &euro;';
             if (!$refOnB) { $ref .= ' <span class="b2bp-off">'.b2b_adm_esc($t['pricing_off']).'</span>'; }
-            $diff = $perUser && ($amtI !== $refAmtI || $onBool !== $refOnB);
+            $diff = ($amtI !== $refAmtI || $onBool !== $refOnB);
         }
 
         $out  .= '<tr data-row data-id="'.$id.'" data-key="'.b2b_adm_esc($key).'"'.($diff ? ' class="b2bp-diff"' : '').'>'
