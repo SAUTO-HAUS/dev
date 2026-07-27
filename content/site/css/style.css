@@ -392,7 +392,7 @@
       padding: 0.3rem;
   }
   main .gr > .cnt > .it > .prc > .val {
-      font-size: 1.3rem;
+      font-size: 1.15rem;
   }
   main .gr > .cnt > .it > .prc > .stock-status {
       font-size: 1rem;
@@ -411,7 +411,7 @@
   main .gr > .cnt > .it > .txt > .prc > .o_val,
   main .gr > .cnt > .it > .prc > .o_val {
       position:relative; display:inline-block;
-      color:#CE3226; font-size:0.95rem; font-weight:700;
+      color:#CE3226; font-size:0.85rem; font-weight:700;
       letter-spacing:0.02em;
       padding:0.05rem 0.15rem;
   }
