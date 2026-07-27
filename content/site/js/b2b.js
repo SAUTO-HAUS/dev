@@ -22,6 +22,27 @@
         btn.setAttribute('aria-label', (show ? btn.dataset.hide : btn.dataset.show) || '');
     });
 
+    // Hero "change password" button: reveal/hide the change-password card and
+    // scroll to it when opening.
+    document.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-b2b-pw-toggle]');
+        if (!btn) return;
+        e.preventDefault();
+        var panel = document.querySelector('.b2b-pw-panel');
+        if (!panel) return;
+        var opening = panel.hasAttribute('hidden');
+        if (opening) {
+            panel.removeAttribute('hidden');
+            btn.classList.add('is-open');
+            panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            var first = panel.querySelector('input');
+            if (first) setTimeout(function () { first.focus(); }, 300);
+        } else {
+            panel.setAttribute('hidden', '');
+            btn.classList.remove('is-open');
+        }
+    });
+
     // ------------------------------------------------------------------ utils
 
     /**

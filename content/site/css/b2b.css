@@ -331,11 +331,26 @@
 .b2b-panel{ min-height:220px; display:flow-root; }  /* contains the .gr float from the cars grid */
 
 /* Self-service "change password" card in the cabinet: a narrow form so the
-   fields don't stretch across the full-width cabinet panel. */
+   fields don't stretch across the full-width cabinet panel. Hidden until the
+   hero button reveals it — the [hidden] rule needs a class to beat
+   .b2b-panel{display:flow-root}. */
 .b2b-pw-panel{ margin-top:1.2rem; min-height:0; }
+.b2b-pw-panel[hidden]{ display:none; }
 .b2b-pw{ max-width:460px; }
 .b2b-pw__ttl{ margin:0 0 1rem; font-size:1.15rem; font-weight:800; }
 .b2b-form__foot--forgot{ margin-bottom:.35rem; }
+
+/* "Change password" toggle button in the hero identity block. */
+.b2b-hero__pwrow{ margin-top:.55rem; }
+.b2b-hero__pw{
+    display:inline-flex; align-items:center; gap:.4rem;
+    padding:.34rem .7rem;
+    background:#fafafb; border:1px solid #eef0f3; border-radius:9px;
+    color:var(--b2b-muted); font-size:.8rem; font-weight:600; cursor:pointer;
+    transition:background .15s, color .15s, border-color .15s;
+}
+.b2b-hero__pw:hover, .b2b-hero__pw.is-open{ background:#fff; color:var(--b2b-brand); border-color:var(--b2b-brand); }
+.b2b-hero__pw svg{ width:15px; height:15px; }
 
 .b2b-legend{ display:flex; gap:.5rem; margin-bottom:1rem; flex-wrap:wrap; }
 

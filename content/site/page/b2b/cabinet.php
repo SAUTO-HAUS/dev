@@ -159,9 +159,10 @@ echo '
     </div>';
 
 // ------------------------------------------------- Security: change password
-// Self-service; the partner types the current + new password. Reset-by-email
-// (b2b-forgot) covers the case where they cannot log in at all.
-echo '<div class="b2b-panel b2b-pw-panel">
+// Hidden by default; opened by the "change password" button in the hero
+// (data-b2b-pw-toggle, handled in b2b.js). Reset-by-email (b2b-forgot) covers
+// the case where the partner cannot log in at all.
+echo '<div class="b2b-panel b2b-pw-panel" hidden>
     <div class="b2b-pw">
         <h2 class="b2b-pw__ttl">'.b2b_esc($t['pw_change_title']).'</h2>
         <form class="b2b-form" id="b2b-change-password-form" data-csrf="'.$csrf.'" novalidate>

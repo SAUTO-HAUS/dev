@@ -156,7 +156,14 @@ if (!function_exists('b2b_assets')) {
             <div class="b2b-hero__text">
                 <p class="b2b-hero__greet">'.b2b_esc($t['welcome']).'</p>
                 <h1 class="b2b-hero__name">'.b2b_esc($displayName).'</h1>
-                <span class="b2b-badge b2b-badge--'.b2b_esc($user['status']).'">'.b2b_status_label((string)$user['status']).'</span>
+                <span class="b2b-badge b2b-badge--'.b2b_esc($user['status']).'">'.b2b_status_label((string)$user['status']).'</span>'
+              // The change-password card lives on the cabinet pages (not /compare);
+              // this button reveals it (see .b2b-pw-panel + b2b.js).
+              .($active !== 'compare'
+                    ? '<div class="b2b-hero__pwrow"><button type="button" class="b2b-hero__pw" data-b2b-pw-toggle>'
+                      .'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
+                      .'<span>'.b2b_esc($t['pw_change_title']).'</span></button></div>'
+                    : '').'
             </div>
         </div>
 
