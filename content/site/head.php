@@ -330,12 +330,13 @@ if (in_array($_z2, ['cars', 'ordercars'], true) && isset($t_mp[3]) && !is_numeri
 <style>
 /* Share button on car cards (top-right corner): black icon only, no label. */
 .card-share-btn{position:absolute;top:4px;right:4px;z-index:5;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:0;width:44px;height:44px;padding:0;background:rgba(255,255,255,0.8);border:1px solid rgba(255,255,255,0.6);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,.12);color:#111;cursor:pointer;line-height:1;transition:background .15s,transform .12s,box-shadow .15s;-webkit-tap-highlight-color:transparent;}
-.card-share-btn:hover{background:#000;border-color:#000;color:#fff;box-shadow:0 4px 14px rgba(0,0,0,.25);transform:translateY(-1px);}
-.card-share-btn:active{transform:scale(.96);}
+.card-share-btn:hover{background:#fff;color:#e2001a;box-shadow:0 4px 14px rgba(0,0,0,.25);transform:translateY(-1px);}
+.card-share-btn:active{transform:scale(.92);}
 /* Label is hidden by default — only shown (as "Copiat") after a successful copy. */
 .card-share-btn .csb-label{display:none;font-size:.62rem;font-weight:700;letter-spacing:.01em;color:#fff;}
 .card-share-btn .csb-ico{width:26px;height:26px;display:block;fill:none;}
-.card-share-btn .csb-ico path,.card-share-btn .csb-ico circle{fill:none;stroke:currentColor;}
+.card-share-btn .csb-ico path,.card-share-btn .csb-ico circle{fill:none;stroke:#111;transition:stroke .15s;}
+.card-share-btn:hover .csb-ico path,.card-share-btn:hover .csb-ico circle{stroke:#e2001a;}
 /* After copy: red pill with white "Copiat", icon hidden, auto width for the text. */
 .card-share-btn.is-copied{width:auto;min-width:36px;padding:0 10px;background:#d30909;border-color:#d30909;color:#fff;border-radius:10px;}
 .card-share-btn.is-copied .csb-label{display:inline;color:#fff;}
