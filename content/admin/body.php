@@ -113,13 +113,27 @@ if (!empty($_GET['embed']) && isset($i_counts) && $i_counts == 1) {
 					if ($sett_actions !== null) { $render_menu['sett'] = $sett_actions; }
 				}
 
-				$b2b_new_users = 0;
-				$b2b_new_requests  = 0;
+				// "New" clients = registered since the Super Admin last opened the list.
+				// Opening /b2b/users advances a "seen" marker (the newest client id at
+				// that moment), so the badge clears the instant he looks.
+				$b2b_new_users    = 0;
+				$b2b_new_requests = 0;
 				try {
-					// "New" clients: registered in the last 7 days (accounts are auto-active
-					// now, so this replaces the old "pending approval" count).
-					$b2b_new_users = (int)$db->query('SELECT COUNT(*) FROM '.$prefx.'_b2b_users WHERE `created_at` > (NOW() - INTERVAL 7 DAY)')->fetchColumn();
-					$b2b_new_requests  = (int)$db->query('SELECT COUNT(*) FROM '.$prefx.'_b2b_requests WHERE `status`="new"')->fetchColumn();
+					$onB2bUsers = (($t_mp[3] ?? '') === 'b2b') && (($t_mp[4] ?? 'users') === 'users');
+					if ($onB2bUsers) {
+						$maxUserId = (int)$db->query('SELECT COALESCE(MAX(id),0) FROM '.$prefx.'_b2b_users')->fetchColumn();
+						// Upsert without relying on a UNIQUE(name) index: UPDATE never
+						// duplicates; INSERT only when the row is genuinely missing.
+						$updSeen = $db->prepare('UPDATE '.$prefx.'_settings SET `value`=:v WHERE `name`="b2b_users_seen_id"');
+						$updSeen->execute([':v' => (string)$maxUserId]);
+						if ($updSeen->rowCount() === 0
+							&& (int)$db->query('SELECT COUNT(*) FROM '.$prefx.'_settings WHERE `name`="b2b_users_seen_id"')->fetchColumn() === 0) {
+							$db->prepare('INSERT INTO '.$prefx.'_settings (`name`,`value`) VALUES ("b2b_users_seen_id", :v)')->execute([':v' => (string)$maxUserId]);
+						}
+					}
+					$seenUserId       = (int)($db->query('SELECT `value` FROM '.$prefx.'_settings WHERE `name`="b2b_users_seen_id" LIMIT 1')->fetchColumn() ?: 0);
+					$b2b_new_users    = (int)$db->query('SELECT COUNT(*) FROM '.$prefx.'_b2b_users WHERE id > '.$seenUserId)->fetchColumn();
+					$b2b_new_requests = (int)$db->query('SELECT COUNT(*) FROM '.$prefx.'_b2b_requests WHERE `status`="new"')->fetchColumn();
 				} catch (\Throwable $e) { /* tables not migrated yet */ }
 
 				if (!empty($render_menu)) {
