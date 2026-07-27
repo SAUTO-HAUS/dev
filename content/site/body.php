@@ -399,23 +399,27 @@ endif;
 
 <div id="crumbs" data-lng-c="<?php echo $lng['w']['copied']; ?>">
     <?php
-    if ( isset($t_mp[2]) && $t_mp[2] === 'b2b' ){
-        // Friendly, localized crumbs for the partner cabinet — clients do not know
-        // the raw "b2b" / "invoices" URL words.
+    if ( isset($t_mp[2]) && in_array($t_mp[2], ['b2b', 'b2b-login', 'b2b-register'], true) ){
+        // Friendly, localized crumbs for the partner area — clients do not know the
+        // raw "b2b" / "invoices" / "b2b-login" URL words.
         $_bcl  = $_COOKIE['lang'] ?? 'ro';
         $_b2bc = [
-            'ro' => ['root'=>'Cabinet', 'invoices'=>'Conturi de plată', 'cont-plata'=>'Cont de plată'],
-            'ru' => ['root'=>'Кабинет', 'invoices'=>'Счета на оплату', 'cont-plata'=>'Счёт на оплату'],
-            'en' => ['root'=>'Cabinet', 'invoices'=>'Payment invoices', 'cont-plata'=>'Payment invoice'],
+            'ro' => ['root'=>'Cabinet', 'invoices'=>'Conturi de plată', 'cont-plata'=>'Cont de plată', 'b2b-login'=>'Autentificare', 'b2b-register'=>'Înregistrare'],
+            'ru' => ['root'=>'Кабинет', 'invoices'=>'Счета на оплату', 'cont-plata'=>'Счёт на оплату', 'b2b-login'=>'Вход', 'b2b-register'=>'Регистрация'],
+            'en' => ['root'=>'Cabinet', 'invoices'=>'Payment invoices', 'cont-plata'=>'Payment invoice', 'b2b-login'=>'Login', 'b2b-register'=>'Registration'],
         ];
         $_bm  = $_b2bc[$_bcl] ?? $_b2bc['ro'];
-        $_sub = (isset($t_mp[3]) && $t_mp[3] !== '' && $t_mp[3] !== 'cabinet') ? $t_mp[3] : '';
         echo '<a href="/'.$_bcl.'/">'.$lng['w']['home_page'].'</a>';
-        if ($_sub !== ''){
-            echo ' - <a href="/'.$_bcl.'/b2b/cabinet">'.$_bm['root'].'</a>';
-            echo ' - <span class="crnt cp_url" title="'.$lng['w']['copy'].' URL">'.($_bm[$_sub] ?? $_sub).'</span>';
+        if ($t_mp[2] === 'b2b-login' || $t_mp[2] === 'b2b-register'){
+            echo ' - <span class="crnt cp_url" title="'.$lng['w']['copy'].' URL">'.$_bm[$t_mp[2]].'</span>';
         }else{
-            echo ' - <span class="crnt cp_url" title="'.$lng['w']['copy'].' URL">'.$_bm['root'].'</span>';
+            $_sub = (isset($t_mp[3]) && $t_mp[3] !== '' && $t_mp[3] !== 'cabinet') ? $t_mp[3] : '';
+            if ($_sub !== ''){
+                echo ' - <a href="/'.$_bcl.'/b2b/cabinet">'.$_bm['root'].'</a>';
+                echo ' - <span class="crnt cp_url" title="'.$lng['w']['copy'].' URL">'.($_bm[$_sub] ?? $_sub).'</span>';
+            }else{
+                echo ' - <span class="crnt cp_url" title="'.$lng['w']['copy'].' URL">'.$_bm['root'].'</span>';
+            }
         }
     }
     elseif ( isset($t_mp[2])&&$t_mp[2]!='' ){

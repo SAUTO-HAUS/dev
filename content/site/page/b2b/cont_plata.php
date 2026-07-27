@@ -31,7 +31,7 @@ $T = [
         'submit_note' => 'După ce creezi contul de plată, cererea ajunge instant la echipa Sauto și te contactăm în scurt timp pentru confirmare.',
         'req_msg' => 'Completează câmpurile obligatorii: nume, IDNP/IDNO și telefon.',
         'idno_msg' => 'IDNP/IDNO trebuie să conțină exact 13 cifre.',
-        'not_found' => 'Mașina nu a fost găsită.', 'restricted' => 'Restricționat conform planului B2B.',
+        'not_found' => 'Mașina nu a fost găsită.', 'restricted' => 'Restricționat conform planului tău.',
         'already' => 'Aveți deja un cont de plată pentru această mașină.', 'view_invoice' => 'Vezi contul de plată',
     ],
     'ru' => [
@@ -46,7 +46,7 @@ $T = [
         'submit_note' => 'После создания счёта заявка мгновенно поступает команде Sauto — мы свяжемся с вами в ближайшее время для подтверждения.',
         'req_msg' => 'Заполните обязательные поля: имя, IDNP/IDNO и телефон.',
         'idno_msg' => 'IDNP/IDNO должен содержать ровно 13 цифр.',
-        'not_found' => 'Автомобиль не найден.', 'restricted' => 'Ограничено по плану B2B.',
+        'not_found' => 'Автомобиль не найден.', 'restricted' => 'Ограничено согласно вашему плану.',
         'already' => 'У вас уже есть счёт на оплату для этого авто.', 'view_invoice' => 'Смотреть счёт на оплату',
     ],
     'en' => [
@@ -61,7 +61,7 @@ $T = [
         'submit_note' => 'Once you create the payment invoice, your request reaches the Sauto team instantly and we\'ll contact you shortly to confirm.',
         'req_msg' => 'Please fill in the required fields: name, IDNP/IDNO and phone.',
         'idno_msg' => 'IDNP/IDNO must be exactly 13 digits.',
-        'not_found' => 'Car not found.', 'restricted' => 'Restricted by the B2B plan.',
+        'not_found' => 'Car not found.', 'restricted' => 'Restricted by your plan.',
         'already' => 'You already have a payment invoice for this car.', 'view_invoice' => 'View payment invoice',
     ],
 ];

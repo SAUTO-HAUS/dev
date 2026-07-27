@@ -161,9 +161,9 @@ if (!function_exists('b2b_car_actions_html')) {
     function b2b_restricted_html(string $lang): string
     {
         $L = [
-            'ro' => ['ttl' => 'Acces restricționat', 'txt' => 'Restricționat conform planului B2B. Nu aveți acces la licitațiile din această regiune.', 'btn' => 'Înapoi la catalog'],
-            'ru' => ['ttl' => 'Доступ ограничен',   'txt' => 'Ограничено согласно вашему B2B-плану. У вас нет доступа к аукционам этого региона.', 'btn' => 'Назад в каталог'],
-            'en' => ['ttl' => 'Access restricted',  'txt' => 'Restricted by your B2B plan. You do not have access to auctions from this region.',  'btn' => 'Back to catalog'],
+            'ro' => ['ttl' => 'Acces restricționat', 'txt' => 'Restricționat conform planului tău. Nu aveți acces la licitațiile din această regiune.', 'btn' => 'Înapoi la catalog'],
+            'ru' => ['ttl' => 'Доступ ограничен',   'txt' => 'Ограничено согласно вашему плану. У вас нет доступа к аукционам этого региона.', 'btn' => 'Назад в каталог'],
+            'en' => ['ttl' => 'Access restricted',  'txt' => 'Restricted by your plan. You do not have access to auctions from this region.',  'btn' => 'Back to catalog'],
         ];
         $t = $L[$lang] ?? $L['ro'];
 

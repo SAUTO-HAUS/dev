@@ -13,18 +13,18 @@ if (!function_exists('b2b_lang')) {
         return [
             'ro' => [
                 // nav
-                'brand'            => 'Partener B2B',
-                'cabinet'          => 'Cabinet B2B',
+                'brand'            => 'Partener',
+                'cabinet'          => 'Cabinet',
                 'cabinet_short'    => 'Cabinet',
                 'cabinet_mine'     => 'Cabinetul meu',
                 'header_register'  => 'Înregistrare',
-                'login'            => 'Autentificare B2B',
-                'register'         => 'Înregistrare B2B',
+                'login'            => 'Autentificare',
+                'register'         => 'Înregistrare',
                 'logout'           => 'Ieșire',
                 'back_to_site'     => 'Înapoi la site',
 
                 // registration form
-                'reg_title'        => 'Cont de partener B2B',
+                'reg_title'        => 'Cont de partener',
                 'reg_sub'          => 'Completați datele de contact. Contul devine activ după validarea de către administrator — veți fi anunțat pe email.',
                 'person_type'       => 'Tip persoană',
                 'person_company'    => 'Persoană juridică',
@@ -116,17 +116,17 @@ if (!function_exists('b2b_lang')) {
             ],
 
             'ru' => [
-                'brand'            => 'B2B партнёр',
-                'cabinet'          => 'Кабинет B2B',
+                'brand'            => 'Партнёр',
+                'cabinet'          => 'Кабинет',
                 'cabinet_short'    => 'Кабинет',
                 'cabinet_mine'     => 'Мой кабинет',
                 'header_register'  => 'Регистрация',
-                'login'            => 'Вход B2B',
-                'register'         => 'Регистрация B2B',
+                'login'            => 'Вход',
+                'register'         => 'Регистрация',
                 'logout'           => 'Выход',
                 'back_to_site'     => 'Вернуться на сайт',
 
-                'reg_title'        => 'Аккаунт B2B партнёра',
+                'reg_title'        => 'Аккаунт партнёра',
                 'reg_sub'          => 'Заполните контактные данные. Аккаунт активируется после проверки администратором — мы уведомим вас по email.',
                 'person_type'       => 'Тип лица',
                 'person_company'    => 'Юридическое лицо',
@@ -212,17 +212,17 @@ if (!function_exists('b2b_lang')) {
             ],
 
             'en' => [
-                'brand'            => 'B2B partner',
-                'cabinet'          => 'B2B cabinet',
+                'brand'            => 'Partner',
+                'cabinet'          => 'Cabinet',
                 'cabinet_short'    => 'Cabinet',
                 'cabinet_mine'     => 'My cabinet',
                 'header_register'  => 'Register',
-                'login'            => 'B2B login',
-                'register'         => 'B2B registration',
+                'login'            => 'Login',
+                'register'         => 'Registration',
                 'logout'           => 'Log out',
                 'back_to_site'     => 'Back to site',
 
-                'reg_title'        => 'B2B partner account',
+                'reg_title'        => 'Partner account',
                 'reg_sub'          => 'Fill in your contact details. The account is activated after an administrator validates it — you will be notified by email.',
                 'person_type'       => 'Person type',
                 'person_company'    => 'Legal entity',

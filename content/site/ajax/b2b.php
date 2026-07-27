@@ -106,7 +106,7 @@ switch ($b2b_fn) {
         $region = B2bRegions::regionForCar($carId);
         if ($region !== null && !B2bRegions::isAllowed($userId, $region)) {
             B2bAudit::log($userId, B2bAudit::REGION_DENIED, ['car_id' => $carId, 'region' => $region, 'via' => 'save'], $carId);
-            $b2b_fail('Restricționat conform planului B2B.');
+            $b2b_fail('Restricționat conform planului tău.');
             break;
         }
 
@@ -236,7 +236,7 @@ switch ($b2b_fn) {
         $region = B2bRegions::regionForCar($carId);
         if ($region !== null && !B2bRegions::isAllowed($userId, $region)) {
             B2bAudit::log($userId, B2bAudit::REGION_DENIED, ['car_id' => $carId, 'region' => $region, 'via' => 'request'], $carId);
-            $b2b_fail('Restricționat conform planului B2B.');
+            $b2b_fail('Restricționat conform planului tău.');
             break;
         }
 
