@@ -156,5 +156,42 @@ elseif ($action === 'activity') {
 }
 
 echo '
+    </div>';
+
+// ------------------------------------------------- Security: change password
+// Self-service; the partner types the current + new password. Reset-by-email
+// (b2b-forgot) covers the case where they cannot log in at all.
+echo '<div class="b2b-panel b2b-pw-panel">
+    <div class="b2b-pw">
+        <h2 class="b2b-pw__ttl">'.b2b_esc($t['pw_change_title']).'</h2>
+        <form class="b2b-form" id="b2b-change-password-form" data-csrf="'.$csrf.'" novalidate>
+            <div class="b2b-field">
+                <label for="b2b-pw-cur">'.b2b_esc($t['pw_current']).'</label>
+                <div class="b2b-pass-wrap">
+                    <input type="password" id="b2b-pw-cur" name="current" required autocomplete="current-password" />
+                    '.b2b_pass_toggle($t).'
+                </div>
+            </div>
+            <div class="b2b-field">
+                <label for="b2b-pw-new">'.b2b_esc($t['pw_new']).'</label>
+                <div class="b2b-pass-wrap">
+                    <input type="password" id="b2b-pw-new" name="new" minlength="8" required autocomplete="new-password" />
+                    '.b2b_pass_toggle($t).'
+                </div>
+                <small class="b2b-hint">'.b2b_esc($t['password_hint']).'</small>
+            </div>
+            <div class="b2b-field">
+                <label for="b2b-pw-new2">'.b2b_esc($t['pw_new_repeat']).'</label>
+                <div class="b2b-pass-wrap">
+                    <input type="password" id="b2b-pw-new2" name="confirm" minlength="8" required autocomplete="new-password" />
+                    '.b2b_pass_toggle($t).'
+                </div>
+            </div>
+            <div class="b2b-form__msg" role="alert" aria-live="polite"></div>
+            <button type="submit" class="b2b-btn b2b-btn--primary">'.b2b_esc($t['pw_save']).'</button>
+        </form>
     </div>
+</div>';
+
+echo '
 </div>';

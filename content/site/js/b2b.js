@@ -222,6 +222,93 @@
         });
     }
 
+    // -------------------------------------------------- password change / reset
+
+    // Cabinet: change own password (current + new + repeat).
+    function initChangePassword() {
+        var form = document.getElementById('b2b-change-password-form');
+        if (!form) return;
+        var csrf = form.dataset.csrf;
+        var box  = form.querySelector('.b2b-form__msg');
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var np = form.querySelector('[name="new"]').value;
+            var cf = form.querySelector('[name="confirm"]').value;
+            if (np !== cf) { say(box, msg('pass_mismatch'), 'error'); return; }
+
+            var btn = form.querySelector('button[type="submit"]');
+            say(box, ''); busy(btn, true);
+
+            api('b2b_change_password', {
+                current: form.querySelector('[name="current"]').value,
+                'new':   np,
+                confirm: cf
+            }, csrf).then(function (res) {
+                busy(btn, false);
+                if (handleCsrf(res)) return;
+                if (!res.ok) { say(box, res.error, 'error'); return; }
+                form.reset();
+                say(box, res.message, 'ok');
+            });
+        });
+    }
+
+    // Forgot password: request a reset link (answer is always generic).
+    function initForgot() {
+        var form = document.getElementById('b2b-forgot-form');
+        if (!form) return;
+        var csrf = form.dataset.csrf;
+        var box  = form.querySelector('.b2b-form__msg');
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var btn = form.querySelector('button[type="submit"]');
+            say(box, ''); busy(btn, true);
+
+            api('b2b_forgot_password', {
+                email: form.querySelector('[name="email"]').value.trim()
+            }, csrf).then(function (res) {
+                busy(btn, false);
+                if (handleCsrf(res)) return;
+                say(box, res.message || '', 'ok');
+                form.reset();
+            });
+        });
+    }
+
+    // Reset page: set the new password using the token from the emailed link.
+    function initReset() {
+        var form = document.getElementById('b2b-reset-form');
+        if (!form) return;
+        var csrf    = form.dataset.csrf;
+        var box     = form.querySelector('.b2b-form__msg');
+        var success = document.getElementById('b2b-reset-success');
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var np = form.querySelector('[name="new"]').value;
+            var cf = form.querySelector('[name="confirm"]').value;
+            if (np !== cf) { say(box, msg('pass_mismatch'), 'error'); return; }
+
+            var btn = form.querySelector('button[type="submit"]');
+            say(box, ''); busy(btn, true);
+
+            api('b2b_reset_password', {
+                token:   form.querySelector('[name="token"]').value,
+                'new':   np,
+                confirm: cf
+            }, csrf).then(function (res) {
+                busy(btn, false);
+                if (handleCsrf(res)) return;
+                if (!res.ok) { say(box, res.error, 'error'); return; }
+                form.hidden = true;
+                if (success) success.hidden = false;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+    }
+
     // ------------------------------------------------------ car page actions
 
     function initCarActions() {
@@ -355,6 +442,9 @@
     function init() {
         initRegister();
         initLogin();
+        initChangePassword();
+        initForgot();
+        initReset();
         initCarActions();
     }
 

@@ -87,6 +87,22 @@ if (!function_exists('b2b_assets')) {
     }
 
     /**
+     * Show/hide password toggle button (eye + eye-off). The click handler is
+     * delegated globally in b2b.js, so pages only need this markup inside a
+     * `.b2b-pass-wrap` next to the password input.
+     */
+    function b2b_pass_toggle(array $t): string
+    {
+        $eyes =
+            '<svg class="b2b-eye ico-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>'
+          . '<svg class="b2b-eye ico-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/><line x1="3" y1="3" x2="21" y2="21"/></svg>';
+        $show = b2b_esc($t['pass_show'] ?? 'Arată parola');
+        $hide = b2b_esc($t['pass_hide'] ?? 'Ascunde parola');
+        return '<button type="button" class="b2b-pass-toggle" data-b2b-pass-toggle'
+             . ' data-show="'.$show.'" data-hide="'.$hide.'" aria-label="'.$show.'">'.$eyes.'</button>';
+    }
+
+    /**
      * Cabinet hero + nav cards (identity, saved cars, invoices, compare).
      *
      * Shared by the cabinet tabs and the /compare page so a logged-in partner

@@ -16,6 +16,7 @@ use App\Services\B2b\B2bConfig;
 use App\Services\B2b\B2bCsrf;
 use App\Services\B2b\B2bInvoice;
 use App\Services\B2b\B2bNotifier;
+use App\Services\B2b\B2bPasswordReset;
 use App\Services\B2b\B2bRegions;
 
 $b2b_fn   = (string)($_POST['fn'] ?? '');
@@ -90,7 +91,7 @@ if (!B2bCsrf::check($_POST['csrf'] ?? null)) {
     return;
 }
 
-$b2b_needs_auth = ['b2b_logout', 'b2b_save_car', 'b2b_unsave_car', 'b2b_sync_favorites', 'b2b_create_invoice', 'b2b_send_request'];
+$b2b_needs_auth = ['b2b_logout', 'b2b_change_password', 'b2b_save_car', 'b2b_unsave_car', 'b2b_sync_favorites', 'b2b_create_invoice', 'b2b_send_request'];
 if (in_array($b2b_fn, $b2b_needs_auth, true) && !b2b_is_client()) {
     $b2b_fail(B2bAuth::msg('auth_required'), ['auth_required' => true]);
     return;
@@ -139,6 +140,51 @@ switch ($b2b_fn) {
     case 'b2b_logout': {
         B2bAuth::logout();
         $b2b_ok(['redirect' => '/'.$b2b_lang.'/b2b-login']);
+        break;
+    }
+
+    // ---- Change password (logged-in partner, from the cabinet) --------------
+    case 'b2b_change_password': {
+        $current = (string)($_POST['current'] ?? '');
+        $new     = (string)($_POST['new'] ?? '');
+        $confirm = (string)($_POST['confirm'] ?? '');
+
+        if ($new !== $confirm) {
+            $b2b_fail(B2bAuth::msg('password_mismatch'), ['field' => 'confirm']);
+            break;
+        }
+        $res = B2bAuth::changePassword(b2b_user_id(), $current, $new);
+        if (!$res['ok']) {
+            $b2b_fail($res['error']);
+            break;
+        }
+        $b2b_ok(['message' => B2bAuth::msg('password_changed')]);
+        break;
+    }
+
+    // ---- Forgot password: email a one-time reset link (always silent) --------
+    case 'b2b_forgot_password': {
+        B2bPasswordReset::request((string)($_POST['email'] ?? ''), $b2b_lang);
+        // Same answer whether or not the email matched an account.
+        $b2b_ok(['message' => B2bAuth::msg('forgot_sent')]);
+        break;
+    }
+
+    // ---- Reset password with a token from the emailed link ------------------
+    case 'b2b_reset_password': {
+        $new     = (string)($_POST['new'] ?? '');
+        $confirm = (string)($_POST['confirm'] ?? '');
+
+        if ($new !== $confirm) {
+            $b2b_fail(B2bAuth::msg('password_mismatch'), ['field' => 'confirm']);
+            break;
+        }
+        $res = B2bPasswordReset::complete((string)($_POST['token'] ?? ''), $new);
+        if (!$res['ok']) {
+            $b2b_fail($res['error']);
+            break;
+        }
+        $b2b_ok(['message' => B2bAuth::msg('reset_done')]);
         break;
     }
 

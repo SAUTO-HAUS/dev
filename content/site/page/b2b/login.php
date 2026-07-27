@@ -49,6 +49,9 @@ $body = '
 
     <button type="submit" class="b2b-btn b2b-btn--primary b2b-btn--block">'.b2b_esc($t['login_submit']).'</button>
 
+    <p class="b2b-form__foot b2b-form__foot--forgot">
+        <a href="/'.b2b_esc($lang).'/b2b-forgot">'.b2b_esc($t['login_forgot']).'</a>
+    </p>
     <p class="b2b-form__foot">
         '.b2b_esc($t['login_no_account']).'
         <a href="/'.b2b_esc($lang).'/b2b-register">'.b2b_esc($t['register']).'</a>

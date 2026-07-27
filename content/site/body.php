@@ -477,18 +477,18 @@ endif;
 
 <div id="crumbs" data-lng-c="<?php echo $lng['w']['copied']; ?>">
     <?php
-    if ( isset($t_mp[2]) && in_array($t_mp[2], ['b2b', 'b2b-login', 'b2b-register'], true) ){
+    if ( isset($t_mp[2]) && in_array($t_mp[2], ['b2b', 'b2b-login', 'b2b-register', 'b2b-forgot', 'b2b-reset'], true) ){
         // Friendly, localized crumbs for the partner area — clients do not know the
         // raw "b2b" / "invoices" / "b2b-login" URL words.
         $_bcl  = $_COOKIE['lang'] ?? 'ro';
         $_b2bc = [
-            'ro' => ['root'=>'Cabinet', 'invoices'=>'Conturi de plată', 'cont-plata'=>'Cont de plată', 'b2b-login'=>'Autentificare', 'b2b-register'=>'Înregistrare'],
-            'ru' => ['root'=>'Кабинет', 'invoices'=>'Счета на оплату', 'cont-plata'=>'Счёт на оплату', 'b2b-login'=>'Вход', 'b2b-register'=>'Регистрация'],
-            'en' => ['root'=>'Cabinet', 'invoices'=>'Payment invoices', 'cont-plata'=>'Payment invoice', 'b2b-login'=>'Login', 'b2b-register'=>'Registration'],
+            'ro' => ['root'=>'Cabinet', 'invoices'=>'Conturi de plată', 'cont-plata'=>'Cont de plată', 'b2b-login'=>'Autentificare', 'b2b-register'=>'Înregistrare', 'b2b-forgot'=>'Resetare parolă', 'b2b-reset'=>'Resetare parolă'],
+            'ru' => ['root'=>'Кабинет', 'invoices'=>'Счета на оплату', 'cont-plata'=>'Счёт на оплату', 'b2b-login'=>'Вход', 'b2b-register'=>'Регистрация', 'b2b-forgot'=>'Сброс пароля', 'b2b-reset'=>'Сброс пароля'],
+            'en' => ['root'=>'Cabinet', 'invoices'=>'Payment invoices', 'cont-plata'=>'Payment invoice', 'b2b-login'=>'Login', 'b2b-register'=>'Registration', 'b2b-forgot'=>'Password reset', 'b2b-reset'=>'Password reset'],
         ];
         $_bm  = $_b2bc[$_bcl] ?? $_b2bc['ro'];
         echo '<a href="/'.$_bcl.'/">'.$lng['w']['home_page'].'</a>';
-        if ($t_mp[2] === 'b2b-login' || $t_mp[2] === 'b2b-register'){
+        if (in_array($t_mp[2], ['b2b-login', 'b2b-register', 'b2b-forgot', 'b2b-reset'], true)){
             echo ' - <span class="crnt cp_url" title="'.$lng['w']['copy'].' URL">'.$_bm[$t_mp[2]].'</span>';
         }else{
             $_sub = (isset($t_mp[3]) && $t_mp[3] !== '' && $t_mp[3] !== 'cabinet') ? $t_mp[3] : '';
@@ -683,6 +683,8 @@ elseif ( $t_mp[2]=='ordercars' && (!isset($t_mp[3]) || $t_mp[3]=='' || !is_numer
     //---B2B module: registration, 2-step login, dealer cabinet
     elseif ($t_mp[2]=='b2b-register') {include (_SITE_PAGE.'/b2b/register.php');}
     elseif ($t_mp[2]=='b2b-login')    {include (_SITE_PAGE.'/b2b/login.php');}
+    elseif ($t_mp[2]=='b2b-forgot')   {include (_SITE_PAGE.'/b2b/forgot.php');}
+    elseif ($t_mp[2]=='b2b-reset')    {include (_SITE_PAGE.'/b2b/reset.php');}
     elseif ($t_mp[2]=='b2b')          {include (_SITE_PAGE.'/b2b/cabinet.php');}
 
     elseif ($t_mp[2]=='dev_tools'){

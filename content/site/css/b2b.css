@@ -330,6 +330,13 @@
 
 .b2b-panel{ min-height:220px; display:flow-root; }  /* contains the .gr float from the cars grid */
 
+/* Self-service "change password" card in the cabinet: a narrow form so the
+   fields don't stretch across the full-width cabinet panel. */
+.b2b-pw-panel{ margin-top:1.2rem; min-height:0; }
+.b2b-pw{ max-width:460px; }
+.b2b-pw__ttl{ margin:0 0 1rem; font-size:1.15rem; font-weight:800; }
+.b2b-form__foot--forgot{ margin-bottom:.35rem; }
+
 .b2b-legend{ display:flex; gap:.5rem; margin-bottom:1rem; flex-wrap:wrap; }
 
 /* -------------------------------------------------------- empty / tables */

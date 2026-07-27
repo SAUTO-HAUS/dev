@@ -108,7 +108,9 @@ $url_arr = [
     'compare',
     'b2b',
     'b2b-register',
-    'b2b-login'
+    'b2b-login',
+    'b2b-forgot',
+    'b2b-reset'
 ];
 $sub_urls = [
     '',
