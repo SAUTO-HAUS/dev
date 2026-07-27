@@ -20,6 +20,34 @@ if (!defined('B2B_PRICE_RULES_LOADED')) {
     define('B2B_PRICE_RULES_LOADED', 1);
 
     /**
+     * The partner whose pricing applies to the current view, as
+     * [bool $isClient, int|null $userId].
+     *
+     * Normally this is the logged-in partner. As a Super Admin convenience, an
+     * authenticated admin (identified by a PHP $_SESSION user — B2B clients never
+     * have one, they use a selector/validator cookie) may append
+     * ?b2b_as=<partner_id> to a car URL to preview exactly the price that partner
+     * sees, e.g. by clicking the car from /adminsauto/b2b/requests. The gate is
+     * the admin session, so an ordinary visitor cannot forge the parameter to
+     * obtain dealer prices.
+     *
+     * @return array{0: bool, 1: int|null}
+     */
+    function b2b_effective_client(): array
+    {
+        if (function_exists('b2b_is_client') && b2b_is_client()) {
+            return [true, (int)b2b_user_id()];
+        }
+        if (!empty($_SESSION['user_id']) && !empty($_GET['b2b_as'])) {
+            $asId = (int)$_GET['b2b_as'];
+            if ($asId > 0) {
+                return [true, $asId];
+            }
+        }
+        return [false, null];
+    }
+
+    /**
      * Breakdown for a parsing car with the prices that apply to the current
      * visitor. Single computation point shared by the car page and the catalog
      * cards, so the two cannot diverge.
@@ -31,12 +59,12 @@ if (!defined('B2B_PRICE_RULES_LOADED')) {
     {
         global $db, $prefx;
 
-        // CRITICAL: only a logged-in partner gets B2B pricing. A guest must get
-        // the unchanged retail breakdown, so this is called from the car page for
-        // everyone but only switches tables for a partner. The $b2b flag gates the
-        // table set; the user id selects that partner's own tables when present.
-        $isClient = function_exists('b2b_is_client') && b2b_is_client();
-        $userId   = $isClient ? (int)b2b_user_id() : null;
+        // CRITICAL: only a logged-in partner (or an admin previewing as one) gets
+        // B2B pricing. A guest must get the unchanged retail breakdown, so this is
+        // called from the car page for everyone but only switches tables for a
+        // partner. The $b2b flag gates the table set; the user id selects that
+        // partner's own tables when present.
+        [$isClient, $userId] = b2b_effective_client();
 
         return ($source === 'encar')
             ? parsing_md_breakdown_kr($db, $prefx, $car, null, $isClient, $userId)
@@ -73,7 +101,10 @@ if (!defined('B2B_PRICE_RULES_LOADED')) {
     {
         global $db, $prefx;
 
-        if (!function_exists('b2b_is_client') || !b2b_is_client() || !$rows) {
+        // Same audience gate as the car page: a real partner, or an admin previewing
+        // as one via ?b2b_as. Guests get retail (empty map).
+        [$isClientView] = b2b_effective_client();
+        if (!$isClientView || !$rows) {
             return [];
         }
 

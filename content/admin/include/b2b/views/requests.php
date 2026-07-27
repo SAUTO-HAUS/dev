@@ -92,7 +92,8 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/requests';
                             <div class="b2ba-td--small"><?= b2b_adm_esc($req['phone_number']) ?></div>
                         </td>
                         <td>
-                            <a href="/<?= b2b_adm_esc($lang) ?>/ordercars/<?= (int)$req['car_id'] ?>" target="_blank" rel="noopener">
+                            <?php // ?b2b_as opens the car with this partner's pricing (admin-only preview). ?>
+                            <a href="/<?= b2b_adm_esc($lang) ?>/ordercars/<?= (int)$req['car_id'] ?>?b2b_as=<?= (int)$req['b2b_user_id'] ?>" target="_blank" rel="noopener">
                                 <?= b2b_adm_esc($car['title'] ?? ('#'.(int)$req['car_id'])) ?>
                             </a>
                         </td>
