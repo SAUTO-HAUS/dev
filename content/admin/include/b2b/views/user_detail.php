@@ -125,7 +125,7 @@ $invoices = B2bInvoice::forUser($uid, 200);
             <h2 class="b2ba-h2"><?= b2b_adm_esc($t['set_password']) ?></h2>
             <div class="b2ba-inline">
                 <input type="text" id="b2ba-new-pass" placeholder="<?= b2b_adm_esc($t['new_password']) ?>"
-                       autocomplete="new-password" minlength="8">
+                       autocomplete="new-password" minlength="6">
                 <button type="button" class="b2ba-btn b2ba-btn--primary" data-b2b-admin="reset-password">
                     <?= b2b_adm_esc($t['save']) ?>
                 </button>

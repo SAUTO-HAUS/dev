@@ -179,7 +179,7 @@ echo '<div class="b2b-modal b2b-pw-modal" id="b2b-pw-modal" hidden>
             <div class="b2b-field">
                 <label for="b2b-pw-new">'.b2b_esc($t['pw_new']).'</label>
                 <div class="b2b-pass-wrap">
-                    <input type="password" id="b2b-pw-new" name="new" minlength="8" required autocomplete="new-password" />
+                    <input type="password" id="b2b-pw-new" name="new" minlength="6" required autocomplete="new-password" />
                     '.b2b_pass_toggle($t).'
                 </div>
                 <small class="b2b-hint">'.b2b_esc($t['password_hint']).'</small>
@@ -187,7 +187,7 @@ echo '<div class="b2b-modal b2b-pw-modal" id="b2b-pw-modal" hidden>
             <div class="b2b-field">
                 <label for="b2b-pw-new2">'.b2b_esc($t['pw_new_repeat']).'</label>
                 <div class="b2b-pass-wrap">
-                    <input type="password" id="b2b-pw-new2" name="confirm" minlength="8" required autocomplete="new-password" />
+                    <input type="password" id="b2b-pw-new2" name="confirm" minlength="6" required autocomplete="new-password" />
                     '.b2b_pass_toggle($t).'
                 </div>
             </div>

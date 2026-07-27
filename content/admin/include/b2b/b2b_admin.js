@@ -191,8 +191,8 @@
         // ---- new password ---------------------------------------------------
         if (action === 'reset-password') {
             var input = document.getElementById('b2ba-new-pass');
-            if (!input || input.value.length < 8) {
-                say('Parola trebuie să aibă minimum 8 caractere.', 'error');
+            if (!input || input.value.length < 6) {
+                say('Parola trebuie să aibă minimum 6 caractere.', 'error');
                 return;
             }
 

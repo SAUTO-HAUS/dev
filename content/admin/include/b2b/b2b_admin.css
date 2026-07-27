@@ -249,6 +249,9 @@
 @keyframes b2baPtypeSaved{ 0%,40%{ background:#e6f5ea; border-color:#0f7a3d; } 100%{ background:#fff; border-color:#d9d9d9; } }
 @media (prefers-reduced-motion:reduce){ .b2ba-ptype.is-saved{ animation:none; } }
 
+/* Row-number column in the clients list. */
+.b2ba-th--num, .b2ba-td--num{ width:2.5rem; text-align:right; color:var(--b2ba-muted); font-variant-numeric:tabular-nums; }
+
 /* ------------------------------------------------------------------ badges */
 
 .b2ba-badge{

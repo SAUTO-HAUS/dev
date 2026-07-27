@@ -42,7 +42,7 @@ $body = '
     <div class="b2b-field">
         <label for="b2b-reset-pass">'.b2b_esc($t['pw_new']).'</label>
         <div class="b2b-pass-wrap">
-            <input type="password" id="b2b-reset-pass" name="new" minlength="8" required autocomplete="new-password" />
+            <input type="password" id="b2b-reset-pass" name="new" minlength="6" required autocomplete="new-password" />
             '.$toggle.'
         </div>
         <small class="b2b-hint">'.b2b_esc($t['password_hint']).'</small>
@@ -51,7 +51,7 @@ $body = '
     <div class="b2b-field">
         <label for="b2b-reset-pass2">'.b2b_esc($t['pw_new_repeat']).'</label>
         <div class="b2b-pass-wrap">
-            <input type="password" id="b2b-reset-pass2" name="confirm" minlength="8" required autocomplete="new-password" />
+            <input type="password" id="b2b-reset-pass2" name="confirm" minlength="6" required autocomplete="new-password" />
             '.$toggle.'
         </div>
     </div>

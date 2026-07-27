@@ -35,7 +35,7 @@ if (!function_exists('b2b_lang')) {
                 'phone'            => 'Telefon',
                 'password'         => 'Parolă',
                 'password_repeat'  => 'Repetă parola',
-                'password_hint'    => 'Minimum 8 caractere.',
+                'password_hint'    => 'Minimum 6 caractere.',
                 'pass_show'        => 'Arată parola',
                 'pass_hide'        => 'Ascunde parola',
                 // Password change (cabinet) / forgot / reset
@@ -158,7 +158,7 @@ if (!function_exists('b2b_lang')) {
                 'phone'            => 'Телефон',
                 'password'         => 'Пароль',
                 'password_repeat'  => 'Повторите пароль',
-                'password_hint'    => 'Минимум 8 символов.',
+                'password_hint'    => 'Минимум 6 символов.',
                 'pass_show'        => 'Показать пароль',
                 'pass_hide'        => 'Скрыть пароль',
                 // Password change (cabinet) / forgot / reset
@@ -275,7 +275,7 @@ if (!function_exists('b2b_lang')) {
                 'phone'            => 'Phone',
                 'password'         => 'Password',
                 'password_repeat'  => 'Repeat password',
-                'password_hint'    => 'Minimum 8 characters.',
+                'password_hint'    => 'Minimum 6 characters.',
                 'pass_show'        => 'Show password',
                 'pass_hide'        => 'Hide password',
                 // Password change (cabinet) / forgot / reset

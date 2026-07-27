@@ -71,7 +71,7 @@ $form = '
         </div>
         <div class="b2b-field">
             <label for="b2b-login">'.b2b_esc($t['login_field']).' *</label>
-            <input type="text" id="b2b-login" name="login" minlength="6" maxlength="64" pattern="[A-Za-z0-9._-]{6,64}" required autocomplete="username" />
+            <input type="text" id="b2b-login" name="login" minlength="4" maxlength="64" pattern="[A-Za-z0-9._-]{4,64}" required autocomplete="username" />
             <small class="b2b-hint">'.b2b_esc($t['login_hint']).'</small>
         </div>
     </div>
@@ -80,7 +80,7 @@ $form = '
         <div class="b2b-field">
             <label for="b2b-pass">'.b2b_esc($t['password']).' *</label>
             <div class="b2b-pass-wrap">
-                <input type="password" id="b2b-pass" name="password" minlength="8" required autocomplete="new-password" />
+                <input type="password" id="b2b-pass" name="password" minlength="6" required autocomplete="new-password" />
                 '.$passToggle.'
             </div>
             <small class="b2b-hint">'.b2b_esc($t['password_hint']).'</small>
@@ -88,7 +88,7 @@ $form = '
         <div class="b2b-field">
             <label for="b2b-pass2">'.b2b_esc($t['password_repeat']).' *</label>
             <div class="b2b-pass-wrap">
-                <input type="password" id="b2b-pass2" name="password_repeat" minlength="8" required autocomplete="new-password" />
+                <input type="password" id="b2b-pass2" name="password_repeat" minlength="6" required autocomplete="new-password" />
                 '.$passToggle.'
             </div>
         </div>

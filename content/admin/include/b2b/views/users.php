@@ -93,6 +93,7 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/users';
             <table class="b2ba-table">
                 <thead>
                     <tr>
+                        <th class="b2ba-th--num">#</th>
                         <th><?= b2b_adm_esc($t['col_login']) ?></th>
                         <th><?= b2b_adm_esc($t['col_name']) ?></th>
                         <th><?= b2b_adm_esc($t['col_person_type']) ?></th>
@@ -102,12 +103,13 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/users';
                     </tr>
                 </thead>
                 <tbody>
-                <?php foreach ($users as $u):
+                <?php $rowNo = 0; foreach ($users as $u):
                     $uid    = (int)$u['id'];
                     $status = (string)$u['status'];
                     $detail = '/'.b2b_adm_esc($lang).'/'.b2b_adm_esc($admin_dir).'/b2b/user?id='.$uid;
                 ?>
                     <tr class="b2ba-row-open" data-b2b-open="<?= $detail ?>">
+                        <td class="b2ba-td--num"><?= ++$rowNo ?></td>
                         <td class="b2ba-td--strong"><a class="b2ba-row-link" href="<?= $detail ?>"><?= b2b_adm_esc($u['login']) ?></a></td>
                         <td><?= b2b_adm_esc(B2bAuth::displayName($u)) ?></td>
                         <td>

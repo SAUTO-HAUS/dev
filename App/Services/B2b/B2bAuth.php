@@ -63,11 +63,11 @@ class B2bAuth
             'ro' => [
                 'person_type'       => 'Selectați tipul de persoană.',
                 'name_required'     => 'Numele și prenumele sunt obligatorii.',
-                'login_short'       => 'Login-ul trebuie să aibă minim 6 caractere.',
+                'login_short'       => 'Login-ul trebuie să aibă minim 4 caractere.',
                 'login_charset'     => 'Login-ul poate conține doar litere, cifre, . _ -',
                 'email_invalid'     => 'Adresa de email nu este validă.',
                 'phone_format'      => 'Numărul de telefon trebuie să conțină 8 cifre, după prefixul %s.',
-                'password_short'    => 'Parola trebuie să aibă minimum 8 caractere.',
+                'password_short'    => 'Parola trebuie să aibă minimum 6 caractere.',
                 'login_taken'       => 'Acest login este deja folosit.',
                 'email_taken'       => 'Există deja un cont cu această adresă de email.',
                 'phone_taken'       => 'Există deja un cont cu acest număr de telefon.',
@@ -91,11 +91,11 @@ class B2bAuth
             'ru' => [
                 'person_type'       => 'Выберите тип лица.',
                 'name_required'     => 'Имя и фамилия обязательны.',
-                'login_short'       => 'Логин должен содержать минимум 6 символов.',
+                'login_short'       => 'Логин должен содержать минимум 4 символа.',
                 'login_charset'     => 'Логин может содержать только буквы, цифры, . _ -',
                 'email_invalid'     => 'Адрес электронной почты недействителен.',
                 'phone_format'      => 'Номер телефона должен содержать 8 цифр после префикса %s.',
-                'password_short'    => 'Пароль должен содержать минимум 8 символов.',
+                'password_short'    => 'Пароль должен содержать минимум 6 символов.',
                 'login_taken'       => 'Этот логин уже используется.',
                 'email_taken'       => 'Учётная запись с этим адресом email уже существует.',
                 'phone_taken'       => 'Учётная запись с этим номером телефона уже существует.',
@@ -119,11 +119,11 @@ class B2bAuth
             'en' => [
                 'person_type'       => 'Select the person type.',
                 'name_required'     => 'First and last name are required.',
-                'login_short'       => 'The login must be at least 6 characters.',
+                'login_short'       => 'The login must be at least 4 characters.',
                 'login_charset'     => 'The login may contain only letters, digits, . _ -',
                 'email_invalid'     => 'The email address is not valid.',
                 'phone_format'      => 'The phone number must contain 8 digits after the %s prefix.',
-                'password_short'    => 'The password must be at least 8 characters.',
+                'password_short'    => 'The password must be at least 6 characters.',
                 'login_taken'       => 'This login is already in use.',
                 'email_taken'       => 'An account with this email address already exists.',
                 'phone_taken'       => 'An account with this phone number already exists.',
@@ -169,8 +169,8 @@ class B2bAuth
         if ($fullName === '' || mb_strlen($fullName) > 190) {
             return ['ok' => false, 'field' => 'full_name', 'error' => self::msg('name_required')];
         }
-        // Primary rule shown to the user: at least 6 characters.
-        if (mb_strlen($login) < 6 || mb_strlen($login) > 64) {
+        // Primary rule shown to the user: at least 4 characters.
+        if (mb_strlen($login) < 4 || mb_strlen($login) > 64) {
             return ['ok' => false, 'field' => 'login', 'error' => self::msg('login_short')];
         }
         // Charset kept as a safety net (it goes into URLs and logs), not advertised.
@@ -190,7 +190,7 @@ class B2bAuth
                 'error' => self::msg('phone_format', B2bPhone::MD_DIAL),
             ];
         }
-        if (mb_strlen($password) < 8) {
+        if (mb_strlen($password) < 6) {
             return ['ok' => false, 'field' => 'password', 'error' => self::msg('password_short')];
         }
 
@@ -521,7 +521,7 @@ class B2bAuth
      */
     public static function changePassword(int $userId, string $current, string $new): array
     {
-        if (mb_strlen($new) < 8) {
+        if (mb_strlen($new) < 6) {
             return ['ok' => false, 'error' => self::msg('password_short')];
         }
         $user = self::findById($userId);
@@ -542,7 +542,7 @@ class B2bAuth
     /** Admin-set password; drops every open session for that partner. */
     public static function setPassword(int $userId, string $password): array
     {
-        if (mb_strlen($password) < 8) {
+        if (mb_strlen($password) < 6) {
             return ['ok' => false, 'error' => self::msg('password_short')];
         }
 

@@ -113,10 +113,12 @@ if (!empty($_GET['embed']) && isset($i_counts) && $i_counts == 1) {
 					if ($sett_actions !== null) { $render_menu['sett'] = $sett_actions; }
 				}
 
-				$b2b_pending_users = 0;
+				$b2b_new_users = 0;
 				$b2b_new_requests  = 0;
 				try {
-					$b2b_pending_users = (int)$db->query('SELECT COUNT(*) FROM '.$prefx.'_b2b_users WHERE `status`="pending"')->fetchColumn();
+					// "New" clients: registered in the last 7 days (accounts are auto-active
+					// now, so this replaces the old "pending approval" count).
+					$b2b_new_users = (int)$db->query('SELECT COUNT(*) FROM '.$prefx.'_b2b_users WHERE `created_at` > (NOW() - INTERVAL 7 DAY)')->fetchColumn();
 					$b2b_new_requests  = (int)$db->query('SELECT COUNT(*) FROM '.$prefx.'_b2b_requests WHERE `status`="new"')->fetchColumn();
 				} catch (\Throwable $e) { /* tables not migrated yet */ }
 
@@ -140,7 +142,7 @@ if (!empty($_GET['embed']) && isset($i_counts) && $i_counts == 1) {
 							<div class="bx '.(in_array( $k, $hided_admin_menu, true )?'ghost':'').'">';
 								$label_html = $menu_name;
 								if ($k === 'b2b') {
-									$grp_total = $b2b_pending_users + $b2b_new_requests;
+									$grp_total = $b2b_new_users + $b2b_new_requests;
 									if ($grp_total > 0) {
 										$label_html = '<span class="nm-badge-wrap">'.$menu_name.'<span class="menu-badge">'.$grp_total.'</span></span>';
 									}
@@ -175,7 +177,7 @@ if (!empty($_GET['embed']) && isset($i_counts) && $i_counts == 1) {
 										}
 										
 										$sub_badge = '';
-										if ($mod=='b2b' && $act=='users' && $b2b_pending_users>0) $sub_badge = '<span class="menu-badge menu-badge--sm">'.$b2b_pending_users.'</span>';
+										if ($mod=='b2b' && $act=='users' && $b2b_new_users>0) $sub_badge = '<span class="menu-badge menu-badge--sm">'.$b2b_new_users.'</span>';
 										if ($mod=='b2b' && $act=='requests' && $b2b_new_requests>0) $sub_badge = '<span class="menu-badge menu-badge--sm">'.$b2b_new_requests.'</span>';
 										echo $menu_name.($mod=='mail'&&$qu_x>0?' :'.$qu_x:'').$sub_badge.'
 									</a>';
