@@ -263,10 +263,12 @@ if (!(function_exists('b2b_is_client') && b2b_is_client())):
 			if(lbl){ b.title=lbl; b.setAttribute('aria-label',lbl); }
 		});
 	}
+	var CMP_MAX=10, CMP_MAX_MSG=<?php echo json_encode(['ro'=>'Poți compara maximum 10 mașini.','ru'=>'Можно сравнить не более 10 авто.','en'=>'You can compare up to 10 cars.'][$_COOKIE['lang']] ?? 'Poți compara maximum 10 mașini.', JSON_UNESCAPED_UNICODE); ?>;
 	function toggle(id){
 		id=parseInt(id,10); if(!id) return;
 		var a=get(), i=a.indexOf(id);
-		if(i===-1) a.push(id); else a.splice(i,1);
+		if(i===-1){ if(a.length>=CMP_MAX){ alert(CMP_MAX_MSG); return; } a.push(id); }
+		else a.splice(i,1);
 		save(a); syncBtns(); syncFloat();
 	}
 	document.addEventListener('click', function(e){

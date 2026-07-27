@@ -55,9 +55,10 @@ elseif ($_POST['fn']=='fav_cars'){
 	);
 }
 
-// COMPARE CARS (localStorage list -> cards, same grid as favorites) -----------
+// COMPARE CARS (localStorage list -> side-by-side comparison table) -----------
 elseif ($_POST['fn']=='compare_cars'){
-	require_once(_SITE_INCL.'/functions.php');
+	require_once(_SITE_INCL.'/functions.php');       // b2b_prices_for_cars, lang
+	require_once(_SITE_INCL.'/compare_table.php');   // compare_table_html
 
 	$ids = array();
 	if (isset($_POST['ids'])) {
@@ -65,13 +66,13 @@ elseif ($_POST['fn']=='compare_cars'){
 		foreach ($raw as $rid) { $rid = (int)$rid; if ($rid > 0) { $ids[] = $rid; } }
 	}
 
-	$card = $car_card('fav', count($ids) ?: 1, $ids, 'av', 0, true);
+	$html = function_exists('compare_table_html') ? compare_table_html($db, $prefx, $lng, $ids) : '';
 
 	$returnIt = array(
 		'fn'   => 'compare_cars',
-		'html' => $card['txt'],
-		'count'=> $card['qu'],
-		'ids'  => $card['ids'] ?? array()
+		'html' => $html,
+		'count'=> ($html !== '' ? count($ids) : 0),
+		'ids'  => $ids
 	);
 }
 
