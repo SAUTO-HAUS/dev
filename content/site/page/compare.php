@@ -20,12 +20,26 @@ $emp = $empty[$lang]  ?? $empty['ro'];
 $sa['meta']['h1']  = $ttl;
 $sa['meta']['ttl'] = $ttl . ' | Sauto.md';
 
-echo '<div class="gr fav-page">';
-echo '<h1>'.$ttl.'</h1>';
-echo '<div id="compare_loading" class="fav-loading" style="display:none;">…</div>';
-echo '<div id="compare_empty" class="fav-empty" style="display:none;">'.$emp.'</div>';
-echo '<div id="compare_container"></div>';
-echo '</div>';
+// The comparison list itself is client-side (localStorage); only the surrounding
+// chrome differs by audience. A logged-in partner keeps the cabinet hero + nav so
+// clicking the "Comparare" card doesn't drop them out of the cabinet; guests get
+// the plain collection page like /favorites.
+$compareBody =
+      '<div id="compare_loading" class="fav-loading" style="display:none;">…</div>'
+    . '<div id="compare_empty" class="fav-empty" style="display:none;">'.$emp.'</div>'
+    . '<div id="compare_container"></div>';
+
+if (function_exists('b2b_is_client') && b2b_is_client()) {
+    include_once( __DIR__ . '/b2b/_layout.php' );
+    echo b2b_assets();
+    echo b2b_cabinet_hero($db, b2b_user(), $lang, 'compare');
+    echo '<div class="b2b-panel">'.$compareBody.'</div></div>';
+} else {
+    echo '<div class="gr fav-page">';
+    echo '<h1>'.$ttl.'</h1>';
+    echo $compareBody;
+    echo '</div>';
+}
 ?>
 <style>
 .cmp-wrap{ width:100%; overflow-x:auto; -webkit-overflow-scrolling:touch; border:1px solid #eee; border-radius:14px; background:#fff; }

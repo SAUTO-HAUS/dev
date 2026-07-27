@@ -475,6 +475,17 @@ endif;
             }
         }
     }
+    elseif ( isset($t_mp[2]) && in_array($t_mp[2], ['favorites', 'compare'], true) ){
+        // Localized single crumb for the favourites / compare collection pages.
+        $_fcl = $_COOKIE['lang'] ?? 'ro';
+        $_fc  = [
+            'favorites' => ['ro'=>'Favorite','ru'=>'Избранное','en'=>'Favorites'],
+            'compare'   => ['ro'=>'Comparare','ru'=>'Сравнение','en'=>'Compare'],
+        ];
+        $_lbl = $_fc[$t_mp[2]][$_fcl] ?? $_fc[$t_mp[2]]['ro'];
+        echo '<a href="/'.$_fcl.'/">'.$lng['w']['home_page'].'</a>';
+        echo ' - <span class="crnt cp_url" title="'.$lng['w']['copy'].' URL">'.$_lbl.'</span>';
+    }
     elseif ( isset($t_mp[2])&&$t_mp[2]!='' ){
         echo '<a href="/'.$_COOKIE['lang'].'/">'.$lng['w']['home_page'].'</a>';
         $t_2_val = isset( $lng['l']['menu'][ $t_mp[2] ] ) ? $lng['l']['menu'][ $t_mp[2] ] : $t_mp[2];
