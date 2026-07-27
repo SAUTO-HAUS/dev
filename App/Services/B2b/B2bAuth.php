@@ -37,6 +37,102 @@ class B2bAuth
     private static ?array $current = null;
     private static bool $resolved = false;
 
+    // ------------------------------------------------------------ localisation
+
+    /**
+     * A user-facing auth/registration message in the visitor's language.
+     *
+     * The service returns finished text (not codes) because it also runs from the
+     * AJAX endpoint, where the frontend catalog (_lang.php) is not loaded — keeping
+     * the strings here guarantees they are always available. Public so the AJAX
+     * layer can reuse the same catalog for the messages in this same flow. %s/%d
+     * placeholders are filled from $params.
+     */
+    public static function msg(string $key, ...$params): string
+    {
+        $lang = $_COOKIE['lang'] ?? 'ro';
+        $all  = self::authMessages();
+        $set  = $all[$lang] ?? $all['ro'];
+        $txt  = $set[$key] ?? ($all['ro'][$key] ?? $key);
+
+        return $params ? vsprintf($txt, $params) : $txt;
+    }
+
+    private static function authMessages(): array
+    {
+        return [
+            'ro' => [
+                'person_type'       => 'Selectați tipul de persoană.',
+                'name_required'     => 'Numele și prenumele sunt obligatorii.',
+                'login_short'       => 'Login-ul trebuie să aibă minim 6 caractere.',
+                'login_charset'     => 'Login-ul poate conține doar litere, cifre, . _ -',
+                'email_invalid'     => 'Adresa de email nu este validă.',
+                'phone_format'      => 'Numărul de telefon trebuie să conțină 8 cifre, după prefixul %s.',
+                'password_short'    => 'Parola trebuie să aibă minimum 8 caractere.',
+                'login_taken'       => 'Acest login este deja folosit.',
+                'email_taken'       => 'Există deja un cont cu această adresă de email.',
+                'phone_taken'       => 'Există deja un cont cu acest număr de telefon.',
+                'email_phone_taken' => 'Există deja un cont cu acest număr de telefon și această adresă de email.',
+                'register_failed'   => 'Contul nu a putut fi creat. Încercați din nou.',
+                'register_ok'       => 'Contul a fost creat cu succes și este în așteptarea validării de către administrator. Veți primi un email când contul este activat.',
+                'login_bad'         => 'Login sau parolă incorectă.',
+                'service_down'      => 'Serviciu temporar indisponibil.',
+                'locked'            => 'Cont blocat temporar. Reîncercați peste %d minute.',
+                'pending'           => 'Contul este în așteptarea validării de către administrator.',
+                'blocked'           => 'Contul este blocat. Contactați administratorul.',
+                'password_failed'   => 'Parola nu a putut fi schimbată.',
+                'csrf_expired'      => 'Sesiune expirată. Reîncărcați pagina și încercați din nou.',
+                'auth_required'     => 'Autentificare necesară.',
+            ],
+            'ru' => [
+                'person_type'       => 'Выберите тип лица.',
+                'name_required'     => 'Имя и фамилия обязательны.',
+                'login_short'       => 'Логин должен содержать минимум 6 символов.',
+                'login_charset'     => 'Логин может содержать только буквы, цифры, . _ -',
+                'email_invalid'     => 'Адрес электронной почты недействителен.',
+                'phone_format'      => 'Номер телефона должен содержать 8 цифр после префикса %s.',
+                'password_short'    => 'Пароль должен содержать минимум 8 символов.',
+                'login_taken'       => 'Этот логин уже используется.',
+                'email_taken'       => 'Учётная запись с этим адресом email уже существует.',
+                'phone_taken'       => 'Учётная запись с этим номером телефона уже существует.',
+                'email_phone_taken' => 'Учётная запись с этим номером телефона и адресом email уже существует.',
+                'register_failed'   => 'Не удалось создать учётную запись. Попробуйте снова.',
+                'register_ok'       => 'Учётная запись успешно создана и ожидает подтверждения администратором. Вы получите письмо, когда она будет активирована.',
+                'login_bad'         => 'Неверный логин или пароль.',
+                'service_down'      => 'Сервис временно недоступен.',
+                'locked'            => 'Учётная запись временно заблокирована. Повторите через %d мин.',
+                'pending'           => 'Учётная запись ожидает подтверждения администратором.',
+                'blocked'           => 'Учётная запись заблокирована. Обратитесь к администратору.',
+                'password_failed'   => 'Не удалось изменить пароль.',
+                'csrf_expired'      => 'Сессия истекла. Обновите страницу и попробуйте снова.',
+                'auth_required'     => 'Требуется авторизация.',
+            ],
+            'en' => [
+                'person_type'       => 'Select the person type.',
+                'name_required'     => 'First and last name are required.',
+                'login_short'       => 'The login must be at least 6 characters.',
+                'login_charset'     => 'The login may contain only letters, digits, . _ -',
+                'email_invalid'     => 'The email address is not valid.',
+                'phone_format'      => 'The phone number must contain 8 digits after the %s prefix.',
+                'password_short'    => 'The password must be at least 8 characters.',
+                'login_taken'       => 'This login is already in use.',
+                'email_taken'       => 'An account with this email address already exists.',
+                'phone_taken'       => 'An account with this phone number already exists.',
+                'email_phone_taken' => 'An account with this phone number and email address already exists.',
+                'register_failed'   => 'The account could not be created. Please try again.',
+                'register_ok'       => 'The account was created successfully and is awaiting administrator approval. You will receive an email once it is activated.',
+                'login_bad'         => 'Incorrect login or password.',
+                'service_down'      => 'Service temporarily unavailable.',
+                'locked'            => 'Account temporarily locked. Try again in %d minutes.',
+                'pending'           => 'The account is awaiting administrator approval.',
+                'blocked'           => 'The account is blocked. Contact the administrator.',
+                'password_failed'   => 'The password could not be changed.',
+                'csrf_expired'      => 'Session expired. Reload the page and try again.',
+                'auth_required'     => 'Authentication required.',
+            ],
+        ];
+    }
+
     // ---------------------------------------------------------------- register
 
     /**
@@ -54,21 +150,21 @@ class B2bAuth
         $phoneRaw   = trim((string)($data['phone_number'] ?? ''));
 
         if (!in_array($personType, self::PERSON_TYPES, true)) {
-            return ['ok' => false, 'field' => 'person_type', 'error' => 'Selectați tipul de persoană.'];
+            return ['ok' => false, 'field' => 'person_type', 'error' => self::msg('person_type')];
         }
         if ($fullName === '' || mb_strlen($fullName) > 190) {
-            return ['ok' => false, 'field' => 'full_name', 'error' => 'Numele și prenumele sunt obligatorii.'];
+            return ['ok' => false, 'field' => 'full_name', 'error' => self::msg('name_required')];
         }
         // Primary rule shown to the user: at least 6 characters.
         if (mb_strlen($login) < 6 || mb_strlen($login) > 64) {
-            return ['ok' => false, 'field' => 'login', 'error' => 'Login-ul trebuie să aibă minim 6 caractere.'];
+            return ['ok' => false, 'field' => 'login', 'error' => self::msg('login_short')];
         }
         // Charset kept as a safety net (it goes into URLs and logs), not advertised.
         if (!preg_match('/^[a-z0-9._-]+$/', $login)) {
-            return ['ok' => false, 'field' => 'login', 'error' => 'Login-ul poate conține doar litere, cifre, . _ -'];
+            return ['ok' => false, 'field' => 'login', 'error' => self::msg('login_charset')];
         }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($email) > 190) {
-            return ['ok' => false, 'field' => 'email', 'error' => 'Adresa de email nu este validă.'];
+            return ['ok' => false, 'field' => 'email', 'error' => self::msg('email_invalid')];
         }
         // Moldova only, exactly 8 digits. The browser checks this too, but
         // client-side validation can be bypassed.
@@ -76,24 +172,44 @@ class B2bAuth
         if ($phone === '') {
             return [
                 'ok'    => false,
-                'field' => 'phone_number',
-                'error' => 'Numărul de telefon trebuie să conțină 8 cifre, după prefixul '.B2bPhone::MD_DIAL.'.',
+                'field' => 'phone',
+                'error' => self::msg('phone_format', B2bPhone::MD_DIAL),
             ];
         }
         if (mb_strlen($password) < 8) {
-            return ['ok' => false, 'field' => 'password', 'error' => 'Parola trebuie să aibă minimum 8 caractere.'];
+            return ['ok' => false, 'field' => 'password', 'error' => self::msg('password_short')];
         }
 
         $db = B2bConfig::db();
 
         try {
-            $stmt = $db->prepare('SELECT login, email FROM ' . B2bConfig::table('users')
-                . ' WHERE login = :login OR email = :email LIMIT 1');
-            $stmt->execute([':login' => $login, ':email' => $email]);
-            if ($taken = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                return ($taken['login'] === $login)
-                    ? ['ok' => false, 'field' => 'login', 'error' => 'Acest login este deja folosit.']
-                    : ['ok' => false, 'field' => 'email', 'error' => 'Există deja un cont cu această adresă de email.'];
+            // A person is identified by email + phone, so a match on either must
+            // block a second signup (login is unique too, on its own). The lookup
+            // may return more than one row — the email on one account, the phone on
+            // another — so we OR-scan them all and report every collision.
+            $stmt = $db->prepare('SELECT login, email, phone_number FROM ' . B2bConfig::table('users')
+                . ' WHERE login = :login OR email = :email OR phone_number = :phone');
+            $stmt->execute([':login' => $login, ':email' => $email, ':phone' => $phone]);
+            $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
+            $loginTaken = $emailTaken = $phoneTaken = false;
+            foreach ($rows as $r) {
+                if (mb_strtolower((string)$r['login']) === $login) { $loginTaken = true; }
+                if (mb_strtolower((string)$r['email']) === $email) { $emailTaken = true; }
+                if ((string)$r['phone_number'] === $phone)         { $phoneTaken = true; }
+            }
+
+            if ($loginTaken) {
+                return ['ok' => false, 'field' => 'login', 'error' => self::msg('login_taken')];
+            }
+            if ($emailTaken && $phoneTaken) {
+                return ['ok' => false, 'field' => 'phone', 'error' => self::msg('email_phone_taken')];
+            }
+            if ($emailTaken) {
+                return ['ok' => false, 'field' => 'email', 'error' => self::msg('email_taken')];
+            }
+            if ($phoneTaken) {
+                return ['ok' => false, 'field' => 'phone', 'error' => self::msg('phone_taken')];
             }
 
             $db->prepare(
@@ -114,7 +230,7 @@ class B2bAuth
         } catch (\Throwable $e) {
             // Also covers the UNIQUE(login/email) race between concurrent signups.
             B2bConfig::log('b2b_error.log', 'register err=' . $e->getMessage());
-            return ['ok' => false, 'error' => 'Contul nu a putut fi creat. Încercați din nou.'];
+            return ['ok' => false, 'error' => self::msg('register_failed')];
         }
 
         B2bAudit::log($userId, B2bAudit::REGISTER, ['login' => $login, 'person_type' => $personType]);
@@ -132,7 +248,7 @@ class B2bAuth
     public static function login(string $login, string $password): array
     {
         $login   = mb_strtolower(trim($login));
-        $generic = ['ok' => false, 'error' => 'Login sau parolă incorectă.'];
+        $generic = ['ok' => false, 'error' => self::msg('login_bad')];
 
         try {
             $stmt = B2bConfig::db()->prepare(
@@ -142,7 +258,7 @@ class B2bAuth
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (\Throwable $e) {
             B2bConfig::log('b2b_error.log', 'login err=' . $e->getMessage());
-            return ['ok' => false, 'error' => 'Serviciu temporar indisponibil.'];
+            return ['ok' => false, 'error' => self::msg('service_down')];
         }
 
         // Unknown account returns the same message as a wrong password, so the
@@ -155,7 +271,7 @@ class B2bAuth
 
         if (!empty($user['locked_until']) && strtotime($user['locked_until']) > time()) {
             $minutes = max(1, (int)ceil((strtotime($user['locked_until']) - time()) / 60));
-            return ['ok' => false, 'error' => 'Cont blocat temporar. Reîncercați peste ' . $minutes . ' minute.'];
+            return ['ok' => false, 'error' => self::msg('locked', $minutes)];
         }
 
         if (!password_verify($password, (string)$user['password_hash'])) {
@@ -170,7 +286,7 @@ class B2bAuth
             return [
                 'ok'     => false,
                 'status' => self::STATUS_PENDING,
-                'error'  => 'Contul este în așteptarea validării de către administrator.',
+                'error'  => self::msg('pending'),
             ];
         }
         if ($user['status'] === self::STATUS_BLOCKED) {
@@ -178,7 +294,7 @@ class B2bAuth
             return [
                 'ok'     => false,
                 'status' => self::STATUS_BLOCKED,
-                'error'  => 'Contul este blocat. Contactați administratorul.',
+                'error'  => self::msg('blocked'),
             ];
         }
 
@@ -378,7 +494,7 @@ class B2bAuth
     public static function setPassword(int $userId, string $password): array
     {
         if (mb_strlen($password) < 8) {
-            return ['ok' => false, 'error' => 'Parola trebuie să aibă minimum 8 caractere.'];
+            return ['ok' => false, 'error' => self::msg('password_short')];
         }
 
         try {
@@ -387,7 +503,7 @@ class B2bAuth
                 . ' SET password_hash = :hash, failed_attempts = 0, locked_until = NULL WHERE id = :id'
             )->execute([':hash' => password_hash($password, PASSWORD_DEFAULT), ':id' => $userId]);
         } catch (\Throwable $e) {
-            return ['ok' => false, 'error' => 'Parola nu a putut fi schimbată.'];
+            return ['ok' => false, 'error' => self::msg('password_failed')];
         }
 
         self::destroyAllSessions($userId);

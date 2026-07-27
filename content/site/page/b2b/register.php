@@ -37,12 +37,12 @@ $form = '
         <span class="b2b-field__lbl">'.b2b_esc($t['person_type']).' *</span>
         <div class="b2b-radios">
             <label class="b2b-radio">
-                <input type="radio" name="person_type" value="company" checked />
-                <span>'.b2b_esc($t['person_company']).'</span>
+                <input type="radio" name="person_type" value="individual" checked />
+                <span>'.b2b_esc($t['person_individual']).'</span>
             </label>
             <label class="b2b-radio">
-                <input type="radio" name="person_type" value="individual" />
-                <span>'.b2b_esc($t['person_individual']).'</span>
+                <input type="radio" name="person_type" value="company" />
+                <span>'.b2b_esc($t['person_company']).'</span>
             </label>
         </div>
     </div>

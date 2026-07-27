@@ -32,13 +32,13 @@ $b2b_ok = function (array $data = []) use (&$returnIt, $b2b_fn) {
 // ---------------------------------------------------------------- CSRF + auth
 
 if (!B2bCsrf::check($_POST['csrf'] ?? null)) {
-    $b2b_fail('Sesiune expirată. Reîncărcați pagina și încercați din nou.', ['csrf_expired' => true]);
+    $b2b_fail(B2bAuth::msg('csrf_expired'), ['csrf_expired' => true]);
     return;
 }
 
 $b2b_needs_auth = ['b2b_logout', 'b2b_save_car', 'b2b_unsave_car', 'b2b_sync_favorites', 'b2b_create_invoice', 'b2b_send_request'];
 if (in_array($b2b_fn, $b2b_needs_auth, true) && !b2b_is_client()) {
-    $b2b_fail('Autentificare necesară.', ['auth_required' => true]);
+    $b2b_fail(B2bAuth::msg('auth_required'), ['auth_required' => true]);
     return;
 }
 
@@ -68,7 +68,7 @@ switch ($b2b_fn) {
         }
 
         $b2b_ok([
-            'message' => 'Contul a fost creat cu succes și este în așteptarea validării de către administrator. Veți primi un email când contul este activat.',
+            'message' => B2bAuth::msg('register_ok'),
         ]);
         break;
     }
