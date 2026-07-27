@@ -792,7 +792,42 @@ $(document).ready(function(){
 	// Expose so other scripts (e.g. the Fancybox viewer heart) can refresh all hearts.
 	window.sautoFavSync = syncUI;
 
-	function init(){ syncUI(); loadFavoritesPage(); }
+	// Logged-in partners keep their favourites in the cabinet DB (mirrored on every
+	// toggle). Once per session, reconcile the two: push any local-only favourites
+	// into the cabinet and adopt the durable DB set, so a cleared browser or a
+	// second device shows the same favourites the cabinet already holds. Guests and
+	// repeat page views skip straight to the callback (no request).
+	function syncFavoritesFromDb(done){
+		if (!(window.B2B_FAV && window.B2B_FAV.csrf)) { done(); return; }
+		var already = false;
+		try { already = sessionStorage.getItem('sauto_fav_synced') === '1'; } catch(e){}
+		if (already) { done(); return; }
+
+		var form = new URLSearchParams();
+		form.append('tp', 'ste');
+		form.append('fn', 'b2b_sync_favorites');
+		form.append('csrf', window.B2B_FAV.csrf);
+		form.append('ids', getFavs().join(','));
+
+		fetch('/ajax.php', { method:'POST', headers:{'Content-Type':'application/x-www-form-urlencoded'}, body: form.toString(), credentials:'same-origin' })
+			.then(function(r){ return r.json(); })
+			.then(function(data){
+				if (data && data.ok && Array.isArray(data.ids)) {
+					saveFavs(data.ids.map(Number).filter(Boolean));
+					try { sessionStorage.setItem('sauto_fav_synced', '1'); } catch(e){} // only on success, so a failed sync retries next page
+				}
+			})
+			.catch(function(){})
+			.then(done);
+	}
+
+	function init(){
+		syncUI(); // instant paint from whatever localStorage has
+		syncFavoritesFromDb(function(){
+			syncUI();            // repaint after the DB merge
+			loadFavoritesPage(); // /favorites renders from the merged (cabinet) set
+		});
+	}
 	if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', init); }
 	else { init(); }
 })();

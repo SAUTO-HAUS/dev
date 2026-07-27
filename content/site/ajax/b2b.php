@@ -36,7 +36,7 @@ if (!B2bCsrf::check($_POST['csrf'] ?? null)) {
     return;
 }
 
-$b2b_needs_auth = ['b2b_logout', 'b2b_save_car', 'b2b_unsave_car', 'b2b_create_invoice', 'b2b_send_request'];
+$b2b_needs_auth = ['b2b_logout', 'b2b_save_car', 'b2b_unsave_car', 'b2b_sync_favorites', 'b2b_create_invoice', 'b2b_send_request'];
 if (in_array($b2b_fn, $b2b_needs_auth, true) && !b2b_is_client()) {
     $b2b_fail('Autentificare necesară.', ['auth_required' => true]);
     return;
@@ -127,6 +127,55 @@ switch ($b2b_fn) {
         } catch (Throwable $e) {
             B2bConfig::log('b2b_error.log', 'save_car err='.$e->getMessage());
             $b2b_fail('Operațiunea nu a putut fi finalizată.');
+        }
+        break;
+    }
+
+    // ---- Reconcile favourites: localStorage <-> cabinet (DB) ----------------
+    // Called once per session on page load. The site keeps favourites in
+    // localStorage; the cabinet reads them from the DB. Clearing the browser
+    // (or a second device) would otherwise leave the two out of sync. Here we
+    // import the client's local-only favourites into the DB (skipping cars they
+    // may not access), then return the full merged list so the site adopts the
+    // durable cabinet set. Every id in the reply is guaranteed to be a real,
+    // visible, permitted car, so the client can also prune stale ids from it.
+    case 'b2b_sync_favorites': {
+        $userId = b2b_user_id();
+
+        $localIds = [];
+        if (isset($_POST['ids'])) {
+            $raw = is_array($_POST['ids']) ? $_POST['ids'] : explode(',', (string)$_POST['ids']);
+            foreach ($raw as $r) { $r = (int)$r; if ($r > 0) { $localIds[$r] = $r; } }
+        }
+
+        try {
+            $st = $db->prepare(
+                'SELECT car_id FROM '.B2bConfig::table('saved_cars').' WHERE b2b_user_id = :uid'
+            );
+            $st->execute([':uid' => $userId]);
+            $dbIds = array_map('intval', $st->fetchAll(PDO::FETCH_COLUMN) ?: []);
+            $dbSet = array_flip($dbIds);
+
+            // Import local-only favourites that the client is actually allowed to
+            // see (same existence + region check as a single save).
+            $imported = [];
+            $ins = $db->prepare(
+                'INSERT IGNORE INTO '.B2bConfig::table('saved_cars').' (b2b_user_id, car_id) VALUES (:uid, :car)'
+            );
+            foreach ($localIds as $cid) {
+                if (isset($dbSet[$cid])) { continue; }
+                if (!B2bInvoice::loadCar($cid)) { continue; }             // exists & visible
+                $region = B2bRegions::regionForCar($cid);
+                if ($region !== null && !B2bRegions::isAllowed($userId, $region)) { continue; } // hidden by plan
+                $ins->execute([':uid' => $userId, ':car' => $cid]);
+                $imported[] = $cid;
+            }
+
+            $merged = array_values(array_unique(array_merge($dbIds, $imported)));
+            $b2b_ok(['ids' => $merged, 'imported' => count($imported)]);
+        } catch (Throwable $e) {
+            B2bConfig::log('b2b_error.log', 'sync_fav err='.$e->getMessage());
+            $b2b_fail('Sincronizarea nu a putut fi finalizată.');
         }
         break;
     }
