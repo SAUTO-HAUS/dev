@@ -16,7 +16,7 @@ if (!function_exists('b2b_adm_lang')) {
                 // user list
                 'users_title'     => 'Clienți B2B',
                 'filter_all'      => 'Toate',
-                'search'          => 'Caută (companie, IDNO, email)',
+                'search'          => 'Caută (login, nume, email, telefon)',
                 'col_login'       => 'Login',
                 'col_name'        => 'Nume',
                 'col_person_type' => 'Tip',
@@ -169,7 +169,7 @@ if (!function_exists('b2b_adm_lang')) {
 
                 'users_title'     => 'Клиенты B2B',
                 'filter_all'      => 'Все',
-                'search'          => 'Поиск (компания, IDNO, email)',
+                'search'          => 'Поиск (логин, имя, email, телефон)',
                 'col_login'       => 'Логин',
                 'col_name'        => 'Имя',
                 'col_person_type' => 'Тип',
@@ -316,7 +316,7 @@ if (!function_exists('b2b_adm_lang')) {
 
                 'users_title'     => 'B2B clients',
                 'filter_all'      => 'All',
-                'search'          => 'Search (company, IDNO, email)',
+                'search'          => 'Search (login, name, email, phone)',
                 'col_login'       => 'Login',
                 'col_name'        => 'Name',
                 'col_person_type' => 'Type',
