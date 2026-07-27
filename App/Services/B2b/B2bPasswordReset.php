@@ -25,9 +25,10 @@ class B2bPasswordReset
     /**
      * Create a token and email it — but only for an existing, non-blocked
      * account. Always returns void so the caller cannot tell whether the email
-     * matched an account.
+     * matched an account. The email language follows the partner's NAME script
+     * (Cyrillic -> RU, otherwise RO), not the browsing language.
      */
-    public static function request(string $email, string $lang): void
+    public static function request(string $email): void
     {
         $user = B2bAuth::findByEmail($email);
         if (!$user || ($user['status'] ?? '') === 'blocked') {
@@ -66,7 +67,7 @@ class B2bPasswordReset
             return;
         }
 
-        self::sendEmail($user, $raw, $lang);
+        self::sendEmail($user, $raw);
     }
 
     /** The reset row for a still-valid, unused token, else null. */
@@ -122,11 +123,14 @@ class B2bPasswordReset
 
     // ------------------------------------------------------------------- email
 
-    private static function sendEmail(array $user, string $rawToken, string $lang): void
+    private static function sendEmail(array $user, string $rawToken): void
     {
-        $lang = in_array($lang, ['ro', 'ru', 'en'], true) ? $lang : 'ro';
-        $link = B2bNotifier::siteUrl() . '/' . $lang . '/b2b-reset?token=' . $rawToken;
+        // Language from the NAME script, matching the module convention: a Latin
+        // name like "Grigore Botnarenco" gets the Romanian email even if the
+        // person was browsing the site in Russian; a Cyrillic name gets Russian.
         $name = trim((string)($user['full_name'] ?? ''));
+        $lang = preg_match('/\p{Cyrillic}/u', $name) ? 'ru' : 'ro';
+        $link = B2bNotifier::siteUrl() . '/' . $lang . '/b2b-reset?token=' . $rawToken;
         $m    = self::emailStrings($lang, $name, $link);
 
         try {

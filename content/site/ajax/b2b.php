@@ -164,7 +164,7 @@ switch ($b2b_fn) {
 
     // ---- Forgot password: email a one-time reset link (always silent) --------
     case 'b2b_forgot_password': {
-        B2bPasswordReset::request((string)($_POST['email'] ?? ''), $b2b_lang);
+        B2bPasswordReset::request((string)($_POST['email'] ?? ''));
         // Same answer whether or not the email matched an account.
         $b2b_ok(['message' => B2bAuth::msg('forgot_sent')]);
         break;
