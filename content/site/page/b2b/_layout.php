@@ -125,10 +125,11 @@ if (!function_exists('b2b_assets')) {
         $cmpLabel   = ['ro' => 'Comparare', 'ru' => 'Сравнение', 'en' => 'Compare'][$lang] ?? 'Comparare';
 
         // [label, count, icon, href, extra-attr on the number span]
+        // Order: favourites, compare, then payment invoices.
         $navItems = [
             'cabinet'  => [$t['tab_cars'],     $countSaved,    $icoHeart,   '/'.b2b_esc($lang).'/b2b/cabinet',  ' data-b2b-count="saved"'],
-            'invoices' => [$t['tab_invoices'], $countInvoices, $icoDoc,     '/'.b2b_esc($lang).'/b2b/invoices', ''],
             'compare'  => [$cmpLabel,          0,              $icoCompare, '/'.b2b_esc($lang).'/compare',      ' data-cmp-count'],
+            'invoices' => [$t['tab_invoices'], $countInvoices, $icoDoc,     '/'.b2b_esc($lang).'/b2b/invoices', ''],
         ];
 
         $out = '

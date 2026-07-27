@@ -265,18 +265,24 @@ if (!(function_exists('b2b_is_client') && b2b_is_client())):
 	}
 	var CMP_MAX=10, CMP_MAX_MSG=<?php echo json_encode(['ro'=>'Poți compara maximum 10 mașini.','ru'=>'Можно сравнить не более 10 авто.','en'=>'You can compare up to 10 cars.'][$_COOKIE['lang']] ?? 'Poți compara maximum 10 mașini.', JSON_UNESCAPED_UNICODE); ?>;
 	function toggle(id){
-		id=parseInt(id,10); if(!id) return;
-		var a=get(), i=a.indexOf(id);
-		if(i===-1){ if(a.length>=CMP_MAX){ alert(CMP_MAX_MSG); return; } a.push(id); }
+		id=parseInt(id,10); if(!id) return false;
+		var a=get(), i=a.indexOf(id), added=false;
+		if(i===-1){ if(a.length>=CMP_MAX){ alert(CMP_MAX_MSG); return false; } a.push(id); added=true; }
 		else a.splice(i,1);
 		save(a); syncBtns(); syncFloat();
+		return added;
 	}
+	// Same balance icon as the compare button, for the fly-to-cabinet animation.
+	var CMP_FLY_SVG='<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M7 20h10"/><path d="M6 6l6-1 6 1"/><path d="M12 3v17"/><path d="M9 12L6 6l-3 6a3 3 0 0 0 6 0"/><path d="M21 12l-3-6-3 6a3 3 0 0 0 6 0"/></svg>';
 	document.addEventListener('click', function(e){
 		var b=e.target.closest ? e.target.closest('.card-compare-btn') : null;
 		if(!b) return;
 		e.preventDefault(); e.stopPropagation();
-		toggle(b.dataset.compareId);
+		var added=toggle(b.dataset.compareId);
 		b.classList.remove('cmp-pop'); void b.offsetWidth; b.classList.add('cmp-pop');
+		// Logged-in partner: fly the balance icon to the cabinet button on add, like
+		// favourites. Self-guards (no-op) when there's no cabinet button (guests).
+		if(added && window.SautoFlyToCabinet){ try{ window.SautoFlyToCabinet(b, {html:CMP_FLY_SVG, className:'fav-fly fav-fly--stroke'}); }catch(_){} }
 	}, true);
 	function init(){ syncBtns(); syncFloat(); }
 	if(document.readyState!=='loading') init(); else document.addEventListener('DOMContentLoaded', init);

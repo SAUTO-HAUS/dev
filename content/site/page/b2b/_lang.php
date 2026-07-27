@@ -53,7 +53,7 @@ if (!function_exists('b2b_lang')) {
                 'login_no_account' => 'Nu aveți cont?',
 
                 // cabinet
-                'tab_cars'         => 'Mașini de interes',
+                'tab_cars'         => 'Favorite',
                 'tab_invoices'     => 'Conturi de plată',
                 'tab_requests'     => 'Cereri transmise',
                 'tab_activity'     => 'Istoric activitate',
@@ -153,7 +153,7 @@ if (!function_exists('b2b_lang')) {
                 'login_submit'     => 'Продолжить',
                 'login_no_account' => 'Нет аккаунта?',
 
-                'tab_cars'         => 'Интересующие авто',
+                'tab_cars'         => 'Избранное',
                 'tab_invoices'     => 'Счета на оплату',
                 'tab_requests'     => 'Отправленные заявки',
                 'tab_activity'     => 'История активности',
@@ -249,7 +249,7 @@ if (!function_exists('b2b_lang')) {
                 'login_submit'     => 'Continue',
                 'login_no_account' => 'No account yet?',
 
-                'tab_cars'         => 'Cars of interest',
+                'tab_cars'         => 'Favorites',
                 'tab_invoices'     => 'Payment invoices',
                 'tab_requests'     => 'Sent requests',
                 'tab_activity'     => 'Activity log',

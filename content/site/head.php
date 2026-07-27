@@ -635,9 +635,12 @@ $(document).ready(function(){
 		return fb || hb || null;
 	}
 
-	// Fly a red heart from the heart button to that cabinet button (no shrink),
-	// then bump its avatar.
-	function flyToCabinet(originBtn){
+	// Fly an icon from the origin button to that cabinet button (no shrink), then
+	// bump its avatar. Defaults to a filled red heart (favourites); pass opts
+	// {html, className} to reuse it elsewhere — e.g. the stroked balance icon for
+	// "add to compare". Exposed as window.SautoFlyToCabinet for other scripts.
+	var FLY_HEART = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+	function flyToCabinet(originBtn, opts){
 		if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 		var target = cabinetTarget();
 		if (!target) return;
@@ -647,8 +650,8 @@ $(document).ready(function(){
 		var sRect = originBtn.getBoundingClientRect();
 		var S = 32; // constant size the whole way
 		var fly = document.createElement('div');
-		fly.className = 'fav-fly';
-		fly.innerHTML = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+		fly.className = (opts && opts.className) || 'fav-fly';
+		fly.innerHTML = (opts && opts.html) || FLY_HEART;
 		fly.style.left   = (sRect.left + sRect.width / 2 - S / 2) + 'px';
 		fly.style.top    = (sRect.top + sRect.height / 2 - S / 2) + 'px';
 		fly.style.width  = S + 'px';
@@ -671,6 +674,7 @@ $(document).ready(function(){
 		fly.addEventListener('transitionend', finish, { once: true });
 		setTimeout(finish, 1400); // safety net; must exceed the CSS transition
 	}
+	window.SautoFlyToCabinet = flyToCabinet;
 
 
 	document.addEventListener('click', function(e){

@@ -22,10 +22,10 @@
     font-size:1rem;
     line-height:1.5;
 }
-.b2b-page--wide{ max-width:1180px; }
 
-@media (min-width:1000px) and (orientation:landscape){
-    #b2b_cabinet_grid{ width:80vw; margin-left:calc(50% - 40vw); }
+.b2b-page--wide{ max-width:none; }
+@media (min-width:769px){
+    .b2b-page--wide{ padding-left:0; padding-right:0; }
 }
 
 /* Registration on desktop: a wider (but capped) centered card. Person type takes
@@ -508,6 +508,8 @@
     will-change:transform, opacity;
 }
 .fav-fly svg{ width:100%; height:100%; display:block; fill:#e2001a; filter:drop-shadow(0 4px 10px rgba(226,0,26,.45)); }
+/* Stroked variant (e.g. the "compare" balance icon), which must not be filled. */
+.fav-fly--stroke svg{ fill:none; stroke:#e2001a; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
 @keyframes b2bCartBump{ 0%{transform:scale(1)} 30%{transform:scale(1.22)} 55%{transform:scale(.9)} 100%{transform:scale(1)} }
 .b2b-cart-bump{ animation:b2bCartBump .5s ease; }
 @media (prefers-reduced-motion:reduce){ .fav-fly{ display:none; } .b2b-cart-bump{ animation:none; } }
