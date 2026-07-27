@@ -22,6 +22,39 @@ class B2bInvoice
     private const MAX_ADVANCE = 500000.0;
 
     /**
+     * A user-facing message in the visitor's language. Self-contained (like
+     * B2bAuth::msg) because the service also runs from the AJAX endpoint, where
+     * the frontend translation catalog is not loaded.
+     */
+    private static function msg(string $key): string
+    {
+        $cat = [
+            'ro' => [
+                'no_account'      => 'Cont inexistent.',
+                'car_not_found'   => 'Mașina nu a fost găsită.',
+                'advance_invalid' => 'Suma avansului nu este validă.',
+                'proforma_failed' => 'Proforma nu a putut fi generată.',
+            ],
+            'ru' => [
+                'no_account'      => 'Учётная запись не найдена.',
+                'car_not_found'   => 'Автомобиль не найден.',
+                'advance_invalid' => 'Сумма аванса недействительна.',
+                'proforma_failed' => 'Не удалось сформировать проформу.',
+            ],
+            'en' => [
+                'no_account'      => 'Account not found.',
+                'car_not_found'   => 'The car was not found.',
+                'advance_invalid' => 'The advance amount is not valid.',
+                'proforma_failed' => 'The proforma could not be generated.',
+            ],
+        ];
+        $lang = $_COOKIE['lang'] ?? 'ro';
+        $set  = $cat[$lang] ?? $cat['ro'];
+
+        return $set[$key] ?? ($cat['ro'][$key] ?? $key);
+    }
+
+    /**
      * @param array<string,mixed>|null $docMeta the payment-invoice form data typed
      *   by the client (date, br, mo, vin, buyer_type/name/idno/phone). Frozen onto
      *   the document so it never changes if the client later edits their profile.
@@ -31,12 +64,12 @@ class B2bInvoice
     {
         $user = B2bAuth::findById($userId);
         if (!$user) {
-            return ['ok' => false, 'error' => 'Cont inexistent.'];
+            return ['ok' => false, 'error' => self::msg('no_account')];
         }
 
         $car = self::loadCar($carId);
         if (!$car) {
-            return ['ok' => false, 'error' => 'Mașina nu a fost găsită.'];
+            return ['ok' => false, 'error' => self::msg('car_not_found')];
         }
 
         // Without this check the region restriction could be bypassed by issuing
@@ -45,7 +78,7 @@ class B2bInvoice
         if ($region !== null && !B2bRegions::isAllowed($userId, $region)) {
             B2bAudit::log($userId, B2bAudit::REGION_DENIED, ['car_id' => $carId, 'region' => $region, 'via' => 'invoice'], $carId);
             // Do not reveal a plan restriction — behave as if the car does not exist.
-            return ['ok' => false, 'error' => 'Mașina nu a fost găsită.'];
+            return ['ok' => false, 'error' => self::msg('car_not_found')];
         }
 
         $currency = strtoupper(trim($currency));
@@ -55,7 +88,7 @@ class B2bInvoice
 
         $advance = round($advance, 2);
         if ($advance < self::MIN_ADVANCE || $advance > self::MAX_ADVANCE) {
-            return ['ok' => false, 'error' => 'Suma avansului nu este validă.'];
+            return ['ok' => false, 'error' => self::msg('advance_invalid')];
         }
 
         // Whitelist the document fields the client may set; everything else is
@@ -105,7 +138,7 @@ class B2bInvoice
                 $db->rollBack();
             }
             B2bConfig::log('b2b_error.log', 'invoice create err=' . $e->getMessage());
-            return ['ok' => false, 'error' => 'Proforma nu a putut fi generată.'];
+            return ['ok' => false, 'error' => self::msg('proforma_failed')];
         }
 
         B2bAudit::log($userId, B2bAudit::GENERATE_INVOICE, [

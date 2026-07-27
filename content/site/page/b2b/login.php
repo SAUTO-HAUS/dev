@@ -20,6 +20,16 @@ $csrf = b2b_esc(b2b_csrf_token());
 
 echo b2b_assets();
 
+// Same show/hide toggle as the register page (eye + eye-off, one shown by CSS).
+// The click handler is delegated globally in b2b.js, so only the markup is needed.
+$eyeIcons =
+    '<svg class="b2b-eye ico-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>'
+  . '<svg class="b2b-eye ico-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/><line x1="3" y1="3" x2="21" y2="21"/></svg>';
+$passToggle =
+    '<button type="button" class="b2b-pass-toggle" data-b2b-pass-toggle'
+  . ' data-show="'.b2b_esc($t['pass_show']).'" data-hide="'.b2b_esc($t['pass_hide']).'"'
+  . ' aria-label="'.b2b_esc($t['pass_show']).'">'.$eyeIcons.'</button>';
+
 $body = '
 <form class="b2b-form" id="b2b-login-form" data-csrf="'.$csrf.'" novalidate>
     <div class="b2b-field">
@@ -29,7 +39,10 @@ $body = '
 
     <div class="b2b-field">
         <label for="b2b-login-pass">'.b2b_esc($t['password']).'</label>
-        <input type="password" id="b2b-login-pass" name="password" required autocomplete="current-password" />
+        <div class="b2b-pass-wrap">
+            <input type="password" id="b2b-login-pass" name="password" required autocomplete="current-password" />
+            '.$passToggle.'
+        </div>
     </div>
 
     <div class="b2b-form__msg" role="alert" aria-live="polite"></div>

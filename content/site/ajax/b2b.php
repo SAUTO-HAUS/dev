@@ -29,6 +29,60 @@ $b2b_ok = function (array $data = []) use (&$returnIt, $b2b_fn) {
     $returnIt = array_merge(['fn' => $b2b_fn, 'ok' => true], $data);
 };
 
+// Localised messages for the cabinet actions handled here (saved cars, invoices,
+// requests). The auth flow's own strings live in B2bAuth::msg(); these belong to
+// the AJAX layer, so they stay here. Reads the visitor's language cookie.
+$b2b_msg = (function () use ($b2b_lang) {
+    $cat = [
+        'ro' => [
+            'car_not_found'    => 'Mașina nu a fost găsită.',
+            'car_saved'        => 'Mașina a fost salvată în cabinet.',
+            'car_unsaved'      => 'Mașina a fost eliminată din cabinet.',
+            'op_failed'        => 'Operațiunea nu a putut fi finalizată.',
+            'sync_failed'      => 'Sincronizarea nu a putut fi finalizată.',
+            'invoice_exists'   => 'Aveți deja un cont de plată pentru această mașină.',
+            'invoice_required' => 'Completați câmpurile obligatorii: nume, IDNP/IDNO și telefon.',
+            'idno_format'      => 'IDNP/IDNO trebuie să conțină exact 13 cifre.',
+            'invoice_created'  => 'Contul de plată a fost generat.',
+            'request_failed'   => 'Cererea nu a putut fi înregistrată.',
+            'request_sent'     => 'Cererea a fost transmisă către Super Admin.',
+            'unknown_action'   => 'Acțiune necunoscută.',
+        ],
+        'ru' => [
+            'car_not_found'    => 'Автомобиль не найден.',
+            'car_saved'        => 'Автомобиль сохранён в кабинете.',
+            'car_unsaved'      => 'Автомобиль удалён из кабинета.',
+            'op_failed'        => 'Не удалось выполнить операцию.',
+            'sync_failed'      => 'Не удалось выполнить синхронизацию.',
+            'invoice_exists'   => 'У вас уже есть счёт на оплату для этого автомобиля.',
+            'invoice_required' => 'Заполните обязательные поля: имя, IDNP/IDNO и телефон.',
+            'idno_format'      => 'IDNP/IDNO должен содержать ровно 13 цифр.',
+            'invoice_created'  => 'Счёт на оплату сформирован.',
+            'request_failed'   => 'Не удалось зарегистрировать заявку.',
+            'request_sent'     => 'Заявка отправлена Супер-администратору.',
+            'unknown_action'   => 'Неизвестное действие.',
+        ],
+        'en' => [
+            'car_not_found'    => 'The car was not found.',
+            'car_saved'        => 'The car was saved to your cabinet.',
+            'car_unsaved'      => 'The car was removed from your cabinet.',
+            'op_failed'        => 'The operation could not be completed.',
+            'sync_failed'      => 'Synchronisation could not be completed.',
+            'invoice_exists'   => 'You already have a payment invoice for this car.',
+            'invoice_required' => 'Fill in the required fields: name, IDNP/IDNO and phone.',
+            'idno_format'      => 'IDNP/IDNO must contain exactly 13 digits.',
+            'invoice_created'  => 'The payment invoice was generated.',
+            'request_failed'   => 'The request could not be recorded.',
+            'request_sent'     => 'The request was sent to the Super Admin.',
+            'unknown_action'   => 'Unknown action.',
+        ],
+    ];
+    $set = $cat[$b2b_lang] ?? $cat['ro'];
+    return function (string $key) use ($set, $cat) {
+        return $set[$key] ?? ($cat['ro'][$key] ?? $key);
+    };
+})();
+
 // ---------------------------------------------------------------- CSRF + auth
 
 if (!B2bCsrf::check($_POST['csrf'] ?? null)) {
@@ -99,14 +153,14 @@ switch ($b2b_fn) {
         $carId  = (int)($_POST['car_id'] ?? 0);
 
         if ($carId <= 0 || !B2bInvoice::loadCar($carId)) {
-            $b2b_fail('Mașina nu a fost găsită.');
+            $b2b_fail($b2b_msg('car_not_found'));
             break;
         }
 
         $region = B2bRegions::regionForCar($carId);
         if ($region !== null && !B2bRegions::isAllowed($userId, $region)) {
             B2bAudit::log($userId, B2bAudit::REGION_DENIED, ['car_id' => $carId, 'region' => $region, 'via' => 'save'], $carId);
-            $b2b_fail('Mașina nu a fost găsită.'); // do not reveal a plan restriction
+            $b2b_fail($b2b_msg('car_not_found')); // do not reveal a plan restriction
             break;
         }
 
@@ -116,17 +170,17 @@ switch ($b2b_fn) {
                     'INSERT IGNORE INTO '.B2bConfig::table('saved_cars').' (b2b_user_id, car_id) VALUES (:uid, :car)'
                 )->execute([':uid' => $userId, ':car' => $carId]);
                 B2bAudit::log($userId, B2bAudit::SAVE_CAR, ['car_id' => $carId], $carId);
-                $b2b_ok(['saved' => true, 'message' => 'Mașina a fost salvată în cabinet.']);
+                $b2b_ok(['saved' => true, 'message' => $b2b_msg('car_saved')]);
             } else {
                 $db->prepare(
                     'DELETE FROM '.B2bConfig::table('saved_cars').' WHERE b2b_user_id = :uid AND car_id = :car'
                 )->execute([':uid' => $userId, ':car' => $carId]);
                 B2bAudit::log($userId, B2bAudit::UNSAVE_CAR, ['car_id' => $carId], $carId);
-                $b2b_ok(['saved' => false, 'message' => 'Mașina a fost eliminată din cabinet.']);
+                $b2b_ok(['saved' => false, 'message' => $b2b_msg('car_unsaved')]);
             }
         } catch (Throwable $e) {
             B2bConfig::log('b2b_error.log', 'save_car err='.$e->getMessage());
-            $b2b_fail('Operațiunea nu a putut fi finalizată.');
+            $b2b_fail($b2b_msg('op_failed'));
         }
         break;
     }
@@ -175,7 +229,7 @@ switch ($b2b_fn) {
             $b2b_ok(['ids' => $merged, 'imported' => count($imported)]);
         } catch (Throwable $e) {
             B2bConfig::log('b2b_error.log', 'sync_fav err='.$e->getMessage());
-            $b2b_fail('Sincronizarea nu a putut fi finalizată.');
+            $b2b_fail($b2b_msg('sync_failed'));
         }
         break;
     }
@@ -195,7 +249,7 @@ switch ($b2b_fn) {
                 'invoice_no' => $existing['invoice_no'],
                 'url'        => B2bInvoice::path($existing),
                 'existing'   => true,
-                'message'    => 'Aveți deja un cont de plată pentru această mașină.',
+                'message'    => $b2b_msg('invoice_exists'),
             ]);
             break;
         }
@@ -216,13 +270,13 @@ switch ($b2b_fn) {
         if (trim($docMeta['buyer_name']) === ''
             || trim($docMeta['buyer_idno']) === ''
             || trim($docMeta['buyer_phone']) === '') {
-            $b2b_fail('Completați câmpurile obligatorii: nume, IDNP/IDNO și telefon.');
+            $b2b_fail($b2b_msg('invoice_required'));
             break;
         }
 
         // IDNP (individuals) / IDNO (companies) are both 13-digit numeric codes.
         if (!preg_match('/^\d{13}$/', trim($docMeta['buyer_idno']))) {
-            $b2b_fail('IDNP/IDNO trebuie să conțină exact 13 cifre.');
+            $b2b_fail($b2b_msg('idno_format'));
             break;
         }
 
@@ -264,7 +318,7 @@ switch ($b2b_fn) {
             'invoice_id' => (int)$invoice['id'],
             'invoice_no' => $invoice['invoice_no'],
             'url'        => B2bInvoice::path($invoice),
-            'message'    => 'Contul de plată a fost generat.',
+            'message'    => $b2b_msg('invoice_created'),
         ]);
         break;
     }
@@ -278,14 +332,14 @@ switch ($b2b_fn) {
 
         $car = B2bInvoice::loadCar($carId);
         if (!$car) {
-            $b2b_fail('Mașina nu a fost găsită.');
+            $b2b_fail($b2b_msg('car_not_found'));
             break;
         }
 
         $region = B2bRegions::regionForCar($carId);
         if ($region !== null && !B2bRegions::isAllowed($userId, $region)) {
             B2bAudit::log($userId, B2bAudit::REGION_DENIED, ['car_id' => $carId, 'region' => $region, 'via' => 'request'], $carId);
-            $b2b_fail('Mașina nu a fost găsită.'); // do not reveal a plan restriction
+            $b2b_fail($b2b_msg('car_not_found')); // do not reveal a plan restriction
             break;
         }
 
@@ -314,7 +368,7 @@ switch ($b2b_fn) {
             $requestId = (int)$db->lastInsertId();
         } catch (Throwable $e) {
             B2bConfig::log('b2b_error.log', 'send_request err='.$e->getMessage());
-            $b2b_fail('Cererea nu a putut fi înregistrată.');
+            $b2b_fail($b2b_msg('request_failed'));
             break;
         }
 
@@ -330,11 +384,11 @@ switch ($b2b_fn) {
         $b2b_ok([
             'request_id' => $requestId,
             'wa_links'   => $notify['links'] ?? [],
-            'message'    => 'Cererea a fost transmisă către Super Admin.',
+            'message'    => $b2b_msg('request_sent'),
         ]);
         break;
     }
 
     default:
-        $b2b_fail('Acțiune necunoscută.');
+        $b2b_fail($b2b_msg('unknown_action'));
 }
