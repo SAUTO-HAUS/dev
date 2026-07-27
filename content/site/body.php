@@ -246,6 +246,11 @@ if (!(function_exists('b2b_is_client') && b2b_is_client())):
                 <?php
                 foreach ($menu_arr as $k => $v){
                     if ($v == '1'){
+                        // A B2B partner without access to a catalog simply doesn't see
+                        // it in the menu (no "restricted" message — the section is just
+                        // not there for them). Guests always see everything.
+                        if ($k === 'cars'      && function_exists('b2b_can_see_catalog') && !b2b_can_see_catalog('in_stock')) { continue; }
+                        if ($k === 'ordercars' && function_exists('b2b_can_see_catalog') && !b2b_can_see_catalog('on_order')) { continue; }
                         echo '<a class="'.$k.' button '; if( isset($t_mp[2])&&$t_mp[2]==$k ){echo ' active';} echo '" href="/'.$_COOKIE['lang'].'/'.$k.'"><div>'.$lng['l']['menu'][$k].'</div></a>';
                     }
                 }
