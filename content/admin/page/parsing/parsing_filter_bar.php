@@ -230,13 +230,16 @@ $cur_brand_models = $cur_brand && isset($pf_models[$cur_brand]) ? $pf_models[$cu
         </div>
 
         <?php
-        // Price sorting is opt-in: only /published sets $pf_sort, because it reads
-        // car_ctlg.prc, which exists only for cars already published to sauto.
+        // Price sorting is opt-in: the including page sets $pf_sort. Which prices
+        // can be sorted on differs per page, so the page also picks the option list
+        // via $pf_sort_opts: /published sorts on car_ctlg.prc (the MD price, which
+        // exists only for cars already published to sauto), /ctlg on the € price
+        // printed on the card. Default = the MD options.
         if (!empty($pf_sort)):
             $cur_sort = isset($_GET['f_sort']) ? (string)$_GET['f_sort'] : '';
         ?>
         <?php
-        $sort_opts = [
+        $sort_opts = !empty($pf_sort_opts) && is_array($pf_sort_opts) ? $pf_sort_opts : [
             ''        => $t['sort_none'],
             'md_asc'  => $t['sort_md_asc'],
             'md_desc' => $t['sort_md_desc'],

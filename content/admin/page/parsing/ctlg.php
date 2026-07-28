@@ -95,6 +95,23 @@ try {
     $pageSize = parsing_page_size();
     $offset   = (parsing_current_page() - 1) * $pageSize;
 
+    // Price sorting, same UI as /published but on the € price printed on the card
+    // (.car-price-val): price_final_eur plus the Encar band markup — exactly the
+    // expression the price filter uses, so sorting and filtering agree. Cars with
+    // no price yet ("se calculează") sink to the bottom in both directions.
+    // Whitelisted map, never interpolated from the request.
+    $priceExpr = parsing_displayed_price_sql('pc.', $db, $prefx);
+    $defaultOrder = 'DATE_FORMAT(pc.found_at, "%Y-%m-%d %H:%i") DESC,
+                 pc.price_final_eur IS NULL, pc.price_final_eur ASC,
+                 pc.id DESC';
+    $sortKeys = [
+        ''         => $defaultOrder,
+        'eur_asc'  => 'CASE WHEN COALESCE('.$priceExpr.', 0) > 0 THEN 0 ELSE 1 END, '.$priceExpr.' ASC,  pc.id DESC',
+        'eur_desc' => 'CASE WHEN COALESCE('.$priceExpr.', 0) > 0 THEN 0 ELSE 1 END, '.$priceExpr.' DESC, pc.id DESC',
+    ];
+    $sortKey = isset($_GET['f_sort']) ? (string)$_GET['f_sort'] : '';
+    $orderBy = $sortKeys[$sortKey] ?? $sortKeys[''];
+
     // brand/model come from car_list (the single canonical sauto list) via the
     // car''s sauto_br/sauto_mo mapping, falling back to the raw source name for
     // not-yet-mapped cars. This keeps the card data-brand/data-model identical to
@@ -106,9 +123,7 @@ try {
         LEFT JOIN '.$prefx.'_parsing_filters pf ON pf.id = pc.filter_id
         LEFT JOIN '.$prefx.'_car_list cl ON cl.br = pc.sauto_br AND cl.mo = pc.sauto_mo
         WHERE '.$where.'
-        ORDER BY DATE_FORMAT(pc.found_at, "%Y-%m-%d %H:%i") DESC,
-                 pc.price_final_eur IS NULL, pc.price_final_eur ASC,
-                 pc.id DESC
+        ORDER BY '.$orderBy.'
         LIMIT '.$pageSize.' OFFSET '.$offset);
     $stmt->execute($bind);
     $cars = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -181,6 +196,14 @@ $gearLabels = [
 // Shared catalog filter bar (brand/model/fuel/gear/year/price).
 // Counts in the bar must reflect ONLY this page's cars (proposed).
 $pf_status_filter = ['proposed'];
+// Sort dropdown — same control as /published, but on the € price shown on the
+// card (proposed cars have no MD price yet). Keys must match $sortKeys above.
+$pf_sort = true;
+$pf_sort_opts = [
+    ''         => $t['sort_none'],
+    'eur_asc'  => $t['sort_eur_asc'],
+    'eur_desc' => $t['sort_eur_desc'],
+];
 ob_start();
 include _ADM_PAGE.'/parsing/parsing_filter_bar.php';
 $rtrn .= ob_get_clean();
