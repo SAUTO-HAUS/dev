@@ -95,10 +95,15 @@ try {
     $pageSize = parsing_page_size();
     $offset   = (parsing_current_page() - 1) * $pageSize;
 
-    // Price sorting, same UI as /published but on the € price printed on the card
-    // (.car-price-val): price_final_eur plus the Encar band markup — exactly the
-    // expression the price filter uses, so sorting and filtering agree. Cars with
-    // no price yet ("se calculează") sink to the bottom in both directions.
+    // Price sorting, same UI as /published, in two families:
+    //   eur_* — the € price printed on the card (.car-price-val): price_final_eur
+    //           plus the Encar band markup. Exactly the expression the price filter
+    //           uses, so sorting and filtering agree. Plain SQL.
+    //   md_*  — the full MD landed cost (the "MD:" line). Proposed cars have no
+    //           stored MD price (the card computes it in the browser; car_ctlg.prc
+    //           exists only after publishing), and MD is NOT a function of the €
+    //           price alone — excise depends on engine cc, fuel and age, so a
+    //           cheaper car can land higher. It is therefore ranked in PHP below.
     // Whitelisted map, never interpolated from the request.
     $priceExpr = parsing_displayed_price_sql('pc.', $db, $prefx);
     $defaultOrder = 'DATE_FORMAT(pc.found_at, "%Y-%m-%d %H:%i") DESC,
@@ -108,9 +113,77 @@ try {
         ''         => $defaultOrder,
         'eur_asc'  => 'CASE WHEN COALESCE('.$priceExpr.', 0) > 0 THEN 0 ELSE 1 END, '.$priceExpr.' ASC,  pc.id DESC',
         'eur_desc' => 'CASE WHEN COALESCE('.$priceExpr.', 0) > 0 THEN 0 ELSE 1 END, '.$priceExpr.' DESC, pc.id DESC',
+        'md_asc'   => $defaultOrder, // ordered in PHP (see below), not in SQL
+        'md_desc'  => $defaultOrder,
     ];
     $sortKey = isset($_GET['f_sort']) ? (string)$_GET['f_sort'] : '';
-    $orderBy = $sortKeys[$sortKey] ?? $sortKeys[''];
+    if (!isset($sortKeys[$sortKey])) $sortKey = '';
+    $orderBy = $sortKeys[$sortKey];
+
+    // MD sort: rank EVERY matching car (not just this page) with the same
+    // functions ParsingPublisher uses to write car_ctlg.prc, so the order matches
+    // both the "MD:" line on the card and the price the car gets once published.
+    // Only runs when an MD sort is actually picked; the query is id + the five
+    // fields the formula needs.
+    $mdIds = null;
+    if ($sortKey === 'md_asc' || $sortKey === 'md_desc') {
+        $rankStmt = $db->prepare('SELECT pc.id, pc.source, pc.price_eur, pc.fuel_type,
+                pc.engine_volume, pc.year, pc.title_ro, pc.model
+            FROM '.$prefx.'_parsing_cars pc
+            WHERE '.$where.'
+            ORDER BY '.$defaultOrder);
+        $rankStmt->execute($bind);
+
+        $ranked = [];
+        foreach ($rankStmt->fetchAll(PDO::FETCH_ASSOC) as $i => $r) {
+            // Same inputs the card feeds parsingCalcMd: the raw price_eur and
+            // fuel_type, and the engine cc from the DB or parsed from the title.
+            // With no cc at all the excise — the biggest line — would be dropped
+            // and the MD would be badly low, so the card shows "MD: …" instead;
+            // those cars get md = 0 here and sink to the bottom.
+            $cap = (int)($r['engine_volume'] ?? 0);
+            if ($cap <= 0) $cap = (int)round(((float)parsing_engine_liters($r)) * 1000);
+            $md = 0;
+            if ((float)($r['price_eur'] ?? 0) > 0
+                && ($cap > 0 || parsing_fuel_code($r['fuel_type'] ?? '') === 'electric')) {
+                $bdCar = [
+                    'price_eur' => (float)$r['price_eur'],
+                    'fuel'      => (string)($r['fuel_type'] ?? ''),
+                    'capacity'  => $cap,
+                    'year'      => (int)($r['year'] ?? 0),
+                ];
+                $bd = ($r['source'] ?? '') === 'encar'
+                    ? parsing_md_breakdown_kr($db, $prefx, $bdCar)
+                    : parsing_md_breakdown_eu($db, $prefx, $bdCar);
+                if ($bd && !empty($bd['total'])) $md = (int)round($bd['total']);
+            }
+            $ranked[] = ['id' => (int)$r['id'], 'md' => $md, 'pos' => $i];
+        }
+
+        $dir = $sortKey === 'md_asc' ? 1 : -1;
+        usort($ranked, function ($a, $b) use ($dir) {
+            // Cars with no MD yet stay last in BOTH directions, in the default
+            // (found_at) order; 'pos' also keeps the sort deterministic on ties.
+            if (($a['md'] > 0) !== ($b['md'] > 0)) return $a['md'] > 0 ? -1 : 1;
+            if ($a['md'] > 0 && $a['md'] !== $b['md']) return ($a['md'] <=> $b['md']) * $dir;
+            return $a['pos'] <=> $b['pos'];
+        });
+        $mdIds = array_column(array_slice($ranked, $offset, $pageSize), 'id');
+    }
+
+    // The page slice: normally WHERE + ORDER BY + LIMIT, but for an MD sort the
+    // ids and their order are already decided above, so fetch exactly those.
+    $listWhere = $where;
+    $listBind  = $bind;
+    $listOrder = $orderBy;
+    $listLimit = ' LIMIT '.$pageSize.' OFFSET '.$offset;
+    if ($mdIds !== null) {
+        $in        = implode(',', array_map('intval', $mdIds));
+        $listWhere = $in === '' ? '0' : 'pc.id IN ('.$in.')';
+        $listBind  = [];
+        $listOrder = $in === '' ? 'pc.id' : 'FIELD(pc.id, '.$in.')';
+        $listLimit = '';
+    }
 
     // brand/model come from car_list (the single canonical sauto list) via the
     // car''s sauto_br/sauto_mo mapping, falling back to the raw source name for
@@ -122,10 +195,9 @@ try {
         FROM '.$prefx.'_parsing_cars pc
         LEFT JOIN '.$prefx.'_parsing_filters pf ON pf.id = pc.filter_id
         LEFT JOIN '.$prefx.'_car_list cl ON cl.br = pc.sauto_br AND cl.mo = pc.sauto_mo
-        WHERE '.$where.'
-        ORDER BY '.$orderBy.'
-        LIMIT '.$pageSize.' OFFSET '.$offset);
-    $stmt->execute($bind);
+        WHERE '.$listWhere.'
+        ORDER BY '.$listOrder.$listLimit);
+    $stmt->execute($listBind);
     $cars = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
 
@@ -196,13 +268,15 @@ $gearLabels = [
 // Shared catalog filter bar (brand/model/fuel/gear/year/price).
 // Counts in the bar must reflect ONLY this page's cars (proposed).
 $pf_status_filter = ['proposed'];
-// Sort dropdown — same control as /published, but on the € price shown on the
-// card (proposed cars have no MD price yet). Keys must match $sortKeys above.
+// Sort dropdown — same control as /published, on either price shown on the card:
+// the € source price or the MD landed cost. Keys must match $sortKeys above.
 $pf_sort = true;
 $pf_sort_opts = [
     ''         => $t['sort_none'],
     'eur_asc'  => $t['sort_eur_asc'],
     'eur_desc' => $t['sort_eur_desc'],
+    'md_asc'   => $t['sort_md_asc'],
+    'md_desc'  => $t['sort_md_desc'],
 ];
 ob_start();
 include _ADM_PAGE.'/parsing/parsing_filter_bar.php';
