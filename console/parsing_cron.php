@@ -170,11 +170,8 @@ foreach ($filters as $filter) {
     }
 }
 
-// Enrich cars still missing gearbox / full images (Encar detail API).
-// 100 cars / 120s per run. Requests stay sequential (one detail page at a
-// time) — Encar tolerates this rate, so we don't risk an IP ban.
 try {
-    $enriched = $orchestrator->enrichRecent(100, 120);
+    $enriched = $orchestrator->enrichRecent(300, 120);
     echo "[" . date('Y-m-d H:i:s') . "] Enriched {$enriched} cars\n";
 } catch (Throwable $e) {
     echo "[" . date('Y-m-d H:i:s') . "] Enrich error: " . $e->getMessage() . "\n";

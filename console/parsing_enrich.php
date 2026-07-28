@@ -38,7 +38,7 @@ if ($lockHandle === false || !flock($lockHandle, LOCK_EX | LOCK_NB)) {
 
 try {
     $orchestrator = new ParsingOrchestrator();
-    $enriched = $orchestrator->enrichRecent(100, 120);
+    $enriched = $orchestrator->enrichRecent(300, 120);
     echo "[" . date('Y-m-d H:i:s') . "] Enriched {$enriched} cars\n";
 
     $warmed = warm_openlane_covers($db, 'gh3sp', 200, 60);

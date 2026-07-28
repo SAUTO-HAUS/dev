@@ -127,7 +127,7 @@ class ParsingOrchestrator
         $totalImported = array_sum(array_column($summary, 'imported'));
         if (!$fast) {
             if ($totalImported > 0) {
-                $this->enrichRecent(min($totalImported, 100), 120);
+                $this->enrichRecent(min($totalImported, 300), 120);
             }
         }
 
@@ -282,9 +282,16 @@ class ParsingOrchestrator
         // specs). The "images_local LIKE %url%" clause catches rows that still
         // hold only the remote listing thumbnail (search saved {"url":...}) and
         // need the full gallery pulled from detail.
+        // engine_volume is in the list because the catalog card cannot show the MD
+        // landed price without it (the excise is charged per cm3, so a missing cc
+        // would silently drop the biggest line). Encar's list payload carries no
+        // displacement at all — the adapter can only guess it from the Badge text,
+        // which fails on roughly half the ads — so detail is the only source. A car
+        // that already has vin/gearbox/seats/images but no cc used to match nothing
+        // here and was never re-enriched, leaving its card polling on every view.
         $stmt = $this->db->prepare('SELECT id, source, source_id FROM '.$this->prefix.'_parsing_cars
             WHERE source IN ("encar", "openlane", "ecarstrade", "auto1")
-              AND (vin IS NULL OR vin = "" OR gearbox IS NULL OR seats IS NULL OR images_local IS NULL OR images_local = "[]" OR images_local LIKE \'%"url"%\')
+              AND (vin IS NULL OR vin = "" OR gearbox IS NULL OR seats IS NULL OR engine_volume IS NULL OR engine_volume = 0 OR images_local IS NULL OR images_local = "[]" OR images_local LIKE \'%"url"%\')
             ORDER BY found_at DESC LIMIT ?');
         $stmt->bindValue(1, $limit, \PDO::PARAM_INT);
         $stmt->execute();
