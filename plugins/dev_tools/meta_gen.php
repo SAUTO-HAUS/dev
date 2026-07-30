@@ -100,6 +100,22 @@ if ($current_lang == 'ru') {
 }
 $sa['meta']['kwd'] = 'auto moldova, masini moldova, auto rulate moldova, auto bu moldova, dealer auto moldova, salon auto moldova, sauto';
 
+$_priv_pages = ['b2b', 'b2b-login', 'b2b-register', 'b2b-forgot', 'b2b-reset', 'compare', 'favorites'];
+if (in_array($z2, $_priv_pages, true)) {
+    $zrbt = 'noindex, follow';
+
+    $_priv_titles = [
+        'ro' => ['b2b' => 'Cabinet Sauto', 'b2b-login' => 'Autentificare — Sauto', 'b2b-register' => 'Înregistrare — Sauto', 'b2b-forgot' => 'Resetare parolă — Sauto', 'b2b-reset' => 'Resetare parolă — Sauto', 'compare' => 'Comparare mașini — Sauto', 'favorites' => 'Favorite — Sauto'],
+        'ru' => ['b2b' => 'Кабинет Sauto', 'b2b-login' => 'Вход — Sauto', 'b2b-register' => 'Регистрация — Sauto', 'b2b-forgot' => 'Сброс пароля — Sauto', 'b2b-reset' => 'Сброс пароля — Sauto', 'compare' => 'Сравнение авто — Sauto', 'favorites' => 'Избранное — Sauto'],
+        'en' => ['b2b' => 'Sauto Cabinet', 'b2b-login' => 'Login — Sauto', 'b2b-register' => 'Register — Sauto', 'b2b-forgot' => 'Password reset — Sauto', 'b2b-reset' => 'Password reset — Sauto', 'compare' => 'Compare cars — Sauto', 'favorites' => 'Favorites — Sauto'],
+    ];
+    $_pl = isset($_priv_titles[$current_lang]) ? $current_lang : 'ro';
+    if (isset($_priv_titles[$_pl][$z2])) {
+        $sa['meta']['ttl'] = $_priv_titles[$_pl][$z2];
+        $sa['meta']['dsc'] = $_priv_titles[$_pl][$z2];
+    }
+}
+
 // =====================================================================
 // HOME PAGE (/ro, /ru, /en)
 // =====================================================================
