@@ -248,7 +248,7 @@ $paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt
                 <th class="b2bp-ref"><?= b2b_adm_esc($refLabel) ?></th>
                 <th></th>
             </tr></thead>
-            <tbody><?= $tierRows($commission, 'commission', $rCommission, $pt['eu_col_commission']) ?></tbody>
+            <tbody><?= $tierRows($commission, 'commission', $rCommission, $pt['eu_col_commission'] ?? '') ?></tbody>
         </table>
         <div class="b2ba-card__foot">
             <button type="button" class="b2ba-btn b2ba-btn--ghost" data-b2b-tier-add><?= b2b_adm_esc($pt['tier_add'] ?? '+') ?></button>
@@ -268,7 +268,7 @@ $paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt
                 <th class="b2bp-ref"><?= b2b_adm_esc($refLabel) ?></th>
                 <th></th>
             </tr></thead>
-            <tbody><?= $tierRows($delivery, 'delivery', $rDelivery, $pt['eu_col_delivery']) ?></tbody>
+            <tbody><?= $tierRows($delivery, 'delivery', $rDelivery, $pt['eu_col_delivery'] ?? '') ?></tbody>
         </table>
         <div class="b2ba-card__foot">
             <button type="button" class="b2ba-btn b2ba-btn--ghost" data-b2b-tier-add><?= b2b_adm_esc($pt['tier_add'] ?? '+') ?></button>
