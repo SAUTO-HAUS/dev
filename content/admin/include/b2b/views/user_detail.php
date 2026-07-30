@@ -9,6 +9,7 @@
 use App\Services\B2b\B2bAuth;
 use App\Services\B2b\B2bConfig;
 use App\Services\B2b\B2bInvoice;
+use App\Services\B2b\B2bPhone;
 use App\Services\B2b\B2bRegions;
 
 $lang = $_COOKIE['lang'] ?? 'ro';
@@ -90,14 +91,26 @@ $invoices = B2bInvoice::forUser($uid, 200);
                         <option value="individual"<?= $client['person_type'] === 'individual' ? ' selected' : '' ?>><?= b2b_adm_esc($t['pt_individual']) ?></option>
                     </select>
                 </label>
-                <label class="b2ba-field">
+                <?php
+                // The client owns these: they typed them at signup and nothing here
+                // may overwrite them. Same treatment as the locked fields in the
+                // client's own payment-invoice form — read-only, greyed, padlock.
+                // No data-field attribute, so the save never even sends them.
+                ?>
+                <div class="b2ba-field">
                     <span><?= b2b_adm_esc($t['full_name']) ?></span>
-                    <input type="text" data-field="full_name" value="<?= b2b_adm_esc($client['full_name']) ?>" maxlength="190">
-                </label>
-                <label class="b2ba-field">
+                    <div class="b2ba-locked">
+                        <input type="text" value="<?= b2b_adm_esc($client['full_name']) ?>" readonly tabindex="-1">
+                        <?= b2b_adm_lock_icon() ?>
+                    </div>
+                </div>
+                <div class="b2ba-field">
                     <span><?= b2b_adm_esc($t['phone']) ?></span>
-                    <input type="text" data-field="phone_number" value="<?= b2b_adm_esc($client['phone_number']) ?>" maxlength="32">
-                </label>
+                    <div class="b2ba-locked">
+                        <input type="text" value="<?= b2b_adm_esc(B2bPhone::local($client['phone_number'])) ?>" readonly tabindex="-1">
+                        <?= b2b_adm_lock_icon() ?>
+                    </div>
+                </div>
                 <label class="b2ba-field b2ba-field--wide">
                     <span><?= b2b_adm_esc($t['admin_note']) ?></span>
                     <textarea data-field="admin_note" rows="3" maxlength="2000"><?= b2b_adm_esc($client['admin_note'] ?? '') ?></textarea>

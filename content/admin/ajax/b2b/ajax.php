@@ -135,8 +135,10 @@ switch ($fn) {
         }
 
         // Whitelist: login, email, status and password hash are NOT editable here.
+        // Neither are full_name and phone_number — the client supplied those and
+        // only the client owns them; the profile form shows them locked.
         // Company/legal fields are not collected anywhere, so they are not editable.
-        $allowed = ['full_name', 'phone_number', 'admin_note'];
+        $allowed = ['admin_note'];
 
         $sets = [];
         $args = [':id' => $uid];

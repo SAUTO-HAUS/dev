@@ -200,6 +200,21 @@
     box-shadow:0 0 0 3px rgba(230,30,45,.1);
 }
 .b2ba-field textarea{ resize:vertical; }
+
+/* Client-owned data (name, phone): shown, never editable. Same greyed-out
+   treatment as the locked fields in the client's own payment-invoice form,
+   plus a padlock so the reason is obvious. */
+.b2ba-locked{ position:relative; display:block; }
+.b2ba-locked input[readonly]{
+    padding-right:2.6rem;
+    background:#f1f1f4; border-color:var(--b2ba-line);
+    color:var(--b2ba-muted); cursor:not-allowed;
+}
+.b2ba-locked input[readonly]:focus{ border-color:var(--b2ba-line); box-shadow:none; }
+.b2ba-locked__i{
+    position:absolute; top:50%; right:0.85rem; transform:translateY(-50%);
+    width:1rem; height:1rem; color:#b8b8bf; pointer-events:none;
+}
 /* Single-line controls take the module height; only the textarea grows by rows. */
 .b2ba-field input,
 .b2ba-field select,

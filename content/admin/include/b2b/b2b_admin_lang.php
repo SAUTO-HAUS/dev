@@ -475,4 +475,14 @@ if (!function_exists('b2b_adm_lang')) {
     {
         return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
     }
+
+    /** Padlock marking a field the admin may read but never change. */
+    function b2b_adm_lock_icon(): string
+    {
+        return '<svg class="b2ba-locked__i" viewBox="0 0 24 24" fill="none" stroke="currentColor"'
+             . ' stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+             . '<rect x="4" y="11" width="16" height="10" rx="2"></rect>'
+             . '<path d="M8 11V7a4 4 0 0 1 8 0v4"></path>'
+             . '</svg>';
+    }
 }
