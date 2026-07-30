@@ -131,8 +131,14 @@ $retailTierVal = function (array $retailRows, float $priceFrom, string $field): 
     return null;
 };
 
-/** Renders a tier table (price_from / price_to / B2B value / public value). */
-$tierRows = function (array $rows, string $valueField, array $retailRows) use ($pt, $retailTierVal, $perUser) {
+/** Renders a tier table (price_from / price_to / B2B value / public value).
+ *  data-label on every cell is what the mobile card layout prints above the field
+ *  (the <thead> is hidden there); $valueLabel is the card's own value-column title. */
+$tierRows = function (array $rows, string $valueField, array $retailRows, string $valueLabel) use ($pt, $retailTierVal, $perUser, $refLabel) {
+    $lFrom = b2b_adm_esc($pt['eu_col_price_from'] ?? '');
+    $lTo   = b2b_adm_esc($pt['eu_col_price_to'] ?? '');
+    $lVal  = b2b_adm_esc($valueLabel);
+    $lRef  = b2b_adm_esc($refLabel);
     $out = '';
     foreach ($rows as $r) {
         $id = (int)$r['id'];
@@ -150,10 +156,10 @@ $tierRows = function (array $rows, string $valueField, array $retailRows) use ($
         $diff = ($pub !== null && $val !== $pub) || ($perUser && $pub === null);
 
         $out .= '<tr data-row data-id="'.$id.'"'.($diff ? ' class="b2bp-diff"' : '').'>'
-              . '<td><input type="number" min="0" step="1" class="b2bp-from" value="'.(int)$r['price_from'].'"></td>'
-              . '<td><input type="number" min="0" step="1" class="b2bp-to" value="'.$to.'" placeholder="'.b2b_adm_esc($pt['eu_price_to_unlimited'] ?? '').'"></td>'
-              . '<td class="b2bp-vcell'.($diff ? ' is-diff' : '').'"><input type="number" min="0" step="1" class="b2bp-val" value="'.$val.'" data-ref="'.($pub === null ? '' : $pub).'"></td>'
-              . '<td class="b2bp-ref">'.$pubCell.'</td>'
+              . '<td data-label="'.$lFrom.'"><input type="number" min="0" step="1" class="b2bp-from" value="'.(int)$r['price_from'].'"></td>'
+              . '<td data-label="'.$lTo.'"><input type="number" min="0" step="1" class="b2bp-to" value="'.$to.'" placeholder="'.b2b_adm_esc($pt['eu_price_to_unlimited'] ?? '').'"></td>'
+              . '<td class="b2bp-vcell'.($diff ? ' is-diff' : '').'" data-label="'.$lVal.'"><input type="number" min="0" step="1" class="b2bp-val" value="'.$val.'" data-ref="'.($pub === null ? '' : $pub).'"></td>'
+              . '<td class="b2bp-ref" data-label="'.$lRef.'"><span class="b2bp-refv">'.$pubCell.'</span></td>'
               . '<td><button type="button" class="b2bp-del" title="'.b2b_adm_esc($pt['tier_remove'] ?? '').'">&times;</button></td>'
               . '</tr>';
     }
@@ -161,7 +167,10 @@ $tierRows = function (array $rows, string $valueField, array $retailRows) use ($
 };
 
 /** Renders a param table (label / enabled / B2B amount / retail reference). */
-$paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt, $t, $perUser) {
+$paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt, $t, $perUser, $refLabel) {
+    $lEn  = b2b_adm_esc($pt['eu_col_enabled'] ?? '');
+    $lAmt = b2b_adm_esc($pt['eu_col_amount'] ?? '');
+    $lRef = b2b_adm_esc($refLabel);
     $out = '';
     foreach ($rows as $r) {
         $id     = (int)$r['id'];
@@ -191,9 +200,9 @@ $paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt
 
         $out  .= '<tr data-row data-id="'.$id.'" data-key="'.b2b_adm_esc($key).'"'.($diff ? ' class="b2bp-diff"' : '').'>'
               . '<td class="b2bp-label">'.b2b_adm_esc($label).'</td>'
-              . '<td class="b2bp-c"><input type="checkbox" class="b2bp-en"'.$on.'></td>'
-              . '<td class="b2bp-vcell'.($diff ? ' is-diff' : '').'"><input type="number" min="0" step="1" class="b2bp-val" value="'.$amtI.'" data-ref="'.$refAmt.'" data-ref-en="'.$refOn.'"> <span class="b2bp-u">&euro;</span></td>'
-              . '<td class="b2bp-ref">'.$ref.'</td>'
+              . '<td class="b2bp-c" data-label="'.$lEn.'"><input type="checkbox" class="b2bp-en"'.$on.'></td>'
+              . '<td class="b2bp-vcell'.($diff ? ' is-diff' : '').'" data-label="'.$lAmt.'"><input type="number" min="0" step="1" class="b2bp-val" value="'.$amtI.'" data-ref="'.$refAmt.'" data-ref-en="'.$refOn.'"> <span class="b2bp-u">&euro;</span></td>'
+              . '<td class="b2bp-ref" data-label="'.$lRef.'"><span class="b2bp-refv">'.$ref.'</span></td>'
               . '</tr>';
     }
     return $out;
@@ -239,7 +248,7 @@ $paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt
                 <th class="b2bp-ref"><?= b2b_adm_esc($refLabel) ?></th>
                 <th></th>
             </tr></thead>
-            <tbody><?= $tierRows($commission, 'commission', $rCommission) ?></tbody>
+            <tbody><?= $tierRows($commission, 'commission', $rCommission, $pt['eu_col_commission']) ?></tbody>
         </table>
         <div class="b2ba-card__foot">
             <button type="button" class="b2ba-btn b2ba-btn--ghost" data-b2b-tier-add><?= b2b_adm_esc($pt['tier_add'] ?? '+') ?></button>
@@ -259,7 +268,7 @@ $paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt
                 <th class="b2bp-ref"><?= b2b_adm_esc($refLabel) ?></th>
                 <th></th>
             </tr></thead>
-            <tbody><?= $tierRows($delivery, 'delivery', $rDelivery) ?></tbody>
+            <tbody><?= $tierRows($delivery, 'delivery', $rDelivery, $pt['eu_col_delivery']) ?></tbody>
         </table>
         <div class="b2ba-card__foot">
             <button type="button" class="b2ba-btn b2ba-btn--ghost" data-b2b-tier-add><?= b2b_adm_esc($pt['tier_add'] ?? '+') ?></button>

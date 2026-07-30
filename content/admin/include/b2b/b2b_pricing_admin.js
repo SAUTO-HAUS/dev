@@ -82,6 +82,17 @@
         if (val) markDiff(val);
     });
 
+    // The mobile card layout prints each cell's data-label above the field (the
+    // <thead> is hidden there). Server-rendered rows carry it; a row added here
+    // takes the labels from the card's own header, so no strings live in the JS.
+    function labelCells(card, tr) {
+        var heads = card.querySelectorAll('thead th');
+        Array.prototype.forEach.call(tr.children, function (td, i) {
+            var label = heads[i] ? heads[i].textContent.trim() : '';
+            if (label) td.setAttribute('data-label', label);
+        });
+    }
+
     // ---- Add a tier row (clones the shape of an existing one) ---------------
     root.querySelectorAll('[data-b2b-tier-add]').forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -94,8 +105,9 @@
                 '<td><input type="number" min="0" step="1" class="b2bp-from" value="0"></td>' +
                 '<td><input type="number" min="0" step="1" class="b2bp-to" value=""></td>' +
                 '<td class="b2bp-vcell"><input type="number" min="0" step="1" class="b2bp-val" value="0" data-ref=""></td>' +
-                '<td class="b2bp-ref">&mdash;</td>' + // ref: none for a brand-new band
+                '<td class="b2bp-ref"><span class="b2bp-refv">&mdash;</span></td>' + // ref: none for a brand-new band
                 '<td><button type="button" class="b2bp-del">&times;</button></td>';
+            labelCells(card, tr);
             tbody.appendChild(tr);
             markDiff(tr.querySelector('.b2bp-val')); // new band: differs per client, nothing to compare globally
         });

@@ -441,3 +441,75 @@
         margin:0; padding:0.7rem; font-size:0.9rem; border-radius:10px;
     }
 }
+
+/* --------------------------------------------- pricing editor: mobile cards */
+/* /adminsauto/b2b/pricing (and the client "Prețuri" tab). The 5-column tier
+   tables and 4-column param tables do not fit a phone, so every row becomes a
+   small card and each field prints its column title above itself (data-label,
+   set server-side and by b2b_pricing_admin.js for rows added live). */
+@media (max-width:700px){
+    .b2ba-card.b2bp-card{ padding:1rem 0.85rem; }
+    .b2bp-status{ flex-wrap:wrap; }
+
+    .b2bp-table, .b2bp-table tbody{ display:block; }
+    .b2bp-table thead{ display:none; }
+    .b2bp-table td{ display:block; padding:0; border:0; min-width:0; }
+    .b2bp-table tr{
+        display:grid; gap:0.55rem 0.7rem; align-items:end;
+        padding:0.85rem 0.9rem; margin-bottom:0.7rem;
+        background:#fff; border:1px solid #eef0f3; border-radius:12px;
+        box-shadow:0 4px 14px rgba(20,20,40,.05);
+    }
+    .b2bp-table td[data-label]::before{
+        content:attr(data-label); display:block; margin-bottom:0.25rem;
+        color:var(--b2ba-muted); font-size:0.66rem; font-weight:700;
+        text-transform:uppercase; letter-spacing:0.4px;
+    }
+    .b2bp-table input[type=number]{ width:100%; font-size:1rem; }
+
+    /* the amount and its "€" stay on one line, the label on the line above */
+    .b2bp-table td.b2bp-vcell{
+        display:grid; grid-template-columns:1fr auto; align-items:center; column-gap:0.4rem;
+    }
+    .b2bp-table td.b2bp-vcell::before{ grid-column:1 / -1; }
+    .b2bp-table .b2bp-u{ margin:0; }
+
+    /* reference: a read-only panel as tall as the input beside it */
+    .b2bp-table td.b2bp-ref{ background:none; border:0; white-space:normal; }
+    .b2bp-refv{
+        display:flex; align-items:center; min-height:2.55rem; padding:0.45rem 0.65rem;
+        background:#eaf0f9; border:1px solid #cfd9ea; border-radius:8px;
+        color:#33415c; font-weight:700;
+    }
+
+    /* tier row:  de la | până la | ×   /   valoare | referință */
+    .b2bp-table:not(.b2bp-params) tr{ grid-template-columns:1fr 1fr auto; }
+    .b2bp-table:not(.b2bp-params) td:nth-child(1){ grid-area:1 / 1; }
+    .b2bp-table:not(.b2bp-params) td:nth-child(2){ grid-area:1 / 2; }
+    .b2bp-table:not(.b2bp-params) td:nth-child(5){ grid-area:1 / 3; }
+    .b2bp-table:not(.b2bp-params) td:nth-child(3){ grid-area:2 / 1; }
+    .b2bp-table:not(.b2bp-params) td:nth-child(4){ grid-area:2 / 2 / 3 / -1; }
+    .b2bp-del{ width:2.5rem; height:2.5rem; font-size:1.35rem; }
+
+    /* param row:  denumire | pornit   /   sumă | referință */
+    .b2bp-params tr{ grid-template-columns:1fr 1fr; }
+    .b2bp-params td.b2bp-label{ grid-area:1 / 1; align-self:center; font-size:0.95rem; font-weight:700; }
+    .b2bp-params td.b2bp-c{
+        grid-area:1 / 2; justify-self:end; align-self:center;
+        display:flex; align-items:center; gap:0.4rem; text-align:left;
+    }
+    .b2bp-params td.b2bp-c::before{ margin:0; }
+    .b2bp-table .b2bp-en{ width:1.35rem; height:1.35rem; }
+    .b2bp-params td.b2bp-vcell{ grid-area:2 / 1; }
+    .b2bp-params td.b2bp-ref{ grid-area:2 / 2; }
+
+    /* "differs from the reference" moves from the cells onto the whole card */
+    .b2bp-card .b2bp-table tr.b2bp-diff{
+        background:#fffdf6; border-color:#f0d9a8; box-shadow:inset 3px 0 0 #e0a200;
+    }
+    .b2bp-card .b2bp-table tr.b2bp-diff > td{ background:none; box-shadow:none; }
+
+    /* one comfortable action row per card */
+    .b2ba-card__foot{ gap:0.6rem; }
+    .b2ba-card__foot .b2ba-btn{ flex:1 1 auto; padding:0.7rem 1rem; }
+}
