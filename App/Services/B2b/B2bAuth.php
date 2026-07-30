@@ -74,7 +74,7 @@ class B2bAuth
                 'email_phone_taken' => 'Există deja un cont cu acest număr de telefon și această adresă de email.',
                 'register_failed'   => 'Contul nu a putut fi creat. Încercați din nou.',
                 'register_ok'       => 'Contul a fost creat cu succes. Te poți autentifica acum.',
-                'login_bad'         => 'Login sau parolă incorectă.',
+                'login_bad'         => 'Login/email sau parolă incorectă.',
                 'service_down'      => 'Serviciu temporar indisponibil.',
                 'locked'            => 'Cont blocat temporar. Reîncercați peste %d minute.',
                 'blocked'           => 'Contul este blocat. Contactați administratorul.',
@@ -102,7 +102,7 @@ class B2bAuth
                 'email_phone_taken' => 'Учётная запись с этим номером телефона и адресом email уже существует.',
                 'register_failed'   => 'Не удалось создать учётную запись. Попробуйте снова.',
                 'register_ok'       => 'Учётная запись успешно создана. Теперь вы можете войти.',
-                'login_bad'         => 'Неверный логин или пароль.',
+                'login_bad'         => 'Неверный логин/email или пароль.',
                 'service_down'      => 'Сервис временно недоступен.',
                 'locked'            => 'Учётная запись временно заблокирована. Повторите через %d мин.',
                 'blocked'           => 'Учётная запись заблокирована. Обратитесь к администратору.',
@@ -130,7 +130,7 @@ class B2bAuth
                 'email_phone_taken' => 'An account with this phone number and email address already exists.',
                 'register_failed'   => 'The account could not be created. Please try again.',
                 'register_ok'       => 'Your account was created successfully. You can log in now.',
-                'login_bad'         => 'Incorrect login or password.',
+                'login_bad'         => 'Incorrect login/email or password.',
                 'service_down'      => 'Service temporarily unavailable.',
                 'locked'            => 'Account temporarily locked. Try again in %d minutes.',
                 'blocked'           => 'The account is blocked. Contact the administrator.',
@@ -265,10 +265,17 @@ class B2bAuth
         $generic = ['ok' => false, 'error' => self::msg('login_bad')];
 
         try {
+            // Login or email, so a partner who forgets the login they picked can
+            // still get in with the address they already use for password resets.
+            // No ambiguity between the two: a login may only contain [a-z0-9._-],
+            // so it can never look like an email. Distinct placeholders because
+            // this PDO runs with ATTR_EMULATE_PREPARES=false, where one named
+            // placeholder cannot be reused across positions.
             $stmt = B2bConfig::db()->prepare(
-                'SELECT * FROM ' . B2bConfig::table('users') . ' WHERE login = :login LIMIT 1'
+                'SELECT * FROM ' . B2bConfig::table('users')
+                . ' WHERE login = :login OR email = :email LIMIT 1'
             );
-            $stmt->execute([':login' => $login]);
+            $stmt->execute([':login' => $login, ':email' => $login]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (\Throwable $e) {
             B2bConfig::log('b2b_error.log', 'login err=' . $e->getMessage());

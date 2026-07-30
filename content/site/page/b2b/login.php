@@ -3,8 +3,8 @@
 /**
  * /{lang}/b2b-login - single-step login.
  *
- * Login + password -> fn=b2b_login. Approval by the Super Admin is the only
- * gate, so a valid password on an active account opens the session right away.
+ * Login (or email) + password -> fn=b2b_login. Only a blocked account is
+ * refused, so a valid password opens the session right away.
  */
 
 include_once( __DIR__ . '/_layout.php' );
@@ -33,8 +33,9 @@ $passToggle =
 $body = '
 <form class="b2b-form" id="b2b-login-form" data-csrf="'.$csrf.'" novalidate>
     <div class="b2b-field">
-        <label for="b2b-login-name">'.b2b_esc($t['login_field']).'</label>
-        <input type="text" id="b2b-login-name" name="login" maxlength="64" required autocomplete="username" />
+        <label for="b2b-login-name">'.b2b_esc($t['login_id_field']).'</label>
+        '// maxlength follows the email column (190), not the login one (64).
+        .'<input type="text" id="b2b-login-name" name="login" maxlength="190" required autocomplete="username" />
     </div>
 
     <div class="b2b-field">
