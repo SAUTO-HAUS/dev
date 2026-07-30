@@ -378,6 +378,34 @@
 .b2b-td--strong{ font-weight:700; white-space:nowrap; }
 .b2b-td--wrap{ max-width:320px; }
 
+/* Mobile: each invoice row becomes a clean card with a visual hierarchy (no
+   "label:" prefixes) — readable without any sideways scroll. Cells are placed
+   with grid, independent of their source order. */
+@media (max-width:700px){
+    .b2b-table-wrap{ overflow:visible; background:none; border:0; box-shadow:none; border-radius:0; }
+    .b2b-table{ min-width:0; }
+    .b2b-table thead{ display:none; }
+    .b2b-table tbody{ display:block; }
+    .b2b-table tr{
+        display:grid; grid-template-columns:1fr auto; align-items:center;
+        gap:.4rem .8rem;
+        background:#fff; border:1px solid #eee; border-radius:16px;
+        padding:1rem 1.15rem; margin-bottom:.85rem;
+        box-shadow:0 8px 24px rgba(20,20,40,.06);
+    }
+    .b2b-table td{ display:block; padding:0; border:0; text-align:left; white-space:normal; }
+    .b2b-table td::before{ content:none; }
+    .b2b-table td:nth-child(1){ grid-row:1; grid-column:1; font-weight:800; font-size:1.02rem; }                              /* invoice no */
+    .b2b-table td:nth-child(4){ grid-row:1; grid-column:2; justify-self:end; }                                               /* status badge */
+    .b2b-table td:nth-child(2){ grid-row:2; grid-column:1 / -1; font-size:.95rem; }                                          /* car */
+    .b2b-table td:nth-child(2) a{ text-decoration:underline; text-underline-offset:2px; }                                    /* signal it's a link */
+    .b2b-table td:nth-child(3){ grid-row:3; grid-column:1; font-weight:800; color:var(--b2b-brand); font-size:1rem; }        /* amount */
+    .b2b-table td:nth-child(5){ grid-row:3; grid-column:2; justify-self:end; color:var(--b2b-muted); font-size:.85rem; }     /* date */
+    .b2b-table td.b2b-td--action{ grid-row:4; grid-column:1 / -1; margin-top:.5rem; }                                        /* button */
+    .b2b-table td.b2b-td--action .b2b-btn{ display:block; width:100%; text-align:center; }
+    .b2b-td--strong{ white-space:normal; }
+}
+
 /* -------------------------------------------------------------- timeline */
 
 .b2b-timeline{
