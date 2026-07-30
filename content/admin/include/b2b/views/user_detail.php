@@ -189,7 +189,7 @@ $invoices = B2bInvoice::forUser($uid, 200);
             <div class="b2ba-empty"><?= b2b_adm_esc($t['no_invoices']) ?></div>
         <?php else: ?>
             <div class="b2ba-table-wrap">
-                <table class="b2ba-table b2ba-table--cards">
+                <table class="b2ba-table">
                     <thead><tr>
                         <th><?= b2b_adm_esc($t['col_invoice']) ?></th>
                         <th><?= b2b_adm_esc($t['col_car']) ?></th>
@@ -206,10 +206,10 @@ $invoices = B2bInvoice::forUser($uid, 200);
                         $invSt = ($inv['req_status'] ?? '') !== '' ? (string)$inv['req_status'] : (string)$inv['status'];
                     ?>
                         <tr>
-                            <td class="b2ba-td--strong"><?= b2b_adm_esc($inv['invoice_no']) ?></td>
+                            <td class="b2ba-td--strong b2ba-td--title"><?= b2b_adm_esc($inv['invoice_no']) ?></td>
                             <td data-label="<?= b2b_adm_esc($t['col_car']) ?>"><a href="/<?= b2b_adm_esc($lang) ?>/ordercars/<?= (int)$inv['car_id'] ?>" target="_blank" rel="noopener"><?= b2b_adm_esc($snap['title'] ?? ('#'.(int)$inv['car_id'])) ?></a></td>
                             <td data-label="<?= b2b_adm_esc($t['col_advance']) ?>"><?= b2b_adm_esc(number_format((float)$inv['advance_amount'], 0, '.', '').' '.$inv['currency']) ?></td>
-                            <td><span class="b2ba-badge b2ba-badge--<?= b2b_adm_esc($invSt) ?>"><?= b2b_adm_esc($t['st_'.$invSt] ?? $invSt) ?></span></td>
+                            <td class="b2ba-td--status"><span class="b2ba-badge b2ba-badge--<?= b2b_adm_esc($invSt) ?>"><?= b2b_adm_esc($t['st_'.$invSt] ?? $invSt) ?></span></td>
                             <td class="b2ba-td--small" data-label="<?= b2b_adm_esc($t['col_date']) ?>"><?= b2b_adm_esc(date('d.m.Y', strtotime((string)$inv['created_at']))) ?></td>
                             <td class="b2ba-td--action"><a class="b2ba-btn b2ba-btn--ghost b2ba-btn--sm" href="<?= b2b_adm_esc(B2bInvoice::path($inv)) ?>" target="_blank" rel="noopener"><?= b2b_adm_esc($t['open']) ?></a></td>
                         </tr>

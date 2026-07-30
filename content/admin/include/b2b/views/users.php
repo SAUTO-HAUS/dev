@@ -94,7 +94,6 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/users';
                 <thead>
                     <tr>
                         <th class="b2ba-th--num">#</th>
-                        <th><?= b2b_adm_esc($t['col_login']) ?></th>
                         <th><?= b2b_adm_esc($t['col_name']) ?></th>
                         <th><?= b2b_adm_esc($t['col_person_type']) ?></th>
                         <th><?= b2b_adm_esc($t['col_contact']) ?></th>
@@ -110,8 +109,9 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/users';
                 ?>
                     <tr class="b2ba-row-open" data-b2b-open="<?= $detail ?>">
                         <td class="b2ba-td--num"><?= ++$rowNo ?></td>
-                        <td class="b2ba-td--strong"><a class="b2ba-row-link" href="<?= $detail ?>"><?= b2b_adm_esc($u['login']) ?></a></td>
-                        <td data-label="<?= b2b_adm_esc($t['col_name']) ?>"><?= b2b_adm_esc(B2bAuth::displayName($u)) ?></td>
+                        <?php // The name carries the link: the row opens the profile on click, but
+                              // this keeps a real anchor for keyboard and no-JS navigation. ?>
+                        <td class="b2ba-td--title"><a class="b2ba-row-link" href="<?= $detail ?>"><?= b2b_adm_esc(B2bAuth::displayName($u)) ?></a></td>
                         <td data-label="<?= b2b_adm_esc($t['col_person_type']) ?>">
                             <?php // Super Admin can correct a mistyped type inline (saves on change, no reload). ?>
                             <select class="b2ba-ptype" data-b2b-list-ptype data-user="<?= $uid ?>"
@@ -124,12 +124,12 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/users';
                             <?= b2b_adm_esc($u['email']) ?><br>
                             <?= b2b_adm_esc($u['phone_number']) ?>
                         </td>
-                        <td data-label="<?= b2b_adm_esc($t['col_status']) ?>">
+                        <td class="b2ba-td--status">
                             <span class="b2ba-badge b2ba-badge--<?= b2b_adm_esc($status) ?>">
                                 <?= b2b_adm_esc($t['st_'.$status] ?? $status) ?>
                             </span>
                         </td>
-                        <td>
+                        <td class="b2ba-td--action">
                             <div class="b2ba-row-actions">
                                 <?php if ($status === 'blocked'): ?>
                                     <button type="button" class="b2ba-btn b2ba-btn--ok b2ba-btn--sm"

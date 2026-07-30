@@ -71,7 +71,7 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/requests';
         <div class="b2ba-empty"><?= b2b_adm_esc($t['no_requests']) ?></div>
     <?php else: ?>
         <div class="b2ba-table-wrap">
-            <table class="b2ba-table b2ba-table--cards">
+            <table class="b2ba-table">
                 <thead><tr>
                     <th><?= b2b_adm_esc($t['col_client']) ?></th>
                     <th><?= b2b_adm_esc($t['col_car']) ?></th>
@@ -86,7 +86,7 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/requests';
                     $car = B2bInvoice::loadCar((int)$req['car_id']);
                 ?>
                     <tr id="b2ba-req-<?= $rid ?>" class="<?= $focusId === $rid ? 'is-focus' : '' ?>">
-                        <td>
+                        <td class="b2ba-td--title">
                             <a href="/<?= b2b_adm_esc($lang) ?>/<?= b2b_adm_esc($admin_dir) ?>/b2b/user?id=<?= (int)$req['b2b_user_id'] ?>"
                                class="b2ba-td--strong"><?= b2b_adm_esc(B2bAuth::displayName($req)) ?></a>
                             <div class="b2ba-td--small"><?= b2b_adm_esc($req['phone_number']) ?></div>
@@ -106,7 +106,7 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/requests';
                                 &mdash;
                             <?php endif; ?>
                         </td>
-                        <td data-label="<?= b2b_adm_esc($t['col_status']) ?>">
+                        <td class="b2ba-td--status">
                             <span class="b2ba-badge b2ba-badge--<?= b2b_adm_esc($req['status']) ?>" data-b2b-req-badge="<?= $rid ?>">
                                 <?= b2b_adm_esc($t['st_'.$req['status']] ?? $req['status']) ?>
                             </span>
