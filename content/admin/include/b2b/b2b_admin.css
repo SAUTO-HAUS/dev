@@ -391,3 +391,43 @@
     .b2ba-row-actions .b2ba-btn{ flex:1 1 7rem; padding:0.65rem 0.8rem; font-size:0.86rem; border-radius:10px; }
     .b2ba-table td .b2ba-ptype{ width:100%; padding:0.55rem 0.6rem; font-size:0.9rem; }
 }
+
+/* Admin payment-invoices table → the same approved card as the client cabinet:
+   invoice no (title) + status badge on the header row, "LABEL … value" body rows
+   (label left, value aligned right), a full-width open button underneath. */
+@media (max-width:700px){
+    .b2ba-table--invoices tr{
+        display:grid; grid-template-columns:1fr auto; align-items:center; column-gap:0.8rem;
+        padding:1rem 1.15rem;
+    }
+    .b2ba-table--invoices td{
+        display:block; padding:0; border:0; text-align:left; white-space:normal;
+    }
+    .b2ba-table--invoices td::before{ content:none; }
+    /* header: invoice no (title) left, status badge right */
+    .b2ba-table--invoices td:nth-child(1){ grid-row:1; grid-column:1; font-weight:800; font-size:1.08rem; }
+    .b2ba-table--invoices td:nth-child(4){ grid-row:1; grid-column:2; justify-self:end; }
+    /* body: label on the left, its value aligned to the right */
+    .b2ba-table--invoices td:nth-child(2),
+    .b2ba-table--invoices td:nth-child(3),
+    .b2ba-table--invoices td:nth-child(5){
+        grid-column:1 / -1; display:grid; grid-template-columns:auto 1fr; gap:0.15rem 0.8rem;
+        align-items:baseline; padding:0.5rem 0; border-top:1px solid var(--b2ba-line);
+        text-align:right; font-size:0.92rem; color:var(--b2ba-ink);
+    }
+    .b2ba-table--invoices td:nth-child(2){ grid-row:2; margin-top:0.7rem; }
+    .b2ba-table--invoices td:nth-child(3){ grid-row:3; font-weight:800; }
+    .b2ba-table--invoices td:nth-child(5){ grid-row:4; }
+    .b2ba-table--invoices td:nth-child(2)::before,
+    .b2ba-table--invoices td:nth-child(3)::before,
+    .b2ba-table--invoices td:nth-child(5)::before{
+        content:attr(data-label); justify-self:start; text-align:left; color:var(--b2ba-muted);
+        font-weight:700; font-size:0.66rem; text-transform:uppercase; letter-spacing:0.5px; padding-top:0.15rem;
+    }
+    .b2ba-table--invoices td:nth-child(2) a{ text-decoration:underline; text-underline-offset:2px; }
+    /* footer: full-width open button */
+    .b2ba-table--invoices td.b2ba-td--action{ grid-row:5; grid-column:1 / -1; margin-top:0.85rem; padding:0; }
+    .b2ba-table--invoices td.b2ba-td--action .b2ba-btn{
+        display:flex; width:100%; padding:0.7rem; font-size:0.9rem; border-radius:10px;
+    }
+}
