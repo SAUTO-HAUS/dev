@@ -71,7 +71,7 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/requests';
         <div class="b2ba-empty"><?= b2b_adm_esc($t['no_requests']) ?></div>
     <?php else: ?>
         <div class="b2ba-table-wrap">
-            <table class="b2ba-table">
+            <table class="b2ba-table b2ba-table--cards">
                 <thead><tr>
                     <th><?= b2b_adm_esc($t['col_client']) ?></th>
                     <th><?= b2b_adm_esc($t['col_car']) ?></th>
@@ -112,7 +112,7 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/requests';
                             </span>
                         </td>
                         <td class="b2ba-td--small" data-label="<?= b2b_adm_esc($t['col_date']) ?>"><?= b2b_adm_esc(date('d.m.Y', strtotime((string)$req['created_at']))) ?></td>
-                        <td class="b2ba-td--nowrap">
+                        <td class="b2ba-td--nowrap b2ba-td--action">
                             <button type="button" class="b2ba-btn b2ba-btn--ghost b2ba-btn--sm"
                                     data-b2b-admin="request-status" data-request="<?= $rid ?>" data-value="seen"><?= b2b_adm_esc($t['mark_seen']) ?></button>
                             <button type="button" class="b2ba-btn b2ba-btn--ok b2ba-btn--sm"

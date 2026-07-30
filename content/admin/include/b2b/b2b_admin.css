@@ -356,10 +356,12 @@
     .b2ba-perms{ flex-direction:column; gap:0.6rem; }
 }
 
-/* Mobile: data tables become stacked cards. Each labelled cell is a tight
+/* Mobile + tablet: data tables become stacked cards. Each labelled cell is a tight
    "LABEL  value" line (grid, both left-aligned — not scattered to the edges); the
-   identity block is the card title and the actions are comfortable full-row buttons. */
-@media (max-width:700px){
+   identity block is the card title and the actions are comfortable full-row buttons.
+   The breakpoint is the tablet width: the tables are 860px+ wide, so anything
+   narrower would otherwise scroll sideways inside its wrapper. */
+@media (max-width:1024px){
     .b2ba-table-wrap{ overflow:visible; background:none; border:0; box-shadow:none; border-radius:0; }
     .b2ba-table{ min-width:0; }
     .b2ba-table thead{ display:none; }
@@ -369,13 +371,14 @@
         padding:0.95rem 1.1rem; margin-bottom:0.9rem;
         box-shadow:0 6px 20px rgba(20,20,40,.06);
     }
-    /* "LABEL  value" — label in a narrow left column, value right next to it. */
-    .b2ba-table td[data-label]{
+    /* "LABEL  value" — label in a narrow left column, value right next to it.
+       Excluded for --cards, which lays the same cells out its own way below. */
+    .b2ba-table:not(.b2ba-table--cards) td[data-label]{
         display:grid; grid-template-columns:5.5rem 1fr; gap:0.2rem 0.8rem;
         align-items:start; padding:0.5rem 0; border-bottom:1px solid #f3f4f6;
         text-align:left; white-space:normal;
     }
-    .b2ba-table td[data-label]::before{
+    .b2ba-table:not(.b2ba-table--cards) td[data-label]::before{
         content:attr(data-label); color:var(--b2ba-muted);
         font-weight:700; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.4px;
         padding-top:0.15rem;
@@ -392,42 +395,49 @@
     .b2ba-table td .b2ba-ptype{ width:100%; padding:0.55rem 0.6rem; font-size:0.9rem; }
 }
 
-/* Admin payment-invoices table → the same approved card as the client cabinet:
-   invoice no (title) + status badge on the header row, "LABEL … value" body rows
-   (label left, value aligned right), a full-width open button underneath. */
-@media (max-width:700px){
-    .b2ba-table--invoices tr{
+/* The two "Conturi de plată" tables (requests list + the client's invoices tab) →
+   the same approved card as the client cabinet (.b2b-table in site/css/b2b.css):
+   title + status badge on the header row, "LABEL … value" body rows (label left,
+   value aligned right), full-width action buttons underneath.
+   Cell order both tables share: 1 title · 2,3,5 details · 4 status · 6 actions. */
+@media (max-width:1024px){
+    .b2ba-table--cards tr{
         display:grid; grid-template-columns:1fr auto; align-items:center; column-gap:0.8rem;
-        padding:1rem 1.15rem;
+        padding:1rem 1.15rem; border-radius:16px;
     }
-    .b2ba-table--invoices td{
+    .b2ba-table--cards td{
         display:block; padding:0; border:0; text-align:left; white-space:normal;
     }
-    .b2ba-table--invoices td::before{ content:none; }
-    /* header: invoice no (title) left, status badge right */
-    .b2ba-table--invoices td:nth-child(1){ grid-row:1; grid-column:1; font-weight:800; font-size:1.08rem; }
-    .b2ba-table--invoices td:nth-child(4){ grid-row:1; grid-column:2; justify-self:end; }
+    .b2ba-table--cards td::before{ content:none; }
+    /* header: invoice no / client name (title) left, status badge right */
+    .b2ba-table--cards td:nth-child(1){ grid-row:1; grid-column:1; font-weight:800; font-size:1.08rem; }
+    .b2ba-table--cards td:nth-child(1) .b2ba-td--small{ font-weight:600; margin-top:0.15rem; }
+    .b2ba-table--cards td:nth-child(4){ grid-row:1; grid-column:2; justify-self:end; }
     /* body: label on the left, its value aligned to the right */
-    .b2ba-table--invoices td:nth-child(2),
-    .b2ba-table--invoices td:nth-child(3),
-    .b2ba-table--invoices td:nth-child(5){
+    .b2ba-table--cards td:nth-child(2),
+    .b2ba-table--cards td:nth-child(3),
+    .b2ba-table--cards td:nth-child(5){
         grid-column:1 / -1; display:grid; grid-template-columns:auto 1fr; gap:0.15rem 0.8rem;
         align-items:baseline; padding:0.5rem 0; border-top:1px solid var(--b2ba-line);
         text-align:right; font-size:0.92rem; color:var(--b2ba-ink);
     }
-    .b2ba-table--invoices td:nth-child(2){ grid-row:2; margin-top:0.7rem; }
-    .b2ba-table--invoices td:nth-child(3){ grid-row:3; font-weight:800; }
-    .b2ba-table--invoices td:nth-child(5){ grid-row:4; }
-    .b2ba-table--invoices td:nth-child(2)::before,
-    .b2ba-table--invoices td:nth-child(3)::before,
-    .b2ba-table--invoices td:nth-child(5)::before{
+    .b2ba-table--cards td:nth-child(2){ grid-row:2; margin-top:0.7rem; }
+    .b2ba-table--cards td:nth-child(3){ grid-row:3; font-weight:800; }
+    .b2ba-table--cards td:nth-child(5){ grid-row:4; }
+    .b2ba-table--cards td:nth-child(2)::before,
+    .b2ba-table--cards td:nth-child(3)::before,
+    .b2ba-table--cards td:nth-child(5)::before{
         content:attr(data-label); justify-self:start; text-align:left; color:var(--b2ba-muted);
         font-weight:700; font-size:0.66rem; text-transform:uppercase; letter-spacing:0.5px; padding-top:0.15rem;
     }
-    .b2ba-table--invoices td:nth-child(2) a{ text-decoration:underline; text-underline-offset:2px; }
-    /* footer: full-width open button */
-    .b2ba-table--invoices td.b2ba-td--action{ grid-row:5; grid-column:1 / -1; margin-top:0.85rem; padding:0; }
-    .b2ba-table--invoices td.b2ba-td--action .b2ba-btn{
-        display:flex; width:100%; padding:0.7rem; font-size:0.9rem; border-radius:10px;
+    .b2ba-table--cards td:nth-child(2) a{ text-decoration:underline; text-underline-offset:2px; }
+    /* footer: action buttons share one full-width row (a lone button fills it) */
+    .b2ba-table--cards td.b2ba-td--action{
+        grid-row:5; grid-column:1 / -1; margin-top:0.85rem; padding:0;
+        display:flex; flex-wrap:wrap; gap:0.5rem;
+    }
+    .b2ba-table--cards td.b2ba-td--action .b2ba-btn{
+        flex:1 1 7rem; display:flex; align-items:center; justify-content:center;
+        margin:0; padding:0.7rem; font-size:0.9rem; border-radius:10px;
     }
 }

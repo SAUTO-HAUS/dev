@@ -189,7 +189,7 @@ $invoices = B2bInvoice::forUser($uid, 200);
             <div class="b2ba-empty"><?= b2b_adm_esc($t['no_invoices']) ?></div>
         <?php else: ?>
             <div class="b2ba-table-wrap">
-                <table class="b2ba-table b2ba-table--invoices">
+                <table class="b2ba-table b2ba-table--cards">
                     <thead><tr>
                         <th><?= b2b_adm_esc($t['col_invoice']) ?></th>
                         <th><?= b2b_adm_esc($t['col_car']) ?></th>
