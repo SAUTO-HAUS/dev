@@ -154,16 +154,18 @@ if (!function_exists('b2b_assets')) {
         <div class="b2b-hero__id">
             <span class="b2b-hero__avatar">'.b2b_esc($initials).'</span>
             <div class="b2b-hero__text">
-                <p class="b2b-hero__greet">'.b2b_esc($t['welcome']).'</p>
-                <h1 class="b2b-hero__name">'.b2b_esc($displayName).'</h1>
-                <span class="b2b-badge b2b-badge--'.b2b_esc($user['status']).'">'.b2b_status_label((string)$user['status']).'</span>'
-              // The change-password card lives on the cabinet pages (not /compare);
-              // this button reveals it (see .b2b-pw-panel + b2b.js).
-              .($active !== 'compare'
-                    ? '<div class="b2b-hero__pwrow"><button type="button" class="b2b-hero__pw" data-b2b-pw-toggle>'
+                '// Greeting on the left, "change password" on the right of the same line.
+                // The modal it opens is appended below, so the button works on every
+                // page that renders this hero — /compare included.
+                .'<div class="b2b-hero__toprow">
+                    <p class="b2b-hero__greet">'.b2b_esc($t['welcome']).'</p>
+                    <button type="button" class="b2b-hero__pw" data-b2b-pw-toggle>'
                       .'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'
-                      .'<span>'.b2b_esc($t['pw_change_title']).'</span></button></div>'
-                    : '').'
+                      .'<span>'.b2b_esc($t['pw_change_title']).'</span>
+                    </button>
+                </div>
+                <h1 class="b2b-hero__name">'.b2b_esc($displayName).'</h1>
+                <span class="b2b-badge b2b-badge--'.b2b_esc($user['status']).'">'.b2b_status_label((string)$user['status']).'</span>
             </div>
         </div>
 
@@ -178,8 +180,54 @@ if (!function_exists('b2b_assets')) {
         }
         $out .= '
         </div>
-    </div>';
+    </div>'.b2b_pw_modal($lang);
 
         return $out;
+    }
+
+    /**
+     * "Change password" modal, closed by default. Rendered together with the hero
+     * so its button never points at a modal that is not on the page; opened by
+     * [data-b2b-pw-toggle] and closed by the x / backdrop / Escape (b2b.js).
+     */
+    function b2b_pw_modal(string $lang): string
+    {
+        $t    = b2b_lang($lang);
+        $csrf = b2b_esc(b2b_csrf_token());
+
+        return '
+<div class="b2b-modal b2b-pw-modal" id="b2b-pw-modal" hidden>
+    <div class="b2b-modal__backdrop" data-b2b-pw-close></div>
+    <div class="b2b-modal__box">
+        <button type="button" class="b2b-modal__x" data-b2b-pw-close aria-label="'.b2b_esc($t['pw_close']).'">&times;</button>
+        <h2 class="b2b-modal__ttl">'.b2b_esc($t['pw_change_title']).'</h2>
+        <form class="b2b-form" id="b2b-change-password-form" data-csrf="'.$csrf.'" novalidate>
+            <div class="b2b-field">
+                <label for="b2b-pw-cur">'.b2b_esc($t['pw_current']).'</label>
+                <div class="b2b-pass-wrap">
+                    <input type="password" id="b2b-pw-cur" name="current" required autocomplete="current-password" />
+                    '.b2b_pass_toggle($t).'
+                </div>
+            </div>
+            <div class="b2b-field">
+                <label for="b2b-pw-new">'.b2b_esc($t['pw_new']).'</label>
+                <div class="b2b-pass-wrap">
+                    <input type="password" id="b2b-pw-new" name="new" minlength="6" required autocomplete="new-password" />
+                    '.b2b_pass_toggle($t).'
+                </div>
+                <small class="b2b-hint">'.b2b_esc($t['password_hint']).'</small>
+            </div>
+            <div class="b2b-field">
+                <label for="b2b-pw-new2">'.b2b_esc($t['pw_new_repeat']).'</label>
+                <div class="b2b-pass-wrap">
+                    <input type="password" id="b2b-pw-new2" name="confirm" minlength="6" required autocomplete="new-password" />
+                    '.b2b_pass_toggle($t).'
+                </div>
+            </div>
+            <div class="b2b-form__msg" role="alert" aria-live="polite"></div>
+            <button type="submit" class="b2b-btn b2b-btn--primary b2b-btn--block">'.b2b_esc($t['pw_save']).'</button>
+        </form>
+    </div>
+</div>';
     }
 }

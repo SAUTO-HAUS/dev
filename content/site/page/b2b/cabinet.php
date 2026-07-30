@@ -158,44 +158,9 @@ elseif ($action === 'activity') {
 echo '
     </div>';
 
-// ------------------------------------------------- Security: change password
-// A modal, closed by default; opened by the "change password" button in the hero
-// (data-b2b-pw-toggle) and closed by the ×/backdrop/Escape (data-b2b-pw-close),
-// all handled in b2b.js. Reset-by-email (b2b-forgot) covers the case where the
-// partner cannot log in at all.
-echo '<div class="b2b-modal b2b-pw-modal" id="b2b-pw-modal" hidden>
-    <div class="b2b-modal__backdrop" data-b2b-pw-close></div>
-    <div class="b2b-modal__box">
-        <button type="button" class="b2b-modal__x" data-b2b-pw-close aria-label="'.b2b_esc($t['pw_close']).'">&times;</button>
-        <h2 class="b2b-modal__ttl">'.b2b_esc($t['pw_change_title']).'</h2>
-        <form class="b2b-form" id="b2b-change-password-form" data-csrf="'.$csrf.'" novalidate>
-            <div class="b2b-field">
-                <label for="b2b-pw-cur">'.b2b_esc($t['pw_current']).'</label>
-                <div class="b2b-pass-wrap">
-                    <input type="password" id="b2b-pw-cur" name="current" required autocomplete="current-password" />
-                    '.b2b_pass_toggle($t).'
-                </div>
-            </div>
-            <div class="b2b-field">
-                <label for="b2b-pw-new">'.b2b_esc($t['pw_new']).'</label>
-                <div class="b2b-pass-wrap">
-                    <input type="password" id="b2b-pw-new" name="new" minlength="6" required autocomplete="new-password" />
-                    '.b2b_pass_toggle($t).'
-                </div>
-                <small class="b2b-hint">'.b2b_esc($t['password_hint']).'</small>
-            </div>
-            <div class="b2b-field">
-                <label for="b2b-pw-new2">'.b2b_esc($t['pw_new_repeat']).'</label>
-                <div class="b2b-pass-wrap">
-                    <input type="password" id="b2b-pw-new2" name="confirm" minlength="6" required autocomplete="new-password" />
-                    '.b2b_pass_toggle($t).'
-                </div>
-            </div>
-            <div class="b2b-form__msg" role="alert" aria-live="polite"></div>
-            <button type="submit" class="b2b-btn b2b-btn--primary b2b-btn--block">'.b2b_esc($t['pw_save']).'</button>
-        </form>
-    </div>
-</div>';
+// The change-password modal is rendered by b2b_cabinet_hero() above, next to the
+// button that opens it, so every page carrying the hero has it. Reset-by-email
+// (b2b-forgot) covers the case where the partner cannot log in at all.
 
 echo '
 </div>';

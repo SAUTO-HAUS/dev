@@ -259,7 +259,9 @@
     background:#fff; border:1px solid #efefef; border-radius:20px;
     box-shadow:0 12px 34px rgba(20,20,40,.08);
 }
-.b2b-hero__id{ display:flex; align-items:center; gap:1rem; min-width:0; flex:0 1 auto; }
+/* Takes the free width next to the nav cards, so the "change password" button can
+   sit at the right edge of the identity block instead of hugging the greeting. */
+.b2b-hero__id{ display:flex; align-items:center; gap:1rem; min-width:0; flex:1 1 320px; }
 .b2b-hero__avatar{
     flex:0 0 auto; width:56px; height:56px; border-radius:50%;
     display:flex; align-items:center; justify-content:center;
@@ -267,8 +269,10 @@
     font-weight:800; font-size:1.2rem; letter-spacing:.02em;
     box-shadow:0 6px 16px rgba(226,0,26,.30);
 }
-.b2b-hero__text{ min-width:0; }
-.b2b-hero__greet{ margin:0 0 .15rem; color:var(--b2b-muted); font-size:.76rem; font-weight:600; text-transform:uppercase; letter-spacing:.6px; }
+.b2b-hero__text{ min-width:0; flex:1 1 auto; }
+/* Greeting left, change-password button right, on one line. */
+.b2b-hero__toprow{ display:flex; align-items:center; justify-content:space-between; gap:1rem; margin-bottom:.15rem; }
+.b2b-hero__greet{ margin:0; color:var(--b2b-muted); font-size:.76rem; font-weight:600; text-transform:uppercase; letter-spacing:.6px; }
 .b2b-hero__name{ margin:0 0 .5rem; font-size:1.55rem; font-weight:800; line-height:1.05; letter-spacing:-.01em; }
 
 /* Nav cards double as section counters (Cars / Requests / Invoices). They sit on
@@ -344,9 +348,9 @@
 
 .b2b-form__foot--forgot{ margin-bottom:.35rem; }
 
-/* "Change password" toggle button in the hero identity block. */
-.b2b-hero__pwrow{ margin-top:.55rem; }
+/* "Change password" toggle button, on the greeting line of the hero. */
 .b2b-hero__pw{
+    flex:0 0 auto;
     display:inline-flex; align-items:center; gap:.4rem;
     padding:.34rem .7rem;
     background:#fafafb; border:1px solid #eef0f3; border-radius:9px;
