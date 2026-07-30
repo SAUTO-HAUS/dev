@@ -159,7 +159,31 @@
 	#main_menu .lang a:hover div {color:#1f2430;}
 	#main_menu .lang a.active {background:#fff; box-shadow:0 2px 6px rgba(20,24,31,.12);}
 	#main_menu .lang a.active div {color:#e2001a;}
-	
+
+	/* B2B login/register pinned to the TOP of the open menu (by the × close),
+	   as two equal prominent pills — where dealers actually see them, not buried
+	   in the link list. Login = outlined, register = filled red. */
+	#main_menu .menu .b2b-menu-top {
+		order:-1; display:flex; gap:.5rem; width:100%; margin:0 0 1rem; padding:0;
+	}
+	#main_menu .menu .b2b-menu-top .b2b-menu-only {
+		flex:1 1 0; width:auto; min-width:0; margin:0;
+		display:flex; align-items:center; justify-content:center;
+		padding:.7rem .5rem; border:1.5px solid #e2001a; border-radius:12px;
+		background:#fff; box-shadow:none;
+	}
+	#main_menu .menu .b2b-menu-top .b2b-menu-only div {
+		font-size:.85rem; font-weight:700; color:#e2001a; text-transform:none;
+		white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+	}
+	/* Filled primary = the register pill (guests). The logout entry stays outlined. */
+	#main_menu .menu .b2b-menu-top a:last-child:not(.b2b-menu-out) {background:#e2001a; border-color:#e2001a;}
+	#main_menu .menu .b2b-menu-top a:last-child:not(.b2b-menu-out) div {color:#fff;}
+	/* Initials avatar on the logged-in cabinet pill, like the desktop header. */
+	#main_menu .menu .b2b-menu-top .b2b-header-btn__avatar {
+		flex:0 0 auto; width:22px; height:22px; margin-right:.4rem; font-size:.72rem;
+	}
+
 	main > .pht_bx {width:100%; height:auto;}
 	main > .pht_bx > .list {width:100%; max-height:10.5rem; transition:.5s; position:relative; overflow-y:hidden;}
 	main > .pht_bx > .cbx:checked + .list {max-height:100vh;}

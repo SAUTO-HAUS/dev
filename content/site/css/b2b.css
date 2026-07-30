@@ -601,6 +601,9 @@
 /* One placement visible at a time. Same breakpoint the burger menu uses
    (content/site/css/media.css). */
 .b2b-menu-only{ display:none !important; }
+/* The menu-entries wrapper is transparent on desktop (its children are hidden
+   there); the mobile CSS turns it into the top pill row. */
+.b2b-menu-top{ display:contents; }
 
 @media (max-width:999px), (orientation: portrait){
     .b2b-header-btn,

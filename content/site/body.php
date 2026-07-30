@@ -364,8 +364,13 @@ if (!(function_exists('b2b_is_client') && b2b_is_client())):
                     echo '<script>window.B2B_FAV={csrf:'.json_encode(b2b_csrf_token(), JSON_UNESCAPED_SLASHES | JSON_HEX_TAG).'};</script>';
                 }
 
+                // Wrapper so the two entries can be pinned to the top bar of the open
+                // mobile menu (next to the × close), where dealers actually see them.
+                // On desktop the entries stay hidden (.b2b-menu-only).
+                echo '<div class="b2b-menu-top">';
                 if ($_b2b_logged) {
-                    echo '<a class="b2b button b2b-nav-link b2b-menu-only'.($_b2b_on_page ? ' active' : '').'" href="'.$_b2b_href.'">'
+                    echo '<a class="b2b button b2b-nav-link b2b-menu-only b2b-menu-only--user'.($_b2b_on_page ? ' active' : '').'" href="'.$_b2b_href.'">'
+                       . '<span class="b2b-header-btn__avatar">'.$_b2b_initials.'</span>'
                        . '<div>'.$_b2b_label.'</div></a>';
                     echo '<a class="b2b button b2b-nav-link b2b-menu-only b2b-menu-out" href="'.$_b2b_logout_href.'">'
                        . '<div>'.$_b2b_logout_lbl.'</div></a>';
@@ -375,6 +380,7 @@ if (!(function_exists('b2b_is_client') && b2b_is_client())):
                     echo '<a class="b2b button b2b-nav-link b2b-menu-only'.($_on_register ? ' active' : '').'" href="'.$_b2b_reg_href.'">'
                        . '<div>'.$_b2b_reg_lbl.'</div></a>';
                 }
+                echo '</div>';
                 ?>
             </div>
             <?php
