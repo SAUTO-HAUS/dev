@@ -371,7 +371,7 @@ if (!(function_exists('b2b_is_client') && b2b_is_client())):
                 if ($_b2b_logged) {
                     echo '<a class="b2b button b2b-nav-link b2b-menu-only b2b-menu-only--user'.($_b2b_on_page ? ' active' : '').'" href="'.$_b2b_href.'">'
                        . '<span class="b2b-header-btn__avatar">'.$_b2b_initials.'</span>'
-                       . '<div>'.$_b2b_label.'</div></a>';
+                       . '<div>'.b2b_t('cabinet_short').'</div></a>';
                     echo '<a class="b2b button b2b-nav-link b2b-menu-only b2b-menu-out" href="'.$_b2b_logout_href.'">'
                        . '<div>'.$_b2b_logout_lbl.'</div></a>';
                 } else {
@@ -415,6 +415,8 @@ if (!(function_exists('b2b_is_client') && b2b_is_client())):
                 </span>
             </label>
         </nav>
+        <?php // Tap the exposed area (outside the 80% drawer) to close the menu. ?>
+        <label for="mm_cbx" class="mm_bd" aria-hidden="true"></label>
 
         <?php
         // Get contextual phone number with car data for car pages

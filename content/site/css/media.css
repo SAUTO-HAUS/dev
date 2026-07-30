@@ -77,10 +77,13 @@
 	header .def {flex-flow:column wrap;}
 	header > .def > .call {margin-top:1rem;}
 	
-	#main_menu {position:fixed; overflow-y:auto; -webkit-overflow-scrolling:touch; background-color:#fff; top:0; bottom:0; height:100%; right:-100%; z-index:10; display:flex; flex-direction:column; align-items:stretch;}
+	#main_menu {position:fixed; overflow-y:auto; -webkit-overflow-scrolling:touch; background-color:#fff; top:0; bottom:0; height:100%; width:75%; right:-100%; z-index:10; display:flex; flex-direction:column; align-items:stretch; box-shadow:-8px 0 24px rgba(0,0,0,.18);}
 
 	#mm_cbx:checked+#main_menu {right:0;}
 	body:has(#mm_cbx:checked) {overflow:hidden;}
+	/* Tap the exposed area (or anywhere outside the drawer) to close the menu. */
+	.mm_bd {position:fixed; inset:0; z-index:9; background:rgba(0,0,0,.35); opacity:0; visibility:hidden; transition:opacity .3s ease, visibility .3s;}
+	#mm_cbx:checked ~ .mm_bd {opacity:1; visibility:visible;}
 	#main_menu > .mm_lb {position:fixed; left:auto; right:1rem; top:1rem; z-index:11;}
 	#mm_cbx:checked+#main_menu > .mm_lb {left:auto; right:1rem; background:none; box-shadow:none; border-radius:0;}
 	/* Text change when menu is open */
@@ -169,11 +172,12 @@
 	#main_menu .menu .b2b-menu-top .b2b-menu-only {
 		flex:1 1 0; width:auto; min-width:0; margin:0;
 		display:flex; align-items:center; justify-content:center;
-		padding:.7rem .5rem; border:1.5px solid #e2001a; border-radius:12px;
+		min-height:3.5rem;                 /* same height for both, matches nav links */
+		padding:.4rem .6rem; border:1px solid #e2001a; border-radius:.85rem;
 		background:#fff; box-shadow:none;
 	}
 	#main_menu .menu .b2b-menu-top .b2b-menu-only div {
-		font-size:.85rem; font-weight:700; color:#e2001a; text-transform:none;
+		font-size:1rem; font-weight:700; color:#e2001a; text-transform:none;
 		white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 	}
 	/* Filled primary = the register pill (guests). The logout entry stays outlined. */
@@ -181,7 +185,7 @@
 	#main_menu .menu .b2b-menu-top a:last-child:not(.b2b-menu-out) div {color:#fff;}
 	/* Initials avatar on the logged-in cabinet pill, like the desktop header. */
 	#main_menu .menu .b2b-menu-top .b2b-header-btn__avatar {
-		flex:0 0 auto; width:22px; height:22px; margin-right:.4rem; font-size:.72rem;
+		flex:0 0 auto; width:32px; height:32px; margin-right:.5rem; font-size:.95rem;
 	}
 
 	main > .pht_bx {width:100%; height:auto;}
