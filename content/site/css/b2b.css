@@ -72,7 +72,7 @@
     margin:0 0 .5rem;
     font-size:1.5rem; font-weight:700; line-height:1.25;
 }
-.b2b-card__sub{ margin:0; color:var(--b2b-muted); font-size:.92rem; }
+.b2b-card__sub{ margin:0; color:var(--b2b-brand); font-size:1.05rem; line-height:1.4; }
 
 /* ------------------------------------------------------------------- form */
 
@@ -201,6 +201,7 @@
 
 .b2b-btn{
     display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+    box-sizing:border-box; /* so a width:100% button stays inside its panel */
     padding:.8rem 1.5rem;
     border:1.5px solid transparent; border-radius:10px;
     font-family:inherit; font-size:.95rem; font-weight:600; line-height:1;
@@ -213,7 +214,7 @@
 .b2b-btn--ghost:hover{ border-color:var(--b2b-brand); color:var(--b2b-brand); }
 .b2b-btn--icon{ padding:.8rem 1rem; background:#fff; border-color:var(--b2b-line); color:#c9a227; font-size:1.05rem; }
 .b2b-btn--icon.is-saved{ background:#fffbe8; border-color:#e8cf6a; }
-.b2b-btn--block{ box-sizing:border-box; width:100%; height:var(--b2b-ctrl-h); }
+.b2b-btn--block{ width:100%; height:var(--b2b-ctrl-h); }
 .b2b-btn--sm{ padding:.5rem 1rem; font-size:.85rem; }
 .b2b-btn:active{ transform:translateY(1px); }
 .b2b-btn[disabled]{ opacity:.6; cursor:not-allowed; transform:none; }
@@ -440,8 +441,13 @@
 /* -------------------------------------------- car page action panel ------ */
 
 /* Sits inside .doit on the car page, replacing the call/WhatsApp buttons.
-   Those are floated, so clear before rendering. */
-.doit > .b2b-actions{ clear:both; }
+   On desktop those are floated, so clear before rendering.
+   On mobile cars_gallery.css turns .doit into a `nowrap` flex row built for
+   those two side-by-side buttons. A flex item is sized by its content, so the
+   panel would shrink to its text and sit pushed to the left — narrower on the
+   variant with the shorter hint. Take a full line of the row instead. */
+.doit > .b2b-actions{ clear:both; width:100%; flex:0 0 100%; }
+main > .spc_bx > .doit:has(> .b2b-actions){ flex-wrap:wrap; }
 
 .b2b-actions{
     margin:0;
