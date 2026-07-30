@@ -259,9 +259,7 @@
     background:#fff; border:1px solid #efefef; border-radius:20px;
     box-shadow:0 12px 34px rgba(20,20,40,.08);
 }
-/* Takes the free width next to the nav cards, so the "change password" button can
-   sit at the right edge of the identity block instead of hugging the greeting. */
-.b2b-hero__id{ display:flex; align-items:center; gap:1rem; min-width:0; flex:1 1 320px; }
+.b2b-hero__id{ display:flex; align-items:center; gap:1rem; min-width:0; flex:0 1 auto; }
 .b2b-hero__avatar{
     flex:0 0 auto; width:56px; height:56px; border-radius:50%;
     display:flex; align-items:center; justify-content:center;
@@ -300,10 +298,21 @@
 .b2b-navcard__num{ font-size:1.4rem; font-weight:800; line-height:1; font-variant-numeric:tabular-nums; }
 .b2b-navcard__label{ color:var(--b2b-muted); font-size:.82rem; font-weight:600; }
 
+/* Desktop: the button sits above the hero card, right-aligned with its edge —
+   lifted out of the flow, with room reserved by the card's own top margin so it
+   cannot collide with whatever precedes it on the page. */
+@media (min-width:769px){
+    .b2b-hero{ position:relative; margin-top:2.8rem; }
+    .b2b-hero__pw{ position:absolute; bottom:calc(100% + .55rem); right:0; }
+}
+
 @media (max-width:768px){
     .b2b-nav{ grid-template-columns:1fr; }
     .b2b-hero{ padding:1.1rem 1.2rem; }
     .b2b-hero__name{ font-size:1.35rem; }
+    /* Identity takes the whole row, so the button reaches the right edge next to
+       the greeting instead of hugging it. */
+    .b2b-hero__id{ flex:1 1 100%; }
 }
 
 .b2b-chips{ display:inline-flex; gap:.35rem; flex-wrap:wrap; }

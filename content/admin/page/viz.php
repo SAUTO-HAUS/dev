@@ -153,7 +153,8 @@ $T = $viz_t[$viz_lang] ?? $viz_t['ro'];
             </tr>
             <?php foreach (array_reverse($viz_daily, true) as $day => $per): ?>
             <tr>
-                <td><?= htmlspecialchars($day) ?></td>
+                <?php // $day is the raw SQL date (2026-07-30); show it the local way. ?>
+                <td><?= htmlspecialchars(date('d.m.Y', strtotime((string)$day))) ?></td>
                 <?php foreach ($viz_regions as $rk => $rv): ?>
                     <td class="n"><?= (int)($per[$rk] ?? 0) ?></td>
                 <?php endforeach; ?>
