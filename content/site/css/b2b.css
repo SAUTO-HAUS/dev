@@ -92,10 +92,15 @@
 .b2b-radios{ display:flex; gap:.6rem; flex-wrap:wrap; }
 .b2b-radio{
     box-sizing:border-box;
-    flex:1 1 0; min-width:9rem;
-    height:var(--b2b-ctrl-h);
+    /* Basis wide enough for the longest label ("Юридическое лицо"): where two of
+       them no longer fit side by side, the line wraps and each option takes the
+       full width — instead of squeezing the text out of its box. */
+    flex:1 1 13rem; min-width:0;
+    min-height:var(--b2b-ctrl-h);
     display:flex; align-items:center; gap:.5rem;
-    padding:0 .9rem;
+    /* Small enough that one line stays exactly --b2b-ctrl-h, like every other
+       control; it only matters when a long label wraps to two lines. */
+    padding:.3rem .9rem;
     border:1.5px solid var(--b2b-line);
     border-radius:10px;
     background:#fff;
@@ -103,11 +108,17 @@
     transition:border-color .15s, background .15s;
 }
 .b2b-radio input[type="radio"]{
-    flex:0 0 auto; width:auto; margin:0; padding:0;
+    /* `.b2b-field input` below styles every input in a field, including this one:
+       reset the parts that would turn the radio circle into a full-size control.
+       `height` matters most — without it the radio is --b2b-ctrl-h tall and drags
+       its whole label box past the height of the other fields. */
+    flex:0 0 auto; width:auto; height:auto; margin:0; padding:0;
     border:0; border-radius:0; background:none; box-shadow:none;
     accent-color:var(--b2b-accent, #e2001a);
 }
-.b2b-radio span{ font-size:.95rem; font-weight:600; white-space:nowrap; }
+/* No nowrap: on the narrowest phones the label wraps inside its box rather than
+   overflowing it. */
+.b2b-radio span{ font-size:.95rem; font-weight:600; line-height:1.2; }
 .b2b-radio:hover{ border-color:var(--b2b-muted); }
 .b2b-radio:has(input:checked){ border-color:var(--b2b-accent, #e2001a); background:#fff5f6; }
 .b2b-radio input[type="radio"]:focus{ outline:none; box-shadow:none; border:0; }
