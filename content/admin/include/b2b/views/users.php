@@ -4,6 +4,7 @@
 
 use App\Services\B2b\B2bAuth;
 use App\Services\B2b\B2bConfig;
+use App\Services\B2b\B2bPhone;
 use App\Services\B2b\B2bRegions;
 
 $lang = $_COOKIE['lang'] ?? 'ro';
@@ -131,6 +132,12 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/users';
                         </td>
                         <td class="b2ba-td--action">
                             <div class="b2ba-row-actions">
+                                <?php $tel = B2bPhone::normalize((string)$u['phone_number']); ?>
+                                <?php if ($tel !== ''): ?>
+                                    <a class="b2ba-btn b2ba-btn--ghost b2ba-btn--sm" href="tel:<?= b2b_adm_esc($tel) ?>">
+                                        <?= b2b_adm_phone_icon() ?><?= b2b_adm_esc($t['call']) ?>
+                                    </a>
+                                <?php endif; ?>
                                 <?php if ($status === 'blocked'): ?>
                                     <button type="button" class="b2ba-btn b2ba-btn--ok b2ba-btn--sm"
                                             data-b2b-list-status data-user="<?= $uid ?>" data-value="active">

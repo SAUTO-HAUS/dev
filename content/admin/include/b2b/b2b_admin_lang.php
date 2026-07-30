@@ -58,6 +58,7 @@ if (!function_exists('b2b_adm_lang')) {
 
                 // actions
                 'approve'         => 'Validează contul',
+                'call'            => 'Sună',
                 'block'           => 'Blochează',
                 'unblock'         => 'Deblochează',
                 'delete'          => 'Șterge definitiv',
@@ -209,6 +210,7 @@ if (!function_exists('b2b_adm_lang')) {
                 'last_ip'         => 'Последний IP',
 
                 'approve'         => 'Подтвердить аккаунт',
+                'call'            => 'Позвонить',
                 'block'           => 'Заблокировать',
                 'unblock'         => 'Разблокировать',
                 'delete'          => 'Удалить навсегда',
@@ -356,6 +358,7 @@ if (!function_exists('b2b_adm_lang')) {
                 'last_ip'         => 'Last IP',
 
                 'approve'         => 'Approve account',
+                'call'            => 'Call',
                 'block'           => 'Block',
                 'unblock'         => 'Unblock',
                 'delete'          => 'Delete permanently',
@@ -474,6 +477,15 @@ if (!function_exists('b2b_adm_lang')) {
     function b2b_adm_esc($value): string
     {
         return htmlspecialchars((string)$value, ENT_QUOTES, 'UTF-8');
+    }
+
+    /** Handset for the "call this client" action. */
+    function b2b_adm_phone_icon(): string
+    {
+        return '<svg class="b2ba-btn__i" viewBox="0 0 24 24" fill="none" stroke="currentColor"'
+             . ' stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'
+             . '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.4-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"></path>'
+             . '</svg>';
     }
 
     /** Padlock marking a field the admin may read but never change. */

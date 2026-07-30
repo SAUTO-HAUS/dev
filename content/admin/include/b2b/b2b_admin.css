@@ -239,7 +239,7 @@
 /* ------------------------------------------------------------------ buttons */
 
 .b2ba-btn{
-    display:inline-flex; align-items:center; justify-content:center;
+    display:inline-flex; align-items:center; justify-content:center; gap:0.4rem;
     min-height:var(--b2ba-h, 2.5rem); padding:0.35rem 1.1rem;
     border:1.5px solid transparent; border-radius:8px;
     font-family:inherit; font-size:0.87rem; font-weight:600; line-height:1.15;
@@ -263,6 +263,7 @@
 .b2ba-btn--soft:hover{ background:#fbd3d9; }
 .b2ba-btn--sm{ min-height:var(--b2ba-h-sm, 2rem); padding:0.25rem 0.75rem; font-size:0.78rem; }
 .b2ba-btn[disabled]{ cursor:not-allowed; }
+.b2ba-btn__i{ width:0.95rem; height:0.95rem; flex:none; }
 
 /* Accept / block buttons inside a clients-table row. */
 .b2ba-row-actions{ display:flex; gap:0.4rem; flex-wrap:wrap; }
@@ -415,6 +416,20 @@
     }
     .b2ba-table td{ display:block; padding:0; border:0; text-align:left; white-space:normal; }
     .b2ba-table td.b2ba-td--num{ display:none; }
+
+    /* A numbered table (the clients list) keeps its counter on the card: a chip
+       left of the title, so 1, 2, 3… still reads top-down. Scoped with :has() —
+       where it is unsupported the number simply stays hidden, as before. */
+    .b2ba-table:has(td.b2ba-td--num) tr{ grid-template-columns:auto 1fr auto; }
+    .b2ba-table:has(td.b2ba-td--num) td.b2ba-td--num{
+        display:block; grid-row:1; grid-column:1;
+        width:auto; min-width:1.75rem; padding:0.15rem 0.4rem;
+        background:#f3f4f6; border-radius:7px;
+        color:var(--b2ba-muted); font-size:0.78rem; font-weight:700;
+        text-align:center; font-variant-numeric:tabular-nums;
+    }
+    .b2ba-table:has(td.b2ba-td--num) td.b2ba-td--title{ grid-column:2; }
+    .b2ba-table:has(td.b2ba-td--num) td.b2ba-td--status{ grid-column:3; }
 
     /* ---- card header */
     .b2ba-table td.b2ba-td--title{ grid-column:1; font-size:1.08rem; font-weight:800; line-height:1.3; }
