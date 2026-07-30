@@ -9,7 +9,6 @@
 use App\Services\B2b\B2bAuth;
 use App\Services\B2b\B2bConfig;
 use App\Services\B2b\B2bInvoice;
-use App\Services\B2b\B2bPhone;
 use App\Services\B2b\B2bRegions;
 
 $lang = $_COOKIE['lang'] ?? 'ro';
@@ -50,11 +49,6 @@ $invoices = B2bInvoice::forUser($uid, 200);
                     <?= b2b_adm_esc($t['st_'.$client['status']] ?? $client['status']) ?>
                 </span>
             </div>
-            <p class="b2ba-sub">
-                <?= b2b_adm_esc($t['pt_'.$client['person_type']] ?? $client['person_type']) ?> &middot;
-                <?= b2b_adm_esc($client['email']) ?> &middot;
-                <?= b2b_adm_esc(B2bPhone::local($client['phone_number'])) ?>
-            </p>
         </div>
         <div class="b2ba-head__actions">
             <?php if ($client['status'] === 'blocked'): ?>
