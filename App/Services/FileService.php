@@ -90,6 +90,7 @@ class FileService
     {
         $imageInfo = getimagesize($tmp_f);
         if ($imageInfo === false) {
+            @unlink($tmp_f); // else the temp upload stays in tmp/ forever
             return false;
         }
 

@@ -236,6 +236,17 @@ if (__post('sub') == 'mo_search') {
                             break;
                         }
                     }
+                    unset($feature);
+
+                    // This JSON is both saved and pushed to 999 further down, so the
+                    // sauto links block has to travel with it — otherwise a price edit
+                    // rewrites the live description without it.
+                    $car999_data['features'] = \App\Helper\Ad999Links::apply($db, $prefx, [
+                        'id' => (int)$r['id'],
+                        'br' => __post('br', $r['br']),
+                        'mo' => __post('mo', $r['mo']),
+                    ], $car999_data['features'], 'ordercars');
+
                     $updated_999_data = json_encode($car999_data);
 
                 }
@@ -371,9 +382,14 @@ if (__post('sub') == 'mo_search') {
 
                     foreach ($x1 as $v1) {
                         foreach ($x2 as $v2) {
-                            if (file_exists($photo_folder.'/'.$r['p_path'].'/'.$r['id'].'/'.$v1.'/'.$p['name'].'.'.$v2)) {
-                                unlink ($photo_folder.'/'.$r['p_path'].'/'.$r['id'].'/'.$v1.'/'.$p['name'].'.'.$v2);
+                            $_pf = $photo_folder.'/'.$r['p_path'].'/'.$r['id'].'/'.$v1.'/'.$p['name'].'.'.$v2;
+                            if (file_exists($_pf)) {
+                                unlink($_pf);
                             }
+                            // Same file in R2, or it would stay stored (and paid
+                            // for) after the operator deleted it here.
+                            try { \App\Services\CarPhotoR2::delete($_pf); }
+                            catch (\Throwable $e) { /* non-fatal */ }
                         }
                     }
 
@@ -636,9 +652,10 @@ if (__post('sub') == 'mo_search') {
                                 }
                             }
                         }
-                        // Photo cap per source (same as ParsingPublisher): auction
-                        // sources (eCarsTrade/OpenLane/Auto1) → 10, Encar → 20.
-                        $imgCap = in_array($pRow['source'] ?? '', ['ecarstrade', 'openlane', 'auto1'], true) ? 10 : 20;
+                        // Photo cap per source — MUST match ParsingPublisher::processPhotos(),
+                        // which is the same rule for the automatic path. Encar goes up in
+                        // full, the auction sources at 20. 999 caps separately at 10.
+                        $imgCap = in_array($pRow['source'] ?? '', ['ecarstrade', 'openlane', 'auto1'], true) ? 20 : 30;
                         $urls = array_slice($urls, 0, $imgCap);
 
                         if (!empty($urls)) {
@@ -776,6 +793,10 @@ if (__post('sub') == 'mo_search') {
                                     'main'  => $pos === 1 ? 1 : 0,
                                     'pos'   => $pos,
                                 ]);
+                                // Mirror into R2 so the car stays servable once the
+                                // local copies are deleted.
+                                \App\Services\CarPhotoR2::push($highPath);
+                                \App\Services\CarPhotoR2::push($medPath);
                             }
                         }
                     }

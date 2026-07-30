@@ -4,6 +4,7 @@ namespace App\Services;
 
 use PDO;
 
+
 /**
  * Permanently erases a car and all its traces: DB rows (car_ctlg, car_pht, seo2,
  * schedule rows) and the photo folder on disk. Used by the auto-delete rule:
@@ -30,6 +31,8 @@ final class CarEraser
         if ($pPath !== '') {
             $dir = rtrim($carImg, '/') . '/' . $pPath . '/' . $carId;
             if (is_dir($dir)) { self::rmdirRecursive($dir); $photosDeleted = true; }
+            // R2 holds the same photos; leaving them there is paid-for dead weight.
+            try { CarPhotoR2::deleteCar($pPath, $carId); } catch (\Throwable $e) { /* non-fatal */ }
         }
 
         // DB: photos, schedule rows on all channels, SEO, unlink parsing, catalog row.
@@ -53,19 +56,23 @@ final class CarEraser
      * single entry point the crons/toggle call: "on_order + n_a=1 → delete". Returns
      * the number of cars erased. in_stock cars are excluded by the WHERE clause.
      */
-    public static function eraseOutOfStockOnOrder(PDO $db, string $prefix, string $carImg, int $limit = 500): int
+    public static function eraseOutOfStockOnOrder(PDO $db, string $prefix, string $carImg, int $limit = 500, ?int &$photosDeleted = null): int
     {
         $rows = $db->query("SELECT id FROM {$prefix}_car_ctlg
             WHERE n_a = 1 AND catalog_type = 'on_order' LIMIT {$limit}")->fetchAll(PDO::FETCH_COLUMN);
         $n = 0;
+        $photosDeleted = 0; // reported back so a silent photo-delete failure is visible
         foreach ($rows as $id) {
             $r = self::erase($db, $prefix, (int)$id, $carImg);
             if ($r['ok']) $n++;
+            if ($r['photos']) $photosDeleted++;
         }
         return $n;
     }
 
-    private static function rmdirRecursive(string $dir): void
+    /** Public so other delete paths (e.g. ParsingPublisher::unpublish) reuse it
+     *  instead of re-implementing it — every copy that drifts leaves orphan folders. */
+    public static function rmdirRecursive(string $dir): void
     {
         if (!is_dir($dir)) return;
         foreach (array_diff(scandir($dir) ?: [], ['.', '..']) as $f) {

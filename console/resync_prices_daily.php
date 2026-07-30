@@ -47,6 +47,7 @@ $fuelMap = [
 $now = time();
 $rows = $db->query("SELECT pc.car_ctlg_id, pc.source, pc.price_eur,
         cc.fl, cc.vol, cc.yr, cc.prc AS card_prc, cc.cur,
+        cc.br, cc.mo, cc.catalog_type,
         cc.`999_id`, cc.`999_api_id`, cc.`999`
     FROM {$prefx}_parsing_cars pc
     JOIN {$prefx}_car_ctlg cc ON cc.id = pc.car_ctlg_id
@@ -101,6 +102,16 @@ foreach ($rows as $r) {
     }
     unset($f);
     if (!$changed) continue;
+
+    // The stored payload of an auto-published car has no sauto links (the publish cron
+    // adds them in memory) — putting them back here keeps the price push from wiping
+    // the description block off the live ad.
+    $json['features'] = \App\Helper\Ad999Links::apply($db, $prefx, [
+        'id'           => (int)$r['car_ctlg_id'],
+        'br'           => $r['br'],
+        'mo'           => $r['mo'],
+        'catalog_type' => $r['catalog_type'],
+    ], $json['features']);
 
     try {
         $api = new Api999Service($r['999_api_id']);

@@ -3359,10 +3359,11 @@ function generateWithGemini() {
             }
             if (urls.length) {
                 const CONCURRENT = 6;
-                // eCarsTrade/OpenLane: cap at 10 photos for sauto (their galleries
-                // are large and we don't need them all); Encar keeps up to 20.
+                // Photo cap for sauto — keep in step with ParsingPublisher and
+                // order_add_new.php. Encar goes up in full; the auction sources
+                // stop at 20, their galleries repeat the same angles.
                 const _src = (data.source || data.parsing_source || '');
-                const _maxImgs = (_src === 'ecarstrade' || _src === 'openlane' || _src === 'auto1') ? 10 : 20;
+                const _maxImgs = (_src === 'ecarstrade' || _src === 'openlane' || _src === 'auto1') ? 20 : 30;
                 const list = urls.slice(0, _maxImgs);
                 const results = new Array(list.length).fill(null);
 
@@ -3475,14 +3476,14 @@ function generateWithGemini() {
         const REQUIRED = ['gr', 'br', 'mo', 'yr', 'mlg', 'vol', 'hp', 'fl', 'tra', 'bt', 'clr', 'prc'];
         const form = document.querySelector('#content_box form, #content_box');
 
-        // How many photos do we expect? (from the parsing entry, capped the same
-        // way as the downloader: 10 for eCarsTrade/OpenLane, 20 for Encar). We must
-        // wait for ALL of them, not just the first.
+        // How many photos do we expect? Same cap as the downloader above — 20 for
+        // the auction sources, everything for Encar. We must wait for ALL of them,
+        // not just the first.
         let expectedImages = 0;
         try {
             const imgs = typeof data.images_local === 'string' ? JSON.parse(data.images_local) : data.images_local;
             const _src = (data.source || data.parsing_source || '');
-            const _maxImgs = (_src === 'ecarstrade' || _src === 'openlane' || _src === 'auto1') ? 10 : 20;
+            const _maxImgs = (_src === 'ecarstrade' || _src === 'openlane' || _src === 'auto1') ? 20 : 30;
             expectedImages = Math.min((Array.isArray(imgs) ? imgs.length : 0), _maxImgs);
         } catch (e) { expectedImages = 0; }
 

@@ -42,7 +42,7 @@ if (!function_exists('compare_table_html')) {
 			'en' => array('instock'=>'In stock','onorder'=>'On order','remove'=>'Remove from compare','avail'=>'Availability'),
 		);
 		$T   = isset($loc[$lang]) ? $loc[$lang] : $loc['ro'];
-		$spec = isset($lng['l']['spec']) ? $lng['l']['spec'] : array();
+		$spec = isset($lng['l']['car']['spec']) ? $lng['l']['car']['spec'] : array();
 		$unit = isset($lng['l']['unit']) ? $lng['l']['unit'] : array();
 		$carL = isset($lng['l']['car']) ? $lng['l']['car'] : array();
 		$esc = function($v){ return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); };
@@ -112,11 +112,18 @@ if (!function_exists('compare_table_html')) {
 			foreach ($order as $k) { $cells[$k] .= '<td>'.$v[$k].'</td>'; }
 		}
 
+		$colspan = count($cars) + 1;
+
 		$out  = '<div class="cmp-wrap"><table class="cmp-table">';
 		$out .= '<tr class="cmp-row-photo"><th></th>'.$c_photo.'</tr>';
 		$out .= '<tr class="cmp-row-name"><th></th>'.$c_name.'</tr>';
 		foreach ($order as $k) {
-			$out .= '<tr'.($k==='prc' ? ' class="cmp-row-price"' : '').'><th>'.$esc($labels[$k]).'</th>'.$cells[$k].'</tr>';
+			$lbl = $esc($labels[$k]);
+			// Phone layout (shown by CSS only under 768px): the spec name as a full-width
+			// band above its values. On a phone a left label column would eat a third of
+			// the screen and squeeze the values, so there it replaces the <th> column.
+			$out .= '<tr class="cmp-grp"><td colspan="'.$colspan.'"><span>'.$lbl.'</span></td></tr>';
+			$out .= '<tr'.($k==='prc' ? ' class="cmp-row-price"' : '').'><th>'.$lbl.'</th>'.$cells[$k].'</tr>';
 		}
 		$out .= '</table></div>';
 		return $out;

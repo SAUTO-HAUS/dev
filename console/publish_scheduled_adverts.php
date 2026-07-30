@@ -95,7 +95,11 @@ foreach ($adverts as $advert) {
                         
                         $freshFeatures[] = $feature;
                     }
-                    
+
+                    // Renewals reuse the stored payload — re-add the sauto links block so
+                    // a republish can't drop it from the live description.
+                    $freshFeatures = \App\Helper\Ad999Links::apply($db, 'gh3sp', $car, $freshFeatures);
+
                     $freshFeatures[] = ["id" => "14", "value" => $images];
                     
                     $responseUpdate = (new Api999Service($car['999_api_id']))->updateAdvert($advert['999_id'], $freshFeatures);

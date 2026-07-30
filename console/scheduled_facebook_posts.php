@@ -142,9 +142,17 @@ try {
             $media = [];
             foreach ($photos as $photo) {
                 $photoPath = $photo_folder . '/' . $photo['path'] . '/' . $post['car_id'] . '/high/' . $photo['name'] . '.jpg';
-                
-                if (file_exists($photoPath)) {
-                    $media[] = $photoPath;
+
+                // No autoloader in this script — classes are required by hand.
+                if (!class_exists('\App\Services\CarPhotoR2')) {
+                    require_once __DIR__ . '/../App/Services/R2Client.php';
+                    require_once __DIR__ . '/../App/Services/CarPhotoR2.php';
+                }
+                // Falls back to R2 once the local copies are gone; the temp it
+                // makes is removed on shutdown.
+                $localPath = \App\Services\CarPhotoR2::localCopy($photoPath);
+                if ($localPath !== null) {
+                    $media[] = $localPath;
                     echo "[" . date('Y-m-d H:i:s') . "] Found photo: {$photoPath}\n";
                 } else {
                     echo "[" . date('Y-m-d H:i:s') . "] Photo not found: {$photoPath}\n";

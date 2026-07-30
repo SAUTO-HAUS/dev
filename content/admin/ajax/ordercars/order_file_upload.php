@@ -8,6 +8,19 @@ $last_id = __post('last_id');
 $zY = substr( md5( date('Y') ), 0, 4 );
 $zM = substr( md5( date('m') ), 0, 4 );
 
+// A car keeps ONE folder for its whole life. The gallery builds every photo URL
+// from car_ctlg.p_path, so a photo added later must land in that same folder —
+// writing it under the current month made it unreachable on any car created in
+// an earlier month.
+$pPath = $zY.'/'.$zM;
+if ($last_id) {
+    $pchk = $db->prepare('SELECT p_path FROM '.$prefx.'_car_ctlg WHERE id = :id');
+    $pchk->execute(['id' => $last_id]);
+    $existingPPath = trim((string)$pchk->fetchColumn(), '/');
+    if ($existingPPath !== '' && strpos($existingPPath, '/') !== false) $pPath = $existingPPath;
+}
+[$zY, $zM] = explode('/', $pPath, 2);
+
 foreach ($_FILES as $inp => $ar){
     $inp = rtrim($inp, '[]');
 
@@ -43,14 +56,17 @@ foreach ($_FILES as $inp => $ar){
         }
     }
 
-    $pos_start = (int)__post('pos_start', 0);
-    if ($pos_start > 0) {
-        $pos_counter = $pos_start - 1;
-    } else {
-        $pdoMax = $db->prepare('SELECT COALESCE(MAX(pos), 0) FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id');
-        $pdoMax->execute(['it_id' => $last_id]);
-        $pos_counter = (int)$pdoMax->fetchColumn();
-    }
+    // pos_start is the file's index WITHIN this upload batch (the JS sends it so
+    // parallel uploads don't race on MAX(pos)). It has to be added on top of what
+    // the car already has — taken as an absolute position it restarted at 1 and
+    // the new photo overwrote car_<id>_1, which is why an added photo appeared as
+    // a duplicate of the first one.
+    $pdoMax = $db->prepare('SELECT COALESCE(MAX(pos), 0) FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id');
+    $pdoMax->execute(['it_id' => $last_id]);
+    $existingMax = (int)$pdoMax->fetchColumn();
+
+    $pos_start   = (int)__post('pos_start', 0);
+    $pos_counter = $existingMax + ($pos_start > 0 ? $pos_start - 1 : 0);
 
 	$fi_mime = finfo_open(FILEINFO_MIME_TYPE);
 	foreach ($ar['name'] as $k => $nm) {
@@ -113,6 +129,10 @@ foreach ($_FILES as $inp => $ar){
                                 'pos'=>$pos
                             ]);
                             $changelog_photos_added[] = $n_nm.'.jpg';
+                            // Mirror into R2 so the photo survives the local cleanup.
+                            foreach (array_keys($size_cr) as $_sz) {
+                                \App\Services\CarPhotoR2::push($path.'/'.$_sz.'/'.$n_nm.'.jpg');
+                            }
 						} else {
 							$rtrn .= ' | File #'.$i.': '.$nm.' - Image processing failed.';
 						}

@@ -128,14 +128,15 @@ if ($fromForm) {
                         $jpgPath = $basePath . $photo['name'] . '.jpg';
                         $webpPath = $basePath . $photo['name'] . '.webp';
                         
-                        if (file_exists($jpgPath)) {
-                            $imageData = file_get_contents($jpgPath);
-                            $base64 = base64_encode($imageData);
-                            $carImages[] = 'data:image/jpeg;base64,' . $base64;
-                        } elseif (file_exists($webpPath)) {
-                            $imageData = file_get_contents($webpPath);
-                            $base64 = base64_encode($imageData);
-                            $carImages[] = 'data:image/webp;base64,' . $base64;
+                        // Reads local first, then R2 — works either side of the cleanup.
+                        $imageData = \App\Services\CarPhotoR2::read($jpgPath);
+                        if ($imageData !== null) {
+                            $carImages[] = 'data:image/jpeg;base64,' . base64_encode($imageData);
+                        } else {
+                            $imageData = \App\Services\CarPhotoR2::read($webpPath);
+                            if ($imageData !== null) {
+                                $carImages[] = 'data:image/webp;base64,' . base64_encode($imageData);
+                            }
                         }
                     }
                 }

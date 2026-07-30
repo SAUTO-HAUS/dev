@@ -4,6 +4,7 @@ namespace App\Services\Parsing;
 
 use App\Core\Container;
 use App\Services\AutoPublicationService;
+use App\Services\CarEraser;
 use Exception;
 use PDO;
 
@@ -175,11 +176,22 @@ class ParsingPublisher
             return ['success' => false, 'error' => 'Parsing car not found'];
         }
 
+        // Set below only when the car actually has a catalog row.
+        $photoDir = ''; $photoPPath = ''; $ctlgId = 0;
+
         try {
             $this->db->beginTransaction();
 
             if (!empty($row['car_ctlg_id'])) {
                 $ctlgId = (int)$row['car_ctlg_id'];
+
+                // Read p_path while the row still exists — it's the only way to
+                // locate the photo folder. Deleted after commit, not here: a
+                // rollback would otherwise wipe photos of a car that still lives.
+                $st = $this->db->prepare('SELECT p_path FROM '.$this->prefix.'_car_ctlg WHERE id = ?');
+                $st->execute([$ctlgId]);
+                $photoPPath = (string)$st->fetchColumn();
+                $photoDir   = $this->carPhotoDir($ctlgId, $photoPPath);
 
                 foreach ([
                     $this->prefix.'_sauto_personal_schedules',
@@ -215,11 +227,32 @@ class ParsingPublisher
             return ['success' => false, 'error' => 'DB error: ' . $e->getMessage()];
         }
 
+        // Car row is gone for good — now drop its photos. Skipping this is what
+        // left ~18k orphan folders on disk (nothing else ever cleans them up).
+        if ($photoDir !== '' && is_dir($photoDir)) {
+            CarEraser::rmdirRecursive($photoDir);
+        }
+        if ($photoPPath !== '' && !empty($ctlgId)) {
+            try { \App\Services\CarPhotoR2::deleteCar($photoPPath, $ctlgId); }
+            catch (\Throwable $e) { /* non-fatal — a stale object only costs storage */ }
+        }
+
         if (!empty($row['ad_999_id'])) {
             $this->archive999Ad($row['ad_999_id']);
         }
 
         return ['success' => true];
+    }
+
+    /** Absolute photo folder for a car, or '' when p_path is missing. */
+    private function carPhotoDir(int $carCtlgId, string $pPath): string
+    {
+        if ($pPath === '') return '';
+        $carImg = defined('_CAR_IMG') ? _CAR_IMG : 'media/images/upload/car';
+        if ($carImg[0] !== '/' && !preg_match('#^[A-Za-z]:#', $carImg)) {
+            $carImg = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '', '/').'/'.ltrim($carImg, '/');
+        }
+        return rtrim($carImg, '/').'/'.trim($pPath, '/').'/'.$carCtlgId;
     }
 
     private function loadParsingCar(int $id): ?array
@@ -426,9 +459,14 @@ class ParsingPublisher
         if (empty($urls)) return;
 
         $source = (string)($parsingRow['source'] ?? '');
-        // Photo cap per source on sauto: auction sources (eCarsTrade/OpenLane/Auto1)
-        // have huge galleries we don't need all of → 10; Encar → 20.
-        $cap = in_array($source, ['ecarstrade', 'openlane', 'auto1'], true) ? 10 : 20;
+        // Photo cap on sauto: Encar 30, the auction sources 20 — their galleries
+        // run to dozens of near-identical frames. Keep in step with the other
+        // three copies of this rule (order_add_new.php and two in order_car.php);
+        // changing only one has no visible effect, because manual publishing goes
+        // through the JS in the form and never reaches this file.
+        // 999 is separate and stays at 10 for every parsing car — see
+        // buildImagesFeature14() in console/sauto_personal_cron.php.
+        $cap = in_array($source, ['ecarstrade', 'openlane', 'auto1'], true) ? 20 : 30;
         $urls = array_slice($urls, 0, $cap);
 
         $docRoot = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '', '/');
@@ -473,11 +511,12 @@ class ParsingPublisher
         }
 
         $pos = 0;
+        $written = []; // local files to mirror into R2 in one batch at the end
         foreach ($fetched as $bytes) {
             if ($bytes === null || $bytes === '') continue;
 
             $tmpFile = $tmpDir . '/' . uniqid('pub_' . $carCtlgId . '_', true) . '.jpg';
-            if (@file_put_contents($tmpFile, $bytes) === false) continue;
+            if (@file_put_contents($tmpFile, $bytes) === false) { @unlink($tmpFile); continue; }
             $info = @getimagesize($tmpFile);
             if ($info === false || ($info[2] ?? 0) !== IMAGETYPE_JPEG) {
                 if (!$this->toJpeg($tmpFile)) { @unlink($tmpFile); continue; }
@@ -505,6 +544,31 @@ class ParsingPublisher
                 'it_id' => $carCtlgId, 'tp' => 'img', 'path' => $pPath,
                 'name' => $name, 'ff' => 'jpg', 'main' => $pos === 1 ? 1 : 0, 'pos' => $pos,
             ]);
+            $written[] = $absBase . '/high/' . $name . '.jpg';
+            $written[] = $absBase . '/med/'  . $name . '.jpg';
+        }
+
+        // One parallel batch for the whole car. Sequentially this was two round
+        // trips per photo — the single biggest cost in a publish job.
+        if ($written) {
+            $r2 = \App\Services\R2Client::fromEnv();
+            if ($r2) {
+                $items = [];
+                foreach ($written as $p) {
+                    $k = \App\Services\CarPhotoR2::keyFor($p);
+                    if ($k !== '' && is_file($p)) $items[] = [$k, $p, 'image/jpeg'];
+                }
+                if ($items) {
+                    $res = $r2->putFilesParallel($items, 10);
+                    if (!empty($res['failed'])) {
+                        // Non-fatal: the file is on disk and the Worker falls back
+                        // to origin, so the ad still shows. The nightly cleanup
+                        // will refuse to delete it locally until R2 has it.
+                        error_log('ParsingPublisher: ' . count($res['failed'])
+                            . ' photo(s) failed to reach R2 for car ' . $carCtlgId);
+                    }
+                }
+            }
         }
     }
 
@@ -592,6 +656,10 @@ class ParsingPublisher
         }
 
         if ($src !== false) imagedestroy($src);
+        // The R2 copy is NOT made here. Pushing two objects per photo, one after
+        // the other, meant 100 sequential round trips for a 50-photo car and was
+        // the reason publishing slowed to a crawl. processPhotos() collects the
+        // written files and uploads them in one parallel batch instead.
         return is_file($highPath) && is_file($medPath);
     }
 

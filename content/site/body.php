@@ -219,7 +219,12 @@ echo '
 //echo substr( md5('22') , 0, 4 );
 ?>
 
-<div id="to_top" title="<?php echo $lang_to_top; ?>"></div>
+<?php
+$cur_pg = $t_mp[2] ?? '';
+if ($cur_pg === '') { $cur_pg = $t_mp[1] ?? ''; }
+$is_collection_pg = in_array($cur_pg, ['favorites', 'compare'], true);
+?>
+<div id="to_top"<?php echo $is_collection_pg ? ' class="no-mob"' : ''; ?> title="<?php echo $lang_to_top; ?>"></div>
 
 <?php
 // Floating favourites shortcut points to /favorites (localStorage). A logged-in
@@ -227,7 +232,7 @@ echo '
 if (!(function_exists('b2b_is_client') && b2b_is_client())):
     $fav_lbl = ['ro'=>'Favorite','ru'=>'Избранное','en'=>'Favorites'][$_COOKIE['lang']] ?? 'Favorite';
 ?>
-<a id="fav_float" href="/<?php echo $_COOKIE['lang']; ?>/favorites" title="<?php echo $fav_lbl; ?>" aria-label="<?php echo $fav_lbl; ?>">
+<a id="fav_float"<?php echo $cur_pg === 'favorites' ? ' class="is-here"' : ''; ?> href="/<?php echo $_COOKIE['lang']; ?>/favorites" title="<?php echo $fav_lbl; ?>" aria-label="<?php echo $fav_lbl; ?>">
 	<span class="fav-float-ico">
 		<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
 		<span class="fav-nav-count" style="display:none;">0</span>
@@ -235,7 +240,7 @@ if (!(function_exists('b2b_is_client') && b2b_is_client())):
 	<span class="fav-float-lbl"><?php echo $fav_lbl; ?></span>
 </a>
 <?php $cmp_lbl = ['ro'=>'Comparare','ru'=>'Сравнение','en'=>'Compare'][$_COOKIE['lang']] ?? 'Comparare'; ?>
-<a id="compare_float" href="/<?php echo $_COOKIE['lang']; ?>/compare" title="<?php echo $cmp_lbl; ?>" aria-label="<?php echo $cmp_lbl; ?>">
+<a id="compare_float"<?php echo $cur_pg === 'compare' ? ' class="is-here"' : ''; ?> href="/<?php echo $_COOKIE['lang']; ?>/compare" title="<?php echo $cmp_lbl; ?>" aria-label="<?php echo $cmp_lbl; ?>">
 	<span class="cmp-float-ico">
 		<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M7 20h10"/><path d="M6 6l6-1 6 1"/><path d="M12 3v17"/><path d="M9 12L6 6l-3 6a3 3 0 0 0 6 0"/><path d="M21 12l-3-6-3 6a3 3 0 0 0 6 0"/></svg>
 		<span class="cmp-nav-count" style="display:none;">0</span>

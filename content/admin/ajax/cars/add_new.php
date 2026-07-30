@@ -221,9 +221,14 @@ if (__post('sub') == 'mo_search') {
 
                     foreach ($x1 as $v1) {
                         foreach ($x2 as $v2) {
-                            if (file_exists($photo_folder.'/'.$r['p_path'].'/'.$r['id'].'/'.$v1.'/'.$p['name'].'.'.$v2)) {
-                                unlink ($photo_folder.'/'.$r['p_path'].'/'.$r['id'].'/'.$v1.'/'.$p['name'].'.'.$v2);
+                            $_pf = $photo_folder.'/'.$r['p_path'].'/'.$r['id'].'/'.$v1.'/'.$p['name'].'.'.$v2;
+                            if (file_exists($_pf)) {
+                                unlink($_pf);
                             }
+                            // Same file in R2, or it would stay stored (and paid
+                            // for) after the operator deleted it here.
+                            try { \App\Services\CarPhotoR2::delete($_pf); }
+                            catch (\Throwable $e) { /* non-fatal */ }
                         }
                     }
 

@@ -108,11 +108,25 @@ try {
     // cars are never deleted. This is THE single deletion point — runs every cron
     // pass, so an out-of-stock on_order car is erased almost immediately.
     require_once __DIR__ . '/../App/Services/CarEraser.php';
-    $carImg = defined('_CAR_IMG') ? _CAR_IMG
-        : rtrim($_SERVER['DOCUMENT_ROOT'] ?? dirname(__DIR__), '/') . '/media/images/upload/car';
-    $erased = \App\Services\CarEraser::eraseOutOfStockOnOrder($db, $prefx, $carImg, 500);
+    // Must be ABSOLUTE. Under CLI $_SERVER['DOCUMENT_ROOT'] is an empty string
+    // rather than unset, so `?? dirname(__DIR__)` never fired and this resolved to
+    // "/media/images/upload/car" — is_dir() failed, photo folders were left behind
+    // on every auto-delete while the DB rows went away regardless.
+    $docRoot = $_SERVER['DOCUMENT_ROOT'] ?? '';
+    if ($docRoot === '' || !is_dir($docRoot)) $docRoot = dirname(__DIR__);
+    $carImg = rtrim($docRoot, '/') . '/media/images/upload/car';
+
+    $photosDeleted = 0;
+    $erased = \App\Services\CarEraser::eraseOutOfStockOnOrder($db, $prefx, $carImg, 500, $photosDeleted);
     if ($erased > 0) {
-        echo "[" . date('Y-m-d H:i:s') . "] 🗑️  Deleted {$erased} out-of-stock on_order car(s) permanently\n";
+        echo "[" . date('Y-m-d H:i:s') . "] 🗑️  Deleted {$erased} out-of-stock on_order car(s) permanently"
+            . " ({$photosDeleted} photo folder(s) removed)\n";
+        // Loud on mismatch: silent photo-delete failures are exactly how ~18k
+        // orphan folders accumulated unnoticed.
+        if ($photosDeleted < $erased) {
+            echo "[" . date('Y-m-d H:i:s') . "] ⚠️  " . ($erased - $photosDeleted)
+                . " car(s) erased WITHOUT their photo folder — check base dir: {$carImg}\n";
+        }
     }
 
     if ($postponed_count === 0 && $restored_count === 0 && $na_on_count === 0 && $na_off_count === 0 && $erased === 0) {

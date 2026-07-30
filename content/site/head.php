@@ -439,6 +439,11 @@ main > .pht_bx > .big_pht > .card-compare-btn{top:116px;right:12px;z-index:8;}
 #compare_float > .cmp-float-lbl{font-family:"def_l";font-size:.95rem;font-weight:700;color:#000;line-height:1;text-align:center;}
 #compare_float > .cmp-float-ico > .cmp-nav-count{position:absolute;top:-6px;right:-6px;min-width:18px;height:18px;line-height:18px;padding:0 5px;background:#e2001a;color:#fff;border-radius:9px;font-size:.7rem;font-weight:700;text-align:center;box-sizing:border-box;}
 @media (max-width:999px), (orientation: portrait){ #compare_float{top:auto;right:auto;left:10px;bottom:170px;} #compare_float > .cmp-float-lbl{display:none;} }
+@media (max-width:999px), (orientation: portrait){
+	#fav_float.is-here, #compare_float.is-here{display:none;}
+	#fav_float.is-here + #compare_float{bottom:100px;}
+	#to_top.no-mob{display:none;}
+}
 </style>
 <script data-cfasync="false">
 // Google Consent Mode v2

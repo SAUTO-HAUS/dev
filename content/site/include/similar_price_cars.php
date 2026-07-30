@@ -261,6 +261,7 @@ function generateSimilarCarsHTML($cars, $currentSection, $db, $prefx, $lng, $img
             <div class="card-img-wrap">
                 '.car_share_btn($car['id'], $page_type, $lng).'
                 '.car_fav_btn($car['id'], $lng).'
+                '.car_compare_btn($car['id'], $lng).'
                 '.$image_html.'
             </div>
             <div class="prc">

@@ -70,9 +70,10 @@ function buildImagesFeature14($carId, $accountId, $db, $prefx, &$rateLimited = f
         return [];
     }
 
-    // Image cap on 999: every parsing car (Encar/OpenLane/eCarsTrade) publishes max
-    // 10 photos here — regardless of the higher sauto cap (Encar 20 there). Account 4
-    // (Korea) is always 10. Everything else keeps 20. Detect parsing by parsing_id.
+    // Image cap on 999: every parsing car publishes max 10 photos here, whatever
+    // it got on sauto (Encar goes up there in full, the auction sources at 20).
+    // Account 4 (Korea) is always 10. Everything else keeps 20. Parsing is
+    // detected by parsing_id.
     $isParsing = false;
     try {
         $pchk = $db->prepare("SELECT parsing_id FROM {$prefx}_car_ctlg WHERE id = :id");
@@ -82,17 +83,26 @@ function buildImagesFeature14($carId, $accountId, $db, $prefx, &$rateLimited = f
     $maxImages = ($accountId == 4 || $isParsing) ? 10 : 20;
     $photos = array_slice($photos, 0, $maxImages);
 
+    // This script has no autoloader — every class is required by hand.
+    if (!class_exists('\App\Services\CarPhotoR2')) {
+        require_once __DIR__ . '/../App/Services/R2Client.php';
+        require_once __DIR__ . '/../App/Services/CarPhotoR2.php';
+    }
+
     // Resolve every photo to a real file path once. Running from CLI cron —
     // $_SERVER['DOCUMENT_ROOT'] is unreliable, so resolve relative to this script.
     $mediaBase = __DIR__ . '/../media/images/upload/car/';
     $paths = [];
     foreach ($photos as $img) {
         $imgPath = $mediaBase . $img['path'] . '/' . $img['it_id'] . '/high/' . $img['name'] . '.' . $img['ff'];
-        if (!file_exists($imgPath)) {
+        // Falls back to R2 once the local copies are gone; the temp it makes is
+        // cleaned up on shutdown.
+        $local = \App\Services\CarPhotoR2::localCopy($imgPath);
+        if ($local === null) {
             echo "[" . date('Y-m-d H:i:s') . "] Feature 14: missing file {$imgPath}\n";
             continue;
         }
-        $paths[] = $imgPath;
+        $paths[] = $local;
     }
     if (empty($paths)) return [];
 
@@ -265,46 +275,6 @@ function updateFeaturesWithFreshData($features, $carData, $db, $prefx) {
             }
         }
         
-        if ($featureId === '13' || $featureId === 13) {
-            $descriptionText = (string)($feature['value'] ?? '');
-            $descriptionText = preg_replace(
-                '/Detalii despre automobil:\s*\n'
-                . 'https?:\/\/\S+\s*\n'
-                . 'Toate automobilele modelului[^\n]*\n'
-                . 'https?:\/\/\S+\s*\n'
-                . 'Toate automobilele mărcii[^\n]*\n'
-                . 'https?:\/\/\S+\s*/u',
-                '',
-                $descriptionText
-            );
-            $descriptionText = trim((string)$descriptionText);
-
-            if (!empty($carData['br']) && !empty($carData['mo'])) {
-                $stmtCarList = $db->prepare("SELECT br_nm, mo_nm FROM {$prefx}_car_list WHERE br = ? AND mo = ? LIMIT 1");
-                $stmtCarList->execute([$carData['br'], $carData['mo']]);
-                $carListInfo = $stmtCarList->fetch(PDO::FETCH_ASSOC);
-
-                if ($carListInfo && !empty($carListInfo['br_nm']) && !empty($carListInfo['mo_nm'])) {
-                    $brandSlug = strtolower(str_replace('_', '-', $carData['br']));
-                    $modelSlug = strtolower(str_replace('_', '-', $carData['mo']));
-                    $brandText = $carListInfo['br_nm'];
-                    $modelText = $carListInfo['mo_nm'];
-
-                    $section = ($carData['catalog_type'] === 'on_order') ? 'ordercars' : 'cars';
-
-                    $carLink = "https://www.sauto.md/ro/{$section}/{$carData['id']}";
-                    $modelLink = "https://www.sauto.md/ro/{$section}/{$brandSlug}/{$modelSlug}";
-                    $brandLink = "https://www.sauto.md/ro/{$section}/{$brandSlug}";
-
-                    $linksText = "Detalii despre automobil:\n{$carLink}\nToate automobilele modelului {$modelText}:\n{$modelLink}\nToate automobilele mărcii {$brandText}:\n{$brandLink}";
-
-                    $descriptionText = $linksText . ($descriptionText !== '' ? "\n\n" . $descriptionText : '');
-                }
-            }
-
-            $feature['value'] = $descriptionText;
-        }
-        
         if (($featureId === '103' || $featureId === 103 || $featureId === '2553' || $featureId === 2553) && !empty($carData['vol'])) {
             $engineVolumeCm3 = (int)$carData['vol'];
             if ($featureId === '2553' || $featureId === 2553) {
@@ -345,8 +315,11 @@ function updateFeaturesWithFreshData($features, $carData, $db, $prefx) {
         
         $updatedFeatures[] = $feature;
     }
-    
-    return $updatedFeatures;
+
+    // Sauto links on top of the description. Also CREATES feature 13 when the saved
+    // payload has none (parsing payloads with an empty text), which the old inline
+    // version couldn't do — it only rewrote an existing one.
+    return \App\Helper\Ad999Links::apply($db, $prefx, $carData, $updatedFeatures);
 }
 
 try {
@@ -468,6 +441,7 @@ try {
     require_once __DIR__ . '/../App/Core/Container.php';
     require_once __DIR__ . '/../App/Services/PublicationService.php';
     require_once __DIR__ . '/../App/Services/Api999Service.php';
+    require_once __DIR__ . '/../App/Helper/Ad999Links.php';
     
     // Initialize Container with database and prefix
     \App\Core\Container::set('db', $db);
@@ -932,7 +906,17 @@ try {
                             'new_999_id' => $new999Id,
                             'car_id' => $schedule['car_id']
                         ]);
-                        
+
+                        // Persist WHAT WE PUBLISHED, not the payload we started from —
+                        // the links/phone/images were added in memory only. Without this
+                        // the stored copy stays link-less, and the next push of it (price
+                        // resync, car edit, renewal) wipes the links off the live ad.
+                        $db->prepare("UPDATE {$prefx}_car_ctlg SET `999` = :js WHERE id = :car_id")
+                           ->execute([
+                               'js' => json_encode($featuresData, JSON_UNESCAPED_UNICODE),
+                               'car_id' => $schedule['car_id'],
+                           ]);
+
                         // Update schedule as published
                         $stmt = $db->prepare("
                             UPDATE gh3sp_sauto_personal_schedules 

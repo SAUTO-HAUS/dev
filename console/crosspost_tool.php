@@ -1,13 +1,24 @@
 <?php
 /**
  * One tool for the auto cross-post pipeline. Pick a mode with ?do=…
- *   test    : audit settings + tables + dry-run per filter (default)
- *   cars    : what cars the crosspost cron queued for 999 in the last 2h + why
- *   cleanup : delete the 999 test schedules (add &apply=1 to actually delete)
+ *   test      : audit settings + tables + dry-run per filter (default)
+ *   cars      : what cars the crosspost cron queued for 999 in the last 2h + why
+ *   cleanup   : delete the 999 test schedules (add &apply=1 to actually delete)
+ *   footprint : full disk report — what to delete, what to move to R2, does 100 GB fit
+ *   orphans   : delete photo folders whose car no longer exists (dry-run by default)
  *
  *   https://www.sauto.md/console/crosspost_tool.php?token=cron2026&do=test
  */
 if (php_sapi_name()!=='cli' && (($_GET['token']??'')!=='cron2026')) { http_response_code(403); die('Forbidden'); }
+// From cron there is no query string, so accept "key=value" argv pairs and feed
+// them into $_GET — every mode below then works identically either way, and the
+// long-running ones (droplocal) escape the LiteSpeed connection timeout.
+if (php_sapi_name()==='cli') {
+    foreach (array_slice($argv ?? [], 1) as $a) {
+        if (strpos($a,'=')!==false) { [$k,$v]=explode('=',$a,2); $_GET[$k]=$v; }
+    }
+    @set_time_limit(0);
+}
 define('_DOIT',1); define('_DEFAULT','content/default'); chdir(__DIR__);
 // Match the crons' timezone so any schedule rows this tool writes use Chisinau time
 // (not the server's UTC), keeping schedule_time consistent with the real crons.
@@ -20,7 +31,7 @@ $prefx='gh3sp';
 \App\Core\Container::set('db',$db); \App\Core\Container::set('prefix',$prefx);
 $P="{$prefx}_parsing_cars"; $C="{$prefx}_car_ctlg"; $F="{$prefx}_parsing_filters";
 $S999="{$prefx}_sauto_personal_schedules"; $SFB="{$prefx}_scheduled_facebook_posts"; $STG="{$prefx}_scheduled_telegram_posts";
-header('Content-Type: text/plain; charset=utf-8');
+if (php_sapi_name()!=='cli') header('Content-Type: text/plain; charset=utf-8');
 function hr($t){ echo "\n==== {$t} ".str_repeat('=',max(3,44-strlen($t)))."\n"; }
 $do = $_GET['do'] ?? 'test';
 echo "NOW: ".$db->query("SELECT NOW()")->fetchColumn()."   mode: {$do}\n";
@@ -1558,6 +1569,1411 @@ if ($do === 'highvsmed') {
         echo "  /med/  sample: ".$fmt($med)."   → est. ALL: ".$fmt($med*$factor)."\n";
         echo "\n  Deleting /high/ everywhere would free ~".$fmt($high*$factor)." (keeping /med/ 800px).\n";
     } else echo "  no photo dirs in sample\n";
+    echo "\nDone.\n"; exit;
+}
+
+// ─────────────────────────── MODE: footprint ───────────────────────────
+// One page that answers "how much disk do we ACTUALLY need?" — everything counting
+// toward the cPanel quota (docroot dirs, MySQL, mail/backups outside docroot), with
+// car photos split into REFERENCED (must move to R2) vs ORPHAN (just delete). Ends
+// with a verdict on whether a 100 GB plan fits. Read-only.
+//   ?do=footprint            sampled — fast, ±10%
+//   ?do=footprint&full=1     walk every file — exact, slow
+//   &budget=300              seconds allowed for the heavy walks (default 150)
+if ($do === 'footprint') {
+    @set_time_limit(0);
+    $root   = rtrim($_SERVER['DOCUMENT_ROOT'] ?? dirname(__DIR__), '/');
+    $carImg = defined('_CAR_IMG') ? _CAR_IMG : 'media/images/upload/car';
+    if ($carImg[0] !== '/' && !preg_match('#^[A-Za-z]:#', $carImg)) $carImg = $root.'/'.ltrim($carImg, '/');
+    $full     = ($_GET['full'] ?? '') === '1';
+    $deadline = time() + max(30, (int)($_GET['budget'] ?? 150));
+    $G = fn($b) => number_format($b / 1073741824, 2).' GB';
+    $M = fn($b) => number_format($b / 1048576, 1).' MB';
+    $N = fn($n) => number_format($n);
+
+    // Recursive size + file count in one pass. Skips symlinks so we never follow a
+    // link out of the account and double-count.
+    $walk = function(string $dir) use (&$walk): array {
+        if (!is_dir($dir)) return [0, 0];
+        $items = @scandir($dir); if ($items === false) return [0, 0];
+        $b = 0; $f = 0;
+        foreach ($items as $it) {
+            if ($it === '.' || $it === '..') continue;
+            $p = $dir.'/'.$it;
+            if (is_link($p)) continue;
+            if (is_dir($p)) { [$sb, $sf] = $walk($p); $b += $sb; $f += $sf; }
+            else { $b += (int)@filesize($p); $f++; }
+        }
+        return [$b, $f];
+    };
+
+    // Same, but skipping one child — lets us size a parent without re-walking a
+    // subtree already measured elsewhere (the car dir alone is ~1M files).
+    $walkSkip = function(string $dir, array $skip) use ($walk): array {
+        if (!is_dir($dir)) return [0, 0];
+        $items = @scandir($dir); if ($items === false) return [0, 0];
+        $b = 0; $f = 0;
+        foreach ($items as $it) {
+            if ($it === '.' || $it === '..' || in_array($it, $skip, true)) continue;
+            $p = $dir.'/'.$it;
+            if (is_link($p)) continue;
+            if (is_dir($p)) { [$sb, $sf] = $walk($p); $b += $sb; $f += $sf; }
+            else { $b += (int)@filesize($p); $f++; }
+        }
+        return [$b, $f];
+    };
+
+    echo "  mode: ".($full ? "FULL (exact)" : "SAMPLED (±10%, add &full=1 for exact)")."\n";
+
+    // ── 1. Car photos: referenced vs orphan ───────────────────────────────────
+    // Enumerate <year>/<month>/<car_id> dirs WITHOUT stat'ing files first — cheap.
+    // A dir whose id is gone from car_ctlg is dead weight: it must not be migrated.
+    $t0 = microtime(true);
+    // car_id => LIST of dirs. The same car can own folders under two different
+    // month paths (p_path changed after a re-upload), so keying id => one path
+    // silently drops the duplicates and undercounts both size and file count.
+    $onDisk = [];
+    foreach (array_diff(@scandir($carImg) ?: [], ['.','..']) as $y) {
+        $yp = $carImg.'/'.$y; if (!is_dir($yp)) continue;
+        foreach (array_diff(@scandir($yp) ?: [], ['.','..']) as $m) {
+            $mp = $yp.'/'.$m; if (!is_dir($mp)) continue;
+            foreach (array_diff(@scandir($mp) ?: [], ['.','..']) as $cid) {
+                if (!ctype_digit($cid)) continue;
+                $p = $mp.'/'.$cid;
+                if (is_dir($p)) $onDisk[(int)$cid][] = $p;
+            }
+        }
+    }
+    $dbIds = array_flip(array_map('intval', $db->query("SELECT id FROM {$C}")->fetchAll(PDO::FETCH_COLUMN)));
+    $kept = []; $orphan = []; $dupIds = 0;
+    foreach ($onDisk as $id => $paths) {
+        if (count($paths) > 1) $dupIds++;
+        foreach ($paths as $p) {
+            if (isset($dbIds[$id])) $kept[] = $p; else $orphan[] = $p;
+        }
+    }
+    $dirsTotal = count($kept) + count($orphan);
+
+    // Size a set of dirs: all of them when &full=1, otherwise an evenly spread
+    // sample extrapolated to the whole set (first-N would bias toward old cars).
+    $sizeSet = function(array $dirs, int $sample) use ($walk, $full, $deadline): array {
+        $tot = count($dirs);
+        if ($tot === 0) return [0, 0, 0, 0];
+        $step = $full ? 1 : max(1, (int)floor($tot / $sample));
+        $b = 0; $f = 0; $n = 0;
+        for ($i = 0; $i < $tot; $i += $step) {
+            [$sb, $sf] = $walk($dirs[$i]); $b += $sb; $f += $sf; $n++;
+            if (time() > $deadline) break; // budget hit — extrapolate from what we got
+        }
+        if ($n === 0) return [0, 0, 0, $tot];
+        // Extrapolate whenever we didn't measure every folder (sampling OR early exit).
+        return [(int)($b / $n * $tot), (int)($f / $n * $tot), $n, $tot];
+    };
+
+    [$keptB, $keptF, $keptN, $keptTot]   = $sizeSet($kept, 250);
+    [$orphB, $orphF, $orphN, $orphTot]   = $sizeSet($orphan, 150);
+
+    $phtRows = (int)$db->query("SELECT COUNT(*) FROM {$prefx}_car_pht")->fetchColumn();
+    $carsDb  = count($dbIds);
+
+    hr("CAR PHOTOS — ".basename($carImg)."/");
+    echo "  photo folders on disk: ".$N($dirsTotal)."   (".$N(count($onDisk))." distinct car ids)\n";
+    echo "  cars in car_ctlg:      ".$N($carsDb)."\n";
+    echo "  car_pht photo rows:    ".$N($phtRows)."\n";
+    if ($dupIds > 0) {
+        echo "  ".$N($dupIds)." car id(s) own folders under MORE THAN ONE month path\n";
+    }
+    echo "\n";
+    echo "  KEEP   (car still in DB): ".str_pad($N($keptTot).' folders', 20).str_pad($G($keptB), 12)
+        .$N($keptF)." files".($full ? '' : "  [from {$keptN} sampled]")."\n";
+    echo "  ORPHAN (car deleted):     ".str_pad($N($orphTot).' folders', 20).str_pad($G($orphB), 12)
+        .$N($orphF)." files".($full ? '' : "  [from {$orphN} sampled]")."\n";
+    echo "  ".str_repeat('-', 60)."\n";
+    echo "  car-img TOTAL:            ".str_pad('', 20).str_pad($G($keptB + $orphB), 12).$N($keptF + $orphF)." files\n";
+    printf("  (car photo scan: %.1fs)\n", microtime(true) - $t0);
+
+    // ── 2. Junk that must NOT be migrated ─────────────────────────────────────
+    // Parser galleries + proxy cache: nothing in the codebase ever deletes these.
+    hr("JUNK — delete, never migrate");
+    // tmp/parsing_imgcache is inside tmp, so tmp is measured with it excluded.
+    $junk = [
+        'uploads/parsing'      => [fn() => $walk($root.'/uploads/parsing'),
+            'parser galleries (up to 50 full-size photos/car, incl. cars never published)'],
+        'tmp/parsing_imgcache' => [fn() => $walk($root.'/tmp/parsing_imgcache'),
+            'OpenLane proxy cache (7-day TTL only invalidates, never unlinks)'],
+        'tmp (rest)'           => [fn() => $walkSkip($root.'/tmp', ['parsing_imgcache']),
+            'temp files (orphaned pub_*/up_* when a publish dies mid-way)'],
+        'logs'                 => [fn() => $walk($root.'/logs'), 'app logs'],
+    ];
+    $junkB = 0; $junkF = 0;
+    foreach ($junk as $label => [$measure, $why]) {
+        [$b, $f] = $measure();
+        $junkB += $b; $junkF += $f;
+        echo "  ".str_pad($label, 24).str_pad($G($b), 12).str_pad($N($f).' files', 16)."{$why}\n";
+        if (time() > $deadline) { echo "  (budget spent — remaining junk dirs skipped)\n"; break; }
+    }
+    echo "  ".str_repeat('-', 60)."\n  ".str_pad('JUNK TOTAL', 24).str_pad($G($junkB), 12).$N($junkF)." files\n";
+
+    // ── 3. Everything else in the docroot ─────────────────────────────────────
+    hr("DOCROOT — other top-level dirs");
+    $otherB = 0;
+    foreach (array_diff(@scandir($root) ?: [], ['.','..']) as $f) {
+        $p = $root.'/'.$f;
+        if (is_link($p)) continue;
+        if (in_array($f, ['media', 'uploads', 'tmp', 'logs'], true)) continue; // counted above
+        $b = is_dir($p) ? $walk($p)[0] : (int)@filesize($p);
+        $otherB += $b;
+        if ($b > 52428800) echo "  ".str_pad($f, 24).$G($b)."\n";
+        if (time() > $deadline) { echo "  (budget spent)\n"; break; }
+    }
+    // media/ minus the car dir = video, fonts, files, site graphics, tyres/offer/team.
+    // Walked level by level with the car dir skipped — re-walking it would cost the
+    // same ~1M stat calls the sampling above exists to avoid.
+    $mediaRest = $walkSkip($root.'/media', ['images'])[0]
+               + $walkSkip($root.'/media/images', ['upload'])[0]
+               + $walkSkip($root.'/media/images/upload', ['car'])[0];
+    echo "  ".str_pad('media/ (non-car)', 24).$G($mediaRest)."\n";
+    $uploadsRest = $walkSkip($root.'/uploads', ['parsing'])[0]; // parsing counted in JUNK
+    echo "  ".str_pad('uploads/ (crm, calc)', 24).$G($uploadsRest)."\n";
+    echo "  ".str_repeat('-', 60)."\n  ".str_pad('OTHER TOTAL', 24).$G($otherB + $mediaRest + $uploadsRest)."\n";
+    $otherAll = $otherB + $mediaRest + $uploadsRest;
+
+    // ── 4. MySQL — counts toward the cPanel quota too ─────────────────────────
+    hr("MYSQL (counts toward the cPanel quota)");
+    $dbB = 0;
+    try {
+        $q = $db->query("SELECT table_name tn, data_length+index_length b, table_rows r
+            FROM information_schema.tables WHERE table_schema = DATABASE()
+            ORDER BY b DESC LIMIT 12");
+        // Cast: information_schema returns NULL for some engines, and PHP 8.4
+        // deprecates passing null to number_format().
+        foreach ($q as $r) {
+            echo "  ".str_pad($r['tn'], 38).str_pad($M((int)$r['b']), 12).$N((int)$r['r'])." rows (est)\n";
+        }
+        $dbB = (int)$db->query("SELECT SUM(data_length+index_length) FROM information_schema.tables
+            WHERE table_schema = DATABASE()")->fetchColumn();
+        echo "  ".str_repeat('-', 60)."\n  ".str_pad('DB TOTAL', 38).$G($dbB)."\n";
+    } catch (\Throwable $e) {
+        echo "  (information_schema not readable: ".$e->getMessage().")\n";
+    }
+
+    // ── 5. Outside the docroot — mail + backups are the classic hidden hog ────
+    hr("OUTSIDE DOCROOT (mail, backups — often the surprise)");
+    $home = dirname($root);
+    $homeB = 0;
+    $items = @scandir($home);
+    if ($items === false) {
+        echo "  {$home} not readable (open_basedir) — check cPanel → Disk Usage manually\n";
+    } else {
+        // Check the budget BEFORE each child, not after: mail/ can hold hundreds of
+        // thousands of small files and would blow past the limit in a single walk.
+        foreach (array_diff($items, ['.','..']) as $f) {
+            $p = $home.'/'.$f;
+            if (is_link($p) || $p === $root) continue;
+            if (time() > $deadline) { echo "  (budget spent — {$f}/ and the rest not measured)\n"; break; }
+            $b = is_dir($p) ? $walk($p)[0] : (int)@filesize($p);
+            $homeB += $b;
+            if ($b > 104857600) echo "  ".str_pad($f, 24).$G($b)."\n";
+        }
+        echo "  ".str_repeat('-', 60)."\n  ".str_pad('OUTSIDE TOTAL', 24).$G($homeB)."  (>100MB shown)\n";
+    }
+
+    // ── 6. Verdict ────────────────────────────────────────────────────────────
+    $now      = $keptB + $orphB + $junkB + $otherAll + $dbB + $homeB;
+    $afterJunk = $now - $junkB - $orphB;          // step 1: delete junk + orphans
+    $afterR2   = $afterJunk - $keptB;             // step 2: car photos live in R2
+    $objects   = $keptF;
+    hr("VERDICT");
+    echo "  NOW (everything above):            ".$G($now)."\n";
+    echo "  after deleting junk + orphans:     ".$G($afterJunk)."   (frees ".$G($junkB + $orphB).")\n";
+    echo "  after moving car photos to R2:     ".$G($afterR2)."   (frees another ".$G($keptB).")\n\n";
+    echo "  100 GB plan after cleanup only:  ".($afterJunk < 100*1073741824 ? "FITS ✓" : "does NOT fit — R2 needed")."\n";
+    echo "  100 GB plan after R2 migration:  ".($afterR2   < 100*1073741824 ? "FITS ✓" : "does NOT fit — look at MySQL/mail above")."\n";
+
+    hr("R2 MIGRATION ESTIMATE");
+    echo "  objects to upload: ".$N($objects)." files, ".$G($keptB)."\n";
+    printf("  R2 storage cost:   \$%.2f/month  (\$0.015/GB, first 10 GB free, egress \$0)\n",
+        max(0, ($keptB/1073741824) - 10) * 0.015);
+    printf("  one-off write ops: \$%.2f  (Class A, \$4.50 per million PUTs)\n", $objects / 1000000 * 4.50);
+    printf("  upload time @200ms/object: ~%.0f hours of background cron\n", $objects * 0.2 / 3600);
+    echo "  NOTE: the server must send ".$G($keptB)." outbound — check the cPanel\n";
+    echo "        bandwidth quota before starting, or split it across months.\n";
+    echo "\nDone.\n"; exit;
+}
+
+// ─────────────────────────── MODE: r2test ───────────────────────────
+// End-to-end check of the R2 setup before migrating anything: credentials load,
+// PUT, HEAD, LIST and DELETE all work. Writes then removes one tiny test object.
+// Also uploads one REAL car photo (&real=1) to prove key layout + content type.
+if ($do === 'r2test') {
+    hr("R2 connectivity test");
+    $r2 = \App\Services\R2Client::fromEnv();
+    if (!$r2) {
+        echo "  ✗ credentials not found.\n";
+        echo "    Expected in ".($_SERVER['DOCUMENT_ROOT'] ?? dirname(__DIR__))."/.env :\n";
+        echo "      R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET\n";
+        echo "\nDone.\n"; exit;
+    }
+    echo "  ✓ credentials loaded from .env\n";
+
+    $key  = '_r2test/' . date('Ymd_His') . '_' . bin2hex(random_bytes(4)) . '.txt';
+    $body = 'sauto r2 test ' . date('c');
+
+    echo "  PUT    {$key} ... ";
+    if (!$r2->putObject($key, $body, 'text/plain')) {
+        echo "FAILED\n\n  → check the Access Key / Secret / bucket name in .env,\n";
+        echo "    and that the token has Object Read & Write on this bucket.\n\nDone.\n"; exit;
+    }
+    echo "ok\n";
+
+    echo "  HEAD   ... ".($r2->exists($key) ? "ok (object is there)" : "FAILED")."\n";
+    [$keys] = $r2->listObjects('_r2test/');
+    echo "  LIST   ... ".count($keys)." object(s) under _r2test/\n";
+    echo "  DELETE ... ".($r2->deleteObject($key) ? "ok" : "FAILED")."\n";
+    echo "  HEAD   ... ".($r2->exists($key) ? "STILL THERE (delete did not work)" : "gone ✓")."\n";
+
+    // deletePrefix is what erasing a car calls — a whole folder at once. Never
+    // exercised by the migration, so prove it on throwaway keys.
+    hr("prefix delete (what erasing a car uses)");
+    $pfx = '_r2test/prefix_' . bin2hex(random_bytes(3)) . '/';
+    foreach (['high/a.jpg', 'high/b.jpg', 'med/a.jpg'] as $f) {
+        $r2->putObject($pfx . $f, 'x', 'image/jpeg');
+    }
+    [$before] = $r2->listObjects($pfx);
+    echo "  wrote  ... ".count($before)." object(s) under {$pfx}\n";
+    $gone = $r2->deletePrefix($pfx);
+    [$after] = $r2->listObjects($pfx);
+    echo "  deletePrefix() removed {$gone}, remaining: ".count($after)
+        .(count($after) === 0 ? "  ✓" : "  ✗ LEFTOVERS")."\n";
+
+    // Optional: push one real photo so we can eyeball the key layout in the dashboard.
+    if (($_GET['real'] ?? '') === '1') {
+        $carImg = defined('_CAR_IMG') ? _CAR_IMG : 'media/images/upload/car';
+        if ($carImg[0] !== '/' && !preg_match('#^[A-Za-z]:#', $carImg)) {
+            $carImg = rtrim($_SERVER['DOCUMENT_ROOT'] ?? dirname(__DIR__), '/').'/'.ltrim($carImg, '/');
+        }
+        $row = $db->query("SELECT p.path, p.name, p.ff, p.it_id FROM {$prefx}_car_pht p
+            JOIN {$C} c ON c.id = p.it_id ORDER BY p.id DESC LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+        hr("real photo upload");
+        if (!$row) { echo "  no car_pht rows found\n"; }
+        else {
+            $ff  = $row['ff'] ?: 'jpg';
+            // Key mirrors the public URL path exactly, so the Worker can map
+            // /media/images/upload/car/<key> → R2 object with no translation.
+            $rel = $row['path'].'/'.$row['it_id'].'/high/'.$row['name'].'.'.$ff;
+            $abs = rtrim($carImg,'/').'/'.$rel;
+            echo "  local: {$abs}\n";
+            if (!is_file($abs)) echo "  ✗ file not on disk — try another car\n";
+            else {
+                echo "  size:  ".number_format(filesize($abs)/1024, 1)." KB\n";
+                echo "  key:   {$rel}\n";
+                echo "  PUT    ... ".($r2->putFile($rel, $abs) ? "ok" : "FAILED")."\n";
+                echo "  HEAD   ... ".($r2->exists($rel) ? "ok ✓" : "FAILED")."\n";
+                echo "\n  Leave it there — the migration will overwrite the same key.\n";
+            }
+        }
+    } else {
+        echo "\n  Add &real=1 to also upload one real car photo as a layout check.\n";
+    }
+    echo "\nDone.\n"; exit;
+}
+
+// ─────────────────────────── MODE: r2gaps ───────────────────────────
+// Which live cars have photos the DB knows about but R2 does not. Driven by
+// car_pht, not the disk — after a local wipe the filesystem can no longer say
+// what should exist, so the table is the only remaining source of truth.
+//   ?do=r2gaps              report
+//   &fix=1                  re-upload from disk where the file is still there
+//   &limit=N                cars per run (default 4000)
+if ($do === 'r2gaps') {
+    @set_time_limit(0);
+    $fix   = ($_GET['fix'] ?? '') === '1';
+    $prune = ($_GET['prune'] ?? '') === '1';
+    $limit = max(1, (int)($_GET['limit'] ?? 4000));
+    $pruned = 0;
+    $N = fn($n) => number_format($n);
+
+    @ini_set('memory_limit', '512M');
+    $r2 = \App\Services\R2Client::fromEnv();
+    if (!$r2) { echo "  R2 not configured\n\nDone.\n"; exit; }
+    $base = class_exists('\App\Services\CarPhotoR2') ? \App\Services\CarPhotoR2::base() : '';
+
+    // Pick the car ids FIRST, newest last-published first — those are the ones at
+    // risk. Pulling all ~613k car_pht rows at once exhausts the memory cap.
+    $offset = max(0, (int)($_GET['offset'] ?? 0));
+    $ids = $db->query("SELECT id FROM {$C} ORDER BY id DESC LIMIT {$limit} OFFSET {$offset}")
+        ->fetchAll(PDO::FETCH_COLUMN);
+    if (!$ids) { echo "  no cars\n\nDone.\n"; exit; }
+    $idList = implode(',', array_map('intval', $ids));
+
+    $rows = $db->query("SELECT it_id, path, name, ff FROM {$prefx}_car_pht
+        WHERE it_id IN ({$idList}) ORDER BY it_id DESC, pos ASC")->fetchAll(PDO::FETCH_ASSOC);
+
+    hr("cars whose photos are missing from R2");
+    echo "  newest ".$N(count($ids))." car(s), ".$N(count($rows))." photo row(s)\n";
+
+    // Group by car so we list each R2 prefix once instead of per photo.
+    $byCar = [];
+    foreach ($rows as $r) $byCar[(int)$r['it_id']][] = $r;
+    echo "  cars with photos: ".$N(count($byCar))."\n\n";
+
+    $checked = 0; $badCars = []; $missTotal = 0; $fixed = 0; $unfixable = 0;
+    // LiteSpeed cuts the connection well before 200s, so keep each pass short and
+    // page through with &offset instead.
+    $stop = time() + 60;
+    foreach ($byCar as $carId => $photos) {
+        if (time() > $stop) { echo "  (stopped after {$checked} cars — continue with &offset=".($offset + $checked).")\n"; break; }
+        $checked++;
+        $pPath  = trim((string)$photos[0]['path'], '/');
+        $prefix = $pPath . '/' . $carId . '/';
+
+        $inR2 = []; $token = null;
+        do {
+            [$page, $token] = $r2->listObjects($prefix, $token);
+            foreach ($page as $k => $sz) $inR2[substr($k, strlen($prefix))] = $sz;
+        } while ($token !== null);
+
+        $miss = [];
+        foreach ($photos as $p) {
+            $ff = $p['ff'] ?: 'jpg';
+            foreach (['high', 'med'] as $sz) {
+                $f = $sz . '/' . $p['name'] . '.' . $ff;
+                if (!isset($inR2[$f])) $miss[] = $f;
+            }
+        }
+        if (!$miss) continue;
+
+        $missTotal += count($miss);
+        $badCars[$carId] = count($miss);
+
+        if ($fix && $base !== '') {
+            foreach ($miss as $f) {
+                $abs = $base . '/' . $prefix . $f;
+                if (is_file($abs)) { if (\App\Services\CarPhotoR2::push($abs)) $fixed++; }
+                else $unfixable++;
+            }
+        }
+
+        // &prune=1: drop car_pht rows whose file is in neither place. The row
+        // would otherwise render an <img> that 404s somewhere in the gallery.
+        if ($prune) {
+            $gone = [];
+            foreach ($miss as $f) {
+                if (is_file($base . '/' . $prefix . $f)) continue;
+                $gone[basename($f, '.' . pathinfo($f, PATHINFO_EXTENSION))] = true;
+            }
+            foreach (array_keys($gone) as $name) {
+                $del = $db->prepare("DELETE FROM {$prefx}_car_pht WHERE it_id = ? AND name = ?");
+                $del->execute([$carId, $name]);
+                $pruned += $del->rowCount();
+            }
+        }
+    }
+
+    echo "  cars checked      : ".$N($checked)."\n";
+    echo "  cars with gaps    : ".$N(count($badCars))."\n";
+    echo "  missing objects   : ".$N($missTotal)."\n";
+    if ($fix) {
+        echo "  re-uploaded       : ".$N($fixed)."\n";
+        echo "  GONE (no local)   : ".$N($unfixable)."\n";
+    }
+    if ($prune) echo "  car_pht rows removed: ".$N($pruned)."\n";
+    if ($badCars) {
+        echo "\n  affected car ids (newest first):\n    ";
+        echo implode(', ', array_slice(array_keys($badCars), 0, 40));
+        if (count($badCars) > 40) echo ', … +'.(count($badCars) - 40).' more';
+        echo "\n";
+        if (!$fix) echo "\n  Add &fix=1 to re-upload the ones still on disk.\n";
+    } else {
+        echo "\n  ✓ every photo in car_pht has its object in R2\n";
+    }
+    echo "\nDone.\n"; exit;
+}
+
+// ─────────────────────────── MODE: r2push ───────────────────────────
+// Upload ONE car's photo folder into R2. For cars published after the bulk
+// migration, and as a quick fix whenever droplocal reports a gap.
+//   ?do=r2push&id=123
+if ($do === 'r2push') {
+    $id = (int)($_GET['id'] ?? 0);
+    if ($id <= 0) { echo "  pass &id=<car_ctlg id>\n\nDone.\n"; exit; }
+    if (!class_exists('\App\Services\CarPhotoR2')) { echo "  CarPhotoR2 not uploaded\n\nDone.\n"; exit; }
+
+    $p = (string)$db->query("SELECT p_path FROM {$C} WHERE id={$id}")->fetchColumn();
+    if ($p === '') { echo "  car #{$id} not found or has no p_path\n\nDone.\n"; exit; }
+
+    $dir = \App\Services\CarPhotoR2::base().'/'.trim($p, '/').'/'.$id;
+    hr("push car #{$id} to R2");
+    echo "  dir: {$dir}\n";
+    if (!is_dir($dir)) { echo "  no local folder — nothing to upload\n\nDone.\n"; exit; }
+
+    $n = \App\Services\CarPhotoR2::pushDir($dir);
+    echo "  uploaded: {$n} file(s)\n";
+    echo "\n  Verify with:  ?do=r2car&id={$id}\n";
+    echo "\nDone.\n"; exit;
+}
+
+// ─────────────────────────── MODE: droplocal ───────────────────────────
+// Delete local car photos that are safely in R2. This is THE irreversible step,
+// so it never deletes on trust: for every single file it checks the object is in
+// R2 with the same byte size, and one mismatch makes it skip that whole car.
+//   ?do=droplocal&id=123          one car (dry-run)
+//   ?do=droplocal&prefix=c92a/d72d  one month
+//   ?do=droplocal&all=1           everything
+//   &apply=1                      actually delete   &limit=N  &budget=240
+if ($do === 'droplocal') {
+    @set_time_limit(0);
+    $apply  = ($_GET['apply'] ?? '') === '1';
+    $limit  = max(1, (int)($_GET['limit'] ?? 200));
+    $deadline = time() + max(30, (int)($_GET['budget'] ?? 240));
+    $N = fn($n) => number_format($n);
+    $G = fn($b) => number_format($b / 1073741824, 2).' GB';
+
+    $r2 = \App\Services\R2Client::fromEnv();
+    if (!$r2) { echo "  R2 not configured\n\nDone.\n"; exit; }
+
+    $carImg = defined('_CAR_IMG') ? _CAR_IMG : 'media/images/upload/car';
+    if ($carImg[0] !== '/' && !preg_match('#^[A-Za-z]:#', $carImg)) {
+        $carImg = rtrim($_SERVER['DOCUMENT_ROOT'] ?? dirname(__DIR__), '/').'/'.ltrim($carImg, '/');
+    }
+    $carImg = rtrim(str_replace('\\', '/', $carImg), '/');
+
+    // Which car folders are in scope.
+    $targets = []; // relative 'y/m/id'
+    $id     = (int)($_GET['id'] ?? 0);
+    $prefix = trim((string)($_GET['prefix'] ?? ''), '/');
+    if ($id > 0) {
+        $p = (string)$db->query("SELECT p_path FROM {$C} WHERE id={$id}")->fetchColumn();
+        if ($p === '') { echo "  car #{$id} has no p_path (deleted?)\n\nDone.\n"; exit; }
+        $targets[] = trim($p, '/').'/'.$id;
+    } else {
+        $scan = $prefix !== '' ? [$prefix] : [];
+        if (!$scan) {
+            if (($_GET['all'] ?? '') !== '1') {
+                echo "  pass &id=N, or &prefix=<y>/<m>, or &all=1\n\nDone.\n"; exit;
+            }
+            foreach (array_diff(@scandir($carImg) ?: [], ['.','..']) as $y) {
+                if (!is_dir($carImg.'/'.$y)) continue;
+                foreach (array_diff(@scandir($carImg.'/'.$y) ?: [], ['.','..']) as $m) {
+                    if (is_dir($carImg.'/'.$y.'/'.$m)) $scan[] = $y.'/'.$m;
+                }
+            }
+        }
+        foreach ($scan as $pfx) {
+            foreach (array_diff(@scandir($carImg.'/'.$pfx) ?: [], ['.','..']) as $cid) {
+                if (ctype_digit($cid) && is_dir($carImg.'/'.$pfx.'/'.$cid)) $targets[] = $pfx.'/'.$cid;
+            }
+        }
+    }
+
+    hr($apply ? "DELETING local photos already in R2" : "DRY-RUN — what would be deleted (add &apply=1)");
+    echo "  car folders in scope: ".$N(count($targets))."\n";
+    if (!$targets) { echo "\n  nothing to do\n\nDone.\n"; exit; }
+
+    $okCars = 0; $skipCars = 0; $files = 0; $bytes = 0; $problems = [];
+
+    foreach ($targets as $i => $rel) {
+        if ($i >= $limit || time() > $deadline) break;
+        $dir = $carImg.'/'.$rel;
+        if (!is_dir($dir)) continue;
+
+        // Local inventory.
+        $local = [];
+        $walk = function (string $d, string $sub) use (&$walk, &$local) {
+            foreach (array_diff(@scandir($d) ?: [], ['.','..']) as $f) {
+                $p = $d.'/'.$f;
+                if (is_link($p)) continue;
+                if (is_dir($p)) { $walk($p, $sub.$f.'/'); continue; }
+                $local[$sub.$f] = (int)@filesize($p);
+            }
+        };
+        $walk($dir, '');
+        if (!$local) continue;
+
+        // R2 inventory for the same prefix.
+        $inR2 = []; $token = null;
+        do {
+            [$page, $token] = $r2->listObjects($rel.'/', $token);
+            foreach ($page as $k => $sz) $inR2[substr($k, strlen($rel) + 1)] = $sz;
+        } while ($token !== null);
+
+        // Every file must be present AND the same size. No exceptions.
+        $bad = [];
+        foreach ($local as $f => $sz) {
+            if (!isset($inR2[$f]))      { $bad[] = "{$f} (missing in R2)"; continue; }
+            if ($inR2[$f] !== $sz)      { $bad[] = "{$f} ({$sz}b local vs {$inR2[$f]}b in R2)"; }
+        }
+        if ($bad) {
+            $skipCars++;
+            if (count($problems) < 10) $problems[] = $rel.': '.$bad[0];
+            continue;
+        }
+
+        $files += count($local);
+        $bytes += array_sum($local);
+        $okCars++;
+
+        if ($apply) {
+            $rm = function (string $d) use (&$rm) {
+                foreach (array_diff(@scandir($d) ?: [], ['.','..']) as $f) {
+                    $p = $d.'/'.$f;
+                    is_dir($p) ? $rm($p) : @unlink($p);
+                }
+                @rmdir($d);
+            };
+            $rm($dir);
+        }
+    }
+
+    echo "  verified fully in R2 : ".$N($okCars)." car(s), ".$N($files)." file(s), ".$G($bytes)."\n";
+    echo "  SKIPPED (not safe)   : ".$N($skipCars)."\n";
+    foreach ($problems as $p) echo "      {$p}\n";
+    if ($skipCars) echo "    → these keep their local copies; re-run the migration verify pass first.\n";
+
+    echo $apply
+        ? "\n  ✓ deleted locally. Space freed: ".$G($bytes)."\n"
+        : "\n  Nothing was deleted. Add &apply=1 to proceed.\n";
+    echo "\nDone.\n"; exit;
+}
+
+// ─────────────────────────── MODE: delphoto ───────────────────────────
+// Remove one photo from a car: the car_pht row plus every variant in R2
+// (jpg/webp × high/med). Positions are renumbered so the gallery stays 1..N.
+//   ?do=delphoto&id=9670&pos=15      dry-run    &apply=1 to delete
+if ($do === 'delphoto') {
+    $id  = (int)($_GET['id'] ?? 0);
+    $pos = (int)($_GET['pos'] ?? 0);
+    $apply = ($_GET['apply'] ?? '') === '1';
+    if ($id <= 0) { echo "  pass &id=<car_ctlg id>&pos=<n>\n\nDone.\n"; exit; }
+
+    $rows = $db->query("SELECT id, name, ff, pos, main, path FROM {$prefx}_car_pht
+        WHERE it_id = {$id} ORDER BY pos, id")->fetchAll(PDO::FETCH_ASSOC);
+    hr("photos of car #{$id}");
+    foreach ($rows as $r) {
+        printf("  pos %-4s %s%s.%s\n", $r['pos'], $r['main'] ? '★ ' : '  ', $r['name'], $r['ff']);
+    }
+    if (!$rows) { echo "  (no photos)\n\nDone.\n"; exit; }
+    if ($pos <= 0) { echo "\n  pass &pos=<n> to pick one\n\nDone.\n"; exit; }
+
+    $target = null;
+    foreach ($rows as $r) if ((int)$r['pos'] === $pos) { $target = $r; break; }
+    if (!$target) { echo "\n  no photo at pos {$pos}\n\nDone.\n"; exit; }
+
+    hr(($apply ? "DELETING" : "DRY-RUN — would delete")." pos {$pos}");
+    echo "  name: {$target['name']}.{$target['ff']}".($target['main'] ? "   ★ this is the cover" : '')."\n";
+
+    // Every variant of that photo, whatever sizes and formats exist.
+    $r2 = \App\Services\R2Client::fromEnv();
+    $keys = [];
+    if ($r2) {
+        $prefix = trim((string)$target['path'], '/').'/'.$id.'/';
+        $token = null;
+        do {
+            [$page, $token] = $r2->listObjects($prefix, $token);
+            foreach (array_keys($page) as $k) {
+                if (pathinfo($k, PATHINFO_FILENAME) === $target['name']) $keys[] = $k;
+            }
+        } while ($token !== null);
+    }
+    echo "  R2 objects to remove: ".count($keys)."\n";
+    foreach ($keys as $k) echo "    {$k}\n";
+
+    if (!$apply) { echo "\n  Add &apply=1 to delete.\n\nDone.\n"; exit; }
+
+    foreach ($keys as $k) $r2->deleteObject($k);
+    $db->prepare("DELETE FROM {$prefx}_car_pht WHERE id = ?")->execute([$target['id']]);
+
+    // Renumber, and hand the cover to the new first photo if we removed it.
+    $left = $db->query("SELECT id FROM {$prefx}_car_pht WHERE it_id = {$id} ORDER BY pos, id")
+        ->fetchAll(PDO::FETCH_COLUMN);
+    $upd = $db->prepare("UPDATE {$prefx}_car_pht SET pos = ?, main = ? WHERE id = ?");
+    $n = 0;
+    foreach ($left as $rid) { $n++; $upd->execute([$n, $n === 1 ? 1 : 0, $rid]); }
+
+    echo "\n  ✓ deleted the photo and ".count($keys)." R2 object(s)\n";
+    echo "  ✓ {$n} photo(s) left, renumbered 1..{$n}\n";
+    echo "\nDone.\n"; exit;
+}
+
+// ─────────────────────────── MODE: fixpath ───────────────────────────
+// Rebuild car_pht rows for a car whose photos are in R2 but whose DB rows are
+// gone or unusable. Written for cars whose p_path carried a trailing slash: the
+// folder migrated fine, but every URL came out with a double slash and my
+// depth check mistook the extra slash for a third path segment.
+//   ?do=fixpath&id=9670        dry-run    &apply=1 to write
+if ($do === 'fixpath') {
+    $id = (int)($_GET['id'] ?? 0);
+    $apply = ($_GET['apply'] ?? '') === '1';
+    if ($id <= 0) { echo "  pass &id=<car_ctlg id>\n\nDone.\n"; exit; }
+
+    $r2 = \App\Services\R2Client::fromEnv();
+    if (!$r2) { echo "  R2 not configured\n\nDone.\n"; exit; }
+
+    $car = $db->query("SELECT id, br_nm, mo_nm, p_path FROM {$C} WHERE id={$id}")->fetch(PDO::FETCH_ASSOC);
+    if (!$car) { echo "  car #{$id} not in car_ctlg\n\nDone.\n"; exit; }
+
+    $clean  = trim((string)$car['p_path'], '/');   // the trailing slash goes
+    $prefix = $clean . '/' . $id . '/';
+    hr("rebuild photos for #{$id} — {$car['br_nm']} {$car['mo_nm']}");
+    echo "  p_path in DB : '".$car['p_path']."'".($car['p_path'] !== $clean ? "   ← has a stray slash" : '')."\n";
+    echo "  R2 prefix    : {$prefix}\n";
+
+    $inR2 = []; $token = null;
+    do {
+        [$page, $token] = $r2->listObjects($prefix, $token);
+        foreach ($page as $k => $sz) $inR2[substr($k, strlen($prefix))] = $sz;
+    } while ($token !== null);
+    echo "  objects in R2: ".count($inR2)."\n";
+
+    // One row per photo name. The old scheme stored jpg and webp side by side;
+    // car_pht holds a single row per name, the site picks the format per browser.
+    // Scan BOTH size folders: a photo present only in one of them still deserves
+    // a row, and taking just high/ silently dropped one here.
+    $names = []; $perDir = [];
+    foreach (array_keys($inR2) as $f) {
+        $slash = strpos($f, '/');
+        if ($slash === false) continue;
+        $dir = substr($f, 0, $slash);
+        if ($dir !== 'high' && $dir !== 'med') continue;
+        $perDir[$dir] = ($perDir[$dir] ?? 0) + 1;
+        $base = pathinfo(substr($f, $slash + 1), PATHINFO_FILENAME);
+        $ext  = strtolower(pathinfo($f, PATHINFO_EXTENSION));
+        // Images only. Every folder also carries an index.html put there as
+        // directory-listing protection, and without this it became "photo 15".
+        if ($base === '' || !in_array($ext, ['jpg', 'jpeg', 'png', 'webp', 'gif'], true)) continue;
+        if (!isset($names[$base]) || $ext === 'jpg') $names[$base] = $ext;
+    }
+    ksort($names);
+    foreach ($perDir as $d => $c) echo "  {$d}/: {$c} file(s)\n";
+    echo "  distinct photos: ".count($names)."\n";
+
+    $have = (int)$db->query("SELECT COUNT(*) FROM {$prefx}_car_pht WHERE it_id={$id}")->fetchColumn();
+    echo "  car_pht rows now: {$have}\n";
+    if (!$names) { echo "\n  nothing to rebuild\n\nDone.\n"; exit; }
+
+    foreach (array_slice(array_keys($names), 0, 5) as $n) echo "    {$n}.{$names[$n]}\n";
+
+    if (!$apply) {
+        echo "\n  Would insert ".count($names)." row(s) with path='{$clean}'";
+        echo ($car['p_path'] !== $clean ? " and fix car_ctlg.p_path.\n" : ".\n");
+        echo "  Add &apply=1 to write.\n\nDone.\n"; exit;
+    }
+
+    $db->prepare("DELETE FROM {$prefx}_car_pht WHERE it_id = ?")->execute([$id]);
+    $ins = $db->prepare("INSERT INTO {$prefx}_car_pht
+        (`it_id`,`tp`,`path`,`name`,`ff`,`main`,`pos`) VALUES (?,?,?,?,?,?,?)");
+    $pos = 0;
+    foreach ($names as $n => $ext) {
+        $pos++;
+        $ins->execute([$id, 'img', $clean, $n, $ext, $pos === 1 ? 1 : 0, $pos]);
+    }
+    if ($car['p_path'] !== $clean) {
+        $db->prepare("UPDATE {$C} SET p_path = ? WHERE id = ?")->execute([$clean, $id]);
+        echo "  ✓ p_path corrected to '{$clean}'\n";
+    }
+    echo "  ✓ inserted {$pos} car_pht row(s)\n";
+    echo "\n  Check the car page now.\n";
+    echo "\nDone.\n"; exit;
+}
+
+// ─────────────────────────── MODE: pathdepth ───────────────────────────
+// How deep are the p_path values in car_pht? The migration walked exactly
+// <year>/<month>/<car_id> and skipped anything else, so older cars stored under
+// a three-segment path were never copied to R2 — and were then deleted locally.
+// This counts the damage. ?do=pathdepth   &sample=1 to test R2 for a few keys
+if ($do === 'pathdepth') {
+    $N = fn($n) => number_format($n);
+
+    hr("car_pht rows by path depth");
+    $rows = $db->query("SELECT
+            LENGTH(path) - LENGTH(REPLACE(path, '/', '')) AS slashes,
+            COUNT(DISTINCT it_id) cars, COUNT(*) photos
+        FROM {$prefx}_car_pht GROUP BY slashes ORDER BY slashes")->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($rows as $r) {
+        $seg = (int)$r['slashes'] + 1;
+        $note = $seg === 2 ? 'normal — migrated' : 'NOT migrated, photos lost';
+        printf("  %d segment(s): %8s car(s), %9s photo(s)   %s\n",
+            $seg, $N($r['cars']), $N($r['photos']), $note);
+    }
+
+    hr("affected cars still live in car_ctlg");
+    $rows = $db->query("SELECT c.catalog_type, c.n_a, COUNT(DISTINCT c.id) cars
+        FROM {$C} c JOIN {$prefx}_car_pht p ON p.it_id = c.id
+        WHERE LENGTH(p.path) - LENGTH(REPLACE(p.path, '/', '')) <> 1
+        GROUP BY c.catalog_type, c.n_a ORDER BY cars DESC")->fetchAll(PDO::FETCH_ASSOC);
+    if (!$rows) echo "  none — every affected car is already deleted\n";
+    foreach ($rows as $r) {
+        printf("  %-10s n_a=%-3s %s car(s)\n", $r['catalog_type'], $r['n_a'], $N($r['cars']));
+    }
+
+    hr("example paths");
+    foreach ($db->query("SELECT DISTINCT path FROM {$prefx}_car_pht
+        WHERE LENGTH(path) - LENGTH(REPLACE(path, '/', '')) <> 1 LIMIT 8") as $r) {
+        echo "  {$r['path']}\n";
+    }
+
+    // Are any of them actually still in R2? (They should not be, but prove it.)
+    if (($_GET['sample'] ?? '') === '1') {
+        hr("R2 check on a few of them");
+        $r2 = \App\Services\R2Client::fromEnv();
+        if (!$r2) { echo "  R2 not configured\n"; }
+        else {
+            $rows = $db->query("SELECT it_id, path, name, ff FROM {$prefx}_car_pht
+                WHERE LENGTH(path) - LENGTH(REPLACE(path, '/', '')) <> 1 LIMIT 10")->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($rows as $r) {
+                $key = trim($r['path'], '/').'/'.$r['it_id'].'/high/'.$r['name'].'.'.($r['ff'] ?: 'jpg');
+                echo "  ".($r2->exists($key) ? 'IN R2 ' : 'MISSING')."  {$key}\n";
+            }
+        }
+    } else {
+        echo "\n  Add &sample=1 to test a few keys against R2.\n";
+    }
+
+    hr("the affected cars");
+    $rows = $db->query("SELECT c.id, c.br_nm, c.mo_nm, c.yr, c.vis, c.act,
+            COUNT(p.id) photos, FROM_UNIXTIME(c.date, '%Y-%m-%d') added
+        FROM {$C} c JOIN {$prefx}_car_pht p ON p.it_id = c.id
+        WHERE LENGTH(p.path) - LENGTH(REPLACE(p.path, '/', '')) <> 1
+        GROUP BY c.id ORDER BY c.id")->fetchAll(PDO::FETCH_ASSOC);
+    printf("  %-8s %-14s %-16s %-6s %-5s %-8s %s\n", 'id', 'brand', 'model', 'year', 'vis', 'photos', 'added');
+    foreach ($rows as $r) {
+        printf("  %-8d %-14s %-16s %-6s %-5s %-8d %s\n", $r['id'],
+            substr((string)$r['br_nm'], 0, 14), substr((string)$r['mo_nm'], 0, 16),
+            $r['yr'], $r['vis'], $r['photos'], $r['added']);
+    }
+
+    // The files are gone from disk AND from R2, so the rows only make the page
+    // render <img> tags that 404. Removing them is strictly an improvement.
+    if (($_GET['prune'] ?? '') === '1') {
+        $del = $db->exec("DELETE p FROM {$prefx}_car_pht p
+            WHERE LENGTH(p.path) - LENGTH(REPLACE(p.path, '/', '')) <> 1");
+        echo "\n  ✓ removed ".$N((int)$del)." dead car_pht row(s) — no more broken images\n";
+        echo "\nDone.\n"; exit;
+    }
+
+    // Erase the cars outright. Scoped to exactly the 3-segment-path set, never
+    // the general "n_a=1 in_stock" population, which is far larger.
+    if (($_GET['erase'] ?? '') === '1') {
+        $apply = ($_GET['apply'] ?? '') === '1';
+
+        // Only cars whose photos are ALL lost. A car that also has working
+        // (2-segment) photos must not be erased — deleting it would throw away
+        // pictures that are perfectly fine in R2.
+        $ids = $db->query("SELECT c.id FROM {$C} c JOIN {$prefx}_car_pht p ON p.it_id = c.id
+            GROUP BY c.id
+            HAVING SUM(LENGTH(p.path) - LENGTH(REPLACE(p.path, '/', '')) = 1) = 0")
+            ->fetchAll(PDO::FETCH_COLUMN);
+
+        $mixed = $db->query("SELECT c.id FROM {$C} c JOIN {$prefx}_car_pht p ON p.it_id = c.id
+            GROUP BY c.id
+            HAVING SUM(LENGTH(p.path) - LENGTH(REPLACE(p.path, '/', '')) = 1) > 0
+               AND SUM(LENGTH(p.path) - LENGTH(REPLACE(p.path, '/', '')) <> 1) > 0")
+            ->fetchAll(PDO::FETCH_COLUMN);
+
+        hr($apply ? "ERASING cars whose photos are all gone" : "DRY-RUN — cars that would be erased");
+        echo "  cars with NO usable photo left: ".$N(count($ids))."\n";
+        if ($mixed) {
+            echo "  ⚠ ".$N(count($mixed))." car(s) have both lost AND working photos — NOT erased:\n";
+            echo "      ".implode(', ', array_slice($mixed, 0, 20))."\n";
+            echo "    Use &prune=1 instead to drop just their dead rows.\n";
+        }
+        if (!$apply) {
+            echo "\n  Nothing changed. Add &apply=1 to erase.\n";
+            echo "  This removes car_ctlg, car_pht, seo2, schedule rows, the photo\n";
+            echo "  folder and any R2 objects. It is NOT reversible, and the ".count($ids)."\n";
+            echo "  public pages will start returning 404.\n";
+            echo "\nDone.\n"; exit;
+        }
+
+        $carImg = defined('_CAR_IMG') ? _CAR_IMG : 'media/images/upload/car';
+        if ($carImg[0] !== '/' && !preg_match('#^[A-Za-z]:#', $carImg)) {
+            $carImg = rtrim($_SERVER['DOCUMENT_ROOT'] ?? dirname(__DIR__), '/').'/'.ltrim($carImg, '/');
+        }
+        $ok = 0; $fail = 0;
+        foreach ($ids as $id) {
+            $r = \App\Services\CarEraser::erase($db, $prefx, (int)$id, $carImg);
+            $r['ok'] ? $ok++ : $fail++;
+        }
+        echo "  erased: ".$N($ok)."\n";
+        if ($fail) echo "  failed: ".$N($fail)."\n";
+        echo "\nDone.\n"; exit;
+    }
+
+    echo "\n  Two options:\n";
+    echo "    &prune=1   remove only the dead photo rows — pages stay, without a gallery\n";
+    echo "    &erase=1   remove the cars entirely (dry-run; add &apply=1 to confirm)\n";
+    echo "\nDone.\n"; exit;
+}
+
+// ─────────────────────────── MODE: pubqueue ───────────────────────────
+// Why auto-publish fails while the same car goes through fine from the edit
+// form. Shows the queue state and, more importantly, groups the stored error
+// messages so a pattern is visible instead of one-off reports.
+//   ?do=pubqueue        &limit=15 for the newest failures
+if ($do === 'pubqueue') {
+    $limit = max(1, min(60, (int)($_GET['limit'] ?? 15)));
+    $Q = "{$prefx}_parsing_publish_queue";
+    $N = fn($n) => number_format($n);
+
+    hr("queue state");
+    try {
+        foreach ($db->query("SELECT status, COUNT(*) c FROM {$Q} GROUP BY status ORDER BY c DESC") as $r) {
+            echo "  ".str_pad($r['status'], 12).$N($r['c'])."\n";
+        }
+    } catch (\Throwable $e) { echo "  table unavailable: ".$e->getMessage()."\n\nDone.\n"; exit; }
+
+    // The same reason repeated a hundred times is one bug, not a hundred.
+    // Is the queue draining or filling? A growing backlog is not an error, but it
+    // is the thing people mistake for one.
+    hr("throughput, last 6 hours");
+    try {
+        $rows = $db->query("SELECT DATE_FORMAT(finished_at,'%H:00') h, COUNT(*) c,
+                AVG(TIMESTAMPDIFF(SECOND, started_at, finished_at)) secs
+            FROM {$Q} WHERE status='done' AND finished_at >= NOW() - INTERVAL 6 HOUR
+            GROUP BY h ORDER BY h")->fetchAll(PDO::FETCH_ASSOC);
+        if (!$rows) echo "  (nothing finished in the last 6h)\n";
+        foreach ($rows as $r) {
+            printf("  %s  %4d published  ~%0.0fs each\n", $r['h'], $r['c'], (float)$r['secs']);
+        }
+        $pend = (int)$db->query("SELECT COUNT(*) FROM {$Q} WHERE status='pending'")->fetchColumn();
+        $lastH = $rows ? (int)end($rows)['c'] : 0;
+        if ($lastH > 0) {
+            printf("\n  at the current rate, %s pending would take ~%0.1f h to clear\n",
+                $N($pend), $pend / $lastH);
+        }
+    } catch (\Throwable $e) { echo "  (rate unavailable: ".$e->getMessage().")\n"; }
+
+    hr("failure reasons, most common first");
+    $rows = $db->query("SELECT error, COUNT(*) c, MAX(finished_at) last_seen
+        FROM {$Q} WHERE status = 'failed' AND error IS NOT NULL AND error <> ''
+        GROUP BY error ORDER BY c DESC LIMIT 20")->fetchAll(PDO::FETCH_ASSOC);
+    if (!$rows) echo "  (no failed jobs with a stored error)\n";
+    foreach ($rows as $r) {
+        echo "  ".str_pad('×'.$r['c'], 8)." last ".($r['last_seen'] ?: '?')."\n";
+        echo "      ".substr(str_replace(["\n", "\r"], ' ', (string)$r['error']), 0, 200)."\n";
+    }
+
+    // Retrying jobs carry an error too, and those are the ones still moving.
+    hr("pending jobs that already errored once");
+    $rows = $db->query("SELECT error, COUNT(*) c FROM {$Q}
+        WHERE status = 'pending' AND error IS NOT NULL AND error <> ''
+        GROUP BY error ORDER BY c DESC LIMIT 10")->fetchAll(PDO::FETCH_ASSOC);
+    if (!$rows) echo "  (none)\n";
+    foreach ($rows as $r) {
+        echo "  ×".str_pad($r['c'], 6).substr(str_replace(["\n", "\r"], ' ', (string)$r['error']), 0, 180)."\n";
+    }
+
+    hr("newest failures, one line each");
+    $rows = $db->query("SELECT id, parsing_car_id, car_ctlg_id, attempts, finished_at, error
+        FROM {$Q} WHERE status = 'failed' ORDER BY finished_at DESC LIMIT {$limit}")->fetchAll(PDO::FETCH_ASSOC);
+    foreach ($rows as $r) {
+        printf("  job %-7s parsing %-8s attempts %-3s %s\n    %s\n",
+            $r['id'], $r['parsing_car_id'], $r['attempts'], $r['finished_at'] ?: '?',
+            substr(str_replace(["\n", "\r"], ' ', (string)$r['error']), 0, 180));
+    }
+    if (!$rows) echo "  (none)\n";
+    echo "\nDone.\n"; exit;
+}
+
+// ─────────────────────────── MODE: photocount ───────────────────────────
+// Where photos are lost between the source and the sauto ad. Shows, per source,
+// how many URLs the parsing row holds versus how many rows ended up in car_pht,
+// so a cap can be traced to the adapter, the enrichment, or ParsingPublisher.
+//   ?do=photocount           newest published cars per source
+//   &source=auto1            one source   &limit=8   &id=<car_ctlg id>
+if ($do === 'photocount') {
+    $limit  = max(1, min(40, (int)($_GET['limit'] ?? 8)));
+    $only   = trim((string)($_GET['source'] ?? ''));
+    $id     = (int)($_GET['id'] ?? 0);
+
+    $sources = $only !== '' ? [$only] : ['encar', 'ecarstrade', 'openlane', 'auto1'];
+    if ($id > 0) {
+        $r = $db->query("SELECT pc.source FROM {$P} pc WHERE pc.car_ctlg_id = {$id} LIMIT 1")->fetchColumn();
+        $sources = [$r ?: 'unknown'];
+    }
+
+    echo "  sauto cap now: Encar = ALL, eCarsTrade/OpenLane/Auto1 = 20\n";
+    echo "  999 cap:       10 for every parsing car\n";
+
+    foreach ($sources as $src) {
+        hr($src);
+        $where = $id > 0 ? "pc.car_ctlg_id = {$id}" : "pc.source = ".$db->quote($src)." AND pc.car_ctlg_id > 0";
+        $rows = $db->query("SELECT pc.car_ctlg_id cid, pc.images_local, cc.date
+            FROM {$P} pc JOIN {$C} cc ON cc.id = pc.car_ctlg_id
+            WHERE {$where} ORDER BY pc.car_ctlg_id DESC LIMIT {$limit}")->fetchAll(PDO::FETCH_ASSOC);
+        if (!$rows) { echo "  (no published cars)\n"; continue; }
+
+        printf("  %-8s %-10s %-9s %-9s %s\n", 'car', 'published', 'urls', 'car_pht', 'verdict');
+        foreach ($rows as $r) {
+            $cid  = (int)$r['cid'];
+            $imgs = json_decode($r['images_local'] ?? '[]', true);
+            $urls = is_array($imgs) ? count($imgs) : 0;
+            $pht  = (int)$db->query("SELECT COUNT(*) FROM {$prefx}_car_pht WHERE it_id = {$cid}")->fetchColumn();
+            $when = $r['date'] > 0 ? date('m-d H:i', (int)$r['date']) : '?';
+
+            // Fewer URLs than photos on the ad means the source itself gave us
+            // that many — no cap in our code can raise it.
+            $verdict = $urls === 0 ? 'no urls stored'
+                     : ($pht >= $urls ? 'took everything the source had'
+                     : 'capped at publish time ('.$pht.' of '.$urls.')');
+            printf("  %-8d %-10s %-9d %-9d %s\n", $cid, $when, $urls, $pht, $verdict);
+        }
+    }
+    echo "\n  urls    = entries in parsing_cars.images_local (what we have from the source)\n";
+    echo "  car_pht = photos actually on the sauto ad\n";
+    echo "  Equal numbers mean the SOURCE is the limit, not our cap.\n";
+    echo "\nDone.\n"; exit;
+}
+
+// ─────────────────────────── MODE: dedupqueue ───────────────────────────
+// Remove duplicate PENDING schedule rows — the same car queued more than once on
+// the same channel, which happens when the crosspost button is clicked twice and
+// would post the identical car several times over. Keeps the earliest row.
+// Dry-run unless &apply=1.
+if ($do === 'dedupqueue') {
+    $apply = ($_GET['apply'] ?? '') === '1';
+    $N = fn($n) => number_format($n);
+
+    // 999 republishes cars on a cycle, so several pending rows for one car at
+    // DIFFERENT dates are legitimate there. Default to the social channels only;
+    // &chan= picks explicitly.
+    $all = ['fb' => ['Facebook', $SFB, 'scheduled_date', 'scheduled_time'],
+            'tg' => ['Telegram', $STG, 'scheduled_date', 'scheduled_time'],
+            '999' => ['999.md',  $S999, 'schedule_date',  'schedule_time']];
+    $pick = trim((string)($_GET['chan'] ?? 'fb,tg'));
+    $chans = [];
+    foreach (explode(',', $pick) as $k) if (isset($all[trim($k)])) $chans[] = $all[trim($k)];
+    if (!$chans) { echo "  &chan= must be fb, tg, 999 or a comma list\n\nDone.\n"; exit; }
+    echo "  channels: {$pick}   (999 excluded by default — it republishes on a cycle)\n";
+    $total = 0;
+
+    foreach ($chans as [$name, $tbl, $dCol, $tCol]) {
+        hr($name);
+        try {
+            // Group pending rows per car; anything past the first is a duplicate.
+            $rows = $db->query("SELECT car_id, COUNT(*) c, MIN(id) keep,
+                    COUNT(DISTINCT CONCAT({$dCol},' ',{$tCol})) slots
+                FROM {$tbl} WHERE status='pending'
+                GROUP BY car_id HAVING c > 1 ORDER BY c DESC")->fetchAll(PDO::FETCH_ASSOC);
+            if (!$rows) { echo "  ✓ no duplicates\n"; continue; }
+
+            $extra = 0;
+            foreach ($rows as $r) $extra += (int)$r['c'] - 1;
+            echo "  cars queued more than once: ".$N(count($rows))."\n";
+            echo "  redundant rows            : ".$N($extra)."\n";
+            foreach (array_slice($rows, 0, 10) as $r) {
+                // slots == 1 means every copy is at the SAME moment: a real
+                // double-click. slots > 1 means spread dates — likely intentional.
+                $flag = (int)$r['slots'] === 1 ? 'same time — true duplicate' : "{$r['slots']} different times — CHECK";
+                echo "    car ".str_pad($r['car_id'], 7)." × {$r['c']}  ({$flag})\n";
+            }
+
+            if ($apply) {
+                $del = $db->prepare("DELETE FROM {$tbl}
+                    WHERE status='pending' AND car_id = ? AND id <> ?");
+                $n = 0;
+                foreach ($rows as $r) { $del->execute([$r['car_id'], $r['keep']]); $n += $del->rowCount(); }
+                echo "  → deleted ".$N($n)." row(s)\n";
+                $total += $n;
+            } else {
+                $total += $extra;
+            }
+        } catch (\Throwable $e) {
+            echo "  table unavailable: ".$e->getMessage()."\n";
+        }
+    }
+
+    echo $apply
+        ? "\n  ✓ removed ".$N($total)." duplicate row(s)\n"
+        : "\n  ".$N($total)." duplicate row(s) would be removed. Add &apply=1.\n";
+    echo "\nDone.\n"; exit;
+}
+
+// ─────────────────────────── MODE: queue ───────────────────────────
+// What is waiting to be published on each channel and WHEN. Answers the usual
+// "I pressed the button ten minutes ago and nothing happened" — posts are given
+// a spread-out time, so pending simply means the hour has not come yet.
+//   ?do=queue            &id=<car_ctlg id> to look at one car
+if ($do === 'queue') {
+    $id  = (int)($_GET['id'] ?? 0);
+    $now = (string)$db->query("SELECT NOW()")->fetchColumn();
+    $N   = fn($n) => number_format($n);
+
+    $chans = [
+        'Facebook' => [$SFB, 'scheduled_date', 'scheduled_time'],
+        'Telegram' => [$STG, 'scheduled_date', 'scheduled_time'],
+        '999.md'   => [$S999, 'schedule_date',  'schedule_time'],
+    ];
+
+    foreach ($chans as $name => [$tbl, $dCol, $tCol]) {
+        hr($name);
+        try {
+            $where = $id > 0 ? " AND car_id = {$id}" : '';
+            $due  = (int)$db->query("SELECT COUNT(*) FROM {$tbl}
+                WHERE status='pending' AND CONCAT({$dCol},' ',{$tCol}) <= '{$now}'{$where}")->fetchColumn();
+            $later = (int)$db->query("SELECT COUNT(*) FROM {$tbl}
+                WHERE status='pending' AND CONCAT({$dCol},' ',{$tCol}) > '{$now}'{$where}")->fetchColumn();
+            echo "  due now (cron will take these): ".$N($due)."\n";
+            echo "  scheduled for later          : ".$N($later)."\n";
+
+            $rows = $db->query("SELECT car_id, {$dCol} d, {$tCol} t, status FROM {$tbl}
+                WHERE status='pending'{$where} ORDER BY {$dCol}, {$tCol} LIMIT 8")->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($rows as $r) {
+                $when = $r['d'].' '.$r['t'];
+                echo "    car ".str_pad($r['car_id'], 7)." → {$when}  ".($when <= $now ? '(due)' : '(waiting)')."\n";
+            }
+            if (!$rows) echo "    (nothing pending".($id ? " for car {$id}" : '').")\n";
+        } catch (\Throwable $e) {
+            echo "  table unavailable: ".$e->getMessage()."\n";
+        }
+    }
+    echo "\n  server time: {$now}\n";
+    echo "  Posts get a spread-out time (App/Helper/RandomTimeHelper), so a fresh\n";
+    echo "  one normally waits. 'due now' > 0 with nothing publishing = a real problem.\n";
+    echo "\nDone.\n"; exit;
+}
+
+// ─────────────────────────── MODE: r2svc ───────────────────────────
+// Exercise CarPhotoR2 in isolation before it is wired into the admin: path
+// resolution, key mapping, and — the part that actually matters — reading a
+// photo whose local copy is gone, straight from R2. Read-only apart from one
+// temp file it cleans up itself. ?do=r2svc
+if ($do === 'r2svc') {
+    $S = '\App\Services\CarPhotoR2';
+    hr("CarPhotoR2 self-test");
+    if (!class_exists($S)) { echo "  ✗ class not found — is App/Services/CarPhotoR2.php uploaded?\n\nDone.\n"; exit; }
+    echo "  ✓ class loads\n";
+    echo "  base: ".$S::base()."\n";
+
+    // A real photo to work with.
+    $row = $db->query("SELECT p.path, p.name, p.ff, p.it_id FROM {$prefx}_car_pht p
+        JOIN {$C} c ON c.id = p.it_id ORDER BY p.id DESC LIMIT 1")->fetch(PDO::FETCH_ASSOC);
+    if (!$row) { echo "  no car_pht rows\n\nDone.\n"; exit; }
+    $rel = $row['path'].'/'.$row['it_id'].'/high/'.$row['name'].'.'.($row['ff'] ?: 'jpg');
+
+    // 1. Path resolution — the uploads pass a relative path, parsing an absolute one.
+    $relInput = (defined('_CAR_IMG') ? _CAR_IMG : 'media/images/upload/car').'/'.$rel;
+    $absInput = $S::base().'/'.$rel;
+    hr("path handling");
+    echo "  relative in : {$relInput}\n";
+    echo "    → abs     : ".$S::abs($relInput)."\n";
+    echo "    → key     : ".$S::keyFor($relInput)."\n";
+    echo "  absolute in : {$absInput}\n";
+    echo "    → key     : ".$S::keyFor($absInput)."\n";
+    // sauto_personal_cron builds __DIR__.'/../media/...', so the key has to
+    // survive a ".." in the middle — that leftover is what broke 999 uploads.
+    // base() is <docroot>/media/images/upload/car, hence four levels up.
+    $dotdot = dirname($S::base(), 4).'/console/../media/images/upload/car/'.$rel;
+    echo "  with ../    : {$dotdot}\n";
+    echo "    → key     : ".($S::keyFor($dotdot) ?: '(EMPTY — normalisation broken)')."\n";
+    echo "  ".($S::keyFor($relInput) === $rel && $S::keyFor($absInput) === $rel && $S::keyFor($dotdot) === $rel
+        ? "✓ all three forms map to the same key: {$rel}"
+        : "✗ MISMATCH — expected {$rel}")."\n";
+
+    // 2. Local read.
+    hr("read while the file is still on disk");
+    echo "  exists(): ".($S::exists($absInput) ? 'true' : 'false')."\n";
+    $b = $S::read($absInput);
+    echo "  read():   ".($b === null ? 'NULL ✗' : number_format(strlen($b)).' bytes ✓')."\n";
+
+    // 3. The real test: a key that exists in R2 with no file on disk. Those are
+    // the cars deleted after their photos were copied — exactly the situation
+    // every read site will be in once the local copies are removed.
+    hr("read a photo that is NOT on disk (the post-cleanup case)");
+    $r2 = \App\Services\R2Client::fromEnv();
+    $orphanKey = null;
+    if ($r2) {
+        $token = null; $scanned = 0;
+        do {
+            [$page, $token] = $r2->listObjects(substr($rel, 0, 10), $token);
+            foreach ($page as $k => $sz) {
+                $scanned++;
+                if (!is_file($S::base().'/'.$k)) { $orphanKey = $k; break 2; }
+            }
+        } while ($token !== null && $scanned < 5000);
+    }
+    if ($orphanKey === null) {
+        echo "  (no R2 object without a local file found in the sample — skipped)\n";
+    } else {
+        $p = $S::base().'/'.$orphanKey;
+        echo "  key: {$orphanKey}\n";
+        echo "  on disk: ".(is_file($p) ? 'yes' : 'NO — good, this is the case we want')."\n";
+        $b2 = $S::read($p);
+        echo "  read():  ".($b2 === null ? 'NULL ✗ fallback FAILED' : number_format(strlen($b2)).' bytes ✓ came from R2')."\n";
+        $tmp = $S::localCopy($p);
+        echo "  localCopy(): ".($tmp === null ? 'NULL ✗' : $tmp.' ✓')."\n";
+        if ($tmp && is_file($tmp)) echo "  temp size: ".number_format(filesize($tmp))." bytes (removed on shutdown)\n";
+    }
+    echo "\nDone.\n"; exit;
+}
+
+// ─────────────────────────── MODE: r2car ───────────────────────────
+// Compare ONE car's photos on disk against R2. Use it after publishing/uploading
+// to prove the write path mirrors into the bucket. ?do=r2car&id=<car_ctlg id>
+if ($do === 'r2car') {
+    $id = (int)($_GET['id'] ?? 0);
+    if ($id <= 0) { echo "  pass &id=<car_ctlg id>\n\nDone.\n"; exit; }
+    $r2 = \App\Services\R2Client::fromEnv();
+    if (!$r2) { echo "  R2 not configured (.env)\n\nDone.\n"; exit; }
+
+    $row = $db->query("SELECT id, br_nm, mo_nm, p_path FROM {$C} WHERE id={$id}")->fetch(PDO::FETCH_ASSOC);
+    if (!$row) { echo "  car #{$id} not in car_ctlg\n\nDone.\n"; exit; }
+
+    $carImg = defined('_CAR_IMG') ? _CAR_IMG : 'media/images/upload/car';
+    if ($carImg[0] !== '/' && !preg_match('#^[A-Za-z]:#', $carImg)) {
+        $carImg = rtrim($_SERVER['DOCUMENT_ROOT'] ?? dirname(__DIR__), '/').'/'.ltrim($carImg, '/');
+    }
+    $prefix = trim((string)$row['p_path'], '/').'/'.$id.'/';
+    $dir    = rtrim($carImg, '/').'/'.$prefix;
+
+    hr("car #{$id} — {$row['br_nm']} {$row['mo_nm']}");
+    echo "  prefix: {$prefix}\n";
+
+    // Disk side.
+    $disk = [];
+    $walk = function (string $d, string $rel) use (&$walk, &$disk) {
+        foreach (array_diff(@scandir($d) ?: [], ['.','..']) as $f) {
+            $p = $d.'/'.$f;
+            if (is_dir($p)) { $walk($p, $rel.$f.'/'); continue; }
+            $disk[$rel.$f] = (int)@filesize($p);
+        }
+    };
+    if (is_dir($dir)) $walk(rtrim($dir, '/'), '');
+
+    // R2 side.
+    $inR2 = []; $token = null;
+    do {
+        [$page, $token] = $r2->listObjects($prefix, $token);
+        foreach ($page as $k => $sz) $inR2[substr($k, strlen($prefix))] = $sz;
+    } while ($token !== null);
+
+    echo "  on disk: ".count($disk)." file(s)\n";
+    echo "  in R2:   ".count($inR2)." object(s)\n\n";
+
+    $missing = array_diff_key($disk, $inR2);
+    $extra   = array_diff_key($inR2, $disk);
+    $sizeBad = [];
+    foreach ($disk as $k => $sz) if (isset($inR2[$k]) && $inR2[$k] !== $sz) $sizeBad[] = $k;
+
+    if (!$missing && !$sizeBad) echo "  ✓ every local file is in R2, same size\n";
+    else {
+        if ($missing) { echo "  ✗ MISSING from R2 (".count($missing)."):\n";
+            foreach (array_slice(array_keys($missing), 0, 10) as $k) echo "      {$k}\n"; }
+        if ($sizeBad) { echo "  ✗ size mismatch (".count($sizeBad)."):\n";
+            foreach (array_slice($sizeBad, 0, 10) as $k) echo "      {$k}\n"; }
+    }
+    if ($extra) {
+        echo "  ⓘ in R2 but not on disk (".count($extra)."): normal only if the local\n";
+        echo "    copies were already deleted for this car.\n";
+        foreach (array_slice(array_keys($extra), 0, 5) as $k) echo "      {$k}\n";
+    }
+    echo "\nDone.\n"; exit;
+}
+
+// ─────────────────────────── MODE: fiximgs ───────────────────────────
+// Rewrite parsing_cars.images_local from local uploads/parsing/ file references to
+// the original remote URLs kept in raw_data, so that folder can be deleted without
+// blanking the /parsing catalog. Dry-run unless &apply=1. &limit=N (default 2000).
+if ($do === 'fiximgs') {
+    @set_time_limit(0);
+    $apply = ($_GET['apply'] ?? '') === '1';
+    $limit = max(1, (int)($_GET['limit'] ?? 2000));
+    $N = fn($n) => number_format($n);
+
+    $total = (int)$db->query("SELECT COUNT(*) FROM {$P} WHERE images_local LIKE '%\"path\"%'")->fetchColumn();
+    hr($apply ? "REWRITING images_local → remote URLs" : "DRY-RUN — images_local still pointing at local files");
+    echo "  rows referencing uploads/parsing files: ".$N($total)."\n";
+    if ($total === 0) { echo "\n  ✓ nothing to fix — uploads/parsing is safe to delete\n\nDone.\n"; exit; }
+
+    $rows = $db->query("SELECT id, raw_data, images_local FROM {$P}
+        WHERE images_local LIKE '%\"path\"%' LIMIT {$limit}")->fetchAll(PDO::FETCH_ASSOC);
+
+    $upd = $db->prepare("UPDATE {$P} SET images_local = ? WHERE id = ?");
+    $fixed = 0; $noUrls = []; $sample = null;
+    foreach ($rows as $r) {
+        $raw  = json_decode($r['raw_data'] ?? '{}', true);
+        $urls = $raw['images'] ?? [];
+        // raw_data is the only place the original CDN links survive; without it the
+        // row keeps its local paths and must be left alone rather than blanked.
+        if (!is_array($urls) || empty($urls)) { $noUrls[] = (int)$r['id']; continue; }
+        $json = json_encode(array_map(fn($u) => ['url' => $u], array_values($urls)), JSON_UNESCAPED_UNICODE);
+        if ($sample === null) $sample = ['id' => (int)$r['id'], 'n' => count($urls), 'first' => (string)$urls[0]];
+        if ($apply) $upd->execute([$json, (int)$r['id']]);
+        $fixed++;
+    }
+
+    echo "  this batch: ".$N(count($rows))."\n";
+    echo ($apply ? "  rewritten: " : "  would rewrite: ").$N($fixed)."\n";
+    if ($sample) {
+        echo "  sample #{$sample['id']}: {$sample['n']} image(s), first → {$sample['first']}\n";
+    }
+    if ($noUrls) {
+        echo "  ⚠ ".$N(count($noUrls))." row(s) have NO urls in raw_data — left as-is:\n";
+        echo "      ids: ".implode(', ', array_slice($noUrls, 0, 10))."\n";
+        echo "      → their cards lose the photo if uploads/parsing is deleted.\n";
+    }
+    $left = $total - ($apply ? $fixed : 0);
+    echo "  remaining after this pass: ".$N(max(0, $left))."\n";
+    if (!$apply) {
+        echo "\n  To apply:  ?token=cron2026&do=fiximgs&apply=1&limit={$limit}\n";
+        echo "  Nothing was changed now.\n";
+    } elseif ($left > 0) {
+        echo "\n  → re-run to continue.\n";
+    } else {
+        echo "\n  ✓ done — uploads/parsing can now be deleted.\n";
+    }
+    echo "\nDone.\n"; exit;
+}
+
+// ─────────────────────────── MODE: orphans ───────────────────────────
+// Delete photo folders whose car no longer exists in car_ctlg — dead weight left by
+// the delete paths that dropped the DB row but not the files. Dry-run unless &apply=1.
+//   ?do=orphans                  dry-run: counts, size, sample of ids
+//   ?do=orphans&apply=1          delete one batch (&limit=N, default 400)
+//   &budget=240                  seconds per run before stopping cleanly
+// Safety: every id is re-checked against car_ctlg immediately before its folder goes,
+// every path must resolve inside the car-img tree, and folders whose id still has
+// car_pht rows are reported instead of deleted (that's a DB inconsistency, not junk).
+if ($do === 'orphans') {
+    @set_time_limit(0);
+    $apply    = ($_GET['apply'] ?? '') === '1';
+    $limit    = max(1, (int)($_GET['limit'] ?? 400));
+    $deadline = time() + max(30, (int)($_GET['budget'] ?? 240));
+    $carImg = defined('_CAR_IMG') ? _CAR_IMG : 'media/images/upload/car';
+    if ($carImg[0] !== '/' && !preg_match('#^[A-Za-z]:#', $carImg)) {
+        $carImg = rtrim($_SERVER['DOCUMENT_ROOT'] ?? dirname(__DIR__), '/').'/'.ltrim($carImg, '/');
+    }
+    $norm     = fn(string $p) => str_replace('\\', '/', $p);
+    $realBase = realpath($carImg);
+    if ($realBase === false) { echo "  car-img base not found: {$carImg}\n\nDone.\n"; exit; }
+    $realBase = rtrim($norm($realBase), '/');
+
+    $G = fn($b) => number_format($b / 1073741824, 2).' GB';
+    $N = fn($n) => number_format($n);
+
+    // Enumerate <year>/<month>/<car_id> without stat'ing files — cheap.
+    // car_id => LIST of dirs: one car can own folders under two month paths, and
+    // keying id => one path deletes only the last one while the rest survive.
+    $onDisk = [];
+    foreach (array_diff(@scandir($carImg) ?: [], ['.','..']) as $y) {
+        $yp = $carImg.'/'.$y; if (!is_dir($yp)) continue;
+        foreach (array_diff(@scandir($yp) ?: [], ['.','..']) as $m) {
+            $mp = $yp.'/'.$m; if (!is_dir($mp)) continue;
+            foreach (array_diff(@scandir($mp) ?: [], ['.','..']) as $cid) {
+                if (!ctype_digit($cid)) continue;
+                $p = $mp.'/'.$cid;
+                if (is_dir($p)) $onDisk[(int)$cid][] = $p;
+            }
+        }
+    }
+    $dbIds  = array_flip(array_map('intval', $db->query("SELECT id FROM {$C}")->fetchAll(PDO::FETCH_COLUMN)));
+    $phtIds = array_flip(array_map('intval', $db->query("SELECT DISTINCT it_id FROM {$prefx}_car_pht")->fetchAll(PDO::FETCH_COLUMN)));
+
+    $orphans = []; $inconsistent = []; $orphanDirs = 0; $dupIds = 0; $dirsTotal = 0;
+    foreach ($onDisk as $id => $paths) {
+        $dirsTotal += count($paths);
+        if (isset($dbIds[$id])) continue;                           // car alive → keep
+        if (isset($phtIds[$id])) { $inconsistent[$id] = $paths; continue; } // photos w/o car row
+        $orphans[$id] = $paths;
+        $orphanDirs += count($paths);
+        if (count($paths) > 1) $dupIds++;
+    }
+
+    // Recursive delete that also reports what it freed.
+    $rmCount = function(string $dir) use (&$rmCount): array {
+        $b = 0; $f = 0;
+        foreach (array_diff(@scandir($dir) ?: [], ['.','..']) as $it) {
+            $p = $dir.'/'.$it;
+            if (is_link($p)) { @unlink($p); continue; }
+            if (is_dir($p)) { [$sb, $sf] = $rmCount($p); $b += $sb; $f += $sf; }
+            else { $b += (int)@filesize($p); if (@unlink($p)) $f++; }
+        }
+        @rmdir($dir);
+        return [$b, $f];
+    };
+
+    hr($apply ? "DELETING orphan photo folders" : "DRY-RUN — orphan photo folders (add &apply=1)");
+    echo "  photo folders on disk: ".$N($dirsTotal)."   (".$N(count($onDisk))." distinct car ids)\n";
+    echo "  cars in car_ctlg:      ".$N(count($dbIds))."\n";
+    echo "  ORPHAN car ids:        ".$N(count($orphans))."\n";
+    echo "  ORPHAN folders:        ".$N($orphanDirs).($dupIds > 0
+        ? "   (".$N($dupIds)." id(s) own more than one folder)" : '')."\n";
+    if ($inconsistent) {
+        echo "  ⚠ skipped (car_pht rows exist but no car_ctlg row): ".$N(count($inconsistent))."\n";
+        echo "    ids: ".implode(', ', array_slice(array_keys($inconsistent), 0, 10))."\n";
+        echo "    → DB inconsistency, not junk. Left untouched on purpose.\n";
+    }
+    if (!$orphans) { echo "\n  ✓ nothing to clean\n\nDone.\n"; exit; }
+
+    // Flat list of every orphan dir, used for both sizing and deleting.
+    $flat = [];
+    foreach ($orphans as $id => $paths) { foreach ($paths as $p) $flat[] = [$id, $p]; }
+
+    if (!$apply) {
+        // Size an evenly spread sample and extrapolate — walking 18k folders is slow.
+        $tot = count($flat);
+        $step = max(1, (int)floor($tot / 150));
+        $sb = 0; $sn = 0;
+        $walk = function(string $d) use (&$walk): int {
+            if (!is_dir($d)) return 0; $s = 0;
+            foreach (array_diff(@scandir($d) ?: [], ['.','..']) as $f) {
+                $p = $d.'/'.$f; $s += is_dir($p) ? $walk($p) : (int)@filesize($p);
+            }
+            return $s;
+        };
+        for ($i = 0; $i < $tot; $i += $step) { $sb += $walk($flat[$i][1]); $sn++; if (time() > $deadline) break; }
+        $est = $sn > 0 ? (int)($sb / $sn * $tot) : 0;
+        echo "\n  estimated space to free: ".$G($est)."   [from {$sn} sampled folders]\n";
+        echo "  sample ids: ".implode(', ', array_slice(array_keys($orphans), 0, 12))."\n";
+        echo "\n  To delete, run in batches:\n";
+        echo "    ?token=cron2026&do=orphans&apply=1&limit={$limit}\n";
+        echo "  Re-run until it reports 0 remaining. Nothing was changed now.\n";
+        echo "\nDone.\n"; exit;
+    }
+
+    // ── apply ───────────────────────────────────────────────────────────────
+    $recheck = $db->prepare("SELECT 1 FROM {$C} WHERE id = ? LIMIT 1");
+    $alive   = [];   // ids re-checked this run, so we query each id once
+    $done = 0; $freedB = 0; $freedF = 0; $skipped = 0; $failed = []; $processed = 0;
+
+    foreach ($flat as [$id, $dir]) {
+        if ($done >= $limit || time() > $deadline) break;
+        $processed++;
+
+        // Re-check live: the listing is a snapshot and a car could have been
+        // (re)created since. Cached per id — one car can have several folders.
+        if (!array_key_exists($id, $alive)) {
+            $recheck->execute([$id]);
+            $alive[$id] = (bool)$recheck->fetchColumn();
+        }
+        if ($alive[$id]) { $skipped++; continue; }
+
+        // Never delete outside the car-img tree, whatever the listing said.
+        $real = realpath($dir);
+        if ($real === false) { $skipped++; continue; }
+        $real = $norm($real);
+        if (strpos($real, $realBase.'/') !== 0) { $skipped++; continue; }
+
+        [$b, $f] = $rmCount($dir);
+        // Verify it actually went. rmdir() fails silently on a non-empty or
+        // read-only dir, and a silent failure here is what made the first run
+        // report folders as deleted while they were still on disk.
+        if (is_dir($dir)) { $failed[] = $dir; continue; }
+        $freedB += $b; $freedF += $f; $done++;
+    }
+
+    $remaining = count($flat) - $processed;
+    echo "\n  deleted: ".$N($done)." folder(s), ".$N($freedF)." file(s), ".$G($freedB)." freed\n";
+    if ($skipped) echo "  skipped (car reappeared or path check failed): ".$N($skipped)."\n";
+    if ($failed) {
+        echo "  ⚠ FAILED to remove ".$N(count($failed))." folder(s) — still on disk:\n";
+        foreach (array_slice($failed, 0, 5) as $d) echo "      {$d}\n";
+        echo "    → likely a permissions problem. Send me one of these paths.\n";
+    }
+    echo "  remaining in this listing: ".$N(max(0, $remaining))."\n";
+    echo $remaining > 0
+        ? "\n  → re-run the same URL to continue.\n"
+        : "\n  ✓ this listing is done — re-run the dry-run to confirm.\n";
     echo "\nDone.\n"; exit;
 }
 

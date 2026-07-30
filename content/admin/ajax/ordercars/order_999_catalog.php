@@ -504,7 +504,10 @@ if (__post('sub') == 'get_subcategory') {
                 foreach ($imgs[0] as $img) {
                     $imgPath = $_SERVER['DOCUMENT_ROOT'] . '/media/images/upload/car/' . $img['path'] . '/' . $img['it_id'] . '/high/' . $img['name'] . '.' . $img['ff'];
 
-                    if (!file_exists($imgPath)) {
+                    // Pulls from R2 when the local copy is gone; temp is removed
+                    // on shutdown.
+                    $imgPath = \App\Services\CarPhotoR2::localCopy($imgPath);
+                    if ($imgPath === null) {
                         continue;
                     }
 

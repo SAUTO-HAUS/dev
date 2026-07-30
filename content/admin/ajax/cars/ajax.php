@@ -224,29 +224,33 @@ elseif ( __post('fn')=='erase' ){
         $p_path = $r['p_path'];
     }
 	
-	$checker = 0;
-	$pdo = $db->prepare('SELECT * FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id');
-	$pdo->execute([ 'it_id' => __post('id') ]);
-	foreach ($pdo as $p){ $checker = 1; }
-	
-	if ($checker == 1){
-		if ( (isset($it_id)&&$it_id!='') && (isset($p_path)&&$p_path!='') ){
+	// --- CHANGELOG: log erase ---
+	car_changelog_log($db, $prefx, ['car_id' => __post('id'), 'action' => 'erase', 'catalog_type' => 'cars']);
+
+	// Drop the catalog row FIRST, then clean up only if it really went. act="0"
+	// means "already in trash"; erasing an active car must stay a no-op, or we'd
+	// wipe the photos of a car that keeps showing on the site.
+	$pdo = $db->prepare('DELETE FROM '.$prefx.'_car_ctlg WHERE `id`=:id AND `act`="0" ');
+    $pdo->execute([ 'id' => __post('id') ]);
+
+	if ( $pdo->rowCount() > 0 ){
+		// Folder goes regardless of car_pht rows: an earlier unpublish may have
+		// already cleared them, and the folder would then survive as an orphan.
+		if ( !empty($it_id) && !empty($p_path) ){
 			$dir_name = $photo_folder.'/'.$p_path.'/'.$it_id.'/';
 			if ( file_exists($dir_name) ){
 				removeIt( $dir_name, true );
 			}
+			// Same photos in R2 — otherwise they stay stored, and paid for,
+			// after the car has been erased everywhere else.
+			try { \App\Services\CarPhotoR2::deleteCar((string)$p_path, (int)$it_id); }
+			catch (\Throwable $e) { /* non-fatal */ }
 		}
 		$pdo = $db->prepare('DELETE FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id');
-        $pdo->execute([ 'it_id' => __post('id') ]);
-	;}
-
-	// --- CHANGELOG: log erase ---
-	car_changelog_log($db, $prefx, ['car_id' => __post('id'), 'action' => 'erase', 'catalog_type' => 'cars']);
-
-	$pdo = $db->prepare('DELETE FROM '.$prefx.'_car_ctlg WHERE `id`=:id AND `act`="0" ');
-    $pdo->execute([ 'id' => __post('id') ]);
-	$pdo = $db->prepare('DELETE FROM '.$prefx.'_seo2 WHERE `tp`="item" AND `p1`="cars" AND `it_id`=:it_id ');
-    $pdo->execute([ 'it_id' => __post('id') ]);
+		$pdo->execute([ 'it_id' => __post('id') ]);
+		$pdo = $db->prepare('DELETE FROM '.$prefx.'_seo2 WHERE `tp`="item" AND `p1`="cars" AND `it_id`=:it_id ');
+		$pdo->execute([ 'it_id' => __post('id') ]);
+	}
 	$returnIt = [
         'fn'=>__post('fn'),
         'id'=>__post('photo_id')

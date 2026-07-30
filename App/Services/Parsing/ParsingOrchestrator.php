@@ -88,7 +88,7 @@ class ParsingOrchestrator
                     }
 
                     foreach ($cars as $raw) {
-                        $result = $this->ingestCar($raw, (int)$filter['id'], $fast);
+                        $result = $this->ingestCar($raw, (int)$filter['id'], true);
                         if ($result === 'imported')       $imported++;
                         elseif ($result === 'duplicate')  $duplicates++;
                         else                              $skipped++;

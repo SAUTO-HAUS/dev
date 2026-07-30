@@ -46,11 +46,56 @@ try {
 
     $tr = translate_korean_trims($db, 'gh3sp');
     echo "[" . date('Y-m-d H:i:s') . "] Trims translated: {$tr}\n";
+
+    [$pruned, $freed] = prune_tmp();
+    echo "[" . date('Y-m-d H:i:s') . "] tmp pruned: {$pruned} file(s), "
+        . number_format($freed / 1048576, 1) . " MB freed\n";
 } catch (\Throwable $e) {
     echo "[" . date('Y-m-d H:i:s') . "] Enrich error: " . $e->getMessage() . "\n";
 } finally {
     flock($lockHandle, LOCK_UN);
     fclose($lockHandle);
+}
+
+/**
+ * Keep tmp/ from growing forever. Nothing else ever deletes these:
+ *  - parsing_imgcache/*.jpg : proxy cache whose 7-day TTL only invalidates on read,
+ *    so entries for cars nobody opens again stayed on disk for good (~5 GB, 28k files).
+ *  - pub_*.jpg / up_*.jpg   : publish/upload temps orphaned when a request dies
+ *    between writing the temp and unlinking it.
+ *  - *.zip                  : photo archives, only cleared on the next download.
+ * Returns [files removed, bytes freed].
+ */
+function prune_tmp(): array
+{
+    // Under CLI DOCUMENT_ROOT is an empty string rather than unset, so `??` alone
+    // would leave us pruning "/tmp" on the server root. Check the value, not just
+    // whether the key exists.
+    $root = $_SERVER['DOCUMENT_ROOT'] ?? '';
+    if ($root === '' || !is_dir($root)) $root = dirname(__DIR__);
+    $root = rtrim($root, '/');
+    $now  = time();
+    // Match the cache TTL in parsing_image_fetch_cached(): anything older is a
+    // miss anyway and would be refetched, so deleting it costs nothing.
+    $rules = [
+        ['dir' => $root.'/tmp/parsing_imgcache', 'glob' => '*.jpg', 'age' => 7 * 86400],
+        ['dir' => $root.'/tmp',                  'glob' => 'pub_*.jpg', 'age' => 86400],
+        ['dir' => $root.'/tmp',                  'glob' => 'up_*.jpg',  'age' => 86400],
+        ['dir' => $root.'/tmp',                  'glob' => '*.zip',     'age' => 86400],
+    ];
+
+    $files = 0; $bytes = 0;
+    foreach ($rules as $r) {
+        if (!is_dir($r['dir'])) continue;
+        foreach (glob($r['dir'].'/'.$r['glob']) ?: [] as $f) {
+            if (!is_file($f)) continue;
+            $mtime = @filemtime($f);
+            if ($mtime === false || ($now - $mtime) < $r['age']) continue;
+            $sz = (int)@filesize($f);
+            if (@unlink($f)) { $files++; $bytes += $sz; }
+        }
+    }
+    return [$files, $bytes];
 }
 
 function warm_openlane_covers(PDO $db, string $prefx, int $limit, int $timeLimitSec): int
