@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS `gh3sp_b2b_users` (
     PRIMARY KEY (`id`),
     UNIQUE KEY `uniq_b2b_login` (`login`),
     UNIQUE KEY `uniq_b2b_email` (`email`),
+    UNIQUE KEY `uniq_b2b_phone` (`phone_number`),
     KEY `idx_b2b_status` (`status`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
