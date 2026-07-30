@@ -58,7 +58,7 @@ if (!function_exists('b2b_adm_lang')) {
 
                 // actions
                 'approve'         => 'Validează contul',
-                'call'            => 'Sună',
+                'call'            => 'Apelează',
                 'block'           => 'Blochează',
                 'unblock'         => 'Deblochează',
                 'delete'          => 'Șterge definitiv',

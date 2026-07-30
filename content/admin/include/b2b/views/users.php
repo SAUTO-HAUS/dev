@@ -134,7 +134,7 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/users';
                             <div class="b2ba-row-actions">
                                 <?php $tel = B2bPhone::normalize((string)$u['phone_number']); ?>
                                 <?php if ($tel !== ''): ?>
-                                    <a class="b2ba-btn b2ba-btn--ghost b2ba-btn--sm" href="tel:<?= b2b_adm_esc($tel) ?>">
+                                    <a class="b2ba-btn b2ba-btn--call b2ba-btn--sm" href="tel:<?= b2b_adm_esc($tel) ?>">
                                         <?= b2b_adm_phone_icon() ?><?= b2b_adm_esc($t['call']) ?>
                                     </a>
                                 <?php endif; ?>

@@ -262,6 +262,12 @@
 .b2ba-btn--soft{ background:#fde7ea; color:#c4121f; }
 .b2ba-btn--soft:hover{ background:#fbd3d9; }
 .b2ba-btn--sm{ min-height:var(--b2ba-h-sm, 2rem); padding:0.25rem 0.75rem; font-size:0.78rem; }
+/* Call the client. A tel: link is only useful where there is a dialer, so the
+   button exists on touch layouts alone. Solid green, the mirror of the solid
+   red "block" it sits next to. */
+.b2ba-btn--call{ display:none; background:#0f7a3d; color:#fff; }
+.b2ba-btn--call:hover{ background:#0c6533; }
+@media (max-width:1024px){ .b2ba-btn--call{ display:inline-flex; } }
 .b2ba-btn[disabled]{ cursor:not-allowed; }
 .b2ba-btn__i{ width:0.95rem; height:0.95rem; flex:none; }
 
@@ -345,8 +351,10 @@
 .b2ba-table tbody tr:last-child td{ border-bottom:none; }
 .b2ba-table tbody tr:hover{ background:#fcfcfc; }
 .b2ba-table tbody tr.is-focus{ background:#fff8e8; }
-.b2ba-table a{ color:var(--b2ba-brand); text-decoration:none; }
-.b2ba-table a:hover{ text-decoration:underline; }
+/* Plain links in a table are brand-coloured; a link styled as a button keeps its
+   own colours (otherwise the white label on --call/--ok would turn red here). */
+.b2ba-table a:not(.b2ba-btn){ color:var(--b2ba-brand); text-decoration:none; }
+.b2ba-table a:not(.b2ba-btn):hover{ text-decoration:underline; }
 
 .b2ba-td--strong{ font-weight:700; }
 /* Whole client row is the "open" action; login stays a real link for keyboard/no-JS. */
