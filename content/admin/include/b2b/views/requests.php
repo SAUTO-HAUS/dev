@@ -91,13 +91,13 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/requests';
                                class="b2ba-td--strong"><?= b2b_adm_esc(B2bAuth::displayName($req)) ?></a>
                             <div class="b2ba-td--small"><?= b2b_adm_esc($req['phone_number']) ?></div>
                         </td>
-                        <td>
+                        <td data-label="<?= b2b_adm_esc($t['col_car']) ?>">
                             <?php // ?b2b_as opens the car with this partner's pricing (admin-only preview). ?>
                             <a href="/<?= b2b_adm_esc($lang) ?>/ordercars/<?= (int)$req['car_id'] ?>?b2b_as=<?= (int)$req['b2b_user_id'] ?>" target="_blank" rel="noopener">
                                 <?= b2b_adm_esc($car['title'] ?? ('#'.(int)$req['car_id'])) ?>
                             </a>
                         </td>
-                        <td class="b2ba-td--small">
+                        <td class="b2ba-td--small" data-label="<?= b2b_adm_esc($t['col_invoice']) ?>">
                             <?php if (!empty($req['invoice_no'])): ?>
                                 <a href="/<?= b2b_adm_esc($lang) ?>/b2b/invoice/<?= (int)$req['invoice_id'] ?>?k=<?= b2b_adm_esc($req['access_key']) ?>"
                                    target="_blank" rel="noopener"><?= b2b_adm_esc($req['invoice_no']) ?></a>
@@ -106,12 +106,12 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/requests';
                                 &mdash;
                             <?php endif; ?>
                         </td>
-                        <td>
+                        <td data-label="<?= b2b_adm_esc($t['col_status']) ?>">
                             <span class="b2ba-badge b2ba-badge--<?= b2b_adm_esc($req['status']) ?>" data-b2b-req-badge="<?= $rid ?>">
                                 <?= b2b_adm_esc($t['st_'.$req['status']] ?? $req['status']) ?>
                             </span>
                         </td>
-                        <td class="b2ba-td--small"><?= b2b_adm_esc(date('d.m.Y', strtotime((string)$req['created_at']))) ?></td>
+                        <td class="b2ba-td--small" data-label="<?= b2b_adm_esc($t['col_date']) ?>"><?= b2b_adm_esc(date('d.m.Y', strtotime((string)$req['created_at']))) ?></td>
                         <td class="b2ba-td--nowrap">
                             <button type="button" class="b2ba-btn b2ba-btn--ghost b2ba-btn--sm"
                                     data-b2b-admin="request-status" data-request="<?= $rid ?>" data-value="seen"><?= b2b_adm_esc($t['mark_seen']) ?></button>
