@@ -16,8 +16,8 @@ use PDO;
  */
 class B2bPasswordReset
 {
-    /** Token lifetime, seconds. */
-    private const TTL = 3600; // 1 hour
+    /** Token lifetime, seconds. Keep the email texts below in sync. */
+    private const TTL = 1800; // 30 minutes
 
     /** Max reset emails per account per hour (anti-abuse). */
     private const MAX_PER_HOUR = 5;
@@ -53,13 +53,18 @@ class B2bPasswordReset
         $hash = hash('sha256', $raw);
 
         try {
+            // The deadline is computed by MySQL, because findValid() compares it
+            // against MySQL's NOW(). Writing PHP's date() here would make the real
+            // lifetime depend on the offset between the PHP timezone
+            // (Europe/Chisinau, see content/default/config.php) and the database
+            // server's — hours off, in either direction.
             B2bConfig::db()->prepare(
                 'INSERT INTO ' . B2bConfig::table('password_resets')
-                . ' (b2b_user_id, token_hash, expires_at, ip_address) VALUES (:uid, :h, :exp, :ip)'
+                . ' (b2b_user_id, token_hash, expires_at, ip_address)'
+                . ' VALUES (:uid, :h, (NOW() + INTERVAL ' . self::TTL . ' SECOND), :ip)'
             )->execute([
                 ':uid' => $userId,
                 ':h'   => $hash,
-                ':exp' => date('Y-m-d H:i:s', time() + self::TTL),
                 ':ip'  => B2bConfig::clientIp(),
             ]);
         } catch (\Throwable $e) {
@@ -164,22 +169,19 @@ class B2bPasswordReset
                 'subject' => 'Resetare parolă — Sauto.md',
                 'intro'   => 'Salut' . $hi . ',<br><br>Ai cerut resetarea parolei pentru contul tău Sauto.md. Apasă butonul de mai jos ca să setezi o parolă nouă:',
                 'btn'     => 'Setează parola nouă',
-                'note'    => 'Linkul expiră în 1 oră și poate fi folosit o singură dată. Dacă nu tu ai cerut resetarea, ignoră acest email — parola rămâne neschimbată.',
-                'alt'     => "Resetare parolă Sauto.md. Deschide linkul pentru a seta o parolă nouă (expiră în 1 oră):\n" . $link,
+                'alt'     => "Resetare parolă Sauto.md. Deschide linkul pentru a seta o parolă nouă:\n" . $link,
             ],
             'ru' => [
                 'subject' => 'Сброс пароля — Sauto.md',
                 'intro'   => 'Здравствуйте' . $hi . ',<br><br>Вы запросили сброс пароля для вашего аккаунта Sauto.md. Нажмите кнопку ниже, чтобы задать новый пароль:',
                 'btn'     => 'Задать новый пароль',
-                'note'    => 'Ссылка действует 1 час и может быть использована один раз. Если вы не запрашивали сброс, просто игнорируйте это письмо — пароль останется прежним.',
-                'alt'     => "Сброс пароля Sauto.md. Откройте ссылку, чтобы задать новый пароль (действует 1 час):\n" . $link,
+                'alt'     => "Сброс пароля Sauto.md. Откройте ссылку, чтобы задать новый пароль:\n" . $link,
             ],
             'en' => [
                 'subject' => 'Password reset — Sauto.md',
                 'intro'   => 'Hello' . $hi . ',<br><br>You requested a password reset for your Sauto.md account. Click the button below to set a new password:',
                 'btn'     => 'Set a new password',
-                'note'    => 'The link expires in 1 hour and can be used once. If you did not request this, just ignore this email — your password stays unchanged.',
-                'alt'     => "Sauto.md password reset. Open the link to set a new password (expires in 1 hour):\n" . $link,
+                'alt'     => "Sauto.md password reset. Open the link to set a new password:\n" . $link,
             ],
         ][$lang];
 
@@ -189,8 +191,8 @@ class B2bPasswordReset
           . '<p style="text-align:center;margin:28px 0;">'
           . '<a href="' . $href . '" style="display:inline-block;background:#e2001a;color:#fff;text-decoration:none;font-weight:700;padding:13px 26px;border-radius:8px;">' . $esc($t['btn']) . '</a>'
           . '</p>'
-          . '<p style="color:#666;font-size:13px;">' . $esc($t['note']) . '</p>'
-          . '<p style="color:#999;font-size:12px;word-break:break-all;">' . $href . '</p>'
+          // No raw URL under the button: the plain-text AltBody already carries the
+          // link for clients that do not render HTML.
           . '</div>';
 
         return ['subject' => $t['subject'], 'body' => $body, 'alt' => $t['alt']];
