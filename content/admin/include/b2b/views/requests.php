@@ -6,6 +6,12 @@ use App\Services\B2b\B2bAuth;
 use App\Services\B2b\B2bConfig;
 use App\Services\B2b\B2bInvoice;
 
+// The price each partner saw is recomputed here, so the breakdown functions and
+// the catalog fuel-code map have to be available in the admin context too. Both
+// files only declare functions, guarded against a double include.
+require_once _ADM_PAGE.'/parsing/parsing_pricing.php';
+require_once _SITE_INCL.'/b2b/b2b_pricing.php';
+
 $lang = $_COOKIE['lang'] ?? 'ro';
 $t    = b2b_adm_lang($lang);
 
@@ -47,6 +53,58 @@ try {
 }
 
 $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/requests';
+
+/**
+ * The price THIS partner saw for the car — never the catalog one, which is the
+ * public price. Recomputed with the same breakdown the site runs, flagged for
+ * B2B and scoped to the partner: their own price tables when they have any,
+ * the global B2B set otherwise. Cars outside the parsing catalogs have no
+ * breakdown, so there the catalog price is what the partner saw.
+ *
+ * @return array{amount:int, cur:string}|null
+ */
+$clientPrice = function (?array $car, int $clientId) use ($db, $prefx): ?array {
+    static $srcPrice = [];   // parsing_id => price_eur, one lookup per car
+
+    if (!$car) {
+        return null;
+    }
+
+    $pid = (int)($car['parsing_id'] ?? 0);
+    $src = (string)($car['parsing_source'] ?? '');
+
+    if ($pid <= 0 || !in_array($src, ['encar', 'openlane', 'ecarstrade', 'auto1'], true)) {
+        $prc = (int)($car['prc'] ?? 0);
+        return $prc > 0 ? ['amount' => $prc, 'cur' => (string)($car['cur'] ?? '')] : null;
+    }
+
+    if (!array_key_exists($pid, $srcPrice)) {
+        try {
+            $q = $db->prepare('SELECT price_eur FROM '.$prefx.'_parsing_cars WHERE id = ? LIMIT 1');
+            $q->execute([$pid]);
+            $srcPrice[$pid] = (float)($q->fetchColumn() ?: 0);
+        } catch (Throwable $e) {
+            $srcPrice[$pid] = 0.0;
+        }
+    }
+    if ($srcPrice[$pid] <= 0) {
+        return null;
+    }
+
+    $bdCar = [
+        'price_eur' => $srcPrice[$pid],
+        'fuel'      => b2b_fuel_code($car['fl'] ?? null),
+        'capacity'  => (int)($car['vol'] ?? 0),
+        'year'      => (int)($car['yr'] ?? 0),
+    ];
+    $bd = $src === 'encar'
+        ? parsing_md_breakdown_kr($db, $prefx, $bdCar, null, true, $clientId)
+        : parsing_md_breakdown_eu($db, $prefx, $bdCar, null, true, $clientId);
+
+    return ($bd && !empty($bd['total']))
+        ? ['amount' => (int)round($bd['total']), 'cur' => 'EUR']
+        : null;
+};
 ?>
 
 <div class="b2ba">
@@ -96,6 +154,11 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/requests';
                             <a href="/<?= b2b_adm_esc($lang) ?>/ordercars/<?= (int)$req['car_id'] ?>?b2b_as=<?= (int)$req['b2b_user_id'] ?>" target="_blank" rel="noopener">
                                 <?= b2b_adm_esc($car['title'] ?? ('#'.(int)$req['car_id'])) ?>
                             </a>
+                            <?php // The price this partner saw — their own tables if any, global B2B otherwise. ?>
+                            <?php $cp = $clientPrice($car, (int)$req['b2b_user_id']); ?>
+                            <?php if ($cp): ?>
+                                <div class="b2ba-td--small"><?= b2b_adm_esc(number_format($cp['amount'], 0, '.', ' ')) ?> <?= b2b_adm_esc($cp['cur']) ?></div>
+                            <?php endif; ?>
                         </td>
                         <td class="b2ba-td--small" data-label="<?= b2b_adm_esc($t['col_invoice']) ?>">
                             <?php if (!empty($req['invoice_no'])): ?>
