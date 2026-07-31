@@ -234,6 +234,13 @@ class B2bAuth
 
         B2bAudit::log($userId, B2bAudit::REGISTER, ['login' => $login, 'person_type' => $personType]);
 
+        // Signing up IS proof of the credentials, and the account is active from
+        // the start, so open the session right here: the partner lands in the
+        // cabinet instead of retyping what they just chose.
+        self::createSession($userId);
+        self::touchLogin($userId);
+        B2bAudit::log($userId, B2bAudit::LOGIN, []);
+
         return ['ok' => true, 'user_id' => $userId];
     }
 

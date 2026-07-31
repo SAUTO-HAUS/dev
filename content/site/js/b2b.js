@@ -208,7 +208,11 @@
                     return;
                 }
 
-                // Blocking confirmation per the spec: the form goes away.
+                // The session is already open: go straight to the cabinet. The
+                // confirmation block stays as the fallback for a response without
+                // a redirect (an older cached ajax.php, say).
+                if (res.redirect) { window.location.href = res.redirect; return; }
+
                 form.hidden = true;
                 if (success) success.hidden = false;
                 window.scrollTo({ top: 0, behavior: 'smooth' });

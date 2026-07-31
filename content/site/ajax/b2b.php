@@ -116,9 +116,11 @@ switch ($b2b_fn) {
             break;
         }
 
-        // Accounts are active immediately (no admin approval), so nothing to notify.
+        // The account is active and register() already opened its session, so send
+        // the partner straight into the cabinet instead of a "now log in" screen.
         $b2b_ok([
-            'message' => B2bAuth::msg('register_ok'),
+            'message'  => B2bAuth::msg('register_ok'),
+            'redirect' => '/'.$b2b_lang.'/b2b/cabinet',
         ]);
         break;
     }
