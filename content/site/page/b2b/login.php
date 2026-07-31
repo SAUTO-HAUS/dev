@@ -34,10 +34,13 @@ $body = '
 <form class="b2b-form" id="b2b-login-form" data-csrf="'.$csrf.'" novalidate>
     <div class="b2b-field">
         <label for="b2b-login-name">'.b2b_esc($t['email']).'</label>
-        '// The field still posts as `login`: the server matches it against both
-         // columns, so accounts created before the email-as-identifier change can
-         // still sign in with the login they picked back then.
-        .'<input type="email" id="b2b-login-name" name="login" maxlength="190" required autocomplete="email" />
+        '// type=email for the keyboard, autocomplete=username for the password
+         // manager: on a sign-in form that is the token browsers key on to offer
+         // the saved account (and fill the password with it). "email" would only
+         // reach the address book. The field still posts as `login`, because the
+         // server matches it against both columns — accounts created before the
+         // email-as-identifier change still sign in with the login they picked.
+        .'<input type="email" id="b2b-login-name" name="login" maxlength="190" required autocomplete="username" />
     </div>
 
     <div class="b2b-field">
