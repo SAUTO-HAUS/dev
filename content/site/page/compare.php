@@ -170,6 +170,22 @@ if (function_exists('b2b_is_client') && b2b_is_client()) {
 	}
 	window.addEventListener('resize', syncHint);
 	window.addEventListener('orientationchange', syncHint);
+	
+	function photoTouchStart(e){
+		var w = box.querySelector('.cmp-wrap');
+		if (!w || !e.target.closest || !e.target.closest('.cmp-row-photo')) return;
+		w.dataset.keepTop = w.scrollTop;   // restored below, in case a browser zeroes it
+		w.style.overflowY = 'hidden';
+	}
+	function photoTouchEnd(){
+		var w = box.querySelector('.cmp-wrap');
+		if (!w || w.style.overflowY !== 'hidden') return;
+		w.style.overflowY = '';
+		if (w.dataset.keepTop) { w.scrollTop = +w.dataset.keepTop; delete w.dataset.keepTop; }
+	}
+	box.addEventListener('touchstart', photoTouchStart, { passive:true });
+	box.addEventListener('touchend', photoTouchEnd, { passive:true });
+	box.addEventListener('touchcancel', photoTouchEnd, { passive:true });
 
 	function load(){
 		var ids = getIds();
