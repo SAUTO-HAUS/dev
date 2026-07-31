@@ -108,7 +108,6 @@ switch ($b2b_fn) {
             'email'        => $_POST['email'] ?? '',
             'phone_number' => $_POST['phone'] ?? '',
             'full_name'    => $_POST['full_name'] ?? '',
-            'login'        => $_POST['login'] ?? '',
             'password'     => $_POST['password'] ?? '',
         ]);
 

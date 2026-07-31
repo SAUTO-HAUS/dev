@@ -7,8 +7,10 @@ use PDO;
 /**
  * B2B authentication: registration and login.
  *
- * Approval by the Super Admin is the only gate: an account starts `pending` and
- * cannot log in until an administrator activates it. There is no second factor.
+ * The email is the identifier — signup does not ask for a login, and the `login`
+ * column simply mirrors the email so its UNIQUE index still guards concurrent
+ * signups. Accounts created before that change keep their own login and can sign
+ * in with either. An account is usable right away; only `blocked` is refused.
  *
  * Sessions use a selector/validator pair: the cookie holds `selector.validator`
  * while the DB stores only a hash of the validator, so a leaked table dump
@@ -63,18 +65,15 @@ class B2bAuth
             'ro' => [
                 'person_type'       => 'Selectați tipul de persoană.',
                 'name_required'     => 'Numele și prenumele sunt obligatorii.',
-                'login_short'       => 'Login-ul trebuie să aibă minim 4 caractere.',
-                'login_charset'     => 'Login-ul poate conține doar litere, cifre, . _ -',
                 'email_invalid'     => 'Adresa de email nu este validă.',
                 'phone_format'      => 'Numărul de telefon trebuie să conțină 8 cifre, după prefixul %s.',
                 'password_short'    => 'Parola trebuie să aibă minimum 6 caractere.',
-                'login_taken'       => 'Acest login este deja folosit.',
                 'email_taken'       => 'Există deja un cont cu această adresă de email.',
                 'phone_taken'       => 'Există deja un cont cu acest număr de telefon.',
                 'email_phone_taken' => 'Există deja un cont cu acest număr de telefon și această adresă de email.',
                 'register_failed'   => 'Contul nu a putut fi creat. Încercați din nou.',
                 'register_ok'       => 'Contul a fost creat cu succes. Te poți autentifica acum.',
-                'login_bad'         => 'Login/email sau parolă incorectă.',
+                'login_bad'         => 'Email sau parolă incorectă.',
                 'service_down'      => 'Serviciu temporar indisponibil.',
                 'locked'            => 'Cont blocat temporar. Reîncercați peste %d minute.',
                 'blocked'           => 'Contul este blocat. Contactați administratorul.',
@@ -91,18 +90,15 @@ class B2bAuth
             'ru' => [
                 'person_type'       => 'Выберите тип лица.',
                 'name_required'     => 'Имя и фамилия обязательны.',
-                'login_short'       => 'Логин должен содержать минимум 4 символа.',
-                'login_charset'     => 'Логин может содержать только буквы, цифры, . _ -',
                 'email_invalid'     => 'Адрес электронной почты недействителен.',
                 'phone_format'      => 'Номер телефона должен содержать 8 цифр после префикса %s.',
                 'password_short'    => 'Пароль должен содержать минимум 6 символов.',
-                'login_taken'       => 'Этот логин уже используется.',
                 'email_taken'       => 'Учётная запись с этим адресом email уже существует.',
                 'phone_taken'       => 'Учётная запись с этим номером телефона уже существует.',
                 'email_phone_taken' => 'Учётная запись с этим номером телефона и адресом email уже существует.',
                 'register_failed'   => 'Не удалось создать учётную запись. Попробуйте снова.',
                 'register_ok'       => 'Учётная запись успешно создана. Теперь вы можете войти.',
-                'login_bad'         => 'Неверный логин/email или пароль.',
+                'login_bad'         => 'Неверный email или пароль.',
                 'service_down'      => 'Сервис временно недоступен.',
                 'locked'            => 'Учётная запись временно заблокирована. Повторите через %d мин.',
                 'blocked'           => 'Учётная запись заблокирована. Обратитесь к администратору.',
@@ -119,18 +115,15 @@ class B2bAuth
             'en' => [
                 'person_type'       => 'Select the person type.',
                 'name_required'     => 'First and last name are required.',
-                'login_short'       => 'The login must be at least 4 characters.',
-                'login_charset'     => 'The login may contain only letters, digits, . _ -',
                 'email_invalid'     => 'The email address is not valid.',
                 'phone_format'      => 'The phone number must contain 8 digits after the %s prefix.',
                 'password_short'    => 'The password must be at least 6 characters.',
-                'login_taken'       => 'This login is already in use.',
                 'email_taken'       => 'An account with this email address already exists.',
                 'phone_taken'       => 'An account with this phone number already exists.',
                 'email_phone_taken' => 'An account with this phone number and email address already exists.',
                 'register_failed'   => 'The account could not be created. Please try again.',
                 'register_ok'       => 'Your account was created successfully. You can log in now.',
-                'login_bad'         => 'Incorrect login/email or password.',
+                'login_bad'         => 'Incorrect email or password.',
                 'service_down'      => 'Service temporarily unavailable.',
                 'locked'            => 'Account temporarily locked. Try again in %d minutes.',
                 'blocked'           => 'The account is blocked. Contact the administrator.',
@@ -157,8 +150,12 @@ class B2bAuth
     public static function register(array $data): array
     {
         $personType = (string)($data['person_type'] ?? '');
-        $login      = mb_strtolower(trim((string)($data['login'] ?? '')));
         $email      = mb_strtolower(trim((string)($data['email'] ?? '')));
+        // Signup no longer asks for a login: partners kept forgetting the one they
+        // invented. The email is the identifier, and the `login` column mirrors it
+        // so its UNIQUE index keeps guarding concurrent signups. Accounts created
+        // before this still sign in with their own login (see login()).
+        $login      = $email;
         $password   = (string)($data['password'] ?? '');
         $fullName   = trim((string)($data['full_name'] ?? ''));
         $phoneRaw   = trim((string)($data['phone_number'] ?? ''));
@@ -168,14 +165,6 @@ class B2bAuth
         }
         if ($fullName === '' || mb_strlen($fullName) > 190) {
             return ['ok' => false, 'field' => 'full_name', 'error' => self::msg('name_required')];
-        }
-        // Primary rule shown to the user: at least 4 characters.
-        if (mb_strlen($login) < 4 || mb_strlen($login) > 64) {
-            return ['ok' => false, 'field' => 'login', 'error' => self::msg('login_short')];
-        }
-        // Charset kept as a safety net (it goes into URLs and logs), not advertised.
-        if (!preg_match('/^[a-z0-9._-]+$/', $login)) {
-            return ['ok' => false, 'field' => 'login', 'error' => self::msg('login_charset')];
         }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL) || mb_strlen($email) > 190) {
             return ['ok' => false, 'field' => 'email', 'error' => self::msg('email_invalid')];
@@ -198,24 +187,20 @@ class B2bAuth
 
         try {
             // A person is identified by email + phone, so a match on either must
-            // block a second signup (login is unique too, on its own). The lookup
-            // may return more than one row — the email on one account, the phone on
-            // another — so we OR-scan them all and report every collision.
-            $stmt = $db->prepare('SELECT login, email, phone_number FROM ' . B2bConfig::table('users')
-                . ' WHERE login = :login OR email = :email OR phone_number = :phone');
-            $stmt->execute([':login' => $login, ':email' => $email, ':phone' => $phone]);
+            // block a second signup. The lookup may return more than one row — the
+            // email on one account, the phone on another — so we OR-scan them all
+            // and report every collision.
+            $stmt = $db->prepare('SELECT email, phone_number FROM ' . B2bConfig::table('users')
+                . ' WHERE email = :email OR phone_number = :phone');
+            $stmt->execute([':email' => $email, ':phone' => $phone]);
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
-            $loginTaken = $emailTaken = $phoneTaken = false;
+            $emailTaken = $phoneTaken = false;
             foreach ($rows as $r) {
-                if (mb_strtolower((string)$r['login']) === $login) { $loginTaken = true; }
                 if (mb_strtolower((string)$r['email']) === $email) { $emailTaken = true; }
                 if ((string)$r['phone_number'] === $phone)         { $phoneTaken = true; }
             }
 
-            if ($loginTaken) {
-                return ['ok' => false, 'field' => 'login', 'error' => self::msg('login_taken')];
-            }
             if ($emailTaken && $phoneTaken) {
                 return ['ok' => false, 'field' => 'phone', 'error' => self::msg('email_phone_taken')];
             }

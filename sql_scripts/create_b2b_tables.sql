@@ -24,7 +24,9 @@
 CREATE TABLE IF NOT EXISTS `gh3sp_b2b_users` (
     `id` INT(11) NOT NULL AUTO_INCREMENT,
     `person_type` ENUM('company','individual') NOT NULL DEFAULT 'company',
-    `login` VARCHAR(64) NOT NULL,
+    -- Signup does not ask for a login: `login` mirrors the email, so it is sized
+    -- like the email column. Older accounts still hold the login they picked.
+    `login` VARCHAR(190) NOT NULL,
     `email` VARCHAR(190) NOT NULL,
     `password_hash` VARCHAR(255) NOT NULL,
     `full_name` VARCHAR(190) NOT NULL,

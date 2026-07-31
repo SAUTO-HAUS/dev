@@ -44,6 +44,9 @@
         align-items:start;
     }
     .b2b-page--form .b2b-field-row{ display:contents; }
+    /* A row left with a single field (the name, since signup dropped the login)
+       spans both columns instead of pairing up with whatever follows it. */
+    .b2b-page--form .b2b-field-row > .b2b-field:only-child{ grid-column:1 / -1; }
 
     /* Person type is the only field outside a .b2b-field-row, so a child
        selector is enough to give it the full row. */

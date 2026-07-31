@@ -64,15 +64,11 @@ $form = '
         </div>
     </div>
 
-    <div class="b2b-field-row">
+    '// No login field: the email is the identifier (see B2bAuth::register).
+    .'<div class="b2b-field-row">
         <div class="b2b-field">
             <label for="b2b-name">'.b2b_esc($t['full_name']).' *</label>
             <input type="text" id="b2b-name" name="full_name" maxlength="190" required autocomplete="name" />
-        </div>
-        <div class="b2b-field">
-            <label for="b2b-login">'.b2b_esc($t['login_field']).' *</label>
-            <input type="text" id="b2b-login" name="login" minlength="4" maxlength="64" pattern="[A-Za-z0-9._-]{4,64}" required autocomplete="username" />
-            <small class="b2b-hint">'.b2b_esc($t['login_hint']).'</small>
         </div>
     </div>
 

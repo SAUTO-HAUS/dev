@@ -194,7 +194,6 @@
                 email:       form.querySelector('[name="email"]').value.trim(),
                 phone:       phoneValue(form.querySelector('[name="phone"]')),
                 full_name:   form.querySelector('[name="full_name"]').value.trim(),
-                login:       form.querySelector('[name="login"]').value.trim(),
                 password:    pass.value
             }, csrf).then(function (res) {
                 busy(btn, false);

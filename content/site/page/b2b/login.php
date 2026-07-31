@@ -33,9 +33,11 @@ $passToggle =
 $body = '
 <form class="b2b-form" id="b2b-login-form" data-csrf="'.$csrf.'" novalidate>
     <div class="b2b-field">
-        <label for="b2b-login-name">'.b2b_esc($t['login_id_field']).'</label>
-        '// maxlength follows the email column (190), not the login one (64).
-        .'<input type="text" id="b2b-login-name" name="login" maxlength="190" required autocomplete="username" />
+        <label for="b2b-login-name">'.b2b_esc($t['email']).'</label>
+        '// The field still posts as `login`: the server matches it against both
+         // columns, so accounts created before the email-as-identifier change can
+         // still sign in with the login they picked back then.
+        .'<input type="email" id="b2b-login-name" name="login" maxlength="190" required autocomplete="email" />
     </div>
 
     <div class="b2b-field">
