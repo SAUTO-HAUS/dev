@@ -137,6 +137,10 @@ if (function_exists('b2b_is_client') && b2b_is_client()) {
 	.cmp-row-name td{ padding:.1rem .5rem .3rem; position:sticky; top:6.4rem; z-index:3; box-shadow:0 3px 6px -5px rgba(0,0,0,.5); }
 	.cmp-name{ display:block; font-size:.92rem; line-height:1.25; }
 	.cmp-price{ font-size:1.05rem; }
+	.cmp-table:has(.cmp-row-photo td:only-of-type) .cmp-photo img{
+		width:15rem; max-width:100%; height:auto; aspect-ratio:3/2; margin:0 auto;
+	}
+	.cmp-table:has(.cmp-row-photo td:only-of-type) .cmp-row-name td{ top:10.9rem; }
 }
 @media (max-width:400px){
 	.cmp-table td:not(:first-child){ min-width:8.6rem; }
