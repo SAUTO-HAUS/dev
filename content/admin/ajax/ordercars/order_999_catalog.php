@@ -5,23 +5,8 @@ use App\Db\Car;
 use App\Helper\DefaultText;
 use App\Services\Api999Service;
 
-if (!function_exists('parsing_strip_999_links')) {
- 
-    function parsing_strip_999_links(string $text): string
-    {
-        $text = preg_replace(
-            '/Detalii despre automobil:\s*\n'
-            . 'https?:\/\/\S+\s*\n'
-            . 'Toate automobilele modelului[^\n]*\n'
-            . 'https?:\/\/\S+\s*\n'
-            . 'Toate automobilele mărcii[^\n]*\n'
-            . 'https?:\/\/\S+\s*/u',
-            '',
-            $text
-        );
-        return trim((string)$text);
-    }
-}
+// Note: the link block is handled by App\Helper\Ad999Links — the stock-cars handler
+// still carries its own parsing_strip_999_links() copy.
 
 /*error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -31,6 +16,16 @@ $rtrn = '';
 $zY = substr( md5( date('Y') ), 0, 4 );
 $zM = substr( md5( date('m') ), 0, 4 );
 $requestData = $_POST;
+
+// These only READ from the 999 API to fill the form, and each call goes out over the
+// network. PHP keeps the session file locked for the whole request, so while they run
+// every other admin request from the same user waits — opening one car form stalls the
+// rest of the panel. None of them writes to the session.
+if (in_array(__post('sub'), ['get_subcategory', 'get_subcategory_offer_types',
+        'get_features', 'get_phone', 'get_features_depends'], true)
+    && session_status() === PHP_SESSION_ACTIVE) {
+    session_write_close();
+}
 
 // Try to use order cars settings, fallback to default if not configured
 try {
@@ -101,22 +96,13 @@ if (__post('sub') == 'get_subcategory') {
             $advertFeatures = json_decode($advert['999'], true);
             $features = $advertFeatures['features'] ?? [];
 
-            $stmt = $pdo->prepare("SELECT br, mo FROM {$prefx}_car_ctlg WHERE id = ?");
+            // Operator-edited text: drop the old link block so Ad999Links can put a
+            // fresh one on top, instead of the text ending up with two copies.
+            $newText = \App\Helper\Ad999Links::strip($newText);
+
+            $stmt = $pdo->prepare("SELECT id, br, mo, import_country_id FROM {$prefx}_car_ctlg WHERE id = ?");
             $stmt->execute([$carId]);
-            $carInfo = $stmt->fetch(\PDO::FETCH_ASSOC);
-            if ($carInfo && !empty($carInfo['br']) && !empty($carInfo['mo'])) {
-                $stmtCarList = $pdo->prepare("SELECT br_nm, mo_nm FROM {$prefx}_car_list WHERE br = ? AND mo = ? LIMIT 1");
-                $stmtCarList->execute([$carInfo['br'], $carInfo['mo']]);
-                $carListInfo = $stmtCarList->fetch(\PDO::FETCH_ASSOC);
-                if ($carListInfo && !empty($carListInfo['br_nm']) && !empty($carListInfo['mo_nm'])) {
-                    $brandSlug = strtolower(str_replace('_', '-', $carInfo['br']));
-                    $modelSlug = strtolower(str_replace('_', '-', $carInfo['mo']));
-                    $newText = parsing_strip_999_links($newText);
-                    $linksText = "Detalii despre automobil:\nhttps://www.sauto.md/ro/ordercars/{$carId}\nToate automobilele modelului {$carListInfo['mo_nm']}:\nhttps://www.sauto.md/ro/ordercars/{$brandSlug}/{$modelSlug}\nToate automobilele mărcii {$carListInfo['br_nm']}:\nhttps://www.sauto.md/ro/ordercars/{$brandSlug}";
-                    $newText = $linksText . ($newText !== '' ? "\n\n" . $newText : '');
-                }
-            }
-            
+            $carInfo = $stmt->fetch(\PDO::FETCH_ASSOC) ?: [];
 
             $feature13Found = false;
             foreach ($features as $index => $feature) {
@@ -129,7 +115,11 @@ if (__post('sub') == 'get_subcategory') {
             if (!$feature13Found) {
                 $features[] = ['id' => '13', 'value' => $newText];
             }
-            
+
+            if ($carInfo) {
+                $features = \App\Helper\Ad999Links::apply($pdo, $prefx, $carInfo, $features, 'ordercars');
+            }
+
             // Update on 999.md
             try {
                 $response = (new Api999Service($advert['999_api_id']))->updateAdvert($advert['999_id'], $features);
@@ -213,7 +203,7 @@ if (__post('sub') == 'get_subcategory') {
     parse_str($_POST['form_data'], $input);
     
     if (!empty($carId)) {
-        $stmt = $pdo->prepare("SELECT 999_api_id, import_country_id, gr, catalog_type FROM gh3sp_car_ctlg WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT 999_api_id, import_country_id, gr, catalog_type, parsing_source FROM gh3sp_car_ctlg WHERE id = ?");
         $stmt->execute([$carId]);
         $carApiData = $stmt->fetch(\PDO::FETCH_ASSOC) ?: [];
 
@@ -221,7 +211,23 @@ if (__post('sub') == 'get_subcategory') {
         if ($catalogType === 'on_order') {
             $importCountry = (int)($carApiData['import_country_id'] ?? 0);
             $isCom = ($carApiData['gr'] ?? '') === 'com';
-            if ($isCom) {
+            // North America resolved by country CODE (the Korea 41 above is a legacy
+            // id). CA and US both count: AutoTrader is autotrader.ca and the region
+            // was renamed to Canada, but cars published earlier still carry US.
+            $naCountryIds = [];
+            try {
+                $naCountryIds = array_map('intval', $pdo->query(
+                    "SELECT id FROM countries WHERE code IN ('CA','US')"
+                )->fetchAll(\PDO::FETCH_COLUMN) ?: []);
+            } catch (\Throwable $e) { /* stays empty → never matches */ }
+
+            // Every AutoTrader car goes to SautoSUA, before the commercial rule.
+            $isUsa = ($carApiData['parsing_source'] ?? '') === 'autotrader'
+                  || in_array($importCountry, $naCountryIds, true);
+
+            if ($isUsa) {
+                $input['999_api_id'] = 5;             // AutoTrader / USA → SautoSUA
+            } elseif ($isCom) {
                 $input['999_api_id'] = 2;             // commercial takes priority
             } elseif ($importCountry === 41) {
                 $input['999_api_id'] = 4;             // Korea → Encars-MD
@@ -296,6 +302,7 @@ if (__post('sub') == 'get_subcategory') {
         2 => '37379600616', // Sauto-auto-comerciale
         3 => '37379600326', // Sauto-stock-extern
         4 => '37379603161', // Encars-MD (Korea)
+        5 => '37378004642', // SautoSUA (USA)
     ];
     $acc = (int)$input['999_api_id'];
     if (!empty($accountPhoneMap[$acc])) {
@@ -402,50 +409,13 @@ if (__post('sub') == 'get_subcategory') {
         }
     }
 
-    // Add dynamic links to description (feature 13) for on_order cars
     if (!empty($carId)) {
-        $stmt = $pdo->prepare("SELECT br, mo FROM gh3sp_car_ctlg WHERE id = ?");
+        $stmt = $pdo->prepare("SELECT id, br, mo, import_country_id FROM gh3sp_car_ctlg WHERE id = ?");
         $stmt->execute([$carId]);
         $carInfo = $stmt->fetch(\PDO::FETCH_ASSOC);
-        
-        if ($carInfo && !empty($carInfo['br']) && !empty($carInfo['mo'])) {
-            // Get brand and model names from car_list table
-            $stmtCarList = $pdo->prepare("SELECT br_nm, mo_nm FROM gh3sp_car_list WHERE br = ? AND mo = ? LIMIT 1");
-            $stmtCarList->execute([$carInfo['br'], $carInfo['mo']]);
-            $carListInfo = $stmtCarList->fetch(\PDO::FETCH_ASSOC);
-            
-            if ($carListInfo && !empty($carListInfo['br_nm']) && !empty($carListInfo['mo_nm'])) {
-                $brandSlug = strtolower(str_replace('_', '-', $carInfo['br']));
-                $modelSlug = strtolower(str_replace('_', '-', $carInfo['mo']));
-                $brandText = $carListInfo['br_nm'];
-                $modelText = $carListInfo['mo_nm'];
-                
-                $carLink = "https://www.sauto.md/ro/ordercars/{$carId}";
-                $modelLink = "https://www.sauto.md/ro/ordercars/{$brandSlug}/{$modelSlug}";
-                $brandLink = "https://www.sauto.md/ro/ordercars/{$brandSlug}";
-                
-                $linksText = "Detalii despre automobil:\n{$carLink}\nToate automobilele modelului {$modelText}:\n{$modelLink}\nToate automobilele mărcii {$brandText}:\n{$brandLink}";
-
-                $feature13Found = false;
-                foreach ($features as $index => $feature) {
-                    if ($feature['id'] === '13') {
-                        $val = parsing_strip_999_links((string)$features[$index]['value']);
-                        $features[$index]['value'] = $linksText . ($val !== '' ? "\n\n" . $val : '');
-                        __log("Added dynamic links to description for on_order car {$carId}");
-                        $feature13Found = true;
-                        break;
-                    }
-                }
-                
-                // If feature 13 doesn't exist, create it with just the links
-                if (!$feature13Found) {
-                    $features[] = [
-                        "id" => "13",
-                        "value" => $linksText
-                    ];
-                    __log("Created feature 13 with dynamic links for on_order car {$carId}");
-                }
-            }
+        if ($carInfo) {
+            $features = \App\Helper\Ad999Links::apply($pdo, 'gh3sp', $carInfo, $features, 'ordercars');
+            __log("Applied dynamic links to description for on_order car {$carId}");
         }
     }
 
@@ -497,7 +467,17 @@ if (__post('sub') == 'get_subcategory') {
 
         if (!empty($imgs0)) {
             $i = 1;
-            $maxImg999 = ((int)($input['999_api_id'] ?? 0) === 4) ? 10 : 20;
+            // Same caps as the cron (sauto_personal_cron.php): 15 on SautoSUA, 10 for
+            // Encars-MD and every other parsing car, 20 for a hand-made ad. Keying this
+            // on account 4 alone made a USA car upload 20 here and 10 through the cron.
+            $isParsingCar = false;
+            try {
+                $pchk = $pdo->prepare("SELECT parsing_id FROM gh3sp_car_ctlg WHERE id = ?");
+                $pchk->execute([$carId]);
+                $isParsingCar = !empty($pchk->fetchColumn());
+            } catch (\Throwable $e) { /* column may be absent on old installs */ }
+            $acc999 = (int)($input['999_api_id'] ?? 0);
+            $maxImg999 = ($acc999 === 5) ? 15 : (($acc999 === 4 || $isParsingCar) ? 10 : 20);
             $imgs = array_chunk($imgs0, $maxImg999);
 
             if (!empty($imgs[0]) && is_array($imgs[0])) {
@@ -524,6 +504,19 @@ if (__post('sub') == 'get_subcategory') {
                     }
                 }
             }
+        }
+
+        // Manual publishing spends the same 1200 images/day 999 allows per account, so
+        // it goes into the same counter the cron budgets from. Without this the cron
+        // believes the account is idle, keeps uploading, and reads the resulting 403 as
+        // a passing throttle instead of the quota it really is.
+        if (!empty($images999) && $acc999 > 0) {
+            try {
+                $cnt = count($images999);
+                $pdo->prepare("INSERT INTO gh3sp_settings (name, value) VALUES (?, ?)
+                    ON DUPLICATE KEY UPDATE value = CAST(value AS UNSIGNED) + ?")
+                    ->execute(['999md_uploads_' . date('Ymd') . '_' . $acc999, (string)$cnt, $cnt]);
+            } catch (\Throwable $e) { /* counter is advisory — never block a publish */ }
         }
 
         if (!empty($images999)) {

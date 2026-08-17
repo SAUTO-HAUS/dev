@@ -2,17 +2,41 @@
 
 $time = time()+(60*60*24*365);//1 year
 
+/**
+ * The language cookie is strictly necessary (the site cannot render without
+ * knowing the language) and carries the full set of security attributes.
+ *
+ * HttpOnly included: front-end code no longer reads this cookie — it reads
+ * <body data-lng>, which PHP renders from the same value. Keeping the cookie
+ * out of JavaScript's reach is what an audit expects of every cookie that does
+ * not have a concrete reason to be script-readable.
+*/
+
+if (!function_exists('setLangCookie')) {
+	function setLangCookie($value, $expires, $domain) {
+		setcookie('lang', $value, [
+			'expires'  => $expires,
+			'path'     => '/',
+			'domain'   => '.'.$domain,
+			'secure'   => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+			              || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https'),
+			'httponly' => true,
+			'samesite' => 'Lax',
+		]);
+	}
+}
+
 if ( (isset($t_mp[2])&&$t_mp[2]=='dev_tools') && (isset($t_mp[3])&&$t_mp[3]=='api') ){$_COOKIE['lang'] = 'en';}
 elseif ( isset($_POST['qSd4b_print']) ){ $_COOKIE['lang'] = 'ro'; }
 elseif( !isset($_COOKIE['lang']) ) {
 	if ( in_array($t_mp[1], $lang_arr, true) ){
-		setcookie('lang', $t_mp[1], $time, '/', '.'.$domain_name); $_COOKIE['lang'] = $t_mp[1];
+		setLangCookie($t_mp[1], $time, $domain_name); $_COOKIE['lang'] = $t_mp[1];
 	}else{
-		setcookie('lang', $default_lang, $time, '/', '.'.$domain_name); $_COOKIE['lang'] = $default_lang;
+		setLangCookie($default_lang, $time, $domain_name); $_COOKIE['lang'] = $default_lang;
 	}
 }
 elseif ( ( isset($_COOKIE['lang']) && $_COOKIE['lang']!=$t_mp[1] ) && in_array($t_mp[1], $lang_arr, true) ){
-	setcookie('lang', $t_mp[1], $time, '/', '.'.$domain_name); $_COOKIE['lang'] = $t_mp[1];
+	setLangCookie($t_mp[1], $time, $domain_name); $_COOKIE['lang'] = $t_mp[1];
 }
 
 $language = array(
@@ -221,7 +245,7 @@ if ($_COOKIE['lang']=='ru'){
 		),
 		
 		'l'=>array(
-			'menu'=>array('home'=>'Главная страница', 'cars'=>'Наш автопарк', 'ordercars'=>'Авто под заказ', 'services'=>'Услуги', 'tyres'=>'Шины', 'rent'=>'Аренда авто', 'credit'=>'Автокредит', 'contacts'=>'Контакты', 'information'=>'Информация', 'about'=>'О Нас', 'terms'=>'Терминология и условия', 'warranty'=>'Гарантия', 'privacy'=>'Политика конфиденциальности', 'tradein'=>'Trade-in'),
+			'menu'=>array('home'=>'Главная страница', 'cars'=>'Наш автопарк', 'ordercars'=>'Авто под заказ', 'services'=>'Услуги', 'tyres'=>'Шины', 'rent'=>'Аренда авто', 'credit'=>'Автокредит', 'contacts'=>'Контакты', 'information'=>'Информация', 'about'=>'О Нас', 'terms'=>'Терминология и условия', 'warranty'=>'Гарантия', 'privacy'=>'Политика конфиденциальности', 'cookies'=>'Политика использования cookie', 'tradein'=>'Trade-in'),
 			'extras'=>['fire_ext'=>'Огнетушитель', 'key'=>'Доп. ключи', 'matt'=>'Коврики', 'medkit'=>'Аптечка', 'tools'=>'Инструменты', 'wheel'=>'Запаска'],
 			'car'=>array(
 				'gr'=>array('car'=>'ЛЕГКОВЫЕ АВТОМОБИЛИ', 'com'=>'КОММЕРЧЕСКИЕ АВТОМОБИЛИ'),
@@ -262,10 +286,6 @@ if ($_COOKIE['lang']=='ru'){
 				, 'SE'=>'Швеция', 'GB'=>'Великобритания', 'NO'=>'Норвегия', 'IS'=>'Исландия', 'LI'=>'Лихтенштейн', 'CH'=>'Швейцария', 'ME'=>'Черногория', 'BA'=>'Босния и Герцеговина', 'MD'=>'Молдова', 'MK'=>'Северная Македония', 'AL'=>'Албания'
 				, 'RS'=>'Сербия', 'TR'=>'Турция', 'UA'=>'Украина'
 			],
-			'consent'=>[
-				'base_txt'=>[0=>'Данный веб-сайт использует различные файлы cookie. Сайт запомнит Ваш выбор на время будущих посещений. Нажимая «', 1=>'», Вы соглашаетесь с использованием файлов cookie (в том числе для аналитических, функциональных и маркетинговых целей).'], 
-				'acpt_all'=>'Принять', 'essent'=>'Только необходимое', 'cstm'=>'Настроить', 'cstmztn'=>'Индивидуальная настройка', 'func_ck'=>'Функциональные cookie', 'ad_ck'=>'Рекламные cookie', 'usr_dt_ck'=>'Cookie пользовательских данных', 'prsn_ck'=>'Персонализированные cookie', 'ana_ck'=>'Аналитические cookie', 'acpt_sel'=>'Принять выбранное', 'back'=>'Назад'
-			]
 		),
 		
 		't'=>array(
@@ -277,7 +297,9 @@ if ($_COOKIE['lang']=='ru'){
 				'our_serv'=>'Наши услуги',
 				'social'=>'Мы в соцсетях',
 				'address'=>array(0=>'Молдова, Кишинев', 1=>'ул. Каля Мошилор 11', 2=>'ул. Пьетрэрией 3'),
-				'prs_dat_agr'=>array(1=>'Согласие на обработку', 2=>'персональных данных', 'ttl'=>'Прочитать политику конфиденциальности')
+				// Informative notice, NOT a checkbox: conditioning a pre-contractual
+				// service on ticking a privacy box is abusive under Legea 195/2024.
+				'prs_dat_agr'=>array(1=>'Ваши данные будут использованы исключительно для ответа на этот запрос, согласно', 2=>'Политике конфиденциальности', 'ttl'=>'Прочитать политику конфиденциальности', 'mkt'=>'Согласен(на) получать в будущем похожие автопредложения.')
 			),
 			'mini'=>array(
 				'rent'=>'Аренда автомобилей',
@@ -950,6 +972,7 @@ if ($_COOKIE['lang']=='ru'){
 		'about'=>'О нас',
 		'contacts'=>'Контакты',
 		'privacy'=>'Политика конфиденциальности',
+		'cookies'=>'Политика использования cookie',
 		'credit'=>'Требования по кредитованию',
 		'terms'=>'Терминология и условия',
 		'warranty'=>'Гарантия'
@@ -969,27 +992,153 @@ if ($_COOKIE['lang']=='ru'){
 			</ul>
 		',
 		'privacy' => '
-			<p>Политика конфиденциальности применимая компанией <b>SAUTO S.R.L.</b> объясняет, каким образом используется любой тип личной информации, которая запрашивается в процессе использования сайта.</p>
-			<p>Личная информация означает любой тип информации, которая идентифицирует Вас как личность (например ваше имя, адрес или телефон).</p>
-			<p><b>SAUTO SRL</b> обязуется не продавать и не распространять собранную информацию третьим лицам.</p>
-			<p>Мы собираем данные только для того, чтобы выполнять заказы и как можно лучше обслуживать наших клиентов обеспечивая полной информацией, касающейся автомобилей.</p>
-			<p>Собранные данные включают: фамилию и имя, адрес электронной почты, контактный телефон. Мы используем собранную информацию, с единственной целью - общение с нашими клиентами. Таким образом, заполняя формуляр сообщения, покупатель обеспечивает согласие на то, что его персональные данные будут включены в базу данных сайта <b>sauto.md</b></p>
-			<b>Цель сбора данных заключается:</b>
+			<h1>Уведомление об обработке данных (Политика конфиденциальности)</h1>
+			<p><i>Последнее обновление: <time datetime="2026-08-10">10-08-2026</time> · Версия v1.0</i></p>
+			<p>Прозрачность и безопасность ваших данных — наш приоритет. Эта страница понятно, без сложных юридических терминов, объясняет, что мы делаем с вашими персональными данными, когда вы пользуетесь сайтом sauto.md, зачем мы их запрашиваем и какие права у вас есть.</p>
+
+			<h2>1. Кто мы</h2>
+			<p>Сайт sauto.md администрируется компанией:</p>
 			<ul>
-				<li>в информировании клиентов/покупателей относительно запрошенного автомобиля, предзаказа.</li>
-				<li>в передаче новостей и/или периодических оповещений по электронной почте.</li>
-				<li>в исследовании рынка, мониторинге продаж и трафика на нашем сайте.</li>
+				<li>Юридическое название: <b>SAUTO S.R.L.</b></li>
+				<li>IDNO: 1017600006845</li>
+				<li>Адрес: ул. Calea Moșilor 11 / ул. Pietrăriei 3, Кишинёв, Республика Молдова</li>
+				<li>Ответственный за защиту персональных данных (контакт по персональным данным): <a href="mailto:managment@sauto.md">managment@sauto.md</a> | Тел: <a href="tel:+37369977674">069977674</a></li>
+				<li>Применимый закон: Закон № 195/2024 о защите персональных данных (Республика Молдова), применяется с 23 августа 2026 года.</li>
 			</ul>
-			<b>Файлы cookie</b>
+
+			<h2>2. Какие данные мы обрабатываем, зачем и на каком правовом основании (ст. 6)</h2>
+			<p>Мы не собираем данные «на всякий случай». У каждой запрашиваемой информации есть чёткая цель и правовое основание согласно Закону 195/2024:</p>
 			<ul>
-				<li>Этот сайт использует файлы cookie для улучшения вашего опыта его просмотра и для рассчета и контроля трафика на сайте.</li>
-				<li>Мы используем ограниченное количество файлов cookie, а именно Google Analytics и Facebook Pixel.</li>
-				<li>Собранная информация является анонимной и хранится для нас в Google, соответственно на Facebook. Эта информация хранится не более 90 дней и после истечения срока удаляется.</li>
-				<li>Единственной целью использования данной информации, является возможность лучше понять нужды наших клиентов, чтобы постоянно улучшать наши предложения и предоставлять пользователям наиболее приятный опыт использования сайта <b>sauto.md</b>.</li>
+				<li><b>A. Ответы на обращения и автозаказы (форма обратной связи)</b>
+					<ul>
+						<li>Собираемые данные: фамилия, имя, телефон, адрес электронной почты.</li>
+						<li>Цель: предоставить вам запрошенную информацию об автомобиле или обработать заказ.</li>
+						<li>Правовое основание: преддоговорные действия и исполнение договора (ст. 6, ч. 1, п. b).</li>
+					</ul>
+				</li>
+				<li><b>B. Маркетинг и рассылка (периодические оповещения)</b>
+					<ul>
+						<li>Собираемые данные: адрес электронной почты.</li>
+						<li>Цель: отправка коммерческих предложений и информации о новых автомобилях в наличии.</li>
+						<li>Правовое основание: ваше согласие, данное отдельной и понятной галочкой (ст. 6, ч. 1, п. a). Вы можете отписаться в любой момент внизу любого полученного письма.</li>
+					</ul>
+				</li>
+				<li><b>C. Аналитика трафика и реклама (cookie-файлы)</b>
+					<ul>
+						<li>Собираемые данные: IP-адрес (анонимизированный), идентификаторы cookie, данные о навигации.</li>
+						<li>Цель: понять, как используется сайт (Google Analytics, Yandex Metrica), и показывать релевантную рекламу (Facebook Pixel, Google Ads, TikTok Pixel).</li>
+						<li>Правовое основание: ваше согласие, полученное через баннер cookie при первом посещении (ст. 6, ч. 1, п. a). Ни один из этих инструментов не запускается до вашего согласия.</li>
+					</ul>
+				</li>
+				<li><b>D. Ваш аккаунт на Sauto.md (Кабинет)</b>
+					<ul>
+						<li>Собираемые данные: фамилия, имя, e-mail, телефон, тип лица (физическое или юридическое), сохранённые в кабинете автомобили и история ваших запросов.</li>
+						<li>Цель: создание и ведение аккаунта, хранение сохранённых автомобилей, показ цен и обработка ваших запросов.</li>
+						<li>Правовое основание: исполнение договора (ст. 6, ч. 1, п. b). Мы также ведём технический журнал действий в аккаунте на основании законного интереса безопасности (ст. 6, ч. 1, п. f).</li>
+						<li>Предложения и акции по e-mail или телефону отправляются <b>только если</b> вы отдельно отметили это (см. пункт B). Аккаунт работает точно так же и без этой отметки.</li>
+					</ul>
+				</li>
 			</ul>
-			<p>В любой момент по Вашей просьбе мы можем изменить или удалить из нашей базы данных любую информацию, которую Вы нам предоставили.</p>
-			<p>Если вы хотите изменить или удалить Ваши личные данные, которыми мы обладаем, пожалуйста, свяжитесь с нами по электронной почте на <a href="mailto:sautomd@gmail.com"><b>sautomd@gmail.com</b></a>.</p>
-			<p>Мы рады получить Ваши вопросы и комментарии относительно любого аспекта конфиденциальности. Если у Вас есть такие комментарии, или Вы хотите сформулировать жалобу относительно способа, в котором мы используем Ваши персональные данные, пожалуйста, свяжитесь с нами по телефону: <a href="tel:+37379600361"><b>079-600-361</b></a> или по электронной почте на <a href="mailto:sautomd@gmail.com"><b>sautomd@gmail.com</b></a>.</p>
+
+			<h2>3. Кто ещё видит ваши данные (получатели)</h2>
+			<p>Мы не продаём и не сдаём в аренду ваши данные. Для обеспечения работы сайта мы передаём данные строго в указанных целях нашим партнёрам (действующим как обработчики, на основании надёжных договоров):</p>
+			<ul>
+				<li>Поставщик услуг веб-хостинга.</li>
+				<li>Google (Analytics, Ads, Tag Manager) и Meta (Facebook Pixel) — только если вы приняли соответствующие cookie.</li>
+				<li>Yandex (Metrica) — только если вы приняли аналитические cookie.</li>
+				<li>TikTok (TikTok Pixel) — только если вы приняли маркетинговые cookie.</li>
+				<li>Cloudflare — сеть доставки статического контента (изображения, файлы), без доступа к нашей базе данных.</li>
+				<li>Бухгалтерская компания (строго для выставленных счетов).</li>
+			</ul>
+			<p><b>Передача за пределы Республики Молдова.</b> Наша база данных размещена в Республике Молдова. Однако перечисленные выше поставщики аналитики и рекламы обрабатывают данные на серверах за пределами страны, согласно собственным политикам: Google и Meta — в США, Yandex — в Российской Федерации, TikTok — в Китае и Сингапуре. Эти передачи происходят <b>только если вы приняли</b> соответствующие cookie; при отказе ни один из этих инструментов не запускается и к ним ничего не уходит.</p>
+
+			<h2>4. Сколько времени мы храним данные</h2>
+			<ul>
+				<li>Данные, связанные с предложениями/заказами, хранятся в течение срока действия договора и далее — согласно установленным законом обязанностям по архивированию (напр. налоговое законодательство).</li>
+				<li>Данные для рассылки хранятся до момента отзыва вашего согласия (отписки).</li>
+				<li>Ваше решение по cookie хранится 1 год, после чего баннер спросит снова.</li>
+				<li>Cookie, устанавливаемые инструментами аналитики и маркетинга, имеют сроки, заданные их поставщиками. Основные из них:</li>
+			</ul>
+			<table class="cookie-table">
+				<tr><th>Cookie</th><th>Кто устанавливает</th><th>Для чего</th><th>Срок</th></tr>
+				<tr><td>cookie_consent</td><td>Sauto.md</td><td>Хранит ваш выбор в баннере. Необходимый.</td><td>1 год</td></tr>
+				<tr><td>lang</td><td>Sauto.md</td><td>Язык сайта. Необходимый.</td><td>1 год</td></tr>
+				<tr><td>_ga, _ga_*</td><td>Google Analytics</td><td>Статистика посещений</td><td>90 дней</td></tr>
+				<tr><td>_ym_uid, _ym_d</td><td>Yandex Metrica</td><td>Статистика посещений</td><td>1 год</td></tr>
+				<tr><td>_fbp</td><td>Meta (Facebook Pixel)</td><td>Измерение рекламы</td><td>90 дней</td></tr>
+				<tr><td>_ttp, _tt_enable_cookie, ttcsid_*</td><td>TikTok Pixel</td><td>Измерение рекламы</td><td>до 13 месяцев</td></tr>
+				<tr><td>_gcl_au</td><td>Google Ads</td><td>Измерение конверсий</td><td>90 дней</td></tr>
+			</table>
+			<p>Необходимые cookie работают всегда — без них сайт не запомнит язык или ваш выбор по cookie. Остальные запускаются только с вашего согласия.</p>
+
+			<h2>5. Ваши права (ст. 15-22)</h2>
+			<p>Согласно новому законодательству, вы полностью контролируете свои данные. Вы имеете право на:</p>
+			<ul>
+				<li><b>Доступ:</b> узнать, какие данные о вас у нас есть, и получить их копию.</li>
+				<li><b>Исправление:</b> исправить неверные или неполные данные.</li>
+				<li><b>Удаление («право быть забытым»):</b> потребовать удаления ваших данных (когда больше нет установленной законом обязанности их хранить).</li>
+				<li><b>Ограничение и возражение:</b> потребовать временного или окончательного прекращения обработки ваших данных (особенно в маркетинговых целях).</li>
+				<li><b>Переносимость:</b> получить данные в структурированном формате, чтобы передать их в другое место.</li>
+			</ul>
+			<p><b>Как воспользоваться этими правами?</b><br/>
+			Напишите нам на <a href="mailto:sautomd@gmail.com?subject=Cerere%20GDPR%20-%20Sauto.md">sautomd@gmail.com</a>. Мы ответим бесплатно в срок не более 30 дней.</p>
+
+			<h2>6. Право подать жалобу</h2>
+			<p>Если вы считаете, что мы не соблюли ваши права, вы можете обратиться к нам в любой момент для решения вопроса. Также вы имеете право подать официальную жалобу в Национальный центр по защите персональных данных (CNPDCP) на сайте органа: <a href="https://datepersonale.md" target="_blank" rel="noopener">datepersonale.md</a>.</p>
+
+			<h2>7. Управление вашими предпочтениями (cookie)</h2>
+			<p>Вы имеете право изменить своё решение относительно скриптов отслеживания (Analytics, Pixel) в любой момент. Используйте кнопку ниже, чтобы снова открыть панель настроек и запретить или разрешить их использование:</p>
+			<p><button type="button" class="cookie-settings-btn" onclick="openCookieManager()">Настройки и отзыв cookie</button></p>
+			<p>Подробности по каждому cookie — в <a href="/ru/cookies">Политике использования cookie</a>.</p>
+		',
+		'cookies' => '
+			<h1>Политика использования cookie</h1>
+			<p><i>Последнее обновление: <time datetime="2026-08-10">10-08-2026</time> · Версия v1.0</i></p>
+			<p>Эта страница объясняет, что такое cookie, какие из них мы используем на sauto.md, зачем и как в любой момент изменить свой выбор. Она является частью <a href="/ru/privacy">Уведомления об обработке данных</a>.</p>
+
+			<h2>1. Что такое cookie</h2>
+			<p>Cookie — это небольшой текстовый файл, который сайт сохраняет в вашем браузере. Одни необходимы для работы сайта (например, чтобы запомнить выбранный язык), другие служат для аналитики трафика или рекламы.</p>
+
+			<h2>2. Наше правило: по умолчанию ничего</h2>
+			<p><b>Sauto.md не запускает ни один неосновной cookie до вашего согласия.</b> При первом посещении вы видите баннер с двумя равнозначными кнопками: «Отказ» и «Принять». Пока вы не выберете, ни один инструмент аналитики или маркетинга не загружается.</p>
+			<p>Отказ никак не ограничивает ваш доступ к сайту и автопредложениям.</p>
+
+			<h2>3. Основные cookie (всегда активны)</h2>
+			<p>Без них сайт не может работать. Они вас не отслеживают и не требуют согласия.</p>
+			<table class="cookie-table">
+				<tr><th>Cookie</th><th>Для чего</th><th>Срок</th></tr>
+				<tr><td>cookie_consent</td><td>Хранит ваш выбор в баннере</td><td>1 год</td></tr>
+				<tr><td>lang</td><td>Язык отображения сайта</td><td>1 год</td></tr>
+				<tr><td>PHPSESSID</td><td>Техническая сессия (формы, авторизация)</td><td>до закрытия браузера</td></tr>
+			</table>
+
+			<h2>4. Аналитические cookie (только с вашего согласия)</h2>
+			<p>Показывают, как используется сайт, чтобы мы могли его улучшать. Мы не используем их для показа рекламы.</p>
+			<table class="cookie-table">
+				<tr><th>Cookie</th><th>Кто устанавливает</th><th>Срок</th></tr>
+				<tr><td>_ga, _ga_*</td><td>Google Analytics</td><td>90 дней</td></tr>
+				<tr><td>_ym_uid, _ym_d, _ym_isad</td><td>Yandex Metrica</td><td>1 год</td></tr>
+			</table>
+
+			<h2>5. Маркетинговые cookie (только с вашего согласия)</h2>
+			<p>Позволяют показывать релевантные автопредложения и измерять эффективность кампаний.</p>
+			<table class="cookie-table">
+				<tr><th>Cookie</th><th>Кто устанавливает</th><th>Срок</th></tr>
+				<tr><td>_fbp</td><td>Meta (Facebook Pixel)</td><td>90 дней</td></tr>
+				<tr><td>_gcl_au</td><td>Google Ads</td><td>90 дней</td></tr>
+				<tr><td>_ttp, _tt_enable_cookie, ttcsid_*</td><td>TikTok Pixel</td><td>до 13 месяцев</td></tr>
+			</table>
+
+			<h2>6. Куда уходят данные</h2>
+			<p>Перечисленные инструменты принадлежат компаниям, которые обрабатывают данные на серверах за пределами Республики Молдова: Google и Meta — в США, Yandex — в Российской Федерации, TikTok — в Китае и Сингапуре. Эти передачи происходят <b>только если вы приняли</b> соответствующую категорию. При отказе инструменты не запускаются и к ним ничего не уходит.</p>
+
+			<h2>7. Как изменить свой выбор</h2>
+			<p>В любой момент, одним кликом. Кнопка ниже снова открывает панель настроек, где каждую категорию можно включить или выключить отдельно. Та же кнопка есть внизу каждой страницы.</p>
+			<p><button type="button" class="cookie-settings-btn" onclick="openCookieManager()">Настройки и отзыв cookie</button></p>
+			<p>Вы также можете удалить cookie прямо в настройках приватности браузера. Учтите: если удалить все, мы забудем и о вашем отказе — и баннер спросит снова.</p>
+
+			<h2>8. Контакт</h2>
+			<p>По любым вопросам о cookie или ваших данных: <a href="mailto:managment@sauto.md">managment@sauto.md</a>. Полные сведения о ваших правах — в <a href="/ru/privacy">Политике конфиденциальности</a>.</p>
 		',
 		'credit' => '
 		<h1>Покупайте автомобиль с лёгкостью: Кредит и Лизинг в Молдове</h1>
@@ -1199,6 +1348,7 @@ if ($_COOKIE['lang']=='ru'){
 		'settings'=>'Настройки',
 		'publication_settings'=>'Публикация',
 		'404_stats'=>'Ошибки 404',
+		'gdpr'=>'Журнал согласий на cookie',
 		'checked_count'=>'Количество выбранных фото',
 		'check_all'=>'Выделить все',
 		'uncheck_all'=>'Отменить все',
@@ -1871,7 +2021,7 @@ elseif ($_COOKIE['lang']=='ro'){
 		),
 		
 		'l'=>array(
-			'menu'=>array('home'=>'Pagina principală', 'cars'=>'Stocul nostru', 'ordercars'=>'Mașini la comandă', 'services'=>'Servicii', 'tyres'=>'Anvelope', 'rent'=>'Închiriază o mașină', 'credit'=>'Credit Auto', 'contacts'=>'Contacte', 'information'=>'informație', 'about'=>'Despre noi', 'terms'=>'Terminologie și condiții', 'warranty'=>'Garanție', 'privacy'=>'Politica de Confidențialitate', 'tradein'=>'Trade-in'),
+			'menu'=>array('home'=>'Pagina principală', 'cars'=>'Stocul nostru', 'ordercars'=>'Mașini la comandă', 'services'=>'Servicii', 'tyres'=>'Anvelope', 'rent'=>'Închiriază o mașină', 'credit'=>'Credit Auto', 'contacts'=>'Contacte', 'information'=>'informație', 'about'=>'Despre noi', 'terms'=>'Terminologie și condiții', 'warranty'=>'Garanție', 'privacy'=>'Politica de Confidențialitate', 'cookies'=>'Politica de cookie-uri', 'tradein'=>'Trade-in'),
 			'extras'=>['fire_ext'=>'Extinctor', 'key'=>'Adăugați chei', 'matt'=>'Mags', 'medkit'=>'Trusă de prim ajutor', 'tools'=>'Cric si cheie pentru roti', 'wheel'=>'Spare'],
 			'car'=>array(
 				'gr'=>array('car'=>'AUTOTURISME', 'com'=>'AUTOCOMERCIALE'),
@@ -1912,10 +2062,6 @@ elseif ($_COOKIE['lang']=='ro'){
 				, 'SE'=>'Suedia', 'GB'=>'Marea Britanie', 'NO'=>'Norvegia', 'IS'=>'Islanda', 'LI'=>'Liechtenstein', 'CH'=>'Elveția', 'ME'=>'Muntenegru', 'BA'=>'Bosnia și Herțegovina', 'MD'=>'Moldova', 'MK'=>'Macedonia de Nord', 'AL'=>'Albania'
 				, 'RS'=>'Serbia', 'TR'=>'Turcia', 'UA'=>'Ucraina'
 			],
-			'consent'=>[
-				'base_txt'=>[0=>'Acest site folosește diverse cookie-uri. Alegerile tale vor fi reținute în timpul vizitelor viitoare. Făcând clic pe „', 1=>'”, sunteți de acord cu utilizarea cookie-urilor (inclusiv în scopuri analitice, funcționale și de marketing).'], 
-				'acpt_all'=>'Acceptă', 'essent'=>'Doar necesarul', 'cstm'=>'Personalizați', 'cstmztn'=>'Personalizare', 'func_ck'=>'Cookie-uri esențiale', 'ad_ck'=>'Cookie-uri de marketing', 'usr_dt_ck'=>'Cookie-uri de date utilizator', 'prsn_ck'=>'Cookie-uri personalizate', 'ana_ck'=>'Cookie-uri de analiză', 'acpt_sel'=>'Acceptați selectat', 'back'=>'Înapoi'
-			]
 		),
 		
 		't'=>array(
@@ -1927,7 +2073,9 @@ elseif ($_COOKIE['lang']=='ro'){
 				'our_serv'=>'Serviciile noastre',
 				'social'=>'Suntem în rețelele sociale',
 				'address'=>array(0=>'Moldova, Chişinău', 1=>'str. Calea Moşilor 11', 2=>'str. Pietrăriei 3'),
-				'prs_dat_agr'=>array(1=>'Consimțământ pentru prelucrarea', 2=>'datelor cu caracter personal', 'ttl'=>'Citiți politica de confidențialitate')
+				// Informative notice, NOT a checkbox: conditioning a pre-contractual
+				// service on ticking a privacy box is abusive under Legea 195/2024.
+				'prs_dat_agr'=>array(1=>'Datele tale vor fi folosite exclusiv pentru a răspunde acestei solicitări, conform', 2=>'Politicii de Confidențialitate', 'ttl'=>'Citiți politica de confidențialitate', 'mkt'=>'Sunt de acord să fiu contactat pe viitor cu oferte auto similare.')
 			),
 			'mini'=>array(
 				'rent'=>'Inchiriere de mașina',
@@ -2575,6 +2723,7 @@ $lang_xtra_menu = array(
 	'about'=>'Despre noi',
 	'contacts'=>'Contacte',
 	'privacy'=>'Politica confidențialitate',
+	'cookies'=>'Politica de cookie-uri',
 	'credit'=>'Cerințe la creditare auto',
 	'terms'=>'Termeni și condiții',
 	'warranty'=>'Garantie auto'
@@ -2594,17 +2743,153 @@ $lang_xtra_page = array(
 		</ul>
 	',
 	'privacy' => '
-		<p>Politica de confidențialitate promovată de sauto.md explică în ce mod utilizăm noi orice tip de informație personală pe care o solicităm pe parcursul utilizarii site-ului. Informație personală înseamnă orice tip de informație care vă identifică pe dumneavoastră în nume personal (de exemplu numele dumneavoastra, adresa sau telefonul).SAUTO SRL nu va vinde, închiria sau distribui informațiile colectate nimănui. Colectăm informațiile pentru a putea onora comenzile și pentru a servi cît mai bine clienților noștri cu informații complete referitoare la automobile. Informațiile colectate includ: numele, adresa e-mai, telefon de contact. Info rmațiile colectate le folosim exclusiv în scopuri de comunicare cu clienții noștri. Prin completarea datelor în formularul mesageriei, Cumpărătorul declară și își  oferă acceptul ca datele sale personale să fie incluse în baza de date a sauto.md</p>
-		<b>Scopul colectării datelor este:</b>
+		<h1>Notă de informare privind prelucrarea datelor (Politica de Confidențialitate)</h1>
+		<p><i>Ultima actualizare: <time datetime="2026-08-10">10-08-2026</time> · Versiunea v1.0</i></p>
+		<p>Transparența și securitatea datelor tale sunt o prioritate pentru noi. Această pagină îți explică clar, fără termeni juridici complicați, ce facem cu datele tale personale atunci când folosești site-ul sauto.md, de ce le cerem și ce drepturi ai.</p>
+
+		<h2>1. Cine suntem</h2>
+		<p>Site-ul sauto.md este administrat de compania:</p>
 		<ul>
-			<li>Informarea Clientilor/Cumpărătorilor privind automobilul solicitat, comandă auto.</li>
-			<li>Trimiterea ocazional prin email de newslettere si/sau alerte periodice</li>
-			<li>De cercetare de piață, de urmărire și monitorizare a traficului pe site și a vînzărilor</li>
+			<li>Denumire legală: <b>SAUTO S.R.L.</b></li>
+			<li>IDNO: 1017600006845</li>
+			<li>Adresa: str. Calea Moșilor 11 / str. Pietrăriei 3, Chișinău, Republica Moldova</li>
+			<li>Responsabil cu protecția datelor cu caracter personal (contact pentru date personale): <a href="mailto:managment@sauto.md">managment@sauto.md</a> | Tel: <a href="tel:+37369977674">069977674</a></li>
+			<li>Legea aplicabilă: Legea nr. 195/2024 privind protecția datelor cu caracter personal (Republica Moldova), aplicabilă din 23 august 2026.</li>
 		</ul>
-        <b>Cookie-uri</b>
-		<p>cookieuri și anume cookie Google Analytics și cookie Facebook Pixel. Informațiile colectate sunt anonimizate și stocate pentru noi de către Google, respectiv Facebook. Aceste informații sunt păstrate timp de maxim 90 de zile și apoi sunt șterse, singurul scop al acestor informații fiind de a ne oferi o înțelegere mai bună asupra nevoilor clienților noștri, pentru a putea astfel permanent îmbunătăți oferta noastră și oferi o experiență cît mai plăcută pe site utilizatorilor.</p>
-		<p>În orice moment puteți modifica sau șterge din baza noastră de date informațiile pe care ni le-ați oferit. Dacă doriți să modificați sau ștergeți datele dumneavoa stră personale aflate în posesia noastră, vă rugăm să ne contactați prin email la <a href="mailto:sautomd@gmail.com"><b>sautomd@gmail.com</b></a></p>
-        <p>Suntem bucuroși să primim întrebările și comentariile dumneavoastră referitoare la orice aspect de confidențialitate. În cazul în care aveți asemenea comentarii sau în cazul în care doriți să formulați o reclamație referitoare la modul în care utilizăm datele dumneavoastră personale, vă rugăm să ne contactați prin telefon la numarul: <a href="tel:+37379600361"><b>079-600-361</b></a> sau email la <a href="mailto:sautomd@gmail.com"><b>sautomd@gmail.com</b></a></p>
+
+		<h2>2. Ce date prelucrăm, de ce și baza legală (Art. 6)</h2>
+		<p>Nu colectăm date „pentru orice eventualitate”. Fiecare informație cerută are un scop clar și o bază legală conform Legii 195/2024:</p>
+		<ul>
+			<li><b>A. Răspunsul la solicitări și comenzi auto (Formular de contact/mesagerie)</b>
+				<ul>
+					<li>Date colectate: Nume, prenume, telefon, adresă de e-mail.</li>
+					<li>Scop: Pentru a-ți oferi informațiile cerute despre un automobil sau pentru a procesa o comandă.</li>
+					<li>Temei legal: Demersuri precontractuale și executarea unui contract (Art. 6, alin. 1, lit. b).</li>
+				</ul>
+			</li>
+			<li><b>B. Marketing și Newsletter (Alerte periodice)</b>
+				<ul>
+					<li>Date colectate: Adresa de e-mail.</li>
+					<li>Scop: Trimiterea de oferte comerciale și informații despre mașini noi în stoc.</li>
+					<li>Temei legal: Consimțământul tău, acordat printr-o bifă clară și separată (Art. 6, alin. 1, lit. a). Te poți dezabona oricând din subsolul oricărui e-mail primit.</li>
+				</ul>
+			</li>
+			<li><b>C. Analiză de trafic și publicitate (Cookie-uri)</b>
+				<ul>
+					<li>Date colectate: Adresa IP (anonimizată), ID-uri cookie, date de navigare.</li>
+					<li>Scop: Înțelegerea modului în care este folosit site-ul (Google Analytics, Yandex Metrica) și afișarea de reclame relevante (Facebook Pixel, Google Ads, TikTok Pixel).</li>
+					<li>Temei legal: Consimțământul tău, obținut prin bannerul de cookie-uri afișat la prima vizită (Art. 6, alin. 1, lit. a). Niciunul dintre aceste instrumente nu pornește înainte de acordul tău.</li>
+				</ul>
+			</li>
+			<li><b>D. Contul tău pe Sauto.md (Cabinet)</b>
+				<ul>
+					<li>Date colectate: Nume, prenume, e-mail, telefon, tipul persoanei (fizică sau juridică), automobilele salvate în cabinet și istoricul cererilor tale.</li>
+					<li>Scop: Crearea și administrarea contului, păstrarea mașinilor salvate, afișarea prețurilor și procesarea cererilor tale.</li>
+					<li>Temei legal: Executarea unui contract (Art. 6, alin. 1, lit. b). Păstrăm și un jurnal tehnic al acțiunilor din cont, pe temeiul interesului legitim de securitate (Art. 6, alin. 1, lit. f).</li>
+					<li>Ofertele și promoțiile pe e-mail sau telefon îți sunt trimise <b>doar dacă</b> ai bifat separat acest lucru (vezi punctul B). Contul funcționează exact la fel și fără acea bifă.</li>
+				</ul>
+			</li>
+		</ul>
+
+		<h2>3. Cine mai vede datele tale (Destinatarii)</h2>
+		<p>Nu vindem și nu închiriem datele tale. Pentru a asigura funcționarea site-ului, transmitem date strict în scopurile menționate către partenerii noștri (care acționează ca persoane împuternicite, pe bază de contracte sigure):</p>
+		<ul>
+			<li>Furnizorul de servicii de găzduire web (Hosting).</li>
+			<li>Google (Analytics, Ads, Tag Manager) și Meta (Facebook Pixel) – doar dacă ai acceptat cookie-urile respective.</li>
+			<li>Yandex (Metrica) – doar dacă ai acceptat cookie-urile de analiză.</li>
+			<li>TikTok (TikTok Pixel) – doar dacă ai acceptat cookie-urile de marketing.</li>
+			<li>Cloudflare – rețea de livrare a conținutului static (imagini, fișiere), fără acces la baza noastră de date.</li>
+			<li>Compania de contabilitate (strict pentru facturile emise).</li>
+		</ul>
+		<p><b>Transferuri în afara Republicii Moldova.</b> Baza noastră de date este găzduită în Republica Moldova. Furnizorii de analiză și publicitate de mai sus prelucrează însă datele pe servere din afara țării, potrivit propriilor politici: Google și Meta în Statele Unite, Yandex în Federația Rusă, TikTok în China și Singapore. Aceste transferuri au loc <b>doar dacă ai acceptat</b> cookie-urile corespunzătoare; dacă refuzi, niciun instrument dintre acestea nu pornește și nu pleacă nimic către ei.</p>
+
+		<h2>4. Cât timp păstrăm datele</h2>
+		<ul>
+			<li>Datele legate de oferte/comenzi sunt păstrate pe perioada derulării contractului și ulterior conform obligațiilor legale de arhivare (ex. legislația fiscală).</li>
+			<li>Datele pentru newsletter sunt păstrate până în momentul în care îți retragi consimțământul (te dezabonezi).</li>
+			<li>Decizia ta privind cookie-urile este reținută 1 an, după care bannerul te întreabă din nou.</li>
+			<li>Cookie-urile plasate de instrumentele de analiză și marketing au durate stabilite de furnizorii lor. Mai jos găsești principalele:</li>
+		</ul>
+		<table class="cookie-table">
+			<tr><th>Cookie</th><th>Cine îl pune</th><th>Pentru ce</th><th>Cât durează</th></tr>
+			<tr><td>cookie_consent</td><td>Sauto.md</td><td>Reține alegerea ta din banner. Esențial.</td><td>1 an</td></tr>
+			<tr><td>lang</td><td>Sauto.md</td><td>Limba site-ului. Esențial.</td><td>1 an</td></tr>
+			<tr><td>_ga, _ga_*</td><td>Google Analytics</td><td>Statistici de vizitare</td><td>90 de zile</td></tr>
+			<tr><td>_ym_uid, _ym_d</td><td>Yandex Metrica</td><td>Statistici de vizitare</td><td>1 an</td></tr>
+			<tr><td>_fbp</td><td>Meta (Facebook Pixel)</td><td>Măsurarea reclamelor</td><td>90 de zile</td></tr>
+			<tr><td>_ttp, _tt_enable_cookie, ttcsid_*</td><td>TikTok Pixel</td><td>Măsurarea reclamelor</td><td>până la 13 luni</td></tr>
+			<tr><td>_gcl_au</td><td>Google Ads</td><td>Măsurarea conversiilor</td><td>90 de zile</td></tr>
+		</table>
+		<p>Cookie-urile esențiale funcționează mereu — fără ele site-ul nu ar ține minte limba sau alegerea ta privind cookie-urile. Restul pornesc doar cu acordul tău.</p>
+
+		<h2>5. Drepturile tale (Art. 15-22)</h2>
+		<p>Conform noii legislații, beneficiezi de control total asupra datelor tale. Ai dreptul la:</p>
+		<ul>
+			<li><b>Acces:</b> Să afli ce date deținem despre tine și să primești o copie a lor.</li>
+			<li><b>Rectificare:</b> Să corectezi datele greșite sau incomplete.</li>
+			<li><b>Ștergere („Dreptul de a fi uitat”):</b> Să ne ceri să-ți ștergem datele (atunci când nu mai există o obligație legală de a le păstra).</li>
+			<li><b>Restricționare și Opoziție:</b> Să ceri oprirea temporară sau definitivă a prelucrării datelor tale (mai ales pentru marketing).</li>
+			<li><b>Portabilitate:</b> Să primești datele într-un format structurat pentru a le transfera în altă parte.</li>
+		</ul>
+		<p><b>Cum îți exerciți aceste drepturi?</b><br/>
+		Trimite-ne un e-mail la <a href="mailto:sautomd@gmail.com?subject=Cerere%20GDPR%20-%20Sauto.md">sautomd@gmail.com</a>. Îți vom răspunde gratuit în termen de cel mult 30 de zile.</p>
+
+		<h2>6. Dreptul de a depune plângere</h2>
+		<p>Dacă ești de părere că nu ți-am respectat drepturile, ne poți contacta oricând pentru a rezolva problema. De asemenea, ai dreptul de a depune o plângere oficială la Centrul Național pentru Protecția Datelor cu Caracter Personal (CNPDCP), accesând site-ul autorității: <a href="https://datepersonale.md" target="_blank" rel="noopener">datepersonale.md</a>.</p>
+
+		<h2>7. Gestionarea preferințelor tale (Cookie-uri)</h2>
+		<p>Ai dreptul de a-ți schimba decizia cu privire la scripturile de urmărire (Analytics, Pixel) în orice moment. Folosește butonul de mai jos pentru a redeschide panoul de setări și a opri sau permite utilizarea acestora:</p>
+		<p><button type="button" class="cookie-settings-btn" onclick="openCookieManager()">Setări și Revocare Cookie-uri</button></p>
+		<p>Detalii despre fiecare cookie în parte găsești în <a href="/ro/cookies">Politica de cookie-uri</a>.</p>
+	',
+	'cookies' => '
+		<h1>Politica de cookie-uri</h1>
+		<p><i>Ultima actualizare: <time datetime="2026-08-10">10-08-2026</time> · Versiunea v1.0</i></p>
+		<p>Această pagină explică ce sunt cookie-urile, pe care le folosim pe sauto.md, de ce, și cum îți poți schimba alegerea oricând. Face parte din <a href="/ro/privacy">Nota de informare privind prelucrarea datelor</a>.</p>
+
+		<h2>1. Ce este un cookie</h2>
+		<p>Un cookie este un fișier text mic pe care site-ul îl păstrează în browserul tău. Unele sunt necesare ca site-ul să funcționeze (de exemplu ca să rețină limba aleasă), altele servesc la măsurarea traficului sau la publicitate.</p>
+
+		<h2>2. Regula noastră: implicit nimic</h2>
+		<p><b>Sauto.md nu pornește niciun cookie neesențial înainte de acordul tău.</b> La prima vizită vezi un banner cu două opțiuni de aceeași greutate: „Refuz" și „Accept". Până când alegi, niciun instrument de analiză sau marketing nu se încarcă.</p>
+		<p>Refuzul nu îți limitează cu nimic accesul la site sau la ofertele auto.</p>
+
+		<h2>3. Cookie-uri esențiale (mereu active)</h2>
+		<p>Fără ele site-ul nu poate funcționa. Nu te urmăresc și nu au nevoie de acord.</p>
+		<table class="cookie-table">
+			<tr><th>Cookie</th><th>Pentru ce</th><th>Cât durează</th></tr>
+			<tr><td>cookie_consent</td><td>Reține alegerea ta din banner</td><td>1 an</td></tr>
+			<tr><td>lang</td><td>Limba în care afișăm site-ul</td><td>1 an</td></tr>
+			<tr><td>PHPSESSID</td><td>Sesiunea tehnică (formulare, autentificare)</td><td>până închizi browserul</td></tr>
+		</table>
+
+		<h2>4. Cookie-uri de analiză (doar cu acordul tău)</h2>
+		<p>Ne arată cum este folosit site-ul, ca să îl putem îmbunătăți. Nu le folosim pentru a-ți trimite reclame.</p>
+		<table class="cookie-table">
+			<tr><th>Cookie</th><th>Cine îl pune</th><th>Cât durează</th></tr>
+			<tr><td>_ga, _ga_*</td><td>Google Analytics</td><td>90 de zile</td></tr>
+			<tr><td>_ym_uid, _ym_d, _ym_isad</td><td>Yandex Metrica</td><td>1 an</td></tr>
+		</table>
+
+		<h2>5. Cookie-uri de marketing (doar cu acordul tău)</h2>
+		<p>Ne permit să îți arătăm oferte auto relevante și să măsurăm ce campanii funcționează.</p>
+		<table class="cookie-table">
+			<tr><th>Cookie</th><th>Cine îl pune</th><th>Cât durează</th></tr>
+			<tr><td>_fbp</td><td>Meta (Facebook Pixel)</td><td>90 de zile</td></tr>
+			<tr><td>_gcl_au</td><td>Google Ads</td><td>90 de zile</td></tr>
+			<tr><td>_ttp, _tt_enable_cookie, ttcsid_*</td><td>TikTok Pixel</td><td>până la 13 luni</td></tr>
+		</table>
+
+		<h2>6. Unde ajung datele</h2>
+		<p>Instrumentele de mai sus aparțin unor companii care prelucrează datele pe servere din afara Republicii Moldova: Google și Meta în Statele Unite, Yandex în Federația Rusă, TikTok în China și Singapore. Aceste transferuri au loc <b>doar dacă ai acceptat</b> categoria respectivă. Dacă refuzi, instrumentele nu pornesc și nu pleacă nimic către ele.</p>
+
+		<h2>7. Cum îți schimbi alegerea</h2>
+		<p>Oricând, dintr-un singur clic. Butonul de mai jos redeschide panoul de setări, unde poți porni sau opri fiecare categorie separat. Același buton îl găsești și în subsolul fiecărei pagini.</p>
+		<p><button type="button" class="cookie-settings-btn" onclick="openCookieManager()">Setări și Revocare Cookie-uri</button></p>
+		<p>Poți șterge cookie-urile și direct din browser, de la setările de confidențialitate. Reține că, dacă le ștergi pe toate, vom uita inclusiv faptul că ai refuzat — și bannerul te va întreba din nou.</p>
+
+		<h2>8. Contact</h2>
+		<p>Pentru orice întrebare despre cookie-uri sau despre datele tale: <a href="mailto:managment@sauto.md">managment@sauto.md</a>. Detalii complete despre drepturile tale găsești în <a href="/ro/privacy">Politica de Confidențialitate</a>.</p>
 	',
 	'credit' => '
 <h1>Cumpărați un automobil cu ușurință: Credit și Leasing în Moldova</h1>
@@ -2794,6 +3079,7 @@ $adm_lang = array(
     'settings'=>'Setări',
     'publication_settings'=>'Setări publicare',
 	'404_stats'=>'Erori 404',
+	'gdpr'=>'Jurnal Consimțământ Cookie',
     'checked_count'=>'Numărul de fotografii selectate',
     'check_all'=>'Selectati toate',
 	'uncheck_all'=>'Deselecteaza tot',
@@ -3460,7 +3746,7 @@ elseif ($_COOKIE['lang']=='en'){
 		),
 		
 		'l'=>array(
-			'menu'=>array('home'=>'Home page', 'cars'=>'Our Stock', 'ordercars'=>'Cars on Order', 'credit'=>'Car Loan', 'services'=>'Services', 'tyres'=>'Tyres', 'rent'=>'Rent', 'contacts'=>'Contacts', 'information'=>'Information', 'about'=>'About Us', 'terms'=>'Terminology and terms', 'warranty'=>'Warranty', 'privacy'=>'Privacy Policy', 'tradein'=>'Trade-in'),
+			'menu'=>array('home'=>'Home page', 'cars'=>'Our Stock', 'ordercars'=>'Cars on Order', 'credit'=>'Car Loan', 'services'=>'Services', 'tyres'=>'Tyres', 'rent'=>'Rent', 'contacts'=>'Contacts', 'information'=>'Information', 'about'=>'About Us', 'terms'=>'Terminology and terms', 'warranty'=>'Warranty', 'privacy'=>'Privacy Policy', 'cookies'=>'Cookie policy', 'tradein'=>'Trade-in'),
 			'extras'=>['fire_ext'=>'Fire ext.', 'key'=>'Extra keys', 'matt'=>'Mats', 'medkit'=>'Medkit', 'tools'=>'Tools', 'wheel'=>'Spare wheel'],
 			'car'=>array(
 				'gr'=>array('car'=>'CARS', 'com'=>'COMERCIAL'),
@@ -3502,10 +3788,6 @@ elseif ($_COOKIE['lang']=='en'){
 				, 'SE'=>'Sweden', 'GB'=>'United Kingdom', 'NO'=>'Norway', 'IS'=>'Iceland', 'LI'=>'Liechtenstein', 'CH'=>'Switzerland', 'ME'=>'Montenegro', 'BA'=>'Bosnia and Herzegovina', 'MD'=>'Moldova', 'MK'=>'North Macedonia', 'AL'=>'Albania'
 				, 'RS'=>'Serbia', 'TR'=>'Türkiye', 'UA'=>'Ukraine'
 			],
-			'consent'=>[
-				'base_txt'=>[0=>'This website uses various cookies. Your choices will be remembered during future visits. By clicking “', 1=>'”, you are agreeing with the use of cookies (including for analytical, functional, and marketing purposes).'], 
-				'acpt_all'=>'Accept', 'essent'=>'Essentials only', 'cstm'=>'Customize', 'cstmztn'=>'Customization', 'func_ck'=>'Essential cookies', 'ad_ck'=>'Marketing cookies', 'usr_dt_ck'=>'User data cookies', 'prsn_ck'=>'Personalized cookies', 'ana_ck'=>'Analytics cookies', 'acpt_sel'=>'Accept selected', 'back'=>'Back'
-			]
 		),
 		
 		't'=>array(
@@ -3518,7 +3800,9 @@ elseif ($_COOKIE['lang']=='en'){
 				'social'=>'We\'re in social networks',
 				'address'=>',<br/>st. Calea Moshilor 11, MD2024',
 				'address'=>array(0=>'Moldova, Chisinau', 1=>'st. Calea Mosilor 11', 2=>'st. Pietrariei 3'),
-				'prs_dat_agr'=>array(1=>'Consent to the processing of ', 2=>'personal data', 'ttl'=>'Read Privacy Policy')
+				// Informative notice, NOT a checkbox: conditioning a pre-contractual
+				// service on ticking a privacy box is abusive under Legea 195/2024.
+				'prs_dat_agr'=>array(1=>'Your data will be used solely to answer this request, in accordance with the', 2=>'Privacy Policy', 'ttl'=>'Read Privacy Policy', 'mkt'=>'I agree to be contacted in the future with similar car offers.')
 			),
 			'mini'=>array(
 				'rent'=>'Car rent',
@@ -4176,6 +4460,7 @@ $lang_xtra_menu = array(
 	'about'=>'About us',
 	'contacts'=>'Contacts',
 	'privacy'=>'Privacy policy',
+	'cookies'=>'Cookie policy',
 	'credit'=>'Credit conditions',
 	'terms'=>'Terms and conditions',
 	'warranty'=>'Car warranty'
@@ -4193,17 +4478,153 @@ $lang_xtra_page = array(
 		</ul>
 	',
 	'privacy' => '
-		<p>Privacy Policy applied by SAUTO S.R.L. explains how any type of personal information that is requested during the use of the site is used. Personal information means any type of information that identifies you as an individual (for example, your name, address, or telephone number). SAUTO SRL will not sell, rent or distribute the information collected to anyone. We collect data in order to fulfill orders and serve our customers as best we can by providing complete information regarding vehicles. The collected data includes: name and surname, e-mail address, contact phone number. We use the information collected for the sole purpose of communicating with our customers. By filling out the message form, in this way the buyer ensures that his personal data will be included in the database of the site sauto.md</p>
-		<h2><b>The purpose of the data collection is:</b></h2>
+		<h1>Data Processing Notice (Privacy Policy)</h1>
+		<p><i>Last updated: <time datetime="2026-08-10">10-08-2026</time> · Version v1.0</i></p>
+		<p>The transparency and security of your data are a priority for us. This page explains clearly, without complicated legal jargon, what we do with your personal data when you use the sauto.md website, why we ask for it and what rights you have.</p>
+
+		<h2>1. Who we are</h2>
+		<p>The sauto.md website is operated by:</p>
 		<ul>
-			<li> informing customers / customers about the requested car, pre-order.</li>
-			<li> in the transmission of news and / or periodic email alerts.</li>
-			<li> in researching the market, tracking and monitoring sales and traffic on our site.</li>
+			<li>Legal name: <b>SAUTO S.R.L.</b></li>
+			<li>IDNO: 1017600006845</li>
+			<li>Address: str. Calea Moșilor 11 / str. Pietrăriei 3, Chișinău, Republic of Moldova</li>
+			<li>Data protection officer (contact for personal data matters): <a href="mailto:managment@sauto.md">managment@sauto.md</a> | Phone: <a href="tel:+37369977674">069977674</a></li>
+			<li>Applicable law: Law no. 195/2024 on personal data protection (Republic of Moldova), applicable from 23 August 2026.</li>
 		</ul>
-        <h2><b>Cookies</b></h2>
-		<p>This site uses cookies to improve your browsing experience and to calculate and control website traffic. We use a limited number of cookies, namely Google Analytics and Facebook Pixel. The information collected is anonymous and is stored for us on Google, respectively on Facebook. This information is stored no more than 90 days and is deleted after the expiration date. The only purpose of this information is that it gives us the opportunity to better understand the needs of our customers so that we can constantly improve our offers and provide our users with the most pleasant experience on our site.</p>
-        <p>At any time, upon your request, you can change or delete any information that you have provided to us from our database. If you want to change or delete your personal data that we possess, please contact us by email at <a href="mailto:sautomd@gmail.com"><b>sautomd@gmail.com</b> </a>.</p>
-		<p>We welcome your questions and comments regarding any aspect of privacy. If you have such comments, or if you want to formulate a complaint regarding the way in which we use your personal data, please contact us by phone: <a href="tel:+37379600361"><b>079-600-361</b></a> or by emailing <a href="mailto:sautomd@gmail.com"><b>sautomd@gmail.com</b></a>.</p>
+
+		<h2>2. What data we process, why, and the legal basis (Art. 6)</h2>
+		<p>We do not collect data "just in case". Every piece of information we ask for has a clear purpose and a legal basis under Law 195/2024:</p>
+		<ul>
+			<li><b>A. Answering enquiries and car orders (contact/messaging form)</b>
+				<ul>
+					<li>Data collected: first name, last name, phone, e-mail address.</li>
+					<li>Purpose: to give you the information you asked for about a car, or to process an order.</li>
+					<li>Legal basis: pre-contractual steps and performance of a contract (Art. 6(1)(b)).</li>
+				</ul>
+			</li>
+			<li><b>B. Marketing and newsletter (periodic alerts)</b>
+				<ul>
+					<li>Data collected: e-mail address.</li>
+					<li>Purpose: sending commercial offers and information about new cars in stock.</li>
+					<li>Legal basis: your consent, given through a clear and separate checkbox (Art. 6(1)(a)). You can unsubscribe at any time from the footer of any e-mail you receive.</li>
+				</ul>
+			</li>
+			<li><b>C. Traffic analytics and advertising (cookies)</b>
+				<ul>
+					<li>Data collected: IP address (anonymised), cookie IDs, browsing data.</li>
+					<li>Purpose: understanding how the site is used (Google Analytics, Yandex Metrica) and displaying relevant ads (Facebook Pixel, Google Ads, TikTok Pixel).</li>
+					<li>Legal basis: your consent, obtained through the cookie banner shown on your first visit (Art. 6(1)(a)). None of these tools starts before you agree.</li>
+				</ul>
+			</li>
+			<li><b>D. Your Sauto.md account (Cabinet)</b>
+				<ul>
+					<li>Data collected: first name, last name, e-mail, phone, person type (individual or company), the cars saved in your cabinet and the history of your requests.</li>
+					<li>Purpose: creating and running the account, keeping your saved cars, showing prices and processing your requests.</li>
+					<li>Legal basis: performance of a contract (Art. 6(1)(b)). We also keep a technical log of account actions on the legitimate interest of security (Art. 6(1)(f)).</li>
+					<li>Offers and promotions by e-mail or phone are sent <b>only if</b> you ticked that separately (see point B). The account works exactly the same without that tick.</li>
+				</ul>
+			</li>
+		</ul>
+
+		<h2>3. Who else sees your data (recipients)</h2>
+		<p>We do not sell or rent your data. To keep the website running we pass data strictly for the purposes above to our partners (acting as processors, under secure contracts):</p>
+		<ul>
+			<li>The web hosting provider.</li>
+			<li>Google (Analytics, Ads, Tag Manager) and Meta (Facebook Pixel) — only if you accepted the respective cookies.</li>
+			<li>Yandex (Metrica) — only if you accepted analytics cookies.</li>
+			<li>TikTok (TikTok Pixel) — only if you accepted marketing cookies.</li>
+			<li>Cloudflare — content delivery network for static files (images, assets), with no access to our database.</li>
+			<li>The accounting company (strictly for issued invoices).</li>
+		</ul>
+		<p><b>Transfers outside the Republic of Moldova.</b> Our database is hosted in the Republic of Moldova. The analytics and advertising providers listed above do however process data on servers outside the country, under their own policies: Google and Meta in the United States, Yandex in the Russian Federation, TikTok in China and Singapore. These transfers happen <b>only if you accepted</b> the corresponding cookies; if you refuse, none of those tools starts and nothing is sent to them.</p>
+
+		<h2>4. How long we keep the data</h2>
+		<ul>
+			<li>Data related to offers/orders is kept for the duration of the contract and afterwards according to legal archiving obligations (e.g. tax law).</li>
+			<li>Newsletter data is kept until you withdraw your consent (unsubscribe).</li>
+			<li>Your cookie decision is remembered for 1 year, after which the banner asks again.</li>
+			<li>Cookies placed by the analytics and marketing tools have lifetimes set by their providers. The main ones:</li>
+		</ul>
+		<table class="cookie-table">
+			<tr><th>Cookie</th><th>Set by</th><th>What for</th><th>Lifetime</th></tr>
+			<tr><td>cookie_consent</td><td>Sauto.md</td><td>Stores your banner choice. Essential.</td><td>1 year</td></tr>
+			<tr><td>lang</td><td>Sauto.md</td><td>Site language. Essential.</td><td>1 year</td></tr>
+			<tr><td>_ga, _ga_*</td><td>Google Analytics</td><td>Visit statistics</td><td>90 days</td></tr>
+			<tr><td>_ym_uid, _ym_d</td><td>Yandex Metrica</td><td>Visit statistics</td><td>1 year</td></tr>
+			<tr><td>_fbp</td><td>Meta (Facebook Pixel)</td><td>Ad measurement</td><td>90 days</td></tr>
+			<tr><td>_ttp, _tt_enable_cookie, ttcsid_*</td><td>TikTok Pixel</td><td>Ad measurement</td><td>up to 13 months</td></tr>
+			<tr><td>_gcl_au</td><td>Google Ads</td><td>Conversion measurement</td><td>90 days</td></tr>
+		</table>
+		<p>Essential cookies always run — without them the site could not remember your language or your cookie choice. The rest start only with your consent.</p>
+
+		<h2>5. Your rights (Art. 15-22)</h2>
+		<p>Under the new legislation you have full control over your data. You have the right to:</p>
+		<ul>
+			<li><b>Access:</b> find out what data we hold about you and receive a copy of it.</li>
+			<li><b>Rectification:</b> correct wrong or incomplete data.</li>
+			<li><b>Erasure ("right to be forgotten"):</b> ask us to delete your data (when there is no longer a legal obligation to keep it).</li>
+			<li><b>Restriction and objection:</b> ask for the temporary or permanent halt of the processing of your data (especially for marketing).</li>
+			<li><b>Portability:</b> receive your data in a structured format so you can transfer it elsewhere.</li>
+		</ul>
+		<p><b>How do you exercise these rights?</b><br/>
+		Send us an e-mail at <a href="mailto:sautomd@gmail.com?subject=Cerere%20GDPR%20-%20Sauto.md">sautomd@gmail.com</a>. We will reply free of charge within no more than 30 days.</p>
+
+		<h2>6. Right to lodge a complaint</h2>
+		<p>If you believe we have not respected your rights, you can contact us at any time to resolve the matter. You also have the right to lodge an official complaint with the National Centre for Personal Data Protection (CNPDCP), on the authority\'s website: <a href="https://datepersonale.md" target="_blank" rel="noopener">datepersonale.md</a>.</p>
+
+		<h2>7. Managing your preferences (cookies)</h2>
+		<p>You have the right to change your decision about tracking scripts (Analytics, Pixel) at any time. Use the button below to reopen the settings panel and stop or allow their use:</p>
+		<p><button type="button" class="cookie-settings-btn" onclick="openCookieManager()">Cookie settings and withdrawal</button></p>
+		<p>Details for each individual cookie are in the <a href="/en/cookies">Cookie Policy</a>.</p>
+	',
+	'cookies' => '
+		<h1>Cookie Policy</h1>
+		<p><i>Last updated: <time datetime="2026-08-10">10-08-2026</time> · Version v1.0</i></p>
+		<p>This page explains what cookies are, which ones we use on sauto.md, why, and how to change your choice at any time. It is part of our <a href="/en/privacy">Data Processing Notice</a>.</p>
+
+		<h2>1. What a cookie is</h2>
+		<p>A cookie is a small text file the website stores in your browser. Some are required for the site to work (for example to remember your chosen language), others serve traffic analytics or advertising.</p>
+
+		<h2>2. Our rule: nothing by default</h2>
+		<p><b>Sauto.md starts no non-essential cookie before you agree.</b> On your first visit you see a banner with two equally weighted options: "Reject" and "Accept". Until you choose, no analytics or marketing tool loads.</p>
+		<p>Refusing does not limit your access to the site or to the car offers in any way.</p>
+
+		<h2>3. Essential cookies (always on)</h2>
+		<p>Without them the site cannot work. They do not track you and need no consent.</p>
+		<table class="cookie-table">
+			<tr><th>Cookie</th><th>What for</th><th>Lifetime</th></tr>
+			<tr><td>cookie_consent</td><td>Stores your banner choice</td><td>1 year</td></tr>
+			<tr><td>lang</td><td>The language the site is shown in</td><td>1 year</td></tr>
+			<tr><td>PHPSESSID</td><td>Technical session (forms, login)</td><td>until you close the browser</td></tr>
+		</table>
+
+		<h2>4. Analytics cookies (only with your consent)</h2>
+		<p>They show us how the site is used so we can improve it. We do not use them to serve you ads.</p>
+		<table class="cookie-table">
+			<tr><th>Cookie</th><th>Set by</th><th>Lifetime</th></tr>
+			<tr><td>_ga, _ga_*</td><td>Google Analytics</td><td>90 days</td></tr>
+			<tr><td>_ym_uid, _ym_d, _ym_isad</td><td>Yandex Metrica</td><td>1 year</td></tr>
+		</table>
+
+		<h2>5. Marketing cookies (only with your consent)</h2>
+		<p>They let us show you relevant car offers and measure which campaigns work.</p>
+		<table class="cookie-table">
+			<tr><th>Cookie</th><th>Set by</th><th>Lifetime</th></tr>
+			<tr><td>_fbp</td><td>Meta (Facebook Pixel)</td><td>90 days</td></tr>
+			<tr><td>_gcl_au</td><td>Google Ads</td><td>90 days</td></tr>
+			<tr><td>_ttp, _tt_enable_cookie, ttcsid_*</td><td>TikTok Pixel</td><td>up to 13 months</td></tr>
+		</table>
+
+		<h2>6. Where the data goes</h2>
+		<p>The tools above belong to companies that process data on servers outside the Republic of Moldova: Google and Meta in the United States, Yandex in the Russian Federation, TikTok in China and Singapore. These transfers happen <b>only if you accepted</b> the corresponding category. If you refuse, the tools do not start and nothing is sent to them.</p>
+
+		<h2>7. How to change your choice</h2>
+		<p>At any time, in one click. The button below reopens the settings panel, where each category can be switched on or off separately. The same button is in the footer of every page.</p>
+		<p><button type="button" class="cookie-settings-btn" onclick="openCookieManager()">Cookie settings and withdrawal</button></p>
+		<p>You can also delete cookies directly from your browser privacy settings. Note that deleting all of them also erases the record of your refusal — and the banner will ask again.</p>
+
+		<h2>8. Contact</h2>
+		<p>For any question about cookies or your data: <a href="mailto:managment@sauto.md">managment@sauto.md</a>. Full details about your rights are in the <a href="/en/privacy">Privacy Policy</a>.</p>
 	',
 	'credit' => '
 		<h1>Buy a Car with Ease: Auto Credit and Leasing in Moldova</h1>
@@ -4394,6 +4815,7 @@ $adm_lang = array(
 	'settings'=>'Settings',
 	'publication_settings'=>'Publication Settings',
 	'404_stats'=>'404 Errors',
+	'gdpr'=>'Cookie Consent Log',
 	'checked_count'=>'Number of selected photos',
 	'check_all'=>'Check all',
 	'uncheck_all'=>'Uncheck all',

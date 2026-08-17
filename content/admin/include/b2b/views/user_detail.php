@@ -8,6 +8,7 @@
 
 use App\Services\B2b\B2bAuth;
 use App\Services\B2b\B2bConfig;
+use App\Services\B2b\B2bGift;
 use App\Services\B2b\B2bInvoice;
 use App\Services\B2b\B2bPhone;
 use App\Services\B2b\B2bRegions;
@@ -126,6 +127,59 @@ $invoices = B2bInvoice::forUser($uid, 200);
                     <?= b2b_adm_esc($t['save']) ?>
                 </button>
             </div>
+        </div>
+
+        <?php
+        // Gifts are granted from the client list; this is where they can be
+        // reviewed and withdrawn. Withdrawn ones stay visible, struck through,
+        // so a mistake leaves a trace instead of vanishing.
+        $gifts      = B2bGift::historyFor($uid);
+        $giftLabels = B2bGift::labels($lang);
+        ?>
+        <div class="b2ba-card">
+            <h2 class="b2ba-h2"><?= b2b_adm_esc($t['gift_list_title']) ?></h2>
+            <?php if (!$gifts): ?>
+                <p class="b2ba-hint"><?= b2b_adm_esc($t['gift_none']) ?></p>
+            <?php else: ?>
+                <ul class="b2bg-log">
+                    <?php foreach ($gifts as $g):
+                        $revoked = !empty($g['revoked_at']);
+                        $what    = B2bGift::describe($g, $lang);
+                        $note    = trim((string)($g['note'] ?? ''));
+
+                        // A gift may be nothing but a note; using it as the title
+                        // beats printing a dash and hiding the real content below.
+                        $title    = $what !== '' ? $what : ($note !== '' ? $note : '—');
+                        $showNote = ($what !== '' && $note !== '');
+
+                        // One badge, in priority order: withdrawn outranks whether
+                        // the client had seen it.
+                        [$stKey, $stMod] = $revoked
+                            ? ['gift_st_revoked', 'revoked']
+                            : (empty($g['seen_at']) ? ['gift_st_new', 'new'] : ['gift_st_seen', 'seen']);
+                    ?>
+                        <li class="b2bg-log__item<?= $revoked ? ' is-revoked' : '' ?>">
+                            <div class="b2bg-log__main">
+                                <div class="b2bg-log__top">
+                                    <strong><?= b2b_adm_esc($title) ?></strong>
+                                    <span class="b2bg-tag b2bg-tag--<?= $stMod ?>"><?= b2b_adm_esc($t[$stKey]) ?></span>
+                                </div>
+                                <?php if ($showNote): ?>
+                                    <span class="b2bg-log__note"><?= b2b_adm_esc($note) ?></span>
+                                <?php endif; ?>
+                                <span class="b2bg-log__meta"><?= b2b_adm_esc(date('d.m.Y H:i', strtotime((string)$g['created_at']))) ?></span>
+                            </div>
+                            <?php if (!$revoked): ?>
+                                <button type="button" class="b2ba-btn b2ba-btn--soft b2ba-btn--sm"
+                                        data-b2b-gift-revoke data-gift="<?= (int)$g['id'] ?>"
+                                        data-confirm="<?= b2b_adm_esc($t['gift_confirm_rev']) ?>">
+                                    <?= b2b_adm_esc($t['gift_revoke']) ?>
+                                </button>
+                            <?php endif; ?>
+                        </li>
+                    <?php endforeach; ?>
+                </ul>
+            <?php endif; ?>
         </div>
 
         <div class="b2ba-card">

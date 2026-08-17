@@ -1,5 +1,4 @@
 <?php
-use App\Helper\DefaultText;
 $account_id = __post('account_id');
 if (empty($account_id)) {
     if (!empty($car['999_api_id'])) {
@@ -13,7 +12,8 @@ if (empty($account_id)) {
     }
 }
 
-// Set contact based on account_id
+// Set contact based on account_id. 999 rejects an advert whose phone is not
+// registered on the account it publishes under, so each account gets its own.
 if ($account_id == 4) {
     // Encars-MD (Korean cars)
     $contacts = ['37379603161'];
@@ -22,6 +22,10 @@ if ($account_id == 4) {
     // Sauto-auto-comerciale
     $contacts = ['37379600616'];
     $defaultPhone = '37379600616';
+} elseif ($account_id == 5) {
+    // SautoSUA (USA cars)
+    $contacts = ['37378004642'];
+    $defaultPhone = '37378004642';
 } else {
     // Sauto-stock-extern (default)
     $contacts = ['37379600326'];
@@ -36,7 +40,7 @@ foreach ($contacts as $contact): ?>
                 id="contact_<?= $feature_id ?>_<?= md5($contact) ?>"
                 value="<?= htmlspecialchars($contact) ?>"
                 class="form-check-input contact"
-                <?php if((!empty($car999features) && !empty($car999features[$feature_id]['value']) && in_array($contact, $car999features[$feature_id]['value'])) || ($contact == $defaultPhone)) : ?> checked <?php endif; ?>
+                <?php if((!empty($car999features) && !empty($car999features[$feature_id]['value']) && in_array($contact, (array)$car999features[$feature_id]['value'])) || ($contact == $defaultPhone)) : ?> checked <?php endif; ?>
         >
         <label class="form-check-label" for="contact_<?= $feature_id ?>_<?= md5($contact) ?>">
             <?= htmlspecialchars($contact) ?>

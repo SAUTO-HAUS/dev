@@ -2,6 +2,8 @@
 
 $ajax_folder = _ADM_AJAX.'/docs';
 $rtrn = '';
+
+require_once(_ADM_INCL.'/docs/id_photo.php');
 //---------------------------------------------GET USER FIELDS
 if ( $_POST['fn']=='get_user_fields' ){
 	$user_id = isset($_POST['user_id']) ? intval($_POST['user_id']) : 0;
@@ -202,6 +204,13 @@ if ( $_POST['fn']=='edit_sbmt' ){
 		}
 	}
 
+	// ID-card scans belong to the client, not to this document, so they are
+	// written on the docs_u row — the same photo then shows on every document
+	// of that client. Absent fields mean "leave as is", see docs_id_photo_save.
+	docs_id_photo_save($db, $prefx, (int)$u_id,
+		isset($_POST['inp']['id_photo_front']) ? (string)$_POST['inp']['id_photo_front'] : null,
+		isset($_POST['inp']['id_photo_back'])  ? (string)$_POST['inp']['id_photo_back']  : null);
+
 	$_owner_adm_val = isset($_POST['inp']['owner_adm']) && $_POST['inp']['owner_adm'] !== '' ? (int)$_POST['inp']['owner_adm'] : null;
 	$pdo = $db->prepare('UPDATE '.$prefx.'_docs_ctlg SET `cd`=:cd, `inf`=:inf, `u`=:u, `date`=:date, `last_edited_by`=:last_edited_by, `owner_adm`=:owner_adm WHERE `id`=:id');
 	$pdo->execute([ 'cd'=>$it_cd, 'inf'=>$inf, 'u'=>$u_id, 'date'=>$doc_date, 'last_edited_by'=>$last_edited_by, 'owner_adm'=>$_owner_adm_val, 'id'=>$it_id ]);
@@ -234,7 +243,8 @@ elseif ( $_POST['fn']=='search_docs' ){
 		$params = ['s1'=>$likeTerm, 's2'=>$likeTerm, 's3'=>$likeTerm, 's4'=>$likeTerm, 's5'=>$likeTerm, 's6'=>$likeTerm];
 		
 		$pdo = $db->prepare('SELECT 
-			u.id u_id, u.nm u_nm, u.tp u_tp, u.cf_idno u_cf_idno, u.tva_dt u_tva_dt, u.iban_dt_tk u_iban_dt_tk, u.adr u_adr, u.phn u_phn, u.eml u_eml, 
+			u.id u_id, u.nm u_nm, u.tp u_tp, u.cf_idno u_cf_idno, u.tva_dt u_tva_dt, u.iban_dt_tk u_iban_dt_tk, u.adr u_adr, u.phn u_phn, u.eml u_eml,
+			u.id_photo_front, u.id_photo_back,
 			c.*, 
 			c.last_edited_by
 			FROM 
@@ -300,6 +310,7 @@ elseif ( $_POST['fn']=='search_docs' ){
 							data-u_tva_dt="'.( $r['u_tp']=='fiz'&&strtotime($r['u_tva_dt'])!==false?date('Y-m-d',strtotime($r['u_tva_dt'])):$r['u_tva_dt'] ).'" 
 							data-u_iban_dt_tk="'.( $r['u_tp']=='fiz'&&strtotime($r['u_iban_dt_tk'])!==false?date('Y-m-d',strtotime($r['u_iban_dt_tk'])):$r['u_iban_dt_tk'] ).'" 
 							data-u_adr="'.$r['u_adr'].'" data-u_phn="'.$r['u_phn'].'" data-u_eml="'.$r['u_eml'].'"
+							data-id_photo_front="'.htmlspecialchars((string)($r['id_photo_front'] ?? '')).'" data-id_photo_back="'.htmlspecialchars((string)($r['id_photo_back'] ?? '')).'"
 							'.(isset($inf['cntr_fr'])?'data-cntr_fr="'.$inf['cntr_fr'].'"':'').' '.(isset($inf['cntr_to'])?'data-cntr_to="'.$inf['cntr_to'].'"':'').' '.(isset($inf['adr_to'])?'data-adr_to="'.$inf['adr_to'].'"':'').'
 							'.(isset($inf['t2pay'])?'data-t2pay="'.$inf['t2pay'].'"':'').' '.(isset($inf['plate'])?'data-plate="'.$inf['plate'].'"':'').'
 							'.(isset($inf['vin'])?'data-vin="'.$inf['vin'].'"':'').' '.(isset($inf['mo'])?'data-mo="'.$inf['mo'].'"':'').' '.(isset($inf['br'])?'data-br="'.$inf['br'].'"':'').'
@@ -348,6 +359,7 @@ elseif ( $_POST['fn']=='search_docs' ){
 								 <input type="checkbox" name="usr_stamp" title="Stampila client" style="accent-color:#e2001a;">
 							</div>
 							<div class="btn edit" data-fn="edit_it">Edit</div>
+							'.docs_id_photo_row_btn($r['id_photo_front'] ?? null, $r['id_photo_back'] ?? null).'
 							<div class="btn del" data-fn="del_it">Delete</div>
 						</div>
 					</label>'
@@ -358,6 +370,39 @@ elseif ( $_POST['fn']=='search_docs' ){
 		$returnIt = [ 'fn'=>$_POST['fn'], 'results'=>$results, 'count'=>count($results) ];
 	} else {
 		$returnIt = [ 'fn'=>$_POST['fn'], 'results'=>[], 'count'=>0 ];
+	}
+}
+//---------------------------------------------UPLOAD ID CARD PHOTO (buletin)
+// Stored immediately, under a random name, and the form only carries that name:
+// the add form is a plain POST and the edit overlay serializes its fields, so
+// neither could carry the file itself. Reached through ajax.php?tp=adm, which
+// has already verified the admin session.
+elseif ( $_POST['fn']=='upload_id_photo' ){
+	$MAX = 8 * 1024 * 1024;
+	$f   = $_FILES['photo'] ?? null;
+
+	if ( !$f || ($f['error'] ?? UPLOAD_ERR_NO_FILE) !== UPLOAD_ERR_OK || !is_uploaded_file($f['tmp_name']) ){
+		$returnIt = [ 'fn'=>$_POST['fn'], 'error'=>'Fișierul nu a fost încărcat.' ];
+	} elseif ( $f['size'] > $MAX ){
+		$returnIt = [ 'fn'=>$_POST['fn'], 'error'=>'Fișier prea mare (maxim 8 MB).' ];
+	} else {
+		// Type from the image data, not from the name or the browser's claim.
+		$info = @getimagesize($f['tmp_name']);
+		$ext  = [IMAGETYPE_JPEG=>'jpg', IMAGETYPE_PNG=>'png', IMAGETYPE_WEBP=>'webp'][$info[2] ?? 0] ?? '';
+
+		if ( $ext === '' ){
+			$returnIt = [ 'fn'=>$_POST['fn'], 'error'=>'Doar imagini JPG, PNG sau WEBP.' ];
+		} else {
+			$name = bin2hex(random_bytes(16)).'.'.$ext;
+			$dest = docs_id_photo_dir().'/'.$name;
+
+			if ( move_uploaded_file($f['tmp_name'], $dest) ){
+				@chmod($dest, 0644);
+				$returnIt = [ 'fn'=>$_POST['fn'], 'file'=>$name ];
+			} else {
+				$returnIt = [ 'fn'=>$_POST['fn'], 'error'=>'Fișierul nu a putut fi salvat.' ];
+			}
+		}
 	}
 }
 ?>

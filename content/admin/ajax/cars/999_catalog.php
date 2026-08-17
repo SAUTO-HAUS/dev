@@ -479,6 +479,18 @@ if (__post('sub') == 'get_subcategory') {
             }
         }
 
+        // Same counter the cron budgets from — see the note in ordercars/999_catalog.php.
+        // A hand-made ad's photos count against the account's daily allowance too.
+        $acc999 = (int)($input['999_api_id'] ?? 0);
+        if (!empty($images999) && $acc999 > 0) {
+            try {
+                $cnt = count($images999);
+                $pdo->prepare("INSERT INTO gh3sp_settings (name, value) VALUES (?, ?)
+                    ON DUPLICATE KEY UPDATE value = CAST(value AS UNSIGNED) + ?")
+                    ->execute(['999md_uploads_' . date('Ymd') . '_' . $acc999, (string)$cnt, $cnt]);
+            } catch (\Throwable $e) { /* counter is advisory — never block a publish */ }
+        }
+
         if (!empty($images999)) {
             $features[] = ["id" => "14", "value" => $images999];
         }

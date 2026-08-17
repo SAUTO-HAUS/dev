@@ -52,10 +52,14 @@
        selector is enough to give it the full row. */
     .b2b-page--form .b2b-form > .b2b-field{ grid-column:1 / -1; }
 
-    /* Full-width rows: messages, the submit button and the footer link. */
+    /* Full-width rows: messages, the submit button, the footer link, and the
+       two consent blocks — the marketing opt-in and the privacy notice both read
+       as sentences, so half a column would wrap them into a narrow ribbon. */
     .b2b-page--form .b2b-form__msg,
     .b2b-page--form .b2b-form > button,
-    .b2b-page--form .b2b-form__foot{ grid-column:1 / -1; }
+    .b2b-page--form .b2b-form__foot,
+    .b2b-page--form .b2b-form > .mkt-optin,
+    .b2b-page--form .b2b-form > .legal-notice{ grid-column:1 / -1; }
 
     /* A full-width button across the card looks broken; keep it centred. */
     .b2b-page--form .b2b-btn--block{ width:auto; min-width:320px; justify-self:center; }
@@ -279,7 +283,7 @@
 /* Nav cards double as section counters (Cars / Requests / Invoices). They sit on
    the same row as the identity (taking the remaining width), flat segments so it
    does not read as card-in-card. */
-.b2b-nav{ flex:1 1 380px; display:grid; grid-template-columns:repeat(3, 1fr); gap:.75rem; }
+.b2b-nav{ flex:1 1 380px; display:grid; grid-template-columns:repeat(3, 1fr); gap:.4rem; } /* six cards = two rows of three */
 .b2b-navcard{
     display:flex; align-items:center; gap:.95rem;
     padding:.85rem 1rem;
@@ -300,6 +304,10 @@
 .b2b-navcard__meta{ display:flex; flex-direction:column; gap:.12rem; min-width:0; }
 .b2b-navcard__num{ font-size:1.4rem; font-weight:800; line-height:1; font-variant-numeric:tabular-nums; }
 .b2b-navcard__label{ color:var(--b2b-muted); font-size:.82rem; font-weight:600; }
+/* Card without a counter (recently viewed): only centre it. The label keeps the
+   shared styling — giving it the number's weight made that one card shout while
+   the rest whispered. */
+.b2b-navcard__meta--nonum{ justify-content:center; }
 
 /* Desktop: the button sits above the hero card, right-aligned with its edge —
    lifted out of the flow, with room reserved by the card's own top margin so it
@@ -307,15 +315,43 @@
 @media (min-width:769px){
     .b2b-hero{ position:relative; margin-top:2.8rem; }
     .b2b-hero__pw{ position:absolute; bottom:calc(100% + .55rem); right:0; }
+
+    .b2b-hero__id{ flex:1 1 100%; }
+    .b2b-nav{ flex:1 1 100%; }
+
+    /* Deliberately no per-count column override here: the base grid is three
+       wide, which gives six cards two clean rows. Forcing four or five onto a
+       single row squeezed every card and broke the pairing. */
 }
 
 @media (max-width:768px){
-    .b2b-nav{ grid-template-columns:1fr; }
     .b2b-hero{ padding:1.1rem 1.2rem; }
     .b2b-hero__name{ font-size:1.35rem; }
-    /* Identity takes the whole row, so the button reaches the right edge next to
-       the greeting instead of hugging it. */
     .b2b-hero__id{ flex:1 1 100%; }
+    .b2b-nav{ grid-template-columns:repeat(2, 1fr); gap:.4rem; }
+    .b2b-navcard{ gap:.4rem; padding:.25rem .4rem; }
+    .b2b-navcard__ico{ width:32px; height:32px; border-radius:9px; }
+    .b2b-navcard__ico svg{ width:17px; height:17px; }
+    .b2b-navcard__num{ font-size:1.15rem; }
+    .b2b-navcard__label{ font-size:.78rem; }
+
+    /* Order set here, not in the markup, so the desktop rows and the keyboard
+       tab order stay as written. Six cards pair up with none left over:
+           Favorite      Comparare
+           Vizualizate   Filtrele mele
+           Cadouri       Conturi de plata                                    */
+    .b2b-navcard--cabinet { order:1; }
+    .b2b-navcard--compare { order:2; }
+    .b2b-navcard--viewed  { order:3; }
+    .b2b-navcard--filters { order:4; }
+    .b2b-navcard--gifts   { order:5; }
+    .b2b-navcard--invoices{ order:6; }
+
+    /* Without the Gifts card there are five, and the last one by that order —
+       Conturi de plata — would sit alone. Full row then, and only then. */
+    .b2b-nav:has(> .b2b-navcard:nth-child(5)):not(:has(> .b2b-navcard:nth-child(6))) .b2b-navcard--invoices{
+        grid-column:1 / -1;
+    }
 }
 
 .b2b-chips{ display:inline-flex; gap:.35rem; flex-wrap:wrap; }
@@ -358,6 +394,8 @@
 
 .b2b-panel{ min-height:220px; display:flow-root; }  /* contains the .gr float from the cars grid */
 
+.b2b-page .gr{ line-height:normal; }
+
 .b2b-form__foot--forgot{ margin-bottom:.35rem; }
 
 /* "Change password" toggle button, on the greeting line of the hero. */
@@ -377,11 +415,18 @@
 /* -------------------------------------------------------- empty / tables */
 
 .b2b-empty{
+    /* Same gap from the hero the filled states keep (.b2b-table-wrap, .b2b-gifts,
+       and the cars grid via its card margins), so a tab does not shift upwards
+       just because it happens to be empty. */
+    margin-top:1rem;
     padding:3rem 1.5rem; text-align:center;
     background:#fff; border:1px dashed var(--b2b-line); border-radius:18px;
     color:var(--b2b-muted);
 }
 .b2b-empty p{ margin:0 0 1.25rem; }
+/* That bottom margin reserves room for the call-to-action button under the text
+   (the saved-cars tab). Compare has no button, so it would just leave a gap. */
+#compare_empty.b2b-empty p{ margin-bottom:0; }
 
 /* Tables scroll on their own; the page must never scroll sideways. */
 .b2b-table-wrap{
@@ -467,14 +512,27 @@
 
 /* -------------------------------------------- car page action panel ------ */
 
-/* Sits inside .doit on the car page, replacing the call/WhatsApp buttons.
-   On desktop those are floated, so clear before rendering.
+/* Sits inside .doit on the car page, UNDER the call/WhatsApp buttons — a
+   partner keeps both ways of getting in touch. On desktop those two are
+   floated, so clear before rendering.
    On mobile cars_gallery.css turns .doit into a `nowrap` flex row built for
    those two side-by-side buttons. A flex item is sized by its content, so the
    panel would shrink to its text and sit pushed to the left — narrower on the
    variant with the shorter hint. Take a full line of the row instead. */
-.doit > .b2b-actions{ clear:both; width:100%; flex:0 0 100%; }
+.doit > .b2b-actions{ clear:both; width:100%; flex:0 0 100%; margin-top:1rem; }
 main > .spc_bx > .doit:has(> .b2b-actions){ flex-wrap:wrap; }
+
+@media (min-width:640px){
+    /* Desktop puts call + WhatsApp on floats, and a cleared element's own
+       margin is swallowed by the clearance — the panel ends up glued to the
+       buttons. The gap has to come from the floats themselves. */
+    main > .spc_bx > .doit:has(> .b2b-actions) > .call,
+    main > .spc_bx > .doit:has(> .b2b-actions) > .btn-whatsapp{ margin-bottom:1rem; }
+
+    /* .doit carries a 2rem top margin meant for the space under the price. With
+       the gift cards in between, that reads as a hole in the column. */
+    main > .spc_bx > .b2b-gifts--page-d + .doit{ margin-top:.85rem; }
+}
 
 .b2b-actions{
     margin:0;
@@ -671,6 +729,11 @@ main > .spc_bx > .doit:has(> .b2b-actions){ flex-wrap:wrap; }
 .b2b-float .b2b-header-btn{ margin-left:0; box-shadow:0 6px 18px rgba(0,0,0,.14); }
 .b2b-float .b2b-header-out{ box-shadow:0 6px 18px rgba(0,0,0,.14); }
 @media (max-width:999px), (orientation: portrait){ .b2b-float{ display:none !important; } }
+/* The fullscreen photo viewer owns the screen while it is open, but sits at
+   z-index:100 against this cluster's 9990 — so without this the cabinet button
+   floats over the photo. #show_img is a body-level sibling rendered before the
+   float, which is what makes the plain `~` enough here (no JS). */
+#show_img.act ~ .b2b-float{ display:none !important; }
 
 /* One placement visible at a time. Same breakpoint the burger menu uses
    (content/site/css/media.css). */
@@ -700,4 +763,342 @@ main > .spc_bx > .doit:has(> .b2b-actions){ flex-wrap:wrap; }
 }
 
 @media (max-width:400px){
+}
+
+/* ---------------------------------------------------------------------------
+   Gifts granted to the partner.
+   An unopened gift is the notification: a dot on the cabinet button (rendered in
+   body.php on all three placements) and a highlighted card at the top of the
+   list. Once the tab is opened both revert to the plain history look.
+   --------------------------------------------------------------------------- */
+.b2b-dot{
+    position:absolute; top:-5px; right:-6px; z-index:2;
+    min-width:16px; height:16px; padding:0 3px;
+    box-sizing:border-box;
+    display:inline-flex; align-items:center; justify-content:center;
+    border-radius:999px; background:#e2001a; border:2px solid #fff;
+    color:#fff; font-size:9px; font-weight:800; line-height:1;
+    font-family:inherit; letter-spacing:0;
+    box-shadow:0 2px 6px rgba(226,0,26,.45);
+}
+/* Expanding halo: a static dot is easy to walk past, and this is the only
+   signal a partner gets that something is waiting for them. The ring is drawn
+   on a pseudo-element so it can grow past the badge without moving it. */
+.b2b-dot::after{
+    content:''; position:absolute; inset:-2px;
+    border-radius:inherit; pointer-events:none;
+    animation:b2bDotPulse 1.9s ease-out infinite;
+}
+@keyframes b2bDotPulse{
+    0%   { box-shadow:0 0 0 0 rgba(226,0,26,.55); }
+    70%  { box-shadow:0 0 0 11px rgba(226,0,26,0); }
+    100% { box-shadow:0 0 0 0 rgba(226,0,26,0); }
+}
+/* Same courtesy the rest of the module extends. */
+@media (prefers-reduced-motion:reduce){
+    .b2b-dot::after{ animation:none; }
+}
+/* On the cabinet nav cards the dot carries no number — keep it a clean circle. */
+.b2b-navcard__ico .b2b-dot{ min-width:11px; height:11px; padding:0; top:-3px; right:-3px; }
+.b2b-header-btn__avatar,
+.b2b-navcard__ico{ position:relative; }
+
+/* margin-top matches .b2b-table-wrap so the list isn't glued to the hero, the
+   same gap every other cabinet tab keeps. */
+.b2b-gifts{ list-style:none; margin:1rem 0 0; padding:0; display:flex; flex-direction:column; gap:0.75rem; }
+.b2b-gift{
+    /* The icon is centred against the whole text block, not pinned to its first
+       line: the body varies from one line to four (services, condition, note,
+       date), and a top-aligned emoji drifts visually out of the card. */
+    display:flex; gap:0.9rem; align-items:center;
+    padding:1rem; border:1px solid #e8e8ee; border-radius:12px; background:#fff;
+}
+.b2b-gift.is-new{
+    border-color:#e69f17;
+    background:linear-gradient(0deg, rgba(230,159,23,.06), rgba(230,159,23,.06)), #fff;
+}
+.b2b-gift__ico{ font-size:2.6rem; line-height:1; display:inline-block; transform-origin:center; }
+
+/* Unopened gifts pulse harder — they are the ones asking for attention — but
+   every gift keeps a gentle beat so the section reads as alive. */
+.b2b-gift__ico{ animation:b2bGiftPulse 1.9s ease-in-out infinite; }
+.b2b-gift.is-new .b2b-gift__ico{ animation:b2bGiftPulseNew 1.5s ease-in-out infinite; }
+@keyframes b2bGiftPulse{
+    0%, 100%{ transform:scale(1); }
+    50%{ transform:scale(1.25); }
+}
+@keyframes b2bGiftPulseNew{
+    0%, 100%{ transform:scale(1); }
+    50%{ transform:scale(1.45); }
+}
+/* Same courtesy the compare swipe hint already extends. */
+@media (prefers-reduced-motion:reduce){
+    .b2b-gift__ico,
+    .b2b-gift.is-new .b2b-gift__ico{ animation:none; }
+}
+.b2b-gift__body{ flex:1; min-width:0; }
+.b2b-gift__new{
+    display:inline-block; margin-bottom:0.35rem; padding:0.1rem 0.5rem;
+    border-radius:999px; background:#e69f17; color:#fff;
+    font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.03em;
+}
+.b2b-gift__what{ margin:0; font-size:1.05rem; font-weight:700; color:#111827; }
+/* The condition under the services: what the gift is actually worth to them. */
+.b2b-gift__free{ margin:0.15rem 0 0; color:#15803d; font-weight:600; font-size:0.92rem; }
+.b2b-gift__note{ margin:0.25rem 0 0; color:#4b5563; }
+.b2b-gift__time{ display:block; margin-top:0.4rem; font-size:0.8rem; color:#9ca3af; }
+
+/* ---------------------------------------------------------------------------
+   Gifts on the car page, under the offer countdown. Same .b2b-gift items as the
+   cabinet, so both are styled once; only the wrapper differs.
+   The page renders both layouts and lets CSS choose, exactly like the countdown
+   above it — hence the 640px split, matching .prc.desktop / .prc.pricemobile.
+   --------------------------------------------------------------------------- */
+.b2b-gifts--car{ margin:0 0 12px; }
+.b2b-gifts--car .b2b-gift{ padding:.75rem .9rem; gap:.7rem; }
+.b2b-gifts--car .b2b-gift__ico{ font-size:2rem; }
+.b2b-gifts--car .b2b-gift__what{ font-size:.98rem; }
+.b2b-gifts--car .b2b-gift__free{ font-size:.86rem; }
+.b2b-gifts--car .b2b-gift__note{ font-size:.86rem; }
+
+.b2b-gifts--page-m{ display:none; }
+@media (min-width:640px){
+    .b2b-gifts--page-d{ display:flex; width:100%; clear:both; }
+    .b2b-gifts--page-m{ display:none !important; }
+}
+/* 639.98, not 640: at exactly 640px both queries match and each hides the other
+   variant with !important, so neither would render. */
+@media (max-width:639.98px){
+    .b2b-gifts--page-d{ display:none !important; }
+    /* Sits between the title and the price now, so it needs air on both sides. */
+    .b2b-gifts--page-m{ display:flex; margin:10px 0; }
+}
+
+/* ---------------------------------------------------------------------------
+   Saved searches with an alert ("Filtrele mele").
+   A filter that has matched something new is highlighted the same amber as an
+   unopened gift, so "there is something for you" always looks the same.
+   --------------------------------------------------------------------------- */
+.b2b-filters{ margin-top:1rem; }
+
+.b2b-fltform{ margin-bottom:1.25rem; padding:1.25rem 1.4rem; }
+.b2b-fltform__ttl{ margin:0 0 .35rem; font-size:1.1rem; font-weight:800; }
+.b2b-fltform .b2b-hint{ display:block; margin-bottom:1rem; }
+.b2b-fltform__grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(10.5rem, 1fr));
+    gap:.7rem .8rem;
+}
+.b2b-fltform .b2b-field > span{ font-size:.72rem; }
+
+/* A select left to the browser keeps the platform look — grey box, system
+   arrow, blue highlight — next to inputs that are already styled. Strip the
+   native appearance and draw our own chevron so the row reads as one control
+   set. background-image is the only way to put a mark inside a <select>. */
+.b2b-fltform select,
+.b2b-fltform input{
+    height:2.6rem; padding:0 .75rem;
+    border:1.5px solid var(--b2b-line); border-radius:10px;
+    background:#fff; font-family:inherit; font-size:.92rem; color:var(--b2b-ink);
+    transition:border-color .15s, box-shadow .15s, background .15s;
+}
+.b2b-fltform select{
+    appearance:none; -webkit-appearance:none; -moz-appearance:none;
+    padding-right:2rem; cursor:pointer;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236b6b6b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right .75rem center;
+}
+.b2b-fltform select:hover:not(:disabled),
+.b2b-fltform input:hover{ border-color:#c9c9d1; }
+.b2b-fltform select:focus,
+.b2b-fltform input:focus{
+    outline:none; border-color:var(--b2b-brand);
+    box-shadow:0 0 0 3px rgba(226,0,26,.12);
+}
+/* A disabled model select should read as "pick a make first", not as broken. */
+.b2b-fltform select:disabled{ background-color:#f7f7f9; color:#9a9a9a; cursor:not-allowed; }
+/* Chrome shows spinners on number inputs, which crowd the 10rem column. */
+.b2b-fltform input[type=number]::-webkit-outer-spin-button,
+.b2b-fltform input[type=number]::-webkit-inner-spin-button{ -webkit-appearance:none; margin:0; }
+.b2b-fltform input[type=number]{ -moz-appearance:textfield; appearance:textfield; }
+.b2b-fltform__foot{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:1rem; flex-wrap:wrap; margin-top:1.1rem;
+}
+.b2b-fltform__acts{ display:flex; align-items:center; gap:.6rem; }
+.b2b-fltform__msg{ color:var(--b2b-muted); font-size:.9rem; }
+.b2b-fltform__msg.is-error{ color:var(--b2b-brand); }
+/* While a saved filter is loaded into it, the form is no longer the "new filter"
+   box — the brand border says so before the title is read. */
+.b2b-fltform.is-editing{ border-color:var(--b2b-brand); }
+
+.b2b-flt{
+    position:relative;   /* anchors the delete button to the card corner */
+    /* 1rem is the row-gap the car grid uses between card rows (style.css), so a
+       stack of filters keeps the same vertical rhythm as the cars inside them. */
+    margin-bottom:1rem; padding:1rem 1.1rem;
+    background:#fff; border:1px solid #e8e8ee; border-radius:14px;
+}
+.b2b-flt.is-new{
+    border-color:#e69f17;
+    background:linear-gradient(0deg, rgba(230,159,23,.05), rgba(230,159,23,.05)), #fff;
+}
+/* The whole header is the toggle, so the row reads as one target. */
+.b2b-flt__head{
+    display:flex; align-items:center; justify-content:space-between;
+    gap:1rem; flex-wrap:wrap; cursor:pointer; list-style:none;
+    padding-right:4.4rem;   /* clears the corner edit + delete buttons */
+}
+.b2b-flt__head::-webkit-details-marker{ display:none; }  /* default triangle */
+.b2b-flt__head:hover .b2b-flt__what{ color:var(--b2b-brand); }
+.b2b-flt__id{ min-width:0; }
+
+/* Chevron, rotated when the section is open — the only cue that the row folds. */
+.b2b-flt__chev{
+    width:20px; height:20px; flex:0 0 auto;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236b6b6b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:center;
+    transition:transform .15s ease;
+}
+.b2b-flt[open] .b2b-flt__chev{ transform:rotate(180deg); }
+
+/* Cars a filter has caught in total: brand red, so a filter that found
+   something reads differently at a glance from one that found nothing
+   (.b2b-flt__none, which stays grey). Plain text, not a filled pill — that
+   treatment stays reserved for the amber "new since you last looked" badge. */
+.b2b-flt__count{ font-size:.85rem; font-weight:700; color:var(--b2b-brand); white-space:nowrap; }
+.b2b-flt__what{ margin:0; font-size:1.05rem; font-weight:800; color:#111827; }
+.b2b-flt__right{ display:flex; align-items:center; gap:.6rem; }
+.b2b-flt__badge{
+    padding:.2rem .7rem; border-radius:999px;
+    background:#e69f17; color:#fff;
+    font-size:.8rem; font-weight:700; white-space:nowrap;
+}
+.b2b-flt__none{ font-size:.85rem; color:#9ca3af; white-space:nowrap; }
+/* Pinned to the card's top-right corner rather than riding in the header row:
+   inline, they shifted left or right depending on how long the badge beside them
+   was, so they never sat in the same place twice. */
+.b2b-flt__edit,
+.b2b-flt__del{
+    position:absolute; top:.35rem; z-index:2;
+    width:28px; height:28px; padding:0;
+    display:inline-flex; align-items:center; justify-content:center;
+    border:1px solid var(--b2b-line); border-radius:8px;
+    background:#fff; color:var(--b2b-muted);
+    font-size:18px; line-height:1; cursor:pointer;
+    transition:color .15s, border-color .15s;
+}
+.b2b-flt__del{ right:.35rem; }
+.b2b-flt__edit{ right:2.4rem; }   /* left of delete, same 28px rhythm */
+.b2b-flt__edit:hover,
+.b2b-flt__del:hover{ color:var(--b2b-brand); border-color:var(--b2b-brand); }
+
+/* The car grid inside a filter card: it already has the card's padding around
+   it, so it must not add the panel-level top margin on top. */
+.b2b-flt .gr{ float:none; }
+.b2b-flt .gr > .cnt.list{ margin-top:1rem; }
+/* The row's own bottom padding: without it the last card row touches the edge. */
+.b2b-flt[open]{ padding-bottom:1.25rem; }
+
+/* ---------------------------------------------------------------------------
+   Styled dropdown (see b2b.js). The native <select> stays in the DOM but is
+   taken out of sight: it still holds the value and fires change, while the
+   button and list below are ours to style. Only on pointer devices — phones
+   keep the OS picker.
+   --------------------------------------------------------------------------- */
+.b2b-sel{ position:relative; display:block; }
+.b2b-sel > select{
+    position:absolute; width:1px; height:1px; padding:0; margin:0;
+    overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; border:0;
+}
+.b2b-sel__btn{
+    width:100%; height:2.6rem; padding:0 2rem 0 .75rem;
+    border:1.5px solid var(--b2b-line); border-radius:10px;
+    background:#fff; cursor:pointer;
+    font-family:inherit; font-size:.92rem; color:var(--b2b-ink);
+    text-align:left; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    transition:border-color .15s, box-shadow .15s;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236b6b6b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right .75rem center;
+}
+.b2b-sel__btn:hover:not(:disabled){ border-color:#c9c9d1; }
+.b2b-sel__btn:focus-visible,
+.b2b-sel.is-open .b2b-sel__btn{
+    outline:none; border-color:var(--b2b-brand);
+    box-shadow:0 0 0 3px rgba(226,0,26,.12);
+}
+.b2b-sel__btn:disabled{ background-color:#f7f7f9; color:#9a9a9a; cursor:not-allowed; }
+/* "Any" / "All" is a default, not a choice — greyed like a placeholder. */
+.b2b-sel__btn.is-placeholder{ color:var(--b2b-muted); }
+
+.b2b-sel__list{
+    position:absolute; z-index:50; top:calc(100% + .3rem); left:0; right:0;
+    max-height:15rem; overflow-y:auto;
+    margin:0; padding:.25rem; list-style:none;
+    background:#fff; border:1px solid #e8e8ee; border-radius:10px;
+    box-shadow:0 12px 28px rgba(20,20,40,.14);
+}
+.b2b-sel__opt{
+    padding:.45rem .6rem; border-radius:7px;
+    font-size:.9rem; color:var(--b2b-ink); cursor:pointer;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.b2b-sel__opt:hover{ background:#f5f5f7; }
+/* The selected row in the brand red, not the OS blue that started all this. */
+.b2b-sel__opt.is-on{ background:var(--b2b-brand); color:#fff; font-weight:600; }
+
+@media (max-width:768px){
+    .b2b-fltform__grid{ grid-template-columns:repeat(2, 1fr); gap:.6rem .6rem; }
+
+    .b2b-fld--br   { order:1; }
+    .b2b-fld--mo   { order:2; }
+    .b2b-fld--tra  { order:3; }
+    .b2b-fld--fl   { order:4; }
+    .b2b-fld--yrf  { order:5; }
+    .b2b-fld--yrt  { order:6; }
+    .b2b-fld--volf { order:7; }
+    .b2b-fld--volt { order:8; }
+    .b2b-fld--prcf { order:9; }
+    .b2b-fld--prct { order:10; }
+    .b2b-fld--mlg  { order:11; }
+    .b2b-fld--rg   { order:12; }
+
+    /* Two columns on a phone leave ~150px per field: the long labels
+       ("Capacitate până la, cm³") need to wrap without pushing one box taller
+       than its pair, so they stay aligned. */
+    .b2b-fltform .b2b-field > span{
+        font-size:.68rem; line-height:1.25; min-height:2.1em;
+        display:flex; align-items:flex-end;
+    }
+}
+
+.b2b-header-btn--user,
+.b2b-menu-only--user{ position:relative; overflow:visible; }
+
+.b2b-count{
+    position:absolute; top:-6px; right:-6px; z-index:3;
+    min-width:18px; height:18px; padding:0 5px;
+    box-sizing:border-box;
+    display:inline-flex; align-items:center; justify-content:center;
+    border-radius:999px; background:#e2001a; color:#fff;
+    border:2px solid #fff;
+    font-size:10px; font-weight:800; line-height:1; letter-spacing:0;
+    box-shadow:0 2px 6px rgba(226,0,26,.4);
+}
+
+.b2b-count::after{
+    content:''; position:absolute; inset:0;
+    border-radius:inherit; pointer-events:none;
+    animation:b2bDotPulse 1.9s ease-out infinite;
+}
+@media (prefers-reduced-motion:reduce){ .b2b-count::after{ animation:none; } }
+
+@media (max-width:768px){
+    .b2b-flt__id{ flex:1 1 100%; }
+    .b2b-flt__right{ flex:1 1 100%; justify-content:flex-start; margin-top:.35rem; }
+
+    .b2b-flt__what{ font-size:.85rem; line-height:1.35; }
+    .b2b-flt__badge{ font-size:.72rem; padding:.15rem .55rem; }
+    .b2b-flt__count,
+    .b2b-flt__none{ font-size:.75rem; }
 }

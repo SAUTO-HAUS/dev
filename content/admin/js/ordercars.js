@@ -492,11 +492,20 @@ $(document).ready(function(){
 			// The server does the actual download, so we clear the file input
 			// to avoid double-inserting the same photos via order_file_upload.php.
 			let parsingOrder = [];
+			let parsingMainUrl = '';
 			$('#content_box > .bx .prv.imgs:not(.ready) > .its > .it[data-parsing-url]').each(function(){
 				parsingOrder.push($(this).attr('data-parsing-url'));
+				// The main radio carries a FILE index, but these photos are
+				// downloaded server-side from their URLs, so the chosen main has
+				// to travel as a URL too — otherwise the server just flagged the
+				// first photo and the operator's choice was lost.
+				if ($(this).find('input.main_img').is(':checked')) {
+					parsingMainUrl = $(this).attr('data-parsing-url');
+				}
 			});
 			if (parsingOrder.length) {
 				data.set('parsing_image_order', JSON.stringify(parsingOrder));
+				if (parsingMainUrl) data.set('parsing_main_url', parsingMainUrl);
 				// Clear file input — server imports from parsing_image_order.
 				fileInput[0].files = new DataTransfer().files;
 			}
@@ -733,7 +742,7 @@ $(document).ready(function(){
 			account_id: $(this).closest('.bx').find('.account_999_id').val(),
 			bx_id: $(this).closest('.bx').data('bx_id'),
 			// Pass the selected import country so feature 1763 ("origin") defaults
-			// to Korea for Korean cars instead of always Eurozone.
+			// per region (Korea / USA) instead of always Eurozone.
 			import_country_id: $('select[name="import_country_id"]').val() || '',
 		};
 
@@ -1003,6 +1012,14 @@ $(document).ready(function(){
 				if (dbText) {
 					$('.text-option-radio.order-personal-radio[value="' + savedOption + '"]').closest('.text-option-wrapper').find('.text-preview').val(dbText);
 				}
+			} else {
+				// Nothing saved (a car opened from parsing): start on the text that
+				// matches where it is imported from — Canada, Korea or Europe — instead
+				// of leaving every radio blank for the operator to remember.
+				const defOption = $('#text_options_wrapper').data('default-text-option');
+				if (defOption !== '' && defOption !== undefined) {
+					$('.text-option-radio.order-personal-radio[value="' + defOption + '"]').prop('checked', true);
+				}
 			}
 			$("#text_options_wrapper").show();
 		}
@@ -1034,9 +1051,11 @@ $(document).ready(function(){
 
 		if (type === "sauto_personal") {
 			if (orderPersonalTexts['auto_company']) {
-				// Check if Encars-MD (account 4) is selected
-				const selectedAccount = $('.account_999_id').val();
-				const defaultIndex = (selectedAccount == '4') ? 1 : 0; // Index 1 = AUTO DIN COREEA, Index 0 = AUTO LA COMANDA
+				// Pre-select the template that matches the 999 account:
+				// 4 Encars-MD → AUTO DIN COREEA, 5 SautoSUA → AUTO DIN SUA,
+				// anything else → AUTO DIN EUROPA.
+				const selectedAccount = String($('.account_999_id').val() || '');
+				const defaultIndex = selectedAccount === '4' ? 1 : (selectedAccount === '5' ? 2 : 0);
 				
 				orderPersonalTexts['auto_company'].forEach((item, index) => {
 					var sep = '\n\nDetalii despre automobil:\n';
@@ -2116,6 +2135,25 @@ $(document).ready(function() {
 		$('#schedules_list').html(schedulesHTML);
 	}
 
+	// Which 999.md account the car belongs to. Korea wins over the commercial
+	// group, then the USA, then the default stock account. Used both when the
+	// operator picks a country and on page load, so the two never disagree.
+	function pick999Account() {
+		const $country = $('select[name="import_country_id"]');
+		const countryId = $country.val();
+		// Country CODE, not a hardcoded id — 41 (Korea) stays only as a
+		// legacy fallback for rows without the data attribute.
+		const code = String($country.find('option:selected').data('code') || '').toUpperCase();
+
+		if (countryId == '41' || code === 'KR') return '4';   // Encars-MD
+		// Canada (and the USA these cars carried before the region was renamed) wins
+		// over the commercial group: every AutoTrader car belongs on SautoSUA, van or
+		// pickup. Testing 'com' first is what kept sending them to Sauto-stock-extern.
+		if (code === 'CA' || code === 'US') return '5';       // SautoSUA
+		if ($('select[name="gr"]').val() === 'com') return '2'; // Sauto-auto-comerciale
+		return '3';                                           // Sauto-stock-extern
+	}
+
 	// Apply scenario features on page load for order cars
 	$(document).ready(function() {
 		setTimeout(function() {
@@ -2128,19 +2166,14 @@ $(document).ready(function() {
 		// Auto-select 999.md account based on import country and car group
 		$('select[name="import_country_id"]').on('change', function() {
 			const countryId = $(this).val();
-			const account999Select = $('.account_999_id');
-			const isCom = $('select[name="gr"]').val() === 'com';
+			const countryCode = String($(this).find('option:selected').data('code') || '').toUpperCase();
 
-			if (countryId == '41') {
-				account999Select.val('4').trigger('change');
-			} else if (isCom) {
-				account999Select.val('2').trigger('change');
-			} else {
-				account999Select.val('3').trigger('change');
-			}
+			$('.account_999_id').val(pick999Account()).trigger('change');
 
-			// Auto-set delivery_time based on country (60 for Korea, 20 otherwise)
-			$('input[name="delivery_time"]').val(countryId == '41' ? 60 : 20);
+			// Delivery term: 60 days for the overseas routes (Korea, Canada and the
+			// USA — all ship by sea), 20 for Europe.
+			const overseas = (countryCode === 'KR' || countryCode === 'CA' || countryCode === 'US' || countryId == '41');
+			$('input[name="delivery_time"]').val(overseas ? 60 : 20);
 
 			if ($('#announcement_type').val() === 'sauto_personal') {
 				$('#announcement_type').trigger('change');
@@ -2149,12 +2182,9 @@ $(document).ready(function() {
 
 		var _acctTries = 0;
 		var _acctTimer = setInterval(function () {
-			var countryId = $('select[name="import_country_id"]').val();
-			var grVal = $('select[name="gr"]').val();
-			var isCom = grVal === 'com';
 			var $acc = $('.account_999_id');
 			if ($acc.length && $('.feature-contacts, .form-check-input.contact').length) {
-				var want = (countryId == '41') ? '4' : (isCom ? '2' : '3');
+				var want = pick999Account();
 				// ALWAYS trigger change, even if the value is already correct: the
 				// account select can already be 2 while the phone block was rendered
 				// earlier for the default account 3, so the phone must be reloaded.

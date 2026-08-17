@@ -140,13 +140,34 @@ if (!function_exists('b2b_assets')) {
         $icoCompare = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 20h10"/><path d="M6 6l6-1 6 1"/><path d="M12 3v17"/><path d="M9 12L6 6l-3 6a3 3 0 0 0 6 0"/><path d="M21 12l-3-6-3 6a3 3 0 0 0 6 0"/></svg>';
         $cmpLabel   = ['ro' => 'Comparare', 'ru' => 'Сравнение', 'en' => 'Compare'][$lang] ?? 'Comparare';
 
+        $icoGift = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>';
+
+        $icoFilter = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>';
+
+        $icoEye = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+
+        // Saved searches: the card is always there (it is where you create one),
+        // and the dot lights up when a filter has matched something new.
+        $countFilters  = \App\Services\B2b\B2bSavedFilter::countForUser($userId);
+        $unseenFilters = \App\Services\B2b\B2bSavedFilter::unseenTotal($userId);
+
+        // Gifts are only worth a nav card once there is one: an always-empty
+        // section would just add noise for partners who never receive any.
+        $countGifts  = \App\Services\B2b\B2bGift::countForUser($userId);
+        $unseenGifts = \App\Services\B2b\B2bGift::unseenCount($userId);
+
         // [label, count, icon, href, extra-attr on the number span]
         // Order: favourites, compare, then payment invoices.
         $navItems = [
             'cabinet'  => [$t['tab_cars'],     $countSaved,    $icoHeart,   '/'.b2b_esc($lang).'/b2b/cabinet',  ' data-b2b-count="saved"'],
+            'viewed'   => [$t['tab_viewed'],   null,           $icoEye,     '/'.b2b_esc($lang).'/b2b/viewed',   ''],
+            'filters'  => [$t['tab_filters'],  $countFilters,  $icoFilter,  '/'.b2b_esc($lang).'/b2b/filters',  ''],
             'compare'  => [$cmpLabel,          0,              $icoCompare, '/'.b2b_esc($lang).'/compare',      ' data-cmp-count'],
             'invoices' => [$t['tab_invoices'], $countInvoices, $icoDoc,     '/'.b2b_esc($lang).'/b2b/invoices', ''],
         ];
+        if ($countGifts > 0) {
+            $navItems['gifts'] = [$t['tab_gifts'], $countGifts, $icoGift, '/'.b2b_esc($lang).'/b2b/gifts', ''];
+        }
 
         $out = '
 <div class="b2b-page b2b-page--wide">
@@ -165,16 +186,21 @@ if (!function_exists('b2b_assets')) {
                     </button>
                 </div>
                 <h1 class="b2b-hero__name">'.b2b_esc($displayName).'</h1>
-                <span class="b2b-badge b2b-badge--'.b2b_esc($user['status']).'">'.b2b_status_label((string)$user['status']).'</span>
             </div>
         </div>
 
         <div class="b2b-nav">';
         foreach ($navItems as $slug => [$label, $count, $ico, $href, $numAttr]) {
-            $out .= '<a class="b2b-navcard'.($slug === $active ? ' is-active' : '').'" href="'.$href.'">'
-                  . '<span class="b2b-navcard__ico">'.$ico.'</span>'
-                  . '<span class="b2b-navcard__meta">'
-                  . '<span class="b2b-navcard__num"'.$numAttr.'>'.(int)$count.'</span>'
+            $out .= '<a class="b2b-navcard b2b-navcard--'.b2b_esc($slug).($slug === $active ? ' is-active' : '').'" href="'.$href.'">'
+                  . '<span class="b2b-navcard__ico">'.$ico
+                  . (($slug === 'gifts' && $unseenGifts > 0) || ($slug === 'filters' && $unseenFilters > 0)
+                        ? '<span class="b2b-dot" aria-hidden="true"></span>' : '')
+                  . '</span>'
+                  . '<span class="b2b-navcard__meta'.($count === null ? ' b2b-navcard__meta--nonum' : '').'">'
+                  // A null count means "no number on this card": recently-viewed is a
+                  // rolling window, so a figure there would only invite the question
+                  // of why it stops growing.
+                  . ($count === null ? '' : '<span class="b2b-navcard__num"'.$numAttr.'>'.(int)$count.'</span>')
                   . '<span class="b2b-navcard__label">'.b2b_esc($label).'</span>'
                   . '</span></a>';
         }

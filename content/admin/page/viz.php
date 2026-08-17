@@ -11,9 +11,19 @@ if (!in_array($viz_days, [1, 7, 30, 90, 365], true)) { $viz_days = 30; }
 $viz_regions = [
     'korea'  => ['ro' => 'Coreea', 'ru' => 'Корея', 'en' => 'Korea',  'img' => 'south-korea-fl.png'],
     'europe' => ['ro' => 'Europa', 'ru' => 'Европа', 'en' => 'Europe', 'img' => 'european-fl.png'],
-    'usa'    => ['ro' => 'SUA',    'ru' => 'США',    'en' => 'USA',    'img' => 'united-states-fl.png'],
-    'china'  => ['ro' => 'China',  'ru' => 'Китай',  'en' => 'China',  'img' => 'china.png'],
+    // Views logged under the old 'usa' slug are folded into this line by the
+    // queries below — same landing page, same audience, only the name changed.
+    'canada' => ['ro' => 'Canada', 'ru' => 'Канада', 'en' => 'Canada', 'img' => 'flag-canada.svg'],
+    // Hidden until there are on-order cars from China; uncomment to restore.
+    // Visits already recorded stay in the table and reappear with the line.
+    // 'china'  => ['ro' => 'China',  'ru' => 'Китай',  'en' => 'China',  'img' => 'china.png'],
 ];
+
+// Calendar days, not a rolling window. NOW() - 1 DAY made "Today" start at this
+// hour yesterday, so the card covered two dates while the button said one — the
+// card and the daily table could never agree. CURDATE() - (n-1) makes "Today"
+// mean today, and "7 days" mean the last 7 dates including today.
+$viz_from = 'DATE_SUB(CURDATE(), INTERVAL ' . ($viz_days - 1) . ' DAY)';
 
 $viz_lang = $_COOKIE['lang'] ?? 'ro';
 $viz_rows = [];
@@ -23,25 +33,39 @@ $viz_daily = [];
 try {
     // Interval is an int from a whitelist, so it can be inlined (native prepares
     // do not accept a placeholder inside INTERVAL).
-    $stmt = $db->query('SELECT `region`,
+    // The region was renamed USA → Canada, so its history sits under two slugs.
+    // Folding them in SQL rather than adding the two rows up afterwards is what
+    // keeps `visitors` honest: someone who came before and after the rename is
+    // one person, and summing two COUNT(DISTINCT) results would count them twice.
+    $stmt = $db->query('SELECT IF(`region` = "usa", "canada", `region`) AS region,
                COUNT(*) AS views,
                COUNT(DISTINCT `visitor`) AS visitors
         FROM '.$prefx.'_region_views
-        WHERE `created_at` >= DATE_SUB(NOW(), INTERVAL '.$viz_days.' DAY)
-        GROUP BY `region`');
+        WHERE `created_at` >= '.$viz_from.'
+        GROUP BY IF(`region` = "usa", "canada", `region`)');
     foreach ($stmt as $r) {
         $viz_rows[$r['region']] = ['views' => (int)$r['views'], 'visitors' => (int)$r['visitors']];
     }
 
-    // Daily series for the mini chart.
-    $d = $db->query('SELECT DATE(`created_at`) AS d, `region`, COUNT(*) AS n
+    // Per day: PEOPLE, not page loads. This used to be COUNT(*), which counts
+    // views — so the daily table and the cards above showed two different things
+    // under the same wording and could never be reconciled.
+    $d = $db->query('SELECT DATE(`created_at`) AS d,
+               IF(`region` = "usa", "canada", `region`) AS region,
+               COUNT(DISTINCT `visitor`) AS n
         FROM '.$prefx.'_region_views
-        WHERE `created_at` >= DATE_SUB(NOW(), INTERVAL '.$viz_days.' DAY)
-        GROUP BY DATE(`created_at`), `region` ORDER BY d ASC');
+        WHERE `created_at` >= '.$viz_from.'
+        GROUP BY DATE(`created_at`), IF(`region` = "usa", "canada", `region`)
+        ORDER BY d ASC');
     foreach ($d as $r) { $viz_daily[$r['d']][$r['region']] = (int)$r['n']; }
 } catch (Throwable $e) {
     $viz_err = $e->getMessage();
 }
+
+// Drop regions that are not on display (China is commented out above). Without
+// this their numbers would still sit in the denominator and the shares would not
+// add up to what the cards show.
+$viz_rows = array_intersect_key($viz_rows, $viz_regions);
 
 $viz_total_views    = array_sum(array_column($viz_rows, 'views'));
 $viz_total_visitors = array_sum(array_column($viz_rows, 'visitors'));
@@ -56,17 +80,17 @@ $viz_t = [
     'ro' => ['title' => 'Vizualizări pe regiuni', 'views' => 'vizualizări', 'visitors' => 'vizitatori',
              'share' => 'cotă', 'total' => 'Total', 'nodata' => 'Încă nu există date.',
              'period' => 'Perioadă', 'd1' => 'Azi', 'd7' => '7 zile', 'd30' => '30 zile',
-             'd90' => '90 zile', 'd365' => 'Un an', 'hint' => 'O vizită se numără o dată la 30 de minute per vizitator. Boții sunt excluși.',
+             'd90' => '90 zile', 'd365' => 'Un an', 'hint' => 'O vizită se numără o dată la 30 de minute per vizitator. Boții sunt excluși. Cardurile de sus numără fiecare om o singură dată pe toată perioada, tabelul pe zile îl numără o dată în fiecare zi în care a revenit — de aceea zilele adunate dau mai mult.',
              'daily' => 'Pe zile', 'nomigr' => 'Tabelul nu există încă. Rulează sql_scripts/create_region_views_table.sql.'],
     'ru' => ['title' => 'Просмотры по регионам', 'views' => 'просмотров', 'visitors' => 'посетителей',
              'share' => 'доля', 'total' => 'Всего', 'nodata' => 'Данных пока нет.',
              'period' => 'Период', 'd1' => 'Сегодня', 'd7' => '7 дней', 'd30' => '30 дней',
-             'd90' => '90 дней', 'd365' => 'Год', 'hint' => 'Визит считается раз в 30 минут на посетителя. Боты исключены.',
+             'd90' => '90 дней', 'd365' => 'Год', 'hint' => 'Визит считается раз в 30 минут на посетителя. Боты исключены. Карточки сверху считают каждого человека один раз за весь период, таблица по дням — один раз в каждый день, когда он возвращался, поэтому сумма по дням больше.',
              'daily' => 'По дням', 'nomigr' => 'Таблица ещё не создана. Выполните sql_scripts/create_region_views_table.sql.'],
     'en' => ['title' => 'Region views', 'views' => 'views', 'visitors' => 'visitors',
              'share' => 'share', 'total' => 'Total', 'nodata' => 'No data yet.',
              'period' => 'Period', 'd1' => 'Today', 'd7' => '7 days', 'd30' => '30 days',
-             'd90' => '90 days', 'd365' => 'One year', 'hint' => 'One visit per visitor per 30 minutes. Bots excluded.',
+             'd90' => '90 days', 'd365' => 'One year', 'hint' => 'One visit per visitor per 30 minutes. Bots excluded. The cards above count each person once for the whole period; the daily table counts them once on each day they came back, so the days add up to more.',
              'daily' => 'Daily', 'nomigr' => 'Table not created yet. Run sql_scripts/create_region_views_table.sql.'],
 ];
 $T = $viz_t[$viz_lang] ?? $viz_t['ro'];
@@ -158,7 +182,9 @@ $T = $viz_t[$viz_lang] ?? $viz_t['ro'];
                 <?php foreach ($viz_regions as $rk => $rv): ?>
                     <td class="n"><?= (int)($per[$rk] ?? 0) ?></td>
                 <?php endforeach; ?>
-                <td class="n"><strong><?= array_sum($per) ?></strong></td>
+                <?php // Sum the shown columns only — array_sum($per) would silently
+                      // include hidden regions and contradict the row beside it. ?>
+                <td class="n"><strong><?= array_sum(array_intersect_key($per, $viz_regions)) ?></strong></td>
             </tr>
             <?php endforeach; ?>
         </table>

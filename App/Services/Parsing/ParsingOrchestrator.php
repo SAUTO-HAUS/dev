@@ -67,6 +67,20 @@ class ParsingOrchestrator
                     ['_offset_start' => $backfillStart, 'backfill' => true],
                 ];
 
+                // Source ids we already hold. Handed to the adapter so it can skip
+                // them BEFORE doing any per-listing work: AutoTrader spends one
+                // detail request per candidate to read its CARFAX mode, and without
+                // this the whole budget was burned re-checking cars we own, so a run
+                // ended with "0 imported" while never once looking at a new listing.
+                $knownIds = [];
+                try {
+                    $ki = $this->db->prepare('SELECT source_id FROM '.$this->prefix.'_parsing_cars WHERE source = ?');
+                    $ki->execute([$adapter->getSourceCode()]);
+                    foreach ($ki->fetchAll(\PDO::FETCH_COLUMN) as $sid) {
+                        $knownIds[(string)$sid] = true;
+                    }
+                } catch (\Throwable $e) { /* no list = adapter checks nothing, as before */ }
+
                 $duplicates = 0;   // already-have cars skipped by dedup
                 $totalCount = 0;   // Encar's total for this query (progress denominator)
                 $newLastOffset = $backfillStart;
@@ -81,6 +95,7 @@ class ParsingOrchestrator
 
                     $criteria = $baseCriteria;
                     $criteria['_offset_start'] = $pass['_offset_start'];
+                    $criteria['_known_ids']    = $knownIds;
                     $cars = $adapter->searchByFilter($criteria);
                     $found += count($cars);
                     if (property_exists($adapter, 'lastTotalCount')) {
@@ -289,9 +304,21 @@ class ParsingOrchestrator
         // which fails on roughly half the ads — so detail is the only source. A car
         // that already has vin/gearbox/seats/images but no cc used to match nothing
         // here and was never re-enriched, leaving its card polling on every view.
+        // The VIN test only applies to sources that actually expose one. Auto1 and
+        // AutoTrader never do, so an "empty VIN" row there is not a sign of missing
+        // enrichment — it would match forever and re-fetch the same cars on every run.
+        // Rejected rows are excluded or they starve the run: an AutoTrader car with
+        // no CARFAX is marked rejected and returns before its gearbox/images are
+        // filled, so it keeps matching the conditions below and would be re-fetched
+        // on every pass, forever, while genuinely new cars wait behind it.
         $stmt = $this->db->prepare('SELECT id, source, source_id FROM '.$this->prefix.'_parsing_cars
-            WHERE source IN ("encar", "openlane", "ecarstrade", "auto1")
-              AND (vin IS NULL OR vin = "" OR gearbox IS NULL OR seats IS NULL OR engine_volume IS NULL OR engine_volume = 0 OR images_local IS NULL OR images_local = "[]" OR images_local LIKE \'%"url"%\')
+            WHERE source IN ("encar", "openlane", "ecarstrade", "auto1", "autotrader")
+              AND status <> "rejected"
+              AND (
+                    (source IN ("encar", "openlane", "ecarstrade") AND (vin IS NULL OR vin = ""))
+                 OR gearbox IS NULL OR seats IS NULL OR engine_volume IS NULL OR engine_volume = 0
+                 OR images_local IS NULL OR images_local = "[]" OR images_local LIKE \'%"url"%\'
+              )
             ORDER BY found_at DESC LIMIT ?');
         $stmt->bindValue(1, $limit, \PDO::PARAM_INT);
         $stmt->execute();
@@ -386,6 +413,30 @@ class ParsingOrchestrator
             if (!empty($detailImages)) {
                 $imagesLocal = array_map(fn($u) => ['url' => $u], $detailImages);
                 $update['images_local'] = json_encode($imagesLocal, JSON_UNESCAPED_UNICODE);
+            }
+
+            // AutoTrader: only cars with a viewable CARFAX report are kept — the
+            // report is the selling point for a car bought sight-unseen overseas.
+            // The same rule is enforced in ParsingPublisher, which is the gate that
+            // decides; here it is free, because the detail fetch above already
+            // carries the answer, and it clears the catalog early.
+            //
+            // Rejected, not deleted: 'rejected' is an existing status and
+            // /parsing/ctlg lists only 'proposed', so the car disappears from the
+            // catalog while the row stays for reference. Cars ALREADY published
+            // are never touched — the guard on car_ctlg_id keeps them live.
+            if ($source === 'autotrader') {
+                $carfax = $detail['carfax'] ?? null;
+                if (is_array($carfax) && !empty($carfax['url'])) {
+                    $update['report_data'] = json_encode(['carfax' => $carfax], JSON_UNESCAPED_UNICODE);
+                } else {
+                    $this->db->prepare('UPDATE ' . $this->prefix . '_parsing_cars
+                        SET status = "rejected"
+                        WHERE source = ? AND source_id = ?
+                          AND status = "proposed" AND (car_ctlg_id IS NULL OR car_ctlg_id = 0)')
+                        ->execute([$source, $sourceId]);
+                    return;
+                }
             }
 
             if (empty($update)) return;
@@ -877,6 +928,11 @@ class ParsingOrchestrator
             // Encar colour facets (body + interior).
             'color'          => $extra['color'] ?? null,
             'interior_color' => $extra['interior_color'] ?? null,
+            // AutoTrader search area. radius=0 means "all Canada" and is a real
+            // choice, so it is passed through instead of being treated as unset.
+            'zip'            => $extra['zip'] ?? null,
+            'radius'         => $extra['radius'] ?? null,
+            'seller_type'    => $extra['seller_type'] ?? null,
             'criteria_extra' => $extra,
         ];
     }

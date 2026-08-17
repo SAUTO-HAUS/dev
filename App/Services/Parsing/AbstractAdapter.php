@@ -59,6 +59,11 @@ abstract class AbstractAdapter implements AdapterInterface
             curl_setopt($ch, CURLOPT_COOKIEJAR, $options['cookies']);
         }
 
+        // Leave through a proxy when this source has one configured (.env). Set for
+        // Encar because its CDN blocks this server's address; unset for the rest, so
+        // they keep going out directly.
+        OutboundProxy::apply($ch, $this->getSourceCode());
+
         $body = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $error = curl_error($ch);

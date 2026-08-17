@@ -307,6 +307,10 @@
     max-height: 36px;
     max-width: 110px;
 }
+/* Square badge: at the shared 24px cap it looks smaller than the wordmarks. */
+#parsing-container .source-subtabs .src-tab-autotrader img {
+    max-height: 32px;
+}
 #parsing-container .source-subtabs .src-tab:hover {
     background: #fff5f6;
     border-color: #fdd9de;
@@ -828,6 +832,11 @@
 #parsing-container .car-source .source-logo-auto1 {
     height: 18px;
 }
+/* AutoTrader is a near-square filled badge — same reasoning as AUTO1, but it is
+   narrow, so it needs a bit more height to stay readable. */
+#parsing-container .car-source .source-logo-autotrader {
+    height: 26px;
+}
 #parsing-container .car-info h3 {
     font-size: 0.85rem;
     font-weight: 600;
@@ -958,6 +967,8 @@
 }
 #parsing-container .house-report-row .btn-sauto-page,
 #parsing-container .house-report-row .btn-report { width: 100%; }
+/* Sources without a report button (AutoTrader): the lone button takes the full row. */
+#parsing-container .house-report-row.is-single { grid-template-columns: 1fr; }
 
 #parsing-container .publish-grid.action-grid {
 }
@@ -2030,6 +2041,12 @@
     width: 120px;
     height: 28px;
 }
+/* AutoTrader's mark is a near-square badge, so at the shared 80x20 box it
+   renders far smaller than the wordmarks next to it. */
+#parsing-container #sp-autotrader .sp-logo-img {
+    width: 60px;
+    height: 42px;
+}
 
 /* Panel header (clickable) — fixed height so all 3 panels look equal when collapsed */
 #parsing-container .source-panel-head {
@@ -3048,6 +3065,14 @@
     font-size: 0.95rem;
     color: #1a202c;
 }
+/* "Ignore all" sits next to the close cross, kept quiet so it is not hit by mistake. */
+.publish-failures-panel .pfp-ignore-all {
+    margin-left: auto; margin-right: 10px;
+    background: none; border: 1px solid #e5e7eb; border-radius: 6px;
+    padding: 4px 10px; font-size: 0.78rem; color: #6b7280; cursor: pointer; white-space: nowrap;
+}
+.publish-failures-panel .pfp-ignore-all:hover { background: #f9fafb; color: #374151; border-color: #d1d5db; }
+.publish-failures-panel .pfp-ignore-all:disabled { opacity: 0.6; cursor: default; }
 .publish-failures-panel .pfp-close {
     background: none; border: none; font-size: 1rem; color: #9ca3af; cursor: pointer; line-height: 1;
 }

@@ -1,5 +1,9 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
+// Client ID-card photos: the list needs the row button, the forms need the
+// widget (menu.php pulls the same file).
+require_once(_ADM_INCL.'/docs/id_photo.php');
+
 $rtrn = '';
 
 // Load translations from cars.php for document categories
@@ -674,7 +678,11 @@ c/f 1017600006845, c/TVA 0609417</pre>
 								}
 								
 							})
-							
+
+							// The loop above only writes the hidden inputs; drawing the
+							// ID-card previews from them is the widget\'s own job.
+							if ( typeof window.docsIdPhotoSync === "function" ){ window.docsIdPhotoSync(base); }
+
 							// Handle payment stages data for vinzare_avans
 							if (vals.data("doc") == "vinzare_avans" && vals.data("pays")) {
 								var paysData = vals.data("pays").toString();
@@ -1039,7 +1047,8 @@ c/f 1017600006845, c/TVA 0609417</pre>
 			if ($dateFrom_sql != '') { $where[] = 'c.date >= :df'; $params['df'] = $dateFrom_sql; }
 			if ($dateTo_sql != '') { $where[] = 'c.date <= :dt'; $params['dt'] = $dateTo_sql; }
 			$pdo = $db->prepare('SELECT 
-				u.id u_id, u.nm u_nm, u.tp u_tp, u.cf_idno u_cf_idno, u.tva_dt u_tva_dt, u.iban_dt_tk u_iban_dt_tk, u.adr u_adr, u.phn u_phn, u.eml u_eml, 
+				u.id u_id, u.nm u_nm, u.tp u_tp, u.cf_idno u_cf_idno, u.tva_dt u_tva_dt, u.iban_dt_tk u_iban_dt_tk, u.adr u_adr, u.phn u_phn, u.eml u_eml,
+				u.id_photo_front, u.id_photo_back,
 				c.*, 
 				c.last_edited_by
 				FROM 
@@ -1053,7 +1062,8 @@ c/f 1017600006845, c/TVA 0609417</pre>
 		} elseif ($yearFilter_sql > 0) {
 			// Year filter
 			$pdo = $db->prepare('SELECT 
-				u.id u_id, u.nm u_nm, u.tp u_tp, u.cf_idno u_cf_idno, u.tva_dt u_tva_dt, u.iban_dt_tk u_iban_dt_tk, u.adr u_adr, u.phn u_phn, u.eml u_eml, 
+				u.id u_id, u.nm u_nm, u.tp u_tp, u.cf_idno u_cf_idno, u.tva_dt u_tva_dt, u.iban_dt_tk u_iban_dt_tk, u.adr u_adr, u.phn u_phn, u.eml u_eml,
+				u.id_photo_front, u.id_photo_back,
 				c.*, 
 				c.last_edited_by
 				FROM 
@@ -1069,7 +1079,8 @@ c/f 1017600006845, c/TVA 0609417</pre>
 			$twoMonthsAgo = date('Y-m-d', strtotime('-2 months'));
 			
 			$pdo = $db->prepare('SELECT 
-				u.id u_id, u.nm u_nm, u.tp u_tp, u.cf_idno u_cf_idno, u.tva_dt u_tva_dt, u.iban_dt_tk u_iban_dt_tk, u.adr u_adr, u.phn u_phn, u.eml u_eml, 
+				u.id u_id, u.nm u_nm, u.tp u_tp, u.cf_idno u_cf_idno, u.tva_dt u_tva_dt, u.iban_dt_tk u_iban_dt_tk, u.adr u_adr, u.phn u_phn, u.eml u_eml,
+				u.id_photo_front, u.id_photo_back,
 				c.*, 
 				c.last_edited_by
 				FROM 
@@ -1083,7 +1094,8 @@ c/f 1017600006845, c/TVA 0609417</pre>
 		} else {
 			// Load all documents
 			$pdo = $db->prepare('SELECT 
-				u.id u_id, u.nm u_nm, u.tp u_tp, u.cf_idno u_cf_idno, u.tva_dt u_tva_dt, u.iban_dt_tk u_iban_dt_tk, u.adr u_adr, u.phn u_phn, u.eml u_eml, 
+				u.id u_id, u.nm u_nm, u.tp u_tp, u.cf_idno u_cf_idno, u.tva_dt u_tva_dt, u.iban_dt_tk u_iban_dt_tk, u.adr u_adr, u.phn u_phn, u.eml u_eml,
+				u.id_photo_front, u.id_photo_back,
 				c.*, 
 				c.last_edited_by
 				FROM 
@@ -1165,6 +1177,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 							data-u_tva_dt="'.( $r['u_tp']=='fiz'&&strtotime($r['u_tva_dt'])!==false?date('Y-m-d',strtotime($r['u_tva_dt'])):$r['u_tva_dt'] ).'" 
 							data-u_iban_dt_tk="'.( $r['u_tp']=='fiz'&&strtotime($r['u_iban_dt_tk'])!==false?date('Y-m-d',strtotime($r['u_iban_dt_tk'])):$r['u_iban_dt_tk'] ).'" 
 							data-u_adr="'.$r['u_adr'].'" data-u_phn="'.$r['u_phn'].'" data-u_eml="'.$r['u_eml'].'"
+							data-id_photo_front="'.htmlspecialchars((string)($r['id_photo_front'] ?? '')).'" data-id_photo_back="'.htmlspecialchars((string)($r['id_photo_back'] ?? '')).'"
 							'.(isset($inf['cntr_fr'])?'data-cntr_fr="'.$inf['cntr_fr'].'"':'').' '.(isset($inf['cntr_to'])?'data-cntr_to="'.$inf['cntr_to'].'"':'').' '.(isset($inf['adr_to'])?'data-adr_to="'.$inf['adr_to'].'"':'').'
 							'.(isset($inf['t2pay'])?'data-t2pay="'.$inf['t2pay'].'"':'').' '.(isset($inf['plate'])?'data-plate="'.$inf['plate'].'"':'').'
 							'.(isset($inf['vin'])?'data-vin="'.$inf['vin'].'"':'').' '.(isset($inf['mo'])?'data-mo="'.$inf['mo'].'"':'').' '.(isset($inf['br'])?'data-br="'.$inf['br'].'"':'').'
@@ -1215,6 +1228,7 @@ c/f 1017600006845, c/TVA 0609417</pre>
 								 <input type="checkbox" name="usr_stamp" title="Stampila client" style="accent-color:#e2001a;">
 							</div>
 							<div class="btn edit" data-fn="edit_it">Edit</div>
+							'.docs_id_photo_row_btn($r['id_photo_front'] ?? null, $r['id_photo_back'] ?? null).'
 							<div class="btn del" data-fn="del_it">Delete</div>
 						</div>
 					</label>';

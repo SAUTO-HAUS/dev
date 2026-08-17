@@ -56,7 +56,11 @@ class Country
         // Use the appropriate name column based on the language
         $sql = "SELECT id, {$nameColumn} as name, code, flag, is_european FROM countries";
         if ($europeanOnly) {
-            $sql .= " WHERE is_european = 1";
+            // Korea and the USA are not European, but we import from both, so the
+            // admin's "import country" dropdown must offer them — otherwise the
+            // option simply isn't there and a Korean/American car silently saves
+            // with whatever is selected (Europe), landing in the wrong region.
+            $sql .= " WHERE is_european = 1 OR code IN ('KR', 'US')";
         }
         $sql .= " ORDER BY name ASC";
         

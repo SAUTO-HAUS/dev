@@ -24,28 +24,16 @@ include_once(__DIR__ . '/lang_tel.php');
     <meta name="twitter:description" content="<?php echo $telegram_lang[$_COOKIE['lang']]['meta_description']; ?>">
     <meta name="twitter:image" content="https://sauto.md/content/site/page/new_pages/telegram/telegram-media/telegram-img.png">
 
-    <!-- Google Tag Manager -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-    'https://www.googletagmanager.com/gtag/js?id='+i+dl;f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-KRRLB4X');</script>
-    
-    <!-- Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TP4GJ51GSL"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-TP4GJ51GSL');
-    </script>
+    <!-- This landing bypasses the main layout, so it loads the consent engine
+         itself. GTM/GA are injected by consent.js only after consent. -->
+    <script data-cfasync="false" src="/content/site/js/consent.js?d=<?php echo date('GYimsd', filemtime(_SITE.'/js/consent.js')); ?>"></script>
+    <link rel="stylesheet" href="/content/site/css/consent.css?d=<?php echo date('GYimsd', filemtime(_SITE.'/css/consent.css')); ?>">
 
     <!-- Telegram page specific CSS -->
     <link rel="stylesheet" type="text/css" href="/content/site/page/new_pages/telegram/telegram.css?d=<?php echo date('GYimsd', filemtime(__DIR__ . '/telegram.css')); ?>">
 </head>
 <body>
-    <!-- Google Tag Manager (noscript) -->
-    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KRRLB4X" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <?php include(_SITE_INCL.'/consent.php'); ?>
 
 <div class="telegram-wrapper">
     <div class="telegram-container">
@@ -86,21 +74,20 @@ include_once(__DIR__ . '/lang_tel.php');
            class="telegram-button" 
            target="_blank" 
            rel="noopener noreferrer"
-           onclick="gtag('event', 'click', {'event_category': 'telegram', 'event_label': 'join_channel'});">
+           onclick="SautoConsent.onAnalytics(function(){gtag('event', 'click', {'event_category': 'telegram', 'event_label': 'join_channel'});});">
             <?php echo $telegram_lang[$_COOKIE['lang']]['button_text']; ?>
         </a>
     </div>
 </div>
 
 <script>
-    // Track page view
-    if (typeof gtag !== 'undefined') {
+    SautoConsent.onAnalytics(function () {
         gtag('event', 'page_view', {
             'page_title': 'Telegram Landing Page',
             'page_location': window.location.href,
             'page_language': '<?php echo $_COOKIE['lang']; ?>'
         });
-    }
+    });
 </script>
 
 </body>

@@ -308,6 +308,7 @@ $svg_lock = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="
             'regular_999md'    => 'Comerciale',
             'order_999md'      => 'Comanda',
             'korea_999md'      => 'Encars',
+            'usa_999md'        => 'SautoSUA',
             'regular_telegram' => 'AutoMoldova',
             'order_telegram'   => 'AutoimportMD',
             '725963964220309'  => 'SAUTO',

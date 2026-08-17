@@ -159,6 +159,11 @@ foreach ($adverts as $advert) {
             $features[] = $newItem;
         }
 
+        // Same as the republish branch above: this one builds the ad straight from the
+        // stored payload, so without this the links block is missing on every ad first
+        // published through the schedule.
+        $features = \App\Helper\Ad999Links::apply($db, 'gh3sp', $car, $features);
+
         $response = (new Api999Service($car['999_api_id']))->setAdvert($ad['category_id'], $ad['subcategory_id'], $ad['offer_type'], $features);
         $i++;
         echo "[" . date('Y-m-d H:i:s') . "] setAdvert " . $advert['car_id'] . " ".($response['advert']['id'] ?? '')." Response: " . json_encode($response, JSON_UNESCAPED_UNICODE) . "\n";

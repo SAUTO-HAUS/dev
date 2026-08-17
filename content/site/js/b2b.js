@@ -79,9 +79,10 @@
         en: { err_network: 'Network error. Please try again.', pass_mismatch: 'Passwords do not match.', working: 'Processing…', phone_len: 'The phone number must contain 8 digits.' }
     };
 
+    // Read from <body data-lng>, not the cookie: the language cookie is HttpOnly
+    // so that an audit does not flag it as a script-readable cookie.
     function lang() {
-        var m = document.cookie.match(/(?:^|;\s*)lang=([^;]*)/);
-        var l = m ? m[1] : 'ro';
+        var l = (document.body && document.body.getAttribute('data-lng')) || 'ro';
         return MESSAGES[l] ? l : 'ro';
     }
 
@@ -189,12 +190,16 @@
 
             var ptype = form.querySelector('[name="person_type"]:checked');
 
+            var mkt = form.querySelector('[name="marketing_optin"]');
+
             api('b2b_register', {
                 person_type: ptype ? ptype.value : '',
                 email:       form.querySelector('[name="email"]').value.trim(),
                 phone:       phoneValue(form.querySelector('[name="phone"]')),
                 full_name:   form.querySelector('[name="full_name"]').value.trim(),
-                password:    pass.value
+                password:    pass.value,
+                // Optional: an unchecked box submits "" and must not block signup.
+                marketing_optin: (mkt && mkt.checked) ? 'yes' : ''
             }, csrf).then(function (res) {
                 busy(btn, false);
                 if (handleCsrf(res)) return;
@@ -480,4 +485,280 @@
     } else {
         init();
     }
+})();
+
+/* ===========================================================================
+   Saved searches (cabinet -> "Filtrele mele").
+   Create posts the form; delete removes one. Both reload, because the matching
+   car lists are rendered server-side and would otherwise go stale.
+   =========================================================================== */
+(function () {
+    'use strict';
+
+    var form = document.getElementById('b2b_filter_form');
+    var list = document.querySelector('.b2b-filters');
+    if (!form && !list) return;
+
+    var panel = document.querySelector('.b2b-panel');
+    var csrf  = panel ? panel.dataset.csrf : '';
+
+    function api(fn, data) {
+        var body = new URLSearchParams();
+        body.set('tp', 'ste');
+        body.set('pg', 'b2b');
+        body.set('fn', fn);
+        body.set('csrf', csrf);
+        Object.keys(data || {}).forEach(function (k) { body.set(k, data[k]); });
+
+        return fetch('/ajax.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+            body: body.toString(),
+            credentials: 'same-origin'
+        }).then(function (r) { return r.json(); })
+          .catch(function () { return { ok: false, error: 'Network error.' }; });
+    }
+
+    // ---- brand -> model, from the map the page shipped with the form --------
+    var br = document.getElementById('b2b_flt_br');
+    var mo = document.getElementById('b2b_flt_mo');
+    if (br && mo) {
+        br.addEventListener('change', function () {
+            var models = (window.B2B_FLT_MODELS || {})[br.value] || {};
+            var keys = Object.keys(models);
+            mo.innerHTML = '<option value="">' + (mo.dataset.any || mo.options[0].textContent) + '</option>';
+            keys.forEach(function (code) {
+                var o = document.createElement('option');
+                o.value = code;
+                o.textContent = models[code];
+                mo.appendChild(o);
+            });
+            mo.disabled = keys.length === 0;
+        });
+    }
+
+    // ---- create / save an edit ----------------------------------------------
+    // One form for both: the hidden filter_id decides which endpoint runs, so an
+    // edit reuses the whole brand -> model and styled-select machinery.
+    var idFld  = document.getElementById('b2b_filter_id');
+    var ttl    = document.getElementById('b2b_filter_ttl');
+    var submit = document.getElementById('b2b_filter_submit');
+    var cancel = document.getElementById('b2b_filter_cancel');
+
+    if (form) {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var msg = document.getElementById('b2b_filter_msg');
+            var btn = submit || form.querySelector('button[type=submit]');
+            var data = {};
+
+            new FormData(form).forEach(function (v, k) { if (v !== '') data[k] = v; });
+            // Display names travel with the codes so the saved filter still reads
+            // correctly once the matching cars are gone from the catalog.
+            if (br && br.value) data.br_nm = br.options[br.selectedIndex].textContent;
+            if (mo && mo.value) data.mo_nm = mo.options[mo.selectedIndex].textContent;
+
+            if (btn) btn.disabled = true;
+            api(data.filter_id ? 'b2b_edit_filter' : 'b2b_add_filter', data).then(function (res) {
+                if (btn) btn.disabled = false;
+                if (!res.ok) { if (msg) { msg.textContent = res.error || ''; msg.className = 'b2b-fltform__msg is-error'; } return; }
+                window.location.reload();
+            });
+        });
+    }
+
+    // ---- edit: load a saved filter back into the form -----------------------
+    function setField(name, val) {
+        var f = form.elements[name];
+        if (!f) return;
+        f.value = val;
+        // The styled dropdown and the brand -> model handler both listen for
+        // 'change', which a scripted assignment does not fire on its own.
+        if (f.tagName === 'SELECT') f.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    function fillForm(c) {
+        c = c || {};
+
+        setField('br', c.br || '');   // rebuilds the model list this filter needs
+        if (mo && c.mo) {
+            var known = Array.prototype.some.call(mo.options, function (o) { return o.value === c.mo; });
+            // A model that has left the catalog must stay selectable, or saving
+            // the edit would silently widen the filter to the whole brand.
+            if (!known) {
+                var o = document.createElement('option');
+                o.value = c.mo;
+                o.textContent = c.mo_nm || c.mo;
+                mo.appendChild(o);
+            }
+            mo.disabled = false;
+        }
+        ['mo', 'region', 'fl', 'tra', 'yr_from', 'yr_to', 'vol_from', 'vol_to',
+         'mlg_to', 'prc_from', 'prc_to'].forEach(function (k) {
+            setField(k, c[k] != null ? c[k] : '');
+        });
+    }
+
+    function setMode(id) {
+        if (idFld) idFld.value = id || '';
+        if (ttl && form.dataset.ttlNew) ttl.textContent = id ? form.dataset.ttlEdit : form.dataset.ttlNew;
+        if (submit && form.dataset.btnNew) submit.textContent = id ? form.dataset.btnEdit : form.dataset.btnNew;
+        if (cancel) cancel.hidden = !id;
+        form.classList.toggle('is-editing', !!id);
+    }
+
+    document.addEventListener('click', function (e) {
+        var ed = e.target.closest('[data-b2b-filter-edit]');
+        if (!ed || !form) return;
+        // It sits inside <summary>, so without this the click would fold the row.
+        e.preventDefault();
+
+        var c = {};
+        try { c = JSON.parse(ed.dataset.flt || '{}'); } catch (err) { c = {}; }
+        fillForm(c);
+        setMode(ed.dataset.b2bFilterEdit);
+
+        var msg = document.getElementById('b2b_filter_msg');
+        if (msg) { msg.textContent = ''; msg.className = 'b2b-fltform__msg'; }
+        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    if (cancel) {
+        cancel.addEventListener('click', function () {
+            fillForm({});
+            setMode('');
+        });
+    }
+
+    // ---- delete -------------------------------------------------------------
+    document.addEventListener('click', function (e) {
+        var del = e.target.closest('[data-b2b-filter-del]');
+        if (!del) return;
+        // It sits inside <summary>, so without this the click would also fold
+        // the section while the request is still running.
+        e.preventDefault();
+        del.disabled = true;
+        api('b2b_del_filter', { filter_id: del.dataset.b2bFilterDel }).then(function (res) {
+            if (!res.ok) { del.disabled = false; alert(res.error || ''); return; }
+            window.location.reload();
+        });
+    });
+})();
+
+/* ===========================================================================
+   Styled dropdown for the saved-search form.
+
+   A native <select> renders its open list through the OS, so the blue highlight
+   and the plain box cannot be reached from CSS. This keeps the real <select> in
+   the DOM — it still carries the value, submits, and drives the brand -> model
+   logic — and draws a listbox over it on pointer devices.
+
+   Touch keeps the native picker on purpose: the OS wheel/sheet is better than
+   anything we would build, and it is what people expect on a phone.
+   =========================================================================== */
+(function () {
+    'use strict';
+
+    var form = document.getElementById('b2b_filter_form');
+    if (!form || !window.matchMedia('(min-width: 769px)').matches) return;
+
+    function build(sel) {
+        if (sel.dataset.b2bSel) return;
+        sel.dataset.b2bSel = '1';
+
+        var wrap = document.createElement('div');
+        wrap.className = 'b2b-sel';
+        sel.parentNode.insertBefore(wrap, sel);
+        wrap.appendChild(sel);
+
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'b2b-sel__btn';
+        btn.setAttribute('aria-haspopup', 'listbox');
+        btn.setAttribute('aria-expanded', 'false');
+        wrap.appendChild(btn);
+
+        var list = document.createElement('ul');
+        list.className = 'b2b-sel__list';
+        list.setAttribute('role', 'listbox');
+        list.hidden = true;
+        wrap.appendChild(list);
+
+        function label() {
+            var o = sel.options[sel.selectedIndex];
+            btn.textContent = o ? o.textContent : '';
+            btn.classList.toggle('is-placeholder', !sel.value);
+        }
+
+        function render() {
+            list.innerHTML = '';
+            Array.prototype.forEach.call(sel.options, function (o, i) {
+                var li = document.createElement('li');
+                li.className = 'b2b-sel__opt' + (i === sel.selectedIndex ? ' is-on' : '');
+                li.setAttribute('role', 'option');
+                li.setAttribute('aria-selected', i === sel.selectedIndex ? 'true' : 'false');
+                li.textContent = o.textContent;
+                li.addEventListener('click', function () {
+                    sel.selectedIndex = i;
+                    // Native event, so the brand -> model handler above still fires.
+                    sel.dispatchEvent(new Event('change', { bubbles: true }));
+                    close();
+                });
+                list.appendChild(li);
+            });
+        }
+
+        function open() {
+            if (sel.disabled) return;
+            document.querySelectorAll('.b2b-sel.is-open').forEach(function (w) {
+                if (w !== wrap) w.classList.remove('is-open');
+            });
+            render();
+            list.hidden = false;
+            wrap.classList.add('is-open');
+            btn.setAttribute('aria-expanded', 'true');
+            var on = list.querySelector('.is-on');
+            if (on) on.scrollIntoView({ block: 'nearest' });
+        }
+
+        function close() {
+            list.hidden = true;
+            wrap.classList.remove('is-open');
+            btn.setAttribute('aria-expanded', 'false');
+            label();
+        }
+
+        btn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            wrap.classList.contains('is-open') ? close() : open();
+        });
+
+        btn.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown') { e.preventDefault(); open(); }
+            else if (e.key === 'Escape') close();
+        });
+
+        // The model select is rebuilt whenever the brand changes, and starts
+        // disabled — mirror both, or the button would show a stale list.
+        sel.addEventListener('change', label);
+        new MutationObserver(function () {
+            btn.disabled = sel.disabled;
+            label();
+        }).observe(sel, { attributes: true, attributeFilter: ['disabled'], childList: true });
+
+        btn.disabled = sel.disabled;
+        label();
+    }
+
+    form.querySelectorAll('select').forEach(build);
+
+    document.addEventListener('click', function () {
+        document.querySelectorAll('.b2b-sel.is-open').forEach(function (w) {
+            w.classList.remove('is-open');
+            var l = w.querySelector('.b2b-sel__list');
+            if (l) l.hidden = true;
+            var b = w.querySelector('.b2b-sel__btn');
+            if (b) b.setAttribute('aria-expanded', 'false');
+        });
+    });
 })();

@@ -512,20 +512,27 @@ async function ajaxCarImg(filesX, dataX) {
 			var inputName = filesX.attr('name').replace(/\[\]$/, '');
 			var originalFiles = filesX[0].files;
 			// Read files in DOM order (respects drag reorder in preview)
-			var $previewItems = filesX.closest('.bx').find('.prv.imgs:not(.ready) > .its > .it[data-file-index]');
-			var files = [];
-			if ($previewItems.length > 0) {
+			var $previewBox = filesX.closest('.bx').find('.prv.imgs:not(.ready) > .its');
+			var $previewItems = $previewBox.children('.it[data-file-index]');
+			var files;
+			if ($previewBox.length > 0) {
+				// The preview is the source of truth: it holds the operator's
+				// order and no longer holds the tiles they deleted. An EMPTY
+				// preview means "all deleted" — it must upload nothing. Falling
+				// back to the raw file list here (as before) brought every
+				// deleted photo back.
 				files = $previewItems.toArray().map(function(el){
 					var idx = parseInt(el.dataset.fileIndex, 10);
 					return !isNaN(idx) ? originalFiles[idx] : null;
 				}).filter(function(file){ return file; });
-			}
-			if (files.length === 0) {
+			} else {
 				files = Array.from(originalFiles);
 			}
 			// Calculate main image index
 			var mainImgIndex = -1;
-			var selectedValue = $('input[name="main_img"]:checked').val();
+			// Scoped to this car's box: the catalog page can show several
+			// editable cars at once, and they all name the radio "main_img".
+			var selectedValue = filesX.closest('.bx').find('input[name="main_img"]:checked').val();
 			if (selectedValue !== undefined) {
 				var selectedIndex = parseInt(selectedValue);
 				if ($previewItems.length > 0) {
@@ -537,6 +544,19 @@ async function ajaxCarImg(filesX, dataX) {
 					mainImgIndex = selectedIndex;
 				}
 			}
+			// Position base for this batch: the highest pos already on the car.
+			// The server used to read MAX(pos) itself, but the uploads below run
+			// in PARALLEL — by the time the 5th request arrived, earlier ones had
+			// already inserted rows, so its "base" was no longer 0 and positions
+			// came out scrambled (and two files could land on the same pos, whose
+			// file name car_<id>_<pos> then overwrote the other). Sending the base
+			// from here makes every position deterministic. 0 on a new ad.
+			var posBase = 0;
+			filesX.closest('.bx').find('.prv.imgs.ready .it.f_img').each(function(){
+				var p = parseInt(this.dataset.pos, 10);
+				if (!isNaN(p) && p > posBase) posBase = p;
+			});
+
 			var total = files.length;
 			$('#stts_bar > .txt > .el').html('0/' + total);
 			var compressed = (pg === 'ordercars')
@@ -551,6 +571,7 @@ async function ajaxCarImg(filesX, dataX) {
 				fd.append('fn', 'add_new'); fd.append('sub', 'file_load');
 				fd.append('last_id', last_id); fd.append('img_qu', total);
 				fd.append('pos_start', globalIdx + 1);
+				fd.append('pos_base', posBase);
 				fd.append(inputName + '[]', file);
 				if (globalIdx === mainImgIndex) {
 					fd.append('main_img', 0);

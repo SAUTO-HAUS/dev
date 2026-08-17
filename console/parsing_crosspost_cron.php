@@ -160,26 +160,85 @@ $publishedInWindow = function(int $filterId, string $ch) use ($db, $prefx, $cfg)
     return (int)$st->fetchColumn();
 };
 
-$filters = $db->query("SELECT id, name FROM {$prefx}_parsing_filters WHERE active = 1 ORDER BY id")->fetchAll(PDO::FETCH_ASSOC);
+$filters = $db->query("SELECT id, name, sources FROM {$prefx}_parsing_filters WHERE active = 1 ORDER BY id")->fetchAll(PDO::FETCH_ASSOC);
 echo $ts() . " " . count($filters) . " active filter(s)\n";
 $totals = ['999' => 0, 'fb' => 0, 'tg' => 0];
 
-// ROUND-ROBIN: resume from the filter AFTER the last one we processed, so with many
-// filters the global per-run caps don't always starve the tail of the list. We
-// rotate the list to start just past the saved cursor, then remember where we stop.
-$cursor = (int)($settings['crosspost_cursor'] ?? 0);
-if ($cursor > 0 && count($filters) > 1) {
+// ROUND-ROBIN OVER SOURCES, THEN OVER EACH SOURCE'S FILTERS.
+//
+// Walking the filters by id gave every source weight by filter count: 50 Encar
+// filters came up before the 5 eCarsTrade ones were reached, so a run's budget was
+// spent long before the small sources got a turn. Now one filter is taken from each
+// source in turn - encar, auto1, openlane, ... - and the next round takes each
+// source's NEXT filter. A source that runs out drops out and the others carry on.
+//
+// A filter belongs to exactly ONE source: brand/model are stored in that source's
+// own taxonomy (Korean text on Encar, numeric codes on Auto1 and AutoTrader), so the
+// same filter cannot be read by another. `sources` is a list for historical reasons.
+$bySource = [];
+foreach ($filters as $f) {
+    $src = trim(explode(',', (string)($f['sources'] ?? ''))[0]);
+    if ($src === '') { $src = '?'; }
+    $bySource[$src][] = $f;
+}
+ksort($bySource);
+
+// One cursor per source: the id of the last filter served from it, kept across runs
+// so the rotation continues instead of restarting at the first filter every time.
+$srcCursors = json_decode((string)($settings['crosspost_source_cursors'] ?? ''), true);
+if (!is_array($srcCursors)) { $srcCursors = []; }
+
+foreach ($bySource as $src => $list) {
+    $cur = (int)($srcCursors[$src] ?? 0);
+    if ($cur <= 0 || count($list) < 2) { continue; }
     $startIdx = 0;
-    foreach ($filters as $i => $f) { if ((int)$f['id'] > $cursor) { $startIdx = $i; break; } }
+    foreach ($list as $i => $f) { if ((int)$f['id'] > $cur) { $startIdx = $i; break; } }
     if ($startIdx > 0) {
-        $filters = array_merge(array_slice($filters, $startIdx), array_slice($filters, 0, $startIdx));
+        $bySource[$src] = array_merge(array_slice($list, $startIdx), array_slice($list, 0, $startIdx));
     }
 }
+
+// Interleave: round 1 takes the first filter of every source, round 2 the second...
+$ordered = [];
+$maxLen = 0;
+foreach ($bySource as $list) { $maxLen = max($maxLen, count($list)); }
+for ($round = 0; $round < $maxLen; $round++) {
+    foreach ($bySource as $src => $list) {
+        if (isset($list[$round])) {
+            $list[$round]['_src'] = $src;
+            $ordered[] = $list[$round];
+        }
+    }
+}
+$filters = $ordered;
+
+$rotationInfo = [];
+foreach ($bySource as $src => $list) { $rotationInfo[] = $src . '(' . count($list) . ')'; }
+echo $ts() . " rotation: " . implode(' ', $rotationInfo) . "
+";
+
+$lastPerSource = [];   // source => last filter id served this run
 $lastProcessed = 0;
+
+// The run cap is shared per SOURCE, not per filter. Rotating filters alone is not
+// fair: a source with 60 saved filters takes twelve times the slots of one with 5,
+// even though the channels behind them matter equally. Encar published 203 cars on
+// 999 in a day this way while AutoTrader managed 17. Each source now gets its own
+// slice of the same budget, and unused slices are simply not used by others.
+$activeSources = $db->query("SELECT DISTINCT pc.source
+    FROM {$prefx}_parsing_cars pc
+    JOIN {$prefx}_parsing_filters f ON f.id = pc.filter_id AND f.active = 1
+    WHERE pc.status = 'published' AND pc.source <> ''")->fetchAll(PDO::FETCH_COLUMN);
+$sourceCap999 = max(1, (int)ceil(MAX_PER_RUN / max(1, count($activeSources))));
+$per999 = [];   // source => queued in this run
+echo $ts() . " 999 budget: " . MAX_PER_RUN . "/run, " . $sourceCap999
+   . " per source (" . (count($activeSources) ?: 1) . " source(s))\n";
 
 foreach ($filters as $f) {
     $fid = (int)$f['id'];
     $lastProcessed = $fid;
+    // Where this source's rotation stops, so the next run resumes at its next filter.
+    $lastPerSource[(string)($f['_src'] ?? '?')] = $fid;
 
     // Eligible = published on sauto from this filter, live catalog row, has a price,
     // and NOT sold. "Sold" = source auction already ended: status 'unavailable', OR
@@ -227,15 +286,20 @@ foreach ($filters as $f) {
             // Fetch MORE candidates than the budget: cars whose model isn't learned
             // yet are skipped by the builder, so we walk the cheapest list until we've
             // queued `budget` real ones (or run out).
-            $rows = $db->query("SELECT cc.id, cc.catalog_type {$base}
+            $rows = $db->query("SELECT cc.id, cc.catalog_type, pc.source {$base}
                 AND (cc.`999_id` IS NULL OR cc.`999_id` = 0)
                 AND NOT EXISTS (SELECT 1 FROM {$prefx}_sauto_personal_schedules s
                                 WHERE s.car_id = cc.id AND s.status IN ('pending','postponed'))
                 ORDER BY cc.prc ASC LIMIT ".($budget * 5))->fetchAll(PDO::FETCH_ASSOC);
             foreach ($rows as $r) {
                 if ($did['999'] >= $budget) break;
+                // Each source keeps to its own slice of the run, so a source with many
+                // saved filters cannot take the whole budget.
+                $src = (string)($r['source'] ?? '');
+                if ($src !== '' && ($per999[$src] ?? 0) >= $sourceCap999) continue;
                 if ($queue('999', (int)$r['id'], (string)$r['catalog_type'])) {
                     $totals['999']++; $did['999']++;
+                    if ($src !== '') $per999[$src] = ($per999[$src] ?? 0) + 1;
                 }
             }
         }
@@ -277,15 +341,30 @@ foreach ($filters as $f) {
     }
 }
 
-// Save the round-robin cursor so the next run continues after the last filter we
-// touched. If we went through the whole list, reset to 0 (start over next time).
-if (!$dryRun && $lastProcessed > 0) {
-    $save = $db->prepare("INSERT INTO {$prefx}_parsing_settings (setting_key, setting_value)
-        VALUES ('crosspost_cursor', ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)");
-    // If the last processed filter is the highest id (we reached the end), reset to 0.
-    $maxId = (int)$db->query("SELECT MAX(id) FROM {$prefx}_parsing_filters WHERE active = 1")->fetchColumn();
-    $save->execute([$lastProcessed >= $maxId ? '0' : (string)$lastProcessed]);
+// Save one cursor per source, so the next run continues with each source's NEXT
+// filter. A source whose last served filter is its highest id wraps back to the
+// start on its own, independently of the others - which is the point: sources have
+// very different filter counts and must not be forced onto a shared cycle.
+if (!$dryRun && $lastPerSource) {
+    $srcCursors = array_merge($srcCursors, $lastPerSource);
+    foreach ($bySource as $src => $list) {
+        if (!isset($lastPerSource[$src])) { continue; }
+        $maxId = 0;
+        foreach ($list as $f) { $maxId = max($maxId, (int)$f['id']); }
+        if ((int)$lastPerSource[$src] >= $maxId) { $srcCursors[$src] = 0; }
+    }
+    $db->prepare("INSERT INTO {$prefx}_parsing_settings (setting_key, setting_value)
+        VALUES ('crosspost_source_cursors', ?) ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value)")
+       ->execute([json_encode($srcCursors)]);
 }
 
 echo $ts() . " queued totals — 999: {$totals['999']}, fb: {$totals['fb']}, tg: {$totals['tg']}\n";
+// Per-source 999 split of this run: the quickest way to see whether one source is
+// eating the queue. Unused slices are not lost - the cron runs every 30 min and the
+// cursor resumes past the last filter, so those cars stay eligible for the next run.
+if ($per999) {
+    $parts = [];
+    foreach ($per999 as $src => $n) $parts[] = "{$src}={$n}";
+    echo $ts() . " 999 per source: " . implode(', ', $parts) . " (cap {$sourceCap999}/source)\n";
+}
 echo $ts() . " done\n";

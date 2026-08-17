@@ -16,40 +16,40 @@ function sauto_contact_form(array $opts = []): void {
             'name'      => 'Nume',
             'phone'     => 'Telefon',
             'message'   => 'Mesaj',
-            'gdpr'      => 'Sunt de acord cu <a href="/ro/privacy" target="_blank" rel="noopener">prelucrarea datelor personale</a>',
+            'marketing' => 'Doresc să primesc oferte auto viitoare pe e-mail sau telefon.',
+            'notice'    => 'Datele tale vor fi folosite exclusiv pentru a răspunde acestei solicitări, conform <a href="/ro/privacy" target="_blank" rel="noopener">Politicii de Confidențialitate</a>.',
             'submit'    => 'Trimite cererea',
             'success_t' => 'Cererea a fost trimisă!',
             'success_s' => 'Vă vom contacta în cel mai scurt timp.',
             'error'     => 'Eroare. Încercați din nou.',
             'req_name'  => 'Introduceți numele',
             'req_phone' => 'Introduceți telefonul',
-            'req_gdpr'  => 'Confirmați acordul pentru prelucrarea datelor',
         ],
         'ru' => [
             'name'      => 'Имя',
             'phone'     => 'Телефон',
             'message'   => 'Сообщение',
-            'gdpr'      => 'Я согласен на <a href="/ru/privacy" target="_blank" rel="noopener">обработку персональных данных</a>',
+            'marketing' => 'Хочу получать будущие автопредложения по e-mail или телефону.',
+            'notice'    => 'Ваши данные будут использованы исключительно для ответа на этот запрос, согласно <a href="/ru/privacy" target="_blank" rel="noopener">Политике конфиденциальности</a>.',
             'submit'    => 'Отправить заявку',
             'success_t' => 'Заявка отправлена!',
             'success_s' => 'Мы свяжемся с вами в ближайшее время.',
             'error'     => 'Ошибка. Попробуйте снова.',
             'req_name'  => 'Введите имя',
             'req_phone' => 'Введите телефон',
-            'req_gdpr'  => 'Подтвердите согласие на обработку данных',
         ],
         'en' => [
             'name'      => 'Name',
             'phone'     => 'Phone',
             'message'   => 'Message',
-            'gdpr'      => 'I agree to the <a href="/en/privacy" target="_blank" rel="noopener">processing of personal data</a>',
+            'marketing' => 'I want to receive future car offers by e-mail or phone.',
+            'notice'    => 'Your data will be used solely to answer this request, in accordance with the <a href="/en/privacy" target="_blank" rel="noopener">Privacy Policy</a>.',
             'submit'    => 'Send request',
             'success_t' => 'Request sent!',
             'success_s' => 'We will contact you shortly.',
             'error'     => 'Error. Please try again.',
             'req_name'  => 'Enter your name',
             'req_phone' => 'Enter your phone',
-            'req_gdpr'  => 'Please confirm consent',
         ],
     ];
     $l = $labels[$lang] ?? $labels['ro'];
@@ -83,15 +83,18 @@ function sauto_contact_form(array $opts = []): void {
             <div class="scf-line"></div>
         </div>
 
+        <?php // No mandatory privacy checkbox: making a pre-contractual reply
+              // conditional on it is abusive under Legea 195/2024. What is left
+              // is an optional, unticked marketing opt-in — a separate purpose. ?>
         <div class="scf-gdpr">
             <label class="scf-check-label">
-                <input type="checkbox" name="gdpr" class="scf-check-input">
+                <input type="checkbox" name="marketing_contact" value="yes" class="scf-check-input">
                 <span class="scf-check-box">
                     <svg viewBox="0 0 12 10" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <polyline points="1,5 4.5,8.5 11,1" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </span>
-                <span class="scf-check-text"><?= $l['gdpr'] ?></span>
+                <span class="scf-check-text"><?= htmlspecialchars($l['marketing']) ?></span>
             </label>
         </div>
 
@@ -109,6 +112,8 @@ function sauto_contact_form(array $opts = []): void {
                 <span class="scf-spinner"></span>
             </span>
         </button>
+
+        <p class="scf-notice"><?= $l['notice'] ?></p>
 
     </form>
 
@@ -174,6 +179,10 @@ function sauto_contact_form(array $opts = []): void {
 .scf-check-text a { color: #E61E2D; text-decoration: none; border-bottom: 1px solid rgba(230,30,45,0.3); }
 .scf-check-text a:hover { border-bottom-color: #E61E2D; }
 
+/* Transparency notice under the button — information, not a gate. */
+.scf-notice { margin: 0.7rem 0 0; font-size: 12px; line-height: 1.5; color: #666; text-align: center; }
+.scf-notice a { color: #d32f2f; text-decoration: underline; }
+
 /* Error */
 .scf-error {
     display: flex; align-items: center; gap: 0.4rem;
@@ -225,13 +234,13 @@ function scf_submit(e, formId) {
 
     var name  = form.querySelector('[name=name]').value.trim();
     var phone = form.querySelector('[name=phone]').value.trim();
-    var gdpr  = form.querySelector('[name=gdpr]').checked;
 
     err.style.display = 'none';
 
+    // Only the fields we genuinely need to answer are required — the privacy
+    // checkbox gate was removed (Legea 195/2024, minimisation + no conditioning).
     if (!name)  { errT.textContent = <?= json_encode($l['req_name']) ?>;  err.style.display='flex'; form.querySelector('[name=name]').focus(); return; }
     if (!phone || phone === '+373') { errT.textContent = <?= json_encode($l['req_phone']) ?>; err.style.display='flex'; form.querySelector('[name=phone]').focus(); return; }
-    if (!gdpr)  { errT.textContent = <?= json_encode($l['req_gdpr']) ?>;  err.style.display='flex'; return; }
 
     btn.disabled = true;
     btext.style.display = 'none';
@@ -245,6 +254,12 @@ function scf_submit(e, formId) {
             if (d.ok) {
                 form.style.display = 'none';
                 wrap.querySelector('.scf-success').style.display = 'block';
+                // The lead already reached the CRM above; the third-party
+                // conversion only fires if marketing cookies were allowed.
+                if (window.SautoConsent && SautoConsent.hasMarketing()) {
+                    if (typeof fbq === 'function') { fbq('track', 'Lead'); }
+                    if (typeof gtag === 'function') { gtag('event', 'generate_lead'); }
+                }
             } else {
                 errT.textContent = <?= json_encode($l['error']) ?>;
                 err.style.display = 'flex';

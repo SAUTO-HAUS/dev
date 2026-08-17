@@ -92,7 +92,19 @@ $form = '
 
     <div class="b2b-form__msg" role="alert" aria-live="polite"></div>
 
+    '// Optional: pre-ticked by choice of the site owner, the client unticks it
+     // to refuse. Unticking must still let the signup through.
+    .'<div class="mkt-optin">
+        <input type="checkbox" id="marketing_optin" name="marketing_optin" value="yes" checked />
+        <label for="marketing_optin">'.b2b_esc($t['reg_marketing']).'</label>
+    </div>
+
     <button type="submit" class="b2b-btn b2b-btn--primary b2b-btn--block">'.b2b_esc($t['reg_submit']).'</button>
+
+    <p class="legal-notice">
+        '.b2b_esc($t['reg_privacy_note']).'
+        <a href="/'.b2b_esc($lang).'/privacy" target="_blank">'.b2b_esc($t['reg_privacy_link']).'</a>.
+    </p>
 
     <p class="b2b-form__foot">
         '.b2b_esc($t['reg_have_account']).'

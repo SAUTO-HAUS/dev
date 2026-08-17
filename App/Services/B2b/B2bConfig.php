@@ -13,8 +13,13 @@ use PDO;
  */
 class B2bConfig
 {
-    /** Regions that can be granted to a partner. */
-    public const REGIONS = ['korea', 'europe', 'china', 'usa'];
+    /**
+     * Regions that can be granted to a partner.
+     * China is hidden until there are on-order cars from there — put 'china'
+     * back in this list to bring the checkbox and the access rule back.
+     */
+    public const REGIONS = ['korea', 'europe', 'canada'];
+    // public const REGIONS = ['korea', 'europe', 'china', 'canada'];
 
     /** B2B session lifetime, seconds. */
     public const SESSION_TTL = 43200;

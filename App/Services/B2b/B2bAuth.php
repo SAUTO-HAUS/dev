@@ -159,6 +159,9 @@ class B2bAuth
         $password   = (string)($data['password'] ?? '');
         $fullName   = trim((string)($data['full_name'] ?? ''));
         $phoneRaw   = trim((string)($data['phone_number'] ?? ''));
+        // Marketing is a purpose of its own, consented to separately. Signup must
+        // succeed whether or not the box was ticked, so it is never validated.
+        $marketing  = !empty($data['marketing_optin']);
 
         if (!in_array($personType, self::PERSON_TYPES, true)) {
             return ['ok' => false, 'field' => 'person_type', 'error' => self::msg('person_type')];
@@ -213,8 +216,9 @@ class B2bAuth
 
             $db->prepare(
                 'INSERT INTO ' . B2bConfig::table('users')
-                . ' (person_type, login, email, password_hash, full_name, phone_number, status)
-                   VALUES (:ptype, :login, :email, :hash, :name, :phone, :status)'
+                . ' (person_type, login, email, password_hash, full_name, phone_number, status,
+                     marketing_accepted, marketing_accepted_at)
+                   VALUES (:ptype, :login, :email, :hash, :name, :phone, :status, :mkt, :mkt_at)'
             )->execute([
                 ':ptype'  => $personType,
                 ':login'  => $login,
@@ -223,6 +227,8 @@ class B2bAuth
                 ':name'   => $fullName,
                 ':phone'  => $phone,
                 ':status' => self::STATUS_ACTIVE,
+                ':mkt'    => $marketing ? 1 : 0,
+                ':mkt_at' => $marketing ? date('Y-m-d H:i:s') : null,
             ]);
 
             $userId = (int)$db->lastInsertId();

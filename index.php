@@ -4,7 +4,20 @@ ob_start();
 
 include_once('environment.php');
 
-if ( ( session_id()=='' || !isset($_SESSION) ) ){ session_start(); }
+// PHP's default session cookie carries no Secure and no SameSite, which an
+// audit flags as an insecure cookie. Set the attributes before the session
+// starts — afterwards they no longer apply to the cookie already sent.
+if ( ( session_id()=='' || !isset($_SESSION) ) ){
+	session_set_cookie_params([
+		'lifetime' => 0,
+		'path'     => '/',
+		'secure'   => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+		              || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https'),
+		'httponly' => true,
+		'samesite' => 'Lax',
+	]);
+	session_start();
+}
 /*header('Cache-Control: no-cache');
 header('Pragma: no-cache');*/
 

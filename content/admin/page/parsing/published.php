@@ -11,8 +11,16 @@ if (!parsing_has_access($user_id ?? 0)) {
     return;
 }
 
+// Source sub-tabs, same as /parsing/ctlg. Whitelisted so the value can only ever
+// be one of the known sources before it reaches the query.
+$sourceFilter = $_GET['source'] ?? '';
+if (!in_array($sourceFilter, ['encar', 'ecarstrade', 'openlane', 'auto1', 'autotrader'], true)) {
+    $sourceFilter = '';
+}
+
 $cars = [];
 $totalCount = 0;
+$sourceCounts = ['' => 0, 'encar' => 0, 'ecarstrade' => 0, 'openlane' => 0, 'auto1' => 0, 'autotrader' => 0];
 try {
     // Shared catalog filter (searches the whole DB, not just loaded rows).
     include_once _ADM_PAGE.'/parsing/parsing_filter_where.php';
@@ -23,11 +31,35 @@ try {
     // status unavailable BUT still linked to a sauto ad (car_ctlg_id set). This
     // excludes cars that went straight proposed -> unavailable without ever being
     // published (those have no car_ctlg_id and don't belong on this page).
-    $where = '(pc.status = "published" OR (pc.status = "unavailable" AND pc.car_ctlg_id IS NOT NULL AND pc.car_ctlg_id > 0))'.$flt['sql'];
+    $publishedWhere = '(pc.status = "published" OR (pc.status = "unavailable" AND pc.car_ctlg_id IS NOT NULL AND pc.car_ctlg_id > 0))';
+    $where = $publishedWhere.$flt['sql'];
 
+    // Per-source badge counts, same rule as /parsing/ctlg: the whole published
+    // set per source, NOT narrowed by the filter bar — the badges answer "how
+    // many published cars does this source have", and stay stable while the
+    // operator filters. The list count below does respect the filter.
+    $srcStmt = $db->prepare('SELECT pc.source, COUNT(*) AS c FROM '.$prefx.'_parsing_cars pc
+        WHERE '.$publishedWhere.' GROUP BY pc.source');
+    $srcStmt->execute();
+    foreach ($srcStmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+        $src = (string)($row['source'] ?? '');
+        if (isset($sourceCounts[$src])) $sourceCounts[$src] = (int)$row['c'];
+        $sourceCounts[''] += (int)$row['c'];
+    }
+    $totalCount = $sourceFilter === '' ? $sourceCounts[''] : $sourceCounts[$sourceFilter];
+
+    $bind = $flt['params'];
+    if ($sourceFilter !== '') {
+        $where .= ' AND pc.source = ?';
+        $bind[] = $sourceFilter;
+    }
+
+    // Header counter + pagination follow the actual result set once anything is
+    // narrowed down.
     $cntStmt = $db->prepare('SELECT COUNT(*) FROM '.$prefx.'_parsing_cars pc WHERE '.$where);
-    $cntStmt->execute($flt['params']);
-    $totalCount = (int)$cntStmt->fetchColumn();
+    $cntStmt->execute($bind);
+    $matchCount = (int)$cntStmt->fetchColumn();
+    if ($flt['sql'] !== '' || $sourceFilter !== '') $totalCount = $matchCount;
 
     $pageSize = parsing_page_size();
     $offset   = (parsing_current_page() - 1) * $pageSize;
@@ -64,7 +96,7 @@ try {
         WHERE '.$where.'
         ORDER BY '.$orderBy.'
         LIMIT '.$pageSize.' OFFSET '.$offset);
-    $stmt->execute($flt['params']);
+    $stmt->execute($bind);
     $cars = $stmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (Exception $e) {
 
@@ -171,6 +203,32 @@ $rtrn = '
         <button type="button" class="tab tab-999-stats" onclick="parsingShow999Stats()">'.($t['btn_999_stats'] ?? 'Publicări 999').'</button>
     </div>
 
+    <div class="source-subtabs">
+        <a href="/'.$admin_dir.'/parsing/published" class="src-tab'.($sourceFilter === '' ? ' active' : '').'">
+            '.$t['opt_all'].' <span class="src-count">'.$sourceCounts[''].'</span>
+        </a>
+        <a href="/'.$admin_dir.'/parsing/published?source=encar" class="src-tab src-tab-encar'.($sourceFilter === 'encar' ? ' active' : '').'">
+            <img src="/content/admin/page/parsing/media-parsing/encar-logo.webp" alt="Encar">
+            <span class="src-count">'.$sourceCounts['encar'].'</span>
+        </a>
+        <a href="/'.$admin_dir.'/parsing/published?source=ecarstrade" class="src-tab src-tab-ecarstrade'.($sourceFilter === 'ecarstrade' ? ' active' : '').'">
+            <img src="/content/admin/page/parsing/media-parsing/ecarstrade-logo.svg" alt="e-CarsTrade">
+            <span class="src-count">'.$sourceCounts['ecarstrade'].'</span>
+        </a>
+        <a href="/'.$admin_dir.'/parsing/published?source=openlane" class="src-tab'.($sourceFilter === 'openlane' ? ' active' : '').'">
+            <img src="/content/admin/page/parsing/media-parsing/openlane-logo.svg" alt="OpenLane">
+            <span class="src-count">'.$sourceCounts['openlane'].'</span>
+        </a>
+        <a href="/'.$admin_dir.'/parsing/published?source=auto1" class="src-tab src-tab-auto1'.($sourceFilter === 'auto1' ? ' active' : '').'">
+            <img src="/content/admin/page/parsing/media-parsing/auto1.png" alt="AUTO1">
+            <span class="src-count">'.$sourceCounts['auto1'].'</span>
+        </a>
+        <a href="/'.$admin_dir.'/parsing/published?source=autotrader" class="src-tab src-tab-autotrader'.($sourceFilter === 'autotrader' ? ' active' : '').'">
+            <img src="/content/admin/page/parsing/media-parsing/logo-autotrader.svg" alt="AutoTrader">
+            <span class="src-count">'.$sourceCounts['autotrader'].'</span>
+        </a>
+    </div>
+
 ';
 
 $fuelLabels = [
@@ -252,12 +310,33 @@ function crossPostBtn(string $target, array $c, string $titleKey, string $logo, 
          . $img . '</button>';
 }
 
+// Photos of the PUBLISHED ads, one query for the page. Cards prefer these over
+// the source URLs stored at import time: a dealer who re-uploads the gallery (or
+// a source that purges it) leaves us pointing at deleted files, so the card went
+// blank while the sauto ad — built from our own downloaded copies — was fine.
+$ctlgPhotos = []; // ctlg_id => [ '/media/.../high/car_1_2.jpg', ... ]
+if (!empty($ctlgIds)) {
+    try {
+        $in = implode(',', array_fill(0, count($ctlgIds), '?'));
+        $ph = $db->prepare('SELECT it_id, path, name, ff, main, pos FROM '.$prefx.'_car_pht
+            WHERE it_id IN ('.$in.') AND tp = "img" ORDER BY main DESC, pos, id');
+        $ph->execute($ctlgIds);
+        foreach ($ph->fetchAll(PDO::FETCH_ASSOC) as $p) {
+            $ext = !empty($p['ff']) ? '.'.$p['ff'] : '.jpg';
+            $ctlgPhotos[(int)$p['it_id']][] = '/'._CAR_IMG.'/'.$p['path'].'/'.$p['it_id'].'/high/'.$p['name'].$ext;
+        }
+    } catch (Exception $e) {
+        // No photo table access — fall back to the source URLs below.
+    }
+}
+
 if (empty($cars)) {
     $rtrn .= '<div class="empty-state">'.$t['empty_published'].'</div>';
 } else {
     foreach ($cars as $c) {
         $imgsRaw = json_decode($c['images_local'] ?? '[]', true) ?: [];
         $imgUrls = [];
+        $ownPhotos = $ctlgPhotos[(int)($c['car_ctlg_id'] ?? 0)] ?? [];
         foreach ($imgsRaw as $img) {
             if (is_array($img) && !empty($img['path']) && !empty($img['name'])) {
                 $imgUrls[] = '/' . trim($img['path'], '/') . '/' . $img['name'];
@@ -266,6 +345,11 @@ if (empty($cars)) {
             } elseif (is_string($img) && $img !== '') {
                 $imgUrls[] = $img;
             }
+        }
+        // Our own copies win when the ad is live: they can't 404 on us and they
+        // are exactly what the customer sees on sauto.
+        if (!empty($ownPhotos)) {
+            $imgUrls = $ownPhotos;
         }
         // OpenLane CDN blocks hotlinking — route through our proxy. Card uses
         // sz=card (proxy serves ~600px); the big gallery keeps full resolution.
@@ -306,10 +390,11 @@ if (empty($cars)) {
         if (($c['source'] ?? '') === 'ecarstrade') {
             $title = parsing_card_title($c);
         }
-        // Encar (Korea): show the price-band marked price (e.g. 9000 → 9300).
+        // Encar (Korea) / AutoTrader (America): show the price-band marked price.
         $priceDisplay = (float)($c['price_final_eur'] ?? 0);
-        if (($c['source'] ?? '') === 'encar' && $priceDisplay > 0) {
-            $priceDisplay = parsing_kr_marked_price($db, $prefx, $priceDisplay);
+        if ($priceDisplay > 0) {
+            if (($c['source'] ?? '') === 'encar')          $priceDisplay = parsing_kr_marked_price($db, $prefx, $priceDisplay);
+            elseif (($c['source'] ?? '') === 'autotrader') $priceDisplay = parsing_us_marked_price($db, $prefx, $priceDisplay);
         }
         $priceFinal = $priceDisplay > 0
             ? number_format($priceDisplay, 0, '.', ' ') . ' €'
@@ -378,9 +463,11 @@ if (empty($cars)) {
         } elseif ($c['source'] === 'auto1') {
             $reportBtn = '<button class="btn-report" onclick="parsingAuto1Report('.(int)$c['id'].')" title="'.($t['btn_report'] ?? 'Raport').' AUTO1"><span>'.($t['btn_report'] ?? 'Raport').'</span></button>';
         }
-        // House icon + Report on ONE row (like the FB/TG grid).
+        // House icon + Report on ONE row (like the FB/TG grid). AutoTrader has no
+        // report, so its house icon is alone — let it take the whole row instead of
+        // sitting in half of it next to a gap.
         $housePlusReport = ($publicLink !== '' || $reportBtn !== '')
-            ? '<div class="house-report-row">'.$publicLink.$reportBtn.'</div>'
+            ? '<div class="house-report-row'.($reportBtn === '' ? ' is-single' : '').'">'.$publicLink.$reportBtn.'</div>'
             : '';
 
         // Ad hidden on sauto (vis = 0) → dim the card red (pushed to the end by the query).
@@ -415,7 +502,8 @@ if (empty($cars)) {
                       ($c['source'] === 'ecarstrade' ? '<img src="/content/admin/page/parsing/media-parsing/ecarstrade-logo.svg" alt="e-CarsTrade" class="source-logo source-logo-ecarstrade">' :
                       ($c['source'] === 'openlane' ? '<img src="/content/admin/page/parsing/media-parsing/openlane-logo.svg" alt="OpenLane" class="source-logo source-logo-openlane">' :
                       ($c['source'] === 'auto1' ? '<img src="/content/admin/page/parsing/media-parsing/auto1.png" alt="AUTO1" class="source-logo source-logo-auto1">' :
-                      strtoupper($c['source']))))).'
+                      ($c['source'] === 'autotrader' ? '<img src="/content/admin/page/parsing/media-parsing/logo-autotrader.svg" alt="AutoTrader" class="source-logo source-logo-autotrader">' :
+                      strtoupper($c['source'])))))).'
                 </div>
                 <h3>'.htmlspecialchars($title).'</h3>
                 <div class="car-meta" data-seats-label="'.htmlspecialchars($t['card_seats'] ?? 'locuri', ENT_QUOTES).'">

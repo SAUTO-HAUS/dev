@@ -146,10 +146,11 @@ if (empty($cars)) {
         if (($c['source'] ?? '') === 'ecarstrade') {
             $title = parsing_card_title($c);
         }
-        // Encar (Korea): show the price-band marked price (e.g. 9000 → 9300).
+        // Encar (Korea) / AutoTrader (America): show the price-band marked price.
         $priceDisplay = (float)($c['price_final_eur'] ?? 0);
-        if (($c['source'] ?? '') === 'encar' && $priceDisplay > 0) {
-            $priceDisplay = parsing_kr_marked_price($db, $prefx, $priceDisplay);
+        if ($priceDisplay > 0) {
+            if (($c['source'] ?? '') === 'encar')          $priceDisplay = parsing_kr_marked_price($db, $prefx, $priceDisplay);
+            elseif (($c['source'] ?? '') === 'autotrader') $priceDisplay = parsing_us_marked_price($db, $prefx, $priceDisplay);
         }
         $priceFinal = $priceDisplay > 0
             ? number_format($priceDisplay, 0, '.', ' ') . ' €'
@@ -204,7 +205,8 @@ if (empty($cars)) {
                       ($c['source'] === 'ecarstrade' ? '<img src="/content/admin/page/parsing/media-parsing/ecarstrade-logo.svg" alt="e-CarsTrade" class="source-logo source-logo-ecarstrade">' :
                       ($c['source'] === 'openlane' ? '<img src="/content/admin/page/parsing/media-parsing/openlane-logo.svg" alt="OpenLane" class="source-logo source-logo-openlane">' :
                       ($c['source'] === 'auto1' ? '<img src="/content/admin/page/parsing/media-parsing/auto1.png" alt="AUTO1" class="source-logo source-logo-auto1">' :
-                      strtoupper($c['source']))))).'
+                      ($c['source'] === 'autotrader' ? '<img src="/content/admin/page/parsing/media-parsing/logo-autotrader.svg" alt="AutoTrader" class="source-logo source-logo-autotrader">' :
+                      strtoupper($c['source'])))))).'
                 </div>
                 <h3>'.htmlspecialchars($title).'</h3>
                 <div class="car-meta" data-seats-label="'.htmlspecialchars($t['card_seats'] ?? 'locuri', ENT_QUOTES).'">

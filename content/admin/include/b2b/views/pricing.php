@@ -10,6 +10,7 @@
 
 use App\Services\B2b\B2bAuth;
 use App\Services\B2b\B2bConfig;
+use App\Services\B2b\B2bOffer;
 
 $lang = $_COOKIE['lang'] ?? 'ro';
 $t    = b2b_adm_lang($lang);
@@ -80,7 +81,10 @@ $loadScoped = function (string $table, string $orderBy) use ($db, $pfx, $perUser
 [$delivery,   $deliveryCustom]   = $loadScoped('b2b_eu_tiers',         'sort_order, price_from');
 [$euParams,   $euParamsCustom]   = $loadScoped('b2b_eu_params',        'sort_order, id');
 [$krParams,   $krParamsCustom]   = $loadScoped('b2b_kr_params',        'sort_order, id');
+[$usParams,   $usParamsCustom]   = $loadScoped('b2b_us_params',        'sort_order, id');
 
+// us_params is deliberately NOT part of this test: it arrives with a later
+// migration, so an installation without it is up to date, not un-migrated.
 $notMigrated = (!$commission && !$delivery && !$euParams && !$krParams);
 
 // Reference column shown read-only beside the edited values:
@@ -93,6 +97,8 @@ if ($perUser) {
     $rEuMap = $rKrMap = [];
     foreach ($load('SELECT * FROM '.$pfx.'_b2b_eu_params WHERE b2b_user_id IS NULL') as $p) { $rEuMap[(string)$p['param_key']] = $p; }
     foreach ($load('SELECT * FROM '.$pfx.'_b2b_kr_params WHERE b2b_user_id IS NULL') as $p) { $rKrMap[(string)$p['param_key']] = $p; }
+    $rUsMap = [];
+    foreach ($load('SELECT * FROM '.$pfx.'_b2b_us_params WHERE b2b_user_id IS NULL') as $p) { $rUsMap[(string)$p['param_key']] = $p; }
 } else {
     $refLabel    = $t['pricing_public'];
     $rCommission = $load('SELECT * FROM '.$pfx.'_parsing_commission_tiers ORDER BY sort_order, price_from');
@@ -100,6 +106,8 @@ if ($perUser) {
     $rEuMap = $rKrMap = [];
     foreach ($load('SELECT * FROM '.$pfx.'_parsing_eu_params') as $p) { $rEuMap[(string)$p['param_key']] = $p; }
     foreach ($load('SELECT * FROM '.$pfx.'_parsing_kr_params') as $p) { $rKrMap[(string)$p['param_key']] = $p; }
+    $rUsMap = [];
+    foreach ($load('SELECT * FROM '.$pfx.'_parsing_us_params') as $p) { $rUsMap[(string)$p['param_key']] = $p; }
 }
 
 // Per-card status strip (badge + reset), shown only in per-client mode.
@@ -118,6 +126,7 @@ $cardStatus = function (bool $custom, string $section) use ($perUser, $t) {
 $flagStyle = 'height:1.1em;width:auto;vertical-align:-0.15em;margin-right:0.4rem;';
 $flagEu = '<img src="/content/admin/page/parsing/media-parsing/flag-europe.svg" alt="Europa" style="'.$flagStyle.'">';
 $flagKr = '<img src="/content/admin/page/parsing/media-parsing/flag-korea.svg" alt="Coreea" style="'.$flagStyle.'">';
+$flagUs = '<img src="/content/admin/page/parsing/media-parsing/united-states-fl.png" alt="SUA" style="'.$flagStyle.'">';
 
 // Retail value for the price band that contains $priceFrom (read-only reference).
 $retailTierVal = function (array $retailRows, float $priceFrom, string $field): ?int {
@@ -236,9 +245,82 @@ $paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt
 
     <p class="b2ba-hint"><?= b2b_adm_esc($perUser ? $t['pricing_hint_user'] : $t['pricing_hint']) ?></p>
 
+    <?php
+    // Offer deadline for THIS scope: the general one on /b2b/pricing, this
+    // client's own on their page. Same file, same rule as the tables below.
+    $offerScope = $perUser ? $pricingUserId : null;
+    $offerValue = B2bOffer::inputValue($offerScope);
+    $offerTs    = B2bOffer::deadline($offerScope);
+    $globalTs   = $perUser ? B2bOffer::deadline(null) : null;
+    ?>
+    <!-- Offer deadline: when it passes, this scope falls one step down -->
+    <div class="b2ba-card b2bp-card b2bp-offer" data-section="offer">
+        <h2 class="b2ba-h2"><?= b2b_adm_esc($t['offer_title']) ?></h2>
+        <?php if ($perUser): ?>
+            <div class="b2bp-status">
+                <span class="b2bp-tag b2bp-tag--<?= $offerTs !== null ? 'custom' : 'global' ?>">
+                    <?= b2b_adm_esc($offerTs !== null ? $t['pricing_tag_custom'] : $t['pricing_tag_global']) ?>
+                </span>
+            </div>
+        <?php endif; ?>
+
+        <p class="b2ba-hint"><?= b2b_adm_esc($perUser ? $t['offer_hint_user'] : $t['offer_hint']) ?></p>
+
+        <?php
+        // Browsers render a datetime-local field in their OWN locale; lang= is what
+        // Chromium reads to pick the date order and placeholder, so the field
+        // follows the admin panel language instead of the browser's.
+        $offerLeftTxt = $offerTs === null
+            ? $t['offer_none']
+            : ($offerTs <= time() ? $t['offer_expired'] : B2bOffer::humanize($offerTs - time(), $lang));
+        [$fD, $fH, $fM] = B2bOffer::unitForms($lang);
+        ?>
+        <div class="b2ba-grid">
+            <label class="b2ba-field">
+                <span><?= b2b_adm_esc($t['offer_until']) ?></span>
+                <?php
+                // A datetime-local field is drawn by the BROWSER in the browser's own
+                // locale — the lang attribute is not consulted, so an admin on a
+                // Russian browser reads "дд.мм.гггг" whatever the panel language is.
+                // While the field is empty we blank that hint and print our own over
+                // it; the native editor and calendar keep working underneath.
+                ?>
+                <span class="b2bp-dt<?= $offerValue === '' ? ' is-empty' : '' ?>">
+                    <input type="datetime-local" id="b2bp-offer-input" lang="<?= b2b_adm_esc($lang) ?>"
+                           value="<?= b2b_adm_esc($offerValue) ?>">
+                    <span class="b2bp-dt__ph" aria-hidden="true"><?= b2b_adm_esc($t['offer_ph']) ?></span>
+                </span>
+            </label>
+            <div class="b2ba-field">
+                <span><?= b2b_adm_esc($t['offer_left']) ?></span>
+                <div class="b2bp-offer-left<?= ($offerTs !== null && $offerTs <= time()) ? ' is-expired' : '' ?>"
+                     data-end="<?= $offerTs !== null ? (int)$offerTs : '' ?>"
+                     data-lang="<?= b2b_adm_esc($lang) ?>"
+                     data-d="<?= b2b_adm_esc(implode('|', $fD)) ?>"
+                     data-h="<?= b2b_adm_esc(implode('|', $fH)) ?>"
+                     data-m="<?= b2b_adm_esc(implode('|', $fM)) ?>"
+                     data-expired="<?= b2b_adm_esc($t['offer_expired']) ?>"
+                     data-none="<?= b2b_adm_esc($t['offer_none']) ?>"><?= b2b_adm_esc($offerLeftTxt) ?></div>
+            </div>
+            <?php if ($perUser): ?>
+                <div class="b2ba-field">
+                    <span><?= b2b_adm_esc($t['offer_global_ref']) ?></span>
+                    <div class="b2bp-offer-ref">
+                        <?= b2b_adm_esc($globalTs !== null ? date('d.m.Y H:i', $globalTs) : $t['offer_none']) ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+
+        <div class="b2ba-card__foot">
+            <span></span>
+            <button type="button" class="b2ba-btn b2ba-btn--primary" data-b2b-offer-save><?= b2b_adm_esc($t['save']) ?></button>
+        </div>
+    </div>
+
     <!-- Commission tiers (Europe + Korea) -->
     <div class="b2ba-card b2bp-card" data-section="commission" data-value="commission">
-        <h2 class="b2ba-h2"><?= $flagEu.$flagKr ?><?= b2b_adm_esc($t['pricing_commission']) ?></h2>
+        <h2 class="b2ba-h2"><?= $flagEu.$flagKr.$flagUs ?><?= b2b_adm_esc($t['pricing_commission']) ?></h2>
         <?= $cardStatus($commissionCustom, 'commission') ?>
         <table class="b2bp-table">
             <thead><tr>
@@ -307,6 +389,25 @@ $paramRows = function (array $rows, string $labelPfx, array $retailMap) use ($pt
                 <th class="b2bp-ref"><?= b2b_adm_esc($refLabel) ?></th>
             </tr></thead>
             <tbody><?= $paramRows($krParams, 'kr_param_', $rKrMap) ?></tbody>
+        </table>
+        <div class="b2ba-card__foot">
+            <span></span>
+            <button type="button" class="b2ba-btn b2ba-btn--primary" data-b2b-pricing-save><?= b2b_adm_esc($t['save']) ?></button>
+        </div>
+    </div>
+
+    <!-- America fixed costs. The US price markup stays public, like the Korea one. -->
+    <div class="b2ba-card b2bp-card" data-section="us_params">
+        <h2 class="b2ba-h2"><?= $flagUs ?><?= b2b_adm_esc($t['pricing_us_params']) ?></h2>
+        <?= $cardStatus($usParamsCustom, 'us_params') ?>
+        <table class="b2bp-table b2bp-params">
+            <thead><tr>
+                <th><?= b2b_adm_esc($pt['eu_col_param']) ?></th>
+                <th class="b2bp-c"><?= b2b_adm_esc($pt['eu_col_enabled']) ?></th>
+                <th><?= b2b_adm_esc($pt['eu_col_amount']) ?></th>
+                <th class="b2bp-ref"><?= b2b_adm_esc($refLabel) ?></th>
+            </tr></thead>
+            <tbody><?= $paramRows($usParams, 'us_param_', $rUsMap) ?></tbody>
         </table>
         <div class="b2ba-card__foot">
             <span></span>

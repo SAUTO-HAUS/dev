@@ -19,6 +19,19 @@ $importCountryIdForm = (int)($car['import_country_id']
 $importParsingSrc    = strtolower((string)($car['parsing_source'] ?? $parsing_prefill['source'] ?? ''));
 $isKoreaImport       = ($importCountryIdForm === 41) || ($importParsingSrc === 'encar');
 
+// USA cars (AutoTrader) default feature 1763 to "США" (29678), the way Korean
+// cars default to "Корея". Recognised by the country CODE — the Korean 41 above
+// is a legacy id we did not want to repeat — or by the parsing source, which
+// covers a prefill that has not resolved the country yet.
+$isUsaImport = ($importParsingSrc === 'autotrader');
+if (!$isUsaImport && !$isKoreaImport && $importCountryIdForm > 0) {
+    try {
+        $naIds = array_map('intval', \App\Core\Container::get('db')
+            ->query("SELECT id FROM countries WHERE code IN ('CA','US')")->fetchAll(\PDO::FETCH_COLUMN) ?: []);
+        $isUsaImport = in_array($importCountryIdForm, $naIds, true);
+    } catch (\Throwable $e) { /* stays false */ }
+}
+
 $subcatForm999  = (string)($feature_id ?? $car999['subcategory_id'] ?? $defaultSubcategory ?? '');
 $isCommercial999 = ($subcatForm999 === '660');
 
@@ -44,7 +57,15 @@ $numericFeatureDefault = function ($featureId) use ($isCommercial999, $car999fea
             </select>
         </div>
 
-        <div id="text_options_wrapper" class="form-group" style="display: none;" data-text-option="<?= $car999['text_option'] ?? '' ?>" data-db-text="<?= htmlspecialchars($car999features[13]['value'] ?? '', ENT_QUOTES) ?>">
+        <?php
+        // Which standard text this car should start with, when nothing was saved yet:
+        // 0 = AUTO DIN EUROPA, 1 = AUTO DIN COREEA, 2 = AUTO DIN CANADA (order matches
+        // api/order_personal_texts.json). Same origin rules the publish path uses, so
+        // a car opened from parsing arrives with its text already picked instead of an
+        // empty radio group the operator has to remember to fill.
+        $defaultTextOption = $isKoreaImport ? '1' : ($isUsaImport ? '2' : '0');
+        ?>
+        <div id="text_options_wrapper" class="form-group" style="display: none;" data-text-option="<?= $car999['text_option'] ?? '' ?>" data-default-text-option="<?= $defaultTextOption ?>" data-db-text="<?= htmlspecialchars($car999features[13]['value'] ?? '', ENT_QUOTES) ?>">
             <label>
                 <?= __('cars.select_text_option') ?>
                 <span class="text-danger">*</span>
@@ -434,7 +455,11 @@ $numericFeatureDefault = function ($featureId) use ($isCommercial999, $car999fea
                                         // Country of import (1763): Korea cars default to "Корея" (33043),
                                         // everything else keeps the "Еврозона" default.
                                         $isImportCountryDefault = ($feature['id'] == 1763)
-                                            ? ($isKoreaImport ? ($option['id'] == '33043') : ($option['id'] == '29677' && $option['title'] == 'Еврозона'))
+                                            ? ($isKoreaImport
+                                                ? ($option['id'] == '33043')
+                                                : ($isUsaImport
+                                                    ? ($option['id'] == '29678')
+                                                    : ($option['id'] == '29677' && $option['title'] == 'Еврозона')))
                                             : (($feature['id'] == 775)
                                                 // Location/customs (775): commercial → "Республика Молдова"
                                                 // (18592); otherwise keep "Другое" (18594).
@@ -452,7 +477,11 @@ $numericFeatureDefault = function ($featureId) use ($isCommercial999, $car999fea
                                 <?php foreach ($featureDepends['Options'] as $option): ?>
                                     <?php
                                         $isImportCountryDefault = ($feature['id'] == 1763)
-                                            ? ($isKoreaImport ? ($option['id'] == '33043') : ($option['id'] == '29677' && $option['title'] == 'Еврозона'))
+                                            ? ($isKoreaImport
+                                                ? ($option['id'] == '33043')
+                                                : ($isUsaImport
+                                                    ? ($option['id'] == '29678')
+                                                    : ($option['id'] == '29677' && $option['title'] == 'Еврозона')))
                                             : (($option['id'] == '18594' && $option['title'] == 'Другое') || ($option['id'] == '29677' && $option['title'] == 'Еврозона') || ($option['id'] == '18668' && $option['title'] == 'С пробегом') || ($option['id'] == '29672' && $option['title'] == 'Под заказ') || ($option['id'] == '12900' && $option['title'] == 'Кишинёв мун.') || ($option['id'] == '23241' && $option['title'] == 'Автодилер') || ($option['id'] == '21979' && $option['title'] == 'Левый') || ($option['id'] == '19119' && $option['title'] == '5') || ($option['id'] == '19086' && $option['title'] == '5'));
                                         $isCommercialBodyDefault = ($feature['id'] == 102 && $isCommercial999 && $option['id'] == '1047');
                                     ?>
@@ -509,7 +538,7 @@ $numericFeatureDefault = function ($featureId) use ($isCommercial999, $car999fea
                                 class="form-control video-urls"
                                 placeholder="<?= __('cars.video_placeholder') ?>"
                                 <?= $feature['required'] ? 'required' : '' ?>
-                        ><?= (!empty($car999features[$feature['id']]['value'])) ? implode(', ', $car999features[$feature['id']]['value']) : 'https://www.youtube.com/watch?v=M8a_QFzlDEI, https://www.youtube.com/watch?v=O9CdDeJ9vXs, https://www.youtube.com/watch?v=LDzcvhjTf0w' ?></textarea>
+                        ><?= (!empty($car999features[$feature['id']]['value'])) ? implode(', ', (array)$car999features[$feature['id']]['value']) : 'https://www.youtube.com/watch?v=M8a_QFzlDEI, https://www.youtube.com/watch?v=O9CdDeJ9vXs, https://www.youtube.com/watch?v=LDzcvhjTf0w' ?></textarea>
                         <small class="form-text text-muted">
                             <?= __('cars.video_urls_hint') ?>
                         </small>

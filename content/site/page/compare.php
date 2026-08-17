@@ -30,13 +30,23 @@ $sa['meta']['ttl'] = $ttl . ' | Sauto.md';
 // chrome differs by audience. A logged-in partner keeps the cabinet hero + nav so
 // clicking the "Comparare" card doesn't drop them out of the cabinet; guests get
 // the plain collection page like /favorites.
+$isB2bView = function_exists('b2b_is_client') && b2b_is_client();
+
+// Empty state in the cabinet must be the cabinet's own card (bordered, centred),
+// like the Favourites and Invoices tabs — fav-empty is the guest-page look and
+// renders as bare text inside .b2b-panel. Only the id is load-bearing: the JS
+// toggles display on it and never touches its content.
+$emptyBox = $isB2bView
+    ? '<div id="compare_empty" class="b2b-empty" style="display:none;"><p>'.$emp.'</p></div>'
+    : '<div id="compare_empty" class="fav-empty" style="display:none;">'.$emp.'</div>';
+
 $compareBody =
       '<div id="compare_loading" class="fav-loading" style="display:none;">…</div>'
-    . '<div id="compare_empty" class="fav-empty" style="display:none;">'.$emp.'</div>'
+    . $emptyBox
     . '<div id="compare_hint" class="cmp-hint"><span>'.$hnt.' →</span></div>'
     . '<div id="compare_container"></div>';
 
-if (function_exists('b2b_is_client') && b2b_is_client()) {
+if ($isB2bView) {
     include_once( __DIR__ . '/b2b/_layout.php' );
     echo b2b_assets();
     echo b2b_cabinet_hero($db, b2b_user(), $lang, 'compare');

@@ -55,16 +55,34 @@ class Build999Payload
         $this->prefix = $prefix;
     }
 
+    // Index in order_personal_texts.json: 0 = AUTO DIN EUROPA, 1 = AUTO DIN COREEA,
+    // 2 = AUTO DIN SUA. Also stored as text_option, so reopening the car in the form
+    // pre-selects the same template the description was built from.
+    private static function templateIndex(array $car): string
+    {
+        // The SOURCE decides first, exactly like resolveAccount does for the channel.
+        // import_country_id is filled in later in the flow and is still 0 on a freshly
+        // imported car, so relying on it alone sent every American car out with the
+        // European text ("se importă doar din Europa în 10-20 zile") — on the SautoSUA
+        // channel, under a USA ad.
+        $src = (string)($car['parsing_source'] ?? '');
+        if ($src === 'autotrader') return '2';   // AUTO DIN SUA
+        if ($src === 'encar')      return '1';   // AUTO DIN COREEA
+
+        $country = (int)($car['import_country_id'] ?? 0);
+        if ($country === 41) return '1';
+        if (self::isUsaCountry($country)) return '2';
+        return '0';                              // AUTO DIN EUROPA
+    }
+
     // Build feature 13 (description) the same way the manual 999 form does: the chosen
-    // standard template (order_personal_texts.json — "AUTO LA COMANDA" / "AUTO DIN
-    // COREEA") on top, then the car's own text. The publish cron adds the sauto links
-    // above this. Korea cars (import_country_id 41 = South Korea, e.g. Encar) use the
-    // Korea template (index 1); everyone else uses the on-order template (index 0).
+    // standard template on top, then the car's own text. The publish cron adds the
+    // sauto links above this. Template follows the import region, like the 999 account.
     private function buildDescription(array $car): string
     {
         $own = trim((string)($car['txt'] ?? ''));
 
-        $tplIndex = ((int)($car['import_country_id'] ?? 0) === 41) ? 1 : 0;
+        $tplIndex = (int)self::templateIndex($car);
         $tpl = '';
         $jsonPath = (defined('_ROOT') ? _ROOT : dirname(__DIR__, 3)) . '/api/order_personal_texts.json';
         if (is_file($jsonPath)) {
@@ -235,7 +253,7 @@ class Build999Payload
         // EXCEPTION: some models are commercial pickups on the source (correct there)
         // but 999.md has no matching commercial category for them — they must go out
         // as a normal car (659). Force those here regardless of gr.
-        if (($car['gr'] ?? '') === 'com' && !self::forceCarOn999($car)) {
+        if (($car['gr'] ?? '') === 'com' && !self::mustPublishAsCar($car)) {
             return $this->buildCommercial($car);
         }
 
@@ -282,7 +300,7 @@ class Build999Payload
             ['id' => '775',  'value' => '18594'],
             ['id' => '593',  'value' => '18668'],
             ['id' => '1761', 'value' => '29672'],
-            ['id' => '1763', 'value' => '29677'],
+            ['id' => '1763', 'value' => self::originOption($car)],  // country of import
             ['id' => '795',  'value' => '23241'],
             ['id' => '1196', 'value' => '21979'],
             ['id' => '846',  'value' => '19119'],
@@ -314,7 +332,7 @@ class Build999Payload
                 'offer_type'        => self::OFFER_TYPE,
                 'announcement_type' => 'sauto_personal',
                 'scenario'          => 'maximal',
-                'text_option'       => '0',
+                'text_option'       => self::templateIndex($car),
                 'features'          => $features,
             ],
         ];
@@ -329,6 +347,20 @@ class Build999Payload
         $key = mb_strtolower(trim((string)($car['br'] ?? ''))) . '|'
              . mb_strtolower(trim((string)($car['mo'] ?? '')));
         return in_array($key, self::FORCE_CAR_ON_999, true);
+    }
+
+    /**
+     * Pickups go out as a normal car (659), never as commercial (660) — 999 has no
+     * commercial category that fits them and rejects the ad outright. Body code wins
+     * over the brand|model list, which only ever caught the models we had already seen
+     * fail. Public because the publish cron sends whatever subcategory the STORED
+     * payload carries: a car queued while it was still commercial would otherwise keep
+     * going out as 660 forever.
+     */
+    public static function mustPublishAsCar(array $car): bool
+    {
+        if ((string)($car['bt'] ?? '') === 'pkp') return true;
+        return self::forceCarOn999($car);
     }
 
     // Commercial vans/trucks (gr=com) → subcategory 660, offer 776. Much simpler:
@@ -387,7 +419,7 @@ class Build999Payload
                 'offer_type'        => '776',
                 'announcement_type' => 'sauto_personal',
                 'scenario'          => 'maximal',
-                'text_option'       => '0',
+                'text_option'       => self::templateIndex($car),
                 'features'          => $features,
             ],
         ];
@@ -404,13 +436,68 @@ class Build999Payload
         // 2 (Sauto-comerciale), which carries that account's phone. This must win even
         // over a stale 999_api_id (imports default it to 1, which has no forced phone →
         // the ad kept the source phone).
-        if ($isCom) {
-            return ((int)($car['import_country_id'] ?? 0) === 41) ? 4 : 2;
-        }
-        if (!empty($car['999_api_id'])) return (int)$car['999_api_id'];
         $importCountry = (int)($car['import_country_id'] ?? 0);
-        if ($importCountry === 41) return 4;        // Korea → Encars-MD
-        return 3;                                   // else → Sauto-stock-extern
+
+        // Every AutoTrader car belongs on SautoSUA — before the commercial rule and
+        // before any stored 999_api_id. Imports start with that column at 1
+        // (SAUTO-HAUS), so honouring it first used to send American cars to the
+        // wrong channel until the publish cron corrected them after the fact.
+        if (($car['parsing_source'] ?? '') === 'autotrader' || self::isUsaCountry($importCountry)) {
+            return 5;
+        }
+
+        if ($isCom) {
+            return ($importCountry === 41) ? 4 : 2;
+        }
+        // Account 1 (SAUTO-HAUS) is what imports default to and it has no forced phone,
+        // so an ad landing there kept the source's number. Treat it as "not set" and
+        // fall through to the origin rule below.
+        $stored = (int)($car['999_api_id'] ?? 0);
+        if ($stored > 1) return $stored;
+        if ($importCountry === 41) return 4;                 // Korea → Encars-MD
+        return 3;                                            // else → Sauto-stock-extern
+    }
+
+    /**
+     * 999 option for feature 1763 ("country of import"), matching what the manual
+     * form pre-selects: Korea → Корея, USA → США, everything else → Еврозона.
+     * This used to be hardcoded to Еврозона here, so a queue-published Korean or
+     * American car advertised the wrong origin.
+     */
+    private static function originOption(array $car): string
+    {
+        $country = (int)($car['import_country_id'] ?? 0);
+        if ($country === 41) return '33043';               // Корея
+        if (self::isUsaCountry($country)) return '29678';  // США
+        return '29677';                                    // Еврозона
+    }
+
+    /**
+     * Is this the USA import country? Resolved by CODE against the countries
+     * table, not a hardcoded id — the Korea id 41 above is a legacy constant we
+     * did not want to repeat for a second region.
+     */
+    /**
+     * North America: Canada, or the USA that AutoTrader cars carried before the
+     * region was renamed. Both must match — 999 has no Canada option on feature
+     * 1763, so these ads keep going out as "США"; matching only US would have
+     * silently advertised every new Canadian car as "Еврозона", on the SautoSUA
+     * channel, with the American text.
+     */
+    private static function isUsaCountry(int $countryId): bool
+    {
+        static $ids = null;
+        if ($countryId <= 0) return false;
+        if ($ids === null) {
+            $ids = [];
+            try {
+                $db = \App\Core\Container::get('db');
+                $ids = array_map('intval', $db->query(
+                    "SELECT id FROM countries WHERE code IN ('CA','US')"
+                )->fetchAll(\PDO::FETCH_COLUMN) ?: []);
+            } catch (\Throwable $e) { /* leaves empty → never matches */ }
+        }
+        return in_array($countryId, $ids, true);
     }
 
     // sauto brand code → 999 brand id (feature 20). Mirrors order_car.php brandMapping.
@@ -427,7 +514,7 @@ class Build999Payload
             'lamborghini'=>'12462','lancia'=>'210','land_rover'=>'291','lexus'=>'136','lifan'=>'414',
             'lincoln'=>'305','lotus'=>'1743','maserati'=>'1704','mazda'=>'45','mercedes_benz'=>'22',
             'mini'=>'577','mitsubishi'=>'36','nissan'=>'28','opel'=>'1','peugeot'=>'76',
-            'pontiac'=>'284','porsche'=>'282','renault'=>'8','renault_samsung'=>'27737',
+            'pontiac'=>'284','porsche'=>'282','ram'=>'43534','renault'=>'8','renault_samsung'=>'27737',
             'rolls_royce'=>'266','rover'=>'62','saab'=>'344','seat'=>'200','skoda'=>'143',
             'smart'=>'263','ssangyong'=>'397','subaru'=>'121','suzuki'=>'43','tata'=>'883',
             'tesla'=>'17483','toyota'=>'47','volkswagen'=>'20','volvo'=>'193',

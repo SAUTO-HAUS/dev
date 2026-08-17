@@ -492,6 +492,13 @@ if ( isset($_POST['doc_f']) && file_exists(__DIR__.'/docs/'.$_doc_gr_folder.'/'.
 					$u_id = $user_check['id'];
 				}
 			}
+			// ID-card scans go on the client, not on this document, so the same
+			// photo then shows on every document of that client.
+			require_once(__DIR__.'/docs/id_photo.php');
+			docs_id_photo_save($db, $prefx, (int)$u_id,
+				isset($_POST['id_photo_front']) ? (string)$_POST['id_photo_front'] : null,
+				isset($_POST['id_photo_back'])  ? (string)$_POST['id_photo_back']  : null);
+
 			$pdo = $db->prepare('
 				INSERT INTO '.$prefx.'_docs_ctlg (`gr`, `f`, `abr`, `y`, `q`, `n`, `cd`, `inf`, `u`, `date`, `adm`, `owner_adm`, `crtd`)
 				VALUES (:gr, :f, :abr, :y, :q, :n, :cd, :inf, :u, :date, :adm, :owner_adm, :crtd)

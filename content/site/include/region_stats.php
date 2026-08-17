@@ -45,7 +45,7 @@ if (!function_exists('region_view_log')) {
         if (isset($done[$region])) { return; }
         $done[$region] = true;
 
-        if (!in_array($region, ['korea', 'europe', 'usa', 'china'], true)) { return; }
+        if (!in_array($region, ['korea', 'europe', 'canada', 'usa', 'china'], true)) { return; }
         if (!isset($db) || region_view_is_bot()) { return; }
 
         $visitor = region_view_visitor();

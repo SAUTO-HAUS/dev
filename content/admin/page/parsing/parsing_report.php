@@ -719,14 +719,24 @@ if (!function_exists('parsing_report_tr')) {
     }
     }
 
-    if (!function_exists('parsing_report_body_diagram')) {
-    function parsing_report_body_diagram(array $diagItems, array $paints, string $lang, int $accidentCnt = 0, array $outers = []): string
+    // Panel slots we can place on the silhouette, keyed by the canonical code
+    // used in diagnosis.items[].name.
+    if (!function_exists('parsing_report_panel_slots')) {
+    function parsing_report_panel_slots(): array
     {
-        // Panel slots we can place on the silhouette, keyed by the canonical code
-        // used in diagnosis.items[].name.
-        $slots = ['HOOD','FRONT_FENDER_LEFT','FRONT_FENDER_RIGHT','FRONT_DOOR_LEFT',
-                  'FRONT_DOOR_RIGHT','BACK_DOOR_LEFT','BACK_DOOR_RIGHT','QUARTER_PANEL_LEFT',
-                  'QUARTER_PANEL_RIGHT','ROOF_PANEL','TRUNK_LID'];
+        return ['HOOD','FRONT_FENDER_LEFT','FRONT_FENDER_RIGHT','FRONT_DOOR_LEFT',
+                'FRONT_DOOR_RIGHT','BACK_DOOR_LEFT','BACK_DOOR_RIGHT','QUARTER_PANEL_LEFT',
+                'QUARTER_PANEL_RIGHT','ROOF_PANEL','TRUNK_LID'];
+    }
+    }
+
+    // Worst finding per body panel: [slot => type code], 'ok' when untouched.
+    // Split out of the diagram so the listing-card badge derives from exactly the
+    // same rules — the two can never disagree.
+    if (!function_exists('parsing_report_panel_states')) {
+    function parsing_report_panel_states(array $diagItems, array $paints, array $outers = []): array
+    {
+        $slots = parsing_report_panel_slots();
         $state = array_fill_keys($slots, 'ok'); // default: original/normal
 
         // Damage types (X/W/C/A/U/T + P painted) with letter/colour/rank/labels.
@@ -806,6 +816,62 @@ if (!function_exists('parsing_report_tr')) {
             }
         };
         $walkOuters($outers);
+
+        return $state;
+    }
+    }
+
+    // One-glance body condition for a listing card, so the buyer does not have to
+    // open the product page. Returns null when the car carries no Encar inspection
+    // at all — a card with no data must not look like a clean car.
+    //   ['count' => 3, 'letter' => 'X', 'colour' => '#e2001a', 'title' => '…']
+    // count = panels that are not original; letter/colour = the worst finding.
+    if (!function_exists('parsing_report_body_badge')) {
+    function parsing_report_body_badge(?array $report, string $lang = 'ro'): ?array
+    {
+        if (empty($report['inspection']) && empty($report['diagnosis'])) return null;
+
+        $paints = $report['inspection']['master']['detail']['paintPartTypes'] ?? [];
+        $state  = parsing_report_panel_states(
+            $report['diagnosis']['items'] ?? [],
+            is_array($paints) ? $paints : [],
+            $report['inspection']['outers'] ?? []
+        );
+
+        $TYPES = parsing_report_damage_types();
+        $i     = ['ro' => 3, 'ru' => 4, 'en' => 5][$lang] ?? 3;
+
+        // Count each finding and keep the worst one for the badge colour/letter.
+        $byType = [];
+        $worst  = 'ok';
+        foreach ($state as $code) {
+            if ($code === 'ok') continue;
+            $byType[$code] = ($byType[$code] ?? 0) + 1;
+            if (($TYPES[$code][2] ?? 0) > ($TYPES[$worst][2] ?? 0)) $worst = $code;
+        }
+
+        // Tooltip spells out the mix, e.g. "Înlocuit ×3, Vopsit ×2" — the letter
+        // alone only tells the worst finding.
+        $parts = [];
+        foreach ($TYPES as $tc => $td) {
+            if ($tc !== 'ok' && !empty($byType[$tc])) $parts[] = $td[$i].' ×'.$byType[$tc];
+        }
+
+        return [
+            'count'  => array_sum($byType),
+            'letter' => $TYPES[$worst][0] ?? '',
+            'colour' => $TYPES[$worst][1] ?? '#dfe3ea',
+            'title'  => $parts ? implode(', ', $parts) : ($TYPES['ok'][$i] ?? ''),
+        ];
+    }
+    }
+
+    if (!function_exists('parsing_report_body_diagram')) {
+    function parsing_report_body_diagram(array $diagItems, array $paints, string $lang, int $accidentCnt = 0, array $outers = []): string
+    {
+        $slots = parsing_report_panel_slots();
+        $TYPES = parsing_report_damage_types();
+        $state = parsing_report_panel_states($diagItems, $paints, $outers);
 
         // Even with no panel data from Encar, still draw the car — every panel
         // defaults to "ok" (original), so the buyer always sees the silhouette
@@ -1011,7 +1077,9 @@ if (!function_exists('parsing_report_tr')) {
                 $diagnosis['items'] ?? [],
                 is_array($paintsForDiag) ? $paintsForDiag : [],
                 $lang,
-                (int)($record['accidentCnt'] ?? 0),
+                // Only this car's own claims suppress the "no accident" note —
+                // a claim where it damaged another car leaves its panels intact.
+                (int)($record['myAccidentCnt'] ?? $record['accidentCnt'] ?? 0),
                 $inspection['outers'] ?? []
             );
         } elseif (!empty($diagnosis['items'])) {
@@ -1127,6 +1195,20 @@ if (!function_exists('parsing_report_tr')) {
             $myAcc  = (int)($record['myAccidentCnt'] ?? 0);
             $otAcc  = (int)($record['otherAccidentCnt'] ?? 0);
 
+            // Encar tags every insurance claim with a "type":
+            //   1, 2 -> damage to THIS car   3 -> damage this car caused to another
+            // Verified against real payloads: summing type 1+2 reproduces
+            // myAccidentCost exactly, and type 3 reproduces otherAccidentCost.
+            $isMyClaim = fn(array $a): bool => (string)($a['type'] ?? '') !== '3';
+
+            // Repair cost of one claim. Type 2 carries the parts/labor/paint
+            // breakdown; type 1 carries none, only the payout — same fallback
+            // Encar itself uses to build myAccidentCost.
+            $claimCost = function (array $a): int {
+                $repair = (int)($a['partCost'] ?? 0) + (int)($a['laborCost'] ?? 0) + (int)($a['paintingCost'] ?? 0);
+                return $repair > 0 ? $repair : (int)($a['insuranceBenefit'] ?? 0);
+            };
+
             // Helper: a row that is GOOD when count is 0, BAD/red when > 0.
             $flagRow = function (string $label, int $cnt) {
                 if ($cnt > 0) {
@@ -1153,15 +1235,17 @@ if (!function_exists('parsing_report_tr')) {
             if ((int)($record['government'] ?? 0) > 0) $rows .= $flagRow($lbl('gov_use'), (int)$record['government']);
 
             // Accident details, if any (formatted date + real repair cost in ~€).
-            // Repair cost is the sum of parts + labor + paint, which is what Encar
-            // shows as 수리비용 (the actual damage to this car).
+            // Admin keeps the full list, third-party claims included but tagged,
+            // so the totals above can be reconciled row by row.
             $accDetails = '';
             if (!empty($record['accidents'])) {
                 $accDetails .= '<tr class="er-grouprow"><td colspan="2" class="er-sub">'.$lbl('accident_list').'</td></tr>';
                 foreach ($record['accidents'] as $a) {
+                    if (!is_array($a)) continue;
                     $dateTxt   = htmlspecialchars(parsing_report_value('date', $a['date'] ?? '', $lang));
-                    $repairKrw = (int)($a['partCost'] ?? 0) + (int)($a['laborCost'] ?? 0) + (int)($a['paintingCost'] ?? 0);
-                    $costTxt   = htmlspecialchars(parsing_report_value('partCost', $repairKrw, $lang));
+                    if (!$isMyClaim($a)) $dateTxt .= ' <small>('.$lbl('other_accidents').')</small>';
+                    $repairKrw = $claimCost($a);
+                    $costTxt   = $repairKrw > 0 ? htmlspecialchars(parsing_report_value('partCost', $repairKrw, $lang)) : '—';
                     // Date on the left, repair cost as a badge on the right — keeps
                     // it aligned with all other status cells and never gets clipped.
                     $accDetails .= '<tr><td class="er-item er-d1">'.$dateTxt.'</td>'
@@ -1176,11 +1260,10 @@ if (!function_exists('parsing_report_tr')) {
                          . '<span class="er-hchip-v">'.$val.'</span>'
                          . '<span class="er-hchip-l">'.$label.'</span></div>';
                 };
-                $chips  = $chip($lbl('accidents'), $accCnt > 0 ? $accCnt : '0', $accCnt > 0);
-                if ($myAcc > 0 || $otAcc > 0) {
-                    $chips .= $chip($lbl('my_accidents'), $myAcc, $myAcc > 0)
-                            . $chip($lbl('other_accidents'), $otAcc, $otAcc > 0);
-                }
+                // Public page counts only what happened to THIS car. Encar's
+                // accidentCnt also counts claims where this car damaged someone
+                // else's, which says nothing about the condition being sold.
+                $chips  = $chip($lbl('my_accidents'), $myAcc, $myAcc > 0);
                 $chips .= $chip($lbl('owners'), $ownCnt);
 
                 // Serious-status flags as compact pills. "Total loss" (Полная
@@ -1201,14 +1284,18 @@ if (!function_exists('parsing_report_tr')) {
                 if (!empty($record['accidents'])) {
                     $items = '';
                     foreach ($record['accidents'] as $a) {
+                        if (!is_array($a) || !$isMyClaim($a)) continue; // skip third-party damage
                         $dateTxt   = htmlspecialchars(parsing_report_value('date', $a['date'] ?? '', $lang));
-                        $repairKrw = (int)($a['partCost'] ?? 0) + (int)($a['laborCost'] ?? 0) + (int)($a['paintingCost'] ?? 0);
-                        $costTxt   = htmlspecialchars(parsing_report_value('partCost', $repairKrw, $lang));
+                        $repairKrw = $claimCost($a);
+                        $costTxt   = $repairKrw > 0 ? htmlspecialchars(parsing_report_value('partCost', $repairKrw, $lang)) : '—';
                         $items .= '<li><span class="er-acc-date">'.$dateTxt.'</span>'
                                 . '<span class="er-acc-cost-v">'.$costTxt.'</span></li>';
                     }
-                    $accList = '<div class="er-acc-sub">'.$lbl('accident_list').'</div>'
-                             . '<ul class="er-acc-list">'.$items.'</ul>';
+                    // Nothing left once third-party claims are dropped: no header.
+                    if ($items !== '') {
+                        $accList = '<div class="er-acc-sub">'.$lbl('accident_list').'</div>'
+                                 . '<ul class="er-acc-list">'.$items.'</ul>';
+                    }
                 }
 
                 // No section <h4> here: the card's own collapsible header already

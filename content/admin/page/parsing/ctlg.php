@@ -13,7 +13,7 @@ if (!parsing_has_access($user_id ?? 0)) {
 
 // Optional source filter: ?source=encar|ecarstrade|openlane|auto1
 $sourceFilter = $_GET['source'] ?? '';
-if (!in_array($sourceFilter, ['encar', 'ecarstrade', 'openlane', 'auto1'], true)) {
+if (!in_array($sourceFilter, ['encar', 'ecarstrade', 'openlane', 'auto1', 'autotrader'], true)) {
     $sourceFilter = '';
 }
 // Encar-only users are locked to the Encar source (other tabs hidden below).
@@ -29,7 +29,7 @@ if ($parsingEncarOnly) {
 $cars = [];
 $totalCount = 0;
 // Counts per source for sub-tab badges.
-$sourceCounts = ['' => 0, 'encar' => 0, 'ecarstrade' => 0, 'openlane' => 0, 'auto1' => 0];
+$sourceCounts = ['' => 0, 'encar' => 0, 'ecarstrade' => 0, 'openlane' => 0, 'auto1' => 0, 'autotrader' => 0];
 try {
     $countStmt = $db->query('SELECT source, COUNT(*) AS c FROM '.$prefx.'_parsing_cars WHERE status = "proposed" GROUP BY source');
     foreach ($countStmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
@@ -152,9 +152,7 @@ try {
                     'capacity'  => $cap,
                     'year'      => (int)($r['year'] ?? 0),
                 ];
-                $bd = ($r['source'] ?? '') === 'encar'
-                    ? parsing_md_breakdown_kr($db, $prefx, $bdCar)
-                    : parsing_md_breakdown_eu($db, $prefx, $bdCar);
+                $bd = parsing_md_breakdown_for($db, $prefx, $r['source'] ?? '', $bdCar);
                 if ($bd && !empty($bd['total'])) $md = (int)round($bd['total']);
             }
             $ranked[] = ['id' => (int)$r['id'], 'md' => $md, 'pos' => $i];
@@ -241,6 +239,10 @@ $rtrn = '
         <a href="/'.$admin_dir.'/parsing/ctlg?source=auto1" class="src-tab src-tab-auto1'.($sourceFilter === 'auto1' ? ' active' : '').'">
             <img src="/content/admin/page/parsing/media-parsing/auto1.png" alt="AUTO1">
             <span class="src-count">'.$sourceCounts['auto1'].'</span>
+        </a>
+        <a href="/'.$admin_dir.'/parsing/ctlg?source=autotrader" class="src-tab src-tab-autotrader'.($sourceFilter === 'autotrader' ? ' active' : '').'">
+            <img src="/content/admin/page/parsing/media-parsing/logo-autotrader.svg" alt="AutoTrader">
+            <span class="src-count">'.$sourceCounts['autotrader'].'</span>
         </a>').'
     </div>
 
@@ -351,11 +353,13 @@ if (empty($cars)) {
         if (($c['source'] ?? '') === 'ecarstrade') {
             $title = parsing_card_title($c);
         }
-        // Encar (Korea): add the price-band markup so the card shows the marked
-        // price (e.g. 9000 → 9300). Other sources show the raw final price.
+        // Encar (Korea) and AutoTrader (America): add the price-band markup so the
+        // card shows the marked price (e.g. 9000 → 9300). Other sources show the
+        // raw final price.
         $priceDisplay = (float)($c['price_final_eur'] ?? 0);
-        if (($c['source'] ?? '') === 'encar' && $priceDisplay > 0) {
-            $priceDisplay = parsing_kr_marked_price($db, $prefx, $priceDisplay);
+        if ($priceDisplay > 0) {
+            if (($c['source'] ?? '') === 'encar')           $priceDisplay = parsing_kr_marked_price($db, $prefx, $priceDisplay);
+            elseif (($c['source'] ?? '') === 'autotrader')  $priceDisplay = parsing_us_marked_price($db, $prefx, $priceDisplay);
         }
         $priceFinal = $priceDisplay > 0
             ? number_format($priceDisplay, 0, '.', ' ') . ' €'
@@ -423,7 +427,8 @@ if (empty($cars)) {
                       ($c['source'] === 'ecarstrade' ? '<img src="/content/admin/page/parsing/media-parsing/ecarstrade-logo.svg" alt="e-CarsTrade" class="source-logo source-logo-ecarstrade">' :
                       ($c['source'] === 'openlane' ? '<img src="/content/admin/page/parsing/media-parsing/openlane-logo.svg" alt="OpenLane" class="source-logo source-logo-openlane">' :
                       ($c['source'] === 'auto1' ? '<img src="/content/admin/page/parsing/media-parsing/auto1.png" alt="AUTO1" class="source-logo source-logo-auto1">' :
-                      strtoupper($c['source']))))).'
+                      ($c['source'] === 'autotrader' ? '<img src="/content/admin/page/parsing/media-parsing/logo-autotrader.svg" alt="AutoTrader" class="source-logo source-logo-autotrader">' :
+                      strtoupper($c['source'])))))).'
                 </div>
                 <h3>'.htmlspecialchars($title).'</h3>
                 <div class="car-meta" data-seats-label="'.htmlspecialchars($t['card_seats'] ?? 'locuri', ENT_QUOTES).'">

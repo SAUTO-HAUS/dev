@@ -15,6 +15,62 @@ if (!defined('EFFECTIVE_NA_SQL')) {
     define('EFFECTIVE_NA_SQL', '(CASE WHEN `n_a` = 1 OR (`offer_timer_end` > 0 AND `offer_timer_end` < UNIX_TIMESTAMP()) THEN 1 ELSE 0 END)');
 }
 
+// Body-condition badge for the cards: how many panels are not original, plus the
+// worst finding's letter (X/W/C/A/U/T/P), so the buyer can tell an accident-free
+// car from a repaired one without opening the product page.
+//
+// One batched query for the whole page — same approach as b2b_prices_for_cars();
+// report_data is a large JSON blob and must never be fetched per card.
+// Returns [car_id => ['count','letter','colour','title']], missing for cars
+// without an Encar inspection.
+if (!function_exists('car_body_badges')) {
+	function car_body_badges(array $rows, $db, $prefx, $lang = 'ro') {
+		$byParsing = [];
+		foreach ($rows as $r) {
+			$pid = (int)($r['parsing_id'] ?? 0);
+			if ($pid > 0) { $byParsing[$pid][] = (int)$r['id']; }
+		}
+		if (!$byParsing) { return []; }
+
+		$out = [];
+		try {
+			include_once( _ADM_PAGE.'/parsing/parsing_report.php' );
+			if (!function_exists('parsing_report_body_badge')) { return []; }
+
+			$ids = array_keys($byParsing);
+			$in  = implode(',', array_fill(0, count($ids), '?'));
+			$st  = $db->prepare('SELECT id, report_data FROM '.$prefx.'_parsing_cars
+			                     WHERE id IN ('.$in.') AND report_data IS NOT NULL AND report_data <> \'\'');
+			$st->execute($ids);
+			foreach ($st->fetchAll(PDO::FETCH_ASSOC) as $pr) {
+				$badge = parsing_report_body_badge(json_decode((string)$pr['report_data'], true), $lang);
+				if ($badge === null) { continue; }
+				foreach ($byParsing[(int)$pr['id']] as $carId) { $out[$carId] = $badge; }
+			}
+		} catch (Throwable $e) {
+			return []; // a broken report must never take the listing down
+		}
+		return $out;
+	}
+}
+
+// Renders the badge markup. Empty string when the car has no inspection data —
+// a card with no data must not be mistaken for a verified-clean car.
+if (!function_exists('car_body_badge_html')) {
+	function car_body_badge_html($badge, $lng = null) {
+		if (empty($badge) || !is_array($badge)) { return ''; }
+		$clean = (int)$badge['count'] === 0;
+		$title = htmlspecialchars((string)$badge['title'], ENT_QUOTES);
+		// Clean cars keep the neutral grey of the "Original" legend; damaged ones
+		// take the colour of their worst finding, matching the report diagram.
+		$style = $clean ? '' : ' style="background:'.htmlspecialchars((string)$badge['colour'], ENT_QUOTES).'"';
+		return '<span class="card-body-badge'.($clean ? ' is-clean' : '').'"'.$style.' title="'.$title.'">'
+		     . '<b>'.(int)$badge['count'].'</b>'
+		     . ($badge['letter'] !== '' ? '<i>'.htmlspecialchars((string)$badge['letter'], ENT_QUOTES).'</i>' : '')
+		     . '</span>';
+	}
+}
+
 // Share button shown in the top-right corner of every car card: copies the car
 // URL to clipboard on click (JS handler lives in head.php). Label sits above the icon.
 if (!function_exists('car_share_btn')) {
@@ -328,13 +384,17 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 				$ic = strtolower($zreq['ic']);
 				if ($ic === 'korea' || $ic === 'kr') {
 					$sql .= " AND `import_country_id` IN (SELECT id FROM countries WHERE code = 'KR')";
-				} elseif ($ic === 'usa' || $ic === 'us') {
-					$sql .= " AND `import_country_id` IN (SELECT id FROM countries WHERE code = 'US')";
+				} elseif ($ic === 'canada' || $ic === 'ca' || $ic === 'usa' || $ic === 'us') {
+					// One region, two codes: the cars come from AutoTrader (Canada) but
+					// everything published before the rename carries US. Both must show
+					// here, or 3000 ads would vanish the moment the label changed.
+					$sql .= " AND `import_country_id` IN (SELECT id FROM countries WHERE code IN ('CA','US'))";
 				} elseif ($ic === 'china' || $ic === 'cn') {
 					$sql .= " AND `import_country_id` IN (SELECT id FROM countries WHERE code = 'CN')";
 				} elseif ($ic === 'europe' || $ic === 'eu') {
-					// Europe is "the rest", so every named region must be excluded here.
-					$sql .= " AND `import_country_id` IN (SELECT id FROM countries WHERE code NOT IN ('KR','US','CN'))";
+					// Europe is "the rest", so every named region must be excluded here —
+					// CA included, otherwise Canadian cars silently land under Europe.
+					$sql .= " AND `import_country_id` IN (SELECT id FROM countries WHERE code NOT IN ('KR','US','CA','CN'))";
 				}
 			}
 
@@ -551,6 +611,10 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 				if (!isset($b2b_prices[$b2b_id])) { continue; }
 				$b2bP   = (int)$b2b_prices[$b2b_id];
 				$retail = (int)$rrow['prc'];
+				// Marks the card as actually carrying a B2B price. Only cars from
+				// parsing get one, so this is what gates the offer countdown — an
+				// in-stock car keeps the public price and must not claim an expiry.
+				$results[$ri]['b2b_priced'] = 1;
 				// prc drives the card value + monthly payment, so it must be the B2B price.
 				$results[$ri]['prc']   = $b2bP;
 				$results[$ri]['prc_n'] = $b2bP;
@@ -564,6 +628,11 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 			}
 		}
 	}
+
+	// Body-condition badges for the whole page in one query (see car_body_badges).
+	$body_badges = function_exists('car_body_badges')
+		? car_body_badges($results, $db, $prefx, ($_COOKIE['lang'] ?? 'ro'))
+		: [];
 
 	foreach ($results as $r) {
 		// Check if mobile - simple detection
@@ -631,7 +700,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 				$p_src = isset($p['name']) ? '/'._CAR_IMG.'/'.$r['p_path'].'/'.$r['id'].'/med/' : '/'._SITE_IMG.'/v2/';
 				$image_extension = isset($p['ff']) ? '.'.($p['ff'] ?: 'jpg') : '.jpg';
 				$p_name = isset($p['name']) ? $p['name'].$image_extension : 'no_image.svg';
-				$image_html = '<div style="position: relative;"><img src="'.$p_src.$p_name.'" loading="lazy" width="300" height="200" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' main photo" />'.$timer_html_for_image.'</div>';
+				$image_html = '<div class="card-img-slot"><img src="'.$p_src.$p_name.'" loading="lazy" width="300" height="200" alt="car '.$r['br_nm'].' '.$r['mo_nm'].' id'.$r['id'].' main photo" />'.$timer_html_for_image.'</div>';
 			}
 		} else {
 			// Desktop: Single image without wrapper (timer will be in .prc section)
@@ -698,8 +767,17 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 			}
 		}
 		
+		// B2B offer countdown, on its own line under the price — same on mobile and
+		// desktop. Empty for guests, for partners whose offer has no deadline, and
+		// for cars carrying no B2B price at all (in-stock ones): there the price is
+		// the public one and nothing expires.
+		$b2bTimer = (!empty($r['b2b_priced']) && function_exists('b2b_offer_timer_html'))
+			? b2b_offer_timer_html('card') : '';
+		$b2bTimerRow = $b2bTimer !== '' ? '<div class="b2b-offer-row">'.$b2bTimer.'</div>' : '';
+
 		$ar['txt'] .= '
 		<a class="it car" href="/'.$_COOKIE['lang'].'/'.$page_type.'/'.$r['id'].'">
+			'.car_body_badge_html($body_badges[$r['id']] ?? null, $lng).'
 			<div class="name">'.$r['br_nm'].' '.$r['mo_nm'].'</div>
 			<div class="compact-info">
 				<div class="line1">'.$year.' | '.$fuel.' | '.$volume.'</div>
@@ -716,6 +794,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 				<strong class="val">'.($r['prc'] > 100 ? $prc.' &#8364;' : $lng['w']['negociabil']).'</strong>'.$o_prc_bl.'
 				<span class="stock-status'.($r['catalog_type'] == 'on_order' ? ' on-order' : '').'">'.($effective_n_a == 1 ? $lng['w']['not_available'] : ($r['catalog_type'] == 'on_order' ? $lng['w']['on_order'] : $lng['w']['in_stock'])).'</span>
 			</div>
+			'.$b2bTimerRow.'
 			<div class="txt">';
 				
 				//$ar['txt'] .= '<div class="status">'.$z_stat.'</div>';
@@ -749,7 +828,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 					if (!empty($r['import_country_id'])) {
 						$country_name = '';
 						$country_code = '';
-						
+
 						// Determine language column based on current language
 						$langColumn = 'name_ro'; // Default to Romanian
 						if (isset($_COOKIE['lang']) && $_COOKIE['lang'] == 'ru') {
@@ -812,7 +891,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 						// Set larger margin when no import country
 						$price_margin_style = 'margin-top: 40px;';
 					}
-					
+
 				$ar['txt'] .= '
 				</div>
 			</div>';

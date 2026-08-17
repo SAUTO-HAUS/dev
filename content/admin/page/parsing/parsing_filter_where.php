@@ -68,32 +68,45 @@ function parsing_displayed_price_sql(string $col, $db, string $prefx): string
     $plain = "{$col}price_final_eur";
     if (!$db || $prefx === '') { return $cache[$key] = $plain; }
 
-    $tiers = [];
-    try {
-        $stmt = $db->prepare('SELECT price_from, price_to, markup FROM '
-            . $prefx . '_parsing_kr_markup_tiers ORDER BY sort_order, price_from');
-        $stmt->execute();
-        $tiers = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    } catch (\Throwable $e) {
-        return $cache[$key] = $plain;
-    }
-    if (!$tiers) { return $cache[$key] = $plain; }
+    // One markup table per source that has one (Korea for Encar, America for
+    // AutoTrader). A source with no table — or whose table is missing because the
+    // migration has not run yet — simply contributes no branch, so its cars are
+    // filtered on the raw price, exactly as before.
+    $markupTables = [
+        'encar'      => '_parsing_kr_markup_tiers',
+        'autotrader' => '_parsing_us_markup_tiers',
+    ];
 
-    $cases = '';
-    foreach ($tiers as $t) {
-        $from = (int)($t['price_from'] ?? 0);
-        $toRaw = $t['price_to'];
-        $markup = (int)($t['markup'] ?? 0);
-        if ($toRaw === null || $toRaw === '') {
-            $cases .= " WHEN {$col}price_final_eur >= {$from} THEN {$markup}";
-        } else {
-            $to = (int)$toRaw;
-            $cases .= " WHEN {$col}price_final_eur >= {$from} AND {$col}price_final_eur <= {$to} THEN {$markup}";
+    $branches = '';
+    foreach ($markupTables as $source => $table) {
+        $tiers = [];
+        try {
+            $stmt = $db->prepare('SELECT price_from, price_to, markup FROM '
+                . $prefx . $table . ' ORDER BY sort_order, price_from');
+            $stmt->execute();
+            $tiers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (\Throwable $e) {
+            continue;
         }
-    }
-    if ($cases === '') { return $cache[$key] = $plain; }
+        if (!$tiers) continue;
 
-    $markupExpr = "(CASE{$cases} ELSE 0 END)";
-    $expr = "({$col}price_final_eur + CASE WHEN {$col}source = 'encar' THEN {$markupExpr} ELSE 0 END)";
+        $cases = '';
+        foreach ($tiers as $t) {
+            $from = (int)($t['price_from'] ?? 0);
+            $toRaw = $t['price_to'];
+            $markup = (int)($t['markup'] ?? 0);
+            if ($toRaw === null || $toRaw === '') {
+                $cases .= " WHEN {$col}price_final_eur >= {$from} THEN {$markup}";
+            } else {
+                $to = (int)$toRaw;
+                $cases .= " WHEN {$col}price_final_eur >= {$from} AND {$col}price_final_eur <= {$to} THEN {$markup}";
+            }
+        }
+        if ($cases === '') continue;
+        $branches .= " WHEN {$col}source = '{$source}' THEN (CASE{$cases} ELSE 0 END)";
+    }
+    if ($branches === '') { return $cache[$key] = $plain; }
+
+    $expr = "({$col}price_final_eur + CASE{$branches} ELSE 0 END)";
     return $cache[$key] = $expr;
 }

@@ -561,6 +561,143 @@ if ($do === 'feat7') {
     echo "\nDone.\n"; exit;
 }
 
+// ─────────────────────────── MODE: brands999 ───────────────────────────
+// Which brands of the cars in our filters have NO entry in Build999Payload::brandId().
+// Those cars are skipped silently by the cross-post cron — build() returns null, so no
+// schedule row is ever created and the car simply never appears on 999. For each miss
+// the live 999 brand list is searched so the line can be pasted into the map. Read-only.
+if ($do === 'brands999') {
+    hr("brands used by filter cars, missing from the 999 map");
+    $rows = $db->query("SELECT cc.br, cc.br_nm, COUNT(*) n, SUM(cc.`999_id` > 0) live999
+        FROM {$P} pc JOIN {$C} cc ON cc.id = pc.car_ctlg_id
+        WHERE pc.filter_id IS NOT NULL AND cc.br <> ''
+        GROUP BY cc.br, cc.br_nm ORDER BY n DESC")->fetchAll(PDO::FETCH_ASSOC);
+
+    $missing = [];
+    foreach ($rows as $r) {
+        if (\App\Services\Parsing\Build999Payload::brandId((string)$r['br']) === null) $missing[] = $r;
+    }
+    if (!$missing) { echo "  every brand is mapped\n"; echo "\nDone.\n"; exit; }
+
+    // Brands are the options of feature 20 in the car subcategory (658/659/23844) —
+    // the same list the manual form fills its brand select from.
+    // Shape is features_groups[].features[].options[], with lowercase id/title — the
+    // same structure the manual 999 form renders its selects from.
+    $opts = [];
+    try {
+        $svc = new \App\Services\Api999Service();
+        foreach ($svc->getSubcategoryFeatures(658, 659, 23844)['features_groups'] ?? [] as $g) {
+            foreach ($g['features'] ?? [] as $f) {
+                if ((string)($f['id'] ?? '') === '20') { $opts = $f['options'] ?? []; break 2; }
+            }
+        }
+        if (!$opts) echo "  (feature 20 came back without options — check the API answer)\n";
+    } catch (\Throwable $e) { echo "  (could not read the 999 brand list: ".$e->getMessage().")\n"; }
+
+    foreach ($missing as $r) {
+        $norm = fn($s) => preg_replace('/[^a-z0-9]/', '', mb_strtolower(trim((string)$s), 'UTF-8'));
+        $want = $norm(str_replace('_', ' ', (string)$r['br']));
+        $wantNm = $norm($r['br_nm']);
+        $hit = null; $near = [];
+        foreach ($opts as $o) {
+            $name = $norm($o['title'] ?? '');
+            if ($name === $want || $name === $wantNm) { $hit = $o; break; }
+            if ($name !== '' && (strpos($name, $want) !== false || strpos($want, $name) !== false)) $near[] = $o;
+        }
+        echo '  ' . str_pad((string)$r['br'], 20) . str_pad((string)$r['br_nm'], 22)
+           . str_pad($r['n'] . ' cars', 11) . 'live on 999: ' . str_pad((string)$r['live999'], 5);
+        if ($hit) {
+            echo "999 id " . ($hit['id'] ?? '?') . "  →  add  '{$r['br']}'=>'" . ($hit['id'] ?? '?') . "',\n";
+        } elseif ($near) {
+            echo "no exact match. Close: ";
+            foreach (array_slice($near, 0, 5) as $o) echo "'" . ($o['title'] ?? '') . "'=" . ($o['id'] ?? '') . "  ";
+            echo "\n";
+        } else {
+            echo "not found in the 999 brand list (" . count($opts) . " brands read)\n";
+        }
+    }
+    echo "\n  Add the lines to Build999Payload::brandId(). Until then these cars are\n";
+    echo "  skipped by the cross-post cron without any error anywhere.\n";
+    echo "\nDone.\n"; exit;
+}
+
+// ─────────────────────────── MODE: compact ───────────────────────────
+// How many cars from the saved filters are affected by the commercial/pickup split:
+// which ones 999 rejects as commercial, which ones are already live in the wrong
+// category, and what each will become now that pickups publish as cars. Read-only.
+if ($do === 'compact') {
+    $cols = array_column($db->query("SHOW COLUMNS FROM {$S999}")->fetchAll(PDO::FETCH_ASSOC), 'Field');
+    $ec = in_array('error_message', $cols, true) ? 'error_message' : (in_array('error', $cols, true) ? 'error' : null);
+
+    hr("commercial cars from filters — by body type");
+    $rows = $db->query("SELECT COALESCE(NULLIF(cc.bt,''),'(empty)') bt, COUNT(*) n,
+            SUM(cc.`999_id` > 0) live999
+        FROM {$P} pc JOIN {$C} cc ON cc.id = pc.car_ctlg_id
+        WHERE pc.filter_id IS NOT NULL AND cc.gr = 'com'
+        GROUP BY bt ORDER BY n DESC")->fetchAll(PDO::FETCH_ASSOC);
+    if (!$rows) echo "  (none)\n";
+    $totCom = 0; $totPkp = 0;
+    foreach ($rows as $r) {
+        $totCom += (int)$r['n'];
+        if ($r['bt'] === 'pkp') $totPkp += (int)$r['n'];
+        $what = $r['bt'] === 'pkp' ? 'PICKUP -> now published as a car (659)' : 'stays commercial (660)';
+        echo '  ' . str_pad($r['bt'], 10) . str_pad((string)$r['n'], 6)
+           . 'live on 999: ' . str_pad((string)$r['live999'], 6) . $what . "\n";
+    }
+    echo "  ── {$totCom} commercial in total, {$totPkp} of them pickups\n";
+
+    hr("which models — pickups first");
+    foreach ($db->query("SELECT cc.br_nm, cc.mo_nm, COALESCE(NULLIF(cc.bt,''),'?') bt, COUNT(*) n,
+            SUM(cc.`999_id` > 0) live999
+        FROM {$P} pc JOIN {$C} cc ON cc.id = pc.car_ctlg_id
+        WHERE pc.filter_id IS NOT NULL AND cc.gr = 'com'
+        GROUP BY cc.br_nm, cc.mo_nm, bt
+        ORDER BY (bt = 'pkp') DESC, n DESC LIMIT 40")->fetchAll(PDO::FETCH_ASSOC) as $r) {
+        echo '  ' . str_pad($r['bt'], 6) . str_pad($r['br_nm'] . ' ' . $r['mo_nm'], 34)
+           . str_pad((string)$r['n'], 5) . 'live on 999: ' . $r['live999'] . "\n";
+    }
+
+    hr("999 queue status of those cars");
+    foreach ($db->query("SELECT COALESCE(NULLIF(cc.bt,''),'?') bt, s.status, COUNT(*) n
+        FROM {$P} pc JOIN {$C} cc ON cc.id = pc.car_ctlg_id
+        JOIN {$S999} s ON s.car_id = cc.id
+        WHERE pc.filter_id IS NOT NULL AND cc.gr = 'com'
+        GROUP BY bt, s.status ORDER BY n DESC")->fetchAll(PDO::FETCH_ASSOC) as $r)
+        echo '  ' . str_pad($r['bt'], 6) . str_pad($r['status'], 12) . $r['n'] . "\n";
+
+    if ($ec) {
+        hr("failed with a commercial-field error (103 / 1408 / 152)");
+        $r = $db->query("SELECT COUNT(DISTINCT cc.id) n
+            FROM {$P} pc JOIN {$C} cc ON cc.id = pc.car_ctlg_id
+            JOIN {$S999} s ON s.car_id = cc.id
+            WHERE pc.filter_id IS NOT NULL AND s.status = 'failed'
+              AND (s.{$ec} LIKE '%103%' OR s.{$ec} LIKE '%1408%' OR s.{$ec} LIKE '%152%')")->fetch(PDO::FETCH_ASSOC);
+        echo "  {$r['n']} car(s) — these are the ones to reset to 'pending' after deploying the fix\n";
+
+        // The commercial-field error is only one of the reasons. Show every reason these
+        // cars failed, split pickup vs the rest, so we don't fix one and leave the pile.
+        hr("why they really failed — every message, pickups vs the rest");
+        foreach ($db->query("SELECT COALESCE(NULLIF(cc.bt,''),'?') bt,
+                COALESCE(NULLIF(s.{$ec},''),'(no message)') msg,
+                COUNT(*) rows_n, COUNT(DISTINCT cc.id) cars_n
+            FROM {$P} pc JOIN {$C} cc ON cc.id = pc.car_ctlg_id
+            JOIN {$S999} s ON s.car_id = cc.id
+            WHERE pc.filter_id IS NOT NULL AND cc.gr = 'com' AND s.status = 'failed'
+            GROUP BY bt, msg ORDER BY cars_n DESC LIMIT 15")->fetchAll(PDO::FETCH_ASSOC) as $r)
+            echo '  ' . str_pad($r['bt'], 5) . str_pad($r['cars_n'] . ' cars', 11)
+               . str_pad($r['rows_n'] . ' rows', 11) . substr((string)$r['msg'], 0, 110) . "\n";
+    }
+
+    hr("pickups ALREADY live on 999 in the commercial category");
+    $r = $db->query("SELECT COUNT(*) n FROM {$P} pc JOIN {$C} cc ON cc.id = pc.car_ctlg_id
+        WHERE pc.filter_id IS NOT NULL AND cc.gr = 'com' AND cc.bt = 'pkp' AND cc.`999_id` > 0")
+        ->fetch(PDO::FETCH_ASSOC);
+    echo "  {$r['n']} advert(s) are live under the wrong category — they keep working,\n";
+    echo "  the new rule only applies the next time they are (re)published.\n";
+
+    echo "\nDone.\n"; exit;
+}
+
 // ─────────────────────────── MODE: comerr ───────────────────────────
 // Show the ACTUAL car data (vol/fuel/gr/mo_nm) for parsing cars that FAILED on 999
 // with a commercial-feature error (103 cc, 1408 km, 152 weight), plus what value
@@ -4310,6 +4447,271 @@ if ($do === 'mergeparsing') {
     hr("RESULT");
     echo "  brand fixes: {$brandChanges} pairs ({$carsBrand} cars);  model fixes: {$modelChanges} pairs ({$carsModel} cars)\n";
     echo "  ".($apply?"applied. backup in {$prefx}_parsingfix_backup (reversible).":"dry-run — add &apply=1 to write.")."\n";
+    echo "\nDone.\n"; exit;
+}
+
+// ─────────────────────── MODE: encrec (read-only) ───────────────────────
+// Dump the raw Encar "record" node so we can see how Encar marks an accident
+// as damage-to-this-car vs damage-caused-to-others. ?do=encrec[&id=<parsing_id>]
+if ($do === 'encrec') {
+    $id = (int)($_GET['id'] ?? 0);
+    if ($id > 0) {
+        $st = $db->prepare("SELECT id, brand, model, report_data FROM {$P} WHERE id = ? LIMIT 1");
+        $st->execute([$id]);
+        $rows = $st->fetchAll(PDO::FETCH_ASSOC);
+    } else {
+        // No id given: pick cars that actually have a third-party claim, since
+        // those are the only ones where the two lists differ.
+        $rows = $db->query("SELECT id, brand, model, report_data FROM {$P}
+                            WHERE report_data LIKE '%otherAccidentCnt%'
+                              AND report_data NOT LIKE '%\"otherAccidentCnt\":0%'
+                            ORDER BY id DESC LIMIT 3")->fetchAll(PDO::FETCH_ASSOC);
+    }
+    if (!$rows) { echo "\nNo car found.\n"; exit; }
+
+    foreach ($rows as $row) {
+        hr("car {$row['id']}  {$row['brand']} {$row['model']}");
+        $rd  = json_decode((string)$row['report_data'], true);
+        $rec = $rd['record'] ?? null;
+        if (!is_array($rec)) { echo "  no record node\n"; continue; }
+
+        echo "  counters:\n";
+        foreach (['accidentCnt','myAccidentCnt','otherAccidentCnt',
+                  'myAccidentCost','otherAccidentCost','ownerChangeCnt'] as $k) {
+            if (array_key_exists($k, $rec)) echo "    {$k} = ".var_export($rec[$k], true)."\n";
+        }
+
+        echo "  top-level keys: ".implode(', ', array_keys($rec))."\n";
+
+        $acc = $rec['accidents'] ?? null;
+        if (!is_array($acc)) { echo "  accidents: none\n"; continue; }
+        echo "  accidents (".count($acc)." items), raw:\n";
+        foreach ($acc as $i => $a) {
+            echo "    [{$i}] ".json_encode($a, JSON_UNESCAPED_UNICODE)."\n";
+        }
+    }
+    echo "\nDone.\n"; exit;
+}
+
+// ─────────────────────── MODE: nophotos (read-only) ───────────────────────
+// Live ads with an empty gallery. Splits the two causes apart: the source gave
+// us no images at all, vs. we had image URLs and the import did not write them.
+if ($do === 'nophotos') {
+    // Scan car_ctlg ONCE and keep only ids — the NOT EXISTS pass is the expensive
+    // part, and repeating it per section is what made this time out. Everything
+    // else is then a keyed lookup over a couple of dozen rows.
+    $hits = $db->query("SELECT c.id, c.parsing_id, c.br_nm, c.mo_nm, c.dt, c.vis, c.act, c.catalog_type
+                        FROM {$C} c
+                        WHERE c.parsing_id IS NOT NULL
+                          AND NOT EXISTS (SELECT 1 FROM {$prefx}_car_pht ph WHERE ph.it_id = c.id)
+                        ORDER BY c.id DESC")->fetchAll(PDO::FETCH_ASSOC);
+
+    $meta = [];
+    if ($hits) {
+        $pids = array_values(array_unique(array_map(fn($r) => (int)$r['parsing_id'], $hits)));
+        $in   = implode(',', array_fill(0, count($pids), '?'));
+        $st   = $db->prepare("SELECT id, source, status, images_local FROM {$P} WHERE id IN ({$in})");
+        $st->execute($pids);
+        foreach ($st->fetchAll(PDO::FETCH_ASSOC) as $m) { $meta[(int)$m['id']] = $m; }
+    }
+
+    $urlCount = function ($row) {
+        $imgs = json_decode((string)($row['images_local'] ?? ''), true);
+        return is_array($imgs) ? count($imgs) : 0;
+    };
+
+    $live = 0; $fixable = 0; $bySource = [];
+    foreach ($hits as $r) {
+        $m = $meta[(int)$r['parsing_id']] ?? [];
+        $n = $urlCount($m);
+        if ($r['vis'] === '1' && $r['act'] === '1') $live++;
+        if ($n > 0) $fixable++;
+        $src = $m['source'] ?? '(none)';
+        $bySource[$src]['n'] = ($bySource[$src]['n'] ?? 0) + 1;
+        $bySource[$src]['f'] = ($bySource[$src]['f'] ?? 0) + ($n > 0 ? 1 : 0);
+    }
+
+    hr("summary");
+    echo "  published cars with no photos:      ".count($hits)."\n";
+    echo "    of which visible on the site now:  {$live}\n";
+    echo "    image URLs still stored (fixable): {$fixable}\n";
+    echo "    nothing to import from the source: ".(count($hits) - $fixable)."\n";
+
+    hr("by source");
+    foreach ($bySource as $src => $b) {
+        echo "  ".str_pad($src, 12).str_pad((string)$b['n'], 8)."{$b['f']} fixable\n";
+    }
+
+    hr("the fixable ones");
+    $any = false;
+    foreach ($hits as $r) {
+        $m = $meta[(int)$r['parsing_id']] ?? [];
+        $n = $urlCount($m);
+        if ($n === 0) continue;
+        $any = true;
+        echo "  ctlg ".str_pad((string)$r['id'], 7)." parsing ".str_pad((string)$r['parsing_id'], 8)
+           . str_pad((string)($m['source'] ?? '?'), 11).str_pad($r['br_nm'].' '.$r['mo_nm'], 24)
+           . " {$n} urls  {$r['catalog_type']}  vis={$r['vis']} act={$r['act']}  {$r['dt']}\n";
+    }
+    if (!$any) echo "  none\n";
+
+    // Re-queue: the worker now resumes a published-but-photoless car instead of
+    // failing on it, so enqueueing is all the repair needs.
+    if (($_GET['fix'] ?? '') === '1') {
+        $apply = ($_GET['apply'] ?? '') === '1';
+        hr($apply ? "RE-QUEUEING the fixable ones" : "DRY RUN — add &apply=1 to actually queue");
+        $queue = new \App\Services\Parsing\PublishQueue();
+        $n = 0;
+        foreach ($hits as $r) {
+            $m = $meta[(int)$r['parsing_id']] ?? [];
+            if ($urlCount($m) === 0) continue;
+            $n++;
+            echo "  ctlg {$r['id']}  parsing {$r['parsing_id']}  {$r['br_nm']} {$r['mo_nm']}\n";
+            if ($apply) {
+                $queue->clearAutoPublishFailed((int)$r['parsing_id']);
+                $queue->enqueue((int)$r['parsing_id'], 'sauto');
+            }
+        }
+        echo "\n  {$n} cars ".($apply ? "queued — the worker picks them up within a minute" : "would be queued")."\n";
+    }
+
+    hr("the ones we cannot fix (source stored no image URLs)");
+    $any = false;
+    foreach ($hits as $r) {
+        $m = $meta[(int)$r['parsing_id']] ?? [];
+        if ($urlCount($m) > 0) continue;
+        $any = true;
+        echo "  ctlg ".str_pad((string)$r['id'], 7)." parsing ".str_pad((string)$r['parsing_id'], 8)
+           . str_pad((string)($m['source'] ?? '?'), 11).str_pad($r['br_nm'].' '.$r['mo_nm'], 24)
+           . " {$r['catalog_type']}  vis={$r['vis']} act={$r['act']}  {$r['dt']}\n";
+    }
+    if (!$any) echo "  none\n";
+
+    echo "\n  'repairable' = images_local still holds the URLs, so re-running the photo\n";
+    echo "  import would fill the gallery without touching anything else.\n";
+    echo "\nDone.\n"; exit;
+}
+
+// ─────────────────────── MODE: alreadypub (read-only) ───────────────────────
+// Why "Already published" failures happen. Two very different causes look the
+// same in the UI, and `attempts` plus the publish timestamps separate them:
+//   attempts > 1  -> the worker died mid-job and a later run re-claimed it
+//   published_at BEFORE started_at -> the car was published by another route
+//                                     before this job ever got to run
+if ($do === 'alreadypub') {
+    $Q = "{$prefx}_parsing_publish_queue";
+
+    // The failures panel DELETES a job the moment "Edit" is clicked, so by the
+    // time anyone investigates the rows are gone. Show the whole queue state
+    // first — that tells us whether there is anything left to look at.
+    hr("queue by status");
+    foreach ($db->query("SELECT status, COUNT(*) c FROM {$Q} GROUP BY status ORDER BY c DESC") as $r) {
+        echo "  ".str_pad($r['status'], 12).$r['c']."\n";
+    }
+
+    hr("every failed job, whatever the reason");
+    foreach ($db->query("SELECT error, COUNT(*) c FROM {$Q} WHERE status='failed'
+                         GROUP BY error ORDER BY c DESC LIMIT 20") as $r) {
+        echo "  ×".str_pad((string)$r['c'], 5).substr(str_replace(["\n","\r"], ' ', (string)$r['error']), 0, 160)."\n";
+    }
+
+    // Cars auto-publish gave up on outlive the queue row, so they are the durable
+    // record of what went wrong — even after the panel row was dismissed.
+    hr("cars flagged autopublish_failed (survives dismissing)");
+    try {
+        $af = $db->query("SELECT COUNT(*) FROM {$P} WHERE COALESCE(autopublish_failed,0)=1")->fetchColumn();
+        echo "  {$af} cars are excluded from auto-publish until retried manually\n";
+        $rows = $db->query("SELECT id, brand, model, status, published_at, car_ctlg_id, source
+                            FROM {$P} WHERE COALESCE(autopublish_failed,0)=1
+                            ORDER BY id DESC LIMIT 20")->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($rows as $r) {
+            $photos = 0;
+            if (!empty($r['car_ctlg_id'])) {
+                $ps = $db->prepare("SELECT COUNT(*) FROM {$prefx}_car_pht WHERE it_id = ?");
+                $ps->execute([(int)$r['car_ctlg_id']]);
+                $photos = (int)$ps->fetchColumn();
+            }
+            echo "  parsing {$r['id']}  {$r['source']}  ".str_pad($r['brand'].' '.$r['model'], 24)
+               . " status={$r['status']}  ctlg={$r['car_ctlg_id']}  photos={$photos}"
+               . ($r['car_ctlg_id'] && $photos === 0 ? "   *** NO PHOTOS ***" : "")."\n";
+        }
+    } catch (\Throwable $e) { echo "  (column not present: ".$e->getMessage().")\n"; }
+
+    hr("failed jobs with 'Already published'");
+    $rows = $db->query("SELECT q.id, q.parsing_car_id, q.target, q.attempts, q.status,
+                               q.started_at, q.finished_at, q.car_ctlg_id q_ctlg,
+                               p.status p_status, p.published_at, p.car_ctlg_id p_ctlg,
+                               p.brand, p.model, p.source
+                        FROM {$Q} q LEFT JOIN {$P} p ON p.id = q.parsing_car_id
+                        WHERE q.error LIKE '%Already published%'
+                        ORDER BY q.id DESC LIMIT 40")->fetchAll(PDO::FETCH_ASSOC);
+    if (!$rows) { echo "  none left — the panel rows were dismissed (Edit deletes them)\n\nDone.\n"; exit; }
+
+    $diedMid = 0; $preExisting = 0; $unknown = 0;
+    foreach ($rows as $r) {
+        // Did the car become 'published' before this job was even claimed?
+        $verdict = '?';
+        if ((int)$r['attempts'] > 1) { $verdict = 'worker died mid-job'; $diedMid++; }
+        elseif ($r['published_at'] && $r['started_at'] && $r['published_at'] < $r['started_at']) {
+            $verdict = 'published earlier, by another route'; $preExisting++;
+        } else { $unknown++; }
+
+        // The real question for the customer: did the car end up complete?
+        $photos = 0;
+        if (!empty($r['p_ctlg'])) {
+            $ps = $db->prepare("SELECT COUNT(*) FROM {$prefx}_car_pht WHERE it_id = ?");
+            $ps->execute([(int)$r['p_ctlg']]);
+            $photos = (int)$ps->fetchColumn();
+        }
+        echo "  job {$r['id']}  parsing {$r['parsing_car_id']}  {$r['source']}  {$r['brand']} {$r['model']}\n";
+        echo "      attempts={$r['attempts']}  started={$r['started_at']}  finished={$r['finished_at']}\n";
+        echo "      parsing.status={$r['p_status']}  published_at={$r['published_at']}  car_ctlg={$r['p_ctlg']}  photos={$photos}\n";
+        echo "      => {$verdict}".($photos === 0 && !empty($r['p_ctlg']) ? "   *** NO PHOTOS ***" : "")."\n";
+    }
+
+    hr("verdict");
+    echo "  worker died mid-job:                {$diedMid}\n";
+    echo "  already published by another route: {$preExisting}\n";
+    echo "  undetermined:                       {$unknown}\n";
+    echo "\n  MAX_ATTEMPTS is 1, so any failure is terminal on the first run and the\n";
+    echo "  car is flagged autopublish_failed=1 — that is why it stays in the panel.\n";
+    echo "\nDone.\n"; exit;
+}
+
+// ─────────────────────── MODE: bodybadge (read-only) ───────────────────────
+// Two questions at once: what the card badge would show for real on-order cars,
+// and how expensive report_data is to load for a whole page of cards.
+if ($do === 'bodybadge') {
+    require_once __DIR__.'/../content/admin/page/parsing/parsing_report.php';
+
+    hr("COST: report_data size for published on-order Encar cars");
+    $sz = $db->query("SELECT COUNT(*) n, ROUND(AVG(LENGTH(p.report_data))/1024,1) avg_kb,
+                             ROUND(MAX(LENGTH(p.report_data))/1024,1) max_kb,
+                             ROUND(SUM(LENGTH(p.report_data))/1048576,1) total_mb
+                      FROM {$C} c JOIN {$P} p ON p.id = c.parsing_id
+                      WHERE c.catalog_type='on_order' AND c.vis='1' AND c.act='1'
+                        AND p.report_data IS NOT NULL AND p.report_data <> ''")->fetch(PDO::FETCH_ASSOC);
+    echo "  cars with a report: {$sz['n']}\n";
+    echo "  avg {$sz['avg_kb']} KB   max {$sz['max_kb']} KB   all together {$sz['total_mb']} MB\n";
+    $perPage = 24;
+    echo "  => one page of {$perPage} cards would move ~".round(((float)$sz['avg_kb'] * $perPage) / 1024, 1)." MB\n";
+
+    hr("BADGE on the 12 newest on-order cars");
+    $rows = $db->query("SELECT c.id, c.br_nm, c.mo_nm, p.report_data
+                        FROM {$C} c JOIN {$P} p ON p.id = c.parsing_id
+                        WHERE c.catalog_type='on_order' AND c.vis='1' AND c.act='1'
+                          AND p.report_data IS NOT NULL AND p.report_data <> ''
+                        ORDER BY c.id DESC LIMIT 12")->fetchAll(PDO::FETCH_ASSOC);
+    $t0 = microtime(true);
+    foreach ($rows as $r) {
+        $badge = parsing_report_body_badge(json_decode((string)$r['report_data'], true), 'ro');
+        $show  = $badge === null
+            ? '(fara raport — fara badge)'
+            : str_pad($badge['count'].' '.($badge['letter'] ?: '-'), 6).' '.$badge['title'];
+        echo "  ".str_pad((string)$r['id'], 7)." ".str_pad($r['br_nm'].' '.$r['mo_nm'], 26)." {$show}\n";
+    }
+    $ms = round((microtime(true) - $t0) * 1000, 1);
+    echo "\n  decoding + computing ".count($rows)." cars took {$ms} ms\n";
     echo "\nDone.\n"; exit;
 }
 

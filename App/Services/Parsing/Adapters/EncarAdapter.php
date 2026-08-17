@@ -285,19 +285,67 @@ class EncarAdapter extends AbstractAdapter
     public function checkAvailability(string $sourceId): bool
     {
         $response = $this->httpRequest(self::API_DETAIL . urlencode($sourceId));
-        if ($response['status'] === 404) {
-            return false;
+        return $this->readAvailability($response['status'] ?? 0, (string)($response['body'] ?? ''));
+    }
+
+    public function checkAvailabilityBatch(array $sourceIds, int $concurrency = 5, ?array &$statuses = null): array
+    {
+        $statuses  = [];
+        $sourceIds = array_values(array_filter(array_map('strval', $sourceIds), fn($s) => trim($s) !== ''));
+        if (!$sourceIds) return [];
+
+        $out = [];
+        foreach (array_chunk($sourceIds, max(1, $concurrency)) as $wave) {
+            $multi   = curl_multi_init();
+            $handles = [];
+            foreach ($wave as $sid) {
+                $ch = curl_init(self::API_DETAIL . urlencode($sid));
+                curl_setopt_array($ch, [
+                    CURLOPT_RETURNTRANSFER => true,
+                    CURLOPT_TIMEOUT        => 20,
+                    CURLOPT_CONNECTTIMEOUT => 10,
+                    CURLOPT_FOLLOWLOCATION => true,
+                    CURLOPT_HTTPHEADER     => ['Accept: application/json', 'Referer: https://www.encar.com/'],
+                    CURLOPT_USERAGENT      => $this->userAgent,
+                ]);
+                // Same proxy as every other Encar call — this one builds its handles
+                // by hand, so it would otherwise slip out directly and get blocked.
+                \App\Services\Parsing\OutboundProxy::apply($ch, self::SOURCE_CODE);
+                curl_multi_add_handle($multi, $ch);
+                $handles[$sid] = $ch;
+            }
+
+            do {
+                $status = curl_multi_exec($multi, $running);
+                if ($running) curl_multi_select($multi, 1.0);
+            } while ($running && $status === CURLM_OK);
+
+            foreach ($handles as $sid => $ch) {
+                $body = (string)curl_multi_getcontent($ch);
+                $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                // A transport failure leaves code 0, which readAvailability reads
+                // as "still there" — never drop a car because the network blinked.
+                $statuses[$sid] = $code;
+                $out[$sid] = $this->readAvailability($code, $body);
+                curl_multi_remove_handle($multi, $ch);
+                curl_close($ch);
+            }
+            curl_multi_close($multi);
         }
-        if ($response['status'] !== 200) {
-            return true;
-        }
+        return $out;
+    }
+
+    // Shared verdict for one response, so the single and batch paths can never
+    // drift apart on what counts as sold.
+    private function readAvailability(int $status, string $body): bool
+    {
+        if ($status === 404) return false;
+        if ($status !== 200) return true;   // anything else: assume still listed
         // Encar marks sold listings either via a Korean status string or by
         // returning a payload with an explicit "sold" / "Y" flag.
-        if (stripos($response['body'], '판매완료') !== false) {
-            return false;
-        }
-        $data = json_decode($response['body'], true);
-        if (is_array($data) && (($data['advertisement']['status'] ?? '') === 'SOLD' || ($data['sellType'] ?? '') === 'Sold')) {
+        if (stripos($body, '판매완료') !== false) return false;
+        $data = json_decode($body, true);
+        if (is_array($data) && ((($data['advertisement']['status'] ?? '') === 'SOLD') || (($data['sellType'] ?? '') === 'Sold'))) {
             return false;
         }
         return true;

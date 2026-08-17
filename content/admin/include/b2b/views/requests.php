@@ -73,7 +73,7 @@ $clientPrice = function (?array $car, int $clientId) use ($db, $prefx): ?array {
     $pid = (int)($car['parsing_id'] ?? 0);
     $src = (string)($car['parsing_source'] ?? '');
 
-    if ($pid <= 0 || !in_array($src, ['encar', 'openlane', 'ecarstrade', 'auto1'], true)) {
+    if ($pid <= 0 || !in_array($src, ['encar', 'openlane', 'ecarstrade', 'auto1', 'autotrader'], true)) {
         $prc = (int)($car['prc'] ?? 0);
         return $prc > 0 ? ['amount' => $prc, 'cur' => (string)($car['cur'] ?? '')] : null;
     }
@@ -97,9 +97,7 @@ $clientPrice = function (?array $car, int $clientId) use ($db, $prefx): ?array {
         'capacity'  => (int)($car['vol'] ?? 0),
         'year'      => (int)($car['yr'] ?? 0),
     ];
-    $bd = $src === 'encar'
-        ? parsing_md_breakdown_kr($db, $prefx, $bdCar, null, true, $clientId)
-        : parsing_md_breakdown_eu($db, $prefx, $bdCar, null, true, $clientId);
+    $bd = parsing_md_breakdown_for($db, $prefx, $src, $bdCar, null, true, $clientId);
 
     return ($bd && !empty($bd['total']))
         ? ['amount' => (int)round($bd['total']), 'cur' => 'EUR']

@@ -194,8 +194,49 @@ final class R2Client
         $deleted = 0; $token = null;
         do {
             [$keys, $token] = $this->listObjects($prefix, $token);
-            foreach (array_keys($keys) as $k) { if ($this->deleteObject($k)) $deleted++; }
+            $deleted += $this->deleteObjects(array_keys($keys));
         } while ($token !== null);
+        return $deleted;
+    }
+
+    /**
+     * Delete many keys in ONE request (S3 DeleteObjects), up to 1000 per call.
+     *
+     * A car folder holds ~50 objects (every photo in two sizes) and deleting them
+     * one by one meant 50 signed round trips to Cloudflare — several seconds of
+     * staring at a spinner after pressing "delete". This does it in one.
+     */
+    public function deleteObjects(array $keys): int
+    {
+        $keys = array_values(array_filter($keys, fn($k) => is_string($k) && $k !== ''));
+        if (!$keys) return 0;
+
+        $deleted = 0;
+        foreach (array_chunk($keys, 1000) as $chunk) {
+            $body = '<?xml version="1.0" encoding="UTF-8"?><Delete><Quiet>true</Quiet>';
+            foreach ($chunk as $k) {
+                $body .= '<Object><Key>' . htmlspecialchars($k, ENT_XML1 | ENT_QUOTES, 'UTF-8') . '</Key></Object>';
+            }
+            $body .= '</Delete>';
+
+            $ch = $this->buildRequest('POST', '', $body, 'application/xml', ['delete' => ''], [
+                // Required by the DeleteObjects API, on top of the SigV4 payload hash.
+                'content-md5' => base64_encode(md5($body, true)),
+            ]);
+            $out  = curl_exec($ch);
+            $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($code >= 200 && $code < 300) {
+                // Quiet mode answers with errors only, so a clean body means all gone.
+                $failed = substr_count((string)$out, '<Error>');
+                $deleted += max(0, count($chunk) - $failed);
+            } else {
+                // Batch refused (older gateway, odd key) — fall back to one by one so
+                // a delete never silently leaves the whole folder behind.
+                foreach ($chunk as $k) { if ($this->deleteObject($k)) $deleted++; }
+            }
+        }
         return $deleted;
     }
 
@@ -249,7 +290,7 @@ final class R2Client
      * Build a signed cURL handle. $key '' addresses the bucket itself (LIST).
      * $contentType null omits the header entirely (GET/DELETE/HEAD).
      */
-    private function buildRequest(string $method, string $key, string $body, ?string $contentType = null, array $query = [])
+    private function buildRequest(string $method, string $key, string $body, ?string $contentType = null, array $query = [], array $extraHeaders = [])
     {
         $amzDate   = gmdate('Ymd\THis\Z');
         $dateStamp = gmdate('Ymd');
@@ -274,6 +315,9 @@ final class R2Client
             'x-amz-date'           => $amzDate,
         ];
         if ($contentType !== null) $headers['content-type'] = $contentType;
+        // Extra headers have to be SIGNED, not just sent — S3 rejects the request
+        // otherwise. DeleteObjects needs Content-MD5, hence this.
+        foreach ($extraHeaders as $h => $v) $headers[strtolower($h)] = $v;
         ksort($headers);
 
         $canonicalHeaders = '';
@@ -318,7 +362,7 @@ final class R2Client
             CURLOPT_TIMEOUT        => 60,
             CURLOPT_CONNECTTIMEOUT => 15,
         ]);
-        if ($method === 'PUT') curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
+        if ($method === 'PUT' || $method === 'POST') curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
 
         return $ch;
     }

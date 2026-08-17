@@ -75,6 +75,24 @@ try {
 
 }
 
+$usMarkupTiers = [];
+try {
+    $stmt = $db->prepare('SELECT * FROM '.$prefx.'_parsing_us_markup_tiers ORDER BY sort_order, price_from');
+    $stmt->execute();
+    $usMarkupTiers = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+
+}
+
+$usParams = [];
+try {
+    $stmt = $db->prepare('SELECT * FROM '.$prefx.'_parsing_us_params ORDER BY sort_order, id');
+    $stmt->execute();
+    $usParams = $stmt->fetchAll(PDO::FETCH_ASSOC);
+} catch (Exception $e) {
+
+}
+
 $g = function($key, $default = '') use ($settings) {
     return htmlspecialchars($settings[$key] ?? $default);
 };
@@ -83,6 +101,7 @@ $g = function($key, $default = '') use ($settings) {
 $flagStyle = 'height:1.1em;width:auto;vertical-align:-0.15em;margin-right:0.4rem;';
 $flagEu = '<img src="/content/admin/page/parsing/media-parsing/flag-europe.svg" alt="Europa" style="'.$flagStyle.'">';
 $flagKr = '<img src="/content/admin/page/parsing/media-parsing/flag-korea.svg" alt="Coreea" style="'.$flagStyle.'">';
+$flagUs = '<img src="/content/admin/page/parsing/media-parsing/united-states-fl.png" alt="SUA" style="'.$flagStyle.'">';
 
 $rtrn = '
 <link rel="stylesheet" href="/content/admin/page/parsing/parsing.css?v='.filemtime(_ADM_PAGE.'/parsing/parsing.css').'">
@@ -240,7 +259,7 @@ $rtrn = '
         #parsing-container .crosspost-limits input.cp-err { border-color:#dc2626 !important; background:#fdecec; }
     </style>
 
-    <h2 style="margin-top:2.5rem;">'.$flagEu.$flagKr.$t['commission_title'].'</h2>
+    <h2 style="margin-top:2.5rem;">'.$flagEu.$flagKr.$flagUs.$t['commission_title'].'</h2>
     <p class="muted">'.$t['commission_hint'].'</p>
 
     <form class="parsing-eu-section" data-section="commission" onsubmit="parsingSaveEu(event)">
@@ -424,6 +443,83 @@ $rtrn .= '
             </tbody>
         </table>
         <button type="button" class="btn-secondary" onclick="parsingTierAdd(\'kr-markup-table\')" style="margin-top:0.5rem;">+ '.$t['tier_add'].'</button>
+        <button type="submit" class="btn-primary" style="margin-top:0.5rem;margin-left:0.5rem;">'.$t['btn_save_eu'].'</button>
+    </form>
+
+    <h2 style="margin-top:2.5rem;">'.$flagUs.$t['us_params_title'].'</h2>
+    <p class="muted">'.$t['us_params_hint'].'</p>
+
+    <form class="parsing-eu-section" data-section="us_params" onsubmit="parsingSaveEu(event)">
+        <table class="parsing-table">
+            <thead>
+                <tr>
+                    <th>'.$t['eu_col_param'].'</th>
+                    <th style="width:80px;text-align:center;">'.$t['eu_col_enabled'].'</th>
+                    <th style="width:180px;">'.$t['eu_col_amount'].'</th>
+                </tr>
+            </thead>
+            <tbody>';
+
+foreach ($usParams as $param) {
+    $id = (int)$param['id'];
+    $key = $param['param_key'];
+    $label = $t['us_param_'.$key] ?? ucfirst(str_replace('_', ' ', $key));
+    $checked = ((int)$param['enabled'] === 1) ? ' checked' : '';
+    $isPercent = (($param['value_type'] ?? 'fixed') === 'percent');
+    $amount = (float)$param['amount_eur'];
+    $unit = $isPercent ? '%' : '€';
+    // Fixed amounts in € are whole numbers (int-only); percents keep one decimal.
+    $step = $isPercent ? '0.1' : '1';
+    $cls = $isPercent ? '' : ' int-only';
+    $val = $isPercent ? rtrim(rtrim(number_format($amount, 1, '.', ''), '0'), '.') : (string)(int)round($amount);
+    $rtrn .= '
+                <tr>
+                    <td><strong>'.htmlspecialchars($label).'</strong></td>
+                    <td style="text-align:center;"><input type="checkbox" name="us_'.$id.'_enabled" value="1"'.$checked.'></td>
+                    <td style="white-space:nowrap;"><input type="number" step="'.$step.'" min="0" class="'.trim($cls).'" name="us_'.$id.'_amount" value="'.$val.'" style="width:110px;display:inline-block;"> <span class="muted">'.$unit.'</span></td>
+                </tr>';
+}
+if (empty($usParams)) {
+    $rtrn .= '<tr><td colspan="3" class="empty-state">'.$t['empty_country_config'].'</td></tr>';
+}
+
+$rtrn .= '
+            </tbody>
+        </table>
+        <button type="submit" class="btn-primary" style="margin-top:1rem;">'.$t['btn_save_eu'].'</button>
+    </form>
+
+    <h2 style="margin-top:2.5rem;">'.$flagUs.$t['us_markup_title'].'</h2>
+    <p class="muted">'.$t['us_markup_hint'].'</p>
+
+    <form class="parsing-eu-section" data-section="us_markup" onsubmit="parsingSaveEu(event)">
+        <table class="parsing-table" id="us-markup-table" data-prefix="umtier">
+            <thead>
+                <tr>
+                    <th>'.$t['eu_col_price_from'].'</th>
+                    <th>'.$t['eu_col_price_to'].'</th>
+                    <th>'.$t['us_markup_col'].'</th>
+                    <th style="width:50px;"></th>
+                </tr>
+            </thead>
+            <tbody>';
+
+foreach ($usMarkupTiers as $tier) {
+    $id = (int)$tier['id'];
+    $to = ($tier['price_to'] === null || $tier['price_to'] === '') ? '' : (int)$tier['price_to'];
+    $rtrn .= '
+                <tr data-row>
+                    <td><input type="number" step="1" min="0" class="int-only" name="umtier_'.$id.'_price_from" value="'.(int)$tier['price_from'].'"></td>
+                    <td><input type="number" step="1" min="0" class="int-only" name="umtier_'.$id.'_price_to" value="'.$to.'" placeholder="'.$t['eu_price_to_unlimited'].'"></td>
+                    <td><input type="number" step="1" min="0" class="int-only" name="umtier_'.$id.'_markup" value="'.(int)$tier['markup'].'"></td>
+                    <td><button type="button" class="btn-icon" onclick="parsingTierRemove(this)" title="'.$t['tier_remove'].'">🗑</button></td>
+                </tr>';
+}
+
+$rtrn .= '
+            </tbody>
+        </table>
+        <button type="button" class="btn-secondary" onclick="parsingTierAdd(\'us-markup-table\')" style="margin-top:0.5rem;">+ '.$t['tier_add'].'</button>
         <button type="submit" class="btn-primary" style="margin-top:0.5rem;margin-left:0.5rem;">'.$t['btn_save_eu'].'</button>
     </form>
 </div>

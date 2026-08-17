@@ -2,7 +2,15 @@
 
 if ( isset($t_mp[5]) || isset($mixall) ){
 	if ( !isset($t_mp[5]) ){$t_mp[5]='';}
-	
+
+	// Client ID-card photo. The same markup serves the add form and the edit
+	// overlay (which clones these blocks), and it is placed in every document
+	// that has a client — trip sheets and the international invoice have none,
+	// so there is nothing to attach a buletin to there.
+	require_once(_ADM_INCL.'/docs/id_photo.php');
+	$idPhotoWidget = docs_id_photo_widget($_COOKIE['lang'] ?? 'ro');
+	$rtrn .= docs_id_photo_assets();
+
 	$it_ar = [];
 	$pdo = $db->prepare('SELECT * FROM '.$prefx.'_car_list ORDER BY `br` ASC, `mo` ASC'); $pdo->execute();
 	foreach ($pdo as $r){ if ($r['br_nm']!=''){ if ($r['mo']!=''){ $it_ar[ $r['br_nm'] ][] = $r['mo_nm']; } } }
@@ -448,7 +456,9 @@ if ($contract['contract_type'] == 'vinzare_proc') {
 	});
 	</script>
 JAVASCRIPT;
-	
+
+	// No KYC section in this document, so the widget closes the form.
+	$rtrn .= $idPhotoWidget;
 	$rtrn .= ( isset($mixall)?'</form>':'' );
 }
 	
@@ -481,6 +491,7 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
 		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" title="Phone" required /></label>
 
+		'.$idPhotoWidget.'
 		<div class="kyc-questionnaire" style="display: block;">
 			
 		<div style="margin-top: 30px;" class="ttl">Date Chestionar</div>
@@ -630,6 +641,7 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" title="Phone" required /></label>
 		<label class="lbl"><span class="ttl">Email</span><input type="text" name="u_eml" title="Email" /></label>
 		
+		'.$idPhotoWidget.'
 		<div class="kyc-questionnaire" style="display: block;">
 			
 		<div style="margin-top: 30px;" class="ttl">Date Chestionar</div>
@@ -765,6 +777,7 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" title="Phone" required /></label>
 		<label class="lbl"><span class="ttl">Email</span><input type="text" name="u_eml" title="Email" /></label>
 		
+    '.$idPhotoWidget.'
     <div class="kyc-questionnaire" style="display: block;">
 			
 		<div style="margin-top: 30px;" class="ttl">Date Chestionar</div>
@@ -924,7 +937,8 @@ JAVASCRIPT;
 		<div id="grnt_fld_bx" name="grnt_txt" data-qu="0"></div>
 		<div class="btn" data-fn="add_grnt_fld">Adăugati</div>
 
-         <div class="kyc-questionnaire" style="display: block;">
+         '.$idPhotoWidget.'
+    <div class="kyc-questionnaire" style="display: block;">
 			
 		<div style="margin-top: 30px;" class="ttl">Date Chestionar</div>
 			<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
@@ -1045,6 +1059,7 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
 		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" title="Phone" required /></label>
 
+    '.$idPhotoWidget.'
     <div class="kyc-questionnaire" style="display: block;">
 			
 		<div style="margin-top: 30px;" class="ttl">Date Chestionar</div>
@@ -1165,6 +1180,7 @@ JAVASCRIPT;
 		<label class="lbl"><span class="ttl">Name</span><input class="need fj" type="text" name="u_nm" title="Name" data-fiz="Name" data-jur="SRL" required /></label>
 		<label class="lbl"><span class="ttl">Phone</span><input type="text" name="u_phn" title="Phone" required /></label>
 
+    '.$idPhotoWidget.'
     <div class="kyc-questionnaire" style="display: block;">
 			
 		<div style="margin-top: 30px;" class="ttl">Date Chestionar</div>
@@ -1302,6 +1318,7 @@ JAVASCRIPT;
 	<label class="lbl"><span class="ttl">Termenul de achitare</span><input class="need" type="text" name="t2pay" value="3" title="Termenul de achitare" required /></label>
 	<label class="lbl"><span class="ttl">Nr. Înma. Camion/remorca</span><textarea class="need" name="plate" title="Nr. Înma. Camion/remorca" rows="1" required></textarea></label>
 
+		'.$idPhotoWidget.'
 		'.( isset($mixall)?'</form>':'' );
 	}
 
@@ -1491,7 +1508,8 @@ JAVASCRIPT;
 			}
 		})();
 		</script>
-		
+
+		'.$idPhotoWidget.'
 		'.( isset($mixall)?'</form>':'' );
 	}
 
@@ -1730,7 +1748,7 @@ JAVASCRIPT;
 		}
 		
 		$rtrn .= '
-		</div>';
+		</div>'.$idPhotoWidget;
 	}
 	unset($it_ar, $br_html, $mo_html, $clr_html);
 }

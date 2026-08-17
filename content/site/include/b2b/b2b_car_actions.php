@@ -158,6 +158,61 @@ if (!function_exists('b2b_car_actions_html')) {
     }
 
     /** Shown instead of the car when the region is not covered by the plan (spec 3.2). */
+    /**
+     * The partner's active gifts, shown on the car page under the offer
+     * countdown. Same markup and classes as the cabinet list, so the two are
+     * styled once and cannot drift apart.
+     *
+     * Not gated on the car having a B2B price: a gift is granted to the ACCOUNT
+     * and reads "free with any car purchased from us", so it holds for whatever
+     * the partner is looking at. Nothing is rendered for guests, or for a
+     * partner who has no gifts.
+     *
+     * @param string $variant 'page-d' (desktop slot) or 'page-m' (mobile slot);
+     *                        CSS shows exactly one, at the same 640px breakpoint
+     *                        the countdown uses.
+     */
+    function b2b_gift_car_html(string $variant = 'page-d'): string
+    {
+        if (!function_exists('b2b_is_client') || !b2b_is_client()) {
+            return '';
+        }
+
+        try {
+            $gifts = \App\Services\B2b\B2bGift::forUser(b2b_user_id(), 5);
+        } catch (\Throwable $e) {
+            return ''; // table not migrated: the car page must not break
+        }
+        if (!$gifts) {
+            return '';
+        }
+
+        include_once( _SITE_PAGE.'/b2b/_layout.php' );
+
+        $lang = $_COOKIE['lang'] ?? 'ro';
+        $t    = b2b_lang($lang);
+        $esc  = fn($s) => htmlspecialchars((string)$s, ENT_QUOTES, 'UTF-8');
+
+        $out = '<ul class="b2b-gifts b2b-gifts--car b2b-gifts--'.$esc($variant).'">';
+        foreach ($gifts as $g) {
+            $what = \App\Services\B2b\B2bGift::describe($g, $lang);
+            $note = trim((string)($g['note'] ?? ''));
+
+            // No "new" badge here: that state is the cabinet's notification, and
+            // this block is about the perk itself.
+            $out .= '<li class="b2b-gift">'
+                  . '<span class="b2b-gift__ico" aria-hidden="true">&#127873;</span>'
+                  . '<div class="b2b-gift__body">'
+                  . '<p class="b2b-gift__what">'.$esc($what !== '' ? $what : $t['gift_generic']).'</p>'
+                  . '<p class="b2b-gift__free">'.$esc($t['gift_free']).'</p>'
+                  . ($note !== '' ? '<p class="b2b-gift__note">'.$esc($note).'</p>' : '')
+                  . '</div>'
+                  . '</li>';
+        }
+
+        return $out.'</ul>';
+    }
+
     function b2b_restricted_html(string $lang): string
     {
         $L = [

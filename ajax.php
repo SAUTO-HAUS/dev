@@ -8,7 +8,19 @@ include_once('environment.php');
 @ini_set('display_errors', '0');
 error_reporting(E_ALL & ~E_DEPRECATED & ~E_NOTICE & ~E_WARNING);
 
-if ( ( session_id()=='' || !isset($_SESSION) ) ){ session_start(); }
+// Same cookie attributes as index.php — the session cookie must not be issued
+// without Secure/SameSite just because it happened to be created by an AJAX hit.
+if ( ( session_id()=='' || !isset($_SESSION) ) ){
+	session_set_cookie_params([
+		'lifetime' => 0,
+		'path'     => '/',
+		'secure'   => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+		              || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https'),
+		'httponly' => true,
+		'samesite' => 'Lax',
+	]);
+	session_start();
+}
 
 $requestTp = $_POST['tp'] ?? $_GET['tp'] ?? '';
 if ( !in_array($requestTp, ['adm','ste'], true) ){ die( 'Restricted access' ); }

@@ -54,6 +54,22 @@
   #show_img > .right {right:8%;}
   #show_img > .right::before {transform:rotate(-45deg); margin-right:6px;}
   #show_img > .status {position:absolute; z-index:2; top:2%; left:2%; color:#fff;}
+
+  /* Zoom controls — same round white pill as the arrows, bottom centre. */
+  #show_img > .zoom {position:absolute; z-index:3; bottom:4%; left:50%; transform:translateX(-50%); display:flex; gap:8px;}
+  #show_img > .zoom > button {
+      width:44px; height:44px; border:0; border-radius:50%; cursor:pointer;
+      background:rgba(255,255,255,.85); color:#111;
+      font:700 26px/1 system-ui, sans-serif;
+      display:flex; align-items:center; justify-content:center;
+      transition:background .15s, transform .1s;
+  }
+  #show_img > .zoom > button:hover {background:#fff;}
+  #show_img > .zoom > button:active {transform:scale(.92);}
+  #show_img > .zoom > button[disabled] {opacity:.35; cursor:default;}
+  /* Only offer panning once the photo is actually bigger than the viewport. */
+  #show_img.zoomed {cursor:grab;}
+  #show_img.zoomed.grabbing {cursor:grabbing;}
   
   #menu_mobile {
       width:50px;
@@ -79,9 +95,6 @@
   /*#overlay .snd_msg > .inp:nth-child(odd){float:left;}
   #overlay .snd_msg > .inp:nth-child(even){float:right;}*/
   #overlay .snd_msg > textarea {width:100% !important; min-height:10rem; height:3.14rem; resize:vertical;}
-  #overlay .snd_msg > .agmt {width:100%;}
-  #overlay .snd_msg > .agmt > .txt > .x {text-decoration:underline;}
-  #overlay .snd_msg > .agmt > .cbx.cnfrm {accent-color:#e2001a;}
   #overlay .snd_msg > .btn {width:50%; margin:1rem 25% 0; line-height:3rem; cursor:pointer; transition:.3s; border-radius:.3rem;}
   
   
@@ -223,7 +236,7 @@
   main .gr > h1,
   main .gr .gr-h1 {font-size:2rem; font-weight:bold; text-transform:uppercase; margin:-1vw 0 1.5vw 0;}
   main .gr > h2 {font-size:2rem; font-weight:bold; text-transform:uppercase; margin:1.5vw 0 1.5vw 0;}
-  main .gr > .cnt {width:100%; display:flex; flex-flow:row wrap; justify-content:space-between; align-items:center; row-gap:1rem;}
+  main .gr > .cnt {width:100%; display:flex; flex-flow:row wrap; justify-content:space-between; align-items:center; row-gap:1rem;} /* the ONLY vertical gap between card rows — see .cnt.list > .it below */
   main .gr > .cnt > .lnk {width:23.5%; height:17rem; padding:1rem 2rem; background-color:#fff; border-radius:12px; transition:.3s; text-align:center; display: flex; flex-direction: column; align-items: center;}
   main .gr > .cnt > .lnk:hover {transform:scale(1.025); box-shadow:0 5px 10px 0 rgba(0,0,0,.3);}
   main .gr > .cnt > .lnk > img {max-width: 100%;}
@@ -231,13 +244,14 @@
   main .gr > .cnt > .lnk > .txt {color:#515151; text-align:left; display: -webkit-box; -webkit-line-clamp: 3; line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; max-height: 4.2rem;}
   
   main .gr > .cnt > .it {width:23%; /*min-height:60vh;*/ border-radius:12px; overflow:hidden; background-color:#fff; position:relative; transition:.2s;}
-  main .gr > .cnt.list > .it {margin:1rem 0;}
+  main .gr > .cnt.list > .it {margin:0;} 
+  main .gr > .cnt.list {margin-top:1rem;}
   main .gr > .cnt > .it:hover {transform:scale(1.025); box-shadow:0 5px 10px 0 rgba(0,0,0,.3);}
   main .gr > .cnt > .it > .crdt {background-color:#e2001a; color:#fff; display:inline-block; position:absolute; top:1rem; left:1rem; z-index:4; padding:.3rem 1rem; border-radius:.5rem;}
-  main .gr > .cnt > .it > img {width:100%; height:13rem; object-fit:cover; object-position:center; position:relative; z-index:2; float:left; background:#fff url(/media/images/site/v2/no_image.svg) no-repeat center / 30%;}
-  main .gr > .cnt > .it > div.imgX {width:100%; height:13rem; display:block; text-align:center; overflow:hidden; background:url(/media/images/site/v2/no_image.svg) center / 30% no-repeat;}
+  main .gr > .cnt > .it > img {width:100%; object-fit:cover; object-position:center; position:relative; z-index:2; float:left; background:#fff url(/media/images/site/v2/no_image.svg) no-repeat center / 30%;}
+  main .gr > .cnt > .it > div.imgX {width:100%; display:block; text-align:center; overflow:hidden; background:url(/media/images/site/v2/no_image.svg) center / 30% no-repeat;}
   main .gr > .cnt > .it > div.imgX > img {width:100%; height:100%; object-fit:cover; object-position:center;}
-  main .gr > .cnt > .it > .img {width:100%; height:13rem; background-color:transparent; background-repeat:no-repeat; background-position:center; background-size:cover; position:absolute; z-index:3; top:0; left:0; right:0;}
+  main .gr > .cnt > .it > .img {width:100%; background-color:transparent; background-repeat:no-repeat; background-position:center; background-size:cover; position:absolute; z-index:3; top:0; left:0; right:0;}
 
   @media (min-width: 769px) {
     main .gr > .cnt > .it {
@@ -295,51 +309,27 @@
     }
   }
   
+  main .gr > .cnt          { --card-h:auto;  --card-img-h:13rem; }
+  @media (min-width:769px) { main .gr > .cnt { --card-h:30rem; --card-img-h:13rem; } }
+  @media (min-width:1600px){ main .gr > .cnt { --card-h:32rem; --card-img-h:15rem; } }
+  @media (min-width:2200px){ main .gr > .cnt { --card-h:36rem; --card-img-h:17rem; } }
+  @media (min-width:3000px){ main .gr > .cnt { --card-h:40rem; --card-img-h:19rem; } }
+
+  main .gr > .cnt > .it { height:var(--card-h); }
+
+  main .gr > .cnt > .it > img,
+  main .gr > .cnt > .it > div.imgX,
+  main .gr > .cnt > .it > .img,
+  main .gr > .cnt > .it .card-img-wrap > img,
+  main .gr > .cnt > .it .card-img-wrap > .card-img-slot > img { height:var(--card-img-h); }
+
+  /* Tablets: two cards per row. Layout only — the sizes come from the ladder. */
   @media (min-width: 769px) and (max-width: 1024px) {
-    main .gr > .cnt { 
-      flex-flow: row wrap !important; 
+    main .gr > .cnt {
+      flex-flow: row wrap !important;
       justify-content: space-between !important;
     }
-    main .gr > .cnt > .it { 
-      width: 48% !important; 
-      height: 29rem !important; 
-      margin: 1% !important;
-    }
-    main .gr > .cnt > .it > img { height: 13rem !important; }
-    main .gr > .cnt > .it > div.imgX { height: 13rem !important; }
-    main .gr > .cnt > .it > .img { height: 13rem !important; }
-  }
-
-  /* Standard laptops (1200-1599px) */
-  @media (min-width: 1200px) and (max-width: 1599px) {
-    main .gr > .cnt > .it { height: 29rem; }
-    main .gr > .cnt > .it > img { height: 13rem; }
-    main .gr > .cnt > .it > div.imgX { height: 13rem; }
-    main .gr > .cnt > .it > .img { height: 13rem; }
-  }
-
-  /* Standard desktop (1600-2199px) - Includes 1920x1080 */
-  @media (min-width: 1600px) and (max-width: 2199px) {
-    main .gr > .cnt > .it { height: 31rem; }
-    main .gr > .cnt > .it > img { height: 15rem; }
-    main .gr > .cnt > .it > div.imgX { height: 15rem; }
-    main .gr > .cnt > .it > .img { height: 15rem; }
-  }
-
-  /* Large screens (2200-2999px) */
-  @media (min-width: 2200px) and (max-width: 2999px) {
-    main .gr > .cnt > .it { height: 35rem; }
-    main .gr > .cnt > .it > img { height: 17rem; }
-    main .gr > .cnt > .it > div.imgX { height: 17rem; }
-    main .gr > .cnt > .it > .img { height: 17rem; }
-  }
-
-  /* Very large screens (3000px+) */
-  @media (min-width: 3000px) {
-    main .gr > .cnt > .it { height: 39rem; }
-    main .gr > .cnt > .it > img { height: 19rem; }
-    main .gr > .cnt > .it > div.imgX { height: 19rem; }
-    main .gr > .cnt > .it > .img { height: 19rem; }
+    main .gr > .cnt > .it { width: 48% !important; margin: 0 1% !important; } /* horizontal only: vertical is the row-gap's job */
   }
 
   main .gr > .cnt > .it > .img.n_a {background-image:url(/media/images/site/v2/no_image.svg); position:absolute; z-index:1; background-size:30%; background-color:#fff; border-bottom:1px solid #eee;}
@@ -765,10 +755,6 @@
   #cnt > .bx > .gr.mlmp > .ml > form > input[type="text"]:not(:first-child),
   #cnt > .bx > .gr.mlmp > .ml > form > textarea {margin-top:.5rem;}
   #cnt > .bx > .gr.mlmp > .ml > form > textarea {min-height:7rem; resize:vertical;}
-  #cnt > .bx > .gr.mlmp > .ml > form > .agmt {margin:1rem 0;}
-  #cnt > .bx > .gr.mlmp > .ml > form > .agmt > .txt {color:#8c8c8c; font-size:.8rem;}
-  #cnt > .bx > .gr.mlmp > .ml > form > .agmt > .txt > .x {color:#333; text-decoration:underline;}
-  #cnt > .bx > .gr.mlmp > .ml > form > .agmt > .cbx.cnfrm {accent-color:#e2001a;}
   #cnt > .bx > .gr.mlmp > .ml > form > input[type="submit"] {background-color:#e2001a; color:#fff; line-height:4rem; width:100%; text-align:center; border-radius:.5rem; font-family:inherit; font-size:1rem; cursor:pointer; transition:.2s;}
   #cnt > .bx > .gr.mlmp > .ml > form > input[type="submit"]:hover {transform:scale(1.05);}
   
@@ -2698,7 +2684,10 @@ footer .columns-wrapper .column-container.col-logo-container {
       }
       
       main .gr > .cnt > .it > .prc > .val {
-          font-size: 1.8rem !important; 
+          font-size: 1.5rem !important; 
+      }
+      main .gr > .cnt > .it > .prc > .o_val--b2b {
+          font-size: 0.75rem;
       }
 
       main .gr > .cnt > .it > .prc > .stock-status {
@@ -3124,3 +3113,100 @@ footer .columns-wrapper .column-container.col-logo-container {
       #main_menu .lang_list a:hover div {background-color:#fdecee; color:#e2001a;}
       #main_menu .lang_list a:hover {animation:none;} /* kill the inherited shake */
   }
+
+/* ---------------------------------------------------------------------------
+   B2B offer countdown. Rendered only for a logged-in partner whose price offer
+   has a deadline: beside the import flag on catalog cards, under the price on
+   the car page. Turns amber under 24h (.is-soon, set by sitescripts.js).
+   --------------------------------------------------------------------------- */
+.b2b-offer-timer {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    white-space: nowrap;
+    line-height: 1.2;
+    color: #6b7280;
+    font-weight: 500;
+}
+.b2b-offer-timer__val { color: #111827; font-weight: 700; }
+.b2b-offer-timer.is-soon { color: #b45309; }
+.b2b-offer-timer.is-soon .b2b-offer-timer__val { color: #b45309; }
+
+/* Cards: own full-width line under the price (.b2b-offer-row), identical on
+   mobile and desktop — label and value side by side, aligned left with the
+   price above. Wraps to a second line rather than overflowing the card, which
+   the long Russian label needs on narrow cards. */
+.b2b-offer-timer--card {
+    font-size: 0.8rem;
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    white-space: normal;
+    gap: 4px;
+}
+.b2b-offer-timer--card .b2b-offer-timer__lbl { line-height: 1.1; }
+.b2b-offer-timer--card .b2b-offer-timer__val {
+    background: #f3f4f6;
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 0.8rem;
+}
+.b2b-offer-timer--card.is-soon .b2b-offer-timer__val { background: #fef3c7; }
+
+/* Car page. The page renders both layouts and lets CSS pick one, so the
+   countdown exists twice: --page-d under the price block, --page-m under the
+   title. Breakpoint mirrors .prc.desktop / .prc.pricemobile in cars_gallery.css
+   (640px) so exactly one is ever visible.
+
+   .spc_bx is a floated 32% column whose spec rows are themselves float:left, so
+   these must be full-width cleared blocks — left inline they get pulled up
+   alongside a float instead of sitting on their own line. */
+.b2b-offer-timer--page-d,
+.b2b-offer-timer--page-m {
+    font-size: 0.9rem;
+    margin: 6px 0 10px;
+    width: 100%;
+    clear: both;
+    flex-wrap: wrap;      /* long labels wrap instead of overflowing the column */
+    white-space: normal;
+    row-gap: 0;
+}
+.b2b-offer-timer--page-m { display: none; }
+
+@media (min-width: 640px) {
+    /* Centred under the price, which is itself the visual anchor of the column. */
+    .b2b-offer-timer--page-d { display: flex; justify-content: center; text-align: center; }
+    .b2b-offer-timer--page-m { display: none !important; }
+}
+@media (max-width: 640px) {
+    .b2b-offer-timer--page-d { display: none !important; }
+    /* Bottom margin 0: the price row below already brings its own 10px top
+       margin (cars_gallery.css), so anything here just doubles the gap. */
+    /* Now sits UNDER the mobile price row, which ends flush. */
+    .b2b-offer-timer--page-m { display: flex; font-size: 0.95rem; margin: 8px 0 0; }
+    /* On mobile the card timer has a full-width line of its own under the
+       "view details" button, so label and value fit side by side — no need for
+       the stacked layout the cramped desktop flag row needs. */
+}
+
+/* Card: the countdown's own line, directly under the price block. The offsets
+   mirror .prc exactly (0.5rem margins, plus 0.7rem padding under 768px) so the
+   text starts on the same vertical line as the price above it rather than at
+   the card edge. */
+.b2b-offer-row {
+    display: block;
+    width: auto;
+    margin: 2px 0.5rem 0;
+    padding: 0 0.3rem;    /* .prc adds padding:0.3rem on top of its margin */
+    text-align: left;
+}
+@media (max-width: 768px) {
+    /* .prc overrides its horizontal padding to 0.7rem below this width. */
+    .b2b-offer-row {
+        padding-left: 0.7rem;
+        padding-right: 0.7rem;
+    }
+}

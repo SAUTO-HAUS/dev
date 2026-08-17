@@ -22,9 +22,13 @@ $phone    = trim($_POST['phone']    ?? '');
 $message  = trim($_POST['message']  ?? '');
 $source   = trim($_POST['source']   ?? 'site');
 $page_url = mb_substr(strip_tags(trim($_POST['page_url'] ?? '')), 0, 500);
-$gdpr    = !empty($_POST['gdpr']);
+// Optional, separate purpose (Legea 195/2024): future offers. It must never be
+// a condition for answering the enquiry, so it is not validated.
+$marketing = (($_POST['marketing_contact'] ?? '') === 'yes');
 
-if (!$name || !$phone || !$gdpr) {
+// Only name + phone are genuinely needed to reply. The old mandatory privacy
+// checkbox was removed: conditioning a pre-contractual service on it is abusive.
+if (!$name || !$phone) {
     echo json_encode(['ok' => false, 'msg' => 'Date lipsă']);
     exit;
 }
@@ -58,6 +62,9 @@ $db->prepare("UPDATE {$prefx}_crm_inbox_sessions SET sender_phone=:p, page_id=:p
 $body = "Nume: $name\nTelefon: $phone";
 if ($message) $body .= "\nMesaj: $message";
 if ($page_url && in_array($source, ['cars', 'ordercars'])) $body .= "\nPagina: $page_url";
+// Recorded in the message itself: the operator must be able to tell, per lead,
+// whether marketing contact was consented to.
+$body .= "\nMarketing: " . ($marketing ? 'DA (acord explicit ' . date('d.m.Y H:i') . ')' : 'nu');
 
 inbox_save_message($db, $prefx, $sid, 'site', 'in', $sender_id, $name, $body);
 

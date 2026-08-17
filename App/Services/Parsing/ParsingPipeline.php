@@ -166,6 +166,12 @@ class ParsingPipeline
 
         // Approximate fixed rates — good enough for display/filtering.
         // Update periodically if rates drift significantly.
+        // CAD is quoted by BNM (like EUR), so it uses the live daily rate.
+        if ($currency === 'CAD') {
+            return round($amount * CurrencyRate::cadToEur($this->db, $this->prefix), 2);
+        }
+
+        // KRW is NOT published by BNM — it stays a fixed rate.
         $rates = [
             'KRW' => 0.000570, // 1 KRW ≈ 0.000570 EUR (1 EUR ≈ 1753 KRW, updated 2026-05-27)
         ];
@@ -189,6 +195,7 @@ class ParsingPipeline
             'encar' => 'KR',
             'ecarstrade' => 'BE',
             'openlane' => 'DE',
+            'autotrader' => 'CA',
         ][$source] ?? 'DE';
     }
 }

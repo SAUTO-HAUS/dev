@@ -8,7 +8,6 @@ if ( $_POST ){
 		$pCur = mb_strtoupper($_POST['cur'], "utf-8");
 		$zCur = isset($_POST['cur_'.$pCur])?$lng['l']['cur'][ $pCur ]:$pCur;
 		echo '
-		// test
 		<!DOCTYPE html>
 		<html>
 			<head>

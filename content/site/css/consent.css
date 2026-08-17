@@ -1,0 +1,401 @@
+/* Cookie consent UI (Legea 195/2024).
+
+   The banner and the settings modal are the same component seen twice, so both
+   surfaces are built from one set of tokens below. Change a token and both move
+   together — they cannot drift apart.
+
+   The tokens describe a DARK surface (grey panel, white text). Components that
+   live on the white pages instead — the policy-page button, the form notices —
+   carry their own explicit colours further down and must not use these tokens.
+
+   "Refuz" and "Accept" share a single .gdpr-btn rule on purpose: the law
+   requires refusing to be as easy as accepting, so neither may be given a fill,
+   an accent colour or a larger size. */
+
+:root {
+	/* The site footer grey, so the panel reads as part of the site. The panel
+	   is translucent, so a white page behind it lifts the rendered colour to
+	   about #565656 — the link and muted tints below are chosen against that
+	   lifted value, not against #515151, or the small print falls under 4.5:1. */
+	--gdpr-surface:       rgba(81, 81, 81, .97);
+	--gdpr-surface-solid: #515151;
+	--gdpr-blur:          blur(22px) saturate(160%);
+	--gdpr-border:        rgba(255, 255, 255, .14);
+	--gdpr-hairline:      rgba(255, 255, 255, .13);
+	--gdpr-radius:        16px;
+	--gdpr-shadow:        0 -10px 40px rgba(0, 0, 0, .3);
+	--gdpr-shadow-modal:  0 24px 70px rgba(0, 0, 0, .5);
+	--gdpr-ink:           #fff;
+	--gdpr-muted:         rgba(255, 255, 255, .75);
+	/* The brand red is unreadable on this grey (2.2:1), so links use a
+	   lightened tint. Measured on the rendered #565656: #ffc2c6 is 4.82:1,
+	   which clears WCAG AA for the small print these links sit in.
+	   The brand red stays on the white surfaces at the bottom of this file. */
+	--gdpr-link:          #ffc2c6;
+	--gdpr-link-hover:    #ffe2e4;
+	--gdpr-check:         #ff4d57;
+}
+
+/* ------------------------------------------------------------------ banner */
+
+.gdpr-banner {
+	position: fixed;
+	left: 0; right: 0; bottom: 0;
+	z-index: 10000;
+	display: none;              /* JS switches to flex on first visit */
+	flex-flow: row nowrap;
+	align-items: center;
+	gap: 2rem;
+	width: 100%;
+	max-height: 100vh;
+	overflow-y: auto;
+	box-sizing: border-box;
+	padding: 1.15rem 2rem;
+	background: var(--gdpr-surface);
+	-webkit-backdrop-filter: var(--gdpr-blur);
+	backdrop-filter: var(--gdpr-blur);
+	border-top: 1px solid var(--gdpr-border);
+	box-shadow: var(--gdpr-shadow);
+	font-size: .85rem;
+	line-height: 1.55;
+	color: var(--gdpr-ink);
+	animation: gdprRise .34s cubic-bezier(.16, 1, .3, 1);
+}
+
+/* Without backdrop-filter a translucent panel just looks muddy, so fall back
+   to the solid grey instead. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+	.gdpr-banner,
+	.gdpr-modal__box { background: var(--gdpr-surface-solid); }
+}
+
+@keyframes gdprRise {
+	from { opacity: 0; transform: translateY(14px); }
+	to   { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+	.gdpr-banner, .gdpr-modal.is-open { animation: none; }
+}
+
+.gdpr-banner__text { flex: 1 1 auto; min-width: 0; }
+
+.gdpr-banner__ttl {
+	display: block;
+	margin-bottom: .25rem;
+	font-size: 1.02rem;
+	font-weight: 700;
+	letter-spacing: -.012em;
+	color: var(--gdpr-ink);
+}
+.gdpr-banner__text p { margin: .15rem 0; }
+.gdpr-banner__text b { font-weight: 600; color: #fff; }
+.gdpr-banner__sub { font-size: .79rem; color: var(--gdpr-muted); }
+.gdpr-banner__text a {
+	color: var(--gdpr-link);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	text-decoration-thickness: 1px;
+}
+.gdpr-banner__text a:hover { color: var(--gdpr-link-hover); }
+
+.gdpr-banner__actions {
+	flex: 0 0 auto;
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: center;
+	gap: .55rem;
+}
+
+/* ----------------------------------------------------------------- buttons */
+
+/* Geometry and typography are shared by both choices and must stay that way:
+   same size, same padding, same font, same radius, same position in the row.
+   Only the fill differs (--solid vs --outline). Never give one a larger size,
+   a brand colour, or a lower contrast than the other — the law requires
+   refusing to be as easy and as visible as accepting. */
+.gdpr-btn {
+	min-width: 118px;
+	padding: .74rem 1.4rem;
+	border: 1.5px solid transparent;
+	border-radius: 10px;
+	font-family: inherit;
+	font-size: .875rem;
+	font-weight: 600;
+	line-height: 1;
+	white-space: nowrap;
+	cursor: pointer;
+	transition: background .18s ease, color .18s ease, border-color .18s ease, transform .12s ease, box-shadow .18s ease;
+}
+.gdpr-btn:active { transform: translateY(0) scale(.975); box-shadow: none; }
+.gdpr-btn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* Filled white. */
+.gdpr-btn--solid {
+	background: #fff;
+	color: #2b2b2b;
+	border-color: #fff;
+}
+.gdpr-btn--solid:hover {
+	background: #e6e6e6;
+	border-color: #e6e6e6;
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, .22);
+}
+
+/* Outlined, white on the grey panel. Same box, same weight of border. */
+.gdpr-btn--outline {
+	background: transparent;
+	color: #fff;
+	border-color: rgba(255, 255, 255, .85);
+}
+.gdpr-btn--outline:hover {
+	background: rgba(255, 255, 255, .16);
+	border-color: #fff;
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, .22);
+}
+
+/* Secondary entry point to the granular settings — deliberately not a primary
+   action, so it cannot be mistaken for the accept/reject pair. */
+.gdpr-btn--link {
+	min-width: 0;
+	padding: .74rem .55rem;
+	background: none;
+	border: none;
+	font-weight: 400;
+	color: var(--gdpr-muted);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+.gdpr-btn--link:hover { background: none; color: #fff; }
+
+/* ------------------------------------------------------------------- modal */
+
+.gdpr-modal {
+	position: fixed;
+	inset: 0;
+	z-index: 10001;
+	display: none;
+	align-items: center;
+	justify-content: center;
+	padding: 1.25rem;
+	background: rgba(0, 0, 0, .55);
+	-webkit-backdrop-filter: blur(5px);
+	backdrop-filter: blur(5px);
+}
+.gdpr-modal.is-open { display: flex; animation: gdprFade .22s ease; }
+
+@keyframes gdprFade { from { opacity: 0; } to { opacity: 1; } }
+
+/* Same surface recipe as the banner: identical tokens, identical result. */
+.gdpr-modal__box {
+	width: 100%;
+	max-width: 560px;
+	max-height: 88vh;
+	overflow-y: auto;
+	box-sizing: border-box;
+	padding: 1.6rem 1.7rem;
+	background: var(--gdpr-surface);
+	-webkit-backdrop-filter: var(--gdpr-blur);
+	backdrop-filter: var(--gdpr-blur);
+	border: 1px solid var(--gdpr-border);
+	border-radius: var(--gdpr-radius);
+	box-shadow: var(--gdpr-shadow-modal);
+	color: var(--gdpr-ink);
+	font-size: .85rem;
+	line-height: 1.55;
+}
+
+.gdpr-modal__head h2 {
+	margin: 0 0 .2rem;
+	font-size: 1.15rem;
+	font-weight: 700;
+	letter-spacing: -.012em;
+	color: var(--gdpr-ink);
+}
+.gdpr-modal__head p { margin: 0 0 1.1rem; font-size: .79rem; color: var(--gdpr-muted); }
+
+.gdpr-cat {
+	display: flex;
+	align-items: flex-start;
+	gap: 1rem;
+	padding: .85rem 0;
+	border-top: 1px solid var(--gdpr-hairline);
+}
+.gdpr-cat__txt { flex: 1; display: flex; flex-flow: column; gap: .15rem; }
+.gdpr-cat__ttl { font-weight: 600; color: var(--gdpr-ink); }
+.gdpr-cat__ttl em {
+	margin-left: .4rem;
+	padding: .12rem .45rem;
+	background: rgba(255, 255, 255, .14);
+	border-radius: 5px;
+	font-style: normal;
+	font-size: .71rem;
+	font-weight: 500;
+	color: var(--gdpr-muted);
+}
+.gdpr-cat__dsc { font-size: .79rem; color: var(--gdpr-muted); }
+.gdpr-cat input[type="checkbox"] {
+	flex: 0 0 auto;
+	width: 1.15rem; height: 1.15rem;
+	margin-top: .2rem;
+	accent-color: var(--gdpr-check);
+	cursor: pointer;
+}
+.gdpr-cat input[type="checkbox"]:disabled { cursor: default; opacity: .55; }
+
+.gdpr-modal__actions {
+	display: flex;
+	gap: .55rem;
+	margin-top: 1.3rem;
+	padding-top: 1.3rem;
+	border-top: 1px solid var(--gdpr-hairline);
+}
+.gdpr-modal__actions .gdpr-btn { flex: 1; }
+
+.gdpr-modal__policy {
+	display: block;
+	margin-top: .9rem;
+	text-align: center;
+	font-size: .79rem;
+	color: var(--gdpr-link);
+	text-decoration: underline;
+	text-underline-offset: 2px;
+}
+.gdpr-modal__policy:hover { color: var(--gdpr-link-hover); }
+
+/* =========================================================================
+   Everything below sits on the WHITE pages, not on the grey panel, so it
+   keeps the brand red and dark ink. Do not switch these to the tokens above.
+   ========================================================================= */
+
+/* --- forms (Cap. 4) --- */
+
+/* Replaces the old mandatory "I accept the privacy policy" checkbox: plain
+   information, nothing to tick, nothing blocking the submit. */
+.legal-notice {
+	margin: .6rem 0 0;
+	font-size: 12px;
+	line-height: 1.5;
+	color: #666;
+	text-align: center;
+}
+.legal-notice a { color: #d32f2f; text-decoration: underline; }
+
+/* Separate purpose, so: separate box, never pre-ticked, never required. */
+.mkt-optin {
+	display: flex;
+	align-items: flex-start;
+	gap: .5rem;
+	margin: .8rem 0 .4rem;
+	font-size: 13px;
+	line-height: 1.4;
+	color: #555;
+}
+.mkt-optin input[type="checkbox"] {
+	flex: 0 0 auto;
+	width: 1rem; height: 1rem;
+	margin-top: .1rem;
+	accent-color: #e2001a;
+	cursor: pointer;
+}
+.mkt-optin label { cursor: pointer; }
+
+/* --- reopen shortcuts --- */
+
+/* Button inside the privacy / cookie policy pages (white background). */
+.cookie-settings-btn {
+	display: inline-block;
+	padding: .6rem 1.15rem;
+	background: transparent;
+	color: #1e1f24;
+	border: 1.5px solid #1e1f24;
+	border-radius: 10px;
+	font-family: inherit;
+	font-size: .9rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background .18s ease, color .18s ease;
+}
+.cookie-settings-btn:hover { background: #1e1f24; color: #fff; }
+
+/* Footer shortcut — the site footer is already grey, so this one is light. */
+.footer-operator { width: 100%; margin: 6px 0 0; padding: 0; text-align: center; }
+.footer-cookie-link {
+	display: inline-block;
+	padding: 0;
+	background: none;
+	border: none;
+	color: rgba(255, 255, 255, .75);
+	font-family: inherit;
+	font-size: 12px;
+	line-height: 1.7;
+	text-decoration: underline;
+	cursor: pointer;
+}
+.footer-cookie-link:hover { color: #fff; }
+
+/* ------------------------------------------------------------ responsive -- */
+
+/* Tablet: text above, buttons on a row of their own. */
+@media (max-width: 1024px) {
+	.gdpr-banner {
+		flex-flow: column;
+		align-items: stretch;
+		gap: .95rem;
+		padding: 1.15rem 1.3rem;
+	}
+	.gdpr-banner__actions { justify-content: flex-end; }
+	.gdpr-banner__actions .gdpr-btn { min-width: 132px; }
+	/* Settings to the far left, the two real choices together on the right. */
+	.gdpr-banner__actions .gdpr-btn--link { order: -1; margin-right: auto; }
+}
+
+/* Phone: full-width stack; the two choices share one 50/50 row. */
+@media (max-width: 640px) {
+	.gdpr-banner {
+		max-height: 82vh;
+		padding: 1.05rem 1rem 1.2rem;
+		font-size: .82rem;
+		animation: gdprRiseMobile .3s cubic-bezier(.16, 1, .3, 1);
+	}
+	.gdpr-banner__ttl { font-size: .95rem; }
+	.gdpr-banner__sub { font-size: .75rem; }
+	/* One policy link per line, centred, each with a finger-sized tap area —
+	   side by side they are two small targets a few pixels apart. */
+	.gdpr-links { display: block; margin-top: .3rem; }
+	.gdpr-links a {
+		display: block;
+		padding: .45rem 0;
+		font-size: .8rem;
+		text-align: center;
+	}
+	.gdpr-sep { display: none; }
+	.gdpr-banner__actions { flex-flow: row wrap; gap: .5rem; }
+	.gdpr-banner__actions .gdpr-btn { flex: 1 1 0; min-width: 0; padding: .82rem .5rem; }
+	/* Back below the pair, full width, so the two choices keep a clean 50/50
+	   row. Overrides the tablet order/auto-margin above. */
+	.gdpr-banner__actions .gdpr-btn--link {
+		flex: 1 1 100%;
+		order: 1;
+		margin-right: 0;
+		padding: .3rem 0 0;
+		text-align: center;
+	}
+
+	.gdpr-modal { padding: 0; align-items: flex-end; }
+	.gdpr-modal__box {
+		max-width: none;
+		max-height: 90vh;
+		padding: 1.3rem 1.1rem 1.5rem;
+		border-radius: var(--gdpr-radius) var(--gdpr-radius) 0 0;
+		border-left: none; border-right: none; border-bottom: none;
+	}
+	.gdpr-modal__actions { flex-flow: column-reverse; }
+	.gdpr-modal__actions .gdpr-btn { width: 100%; }
+}
+
+@keyframes gdprRiseMobile {
+	from { opacity: 0; transform: translateY(100%); }
+	to   { opacity: 1; transform: translateY(0); }
+}

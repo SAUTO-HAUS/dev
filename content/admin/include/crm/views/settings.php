@@ -60,6 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['crm_section'])) {
             'inbox_ai_prompt_sautohaus_999md',
             'inbox_ai_prompt_order_999md',
             'inbox_ai_prompt_korea_999md',
+            'inbox_ai_prompt_usa_999md',
             'inbox_ai_prompt_regular_999md',
             'inbox_ai_prompt_facebook',
             'inbox_ai_prompt_instagram',
@@ -68,7 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['crm_section'])) {
             if (isset($_POST[$k])) crm_set_setting($db, $prefx, $k, trim($_POST[$k]));
         }
         // AI enable toggles per channel (checkbox: present = 1, absent = 0)
-        $enable_channels = ['telegram','999md','sautohaus_999md','order_999md','korea_999md','regular_999md','facebook','instagram','viber'];
+        $enable_channels = ['telegram','999md','sautohaus_999md','order_999md','korea_999md','usa_999md','regular_999md','facebook','instagram','viber'];
         foreach ($enable_channels as $ch) {
             $val = isset($_POST['inbox_ai_enabled_' . $ch]) ? '1' : '0';
             crm_set_setting($db, $prefx, 'inbox_ai_enabled_' . $ch, $val);
@@ -368,6 +369,7 @@ Never reveal internal company details, staff names, or system architecture.') ?>
                     ['sautohaus_999md',  'inbox_ai_prompt_sautohaus_999md',  '999.svg'],
                     ['order_999md',      'inbox_ai_prompt_order_999md',      '999.svg'],
                     ['korea_999md',      'inbox_ai_prompt_korea_999md',      '999.svg'],
+                    ['usa_999md',        'inbox_ai_prompt_usa_999md',        '999.svg'],
                     ['regular_999md',    'inbox_ai_prompt_regular_999md',    '999.svg'],
                     ['facebook',         'inbox_ai_prompt_facebook',         'facebook.svg'],
                     ['instagram',        'inbox_ai_prompt_instagram',        'instagram.svg'],

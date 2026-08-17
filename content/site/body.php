@@ -166,41 +166,16 @@ if (isset($t_mp[2]) && $t_mp[2] == 'ordercars' && isset($t_mp[3]) && !isset($_GE
 
 <body class="ffd" <?php /*class="noselect ffd"*/ echo ' data-mbl="'.$isMobile.'" data-lng="'.$_COOKIE['lang'].'"'; ?> data-js="0" data-host="SAUTO">
 
-<!-- Google Tag Manager (noscript) -->
-<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KRRLB4X" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-<!-- End Google Tag Manager (noscript) -->
+<!-- GTM noscript iframe removed: it fired the container with no way to ask for
+     consent first, which is exactly what Legea 195/2024 forbids. -->
 
 <?php /*
 	<!-- Yandex.Metrika informer --> <a style="display:none;" href="https://metrika.yandex.ru/stat/?id=87984800&amp;from=informer" target="_blank" rel="nofollow"><img src="https://metrika-informer.com/informer/87984800/3_1_FFFFFFFF_EFEFEFFF_0_pageviews" style="width:88px; height:31px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры, визиты и уникальные посетители)" class="ym-advanced-informer" data-cid="87984800" data-lang="ru" /></a> <!-- /Yandex.Metrika informer -->
 	<!-- Yandex.Metrika counter --> <script type="text/javascript" > (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter87984800 = new Ya.Metrika({ id:87984800, clickmap:true, trackLinks:true, accurateTrackBounce:true, trackHash:true, ecommerce:"dataLayer" }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://cdn.jsdelivr.net/npm/yandex-metrica-watch/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks"); </script> <!-- /Yandex.Metrika counter -->
 	*/ ?>
 
-<!--<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-MG9WJ9" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>-->
 
-<div id="cons_bx" class="cons_bx" style="display:none;">
-    <div class="close-banner" onclick="setConsent(true, true, true, true);">×</div>
-    <div style="display: flex; align-items: center; justify-content: center; flex: 1;">
-        <p><?php echo $lng['l']['consent']['base_txt'][0].$lng['l']['consent']['acpt_all'].$lng['l']['consent']['base_txt'][1].' <a href="/'.$_COOKIE['lang'].'/privacy" target="_blank" style="color:#000; border-bottom:1px solid #e2001a;">"'.$lng['l']['menu']['privacy'].'"</a>'; ?></p>
-    </div>
-    <div class="cons_btns">
-        <button onclick="setConsent(true, true, true, true)" style="background: linear-gradient(135deg, #e2001a, #b8001a) !important; color: white !important; border: 1px solid #e2001a !important; padding: 1rem 3rem !important; font-size: 1.2rem !important; display: flex !important; align-items: center !important; justify-content: center !important; line-height: 1 !important; border-radius: 1.5rem !important;"><?php echo $lng['l']['consent']['acpt_all']; ?></button>
-    </div>
-</div>
-
-<div id="pref_bx" class="cons_bx cons_pref" style="display:none;">
-    <div style="display:flex; flex-flow:column; gap:10px;">
-        <p class="ttl"><?php echo $lng['l']['consent']['cstmztn']; ?></p>
-        <label> <span class="txt"><?php echo $lng['l']['consent']['func_ck']; ?></span> <div class="chk_bx def"><div class="dot"></div></div></label>
-        <label><input checked="checked" type="checkbox" id="ad-storage" /> <span class="txt"><?php echo $lng['l']['consent']['ad_ck']; ?></span> <div class="chk_bx"><div class="dot"></div></div></label>
-        <label><input checked="checked" type="checkbox" id="ad-user-data" /> <span class="txt"><?php echo $lng['l']['consent']['usr_dt_ck']; ?></span> <div class="chk_bx"><div class="dot"></div></div></label>
-        <label><input checked="checked" type="checkbox" id="ad-personalization" /> <span class="txt"><?php echo $lng['l']['consent']['prsn_ck']; ?></span> <div class="chk_bx"><div class="dot"></div></div></label>
-        <label><input checked="checked" type="checkbox" id="analytics-storage" /> <span class="txt"><?php echo $lng['l']['consent']['ana_ck']; ?></span> <div class="chk_bx"><div class="dot"></div></div></label>
-    </div>
-    <div class="cons_btns">
-        <button onclick="savePref()"><?php echo $lng['l']['consent']['acpt_sel']; ?></button>
-        <button onclick="hidePref()"><?php echo $lng['l']['consent']['back']; ?></button>
-    </div>
-</div>
+<?php include(_SITE_INCL.'/consent.php'); ?>
 
 <div id="overlay" class="noselect">
     <div class="close"></div> <div class="bg"></div> <div class="content"></div>
@@ -215,6 +190,7 @@ echo '
 		<div class="close"></div>
 		<div class="left"></div>
 		<div class="right"></div>
+		<div class="zoom"><button type="button" class="zin" aria-label="Zoom in" title="Zoom +">+</button><button type="button" class="zout" aria-label="Zoom out" title="Zoom −">&minus;</button></div>
 	</div>';
 //echo substr( md5('22') , 0, 4 );
 ?>
@@ -352,6 +328,24 @@ if (!(function_exists('b2b_is_client') && b2b_is_client())):
                     $_b2b_label    = b2b_t('cabinet_mine');
                 }
 
+                // An unopened gift shows a dot on the cabinet button, wherever that
+                // button appears (burger entry, header, floating cluster). It is the
+                // only way the partner learns about a gift without an email, so it
+                // has to ride along on all three, not just one.
+                // A bare dot said "something happened" but not what, or how much.
+                // The count answers both at a glance, and 9+ keeps it from growing
+                // wider than the avatar it sits on.
+                $_b2b_gift_dot = '';
+                if ($_b2b_logged) {
+                    $_b2b_alert_n = 0;
+                    if (function_exists('b2b_gift_unseen'))   { $_b2b_alert_n += b2b_gift_unseen(); }
+                    if (function_exists('b2b_filter_unseen')) { $_b2b_alert_n += b2b_filter_unseen(); }
+                    if ($_b2b_alert_n > 0) {
+                        $_b2b_gift_dot = '<span class="b2b-count" aria-hidden="true">'
+                                       . ($_b2b_alert_n > 9 ? '9+' : $_b2b_alert_n) . '</span>';
+                    }
+                }
+
                 // Logout sits next to the cabinet button, only while logged in.
                 $_b2b_logout_href = '/'.$_COOKIE['lang'].'/b2b/logout';
                 $_b2b_logout_lbl  = htmlspecialchars(b2b_t('logout'), ENT_QUOTES, 'UTF-8');
@@ -371,7 +365,7 @@ if (!(function_exists('b2b_is_client') && b2b_is_client())):
                 if ($_b2b_logged) {
                     echo '<a class="b2b button b2b-nav-link b2b-menu-only b2b-menu-only--user'.($_b2b_on_page ? ' active' : '').'" href="'.$_b2b_href.'">'
                        . '<span class="b2b-header-btn__avatar">'.$_b2b_initials.'</span>'
-                       . '<div>'.b2b_t('cabinet_short').'</div></a>';
+                       . '<div>'.b2b_t('cabinet_short').'</div>'.$_b2b_gift_dot.'</a>';
                     echo '<a class="b2b button b2b-nav-link b2b-menu-only b2b-menu-out" href="'.$_b2b_logout_href.'">'
                        . '<div>'.$_b2b_logout_lbl.'</div></a>';
                 } else {
@@ -456,13 +450,11 @@ if (!(function_exists('b2b_is_client') && b2b_is_client())):
             <div class="img"></div>
         </a>
         <?php
-        // Desktop counterpart of the menu entry above: placed to the RIGHT of "call"
-        // so a dealer finds registration/cabinet without digging through the menu.
-        // Hidden on mobile, where the burger entry takes over.
+
         if ($_b2b_logged) {
             echo '<a class="b2b-header-btn b2b-header-btn--user'.($_b2b_on_page ? ' is-active' : '').'" href="'.$_b2b_href.'" title="'.$_b2b_label.'">'
                . '<span class="b2b-header-btn__avatar">'.$_b2b_initials.'</span>'
-               . '<span class="b2b-header-btn__txt">'.$_b2b_label.'</span></a>';
+               . '<span class="b2b-header-btn__txt">'.$_b2b_label.'</span>'.$_b2b_gift_dot.'</a>';
             echo '<a class="b2b-header-out" href="'.$_b2b_logout_href.'" title="'.$_b2b_logout_lbl.'" aria-label="'.$_b2b_logout_lbl.'">'.$_b2b_ico_exit.'</a>';
         } else {
             // Login = secondary text link, Register = primary outlined pill.
@@ -481,7 +473,7 @@ if ($_b2b_logged):
     echo '<div class="b2b-float" aria-hidden="true">'
        . '<a class="b2b-header-btn b2b-header-btn--user'.($_b2b_on_page ? ' is-active' : '').'" href="'.$_b2b_href.'" title="'.$_b2b_label.'">'
        . '<span class="b2b-header-btn__avatar">'.$_b2b_initials.'</span>'
-       . '<span class="b2b-header-btn__txt">'.$_b2b_label.'</span></a>'
+       . '<span class="b2b-header-btn__txt">'.$_b2b_label.'</span>'.$_b2b_gift_dot.'</a>'
        . '<a class="b2b-header-out" href="'.$_b2b_logout_href.'" title="'.$_b2b_logout_lbl.'" aria-label="'.$_b2b_logout_lbl.'">'.$_b2b_ico_exit.'</a>'
        . '</div>';
     echo '<script>(function(){var f=document.querySelector(".b2b-float");var a=document.querySelector("header .b2b-header-btn");var o=document.querySelector("header .b2b-header-out")||a;var anchor=a||document.querySelector("header");if(!f||!anchor)return;function align(){var el=o||a;if(!el)return;var r=el.getBoundingClientRect();var vw=document.documentElement.clientWidth;if(r.width)f.style.right=Math.max(0,Math.round(vw-r.right))+"px";}align();window.addEventListener("resize",align,{passive:true});if("IntersectionObserver" in window){new IntersectionObserver(function(e){f.classList.toggle("is-shown",!e[0].isIntersecting);},{threshold:0}).observe(anchor);}else{var on=false;function u(){var s=(window.pageYOffset||document.documentElement.scrollTop)>(anchor.offsetHeight||120);if(s!==on){on=s;f.classList.toggle("is-shown",s);}}window.addEventListener("scroll",u,{passive:true});u();}})();</script>';
@@ -495,9 +487,9 @@ endif;
         // raw "b2b" / "invoices" / "b2b-login" URL words.
         $_bcl  = $_COOKIE['lang'] ?? 'ro';
         $_b2bc = [
-            'ro' => ['root'=>'Cabinet', 'invoices'=>'Conturi de plată', 'cont-plata'=>'Cont de plată', 'b2b-login'=>'Autentificare', 'b2b-register'=>'Înregistrare', 'b2b-forgot'=>'Resetare parolă', 'b2b-reset'=>'Resetare parolă'],
-            'ru' => ['root'=>'Кабинет', 'invoices'=>'Счета на оплату', 'cont-plata'=>'Счёт на оплату', 'b2b-login'=>'Вход', 'b2b-register'=>'Регистрация', 'b2b-forgot'=>'Сброс пароля', 'b2b-reset'=>'Сброс пароля'],
-            'en' => ['root'=>'Cabinet', 'invoices'=>'Payment invoices', 'cont-plata'=>'Payment invoice', 'b2b-login'=>'Login', 'b2b-register'=>'Registration', 'b2b-forgot'=>'Password reset', 'b2b-reset'=>'Password reset'],
+            'ro' => ['root'=>'Cabinet', 'invoices'=>'Conturi de plată', 'cont-plata'=>'Cont de plată', 'viewed'=>'Vizualizate recent', 'filters'=>'Filtrele mele', 'gifts'=>'Cadouri', 'b2b-login'=>'Autentificare', 'b2b-register'=>'Înregistrare', 'b2b-forgot'=>'Resetare parolă', 'b2b-reset'=>'Resetare parolă'],
+            'ru' => ['root'=>'Кабинет', 'invoices'=>'Счета на оплату', 'cont-plata'=>'Счёт на оплату', 'viewed'=>'Недавно просмотренные', 'filters'=>'Мои фильтры', 'gifts'=>'Подарки', 'b2b-login'=>'Вход', 'b2b-register'=>'Регистрация', 'b2b-forgot'=>'Сброс пароля', 'b2b-reset'=>'Сброс пароля'],
+            'en' => ['root'=>'Cabinet', 'invoices'=>'Payment invoices', 'cont-plata'=>'Payment invoice', 'viewed'=>'Recently viewed', 'filters'=>'My filters', 'gifts'=>'Gifts', 'b2b-login'=>'Login', 'b2b-register'=>'Registration', 'b2b-forgot'=>'Password reset', 'b2b-reset'=>'Password reset'],
         ];
         $_bm  = $_b2bc[$_bcl] ?? $_b2bc['ro'];
         echo '<a href="/'.$_bcl.'/">'.$lng['w']['home_page'].'</a>';
@@ -575,7 +567,7 @@ if ( in_array($_cur_page, $_show_links_pages) && ($_cur_page != 'services' || $_
     $_hb_regions = [
         'korea'  => ['ro' => 'Coreea', 'ru' => 'Кореи', 'en' => 'Korea'],
         'europe' => ['ro' => 'Europa', 'ru' => 'Европы', 'en' => 'Europe'],
-        'usa'    => ['ro' => 'SUA',    'ru' => 'США',    'en' => 'USA'],
+        'canada' => ['ro' => 'Canada', 'ru' => 'Канады', 'en' => 'Canada'],
         // Hidden until there are on-order cars from China; uncomment to restore.
         // 'china'  => ['ro' => 'China',  'ru' => 'Китая',  'en' => 'China'],
     ];
@@ -845,6 +837,7 @@ if (!isset($t_mp[2]) || $t_mp[2]=='') {
                             <div class="information-subcolumn">
                                 <div class="section">
                                     <a href="/<?php echo $_COOKIE['lang']; ?>/privacy"><?php echo $lng['p']['information']['privacy']['name']; ?></a>
+                                    <a href="/<?php echo $_COOKIE['lang']; ?>/cookies"><?php echo $lang_xtra_menu['cookies']; ?></a>
                                     <a href="/<?php echo $_COOKIE['lang']; ?>/terms"><?php echo $lng['p']['information']['terms']['name']; ?></a>
                                 </div>
                             </div>
@@ -932,7 +925,11 @@ if (!isset($t_mp[2]) || $t_mp[2]=='') {
         <!--description above copyright -->
         <div class="footer-bottom">
             <div class="footer-description"><?php echo $lng['t']['x']['logo_txt']; ?></div>
-            <div id="copyrights"><?php echo date('Y') ?> <span title="Copyrighted"> Sauto S.R.L.</span></div>
+            <?php include(_SITE_INCL.'/footer_operator.php'); ?>
+            <?php // IDNO belongs on every page (Legea 195/2024, art. 13-14). The rest of
+                  // the controller identity is already in the footer: name here, address
+                  // and phone in the contacts column, e-mail next to the socials. ?>
+            <div id="copyrights"><?php echo date('Y') ?> <span title="Copyrighted"> Sauto S.R.L.</span> &middot; IDNO 1017600006845</div>
         </div>
     </div> <!-- Close footer-content -->
 
@@ -977,28 +974,15 @@ if (isset($t_mp[2])) {
     }
 }
 ?>
-<!-- Google AdWords -->
-<script type="text/javascript">
-    var google_tag_params = {
+<!-- Google AdWords remarketing — parameters only. conversion.js is loaded by
+     consent.js, and only once the marketing category has been granted. -->
+<script data-cfasync="false">
+    window.SAUTO_ADW_PARAMS = {
         dynx_itemid: "<?php echo $adw_itemid; ?>",
         dynx_pagetype: "<?php echo $adw_pagetype; ?>",
         dynx_totalvalue: "<?php echo $adw_totalvalue; ?>"
     };
 </script>
-<script type="text/javascript">
-    /* <![CDATA[ */
-    var google_conversion_id = 865017510;
-    var google_custom_params = window.google_tag_params;
-    var google_remarketing_only = true;
-    /* ]]> */
-</script>
-<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js" defer></script>
-<noscript>
-    <div style="display:inline;">
-        <img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/865017510/?value=0&amp;guid=ON&amp;script=0"/><?php //991949120 ?>
-    </div>
-</noscript>
-<!-- End Google AdWords -->
  
 <!-- BITRIX site_button disabled
 <?php if (empty($_COOKIE['lang']) || ($_COOKIE['lang'] == 'ru')):?>

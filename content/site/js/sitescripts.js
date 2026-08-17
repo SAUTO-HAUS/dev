@@ -53,18 +53,34 @@ $('main > .spc_bx > .doit > .btn.msg').on('click', function(){
 
 $(document).on('click', '#snd_msg .btn.sbmt', function(){
 	var chkd = false;
-	$(this).data('send', $(this).val() );
-	$(this).parent().children('.imp').each( function(){ if ( $(this).val() ){ chkd = true; } } );
-	
+	var $btn = $(this);
+	var $form = $btn.closest('form');
+	$btn.data('send', $btn.val() );
+	$form.find('.imp').each( function(){ if ( $(this).val() ){ chkd = true; } } );
+
+	// No privacy checkbox gate any more: making a pre-contractual reply
+	// conditional on accepting the policy is abusive under Legea 195/2024.
+	// The form now carries a plain informative notice instead.
 	if (chkd == true){
-		if ( $(this).parent().children('.agmt').children('.cbx.cnfrm').is(':checked') == true ) {
-			$(this).addClass('ghost').val( $(this).data('sending')+'...' );
-			var data = {}; data['tp'] = 'ste'; data['fn'] = 'snd_msg';
-			$(this).parent().children('.use').each(function(){ data[$(this).attr('name')] = $(this).val(); })
-			ajaxIt(data);
+		$btn.addClass('ghost').val( $btn.data('sending')+'...' );
+		var data = {}; data['tp'] = 'ste'; data['fn'] = 'snd_msg';
+		$form.find('.use').each(function(){
+			var $f = $(this);
+			// The optional marketing opt-in is a checkbox: an unchecked box must
+			// send nothing, not its value attribute.
+			if ($f.is(':checkbox')) { if ($f.is(':checked')) { data[$f.attr('name')] = $f.val(); } }
+			else { data[$f.attr('name')] = $f.val(); }
+		})
+		ajaxIt(data);
+
+		// Lead goes to the CRM regardless; the third-party conversion only fires
+		// if the visitor allowed marketing cookies.
+		if (window.SautoConsent && SautoConsent.hasMarketing()) {
+			if (typeof fbq === 'function') { fbq('track', 'Lead'); }
+			if (typeof gtag === 'function') { gtag('event', 'generate_lead'); }
 		}
 	}else{
-		$(this).val( $(this).data('req_fld') ).addClass('ghost').delay(3000).queue(function(){ $(this).val( $(this).data('send') ).removeClass('ghost').dequeue();})
+		$btn.val( $btn.data('req_fld') ).addClass('ghost').delay(3000).queue(function(){ $(this).val( $(this).data('send') ).removeClass('ghost').dequeue();})
 	}
 })
 
@@ -768,7 +784,7 @@ $(document).on('click', '#search_content .search_select[clicked!="1"]', function
 })
 
 $(document).on('change', '#search_content .search_select', function(){
-	var newUrl = '/'+Cookies.get('lang')+'/'+'cars'+'/';
+	var newUrl = '/'+_srtGetLang()+'/'+'cars'+'/';
 	var newMainUrl='';
 	var newExtraUrl='?';
 	var checkMain = 0;
@@ -889,21 +905,93 @@ $('#exchange .valute input').on('input',  function(){
 
 
 //-----------------------------------------------------------------------Img Overlay
+// The viewer paints the photo as a background image, so zoom is background-size
+// and panning is background-position. Pan is kept in percent because that is what
+// background-position understands, and it survives a window resize unchanged.
+var imgZoom = 1, imgPanX = 50, imgPanY = 50, _lastShowSrc = '';
+var ZOOM_MIN = 1, ZOOM_MAX = 6, ZOOM_STEP = 0.5;
+
+function clampPct(v){ return v < 0 ? 0 : (v > 100 ? 100 : v); }
+
+function applyZoom(){
+	var $s = $('#show_img');
+	var pct = 90 * imgZoom;
+	$s.css({
+		'background-size': ($(window).width() >= $(window).height()) ? 'auto '+pct+'%' : pct+'% auto',
+		'background-position': imgPanX+'% '+imgPanY+'%'
+	});
+	$s.toggleClass('zoomed', imgZoom > 1);
+	$s.find('> .zoom > .zin').prop('disabled', imgZoom >= ZOOM_MAX);
+	$s.find('> .zoom > .zout').prop('disabled', imgZoom <= ZOOM_MIN);
+}
+
+function setZoom(z){
+	z = Math.max(ZOOM_MIN, Math.min(ZOOM_MAX, z));
+	if (z === imgZoom) return;
+	if (z === ZOOM_MIN) { imgPanX = 50; imgPanY = 50; }  // back to fit → recentre
+	imgZoom = z;
+	applyZoom();
+}
+
+// Called after every photo change and on window resize. A different photo starts
+// again at fit size; a resize keeps whatever zoom the visitor had.
 function resizer(){
-	if ( $(window).width() >= $(window).height()){
-		if ( $('#show_img').css('background-size')!='auto 90%' ){
-			$('#show_img').css('background-size','auto 90%')
-		}
-	}else{
-		if ( $('#show_img').css('background-size')!='90% auto' ){
-			$('#show_img').css('background-size','90% auto')
-		}
-	}
+	var cur = $('#show_img').css('background-image');
+	if (cur !== _lastShowSrc) { _lastShowSrc = cur; imgZoom = 1; imgPanX = 50; imgPanY = 50; }
+	applyZoom();
 }
 
 $(window).resize(function() {
 	resizer();
 });
+
+// + / − buttons
+$(document).on('click', '#show_img > .zoom > .zin',  function(e){ e.stopPropagation(); setZoom(imgZoom + ZOOM_STEP); });
+$(document).on('click', '#show_img > .zoom > .zout', function(e){ e.stopPropagation(); setZoom(imgZoom - ZOOM_STEP); });
+
+// Wheel zooms instead of scrolling the page behind the overlay.
+document.addEventListener('wheel', function(e){
+	if (!document.getElementById('show_img') || !$('#show_img').hasClass('act')) return;
+	e.preventDefault();
+	setZoom(imgZoom + (e.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP));
+}, { passive: false });
+
+// Double click toggles between fit and 2.5×, so one gesture does both ways.
+$(document).on('dblclick', '#show_img', function(e){
+	if ($(e.target).closest('.close, .left, .right, .zoom, .card-share-btn, .card-fav-btn').length) return;
+	setZoom(imgZoom > ZOOM_MIN ? ZOOM_MIN : 2.5);
+});
+
+// Drag to pan, but only while zoomed in — otherwise there is nothing hidden to
+// reveal and dragging would fight with the click that closes the viewer.
+(function(){
+	var dragging = false, lastX = 0, lastY = 0, moved = false;
+	$(document).on('mousedown', '#show_img', function(e){
+		if (imgZoom <= ZOOM_MIN) return;
+		if ($(e.target).closest('.close, .left, .right, .zoom, .card-share-btn, .card-fav-btn').length) return;
+		dragging = true; moved = false; lastX = e.clientX; lastY = e.clientY;
+		$('#show_img').addClass('grabbing');
+		e.preventDefault();
+	});
+	$(document).on('mousemove', function(e){
+		if (!dragging) return;
+		var dx = e.clientX - lastX, dy = e.clientY - lastY;
+		lastX = e.clientX; lastY = e.clientY;
+		if (Math.abs(dx) > 1 || Math.abs(dy) > 1) moved = true;
+		// Hidden area grows with the zoom factor; converting pixels to percent
+		// through it keeps the photo moving at the speed of the cursor.
+		var overX = Math.max(1, $(window).width()  * (imgZoom - 1));
+		var overY = Math.max(1, $(window).height() * (imgZoom - 1));
+		imgPanX = clampPct(imgPanX - dx / overX * 100);
+		imgPanY = clampPct(imgPanY - dy / overY * 100);
+		applyZoom();
+	});
+	$(document).on('mouseup', function(){
+		if (!dragging) return;
+		dragging = false;
+		$('#show_img').removeClass('grabbing');
+	});
+})();
 
 $(document).on("click", "main > .pht_bx > .list > .phts > .item", function(){
 	var $phtBx = $(this).closest('.pht_bx');
@@ -973,14 +1061,18 @@ $('#show_img > .right').click(function(){
 	}
 })
 
-$('#show_img > .close').click(function(){ $('#show_img').removeClass('act').css('background-image','none'); })
+// Clearing _lastShowSrc makes the next open start at fit size even if it is the
+// same photo the visitor had zoomed into.
+function closeShowImg(){
+	$('#show_img').removeClass('act grabbing zoomed').css('background-image','none');
+	imgZoom = 1; imgPanX = 50; imgPanY = 50; _lastShowSrc = '';
+}
 
-// Keyboard: Escape closes the fullscreen viewer; arrows change the photo.
+$('#show_img > .close').click(function(){ closeShowImg(); })
+
 $(document).on('keydown', function(e){
 	if (!$('#show_img').hasClass('act')) return;
-	if (e.key === 'Escape' || e.keyCode === 27) { $('#show_img').removeClass('act').css('background-image','none'); }
-	else if (e.key === 'ArrowLeft'  || e.keyCode === 37) { $('#show_img > .left').click(); }
-	else if (e.key === 'ArrowRight' || e.keyCode === 39) { $('#show_img > .right').click(); }
+	if (e.key === 'Escape' || e.keyCode === 27) { closeShowImg(); }
 })
 
 // In-place arrows on the desktop big photo (change the image without opening fullscreen).
@@ -1170,6 +1262,64 @@ setInterval(function(){
 		$(this).html(tD + ':' + tH + ':' + tM + ':' + tS);
 	});
 }, 1000);
+
+// B2B offer countdown (.b2b-offer-timer). Separate from .timer-display above:
+// that one is the per-car offer clock in DD:HH:MM:SS, this one is the partner's
+// price deadline in words — days, then hours under a day, then minutes.
+// All wording comes from data attributes so no strings live here.
+(function () {
+	function pluralIndex(n, lang) {
+		if (lang === 'ru') {
+			var m10 = n % 10, m100 = n % 100;
+			if (m10 === 1 && m100 !== 11) return 0;
+			if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return 1;
+			return 2;
+		}
+		if (lang === 'en') return n === 1 ? 0 : 1;
+		// Romanian takes "de" from 20 upwards (20 de zile, but 101 zile).
+		if (n === 1) return 0;
+		var r = n % 100;
+		return (r >= 1 && r <= 19) ? 1 : 2;
+	}
+
+	function forms(el, attr) { return (el.getAttribute(attr) || '').split('|'); }
+
+	function paint() {
+		var nodes = document.querySelectorAll('.b2b-offer-timer[data-b2b-offer-end]');
+		if (!nodes.length) return;
+
+		var now = Math.floor(Date.now() / 1000);
+		var lapsed = false;
+
+		Array.prototype.forEach.call(nodes, function (el) {
+			var end = parseInt(el.getAttribute('data-b2b-offer-end'), 10);
+			var val = el.querySelector('.b2b-offer-timer__val');
+			if (!end || !val) return;
+
+			var left = end - now;
+			if (left <= 0) { lapsed = true; return; }
+
+			var lang = el.getAttribute('data-lang') || 'ro';
+			var n, f;
+			if (left >= 86400)   { n = Math.floor(left / 86400); f = forms(el, 'data-d'); }
+			else if (left >= 3600) { n = Math.floor(left / 3600);  f = forms(el, 'data-h'); }
+			else                 { n = Math.max(1, Math.floor(left / 60)); f = forms(el, 'data-m'); }
+
+			val.textContent = n + ' ' + (f[pluralIndex(n, lang)] || f[f.length - 1] || '');
+			el.classList.toggle('is-soon', left < 86400);
+		});
+
+		// Prices change the moment the offer lapses, so the page has to come back
+		// from the server. Guarded by a flag: reload once, not in a loop.
+		if (lapsed && !window.__b2bOfferReloaded) {
+			window.__b2bOfferReloaded = true;
+			window.location.reload();
+		}
+	}
+
+	paint();
+	setInterval(paint, 30000);
+})();
 
 //-------------------------------------------------------------------------------------- ON LOAD -------------------------------------------------------
 
@@ -1361,8 +1511,10 @@ function _srtGetExtraPath(){
 	return extraPath;
 }
 
+// Language comes from <body data-lng>: the `lang` cookie is HttpOnly, so it is
+// deliberately unreadable from JavaScript.
 function _srtGetLang(){
-	return (document.cookie.match(/(?:^|;\s*)lang=([^;]+)/) || [])[1] || 'ro';
+	return (document.body && document.body.getAttribute('data-lng')) || 'ro';
 }
 
 // Catalog switch badge — click navigates to the other catalog (preserves filters)

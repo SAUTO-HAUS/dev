@@ -22,10 +22,22 @@ if (!empty($car['999'])) {
 }
 
 if ($new999) {
-    // Encar (Korea, country 41) → account 4; commercial → 2; the rest → 3.
+    // Encar (Korea, country 41) → account 4; commercial → 2; USA → 5; rest → 3.
+    // The USA id is looked up by code, unlike the legacy Korean 41 constant.
     $is_korea = ($importIdForm == 41);
     $is_com   = ($grForm === 'com');
-    $default999AccountId = $is_korea ? 4 : ($is_com ? 2 : 3);
+    $is_usa   = false;
+    if (!$is_korea && $importIdForm > 0) {
+        try {
+            $naIds = array_map('intval', \App\Core\Container::get('db')
+                ->query("SELECT id FROM countries WHERE code IN ('CA','US')")->fetchAll(\PDO::FETCH_COLUMN) ?: []);
+            $is_usa = in_array($importIdForm, $naIds, true);
+        } catch (\Throwable $e) { /* stays false */ }
+    }
+    // Canada/USA wins over the commercial rule, exactly like the publish path does
+    // (order_999_catalog.php and sauto_personal_cron.php both test USA first): every
+    // AutoTrader car belongs on SautoSUA, van or not.
+    $default999AccountId = $is_korea ? 4 : ($is_usa ? 5 : ($is_com ? 2 : 3));
 } else {
     $default999AccountId = null;
 }

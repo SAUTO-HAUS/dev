@@ -6,6 +6,26 @@ function genRand($length) {return substr(str_shuffle("abcdefghijklmnopqrstuvwxyz
 
 function myIp() {return $_SERVER['REMOTE_ADDR'];}
 
+/**
+ * Truncated IP for records kept next to a lead (Legea 195/2024, minimisation).
+ * Drops the last octet of IPv4 / the last 80 bits of IPv6, which keeps the
+ * value usable for coarse anti-spam checks while no longer identifying a
+ * household. Full addresses may only live in short-lived server security logs.
+ */
+function anonymizeIp($ip = null) {
+	$ip = $ip ?? ($_SERVER['HTTP_CF_CONNECTING_IP'] ?? $_SERVER['REMOTE_ADDR'] ?? '');
+	$ip = trim(explode(',', (string)$ip)[0]);
+	if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+		$p = explode('.', $ip);
+		return $p[0].'.'.$p[1].'.'.$p[2].'.0';
+	}
+	if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
+		$packed = inet_pton($ip);
+		return $packed === false ? '' : inet_ntop(substr($packed, 0, 6).str_repeat("\0", 10));
+	}
+	return '';
+}
+
 function timeNow() { return date( 'd.m.Y ( H:i:s )', time() ); }
 
 function showErr(){

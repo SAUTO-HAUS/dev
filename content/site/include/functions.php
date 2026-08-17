@@ -532,6 +532,10 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 				if (!isset($b2b_prices[$b2b_id])) { continue; }
 				$b2bP   = (int)$b2b_prices[$b2b_id];
 				$retail = (int)$rrow['prc'];
+				// Marks the card as actually carrying a B2B price. Only cars from
+				// parsing get one, so this is what gates the offer countdown — an
+				// in-stock car keeps the public price and must not claim an expiry.
+				$results[$ri]['b2b_priced'] = 1;
 				// prc drives the card value + monthly payment, so it must be the B2B price.
 				$results[$ri]['prc']   = $b2bP;
 				$results[$ri]['prc_n'] = $b2bP;
@@ -634,6 +638,14 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 				$o_prc_bl = $r['b2b_old_bl'] ?? '';
 			}
 		
+			// B2B offer countdown, on its own line under the price — same on mobile
+			// and desktop. Empty for guests, for partners whose offer has no
+			// deadline, and for cars carrying no B2B price at all (in-stock ones):
+			// there the price is the public one and nothing expires.
+			$b2bTimer = (!empty($r['b2b_priced']) && function_exists('b2b_offer_timer_html'))
+				? b2b_offer_timer_html('card') : '';
+			$b2bTimerRow = $b2bTimer !== '' ? '<div class="b2b-offer-row">'.$b2bTimer.'</div>' : '';
+
 			$ar['txt'] .= '
 			<a class="it car" href="/'.$_COOKIE['lang'].'/'.$page_type.'/'.$r['id'].'">
 				<div class="name">'.$r['br_nm'].' '.$r['mo_nm'].'</div>
@@ -651,6 +663,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 					<strong class="val">'.($r['prc'] > 100 ? $prc.' &#8364;' : $lng['w']['negociabil']).'</strong>'.$o_prc_bl.'
 					<span class="stock-status'.($r['catalog_type'] == 'on_order' ? ' on-order' : '').'">'.($r['n_a'] == '1' ? $lng['w']['not_available'] : ($r['catalog_type'] == 'on_order' ? $lng['w']['on_order'] : $lng['w']['in_stock'])).'</span>
 				</div>
+				'.$b2bTimerRow.'
 				<div class="txt">';
 				
 				//$ar['txt'] .= '<div class="status">'.$z_stat.'</div>';
@@ -685,7 +698,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 					if (!empty($r['import_country_id'])) {
 						$country_name = '';
 						$country_code = '';
-						
+
 						// Determine language column based on current language
 						$langColumn = 'name_ro'; // Default to Romanian
 						if (isset($_COOKIE['lang']) && $_COOKIE['lang'] == 'ru') {
@@ -740,7 +753,7 @@ $car_card = function ($v1='', $lmt='4', $zreq=null, $stts='av', $offset=0, $is_b
 								$ar['txt'] .= '<img src="/media/images/flags/'.$country_code.'.svg" alt="'.$country_name.' flag" style="width: 36px; height: 30px; border: none; padding: 0;">';
 								$ar['txt'] .= '</div>';
 							}
-							
+
 							// Set smaller margin when import country exists
 							$price_margin_style = 'margin-top: -30px;';
 						}

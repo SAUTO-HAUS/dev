@@ -30,6 +30,30 @@ include_once( _SITE_INCL.'/similar_price_cars.php' );
  * @param string $language - Language code (ro, ru, en)
  * @return string - Country name in the specified language or empty string if not found
  */
+/**
+ * Is this car imported from the North America region (Canada, or USA from before
+ * the region was renamed)?
+ *
+ * Both codes match on purpose: AutoTrader is autotrader.ca, so new cars carry CA,
+ * while everything published earlier still carries US. Resolved through the country
+ * CODE, not a hardcoded id — Korea's 41 is a legacy constant scattered around the
+ * codebase and repeating that mistake would break the day the row is recreated.
+ */
+function isUsaImportCountry($countryId): bool
+{
+    static $ids = null;
+    if ($ids === null) {
+        global $db;
+        $ids = [];
+        try {
+            $ids = array_map('intval', $db->query(
+                "SELECT id FROM countries WHERE code IN ('CA','US')"
+            )->fetchAll(PDO::FETCH_COLUMN) ?: []);
+        } catch (Exception $e) { /* stays empty — never matches */ }
+    }
+    return in_array((int)$countryId, $ids, true);
+}
+
 function getImportCountryName($countryId, $language = 'ro') {
     if (empty($countryId)) {
         return '';
@@ -63,7 +87,7 @@ function getImportCountryName($countryId, $language = 'ro') {
  * Shown on the ordercars landing page AND on each region page; the button matching the
  * current region ($active) gets the `is-active` class for a distinct style.
  *
- * @param string $active  Active region slug ('korea'|'europe'|'usa'|'china') or '' for none.
+ * @param string $active  Active region slug ('korea'|'europe'|'canada'|'china') or '' for none.
  * @param string $lang    Current language code.
  * @param string $orderBtnText  Localized "learn more" label for the trailing order button.
  */
@@ -72,8 +96,10 @@ function oc_render_regions($active, $lang, $orderBtnText) {
     $regions = [
         'korea'  => ['ro' => 'Coreea', 'ru' => 'Корея',  'en' => 'Korea',  'flag' => 'south-korea-fl.png'],
         'europe' => ['ro' => 'Europa', 'ru' => 'Европа',  'en' => 'Europe', 'flag' => 'european-fl.png'],
-        'usa'    => ['ro' => 'SUA',    'ru' => 'США',     'en' => 'USA',    'flag' => 'united-states-fl.png'],
-        'china'  => ['ro' => 'China',  'ru' => 'Китай',   'en' => 'China',  'flag' => 'china.png'],
+        'canada' => ['ro' => 'Canada', 'ru' => 'Канада',  'en' => 'Canada', 'flag' => 'flag-canada.svg'],
+        // Hidden until there are on-order cars from China; uncomment to restore.
+        // The /ordercars/china route itself still works, only the button is gone.
+        // 'china'  => ['ro' => 'China',  'ru' => 'Китай',   'en' => 'China',  'flag' => 'china.png'],
     ];
     $out = '<div class="oc_regions">';
     foreach ($regions as $rk => $rv) {
@@ -235,7 +261,10 @@ if (isset($_SERVER['QUERY_STRING'])) {
 // Import regions that live on a clean path (/ordercars/korea) instead of a query string.
 // The path segment carries only the region; all other filters/sorting stay in the query
 // string, so combining works exactly like brand pages (/ordercars/ford?srt=...).
-$oc_region_slugs = ['korea', 'europe', 'usa', 'china'];
+// 'usa' stays in the list purely so the old indexed URL keeps working; it is
+// redirected to /canada below. AutoTrader cars are Canadian and are now sold
+// as such.
+$oc_region_slugs = ['korea', 'europe', 'canada', 'usa', 'china'];
 
 // Then handle clean URLs for car filters and single car pages
 if (isset($t_mp[3]) && !is_numeric($t_mp[3])) {
@@ -244,6 +273,14 @@ if (isset($t_mp[3]) && !is_numeric($t_mp[3])) {
     $_GET['tg'] = 'fltr';
 
     if (in_array($seg, $oc_region_slugs, true)) {
+        // The region was renamed from USA to Canada (AutoTrader sells Canadian cars).
+        // Send the old path to the new one with a 301 so the pages Google already
+        // indexed, and every link inside older ads, keep their standing.
+        if ($seg === 'usa') {
+            $qs = ($_SERVER['QUERY_STRING'] ?? '') !== '' ? '?' . $_SERVER['QUERY_STRING'] : '';
+            header('Location: /' . ($_COOKIE['lang'] ?? 'ro') . '/ordercars/canada' . $qs, true, 301);
+            exit;
+        }
         // Region page: set the import-country filter, NOT a brand.
         $_GET['ic'] = $seg;
     } else {
@@ -309,7 +346,7 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
         $ic_names = [
             'korea'  => ['ro' => 'Coreea', 'ru' => 'Корея',  'en' => 'Korea'],
             'europe' => ['ro' => 'Europa', 'ru' => 'Европа',  'en' => 'Europe'],
-            'usa'    => ['ro' => 'SUA',    'ru' => 'США',     'en' => 'USA'],
+            'canada' => ['ro' => 'Canada', 'ru' => 'Канада',  'en' => 'Canada'],
             'china'  => ['ro' => 'China',  'ru' => 'Китай',   'en' => 'China'],
         ];
         if (isset($ic_names[$ic_key])) {
@@ -416,7 +453,7 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
     // On a region page (/ordercars/korea|europe|usa) show the same region buttons as the
     // landing page, with the current region marked active.
     $_oc_region = (!isset($_GET['br']) && !isset($_GET['bt']) && !empty($_GET['ic'])) ? strtolower($_GET['ic']) : '';
-    if (in_array($_oc_region, ['korea', 'europe', 'usa', 'china'], true)) {
+    if (in_array($_oc_region, ['korea', 'europe', 'canada', 'usa', 'china'], true)) {
         // Traffic counter for /adminsauto/viz/ctlg.
         include_once(_SITE_INCL.'/region_stats.php');
         region_view_log($_oc_region);
@@ -493,7 +530,7 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
                 $ic_names = [
                     'korea'  => ['ro' => 'Coreea', 'ru' => 'Кореи',  'en' => 'Korea'],
                     'europe' => ['ro' => 'Europa', 'ru' => 'Европы', 'en' => 'Europe'],
-                    'usa'    => ['ro' => 'SUA',    'ru' => 'США',    'en' => 'USA'],
+                    'canada' => ['ro' => 'Canada', 'ru' => 'Канада', 'en' => 'Canada'],
                     'china'  => ['ro' => 'China',  'ru' => 'Китая',  'en' => 'China'],
                 ];
                 $ic_k = strtolower($_GET['ic']);
@@ -862,6 +899,20 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 $rtrn .= '<div class="spc_bx">';
                 $rtrn .= '<h1 class="name">'.$r['br_nm'].' '.$r['mo_nm'].' <span class="fl">'. $r['mlg'].', '.$lng['l']['car']['fl'][$r['fl']].', '.$lng['l']['car']['tra'][$r['tra']].'</span></h1>';
 
+                // Mobile order under the title: gift, price, then the countdown.
+                // The gift is the offer, the price is what it applies to, and the
+                // deadline closes the block — so it reads top-down as an argument.
+                // Product page only: on a card this would repeat under every car.
+                $rtrn .= (function_exists('b2b_gift_car_html') ? b2b_gift_car_html('page-m') : '');
+
+                // Computed here but printed AFTER the price block below. Desktop
+                // carries its own copy under the desktop price (--page-d), so each
+                // layout renders exactly one (see style.css).
+                // Only for cars actually priced from the B2B tables — an in-stock car
+                // shows the public price and has no offer to expire.
+                $b2bTimerPage = (function_exists('b2b_car_is_priced') && b2b_car_is_priced($r))
+                    ? b2b_offer_timer_html('page-m') : '';
+
                 // Generate mobile timer HTML if exists. Skip for sold cars (n_a=1).
                 $mobile_timer_html = '';
                 if (!empty($r['offer_timer_end']) && empty($r['n_a'])) {
@@ -889,8 +940,9 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                                         <span class="val" title="'.$lng['w']['prc'].'">'.( $r['prc']>100 ? '<span class="i">'.parseCurr($prc).'</span> <span class="cur">'.( symb_rplc($r['cur']) ).'</span>' : '<span style="font-size: 1.5rem;">'.$lng['w']['negociabil'] ).'</span></span>
                                         '.$o_prc_bl.'
                                         '.$mobile_timer_html.'
-                                    </div> 
-                            
+                                    </div>
+                                    '.$b2bTimerPage.'
+
                                     <div class="clear"> </div>
                             ';
 
@@ -1159,17 +1211,23 @@ $iconTelegramParams = array(
                 
                 $dynamicPhone = ((int)$import_country_id === 41) ? '37368689995' : PhoneHelper::getOrderPhone();
 
-                $waPhone = ((int)$import_country_id === 41) ? '37368689995' : '37369535167';
+                if (isUsaImportCountry($import_country_id)) {
+                    $waPhone = '37360404127';
+                } elseif ((int)$import_country_id === 41) {
+                    $waPhone = '37368689995';
+                } else {
+                    $waPhone = '37369535167';
+                }
                 $waLang   = $_COOKIE['lang'] ?? 'ro';
                 $waCarUrl = 'https://www.sauto.md/' . $waLang . '/ordercars/' . (int)$r['id'];
                 $waUrl    = 'https://wa.me/' . $waPhone . '?text=' . rawurlencode($waCarUrl);
                 $waIcon  = '<svg viewBox="-1.66 0 740.824 740.824" width="28" height="28" fill="#ffffff" aria-hidden="true" style="vertical-align:middle;"><path fill-rule="evenodd" clip-rule="evenodd" d="M630.056 107.658C560.727 38.271 468.525.039 370.294 0 167.891 0 3.16 164.668 3.079 367.072c-.027 64.699 16.883 127.855 49.016 183.523L0 740.824l194.666-51.047c53.634 29.244 114.022 44.656 175.481 44.682h.151c202.382 0 367.128-164.689 367.21-367.094.039-98.088-38.121-190.32-107.452-259.707m-259.758 564.8h-.125c-54.766-.021-108.483-14.729-155.343-42.529l-11.146-6.613-115.516 30.293 30.834-112.592-7.258-11.543c-30.552-48.58-46.689-104.729-46.665-162.379C65.146 198.865 202.065 62 370.419 62c81.521.031 158.154 31.81 215.779 89.482s89.342 134.332 89.311 215.859c-.07 168.242-136.987 305.117-305.211 305.117m167.415-228.514c-9.176-4.591-54.286-26.782-62.697-29.843-8.41-3.061-14.526-4.591-20.644 4.592-6.116 9.182-23.7 29.843-29.054 35.964-5.351 6.122-10.703 6.888-19.879 2.296-9.175-4.591-38.739-14.276-73.786-45.526-27.275-24.32-45.691-54.36-51.043-63.542-5.352-9.183-.569-14.148 4.024-18.72 4.127-4.11 9.175-10.713 13.763-16.07 4.587-5.356 6.116-9.182 9.174-15.303 3.059-6.122 1.53-11.479-.764-16.07-2.294-4.591-20.643-49.739-28.29-68.104-7.447-17.886-15.012-15.466-20.644-15.746-5.346-.266-11.469-.323-17.585-.323-6.117 0-16.057 2.296-24.468 11.478-8.41 9.183-32.112 31.374-32.112 76.521s32.877 88.763 37.465 94.885c4.587 6.122 64.699 98.771 156.741 138.502 21.891 9.45 38.982 15.093 52.307 19.323 21.981 6.979 41.983 5.994 57.793 3.633 17.628-2.633 54.285-22.19 61.932-43.616 7.646-21.426 7.646-39.791 5.352-43.617-2.293-3.826-8.41-6.122-17.585-10.714"/></svg>';
                 $whatsappBtn = '<a class="btn btn-whatsapp" href="' . $waUrl . '" target="_blank" rel="noopener" aria-label="WhatsApp">' . $waIcon . '</a>';
 
-                // B2B panel (invoice + send to Super Admin). Per spec 2.3 it REPLACES
-                // the simple order buttons, so a partner orders through the proforma
-                // flow instead of calling. Empty string for guests, who keep call +
-                // WhatsApp unchanged.
+                // B2B panel (invoice + send to Super Admin); empty for guests.
+                // It sits UNDER call + WhatsApp rather than replacing them: a
+                // partner still has to be able to phone about the car, and the
+                // buttons are what the whole page points at.
                 $b2bActions = b2b_car_actions_html((int)$r['id'], $r);
 
                 $rtrn .= '
@@ -1178,13 +1236,14 @@ $iconTelegramParams = array(
                                 '.$o_prc_bl.'
                                 '.$bnt_params_desktop.'
                             </div>
+                            '.(function_exists('b2b_car_is_priced') && b2b_car_is_priced($r) ? b2b_offer_timer_html('page-d') : '').'
+                            '.(function_exists('b2b_gift_car_html') ? b2b_gift_car_html('page-d') : '').'
                             <div class="doit">
                                 '. $bnt_params_mobile .'
-                                '.$b2bActions.'
-                                '.($b2bActions !== '' ? '' : '
                                 <a class="btn call" href="tel:'.$dynamicPhone.'">'.$lng['w']['call'].'</a>
 
-                                '.$whatsappBtn).'
+                                '.$whatsappBtn.'
+                                '.$b2bActions.'
 
 
 
@@ -1202,11 +1261,12 @@ $iconTelegramParams = array(
                                             <textarea class="inp use txt" name="msg" spellcheck="false" placeholder="'.$lng['w']['message'].'" title="'.$lng['w']['message'].'"></textarea>
                                             <input class="use" type="hidden" name="page" value="'.$_SERVER['REQUEST_URI'].'" />
                                             <input class="use" type="hidden" name="target" value="overlay" />
-                                            <div class="agmt">
-                                                <input type="checkbox" name="agmt" id="f_agmt" class="cbx cnfrm" checked="checked" />
-                                                <span class="txt"><label for="f_agmt">'.$lng['t']['x']['prs_dat_agr'][1].'</label> <a class="x" href="/'.$_COOKIE['lang'].'/privacy" target="_blank" title="'.$lng['t']['x']['prs_dat_agr']['ttl'].'">'.$lng['t']['x']['prs_dat_agr'][2].'</a></span>
+                                            <div class="mkt-optin">
+                                                <input type="checkbox" class="use" name="marketing_contact" id="f_mkt_oc" value="yes" />
+                                                <label for="f_mkt_oc">'.$lng['t']['x']['prs_dat_agr']['mkt'].'</label>
                                             </div>
                                             <input class="btn sbmt" type="submit" value="'.$lng['w']['send'].'" onclick="event.preventDefault();" data-sent="'.$lng['w']['msg_snt'].'" data-sending="'.$lng['w']['sending'].'" data-req_fld="'.$lng['w']['req_not_filled'].'" />
+                                            <p class="legal-notice">'.$lng['t']['x']['prs_dat_agr'][1].' <a href="/'.$_COOKIE['lang'].'/privacy" target="_blank" title="'.$lng['t']['x']['prs_dat_agr']['ttl'].'">'.$lng['t']['x']['prs_dat_agr'][2].'</a>.</p>
                                         </form>
                                     </div>
                                 </div>
@@ -1220,7 +1280,7 @@ $iconTelegramParams = array(
                 $mdTable = '';
                 $encarReport = ''; // Encar inspection report + equipment (public block)
                 $parsingSrc = $r['parsing_source'] ?? '';
-                if (!empty($r['parsing_id']) && in_array($parsingSrc, ['encar', 'openlane', 'ecarstrade', 'auto1'], true)) {
+                if (!empty($r['parsing_id']) && in_array($parsingSrc, ['encar', 'openlane', 'ecarstrade', 'auto1', 'autotrader'], true)) {
                     // The breakdown needs the SOURCE car price (in EUR), not the
                     // car_ctlg `prc` — that already holds the full landed MD price,
                     // so feeding it back would double-count customs/costs. Read the
@@ -1249,12 +1309,13 @@ $iconTelegramParams = array(
                         // For a B2B partner, attach the STANDARD (non-B2B) figures so the
                         // breakdown shows, on every modified line and on the total, the
                         // standard price struck through beside this client's own price.
-                        if (is_array($bd) && function_exists('b2b_is_client') && b2b_is_client()) {
+                        // Keyed on the breakdown's own b2b flag, not on the session: once
+                        // a partner's offer expires they are back on public prices, and
+                        // striking those through against themselves would be nonsense.
+                        if (is_array($bd) && !empty($bd['b2b'])) {
                             if ((int)$r['prc'] > 0) { $bd['retail_total'] = (int)$r['prc']; }
 
-                            $bdStd = ($parsingSrc === 'encar')
-                                ? parsing_md_breakdown_kr($db, $prefx, $carForBd, null, false, null)
-                                : parsing_md_breakdown_eu($db, $prefx, $carForBd, null, false, null);
+                            $bdStd = parsing_md_breakdown_for($db, $prefx, $parsingSrc, $carForBd, null, false, null);
                             if (is_array($bdStd) && !empty($bdStd['lines']) && !empty($bd['lines'])) {
                                 $stdByKey = [];
                                 foreach ($bdStd['lines'] as $sl) { $stdByKey[(string)$sl['key']] = $sl['amount']; }
@@ -1321,6 +1382,37 @@ $iconTelegramParams = array(
                             if (is_array($a1Rep)) {
                                 $reportLang = $_COOKIE['lang'] ?? 'ro';
                                 $encarReport = $a1Rep[$reportLang] ?? ($a1Rep['ro'] ?? '');
+                            }
+                        } catch (Throwable $e) { $encarReport = ''; }
+                    }
+                    // AutoTrader (Canada): CARFAX publishes the report on its own site,
+                    // so there is nothing to render here — only a link. Cars are only
+                    // imported when that link exists (ParsingOrchestrator), so the
+                    // button appears on every AutoTrader car brought in from now on.
+                    elseif ($parsingSrc === 'autotrader') {
+                        try {
+                            $rps = $db->prepare('SELECT report_data FROM '.$prefx.'_parsing_cars WHERE id = ? LIMIT 1');
+                            $rps->execute([(int)$r['parsing_id']]);
+                            $rpRow = $rps->fetch(PDO::FETCH_ASSOC);
+                            $report = ($rpRow && !empty($rpRow['report_data'])) ? json_decode($rpRow['report_data'], true) : null;
+                            $cfUrl = trim((string)($report['carfax']['url'] ?? ''));
+                            if ($cfUrl !== '' && stripos($cfUrl, 'vhr.carfax.ca') !== false) {
+                                // The wordmark stands in for the brand name, so the
+                                // button reads "Vezi raportul <CARFAX logo>".
+                                $cfLbl = ['ro' => 'Vezi raportul',
+                                          'ru' => 'Смотреть отчёт',
+                                          'en' => 'View the report'];
+                                $cfLang = $_COOKIE['lang'] ?? 'ro';
+                                // Inlined, not linked: the file sits under the admin
+                                // tree, which the public site does not serve.
+                                $cfLogo = @file_get_contents(dirname(__DIR__, 2)
+                                        . '/admin/page/parsing/media-parsing/carfax-canada.svg');
+                                $cfLogo = is_string($cfLogo) ? trim($cfLogo) : '';
+                                $encarReport = '<a class="carfax-report-btn" href="'.htmlspecialchars($cfUrl, ENT_QUOTES).'"'
+                                             . ' target="_blank" rel="noopener nofollow">'
+                                             . '<span>'.htmlspecialchars($cfLbl[$cfLang] ?? $cfLbl['ro']).'</span>'
+                                             . $cfLogo
+                                             . '</a>';
                             }
                         } catch (Throwable $e) { $encarReport = ''; }
                     }

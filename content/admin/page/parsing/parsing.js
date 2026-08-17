@@ -15,8 +15,23 @@
                 body.append(k, data[k]);
             }
         }
+        // Read the body as TEXT first. A PHP fatal or a request killed by the time
+        // limit answers with something that is not JSON, and r.json() then throws
+        // "Unexpected end of JSON input" — which says nothing about what happened.
+        // Keeping the raw body means the real message reaches the caller.
         return fetch(AJAX_BASE, { method: 'POST', body, credentials: 'same-origin' })
-            .then(r => r.json());
+            .then(r => r.text().then(txt => {
+                try {
+                    return JSON.parse(txt);
+                } catch (e) {
+                    const err = new Error(
+                        txt ? txt.replace(/<[^>]*>/g, ' ').trim().substring(0, 300)
+                            : ('HTTP ' + r.status + ' with an empty response (timeout?)')
+                    );
+                    err.httpStatus = r.status;
+                    throw err;
+                }
+            }));
     }
 
     function errorAlert(res) {
@@ -102,6 +117,10 @@
         const fields = form.querySelectorAll('input, select');
         for (const el of fields) {
             if (el.type === 'hidden' || el.name === 'source') continue;
+            // Pre-filled search settings (AutoTrader postal code / radius / seller
+            // type) must not count as "the operator picked something", or an empty
+            // form would import the whole catalog.
+            if (el.hasAttribute('data-not-a-filter')) continue;
             if (el.type === 'checkbox' || el.type === 'radio') {
                 if (el.checked) return true;
                 continue;
@@ -147,6 +166,10 @@
         }
         if (e.target && e.target.id === 'auto1-brand') {
             loadAuto1Models(e.target.value);
+            return;
+        }
+        if (e.target && e.target.id === 'autotrader-brand') {
+            loadAutotraderModels(e.target.value);
             return;
         }
         if (e.target && e.target.id === 'auto1-model') {
@@ -259,6 +282,25 @@
         loadAuto1Engines(brand, selectedModel || '', selectedEngine);
     }
 
+    // Populate AutoTrader model select from window.AUTOTRADER_BRANDS. Keyed by
+    // AutoTrader's numeric make id; model values are its numeric model ids (those
+    // are what actually filter — see the adapter's buildSearchUrl).
+    function loadAutotraderModels(brand, selectedModel) {
+        const modelSel = document.getElementById('autotrader-model');
+        if (!modelSel) return;
+        const defText = modelSel.getAttribute('def_text') || '';
+        modelSel.innerHTML = '<option value="">' + defText + '</option>';
+        if (!brand) return;
+        const models = (window.AUTOTRADER_BRANDS || {})[brand] || [];
+        models.forEach(function (m) {
+            const opt = document.createElement('option');
+            opt.value = m.value;
+            opt.textContent = m.label || m.value;
+            if (selectedModel && m.value === selectedModel) opt.selected = true;
+            modelSel.appendChild(opt);
+        });
+    }
+
     // Populate the Auto1 engine picker ("1.5 TDCi") for a chosen model. Engines
     // only make sense under one model, so the menu stays empty until a model is
     // picked. Order comes from the taxonomy (most cars in stock first).
@@ -313,6 +355,10 @@
         const a1Brand = document.getElementById('auto1-brand');
         if (a1Brand && a1Brand.value) {
             loadAuto1Models(a1Brand.value);
+        }
+        const atBrand = document.getElementById('autotrader-brand');
+        if (atBrand && atBrand.value) {
+            loadAutotraderModels(atBrand.value);
         }
         // Cached cover images may already be complete before their inline onload
         // attaches (notably on refresh), leaving them stuck invisible. Mark any
@@ -420,7 +466,14 @@
         }).catch(err => {
             parsingHideOverlay();
             result.className = 'source-search-result show err';
-            result.textContent = L('error_generic', 'Eroare');
+            // Show WHY. A bare "Eroare" hides the two things that actually happen
+            // here — a PHP fatal (ajax.php answers with {message}) and a request
+            // that ran out of time — and they need opposite fixes.
+            const reason = (err && (err.message || err.error)) ? String(err.message || err.error) : '';
+            console.error('search_now failed:', err);
+            result.textContent = reason
+                ? L('error_generic', 'Eroare') + ': ' + reason.substring(0, 300)
+                : L('error_generic', 'Eroare');
         });
     };
 
@@ -549,7 +602,8 @@
             // shows) — keep in sync with the panels and parsing_search_now().
             ['brand','model','car_sub_model','year_from','year_to','km_min','km_max',
              'price_min','price_max','gearbox','drive_type','body_type','category',
-             'country_origin','seats','color','interior_color']
+             'country_origin','seats','color','interior_color',
+             'zip','radius','seller_type']
                 .forEach(k => {
                     const el = form.querySelector('[name="' + k + '"]');
                     if (el && f[k] != null) el.value = f[k];
@@ -582,6 +636,8 @@
                     loadOpenlaneModels(f.brand, f.model);
                 } else if (src === 'ecarstrade') {
                     loadEcarsModels(f.brand, f.model);
+                } else if (src === 'autotrader') {
+                    loadAutotraderModels(f.brand, f.model);
                 } else {
                     const modelEl = form.querySelector('[name="model"]');
                     if (modelEl) {
@@ -934,8 +990,14 @@
         panel = document.createElement('div');
         panel.id = 'publish-failures-panel';
         panel.className = 'publish-failures-panel';
+        // "Ignore all" — one bad batch can leave hundreds of rows (499 RAM cars on the
+        // day the catalogue was missing that make), and dismissing them one by one is
+        // not a job for a human.
         const head = '<div class="pfp-head"><strong>' + L('failures_title', 'Publicări eșuate') +
-            '</strong><button type="button" class="pfp-close" onclick="parsingCloseFailures()">✕</button></div>';
+            ' (' + failed.length + ')</strong>' +
+            '<button type="button" class="pfp-btn pfp-ignore-all" onclick="parsingDismissAllFailures()">' +
+            L('action_ignore_all', 'Ignoră tot') + '</button>' +
+            '<button type="button" class="pfp-close" onclick="parsingCloseFailures()">✕</button></div>';
         const rows = failed.map(job => {
             const car = [job.brand, job.model, job.year].filter(Boolean).join(' ') || ('#' + job.parsing_car_id);
             const reason = (job.error || '').toString();
@@ -960,6 +1022,17 @@
     window.parsingDismissFailure = function (jobId) {
         ajax('publish_queue_dismiss', { job_id: jobId }).then(res => {
             removeFailureRow(jobId);
+            if (res && res.queue) updatePublishQueueBadge(res.queue);
+        });
+    };
+    // Clear every failed job at once. Sent as ONE request — firing hundreds of
+    // dismissals in parallel would queue them all behind the same PHP session.
+    window.parsingDismissAllFailures = function () {
+        const btn = document.querySelector('.pfp-ignore-all');
+        if (btn) { btn.disabled = true; btn.textContent = L('action_working', 'Se procesează…'); }
+        ajax('publish_queue_dismiss', { all: 1 }).then(res => {
+            const panel = document.getElementById('publish-failures-panel');
+            if (panel) panel.remove();
             if (res && res.queue) updatePublishQueueBadge(res.queue);
         });
     };
@@ -1834,10 +1907,13 @@
         // cap). It replaces the preview once the complete list arrives.
         ajax('fetch_all_photos', { car_id: carId }).then(res => {
             if (res && res.success && res.images && res.images.length > preview.length) {
+                const shown = galleryImages[galleryIndex] || null;
                 galleryImages = res.images;   // all photos, no 20 cap
-                galleryIndex = 0;
+                const sameIdx = shown ? galleryImages.indexOf(shown) : -1;
+                galleryIndex = sameIdx >= 0 ? sameIdx : 0;
                 total.textContent = galleryImages.length;
-                loadGalleryImage(0);
+                current.textContent = String(galleryIndex + 1);
+                if (sameIdx < 0) loadGalleryImage(galleryIndex);
                 // Warm the next few images so navigating feels instant.
                 for (let i = 1; i <= 4; i++) {
                     if (galleryImages[i]) new Image().src = galleryHiRes(galleryImages[i]);
@@ -2603,27 +2679,30 @@
         const data = { section: section };
         fd.forEach((v, k) => { data[k] = v; });
         // Unchecked checkboxes are absent from FormData — force enabled=0 for each
-        // Europe (param_) and Korea (kr_) param that has an amount field.
+        // Europe (param_), Korea (kr_) and America (us_) param with an amount field.
         form.querySelectorAll('input[name$="_amount"]').forEach(inp => {
-            const m = inp.name.match(/^(param|kr)_(\d+)_amount$/);
+            const m = inp.name.match(/^(param|kr|us)_(\d+)_amount$/);
             if (m) {
                 const flag = m[1] + '_' + m[2] + '_enabled';
                 if (!(flag in data)) data[flag] = '0';
             }
         });
-        // Tier rows queued for deletion (only inside this form).
-        delete data['ctier_delete[]'];
-        delete data['tier_delete[]'];
-        const deletes = { ctier_delete: [], tier_delete: [] };
+        // Tier rows queued for deletion (only inside this form). Collected per
+        // prefix so every tier table works — FormData keeps one value per key, so
+        // the raw "<prefix>_delete[]" entries would drop all but the last id.
+        const deletes = {};
         form.querySelectorAll('input[data-delete]').forEach(inp => {
             const base = inp.name.replace('[]', '');
-            if (deletes[base]) deletes[base].push(inp.value);
+            delete data[inp.name];
+            (deletes[base] = deletes[base] || []).push(inp.value);
         });
-        if (deletes.ctier_delete.length) data.ctier_delete = deletes.ctier_delete;
-        if (deletes.tier_delete.length) data.tier_delete = deletes.tier_delete;
+        let deleteCount = 0;
+        Object.keys(deletes).forEach(base => {
+            data[base] = deletes[base];
+            deleteCount += deletes[base].length;
+        });
 
-        const hasTierChanges = deletes.ctier_delete.length || deletes.tier_delete.length ||
-            form.querySelector('input[name*="_new"]');
+        const hasTierChanges = deleteCount || form.querySelector('input[name*="_new"]');
         ajax('save_eu_config', data).then(res => {
             if (res && res.success) {
                 alert(L('eu_saved', 'Saved.'));
@@ -2646,7 +2725,9 @@
         if (!table) return;
         const prefix = table.getAttribute('data-prefix');
         const tbody = table.querySelector('tbody');
-        const amountField = (prefix === 'ctier') ? 'commission' : (prefix === 'kmtier') ? 'markup' : 'delivery';
+        const amountField = (prefix === 'ctier') ? 'commission'
+            : (prefix === 'kmtier' || prefix === 'umtier') ? 'markup'
+            : 'delivery';
         const n = 'new' + (tierNewCounter++);
         const tr = document.createElement('tr');
         tr.setAttribute('data-row', '');
@@ -2845,13 +2926,28 @@
         const P = pricingData();
         if (!P || !d || !d.priceEur || d.priceEur <= 0) return null;
         const isKorea = (d.source === 'encar');
-        // Korea markup: add the price-band amount on top of the converted price.
-        // The marked price is the new base for the whole MD breakdown (mirrors
-        // parsing_md_breakdown_kr in PHP).
+        const isAmerica = (d.source === 'autotrader');
+        // Korea/America markup: add the price-band amount on top of the converted
+        // price. The marked price is the new base for the whole MD breakdown
+        // (mirrors parsing_md_breakdown_kr / _us in PHP).
         let priceEur = d.priceEur;
         if (isKorea) priceEur += tierValue(P.kr_markup, priceEur, 'markup');
+        if (isAmerica) priceEur += tierValue(P.us_markup, priceEur, 'markup');
 
         const commission = tierValue(P.commission, priceEur, 'commission');
+
+        if (isAmerica) {
+            // Same shape as Korea: transport enters the customs base, the rest
+            // are flat costs.
+            let freight = 0;
+            (P.us_params || []).forEach(p => { if (p.param_key === 'sea_freight') freight = parseFloat(p.amount_eur) || 0; });
+            const baseUs = priceEur + freight;
+            const customsUs = customsEur(P, baseUs, priceEur, d.fuel, d.capacity, d.year);
+            // Percent costs (local tax) are charged on the MARKED price, i.e.
+            // car + markup — mirrors parsing_md_breakdown_us in PHP.
+            const fixedUs = fixedParamsEur(P.us_params, priceEur, ['sea_freight']);
+            return Math.round(priceEur + freight + customsUs + fixedUs + commission);
+        }
 
         if (isKorea) {
             // Sea freight (RoRo) is the transport that enters the customs base.
@@ -2859,8 +2955,10 @@
             (P.kr_params || []).forEach(p => { if (p.param_key === 'sea_freight_roro') roro = parseFloat(p.amount_eur) || 0; });
             const base = priceEur + roro;
             const customs = customsEur(P, base, priceEur, d.fuel, d.capacity, d.year);
-            // Add all enabled KR fixed costs EXCEPT RoRo (already in the base).
-            const fixed = fixedParamsEur(P.kr_params, priceEur, ['sea_freight_roro']);
+            // Add all enabled KR fixed costs EXCEPT the two freight options: RoRo
+            // is already in the base, and Container is the alternative to it — it
+            // is only ever charged INSTEAD of RoRo, never on top.
+            const fixed = fixedParamsEur(P.kr_params, priceEur, ['sea_freight_roro', 'sea_freight_container']);
             return Math.round(priceEur + roro + customs + fixed + commission);
         }
 
@@ -2958,6 +3056,15 @@
             return ajax('enrich_one_md', { car_id: carId }).then(res => {
                 if (!(res && res.success)) return;
                 const cap = parseInt(res.capacity, 10) || 0;
+                // Neither the source nor the AI can give this car a displacement
+                // → stop polling it. Otherwise the card keeps re-requesting a
+                // detail page that will never carry the number (AutoTrader omits
+                // it on ~40% of listings), which is what made the whole catalog
+                // feel slow.
+                if (!cap && res.cc_unavailable) {
+                    card.removeAttribute('data-md-pending');
+                    return;
+                }
                 if (cap > 0) {
                     card.setAttribute('data-capacity', cap);
                     if (res.fuel) card.setAttribute('data-fuel', res.fuel);

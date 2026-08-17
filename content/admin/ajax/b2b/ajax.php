@@ -12,6 +12,8 @@ use App\Core\Container;
 use App\Services\B2b\B2bAudit;
 use App\Services\B2b\B2bAuth;
 use App\Services\B2b\B2bConfig;
+use App\Services\B2b\B2bGift;
+use App\Services\B2b\B2bOffer;
 use App\Services\B2b\B2bRegions;
 
 header('Content-Type: application/json; charset=UTF-8');
@@ -225,6 +227,9 @@ switch ($fn) {
     case 'save_settings': {
         $allowed = [
             'b2b_advance_default', 'b2b_advance_mode', 'b2b_advance_percent', 'b2b_advance_max',
+            // Master switch on /adminsauto/b2b/users: '1' makes every partner's own
+            // deadline inert so the general offer governs all of them again.
+            'b2b_ignore_personal_deadlines',
         ];
 
         $incoming = $_POST['settings'] ?? [];
@@ -273,6 +278,7 @@ switch ($fn) {
         $paramMap = [
             'eu_params' => $pfx.'_b2b_eu_params',
             'kr_params' => $pfx.'_b2b_kr_params',
+            'us_params' => $pfx.'_b2b_us_params',
         ];
 
         try {
@@ -360,6 +366,7 @@ switch ($fn) {
             'delivery'   => $pfx.'_b2b_eu_tiers',
             'eu_params'  => $pfx.'_b2b_eu_params',
             'kr_params'  => $pfx.'_b2b_kr_params',
+            'us_params'  => $pfx.'_b2b_us_params',
         ];
         if (!isset($map[$section])) {
             b2b_adm_out(['ok' => false, 'error' => 'Secțiune necunoscută.']);
@@ -375,6 +382,103 @@ switch ($fn) {
         }
 
         B2bAudit::log($scopeUser, B2bAudit::PERMISSIONS_CHANGED, ['pricing_reset' => $section, 'by_admin' => (int)$user_id]);
+
+        b2b_adm_out(['ok' => true]);
+    }
+
+    // ---- Deadline of the price offer, for one scope --------------------------
+    // Same scoping rule as save_pricing: with user_id it is that client's own
+    // offer, without it the general one. An empty value clears the deadline.
+    case 'save_offer_expiry': {
+        $scopeUser = (int)($_POST['user_id'] ?? 0);
+        $expiresAt = (string)($_POST['expires_at'] ?? '');
+
+        if ($scopeUser > 0 && !B2bAuth::findById($scopeUser)) {
+            b2b_adm_out(['ok' => false, 'error' => 'Client inexistent.']);
+        }
+
+        try {
+            B2bOffer::save($scopeUser > 0 ? $scopeUser : null, $expiresAt, (int)$user_id);
+        } catch (Throwable $e) {
+            B2bConfig::log('b2b_error.log', 'admin save_offer_expiry err='.$e->getMessage());
+            b2b_adm_out(['ok' => false, 'error' => 'Termenul nu a putut fi salvat.']);
+        }
+
+        if ($scopeUser > 0) {
+            B2bAudit::log($scopeUser, B2bAudit::PERMISSIONS_CHANGED, ['offer_expiry' => $expiresAt, 'by_admin' => (int)$user_id]);
+        }
+
+        b2b_adm_out(['ok' => true]);
+    }
+
+    // ---- Gifts granted to a client ------------------------------------------
+    case 'send_gift': {
+        $target = (int)($_POST['user_id'] ?? 0);
+        $note   = (string)($_POST['note'] ?? '');
+
+        // The admin JS flattens arrays into a comma-separated string before
+        // posting, so accept both shapes rather than silently receiving none.
+        $items = $_POST['items'] ?? [];
+        if (is_string($items)) {
+            $items = $items === '' ? [] : explode(',', $items);
+        }
+        $items = is_array($items) ? $items : [];
+
+        if ($target <= 0 || !B2bAuth::findById($target)) {
+            b2b_adm_out(['ok' => false, 'error' => 'Client inexistent.']);
+        }
+
+        // An empty gift would notify the client with nothing to show.
+        $giftId = B2bGift::send($target, $items, $note, (int)$user_id);
+        if ($giftId <= 0) {
+            b2b_adm_out(['ok' => false, 'error' => 'Alege cel puțin un serviciu sau scrie o observație.']);
+        }
+
+        B2bAudit::log($target, B2bAudit::GIFT_SENT, [
+            'gift_id'  => $giftId,
+            'items'    => implode(',', array_intersect((array)$items, B2bGift::SERVICES)),
+            'by_admin' => (int)$user_id,
+        ], $giftId);
+
+        b2b_adm_out(['ok' => true, 'gift_id' => $giftId]);
+    }
+
+    // Gifts of one client, for the dialog opened from the list. Fetched on demand
+    // rather than preloaded with the table, which can hold 500 rows.
+    case 'list_gifts': {
+        $target = (int)($_POST['user_id'] ?? 0);
+        if ($target <= 0) {
+            b2b_adm_out(['ok' => false, 'error' => 'Client inexistent.']);
+        }
+
+        $lang = $_COOKIE['lang'] ?? 'ro';
+        $out  = [];
+        foreach (B2bGift::historyFor($target) as $g) {
+            $out[] = [
+                'id'      => (int)$g['id'],
+                'what'    => B2bGift::describe($g, $lang),
+                'note'    => (string)($g['note'] ?? ''),
+                'date'    => date('d.m.Y H:i', strtotime((string)$g['created_at'])),
+                'revoked' => !empty($g['revoked_at']),
+                'seen'    => !empty($g['seen_at']),
+            ];
+        }
+
+        b2b_adm_out(['ok' => true, 'gifts' => $out]);
+    }
+
+    case 'revoke_gift': {
+        $giftId  = (int)($_POST['gift_id'] ?? 0);
+        $ownerId = B2bGift::revoke($giftId, (int)$user_id);
+
+        if ($ownerId <= 0) {
+            b2b_adm_out(['ok' => false, 'error' => 'Cadoul nu a putut fi retras.']);
+        }
+
+        B2bAudit::log($ownerId, B2bAudit::GIFT_REVOKED, [
+            'gift_id'  => $giftId,
+            'by_admin' => (int)$user_id,
+        ], $giftId);
 
         b2b_adm_out(['ok' => true]);
     }

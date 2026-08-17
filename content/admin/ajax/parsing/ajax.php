@@ -45,6 +45,20 @@ if (parsing_is_encar_only($user_id ?? 0)) {
     }
 }
 
+// Actions that spend seconds on an outbound request (a source detail page, the AI)
+// and never write to the session. PHP holds an exclusive lock on the session file
+// for the whole request, so without this every other admin request — including plain
+// page loads — waits in line behind them. Opening the catalog fires 16 enrich calls
+// at once, which is why the WHOLE admin felt frozen, not just /parsing.
+// Same fix as parsing_image_proxy() further down.
+const PARSING_SESSIONLESS_ACTIONS = [
+    'enrich_one_md', 'ai_enrich_specs', 'fetch_all_photos', 'get_car_details',
+    'locate_by_link', 'fetch_by_link',
+];
+if (in_array($action, PARSING_SESSIONLESS_ACTIONS, true) && session_status() === PHP_SESSION_ACTIVE) {
+    session_write_close();
+}
+
 try {
     switch ($action) {
         case 'save_filter':
@@ -311,6 +325,11 @@ function parsing_save_filter($db, $prefx, $userId, $p) {
     if ($engines) $extra['engine'] = $engines;
     if (!empty($p['km_min']))         $extra['km_min'] = (int)$p['km_min'];
     if (!empty($p['price_min']))      $extra['price_min'] = (int)$p['price_min'];
+    // AutoTrader search area. radius is stored even when 0 ("all Canada"), which
+    // is a deliberate choice and must not silently fall back to the default.
+    if (!empty($p['zip']))            $extra['zip'] = strtoupper(preg_replace('/\s+/', '', trim($p['zip'])));
+    if (isset($p['radius']) && $p['radius'] !== '') $extra['radius'] = (int)$p['radius'];
+    if (!empty($p['seller_type']))    $extra['seller_type'] = trim($p['seller_type']);
 
     $data = [
         'user_id' => $userId,
@@ -735,10 +754,17 @@ function parsing_publish_queue_retry($db, $prefx, $p) {
 }
 
 function parsing_publish_queue_dismiss($db, $prefx, $p) {
-    $jobId = (int)($p['job_id'] ?? 0);
-    if ($jobId <= 0) return ['success' => false, 'error' => 'Missing job_id'];
     try {
         $queue = new \App\Services\Parsing\PublishQueue();
+
+        // "Ignore all" from the failures panel — one request, one statement.
+        if (!empty($p['all'])) {
+            $n = $queue->dismissAllFailed();
+            return ['success' => true, 'dismissed' => $n, 'queue' => $queue->counts()];
+        }
+
+        $jobId = (int)($p['job_id'] ?? 0);
+        if ($jobId <= 0) return ['success' => false, 'error' => 'Missing job_id'];
         $ok = $queue->dismiss($jobId);
         return ['success' => $ok, 'queue' => $queue->counts()];
     } catch (\Throwable $e) {
@@ -754,6 +780,7 @@ function parsing_publish_queue_dismiss($db, $prefx, $p) {
 function parsing_publish_999_stats($db, $prefx) {
     // Account labels, keyed by 999_api_id. Display order is the array order.
     $accounts = [
+        5 => 'SautoSUA',
         4 => 'Encars-MD',
         3 => 'Sauto-stock-extern',
         2 => 'Sauto-comerciale',
@@ -891,11 +918,29 @@ function parsing_enrich_one_md($db, $prefx, $p) {
     } catch (\Throwable $e) { /* best-effort */ }
 
     $stmt = $db->prepare("SELECT engine_volume, fuel_type, year, source, price_eur,
-                          gearbox, seats, power_hp, drive_type
+                          gearbox, seats, power_hp, drive_type, ai_verified
                           FROM {$prefx}_parsing_cars WHERE id = ? LIMIT 1");
     $stmt->execute([$carId]);
     $car = $stmt->fetch(PDO::FETCH_ASSOC);
     if (!$car) return ['success' => false, 'error' => 'Not found'];
+
+    // Some sources simply do not publish the displacement — AutoTrader omits it
+    // on ~40% of its listings, detail page included. Re-pulling that page can
+    // never produce a cc, so the card would poll forever. Ask the AI ONCE, gated
+    // on ai_verified: SpecEnricher's own "everything is filled" shortcut can
+    // never trigger for a car whose cc stays unknown, so without this gate every
+    // page view would spend another AI call on the same hopeless car.
+    $noCc = ((int)$car['engine_volume'] <= 0 && ($car['fuel_type'] ?? '') !== 'electric');
+    if ($noCc && empty($car['ai_verified'])) {
+        try {
+            \App\Services\Parsing\SpecEnricher::enrich($db, $prefx, $carId);
+            $stmt->execute([$carId]);
+            $car = $stmt->fetch(PDO::FETCH_ASSOC) ?: $car;
+            $noCc = ((int)$car['engine_volume'] <= 0 && ($car['fuel_type'] ?? '') !== 'electric');
+        } catch (\Throwable $e) { /* best-effort */ }
+    }
+    // Tell the UI to stop asking: the source has no cc and the AI already tried.
+    $ccUnavailable = $noCc && !empty($car['ai_verified']);
 
     // Return the spec fields too so the catalog card's car-meta (gearbox, seats,
     // hp) can be filled live without a page refresh — enrichOnePublic just pulled
@@ -903,6 +948,7 @@ function parsing_enrich_one_md($db, $prefx, $p) {
     return [
         'success'    => true,
         'capacity'   => (int)$car['engine_volume'],
+        'cc_unavailable' => $ccUnavailable,
         'fuel'       => $car['fuel_type'],
         'year'       => (int)$car['year'],
         'source'     => $car['source'],
@@ -1320,8 +1366,14 @@ function parsing_image_proxy($url) {
     if (!preg_match('#^https?://#i', $url)) { http_response_code(400); echo 'bad url'; return; }
 
     // Whitelist source hosts to avoid being used as an open proxy.
+    // Cards render AutoTrader/Auto1 images straight from their CDN (no hotlink
+    // protection), but the EDIT form must pull them through here: it turns each
+    // photo into a File for the upload input, which the browser blocks
+    // cross-origin. A missing host here means an empty photo picker on edit,
+    // even though publishing (server-side curl) works fine.
     $allowedHosts = ['ci.encar.com', 'fem.encar.com', 'www.encar.com', 'api.encar.com',
-        'images.openlane.eu', 'ecarstrade.com', 'img-pa.auto1.com'];
+        'images.openlane.eu', 'ecarstrade.com', 'img-pa.auto1.com',
+        'prod.pictures.autoscout24.net'];
     $host = parse_url($url, PHP_URL_HOST) ?: '';
     $hostOk = false;
     foreach ($allowedHosts as $h) {
@@ -1352,6 +1404,7 @@ function parsing_image_proxy($url) {
     if (stripos($host, 'ecarstrade') !== false) $referer = 'https://ru.ecarstrade.com/';
     if (stripos($host, 'openlane')   !== false) $referer = 'https://www.openlane.eu/';
     if (stripos($host, 'auto1')      !== false) $referer = 'https://www.auto1.com/';
+    if (stripos($host, 'autoscout24') !== false) $referer = 'https://www.autotrader.ca/';
 
     if (stripos($host, 'encar.com') !== false) {
         $url = preg_replace('/\?.*$/', '', $url);
@@ -1375,6 +1428,35 @@ function parsing_image_proxy($url) {
         echo 'fetch failed';
         return;
     }
+    // The publish form loads a car's photos through here with nobanner=1, so a dealer
+    // banner is refused before it can become a file in the upload input. Browsing the
+    // catalog uses the same proxy WITHOUT the flag and still sees the whole gallery.
+    // The queue publisher filters its own bytes separately (ParsingPublisher).
+    if (!empty($_GET['nobanner'])) {
+        if (\App\Services\Parsing\BannerImage::isBanner($bytes)) {
+            http_response_code(404);
+            echo 'banner';
+            return;
+        }
+        // Same picture already seen in another listing → a dealer advert, not this
+        // car. Catches the busy adverts that look like photographs.
+        $pid = (int)($_GET['pid'] ?? 0);
+        if ($pid > 0) {
+            $hash = \App\Services\Parsing\BannerImage::fingerprint($bytes);
+            if ($hash !== null) {
+                $isAdvert = \App\Services\Parsing\BannerImage::seenOnAnotherListing($db, $prefx, $hash, $pid);
+                // Recorded even when refused, so the cleanup script can find the same
+                // advert in ads published before it was known.
+                \App\Services\Parsing\BannerImage::remember($db, $prefx, $hash, $pid);
+                if ($isAdvert) {
+                    http_response_code(404);
+                    echo 'banner (seen in another listing)';
+                    return;
+                }
+            }
+        }
+    }
+
     header('Content-Type: image/jpeg');
     header('Content-Length: ' . strlen($bytes));
     header('Cache-Control: public, max-age=2592000, immutable'); // 30 days
@@ -1526,6 +1608,12 @@ function parsing_search_now($db, $prefx, $p) {
     // finishes, which made the page feel frozen / the spinner run "forever".
     if (session_id() !== '') { @session_write_close(); }
 
+    // A manual search that runs past the web server's limit answers 500 with an
+    // empty body — the operator sees "Eroare" and no import happened at all. Our
+    // own ceiling stays BELOW the server's: better a short run that returns what
+    // it found than a long one the server kills.
+    @set_time_limit(60);
+
     // Server time just before importing — cars with found_at >= this are the ones
     // we just brought in, so the UI can ring them in the catalog. 10s safety margin
     // covers tiny PHP/MySQL clock differences.
@@ -1549,7 +1637,9 @@ function parsing_search_now($db, $prefx, $p) {
     // a sauto internal code that must be resolved to a display name.
     // Auto1 also sends brand (numeric manufacturer code) + model (Auto1 value)
     // straight from its own taxonomy select, so pass them through unchanged.
-    $taxonomySource = in_array($singleSource, ['encar', 'openlane', 'ecarstrade', 'auto1'], true);
+    // AutoTrader also sends brand/model straight from its own taxonomy (URL
+    // slugs like "bmw" / "x5"), so it passes through unchanged too.
+    $taxonomySource = in_array($singleSource, ['encar', 'openlane', 'ecarstrade', 'auto1', 'autotrader'], true);
     if (!empty($p['brand'])) {
         if ($taxonomySource) {
             $brandName = trim($p['brand']);
@@ -1595,6 +1685,11 @@ function parsing_search_now($db, $prefx, $p) {
         'interior_color'  => $p['interior_color'] ?? null,
         'car_sub_model'   => !empty($p['car_sub_model']) ? trim($p['car_sub_model']) : null,
         'premium_offer'   => !empty($p['premium_offer']) ? trim($p['premium_offer']) : null,
+        // AutoTrader search area (postal code + radius in km, 0 = all Canada) and
+        // seller type. Ignored by every other adapter.
+        'zip'             => !empty($p['zip']) ? strtoupper(preg_replace('/\s+/', '', trim($p['zip']))) : null,
+        'radius'          => isset($p['radius']) && $p['radius'] !== '' ? (int)$p['radius'] : null,
+        'seller_type'     => !empty($p['seller_type']) ? trim($p['seller_type']) : null,
     ];
 
     $orchestrator = new \App\Services\Parsing\ParsingOrchestrator();
@@ -1617,6 +1712,20 @@ function parsing_search_now($db, $prefx, $p) {
         }
         try {
             $srcCriteria = $criteria;
+
+            // Listings we already hold for this source, so the adapter can skip
+            // them and spend the run reaching cars we do not have — without it a
+            // repeated import keeps re-reading the same newest pages and reports
+            // "0 imported". runFilter() does the same; this path (the manual
+            // "Caută acum" button) calls the adapter directly and needs it too.
+            try {
+                $kn = $db->prepare('SELECT source_id FROM '.$prefx.'_parsing_cars WHERE source = ?');
+                $kn->execute([$sourceCode]);
+                $knownIds = [];
+                foreach ($kn->fetchAll(\PDO::FETCH_COLUMN) as $sid) { $knownIds[(string)$sid] = true; }
+                $srcCriteria['_known_ids'] = $knownIds;
+            } catch (\Throwable $e) { /* without the list the adapter behaves as before */ }
+
             // Encar pulls up to 300 cars per manual search (default is 200).
             if ($sourceCode === 'encar') {
                 $srcCriteria['_max_results'] = 300;
@@ -1628,10 +1737,23 @@ function parsing_search_now($db, $prefx, $p) {
             if ($sourceCode === 'auto1') {
                 $srcCriteria['_max_results'] = 500;
             }
+            // AutoTrader pages are fixed at 20 cars, so every 20 imported cars
+            // costs one request (~0.6s). 300 per click ≈ 15 pages stays snappy;
+            // the saved offset walks the rest of the catalog on later clicks.
+            if ($sourceCode === 'autotrader') {
+                $srcCriteria['_max_results'] = 300;
+            }
             $cars = $adapter->searchByFilter($srcCriteria);
             $found += count($cars);
             if (property_exists($adapter, 'lastTotalCount')) {
                 $totalCount = max($totalCount, (int)$adapter->lastTotalCount);
+            }
+            // Listings the adapter recognised as ours and never opened. Counted as
+            // duplicates for the operator: "0 imported (300 already ours)" reads very
+            // differently from a bare "0", and it is the usual reason a search on the
+            // newest pages finds nothing.
+            if (property_exists($adapter, 'lastKnownSkipped')) {
+                $duplicates += (int)$adapter->lastKnownSkipped;
             }
             $resultCounts = [];
             $srcImported = 0; $srcSkipped = 0;
@@ -2389,15 +2511,27 @@ function parsing_save_eu_config($db, $prefx, $userId, $p) {
     $kmInsert = $db->prepare('INSERT INTO '.$prefx.'_parsing_kr_markup_tiers
         (price_from, price_to, markup, sort_order, updated_by)
         VALUES (:pf, :pt, :mk, :so, :uid)');
+    $usStmt = $db->prepare('UPDATE '.$prefx.'_parsing_us_params
+        SET amount_eur = :amt, enabled = :en, updated_by = :uid
+        WHERE id = :id');
+    $umStmt = $db->prepare('UPDATE '.$prefx.'_parsing_us_markup_tiers
+        SET price_from = :pf, price_to = :pt, markup = :mk, updated_by = :uid
+        WHERE id = :id');
+    $umInsert = $db->prepare('INSERT INTO '.$prefx.'_parsing_us_markup_tiers
+        (price_from, price_to, markup, sort_order, updated_by)
+        VALUES (:pf, :pt, :mk, :so, :uid)');
 
     $tierIds = [];
     $commIds = [];
     $paramIds = [];
     $krIds = [];
     $kmIds = [];
+    $usIds = [];
+    $umIds = [];
     $tierNew = [];
     $commNew = [];
     $kmNew = [];
+    $umNew = [];
     foreach (array_keys($p) as $k) {
         if (preg_match('/^tier_new(\d+)_/', $k, $m)) {
             $tierNew[(int)$m[1]] = true;
@@ -2405,16 +2539,22 @@ function parsing_save_eu_config($db, $prefx, $userId, $p) {
             $commNew[(int)$m[1]] = true;
         } elseif (preg_match('/^kmtier_new(\d+)_/', $k, $m)) {
             $kmNew[(int)$m[1]] = true;
+        } elseif (preg_match('/^umtier_new(\d+)_/', $k, $m)) {
+            $umNew[(int)$m[1]] = true;
         } elseif (preg_match('/^tier_(\d+)_/', $k, $m)) {
             $tierIds[(int)$m[1]] = true;
         } elseif (preg_match('/^ctier_(\d+)_/', $k, $m)) {
             $commIds[(int)$m[1]] = true;
         } elseif (preg_match('/^kmtier_(\d+)_/', $k, $m)) {
             $kmIds[(int)$m[1]] = true;
+        } elseif (preg_match('/^umtier_(\d+)_/', $k, $m)) {
+            $umIds[(int)$m[1]] = true;
         } elseif (preg_match('/^param_(\d+)_/', $k, $m)) {
             $paramIds[(int)$m[1]] = true;
         } elseif (preg_match('/^kr_(\d+)_/', $k, $m)) {
             $krIds[(int)$m[1]] = true;
+        } elseif (preg_match('/^us_(\d+)_/', $k, $m)) {
+            $usIds[(int)$m[1]] = true;
         }
     }
 
@@ -2466,6 +2606,24 @@ function parsing_save_eu_config($db, $prefx, $userId, $p) {
                 ':id'  => $id,
             ]);
         }
+        foreach (array_keys($usIds) as $id) {
+            $usStmt->execute([
+                ':amt' => (float)($p['us_'.$id.'_amount'] ?? 0),
+                ':en'  => !empty($p['us_'.$id.'_enabled']) ? 1 : 0,
+                ':uid' => $userId,
+                ':id'  => $id,
+            ]);
+        }
+        foreach (array_keys($umIds) as $id) {
+            $to = $p['umtier_'.$id.'_price_to'] ?? '';
+            $umStmt->execute([
+                ':pf'  => (int)($p['umtier_'.$id.'_price_from'] ?? 0),
+                ':pt'  => ($to === '' ? null : (int)$to),
+                ':mk'  => (int)($p['umtier_'.$id.'_markup'] ?? 0),
+                ':uid' => $userId,
+                ':id'  => $id,
+            ]);
+        }
         // Insert new tier rows (added in the UI, names tier_new<N>_*).
         foreach (array_keys($tierNew) as $n) {
             $to = $p['tier_new'.$n.'_price_to'] ?? '';
@@ -2497,6 +2655,16 @@ function parsing_save_eu_config($db, $prefx, $userId, $p) {
                 ':uid' => $userId,
             ]);
         }
+        foreach (array_keys($umNew) as $n) {
+            $to = $p['umtier_new'.$n.'_price_to'] ?? '';
+            $umInsert->execute([
+                ':pf'  => (float)($p['umtier_new'.$n.'_price_from'] ?? 0),
+                ':pt'  => ($to === '' ? null : (float)$to),
+                ':mk'  => (float)($p['umtier_new'.$n.'_markup'] ?? 0),
+                ':so'  => 99,
+                ':uid' => $userId,
+            ]);
+        }
         // Delete tier rows removed in the UI (ids in tier_delete / ctier_delete).
         $tierDel = array_filter(array_map('intval', (array)($p['tier_delete'] ?? [])));
         if ($tierDel) {
@@ -2512,6 +2680,11 @@ function parsing_save_eu_config($db, $prefx, $userId, $p) {
         if ($kmDel) {
             $in = implode(',', array_fill(0, count($kmDel), '?'));
             $db->prepare('DELETE FROM '.$prefx.'_parsing_kr_markup_tiers WHERE id IN ('.$in.')')->execute(array_values($kmDel));
+        }
+        $umDel = array_filter(array_map('intval', (array)($p['umtier_delete'] ?? [])));
+        if ($umDel) {
+            $in = implode(',', array_fill(0, count($umDel), '?'));
+            $db->prepare('DELETE FROM '.$prefx.'_parsing_us_markup_tiers WHERE id IN ('.$in.')')->execute(array_values($umDel));
         }
         $db->commit();
     } catch (Exception $e) {
@@ -2560,7 +2733,7 @@ function parsing_resync_card_prices($db, $prefx, int $maxDiff = 500): array {
             FROM {$prefx}_parsing_cars pc
             JOIN {$prefx}_car_ctlg cc ON cc.id = pc.car_ctlg_id
             WHERE pc.status='published' AND pc.car_ctlg_id > 0
-              AND pc.source IN ('encar','openlane','ecarstrade','auto1')
+              AND pc.source IN ('encar','openlane','ecarstrade','auto1','autotrader')
               AND pc.price_eur > 0")->fetchAll(PDO::FETCH_ASSOC);
     } catch (\Throwable $e) {
         return ['checked' => 0, 'updated' => 0, 'skipped_big' => 0, 'error' => $e->getMessage()];
@@ -2583,9 +2756,7 @@ function parsing_resync_card_prices($db, $prefx, int $maxDiff = 500): array {
             'capacity'  => (int)$r['vol'],
             'year'      => (int)$r['yr'],
         ];
-        $bd = ($r['source'] === 'encar')
-            ? parsing_md_breakdown_kr($db, $prefx, $bdCar)
-            : parsing_md_breakdown_eu($db, $prefx, $bdCar);
+        $bd = parsing_md_breakdown_for($db, $prefx, $r['source'] ?? '', $bdCar);
         if (!$bd || empty($bd['total'])) continue;
 
         $total = (int)round($bd['total']);

@@ -18,6 +18,7 @@ use App\Services\B2b\B2bInvoice;
 use App\Services\B2b\B2bNotifier;
 use App\Services\B2b\B2bPasswordReset;
 use App\Services\B2b\B2bRegions;
+use App\Services\B2b\B2bSavedFilter;
 
 $b2b_fn   = (string)($_POST['fn'] ?? '');
 $b2b_lang = $_COOKIE['lang'] ?? 'ro';
@@ -47,6 +48,12 @@ $b2b_msg = (function () use ($b2b_lang) {
             'invoice_created'  => 'Contul de plată a fost generat.',
             'request_failed'   => 'Cererea nu a putut fi înregistrată.',
             'request_sent'     => 'Cererea a fost transmisă către Super Admin.',
+            'filter_saved'     => 'Filtrul a fost salvat. Vă anunțăm când apar mașini noi.',
+            'filter_updated'   => 'Filtrul a fost actualizat.',
+            'filter_deleted'   => 'Filtrul a fost șters.',
+            'filter_empty'     => 'Completați cel puțin un criteriu.',
+            'filter_limit'     => 'Ați atins numărul maxim de filtre salvate.',
+            'filter_missing'   => 'Filtrul nu a fost găsit.',
             'unknown_action'   => 'Acțiune necunoscută.',
         ],
         'ru' => [
@@ -61,6 +68,12 @@ $b2b_msg = (function () use ($b2b_lang) {
             'invoice_created'  => 'Счёт на оплату сформирован.',
             'request_failed'   => 'Не удалось зарегистрировать заявку.',
             'request_sent'     => 'Заявка отправлена Супер-администратору.',
+            'filter_saved'     => 'Фильтр сохранён. Сообщим, когда появятся новые авто.',
+            'filter_updated'   => 'Фильтр обновлён.',
+            'filter_deleted'   => 'Фильтр удалён.',
+            'filter_empty'     => 'Заполните хотя бы один критерий.',
+            'filter_limit'     => 'Достигнут максимум сохранённых фильтров.',
+            'filter_missing'   => 'Фильтр не найден.',
             'unknown_action'   => 'Неизвестное действие.',
         ],
         'en' => [
@@ -75,6 +88,12 @@ $b2b_msg = (function () use ($b2b_lang) {
             'invoice_created'  => 'The payment invoice was generated.',
             'request_failed'   => 'The request could not be recorded.',
             'request_sent'     => 'The request was sent to the Super Admin.',
+            'filter_saved'     => 'Filter saved. We will tell you when matching cars appear.',
+            'filter_updated'   => 'Filter updated.',
+            'filter_deleted'   => 'Filter deleted.',
+            'filter_empty'     => 'Fill in at least one criterion.',
+            'filter_limit'     => 'You have reached the maximum number of saved filters.',
+            'filter_missing'   => 'Filter not found.',
             'unknown_action'   => 'Unknown action.',
         ],
     ];
@@ -91,7 +110,7 @@ if (!B2bCsrf::check($_POST['csrf'] ?? null)) {
     return;
 }
 
-$b2b_needs_auth = ['b2b_logout', 'b2b_change_password', 'b2b_save_car', 'b2b_unsave_car', 'b2b_sync_favorites', 'b2b_create_invoice', 'b2b_send_request'];
+$b2b_needs_auth = ['b2b_logout', 'b2b_change_password', 'b2b_save_car', 'b2b_unsave_car', 'b2b_sync_favorites', 'b2b_create_invoice', 'b2b_send_request', 'b2b_add_filter', 'b2b_edit_filter', 'b2b_del_filter'];
 if (in_array($b2b_fn, $b2b_needs_auth, true) && !b2b_is_client()) {
     $b2b_fail(B2bAuth::msg('auth_required'), ['auth_required' => true]);
     return;
@@ -109,6 +128,8 @@ switch ($b2b_fn) {
             'phone_number' => $_POST['phone'] ?? '',
             'full_name'    => $_POST['full_name'] ?? '',
             'password'     => $_POST['password'] ?? '',
+            // Optional marketing consent; absence must never fail the signup.
+            'marketing_optin' => (($_POST['marketing_optin'] ?? '') === 'yes'),
         ]);
 
         if (!$res['ok']) {
@@ -428,6 +449,51 @@ switch ($b2b_fn) {
             'request_id' => $requestId,
             'message'    => $b2b_msg('request_sent'),
         ]);
+        break;
+    }
+
+    // ---- Saved searches with an alert --------------------------------------
+    case 'b2b_add_filter': {
+        $fltId = B2bSavedFilter::create(b2b_user_id(), $_POST, (string)($_POST['name'] ?? ''));
+
+        if ($fltId <= 0) {
+            // Either every field was left empty — which would alert on the whole
+            // catalog — or the per-user limit is reached.
+            $b2b_fail(B2bSavedFilter::countForUser(b2b_user_id()) >= B2bSavedFilter::MAX_PER_USER
+                ? $b2b_msg('filter_limit')
+                : $b2b_msg('filter_empty'));
+            break;
+        }
+
+        $b2b_ok(['filter_id' => $fltId, 'message' => $b2b_msg('filter_saved')]);
+        break;
+    }
+
+    case 'b2b_edit_filter': {
+        $b2b_uid = b2b_user_id();
+        $b2b_fid = (int)($_POST['filter_id'] ?? 0);
+
+        // Existence is checked separately: an edit that changes nothing updates
+        // no row, and that must not read as "filter not found".
+        if (!B2bSavedFilter::find($b2b_uid, $b2b_fid)) {
+            $b2b_fail($b2b_msg('filter_missing'));
+            break;
+        }
+        if (!B2bSavedFilter::update($b2b_uid, $b2b_fid, $_POST, (string)($_POST['name'] ?? ''))) {
+            $b2b_fail($b2b_msg('filter_empty'));
+            break;
+        }
+
+        $b2b_ok(['filter_id' => $b2b_fid, 'message' => $b2b_msg('filter_updated')]);
+        break;
+    }
+
+    case 'b2b_del_filter': {
+        if (!B2bSavedFilter::delete(b2b_user_id(), (int)($_POST['filter_id'] ?? 0))) {
+            $b2b_fail($b2b_msg('filter_missing'));
+            break;
+        }
+        $b2b_ok(['message' => $b2b_msg('filter_deleted')]);
         break;
     }
 

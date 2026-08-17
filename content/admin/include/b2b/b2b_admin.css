@@ -51,6 +51,38 @@
 }
 .b2ba-search input:focus{ outline:none; border-color:var(--b2ba-brand); }
 
+/* Switch that saves itself (data-toggle-setting). Amber, not brand red: it is a
+   temporary override of a rule, not a destructive action. */
+.b2ba-switch{
+    display:flex; align-items:flex-start; gap:0.7rem;
+    margin:0 0 1rem; padding:0.85rem 1rem;
+    border:1.5px solid var(--b2ba-line); border-radius:12px;
+    background:#fff; cursor:pointer;
+    transition:border-color .15s, background .15s;
+}
+.b2ba-switch:hover{ border-color:#d4b06a; }
+.b2ba-switch.is-on{ border-color:#e6a817; background:#fffaf0; }
+.b2ba-switch input{ position:absolute; opacity:0; width:0; height:0; }
+
+.b2ba-switch__box{
+    position:relative; flex:0 0 auto; margin-top:0.15rem;
+    width:2.4rem; height:1.35rem; border-radius:999px;
+    background:#cfcfcf; transition:background .15s;
+}
+.b2ba-switch__box::after{
+    content:''; position:absolute; top:0.17rem; left:0.2rem;
+    width:1rem; height:1rem; border-radius:50%;
+    background:#fff; box-shadow:0 1px 3px rgba(0,0,0,.25);
+    transition:transform .15s;
+}
+.b2ba-switch input:checked + .b2ba-switch__box{ background:#e6a817; }
+.b2ba-switch input:checked + .b2ba-switch__box::after{ transform:translateX(1.05rem); }
+.b2ba-switch input:focus-visible + .b2ba-switch__box{ box-shadow:0 0 0 3px rgba(230,168,23,.35); }
+
+.b2ba-switch__txt{ display:flex; flex-direction:column; gap:0.2rem; min-width:0; }
+.b2ba-switch__txt strong{ font-size:0.92rem; font-weight:700; }
+.b2ba-switch__txt small{ font-size:0.8rem; line-height:1.4; color:var(--b2ba-muted, #6b6b6b); }
+
 .b2ba-filters{ display:flex; gap:0.4rem; margin-bottom:1rem; flex-wrap:wrap; }
 .b2ba-filter{
     display:inline-flex; align-items:center; gap:0.4rem;
@@ -555,4 +587,245 @@
         background:#fffdf6; border-color:#f0d9a8; box-shadow:inset 3px 0 0 #e0a200;
     }
     .b2bp-card .b2bp-table tr.b2bp-diff > td{ background:none; box-shadow:none; }
+}
+
+/* ---- Offer deadline card (pricing editor) --------------------------------
+   Same card shell as the price tables; the scope is decided by the page, so
+   this block is identical on the global page and on a client's Prețuri tab. */
+.b2bp-offer .b2bp-offer-left,
+.b2bp-offer .b2bp-offer-ref {
+    display: flex;
+    align-items: center;
+    min-height: 38px;
+    font-weight: 600;
+    color: #111827;
+}
+.b2bp-offer .b2bp-offer-ref { font-weight: 500; color: #6b7280; }
+.b2bp-offer .b2bp-offer-left.is-expired { color: #b91c1c; }
+
+/* Our own empty-state hint for the deadline field. The browser draws a
+   datetime-local in ITS locale and ignores lang=, so a Russian browser shows
+   "дд.мм.гггг" on a Romanian panel. While the field is empty the native hint is
+   made transparent and this one is painted over it; pointer-events stay off so
+   clicks and the calendar button still reach the input. */
+.b2bp-dt{ position:relative; display:block; }
+.b2bp-dt__ph{
+    position:absolute; left:0.8rem; top:50%; transform:translateY(-50%);
+    pointer-events:none; display:none;
+    font-size:0.9rem; color:var(--b2ba-muted);
+}
+.b2bp-dt.is-empty .b2bp-dt__ph{ display:block; }
+.b2bp-dt.is-empty input::-webkit-datetime-edit{ color:transparent; }
+.b2bp-dt.is-empty input:focus::-webkit-datetime-edit{ color:inherit; }
+.b2bp-dt.is-empty input:focus ~ .b2bp-dt__ph{ display:none; }
+
+/* ---- Gift dialog + per-row gift counter ---------------------------------- */
+/* The count rides on the button's corner instead of inside its label: in the
+   flow it widened the button, so the row with a gift no longer lined up with
+   the rest of the table. Absolute = zero effect on layout. */
+.b2ba-btn--gift{ position:relative; overflow:visible; }
+.b2ba-gift-n{
+    position:absolute; top:-0.4rem; right:-0.4rem;
+    min-width:1.1rem; height:1.1rem; padding:0 0.2rem;
+    border-radius:999px; background:#e69f17; color:#fff; border:2px solid #fff;
+    font-size:0.66rem; font-weight:700; line-height:0.95rem; text-align:center;
+    pointer-events:none;   /* never swallows the click meant for the button */
+}
+.b2ba-modal[hidden]{ display:none; }
+.b2ba-modal{ position:fixed; inset:0; z-index:9000; display:flex; align-items:center; justify-content:center; padding:1rem; }
+.b2ba-modal__bg{ position:absolute; inset:0; background:rgba(17,24,39,.55); }
+/* The box itself never scrolls — __body does. That is what keeps the × pinned
+   to the corner instead of sliding away with the content. */
+.b2ba-modal__box{
+    position:relative; width:min(46rem, 100%); max-height:90vh; overflow:hidden;
+    display:flex; flex-direction:column;
+    background:#fff; border-radius:12px;
+    box-shadow:0 20px 45px rgba(0,0,0,.25);
+}
+.b2ba-modal__body{ overflow:auto; padding:1.25rem; }
+
+/* On a phone 90vh is nearly the whole screen, which reads as a page rather than
+   a dialog — you lose the sense that there is something behind it. */
+@media (max-width:768px){
+    .b2ba-modal{ padding:0.75rem; }
+    .b2ba-modal__box{ max-height:78vh; }
+    .b2ba-modal__body{ padding:1rem; }
+}
+
+/* Mirrors .b2b-modal__x on the site side, so both modals close the same way. */
+.b2ba-modal__x{
+    position:absolute; top:0.5rem; right:0.55rem; z-index:2;
+    width:32px; height:32px; padding:0; border:0; border-radius:8px;
+    /* Opaque: content scrolls underneath it. */
+    background:#fff; color:#9a9a9a; font-size:24px; line-height:1; cursor:pointer;
+    transition:background .15s, color .15s;
+}
+.b2ba-modal__x:hover{ background:#f4f4f4; color:#111; }
+/* Keeps the title clear of the button. */
+.b2ba-modal__body > .b2ba-h2:first-of-type{ padding-right:2.2rem; }
+.b2bg-who{ margin:0 0 0.75rem; color:var(--b2ba-muted); }
+.b2bg-list{ display:flex; flex-direction:column; gap:0.5rem; margin-bottom:0.9rem; }
+.b2ba-noscroll{ overflow:hidden; }
+.b2bg-log{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0.5rem; }
+.b2bg-log__item{
+    display:flex; align-items:center; justify-content:space-between; gap:1rem;
+    padding:0.7rem 0.85rem; border:1px solid var(--b2ba-line); border-radius:8px;
+    background:#fff;
+}
+/* Withdrawn: dimmed and struck through, but still legible — it is a record of
+   something that happened, not a deleted row. */
+.b2bg-log__item.is-revoked{ background:#fafafa; }
+/* The line is drawn rather than set with text-decoration: line-through sits
+   where the font's metrics put it, which in this face lands off-centre. Same
+   pseudo-element trick the old-price style on the site uses. */
+.b2bg-log__item.is-revoked .b2bg-log__top strong{
+    position:relative; color:var(--b2ba-muted); text-decoration:none;
+}
+.b2bg-log__item.is-revoked .b2bg-log__top strong::after{
+    content:''; position:absolute; left:0; right:0; top:50%;
+    height:1px; margin-top:-1px; background:currentColor; pointer-events:none;
+}
+.b2bg-log__main{ min-width:0; }
+.b2bg-log__top{ display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap; }
+.b2bg-log__top strong{ font-size:0.95rem; }
+.b2bg-log__note{ display:block; margin-top:0.15rem; color:var(--b2ba-muted); font-size:0.85rem; }
+.b2bg-log__meta{ display:block; margin-top:0.2rem; font-size:0.76rem; color:#9ca3af; }
+
+/* State of one gift; only one is ever shown, withdrawn outranking the rest. */
+.b2bg-tag{
+    padding:0.05rem 0.45rem; border-radius:999px;
+    font-size:0.68rem; font-weight:700; text-transform:uppercase; letter-spacing:0.03em;
+    white-space:nowrap;
+}
+.b2bg-tag--new{ background:#fef3c7; color:#92400e; }
+.b2bg-tag--seen{ background:#dcfce7; color:#166534; }
+.b2bg-tag--revoked{ background:#f1f1f4; color:#6b7280; }
+.b2bg-existing{ margin-top:1rem; padding-top:1rem; border-top:1px solid var(--b2ba-line); }
+.b2bg-existing:empty{ display:none; }
+.b2bg-existing__ttl{ margin:0 0 0.6rem; font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; color:var(--b2ba-muted); }
+
+/* ---- Client activity history (views/history.php) -------------------------- */
+
+/* Summary: the questions the log is opened to answer, before reading any of it. */
+.b2bh-sum{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(11rem, 1fr));
+    gap:0.75rem; margin-bottom:1.1rem;
+}
+.b2bh-sum__card{
+    display:flex; flex-direction:column; gap:0.15rem;
+    padding:0.9rem 1rem; background:#fff;
+    border:1px solid var(--b2ba-line); border-radius:12px;
+}
+.b2bh-sum__card--wide{ grid-column:span 2; }
+.b2bh-sum__n{ font-size:1.5rem; font-weight:800; line-height:1.1; color:#111827; }
+.b2bh-sum__l{ font-size:0.74rem; font-weight:700; text-transform:uppercase; letter-spacing:0.03em; color:var(--b2ba-muted); }
+.b2bh-sum__x{ font-size:0.85rem; color:var(--b2ba-muted); }
+.b2bh-srcs{ display:flex; flex-wrap:wrap; gap:0.35rem; margin-top:0.35rem; }
+.b2bh-src{
+    display:inline-flex; align-items:center; gap:0.3rem;
+    padding:0.15rem 0.55rem; border-radius:999px;
+    background:#f1f5f9; color:#334155; font-size:0.78rem; font-weight:600;
+}
+.b2bh-src b{ color:#0f172a; }
+
+/* Date separator: lets the eye jump to a day without reading every row. */
+.b2bh-day td{
+    padding:0.5rem 0.7rem !important;
+    background:#f7f7f9; font-size:0.76rem; font-weight:700;
+    text-transform:uppercase; letter-spacing:0.04em; color:var(--b2ba-muted);
+}
+.b2bh-time{ white-space:nowrap; color:var(--b2ba-muted); font-variant-numeric:tabular-nums; }
+
+/* Action pill, coloured by kind so scanning the column is enough to see the
+   shape of a session: views, logins, money, warnings. */
+.b2bh-act{
+    display:inline-block; padding:0.12rem 0.55rem; border-radius:999px;
+    font-size:0.75rem; font-weight:700; white-space:nowrap;
+}
+.b2bh-act--view{ background:#eef2ff; color:#3730a3; }
+.b2bh-act--auth{ background:#ecfdf5; color:#065f46; }
+.b2bh-act--warn{ background:#fef2f2; color:#991b1b; }
+.b2bh-act--money{ background:#fff7ed; color:#9a3412; }
+.b2bh-act--save{ background:#fdf2f8; color:#9d174d; }
+.b2bh-act--sys{ background:#f1f1f4; color:#4b5563; }
+
+.b2bh-car{ font-weight:700; color:var(--b2ba-ink); text-decoration:none; }
+.b2bh-car:hover{ color:var(--b2ba-brand); text-decoration:underline; }
+.b2bh-yr{ margin-left:0.3rem; font-weight:500; color:var(--b2ba-muted); }
+.b2bh-prc{ margin-left:0.5rem; font-weight:700; color:#0f172a; white-space:nowrap; }
+.b2bh-gone{ color:#9ca3af; }
+.b2bh-meta{ color:var(--b2ba-muted); font-size:0.84rem; }
+
+.b2bh-pager{ display:flex; align-items:center; justify-content:center; gap:0.75rem; margin-top:1rem; }
+.b2bh-pager__n{ font-size:0.85rem; color:var(--b2ba-muted); font-weight:600; }
+
+@media (max-width:1024px){
+    .b2bh-sum__card--wide{ grid-column:1 / -1; }
+    .b2bh-day td{ text-align:center; }
+}
+
+/* Row actions on touch: gift first, then history, call, block. The DOM keeps
+   the desktop order (call is hidden there anyway), so only `order` moves. */
+@media (max-width:1024px){
+    .b2ba-row-actions .b2ba-btn--gift{ order:1; }
+    .b2ba-row-actions .b2ba-btn--hist{ order:2; }
+    .b2ba-row-actions .b2ba-btn--call{ order:3; }
+    .b2ba-row-actions [data-b2b-list-status]{ order:4; }
+}
+
+/* ---- History on touch ----------------------------------------------------
+   The generic card layout turns every cell into a "LABEL … value" line, which
+   for a view log means four labelled rows per car — technically correct, but
+   nobody reads a history that way. Here the card is the car, with time, price
+   and source on one quiet meta line under it:
+
+       BMW X5  2019            ×3
+       18:33 · 24 500 € · Encar                                             */
+@media (max-width:1024px){
+    .b2bh-table tr.b2bh-row{
+        display:flex; flex-wrap:wrap; align-items:baseline;
+        gap:0.2rem 0.5rem; padding:0.8rem 1rem; margin-bottom:0.6rem;
+    }
+    .b2bh-table tr.b2bh-row td{
+        display:inline-block; grid-column:auto;
+        margin:0; padding:0; border:0; text-align:left;
+    }
+    /* Labels are redundant once the values are self-evident. */
+    .b2bh-table tr.b2bh-row td::before{ content:none !important; }
+
+    .b2bh-table .b2bh-c-car{ flex:1 1 100%; font-size:1.02rem; font-weight:800; line-height:1.3; }
+    .b2bh-table .b2bh-c-car .b2bh-car{ text-decoration:none; }
+
+    /* The meta line: same size, same muted tone, separated by dots. */
+    .b2bh-table .b2bh-c-time,
+    .b2bh-table .b2bh-c-prc,
+    .b2bh-table .b2bh-c-src{ font-size:0.85rem; color:var(--b2ba-muted); }
+    .b2bh-table .b2bh-c-time{ order:1; }
+    .b2bh-table .b2bh-c-prc{ order:2; }
+    .b2bh-table .b2bh-c-src{ order:3; }
+    .b2bh-table .b2bh-c-prc:not(:empty)::before,
+    .b2bh-table .b2bh-c-src:not(:empty)::before{
+        content:'·'; margin-right:0.5rem; color:#cbd5e1;
+    }
+    .b2bh-table .b2bh-c-prc .b2bh-prc{ margin:0; font-weight:700; color:var(--b2ba-ink); }
+    /* The source pill would be heavy on a meta line; plain text reads better. */
+    .b2bh-table .b2bh-c-src .b2bh-src{ padding:0; background:none; font-weight:600; }
+
+    /* The day is a heading, not a card. */
+    .b2bh-table tr.b2bh-day{
+        display:block; margin:1.1rem 0 0.5rem; padding:0;
+        background:none; border:0; box-shadow:none; border-radius:0;
+    }
+    .b2bh-table tr.b2bh-day td{
+        padding:0 !important; background:none;
+        font-size:0.72rem; text-align:left;
+    }
+    .b2bh-table tr.b2bh-day:first-child{ margin-top:0; }
+}
+
+/* Page titles on a phone: 1.4rem plus a client name wraps to three lines and
+   pushes the content below the fold before anything has been read. */
+@media (max-width:768px){
+    .b2ba-h1{ font-size:1.05rem; line-height:1.3; }
+    .b2ba-h1 .b2bp-who{ display:block; margin-left:0; font-size:0.95rem; }
 }

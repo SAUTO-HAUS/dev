@@ -4,7 +4,6 @@ use App\Helper\PhoneHelper;?>
 
 <link rel="preconnect" href="https://code.jquery.com" crossorigin>
 <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-<link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
@@ -29,59 +28,11 @@ if (isset($t_mp[2]) && $t_mp[2] === 'rent') { ?>
 
 <link rel="stylesheet" href="/content/site/css/brand_seo.css?v=<?php echo date('GYimsd', filemtime(_SITE . '/css/brand_seo.css')); ?>">
 
-<!-- Facebook Pixel Code -->
-<script>
-  !function(f,b,e,v,n,t,s)
-  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
-  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
-  n.queue=[];t=b.createElement(e);t.async=!0;
-  t.src=v;s=b.getElementsByTagName(e)[0];
-  s.parentNode.insertBefore(t,s)}(window, document,'script',
-  'https://connect.facebook.net/en_US/fbevents.js');
-  fbq('init', '701415057290990');
-  fbq('track', 'PageView');
-</script>
-<noscript><img height="1" width="1" style="display:none"
-  src="https://www.facebook.com/tr?id=701415057290990&ev=PageView&noscript=1"
-/></noscript>
-<!-- End Facebook Pixel Code -->
- 
-<!-- Google Tag Manager -->
-<script data-cfasync="false">(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-KRRLB4X');</script>
-<!-- End Google Tag Manager -->
-
-<!-- Google tag (gtag.js) -->
-<script data-cfasync="false" async src="https://www.googletagmanager.com/gtag/js?id=G-TP4GJ51GSL"></script>
-<script data-cfasync="false">
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-TP4GJ51GSL');
-  gtag('config', 'AW-964347386');
-</script>
-
-<!-- Yandex.Metrika counter -->
-<script type="text/javascript">
-   (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-   m[i].l=1*new Date();
-   for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
-   k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-   (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-
-   ym(100579107, "init", {
-        clickmap:true,
-        trackLinks:true,
-        accurateTrackBounce:true,
-        webvisor:false
-   });
-</script>
-<noscript><div><img src="https://mc.yandex.ru/watch/100579107" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-<!-- /Yandex.Metrika counter -->
+<!-- Trackers (Google Analytics/Ads/GTM, Facebook Pixel, Yandex Metrika) are NOT
+     loaded here. Legea 195/2024 requires no non-essential tag to run before the
+     visitor consents, so every one of them is injected by consent.js only after
+     the matching category is granted. Do not re-add tags to this file. -->
+<script data-cfasync="false" src="/<?php e(_SITE)?>/js/consent.js?d=<?php echo date("GYimsd", filemtime(_SITE.'/js/consent.js')); ?>"></script>
 
 <?php
 // Resolve current language safely — Googlebot does not send cookies, so falling back to
@@ -120,7 +71,7 @@ echo '<link rel="alternate" hreflang="x-default" href="'.$protocol.'://'.$http_h
 <link rel="stylesheet" type="text/css" href="/<?php e(_SITE)?>/css/style.css?d=<?php echo date("GYimsd", filemtime(_SITE.'/css/style.css')); ?>">
 <link rel="stylesheet" type="text/css" href="/<?php e(_SITE)?>/css/mobile-call-button.css?d=<?php echo date("GYimsd", filemtime(_SITE.'/css/mobile-call-button.css')); ?>">
 <link rel="stylesheet" type="text/css" href="/<?php e(_SITE)?>/css/media.css?d=<?php echo date("GYimsd", filemtime(_SITE.'/css/media.css')); ?>">
-<link rel="stylesheet" href="/<?php e(_SITE)?>/css/consent-modal-v2.css?d=<?php echo date("GYimsd", filemtime(_SITE.'/css/consent-modal-v2.css')); ?>">
+<link rel="stylesheet" href="/<?php e(_SITE)?>/css/consent.css?d=<?php echo date("GYimsd", filemtime(_SITE.'/css/consent.css')); ?>">
 <!--
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -343,16 +294,26 @@ if (in_array($_z2, ['cars', 'ordercars'], true) && isset($t_mp[3]) && !is_numeri
 .card-share-btn.is-copied .csb-ico{display:none;}
 /* Make sure the card is a positioning context for the absolute button. */
 .it.car,.car_box.similar{position:relative;}
+/* Body-condition badge, top-right of the card next to the name: "3 X" = three
+   panels not original, worst finding is X (replaced). Sits above the photo, so
+   it never fights the share/favourite/compare stack on the image itself. */
+.it.car > .card-body-badge{position:absolute;top:6px;right:6px;z-index:5;display:inline-flex;align-items:center;gap:3px;padding:2px 7px;border-radius:9px;background:#e2001a;color:#fff;font-size:.72rem;font-weight:700;line-height:1.5;box-shadow:0 1px 3px rgba(0,0,0,.18);pointer-events:auto;}
+.it.car > .card-body-badge > b{font-weight:700;}
+.it.car > .card-body-badge > i{font-style:normal;font-weight:700;opacity:.9;}
+/* No damage found: neutral grey, same tone as the "Original" legend on the report. */
+.it.car > .card-body-badge.is-clean{background:#e9edf2;color:#5b6472;box-shadow:none;}
+@media (max-width:767px){ .it.car > .card-body-badge{top:8px;right:8px;font-size:.78rem;padding:3px 9px;} }
 /* Image wrapper inside cards: anchors the favorite button ON the photo.
    The original card CSS targets `.it > img` (direct child); the wrapper broke that
    chain, so re-apply the image-slot sizing to the wrapper + its inner image. */
 .it.car .card-img-wrap{position:relative;display:block;width:100%;float:left;}
-.it.car .card-img-wrap > img{width:100%;height:13rem;object-fit:cover;object-position:center;display:block;background:#fff url(/media/images/site/v2/no_image.svg) no-repeat center / 30%;}
+/* .card-img-slot is the positioned wrapper the catalog needs for its timer
+   overlay. Both shapes are listed so the image is sized the same whether it sits
+   directly in .card-img-wrap (cabinet, favourites) or one level down (catalog). */
+.it.car .card-img-slot{position:relative;display:block;width:100%;}
+.it.car .card-img-wrap > img,
+.it.car .card-img-wrap > .card-img-slot > img{width:100%;object-fit:cover;object-position:center;display:block;background:#fff url(/media/images/site/v2/no_image.svg) no-repeat center / 30%;}
 .it.car .card-img-wrap > .mobile-card-slider{width:100%;display:block;}
-@media (min-width:1600px) and (max-width:2199px){ .it.car .card-img-wrap > img{height:15rem;} }
-@media (min-width:2200px) and (max-width:2999px){ .it.car .card-img-wrap > img{height:17rem;} }
-@media (min-width:3000px){ .it.car .card-img-wrap > img{height:19rem;} }
-@media (max-width:767px){ .it.car .card-img-wrap > img{height:13rem;} }
 /* Mobile: bigger button, more spacing from the corner. */
 @media (max-width:767px){
 	.card-share-btn{top:12px;right:12px;width:44px;height:44px;border-radius:12px;}
@@ -445,88 +406,6 @@ main > .pht_bx > .big_pht > .card-compare-btn{top:116px;right:12px;z-index:8;}
 	#to_top.no-mob{display:none;}
 }
 </style>
-<script data-cfasync="false">
-// Google Consent Mode v2
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('consent', 'default', {
-	'ad_storage': 'denied',
-	'ad_user_data': 'denied',
-	'ad_personalization': 'denied',
-	'analytics_storage': 'denied'
-});
-
-function unixTime(){ return Math.floor(Date.now() / 1000); }
-
-// Consent UI helper functions
-function showPref(){document.getElementById('cons_bx').style.display = 'none'; var prefBox = document.getElementById('pref_bx'); prefBox.style.display = 'flex'; prefBox.style.visibility = 'visible'; prefBox.style.opacity = '1'; prefBox.style.alignItems = 'center'; prefBox.style.justifyContent = 'center';}
-function hidePref(){document.getElementById('pref_bx').style.display = 'none'; document.getElementById('pref_bx').style.visibility = 'hidden'; document.getElementById('pref_bx').style.opacity = '0'; document.getElementById('cons_bx').style.display = 'flex';}
-
-function setConsent(adCons, usrDtCons, persCons, anaCons) {
-	updateConsent(adCons, usrDtCons, persCons, anaCons);
-	document.getElementById('cons_bx').style.display = 'none';
-}
-
-function savePref() {
-	const adCons = document.getElementById('ad-storage').checked;
-	const usrDtCons = document.getElementById('ad-user-data').checked;
-	const persCons = document.getElementById('ad-personalization').checked;
-	const anaCons = document.getElementById('analytics-storage').checked;
-	setConsent(adCons, usrDtCons, persCons, anaCons);
-	document.getElementById('pref_bx').style.display = 'none';
-	document.getElementById('pref_bx').style.visibility = 'hidden';
-	document.getElementById('pref_bx').style.opacity = '0';
-}
-
-function updateConsent(ad_cons, usr_dt_cons, pers_cons, ana_cons ) {
-	gtag('consent', 'update', {
-		'ad_storage': ad_cons ? 'granted' : 'denied',
-		'ad_user_data': usr_dt_cons ? 'granted' : 'denied',
-		'ad_personalization': pers_cons ? 'granted' : 'denied',
-		'analytics_storage': ana_cons ? 'granted' : 'denied'
-	});
-	// Send page_view after consent is granted for analytics
-	if (ana_cons) {
-		gtag('event', 'page_view', {
-			page_title: document.title,
-			page_location: window.location.href
-		});
-	}
-	const CONSENT_VERSION = 5;
-	localStorage.setItem( 'z_cks_alwd', '{"ad":'+(ad_cons?'true':'false')+', "usrDt":'+(usr_dt_cons?'true':'false')+', "prsn":'+(pers_cons?'true':'false')+', "ana":'+(ana_cons?'true':'false')+', "version":'+CONSENT_VERSION+'}' );
-	localStorage.setItem( 'z_cks_alwd_t', unixTime() );
-}
-
-$(document).ready(function(){
-	const ONE_YEAR = 365 * 24 * 3600;
-	const CURRENT_VERSION = 5;
-	const stored = localStorage.getItem('z_cks_alwd');
-	const storedTime = parseInt( localStorage.getItem('z_cks_alwd_t') || '0' );
-
-	function clearConsent() {
-		localStorage.removeItem('z_cks_alwd');
-		localStorage.removeItem('z_cks_alwd_t');
-		localStorage.removeItem('z_cks_alwd_v');
-	}
-
-	if ( stored !== null && storedTime >= 1719846403 && (unixTime() - storedTime) < ONE_YEAR ) {
-		const cksAlwdObj = JSON.parse( stored );
-		const storedVersion = cksAlwdObj['version'] || 1;
-
-		if (storedVersion >= CURRENT_VERSION) {
-			var adCks = cksAlwdObj['ad']?true:false; var usrDtCks = cksAlwdObj['usrDt']?true:false; var prsnCks = cksAlwdObj['prsn']?true:false; var anaCks = cksAlwdObj['ana']?true:false;
-			updateConsent(adCks, usrDtCks, prsnCks, anaCks);
-		} else {
-			clearConsent();
-			document.getElementById('cons_bx').style.display = 'flex';
-		}
-	} else {
-		clearConsent();
-		document.getElementById('cons_bx').style.display = 'flex';
-	}
-})
-</script>
-
 <script data-cfasync="false">
 // Card "Share" button: copy the car URL to clipboard, show check + "link copied" toast.
 // Delegated on document so it also covers cards injected after load (similar prices, etc.).

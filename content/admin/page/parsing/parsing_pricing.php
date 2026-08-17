@@ -95,6 +95,8 @@ if (!function_exists('parsing_pricing_payload')) {
             'eu_params' => [],                  // Europe fixed costs (EUR)
             'kr_params' => [],                  // Korea fixed costs (EUR)
             'kr_markup' => [],                  // Korea price markup tiers (EUR, added to car price)
+            'us_params' => [],                  // America fixed costs (EUR)
+            'us_markup' => [],                  // America price markup tiers (EUR, added to car price)
         ];
 
         // Calculator settings: discounts only. eur_rate comes from BNM above,
@@ -150,6 +152,28 @@ if (!function_exists('parsing_pricing_payload')) {
         try {
             $stmt = $db->query('SELECT price_from, price_to, markup FROM '.$prefx.'_parsing_kr_markup_tiers ORDER BY sort_order, price_from');
             $out['kr_markup'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {}
+
+        // America fixed costs (B2B variant when $b2b, client rows when scoped).
+        // Falls back to the retail table when the B2B one has no rows: before
+        // add_b2b_us_params.sql is run there is nothing to read, and an empty array
+        // here would silently price every American car at the bare car price.
+        try {
+            $tbl  = $tp.'_us_params';
+            $stmt = $db->query('SELECT param_key, value_type, amount_eur, enabled FROM '.$tbl.$scopeWhere($tbl).' ORDER BY sort_order, id');
+            $out['us_params'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {}
+        if (!$out['us_params']) {
+            try {
+                $stmt = $db->query('SELECT param_key, value_type, amount_eur, enabled FROM '.$prefx.'_parsing_us_params ORDER BY sort_order, id');
+                $out['us_params'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            } catch (Exception $e) {}
+        }
+
+        // America price markup tiers (same role as the Korea markup).
+        try {
+            $stmt = $db->query('SELECT price_from, price_to, markup FROM '.$prefx.'_parsing_us_markup_tiers ORDER BY sort_order, price_from');
+            $out['us_markup'] = $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {}
 
         $cache[$ck] = $out;
@@ -338,8 +362,16 @@ if (!function_exists('parsing_md_breakdown_kr')) {
         $priceEur += $markup;
 
         $roro = 0.0;
+        $container = 0.0;
+        $containerOn = false;
         foreach ($P['kr_params'] ?? [] as $p) {
-            if (($p['param_key'] ?? '') === 'sea_freight_roro') { $roro = (float)$p['amount_eur']; break; }
+            $k = (string)($p['param_key'] ?? '');
+            if ($k === 'sea_freight_roro') { $roro = (float)$p['amount_eur']; }
+            // The alternative freight the visitor may pick on the public table.
+            elseif ($k === 'sea_freight_container') {
+                $container   = (float)$p['amount_eur'];
+                $containerOn = (int)($p['enabled'] ?? 0) === 1;
+            }
         }
 
         // Applied BEFORE the customs base is built: sea freight is part of that base,
@@ -363,15 +395,24 @@ if (!function_exists('parsing_md_breakdown_kr')) {
         $lines[] = ['key' => 'customs', 'amount' => round($cust['customs'])];
         if ($cust['luxury'] > 0) $lines[] = ['key' => 'luxury_tax', 'amount' => round($cust['luxury'])];
 
-        // All enabled KR fixed costs except RoRo (already in the base).
+        // All enabled KR fixed costs except the two freight options (already in
+        // the base, and only one of them is ever charged).
+        $polish = 0.0;
         foreach ($P['kr_params'] ?? [] as $p) {
             if ((int)($p['enabled'] ?? 0) !== 1) continue;
             $key = (string)($p['param_key'] ?? '');
-            if ($key === 'sea_freight_roro') continue;
+            if ($key === 'sea_freight_roro' || $key === 'sea_freight_container') continue;
             $amt = (float)$p['amount_eur'];
             if (($p['value_type'] ?? 'fixed') === 'percent') $amt = $priceEur * ($amt / 100);
             $ov = parsing_price_override($overrides, $key, $amt);
-            $lines[] = ['key' => $key, 'amount' => round($ov['amount']), 'display' => $ov['display'], 'strike' => $ov['strike']];
+            $line = ['key' => $key, 'amount' => round($ov['amount']), 'display' => $ov['display'], 'strike' => $ov['strike']];
+            // Marked so the public table can render it with a tick that takes it
+            // out of the total; it is charged (ticked) by default.
+            if ($key === 'polish_cleaning' && $ov['display'] === null && !$ov['strike']) {
+                $line['optional'] = true;
+                $polish = (float)$line['amount'];
+            }
+            $lines[] = $line;
         }
 
         $comOv = parsing_price_override($overrides, 'commission', $commission);
@@ -380,11 +421,41 @@ if (!function_exists('parsing_md_breakdown_kr')) {
         $total = 0;
         foreach ($lines as $l) $total += $l['amount'];
 
+        // Container variant: freight sits INSIDE the customs base, so the whole
+        // customs calculation has to be redone rather than the total nudged by
+        // the price difference. Computed here and handed to the view, which
+        // swaps the numbers in the browser — the car's stored price stays the
+        // RoRo one.
+        $alt = null;
+        if ($containerOn && $container > 0 && $roroOv['display'] === null && !$roroOv['strike']) {
+            $cOv   = parsing_price_override($overrides, 'sea_freight_container', $container);
+            $cFrgt = $cOv['amount'];
+            $cCust = parsing_customs_parts($P, $priceEur + $cFrgt, (string)($car['fuel'] ?? ''),
+                                           (int)($car['capacity'] ?? 0), (int)($car['year'] ?? 0));
+            // Only offered while both variants agree on whether the luxury tax
+            // applies: otherwise the rows on screen would stop adding up to the
+            // total, since that row is printed only when it is charged.
+            if (($cCust['luxury'] > 0) !== ($cust['luxury'] > 0)) {
+                $cFrgt = null;
+            }
+            $alt = $cFrgt === null ? null : [
+                'freight' => round($cFrgt),
+                'customs' => round($cCust['customs']),
+                'luxury'  => round($cCust['luxury']),
+                // Same total, with the three affected lines replaced.
+                'total'   => $total - round($roro) - round($cust['customs']) - round($cust['luxury'])
+                           + round($cFrgt) + round($cCust['customs']) + round($cCust['luxury']),
+            ];
+        }
+
         return [
             'lines'     => $lines,
             'total'     => $total,
             'eur_rate'  => $P['eur_rate'],
             'route'     => 'kr',
+            // What the public table may offer as a temporary recalculation.
+            'freight_alt' => $alt,
+            'polish'      => round($polish),
             // Derived here, not set by the caller, so a call site cannot apply the
             // dealer prices and forget to label them. True whenever the B2B tables
             // are used (global or per-client).
@@ -457,9 +528,216 @@ if (!function_exists('parsing_md_breakdown_kr')) {
             'estimated' => $delOv['display'] !== null,
         ];
     }
+
+    // America (AutoTrader) markup amount for a given EUR car price.
+    function parsing_us_markup_amount($db, $prefx, float $priceEur): float
+    {
+        if ($priceEur <= 0) return 0.0;
+        $P = parsing_pricing_payload($db, $prefx);
+        return parsing_tier_value($P['us_markup'] ?? [], $priceEur, 'markup');
+    }
+
+    // The DISPLAYED/published America price = source EUR price + its markup tier.
+    function parsing_us_marked_price($db, $prefx, float $priceEur): float
+    {
+        return $priceEur + parsing_us_markup_amount($db, $prefx, $priceEur);
+    }
+
+    /**
+     * Full landed-cost breakdown for an America (AutoTrader) car. Structurally
+     * identical to the Korea route — the client's cost list matches it line for
+     * line: transport is part of the customs base, everything else is flat, and
+     * customs + luxury tax are computed per car from the price.
+     *
+     * @param array $car ['price_eur','fuel','capacity','year']
+     * @param array<string, array>|null $overrides per-line overrides (B2B pricing)
+     */
+    function parsing_md_breakdown_us($db, $prefx, array $car, ?array $overrides = null, bool $b2b = false, ?int $b2bUserId = null): ?array
+    {
+        $priceEur = (float)($car['price_eur'] ?? 0);
+        if ($priceEur <= 0) return null;
+
+        $P = parsing_pricing_payload($db, $prefx, $b2b, $b2bUserId);
+
+        // Markup becomes the new car price and the base for the whole breakdown
+        // (same rule as Korea). Percent costs — the local tax — are charged on
+        // that marked price too: business decision, the 2% applies to the car
+        // price as quoted to the customer, markup included.
+        $markup = parsing_tier_value($P['us_markup'] ?? [], $priceEur, 'markup');
+        $priceEur += $markup;
+
+        $freight = 0.0;
+        foreach ($P['us_params'] ?? [] as $p) {
+            if (($p['param_key'] ?? '') === 'sea_freight') { $freight = (float)$p['amount_eur']; break; }
+        }
+
+        // Overridden before the customs base is built: freight is part of that
+        // base, so patching the printed line afterwards would leave customs
+        // computed on the old figure and the total would not add up.
+        $frOv    = parsing_price_override($overrides, 'sea_freight', $freight);
+        $freight = $frOv['amount'];
+
+        $base = $priceEur + $freight;
+        $cust = parsing_customs_parts($P, $base, (string)($car['fuel'] ?? ''), (int)($car['capacity'] ?? 0), (int)($car['year'] ?? 0));
+        $commission = parsing_tier_value($P['commission'] ?? [], $priceEur, 'commission');
+
+        $lines = [];
+        $lines[] = ['key' => 'price_car', 'amount' => round($priceEur)];
+        $lines[] = [
+            'key'     => 'sea_freight',
+            'amount'  => round($freight),
+            'display' => $frOv['display'],
+            'strike'  => $frOv['strike'],
+        ];
+        $lines[] = ['key' => 'customs', 'amount' => round($cust['customs'])];
+        if ($cust['luxury'] > 0) $lines[] = ['key' => 'luxury_tax', 'amount' => round($cust['luxury'])];
+
+        // All enabled America fixed costs except the freight already in the base.
+        foreach ($P['us_params'] ?? [] as $p) {
+            if ((int)($p['enabled'] ?? 0) !== 1) continue;
+            $key = (string)($p['param_key'] ?? '');
+            if ($key === 'sea_freight') continue;
+            $amt = (float)$p['amount_eur'];
+            if (($p['value_type'] ?? 'fixed') === 'percent') $amt = $priceEur * ($amt / 100);
+            $ov = parsing_price_override($overrides, $key, $amt);
+            $lines[] = ['key' => $key, 'amount' => round($ov['amount']), 'display' => $ov['display'], 'strike' => $ov['strike']];
+        }
+
+        $comOv = parsing_price_override($overrides, 'commission', $commission);
+        $lines[] = ['key' => 'commission', 'amount' => round($comOv['amount']), 'display' => $comOv['display'], 'strike' => $comOv['strike']];
+
+        $total = 0;
+        foreach ($lines as $l) $total += $l['amount'];
+
+        return [
+            'lines'     => $lines,
+            'total'     => $total,
+            'eur_rate'  => $P['eur_rate'],
+            'route'     => 'us',
+            'b2b'       => $b2b,
+            'estimated' => $frOv['display'] !== null,
+        ];
+    }
+
+    /**
+     * Pick the landed-cost route for a source. Every call site used to inline
+     * `source === 'encar' ? kr : eu`, which silently sent a new source down the
+     * Europe route — this keeps the mapping in ONE place.
+     */
+    function parsing_md_breakdown_for($db, $prefx, ?string $source, array $car, ?array $overrides = null, bool $b2b = false, ?int $b2bUserId = null): ?array
+    {
+        switch (strtolower(trim((string)$source))) {
+            case 'encar':      return parsing_md_breakdown_kr($db, $prefx, $car, $overrides, $b2b, $b2bUserId);
+            case 'autotrader': return parsing_md_breakdown_us($db, $prefx, $car, $overrides, $b2b, $b2bUserId);
+            default:           return parsing_md_breakdown_eu($db, $prefx, $car, $overrides, $b2b, $b2bUserId);
+        }
+    }
 }
 
 if (!function_exists('parsing_md_price_table')) {
+
+    /**
+     * Behaviour of the two controls in the Korea table: the RoRo/Container
+     * picker and the polish tick.
+     *
+     * Emitted once per request, and it works by delegation, because the block is
+     * printed twice on a car page (mobile flow + desktop column) and both copies
+     * must react. Every figure it needs is already on the block as a data-*
+     * attribute — the browser only picks between numbers the server computed, it
+     * never does customs arithmetic of its own.
+     */
+    function parsing_md_price_script(): string
+    {
+        static $done = false;
+        if ($done) return '';
+        $done = true;
+
+        return '<script>(function(){
+    if (window.__mdPriceOpts) return;
+    window.__mdPriceOpts = 1;
+
+    function fmt(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " €"; }
+    // The headline price uses commas (parseCurr), the table uses spaces.
+    function fmtTop(n){ return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+
+    // The big price at the top of the car page must never disagree with the
+    // total right below it, so it follows the same switches. Mirrored ONLY
+    // while the two start out equal: on a B2B page, or wherever the shown
+    // price was set by hand, the headline is not this breakdown\'s total and
+    // must be left alone.
+    var topEls = null, mirror = null;
+    function canMirror(block){
+        if (mirror !== null) return mirror;
+        topEls = document.querySelectorAll(".prc .val .i");
+        var total = parseInt(block.dataset.total || "0", 10) || 0;
+        mirror = topEls.length > 0 && total > 0;
+        Array.prototype.forEach.call(topEls, function(el){
+            var n = parseInt(String(el.textContent).replace(/[^0-9]/g, ""), 10);
+            if (!n || n !== total) mirror = false;
+        });
+        return mirror;
+    }
+
+    function cell(block, key){
+        var tr = block.querySelector(\'tr[data-mdp-key="\' + key + \'"]\');
+        return tr ? tr.querySelector(".mdp-amt") : null;
+    }
+
+    function apply(block){
+        var sel    = block.querySelector(".mdp-freight");
+        var tick   = block.querySelector(".mdp-polish");
+        var isCont = !!sel && sel.value === "container";
+        var polish = parseInt(block.dataset.polish || "0", 10) || 0;
+
+        var total = parseInt(block.dataset.total || "0", 10) || 0;
+        if (isCont && block.dataset.altTotal) {
+            total = parseInt(block.dataset.altTotal, 10) || total;
+            var f = cell(block, "sea_freight_roro"); if (f) f.textContent = fmt(block.dataset.freight);
+            var c = cell(block, "customs");          if (c) c.textContent = fmt(block.dataset.customs);
+            var l = cell(block, "luxury_tax");       if (l) l.textContent = fmt(block.dataset.luxury);
+        } else if (sel) {
+            // Back to the canonical RoRo figures the page was rendered with.
+            var f2 = cell(block, "sea_freight_roro"); if (f2) f2.textContent = f2.dataset.base;
+            var c2 = cell(block, "customs");          if (c2) c2.textContent = c2.dataset.base;
+            var l2 = cell(block, "luxury_tax");       if (l2) l2.textContent = l2.dataset.base;
+        }
+
+        if (tick && !tick.checked) { total -= polish; }
+        var row = tick ? tick.closest("tr") : null;
+        if (row) { row.classList.toggle("mdp-row-off", !tick.checked); }
+
+        var tot = block.querySelector(".mdp-total .mdp-amt");
+        if (tot) tot.textContent = fmt(total);
+
+        if (canMirror(block)) {
+            Array.prototype.forEach.call(topEls, function(el){ el.textContent = fmtTop(total); });
+        }
+    }
+
+    // Remember the rendered figures once, so switching back is exact rather
+    // than recomputed.
+    function remember(block){
+        ["sea_freight_roro", "customs", "luxury_tax"].forEach(function(k){
+            var el = cell(block, k);
+            if (el && !el.dataset.base) el.dataset.base = el.textContent;
+        });
+    }
+
+    document.addEventListener("change", function(e){
+        var el = e.target;
+        if (!el || (!el.classList.contains("mdp-freight") && !el.classList.contains("mdp-polish"))) return;
+        var block = el.closest(".md-price-block");
+        if (!block) return;
+        remember(block);
+        apply(block);
+        var note = block.querySelector(".mdp-container-note");
+        if (note) {
+            var sel = block.querySelector(".mdp-freight");
+            note.hidden = !(sel && sel.value === "container");
+        }
+    });
+})();</script>';
+    }
     /**
      * Render the "price to your door" breakdown as an HTML table for the public
      * car page. $lang in {ro, ru, en}. Returns '' if breakdown is null.
@@ -480,6 +758,12 @@ if (!function_exists('parsing_md_price_table')) {
                 'delivery_incheon' => 'Livrare în port Incheon', 'inspection' => 'Inspecție auto',
                 'broker_korea' => 'Serviciu broker Coreea', 'interpol_check' => 'Verificare Interpol',
                 'recycling_tax' => 'Taxă de poluare', 'commission' => 'Comision',
+                'sea_freight' => 'Transport', 'auction_fee' => 'Taxă licitație',
+                'delivery_to_port' => 'Livrare în port', 'broker_service' => 'Serviciu broker',
+                'local_tax' => 'Impozit local',
+                'sea_freight_container' => 'Transport maritim (Container)',
+                'polish_cleaning' => 'Polisare + curățare chimică',
+                'container_note' => '* Cu containerul, livrarea ajunge cu aproximativ o lună mai târziu decât cu RoRo.',
                 'total' => 'TOTAL preț până acasă',
                 'estimate_note' => '* Transportul maritim se calculează exact la momentul îmbarcării pe navă. Totalul afișat este estimativ.',
                 'b2b_badge' => 'Preț partener B2B',
@@ -495,6 +779,12 @@ if (!function_exists('parsing_md_price_table')) {
                 'delivery_incheon' => 'Доставка в порт Инчхон', 'inspection' => 'Осмотр авто',
                 'broker_korea' => 'Услуга брокера Корея', 'interpol_check' => 'Проверка по Интерполу',
                 'recycling_tax' => 'Налог на загрязнение', 'commission' => 'Комиссия',
+                'sea_freight' => 'Транспорт', 'auction_fee' => 'Аукционный сбор',
+                'delivery_to_port' => 'Доставка в порт', 'broker_service' => 'Услуга брокера',
+                'local_tax' => 'Местный налог',
+                'sea_freight_container' => 'Морская доставка (Контейнер)',
+                'polish_cleaning' => 'Полировка + химчистка',
+                'container_note' => '* Контейнером доставка приходит примерно на месяц позже, чем RoRo.',
                 'total' => 'ИТОГО цена до дома',
                 'estimate_note' => '* Морская доставка рассчитывается точно в момент погрузки на судно. Указанная сумма является ориентировочной.',
                 'b2b_badge' => 'Цена партнёра B2B',
@@ -510,6 +800,12 @@ if (!function_exists('parsing_md_price_table')) {
                 'delivery_incheon' => 'Delivery to Incheon port', 'inspection' => 'Vehicle inspection',
                 'broker_korea' => 'Korea broker service', 'interpol_check' => 'Interpol check',
                 'recycling_tax' => 'Pollution tax', 'commission' => 'Commission',
+                'sea_freight' => 'Transport', 'auction_fee' => 'Auction fee',
+                'delivery_to_port' => 'Delivery to port', 'broker_service' => 'Broker service',
+                'local_tax' => 'Local tax',
+                'sea_freight_container' => 'Sea freight (Container)',
+                'polish_cleaning' => 'Polishing + chemical cleaning',
+                'container_note' => '* By container the car arrives roughly one month later than by RoRo.',
                 'total' => 'TOTAL price to your door',
                 'estimate_note' => '* Sea freight is calculated exactly at the moment of loading onto the vessel. The total shown is an estimate.',
                 'b2b_badge' => 'B2B partner price',
@@ -518,6 +814,13 @@ if (!function_exists('parsing_md_price_table')) {
         $t = $L[$lang] ?? $L['ro'];
         $fmt = fn($n) => number_format($n, 0, '.', ' ');
 
+        // Korea only: the visitor may price the car with container freight instead
+        // of RoRo, and drop the polish line. Both are a temporary recalculation on
+        // screen — the price stored on the car is always the RoRo one, polish
+        // included. Never offered on a table that is already showing text instead
+        // of numbers, or the swap would have nothing to swap.
+        $alt = $breakdown['freight_alt'] ?? null;
+
         $rows = '';
         foreach ($breakdown['lines'] as $line) {
             $strike = !empty($line['strike']);
@@ -525,37 +828,86 @@ if (!function_exists('parsing_md_price_table')) {
             // B2B table: keep it struck through so the discount is visible.
             if ((float)$line['amount'] <= 0 && !$strike) continue;
 
-            $label = $t[$line['key']] ?? ucfirst(str_replace('_', ' ', $line['key']));
+            $key   = (string)$line['key'];
+            $label = $t[$key] ?? ucfirst(str_replace('_', ' ', $key));
 
             // `display` replaces the amount with text, e.g. an estimated range.
             $value = isset($line['display']) && $line['display'] !== null
                 ? htmlspecialchars((string)$line['display'])
-                : $fmt($line['amount']).' €';
+                : '<span class="mdp-amt">'.$fmt($line['amount']).' €</span>';
 
             // B2B: on a modified line, show the standard price beside this client's
             // own price. A cancelled fee (struck row) shows what it used to cost.
             if (isset($line['std_amount']) && !isset($line['display'])) {
                 $std = (float)$line['std_amount'];
                 if ($strike) {
-                    if ($std > 0) { $value = $fmt($std).' €'; }
+                    if ($std > 0) { $value = '<span class="mdp-amt">'.$fmt($std).' €</span>'; }
                 } elseif ($std > 0 && $std != (float)$line['amount']) {
                     $value = '<span class="mdp-old">'.$fmt($std).' €</span> '.$value;
                 }
             }
 
-            $rows .= '<tr'.($strike ? ' class="mdp-cancelled"' : '').'>'
-                   . '<td class="mdp-label">'.htmlspecialchars($label).'</td>'
+            // The freight label becomes the RoRo/Container picker; polish gets a
+            // tick that takes it out of the total. Both keep the plain label when
+            // the data for the swap is not there.
+            $cell = htmlspecialchars($label);
+            if ($key === 'sea_freight_roro' && $alt) {
+                // First option is the row's own label, the one the table has
+                // always shown; only the alternative needed a new string. The
+                // delay warning sits right under the picker that causes it, not
+                // down by the total.
+                $cell = '<select class="mdp-freight" aria-label="'.htmlspecialchars($label).'">'
+                      . '<option value="roro">'.htmlspecialchars($label).'</option>'
+                      . '<option value="container">'.htmlspecialchars($t['sea_freight_container'] ?? 'Container').'</option>'
+                      . '</select>'
+                      . '<span class="mdp-container-note" hidden>'
+                      . htmlspecialchars($t['container_note'] ?? '').'</span>';
+            } elseif (!empty($line['optional'])) {
+                $cell = '<label class="mdp-optin"><input type="checkbox" class="mdp-polish" checked>'
+                      . '<span>'.htmlspecialchars($label).'</span></label>';
+            }
+
+            $rows .= '<tr'.($strike ? ' class="mdp-cancelled"' : '').' data-mdp-key="'.htmlspecialchars($key).'">'
+                   . '<td class="mdp-label">'.$cell.'</td>'
                    . '<td class="mdp-val">'.$value.'</td></tr>';
         }
 
         // Elegant card: gradient header, soft rows, pill-style values, bold total.
         $css = '<style>
+            /* CARFAX button under the price table (AutoTrader cars). The report
+               itself lives on carfax.ca, so this is a link, not a rendered block
+               like the Encar/OpenLane reports that sit in the same slot. */
+            .carfax-report-btn{
+                display:flex; align-items:center; justify-content:center; gap:.45rem;
+                margin:-18px 0 30px;
+                padding:14px 18px;
+                border:1px solid #efefef;
+                border-radius:18px;
+                background:#fff;
+                box-shadow:0 10px 30px rgba(20,20,40,.07);
+                color:#e2001a; font-weight:700; font-size:1rem; text-decoration:none;
+                transition:border-color .15s, box-shadow .15s;
+            }
+            /* The wordmark carries its own width:250 height:37 attributes; CSS
+               overrides them so it scales with the label instead of the viewport. */
+            .carfax-report-btn svg{
+                display:block; height:1.25em; width:auto;
+            }
+            .carfax-report-btn:hover{
+                border-color:#e2001a;
+                box-shadow:0 12px 34px rgba(226,0,26,.14);
+            }
+
             /* Show the table once per breakpoint (it is rendered in both the
                mobile flow and the desktop column). */
             .md-price-mobile-only{display:none;}
             @media (max-width:768px){
                 .md-price-mobile-only{display:block;}
                 .md-price-desktop-only{display:none;}
+                /* The negative top margin above tucks the button under the price
+                   table on desktop; on a narrow screen the two stack edge to edge
+                   and need the breathing room back. */
+                .carfax-report-btn{margin-top:0;}
             }
             .md-price-block{
                 margin:0 0 30px;
@@ -596,6 +948,41 @@ if (!function_exists('parsing_md_price_table')) {
             .md-price-table tr.mdp-cancelled .mdp-val{
                 text-decoration:line-through;
                 color:#9a9a9a;
+            }
+            /* The two things the visitor can change: freight type and whether the
+               polish is included. Drawn to sit in the row like the labels around
+               them, not like a form dropped into a price list. */
+            .md-price-table .mdp-freight{
+                font:inherit;color:#3a3a3a;font-weight:500;
+                max-width:100%;padding:4px 30px 4px 10px;
+                border:1px solid #e6c4c8;border-radius:9px;background:#fff;
+                -webkit-appearance:none;appearance:none;cursor:pointer;
+                background-image:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27 viewBox=%270 0 12 8%27 fill=%27none%27%3E%3Cpath d=%27M1 1.5L6 6.5L11 1.5%27 stroke=%27%23e2001a%27 stroke-width=%272%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E");
+                background-repeat:no-repeat;background-position:right 10px center;
+                transition:border-color .15s;
+            }
+            .md-price-table .mdp-freight:hover{border-color:#e2001a;}
+            .md-price-table .mdp-freight:focus{outline:none;border-color:#e2001a;box-shadow:0 0 0 3px rgba(226,0,26,.12);}
+            /* Delay warning, under the picker it belongs to. The [hidden] rule is
+               more specific than the base one, so the attribute still wins. */
+            .md-price-table .mdp-container-note{
+                display:block;margin-top:7px;
+                color:#8a8a8a;font-size:.76rem;line-height:1.35;font-weight:400;
+                white-space:normal;
+            }
+            .md-price-table .mdp-container-note[hidden]{display:none;}
+            .md-price-table .mdp-optin{
+                display:inline-flex;align-items:center;gap:9px;
+                cursor:pointer;color:#3a3a3a;font-weight:500;
+            }
+            .md-price-table .mdp-optin input{
+                width:17px;height:17px;margin:0;flex:0 0 17px;
+                accent-color:#e2001a;cursor:pointer;
+            }
+            /* Unticked: the row stays visible so the price can be put back. */
+            .md-price-table tr.mdp-row-off .mdp-optin span,
+            .md-price-table tr.mdp-row-off .mdp-val{
+                text-decoration:line-through;color:#9a9a9a;
             }
             .md-price-badge{
                 display:inline-block;margin:12px 28px 0;
@@ -701,9 +1088,18 @@ if (!function_exists('parsing_md_price_table')) {
             }
         </style>';
 
-        $originFlag = (($breakdown['route'] ?? 'kr') === 'eu')
-            ? '<img class="mdp-flag" src="/content/admin/page/parsing/media-parsing/flag-europe.svg" alt="EU">'
-            : '<img class="mdp-flag" src="/content/admin/page/parsing/media-parsing/flag-korea.svg" alt="KR">';
+        // Origin flag of the route the breakdown was computed with. Defaulting to
+        // Korea for anything that isn't Europe put a Korean flag on US cars.
+        //
+        // The 'us' key predates the move to Canada as the import country and is
+        // still what parsing_md_breakdown_us() returns; AutoTrader is its only
+        // user and those cars ship from Canada, so it flies the Canadian flag.
+        $originFlags = [
+            'eu' => '<img class="mdp-flag" src="/content/admin/page/parsing/media-parsing/flag-europe.svg" alt="EU">',
+            'us' => '<img class="mdp-flag" src="/content/admin/page/parsing/media-parsing/flag-canada.svg" alt="CA">',
+            'kr' => '<img class="mdp-flag" src="/content/admin/page/parsing/media-parsing/flag-korea.svg" alt="KR">',
+        ];
+        $originFlag = $originFlags[$breakdown['route'] ?? 'kr'] ?? $originFlags['kr'];
         $route = '<span class="md-price-route">'
             . $originFlag
             . '<span class="mdp-path"><img class="mdp-car" src="/content/admin/page/parsing/media-parsing/car-calc.svg?v=3" alt=""></span>'
@@ -714,8 +1110,21 @@ if (!function_exists('parsing_md_price_table')) {
         $note = !empty($breakdown['estimated'])
             ? '<p class="md-price-note">'.htmlspecialchars($t['estimate_note'] ?? '').'</p>'
             : '';
+        // Every figure the swap needs, precomputed server-side: freight is part
+        // of the customs base, so the browser must not try to derive the other
+        // variant from the difference in freight alone.
+        $data = ' data-total="'.(int)$breakdown['total'].'"';
+        if ($alt) {
+            $data .= ' data-alt-total="'.(int)$alt['total'].'"'
+                   . ' data-freight="'.(int)$alt['freight'].'"'
+                   . ' data-customs="'.(int)$alt['customs'].'"'
+                   . ' data-luxury="'.(int)$alt['luxury'].'"';
+        }
+        if (!empty($breakdown['polish'])) {
+            $data .= ' data-polish="'.(int)$breakdown['polish'].'"';
+        }
 
-        $tableHtml = '<div class="md-price-block open">'
+        $tableHtml = '<div class="md-price-block open"'.$data.'>'
             . '<div class="md-price-title md-price-title-static">'
             . '<span class="mdp-title-text">'.$route.'</span></div>'
             . '<div class="md-price-body">'
@@ -724,12 +1133,12 @@ if (!function_exists('parsing_md_price_table')) {
             . '<td class="mdp-val">'
             . ((!empty($breakdown['retail_total']) && (float)$breakdown['retail_total'] > (float)$breakdown['total'])
                 ? '<span class="mdp-old">'.$fmt($breakdown['retail_total']).' €</span> ' : '')
-            . $fmt($breakdown['total']).' €</td></tr>'
+            . '<span class="mdp-amt">'.$fmt($breakdown['total']).' €</span></td></tr>'
             . '</tbody></table>'
             . $note
             . '</div></div>';
 
-        return $css.'<div style="clear:both"></div>'.$tableHtml;
+        return $css.parsing_md_price_script().'<div style="clear:both"></div>'.$tableHtml;
     }
 }
 

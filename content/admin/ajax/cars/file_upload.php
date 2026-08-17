@@ -47,14 +47,23 @@ foreach ($_FILES as $_inp_raw => $ar){
         }
     }
 
-    // pos_start is the file's index WITHIN this upload batch (the JS sends it so
-    // parallel uploads don't race on MAX(pos)). It has to be added on top of what
-    // the car already has — taken as an absolute position it restarted at 1 and
-    // the new photo overwrote car_<id>_1, which is why an added photo appeared as
-    // a duplicate of the first one.
-    $pdoMax = $db->prepare('SELECT COALESCE(MAX(pos), 0) FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id');
-    $pdoMax->execute(['it_id' => $last_id]);
-    $existingMax = (int)$pdoMax->fetchColumn();
+    // pos_start is the file's index WITHIN this upload batch; it is added on top
+    // of what the car already has, because taken as an absolute position it
+    // restarted at 1 and the new photo overwrote car_<id>_1.
+    // pos_base is the car's current highest position, measured ONCE by the client
+    // before the batch starts. Reading MAX(pos) here instead was a race: the
+    // uploads arrive in parallel, so each request saw a different number of rows
+    // and the batch came out reordered — with two files able to claim the same
+    // pos and overwrite each other's car_<id>_<pos>.jpg. MAX(pos) stays only as a
+    // fallback for callers that don't send a base.
+    $posBaseRaw = __post('pos_base', '');
+    if ($posBaseRaw !== '' && $posBaseRaw !== null) {
+        $existingMax = (int)$posBaseRaw;
+    } else {
+        $pdoMax = $db->prepare('SELECT COALESCE(MAX(pos), 0) FROM '.$prefx.'_car_pht WHERE `it_id`=:it_id');
+        $pdoMax->execute(['it_id' => $last_id]);
+        $existingMax = (int)$pdoMax->fetchColumn();
+    }
 
     $pos_start   = (int)__post('pos_start', 0);
     $pos_counter = $existingMax + ($pos_start > 0 ? $pos_start - 1 : 0);

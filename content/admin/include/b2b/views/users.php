@@ -4,6 +4,7 @@
 
 use App\Services\B2b\B2bAuth;
 use App\Services\B2b\B2bConfig;
+use App\Services\B2b\B2bGift;
 use App\Services\B2b\B2bPhone;
 use App\Services\B2b\B2bRegions;
 
@@ -57,6 +58,25 @@ try {
 }
 
 $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/users';
+
+// Active gift count per listed client, in one query, so each row can show how
+// many that client already has without a query per row.
+$giftCounts = [];
+if ($users) {
+    try {
+        $ids = array_map(static fn($u) => (int)$u['id'], $users);
+        $in  = implode(',', array_fill(0, count($ids), '?'));
+        $gq  = $db->prepare('SELECT b2b_user_id, COUNT(*) FROM '.B2bConfig::prefix().'_b2b_gifts
+                              WHERE revoked_at IS NULL AND b2b_user_id IN ('.$in.')
+                              GROUP BY b2b_user_id');
+        $gq->execute($ids);
+        $giftCounts = $gq->fetchAll(PDO::FETCH_KEY_PAIR) ?: [];
+    } catch (Throwable $e) {
+        $giftCounts = []; // table not migrated yet
+    }
+}
+
+$giftLabels = B2bGift::labels($lang);
 ?>
 
 <div class="b2ba">
@@ -71,6 +91,26 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/users';
             <button type="submit" class="b2ba-btn b2ba-btn--ghost">&#128269;</button>
         </form>
     </div>
+
+    <div class="b2ba-msg" id="b2ba-msg" role="status" aria-live="polite"></div>
+
+    <?php
+    // Master switch for the personal price deadlines. A partner's own deadline
+    // outranks the general offer, so without this there is no single place left to
+    // end the preferential prices for everyone at once.
+    $ignorePersonal = B2bConfig::get('b2b_ignore_personal_deadlines', '0') === '1';
+    ?>
+    <label class="b2ba-switch<?= $ignorePersonal ? ' is-on' : '' ?>">
+        <input type="checkbox" data-toggle-setting="b2b_ignore_personal_deadlines"
+               <?= $ignorePersonal ? 'checked' : '' ?>
+               data-msg-on="<?= b2b_adm_esc($t['ignore_personal_on']) ?>"
+               data-msg-off="<?= b2b_adm_esc($t['ignore_personal_off']) ?>">
+        <span class="b2ba-switch__box" aria-hidden="true"></span>
+        <span class="b2ba-switch__txt">
+            <strong><?= b2b_adm_esc($t['ignore_personal_title']) ?></strong>
+            <small><?= b2b_adm_esc($t['ignore_personal_hint']) ?></small>
+        </span>
+    </label>
 
     <nav class="b2ba-filters">
         <?php
@@ -138,6 +178,20 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/users';
                                         <?= b2b_adm_phone_icon() ?><?= b2b_adm_esc($t['call']) ?>
                                     </a>
                                 <?php endif; ?>
+                                <?php // Full activity log: what they viewed, from which source, when. ?>
+                                <a class="b2ba-btn b2ba-btn--ghost b2ba-btn--sm b2ba-btn--hist"
+                                   href="/<?= b2b_adm_esc($lang) ?>/<?= b2b_adm_esc($admin_dir) ?>/b2b/history?id=<?= $uid ?>">
+                                    <?= b2b_adm_esc($t['hist_open']) ?>
+                                </a>
+                                <?php // Opens the gift dialog below, pre-filled with this client. ?>
+                                <button type="button" class="b2ba-btn b2ba-btn--soft b2ba-btn--sm b2ba-btn--gift"
+                                        data-b2b-gift-open data-user="<?= $uid ?>"
+                                        data-name="<?= b2b_adm_esc(B2bAuth::displayName($u)) ?>">
+                                    <?= b2b_adm_esc($t['gift_send']) ?>
+                                    <?php if (($giftCounts[$uid] ?? 0) > 0): ?>
+                                        <span class="b2ba-gift-n"><?= (int)$giftCounts[$uid] ?></span>
+                                    <?php endif; ?>
+                                </button>
                                 <?php if ($status === 'blocked'): ?>
                                     <button type="button" class="b2ba-btn b2ba-btn--ok b2ba-btn--sm"
                                             data-b2b-list-status data-user="<?= $uid ?>" data-value="active">
@@ -159,6 +213,62 @@ $baseUrl = '/'.$lang.'/'.$admin_dir.'/b2b/users';
             </table>
         </div>
     <?php endif; ?>
+
+    <?php
+    // One dialog for the whole list; the row button fills in which client it is
+    // for. Kept out of the table so the markup is not repeated per row.
+    ?>
+    <div class="b2ba-modal" id="b2ba-gift" hidden>
+        <div class="b2ba-modal__bg" data-b2b-gift-close></div>
+        <div class="b2ba-modal__box" role="dialog" aria-modal="true" aria-labelledby="b2ba-gift-ttl">
+            <?php
+            // Same [data-b2b-gift-close] the backdrop and Cancel use. It sits
+            // outside __body on purpose: the body is what scrolls, so the button
+            // stays pinned to the corner of the dialog.
+            ?>
+            <button type="button" class="b2ba-modal__x" data-b2b-gift-close
+                    aria-label="<?= b2b_adm_esc($t['cancel']) ?>">&times;</button>
+
+            <div class="b2ba-modal__body">
+            <h2 class="b2ba-h2" id="b2ba-gift-ttl"><?= b2b_adm_esc($t['gift_title']) ?></h2>
+            <p class="b2ba-hint"><?= b2b_adm_esc($t['gift_hint']) ?></p>
+            <p class="b2bg-who"><strong data-b2b-gift-name></strong></p>
+
+            <div class="b2bg-list">
+                <?php foreach ($giftLabels as $code => $label): ?>
+                    <label class="b2ba-perm">
+                        <input type="checkbox" class="b2bg-item" value="<?= b2b_adm_esc($code) ?>">
+                        <span><?= b2b_adm_esc($label) ?></span>
+                    </label>
+                <?php endforeach; ?>
+            </div>
+
+            <label class="b2ba-field b2ba-field--wide">
+                <span><?= b2b_adm_esc($t['gift_note']) ?></span>
+                <textarea id="b2ba-gift-note" rows="2" maxlength="<?= B2bGift::NOTE_MAX ?>"></textarea>
+            </label>
+
+            <div class="b2ba-card__foot">
+                <button type="button" class="b2ba-btn b2ba-btn--soft" data-b2b-gift-close><?= b2b_adm_esc($t['cancel'] ?? 'Anulează') ?></button>
+                <button type="button" class="b2ba-btn b2ba-btn--primary" data-b2b-gift-send><?= b2b_adm_esc($t['gift_send']) ?></button>
+            </div>
+
+            <?php
+            // Gifts this client already has, loaded when the dialog opens. Sending
+            // and withdrawing belong together — splitting them across two pages
+            // would mean hunting for the profile just to undo a mistake.
+            ?>
+            <div class="b2bg-existing" id="b2ba-gift-list"
+                 data-title="<?= b2b_adm_esc($t['gift_list_title']) ?>"
+                 data-none="<?= b2b_adm_esc($t['gift_none']) ?>"
+                 data-revoke="<?= b2b_adm_esc($t['gift_revoke']) ?>"
+                 data-confirm="<?= b2b_adm_esc($t['gift_confirm_rev']) ?>"
+                 data-st-new="<?= b2b_adm_esc($t['gift_st_new']) ?>"
+                 data-st-seen="<?= b2b_adm_esc($t['gift_st_seen']) ?>"
+                 data-st-revoked="<?= b2b_adm_esc($t['gift_st_revoked']) ?>"></div>
+            </div><!-- /.b2ba-modal__body -->
+        </div>
+    </div>
 </div>
 
 <script src="/content/admin/include/b2b/b2b_admin.js?v=<?= file_exists(_ROOT.'/content/admin/include/b2b/b2b_admin.js') ? date('YmdHis', filemtime(_ROOT.'/content/admin/include/b2b/b2b_admin.js')) : '1' ?>" defer></script>

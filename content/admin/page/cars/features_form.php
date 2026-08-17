@@ -498,7 +498,7 @@ $numericFeatureDefault = function ($featureId) use ($isCommercial999, $car999fea
                                 class="form-control video-urls"
                                 placeholder="<?= __('cars.video_placeholder') ?>"
                                 <?= $feature['required'] ? 'required' : '' ?>
-                        ><?= (!empty($car999features[$feature['id']]['value'])) ? implode(', ', $car999features[$feature['id']]['value']) : 'https://www.youtube.com/watch?v=_sbHQnaZ9kk, https://www.youtube.com/watch?v=O9CdDeJ9vXs, https://www.youtube.com/watch?v=LDzcvhjTf0w' ?></textarea>
+                        ><?= (!empty($car999features[$feature['id']]['value'])) ? implode(', ', (array)$car999features[$feature['id']]['value']) : 'https://www.youtube.com/watch?v=_sbHQnaZ9kk, https://www.youtube.com/watch?v=O9CdDeJ9vXs, https://www.youtube.com/watch?v=LDzcvhjTf0w' ?></textarea>
                         <small class="form-text text-muted">
                             <?= __('cars.video_urls_hint') ?>
                         </small>

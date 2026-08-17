@@ -14,7 +14,17 @@
  *   - optional PER-CLIENT tables (the same rows scoped to the partner's id),
  *     edited in /adminsauto/b2b/pricing?user=X. Fallback is per table: a partner
  *     with rows in a table uses them, otherwise the global set applies.
+ *
+ * Each layer also has a deadline (App\Services\B2b\B2bOffer), and the partner's
+ * own deadline outranks the general one: while his runs he keeps his prices even
+ * if the general offer has lapsed, and when his runs out he drops to the global
+ * B2B prices — or to the public ones if the general offer has lapsed too. A
+ * partner with no deadline of his own follows the general one. That cascade is
+ * applied here, in b2b_effective_client(), so every call site — car page, catalog
+ * cards, compare, invoice — inherits it without knowing about it.
  */
+
+use App\Services\B2b\B2bOffer;
 
 if (!defined('B2B_PRICE_RULES_LOADED')) {
     define('B2B_PRICE_RULES_LOADED', 1);
@@ -31,21 +41,125 @@ if (!defined('B2B_PRICE_RULES_LOADED')) {
      * the admin session, so an ordinary visitor cannot forge the parameter to
      * obtain dealer prices.
      *
+     * The returned scope is already past the expiry cascade, so a partner whose
+     * offer has run out is reported as [true, null] (global prices) or [false,
+     * null] (public prices) exactly as if the admin had removed their tables.
+     *
      * @return array{0: bool, 1: int|null}
      */
     function b2b_effective_client(): array
     {
+        $id = 0;
         if (function_exists('b2b_is_client') && b2b_is_client()) {
-            return [true, (int)b2b_user_id()];
+            $id = (int)b2b_user_id();
+        } elseif (!empty($_SESSION['user_id']) && !empty($_GET['b2b_as'])) {
+            $id = (int)$_GET['b2b_as'];
         }
-        if (!empty($_SESSION['user_id']) && !empty($_GET['b2b_as'])) {
-            $asId = (int)$_GET['b2b_as'];
-            if ($asId > 0) {
-                return [true, $asId];
-            }
+        if ($id <= 0) {
+            return [false, null];
         }
-        return [false, null];
+
+        try {
+            [$useB2b, $scopeId] = B2bOffer::scopeFor($id);
+        } catch (\Throwable $e) {
+            // Expiry table missing: keep serving the prices rather than silently
+            // repricing every partner at retail.
+            return [true, $id];
+        }
+
+        return $useB2b ? [true, $scopeId] : [false, null];
     }
+
+    /**
+     * Deadline now counting down for this visitor, as a unix timestamp, or null
+     * when there is none (guest, or an offer with no time limit).
+     */
+    function b2b_offer_deadline(): ?int
+    {
+        $id = 0;
+        if (function_exists('b2b_is_client') && b2b_is_client()) {
+            $id = (int)b2b_user_id();
+        } elseif (!empty($_SESSION['user_id']) && !empty($_GET['b2b_as'])) {
+            $id = (int)$_GET['b2b_as'];
+        }
+        if ($id <= 0) {
+            return null;
+        }
+
+        try {
+            [$useB2b, , $ts] = B2bOffer::scopeFor($id);
+        } catch (\Throwable $e) {
+            return null;
+        }
+
+        return $useB2b ? $ts : null;
+    }
+
+    /**
+     * Whether a car is priced from the B2B tables at all.
+     *
+     * Only cars imported through parsing get a landed-cost breakdown, so only
+     * they can carry a preferential price. A car from own stock keeps the public
+     * price for partners too — nothing about it expires. Same condition as the
+     * one b2b_prices_for_cars() uses to build its map.
+     */
+    function b2b_car_is_priced(array $car): bool
+    {
+        return !empty($car['parsing_id'])
+            && in_array((string)($car['parsing_source'] ?? ''),
+                        ['encar', 'openlane', 'ecarstrade', 'auto1', 'autotrader'], true);
+    }
+
+    /**
+     * Countdown badge for the partner's current offer, or '' when there is
+     * nothing to count down.
+     *
+     * Granularity follows the remaining time: days, then hours under a day, then
+     * minutes under an hour. The initial text is rendered here so the badge never
+     * flashes empty; b2b-offer-timer in sitescripts.js keeps it ticking and
+     * reloads the page once it hits zero, since the prices change at that moment.
+     *
+     * All wording (including the plural forms) is passed as data attributes — the
+     * JS carries no strings, same convention as the admin pricing editor.
+     *
+     * @param string $variant 'card' on catalog cards, 'page' on the car page
+     */
+    function b2b_offer_timer_html(string $variant = 'card'): string
+    {
+        $ts = b2b_offer_deadline();
+        if ($ts === null) {
+            return '';
+        }
+
+        $left = $ts - time();
+        if ($left <= 0) {
+            return ''; // already lapsed: prices are public again, nothing to show
+        }
+
+        $lang = $_COOKIE['lang'] ?? 'ro';
+        if (!in_array($lang, ['ro', 'ru', 'en'], true)) {
+            $lang = 'ro';
+        }
+
+        // [label, [day forms], [hour forms], [minute forms]] — three plural forms
+        // per unit (ro: 1 / 2-19 / 20+, ru: 1 / 2-4 / 5+, en: 1 / many / many).
+        // Wording and plural rules live in B2bOffer, so this badge and the
+        // countdown in the admin pricing editor can never word it differently.
+        $label = B2bOffer::label($lang);
+        [$dForms, $hForms, $mForms] = B2bOffer::unitForms($lang);
+        $text = B2bOffer::humanize($left, $lang);
+
+        return '<span class="b2b-offer-timer b2b-offer-timer--'.$variant.'"'
+             . ' data-b2b-offer-end="'.(int)$ts.'"'
+             . ' data-lang="'.htmlspecialchars($lang, ENT_QUOTES, 'UTF-8').'"'
+             . ' data-d="'.htmlspecialchars(implode('|', $dForms), ENT_QUOTES, 'UTF-8').'"'
+             . ' data-h="'.htmlspecialchars(implode('|', $hForms), ENT_QUOTES, 'UTF-8').'"'
+             . ' data-m="'.htmlspecialchars(implode('|', $mForms), ENT_QUOTES, 'UTF-8').'">'
+             . '<span class="b2b-offer-timer__lbl">'.htmlspecialchars($label, ENT_QUOTES, 'UTF-8').'</span>'
+             . '<strong class="b2b-offer-timer__val">'.htmlspecialchars($text, ENT_QUOTES, 'UTF-8').'</strong>'
+             . '</span>';
+    }
+
 
     /**
      * Breakdown for a parsing car with the prices that apply to the current
@@ -66,9 +180,7 @@ if (!defined('B2B_PRICE_RULES_LOADED')) {
         // partner's own tables when present.
         [$isClient, $userId] = b2b_effective_client();
 
-        return ($source === 'encar')
-            ? parsing_md_breakdown_kr($db, $prefx, $car, null, $isClient, $userId)
-            : parsing_md_breakdown_eu($db, $prefx, $car, null, $isClient, $userId);
+        return parsing_md_breakdown_for($db, $prefx, $source, $car, null, $isClient, $userId);
     }
 
     /**
@@ -112,7 +224,7 @@ if (!defined('B2B_PRICE_RULES_LOADED')) {
         foreach ($rows as $r) {
             $pid = (int)($r['parsing_id'] ?? 0);
             $src = (string)($r['parsing_source'] ?? '');
-            if ($pid > 0 && in_array($src, ['encar', 'openlane', 'ecarstrade', 'auto1'], true)) {
+            if ($pid > 0 && in_array($src, ['encar', 'openlane', 'ecarstrade', 'auto1', 'autotrader'], true)) {
                 $byParsingId[$pid] = $r;
             }
         }

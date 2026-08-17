@@ -5,7 +5,7 @@ if (isset($t_mp[3]) && !empty($t_mp[3]) && !is_numeric($t_mp[3])) {
 	$seg = strtolower(explode('?', $t_mp[3])[0]);
 	// Import regions live on a clean path (/ordercars/korea) and map to the import-country
 	// filter, NOT a brand. Everything else is treated as a brand (+ optional model).
-	if ($t_mp[2] === 'ordercars' && in_array($seg, ['korea', 'europe', 'usa', 'china'], true)) {
+	if ($t_mp[2] === 'ordercars' && in_array($seg, ['korea', 'europe', 'canada', 'usa', 'china'], true)) {
 		$_GET['ic'] = $seg;
 	} else {
 		$_GET['br'] = str_replace('-', '_', $seg);

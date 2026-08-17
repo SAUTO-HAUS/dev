@@ -32,6 +32,7 @@ $accounts = [
     'regular_999md'   => 'stock',
     'order_999md'     => 'order',
     'korea_999md'     => 'order',
+    'usa_999md'       => 'order',
 ];
 
 $daemon_start = time();

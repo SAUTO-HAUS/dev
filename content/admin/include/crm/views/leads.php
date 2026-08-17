@@ -107,7 +107,7 @@ if (!empty($src_fs)) {
 if ($q !== '') {
     // Map display labels to DB values for channel and page_id
     $ch_map = ['facebook'=>'Facebook','instagram'=>'Instagram','telegram'=>'Telegram','viber'=>'Viber','site'=>'Site','999md'=>'999'];
-    $pg_map = ['sautohaus_999md'=>'SAUTO-HAUS','regular_999md'=>'Comerciale','order_999md'=>'Comanda','korea_999md'=>'Encars','regular_telegram'=>'AutoMoldova','order_telegram'=>'AutoimportMD','725963964220309'=>'SAUTO','482777831588669'=>'Vânzări Piața Pruncu','cars'=>'Cars','ordercars'=>'Order Cars','order'=>'Order','credit'=>'Credit','tradein'=>'Trade-in','sale'=>'Sale','tyres'=>'Tyres','contacts'=>'Contacts','calculator'=>'Calculator'];
+    $pg_map = ['sautohaus_999md'=>'SAUTO-HAUS','regular_999md'=>'Comerciale','order_999md'=>'Comanda','korea_999md'=>'Encars','usa_999md'=>'SautoSUA','regular_telegram'=>'AutoMoldova','order_telegram'=>'AutoimportMD','725963964220309'=>'SAUTO','482777831588669'=>'Vânzări Piața Pruncu','cars'=>'Cars','ordercars'=>'Order Cars','order'=>'Order','credit'=>'Credit','tradein'=>'Trade-in','sale'=>'Sale','tyres'=>'Tyres','contacts'=>'Contacts','calculator'=>'Calculator'];
     $ql = mb_strtolower($q);
 
     // Find DB keys whose display label contains the search term
@@ -529,6 +529,7 @@ if (!empty($status_filter)) {
                     'Mesaje 999.md' => [
                         'inbox:999md:order_999md' => 'Mesaj · 999 · Comanda',
                         'inbox:999md:korea_999md' => 'Mesaj · 999 · Corea',
+                        'inbox:999md:usa_999md' => 'Mesaj · 999 · SUA',
                         'inbox:999md:sautohaus_999md' => 'Mesaj · 999 · Stock',
                         'inbox:999md:regular_999md' => 'Mesaj · 999 · Comerciale',
                     ],
@@ -726,6 +727,7 @@ if (!empty($status_filter)) {
                     'regular_999md'    => 'Comerciale',
                     'order_999md'      => 'Comanda',
                     'korea_999md'      => 'Encars',
+                    'usa_999md'        => 'SautoSUA',
                     'regular_telegram' => 'AutoMoldova',
                     'order_telegram'   => 'AutoimportMD',
                     '725963964220309'  => 'SAUTO',

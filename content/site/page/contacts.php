@@ -188,11 +188,12 @@ $formattedPhone = PhoneHelper::formatPhone($generalPhone, "display");
 					<textarea class="inp use txt" name="msg" spellcheck="false" placeholder="'.$lng['w']['message'].'" title="'.$lng['w']['message'].'"></textarea>
 					<input class="use" type="hidden" name="page" value="'.$_SERVER['REQUEST_URI'].'" />
 					<input class="use" type="hidden" name="target" value="self" />
-					<div class="agmt">
-						<input type="checkbox" name="agmt" id="f_agmt" class="cbx cnfrm" checked="checked" />
-						<span class="txt"><label for="f_agmt">'.$lng['t']['x']['prs_dat_agr'][1].'</label> <a class="x" href="/'.$_COOKIE['lang'].'/privacy" target="_blank" title="'.$lng['t']['x']['prs_dat_agr']['ttl'].'">'.$lng['t']['x']['prs_dat_agr'][2].'</a></span>
+					<div class="mkt-optin">
+						<input type="checkbox" class="use" name="marketing_contact" id="f_mkt_ct" value="yes" />
+						<label for="f_mkt_ct">'.$lng['t']['x']['prs_dat_agr']['mkt'].'</label>
 					</div>
 					<input class="btn sbmt" type="submit" value="'.$lng['w']['send'].'" onclick="event.preventDefault();" data-sent="'.$lng['w']['msg_snt'].'" data-sending="'.$lng['w']['sending'].'" data-req_fld="'.$lng['w']['req_not_filled'].'" />
+					<p class="legal-notice">'.$lng['t']['x']['prs_dat_agr'][1].' <a href="/'.$_COOKIE['lang'].'/privacy" target="_blank" title="'.$lng['t']['x']['prs_dat_agr']['ttl'].'">'.$lng['t']['x']['prs_dat_agr'][2].'</a>.</p>
 				</form>
 				'.$form.'
                 

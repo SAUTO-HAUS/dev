@@ -66,7 +66,7 @@ $serv_arr = [
 	'payment'=>['img'=>'edc-v2.svg', 'grp'=>'info'],
 	'terms'=>['img'=>'terms-v2.svg', 'grp'=>'info']
 ];
-$info_arr = ['about', 'privacy', 'credit', 'terms', 'warranty'];
+$info_arr = ['about', 'privacy', 'cookies', 'credit', 'terms', 'warranty'];
 
 $rent_txt_arr = [
 	'autopark'=>['ttl'=>'Большой автопарк', 'txt'=>'50+ уникальных авто в аренду из нашего автопарка', 'img'=>'rent_autopark.svg'],

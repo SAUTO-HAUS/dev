@@ -385,6 +385,8 @@
 @media (min-width: 1025px) {
     .crm-inbox-day-sep td { background:#e9eaec !important; }
     .crm-calls-day-sep td { background:#e9eaec !important; }
+    #crm-calls-wrap .calls-tbl thead th:first-child { width:64px; white-space:normal; padding-left:0.5rem; padding-right:0.5rem; }
+    #crm-calls-wrap .calls-tbl tbody tr:not(.crm-calls-day-sep) td:first-child { width:64px; text-align:center; padding-left:0.5rem; padding-right:0.5rem; }
 }
 @media (max-width: 1024px) {
     #crm-inbox-wrap .crm-inbox-day-sep td,

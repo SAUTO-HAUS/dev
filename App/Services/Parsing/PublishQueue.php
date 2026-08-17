@@ -131,6 +131,14 @@ class PublishQueue
                     WHERE id = ?')->execute([$res['car_ctlg_id'] ?? null, $id]);
                 return true;
             }
+            // Deliberately not published (AutoTrader car with no readable CARFAX
+            // report). The car is already marked rejected, so auto-publish will
+            // not offer it again — drop the job rather than retry it three times
+            // and leave a row in the failures panel for someone to dismiss.
+            if (!empty($res['rejected'])) {
+                $this->db->prepare('DELETE FROM '.$this->table().' WHERE id = ?')->execute([$id]);
+                return true;
+            }
             return $this->markFailedOrRetry($job, (string)($res['error'] ?? 'Publish failed'));
         } catch (Throwable $e) {
             return $this->markFailedOrRetry($job, $e->getMessage());
@@ -284,6 +292,20 @@ class PublishQueue
         $del = $this->db->prepare('DELETE FROM '.$this->table().' WHERE id = ? AND status = "failed"');
         $del->execute([$jobId]);
         return $del->rowCount() > 0;
+    }
+
+    /**
+     * Clear every failed job in one statement. A single bad batch — a make missing
+     * from the catalogue, say — can leave hundreds of rows, and dismissing them one
+     * at a time is neither reasonable for the operator nor kind to the server.
+     *
+     * @return int How many were removed.
+     */
+    public function dismissAllFailed(): int
+    {
+        $del = $this->db->prepare('DELETE FROM '.$this->table().' WHERE status = "failed"');
+        $del->execute();
+        return $del->rowCount();
     }
 
     /** Self-create the table (no migration runner in this project). */

@@ -23,6 +23,8 @@ class B2bAudit
     public const PASSWORD_RESET      = 'password_reset';
     public const STATUS_CHANGED      = 'status_changed';
     public const PERMISSIONS_CHANGED = 'permissions_changed';
+    public const GIFT_SENT            = 'gift_sent';
+    public const GIFT_REVOKED         = 'gift_revoked';
 
     public static function log(int $userId, string $action, array $details = [], ?int $targetId = null): void
     {

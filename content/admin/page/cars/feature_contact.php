@@ -10,7 +10,7 @@ foreach ($contacts as $contact): ?>
                 id="contact_<?= $feature_id ?>_<?= md5($contact) ?>"
                 value="<?= htmlspecialchars($contact) ?>"
                 class="form-check-input contact"
-                <?php if(!empty($car999features) && !empty($car999features[$feature_id]['value']) && in_array($contact, $car999features[$feature_id]['value'])) : ?> checked <?php endif; ?>
+                <?php if(!empty($car999features) && !empty($car999features[$feature_id]['value']) && in_array($contact, (array)$car999features[$feature_id]['value'])) : ?> checked <?php endif; ?>
         >
         <label class="form-check-label" for="contact_<?= $feature_id ?>_<?= md5($contact) ?>">
             <?= htmlspecialchars($contact) ?>

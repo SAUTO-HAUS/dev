@@ -42,6 +42,7 @@ $inbox_pg_labels = [
     'regular_999md'    => 'Comerciale',
     'order_999md'      => 'Comanda',
     'korea_999md'      => 'Encars',
+    'usa_999md'        => 'SautoSUA',
     'regular_telegram' => 'AutoMoldova',
     'order_telegram'   => 'AutoimportMD',
     '725963964220309'  => 'SAUTO',

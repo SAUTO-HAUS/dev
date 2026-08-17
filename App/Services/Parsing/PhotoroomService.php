@@ -5,22 +5,28 @@ namespace App\Services\Parsing;
 /**
  * Photoroom Remove Background API (v1/segment, Basic plan).
  *
- * Used at publish time for Encar (Korea) cars only: the cover photo is sent to
+ * Used at publish time for AutoTrader (USA) cars only: the cover photo is sent to
  * Photoroom, which returns the car cut out on a clean white background. The key
  * lives in .env as PHOTOROOM_API_KEY. If the key is missing or the call fails we
  * return null and the caller keeps the original photo (never blocks publishing).
  *
- * No shadow: the v2/edit AI shadow distorted the car and bills against the more
- * expensive "Plus" plan; a PHP-drawn shadow looked artificial (car "floating").
- * A clean white cut-out (one Basic-plan call) looks best and stays cheap.
+ * No shadow, on purpose: the AI shadow distorted the car and bills against the more
+ * expensive plan, and a PHP-drawn one looked artificial (the car "floating"). Asking
+ * for nothing but the cut-out keeps it to one cheap call and looks best.
  *
  * Docs: https://docs.photoroom.com/remove-background-api-basic-plan
  */
 class PhotoroomService
 {
-    private const ENDPOINT = 'https://image-api.photoroom.com/v2/edit';
-    private const SHADOW_MODEL_VERSION = '2026-04-15';
+    // v1/segment is the Basic-plan "Remove Background" API: one credit per image.
+    // The code used to call image-api.photoroom.com/v2/edit — the premium editing
+    // API, which bills several credits for the same picture (5 per photo, measured
+    // on the dashboard) because it prices the full editing pipeline, not a cut-out.
+    private const ENDPOINT = 'https://sdk.photoroom.com/v1/segment';
     private ?string $apiKey;
+
+    /** Why the last call failed, for the diagnostic script. Null when it worked. */
+    public ?string $lastError = null;
 
     public function __construct()
     {
@@ -57,42 +63,55 @@ class PhotoroomService
             CURLOPT_HTTPHEADER     => [
                 'accept: image/jpeg',
                 'x-api-key: ' . $this->apiKey,
-                'pr-ai-shadows-model-version: ' . self::SHADOW_MODEL_VERSION,
             ],
+            // Everything this API needs: the photo, a white background, JPEG out, full
+            // resolution. No crop, so the car keeps the framing the dealer shot it in
+            // and only the background changes. No effects — one credit per image.
             CURLOPT_POSTFIELDS     => [
-                'imageFile'                  => new \CURLFile($tmp, 'image/jpeg', 'car.jpg'),
-                'background.color'           => 'FFFFFF',
-                // 'auto' keeps the car's proportions (a fixed 3840x2160 stretched it).
-                'outputSize'                 => 'auto',
-                'padding'                    => '0.15',
-                'shadow.mode'                => 'ai.auto-with-overrides',
-                'shadow.softnessOverride'    => '0.3',
-                'shadow.intensityOverride'   => '0.8',
-                'shadow.spreadOverride'      => '45',
-                'shadow.directionOverride'   => '45',
-                'shadow.subjectPoseOverride' => '90',
-                'export.format'              => 'jpeg',
+                'image_file' => new \CURLFile($tmp, 'image/jpeg', 'car.jpg'),
+                // v1 wants a CSS colour — "#FFFFFF" or "white". A bare "FFFFFF" is
+                // rejected with wrong_key_value_combination.
+                'bg_color'   => '#FFFFFF',
+                'format'     => 'jpg',
+                'size'       => 'full',
             ],
         ]);
         $out  = curl_exec($ch);
         $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $err  = curl_error($ch);
         curl_close($ch);
         @unlink($tmp);
 
+        // Keep WHY it failed. Publishing still falls back to the original photo, but
+        // "returns null" alone hides a rejected key or an unknown parameter, which is
+        // exactly what has to be read from the API's own answer.
         if ($out === false || $code !== 200 || strlen((string)$out) < 1000) {
+            $body = is_string($out) ? trim(substr($out, 0, 300)) : '';
+            $this->lastError = 'HTTP ' . $code
+                . ($err !== '' ? ' (curl: ' . $err . ')' : '')
+                . ($body !== '' ? ' — ' . preg_replace('/\s+/', ' ', $body) : '');
             return null;
         }
         // Sanity: the response must be a real JPEG image.
         $info = @getimagesizefromstring($out);
         if ($info === false || ($info[2] ?? 0) !== IMAGETYPE_JPEG) {
+            $this->lastError = 'HTTP 200 but the body is not a JPEG (' . strlen($out) . ' bytes)';
             return null;
         }
+        $this->lastError = null;
         return $out;
     }
 
     private function readApiKey(): ?string
     {
-        $root = $_SERVER['DOCUMENT_ROOT'] ?? realpath(__DIR__ . '/../../..');
+        // Under CLI, DOCUMENT_ROOT is set to an EMPTY STRING, not absent — so `??`
+        // never fires and $root became ''. The cron looked for "/.env", found nothing,
+        // and Photoroom silently reported itself disabled: every cover went up
+        // untouched while the same code called from the browser worked perfectly.
+        $root = $_SERVER['DOCUMENT_ROOT'] ?? '';
+        if (!is_string($root) || trim($root) === '') {
+            $root = realpath(__DIR__ . '/../../..') ?: dirname(__DIR__, 3);
+        }
         $envFile = rtrim((string)$root, '/\\') . '/.env';
         if (is_file($envFile)) {
             $env = (string)file_get_contents($envFile);

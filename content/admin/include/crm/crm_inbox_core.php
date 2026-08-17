@@ -269,6 +269,7 @@ function inbox_create_lead(PDO $db, string $prefx, int $session_id, string $phon
     $page_source_map = [
         'order_999md'      => '999 La Comanda EU',
         'korea_999md'      => 'Corea 999',
+        'usa_999md'        => 'SUA 999',
         'sautohaus_999md'  => '999 Stock',
         'regular_999md'    => '999 Stock',
         'order_telegram'   => 'Telegram - la comanda',

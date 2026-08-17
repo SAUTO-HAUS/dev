@@ -129,7 +129,9 @@
         card.querySelectorAll('tbody tr[data-row]').forEach(function (tr) {
             var id = parseInt(tr.dataset.id || '0', 10) || 0;
 
-            if (section === 'eu_params' || section === 'kr_params') {
+            // Param cards (a fixed list of costs), as opposed to tier cards. Suffix
+            // test so a new region's costs card works without touching this again.
+            if (section.slice(-7) === '_params') {
                 var en = tr.querySelector('.b2bp-en');
                 var amt = tr.querySelector('.b2bp-val');
                 rows.push({
@@ -172,6 +174,79 @@
                     say((res && res.error) || 'Eroare.', 'error');
                 }
             });
+        });
+    });
+
+    // ---- Offer deadline ------------------------------------------------------
+    // Scoped like the price cards: with a client id it is their own deadline,
+    // without one the general offer. Empty input clears it.
+    var offerInput = document.getElementById('b2bp-offer-input');
+    var offerLeft  = root.querySelector('.b2bp-offer-left');
+
+    // Same wording the partner sees on the site: the words and their plural forms
+    // come from the server (data-d / data-h / data-m), only the rule lives here.
+    function pluralIndex(n, lang) {
+        if (lang === 'ru') {
+            var m10 = n % 10, m100 = n % 100;
+            if (m10 === 1 && m100 !== 11) return 0;
+            if (m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14)) return 1;
+            return 2;
+        }
+        if (lang === 'en') return n === 1 ? 0 : 1;
+        if (n === 1) return 0;
+        var r = n % 100;
+        return (r >= 1 && r <= 19) ? 1 : 2;
+    }
+
+    function humanLeft(seconds, el) {
+        var lang = el.dataset.lang || 'ro';
+        var n, forms;
+        if (seconds >= 86400)   { n = Math.floor(seconds / 86400); forms = (el.dataset.d || '').split('|'); }
+        else if (seconds >= 3600) { n = Math.floor(seconds / 3600);  forms = (el.dataset.h || '').split('|'); }
+        else                    { n = Math.max(1, Math.floor(seconds / 60)); forms = (el.dataset.m || '').split('|'); }
+        return n + ' ' + (forms[pluralIndex(n, lang)] || forms[forms.length - 1] || '');
+    }
+
+    function paintLeft() {
+        if (!offerLeft) return;
+        var end = parseInt(offerLeft.dataset.end || '', 10);
+        if (!end) { offerLeft.textContent = offerLeft.dataset.none || ''; return; }
+        var left = end - Math.floor(Date.now() / 1000);
+        offerLeft.textContent = left <= 0 ? (offerLeft.dataset.expired || '') : humanLeft(left, offerLeft);
+        offerLeft.classList.toggle('is-expired', left <= 0);
+    }
+    paintLeft();
+    if (offerLeft) setInterval(paintLeft, 30000);
+
+    // Our Romanian hint only stands in while the field is genuinely empty; once
+    // a date is picked the browser's own editor takes the space back.
+    if (offerInput) {
+        var dtWrap = offerInput.closest('.b2bp-dt');
+        var syncPh = function () {
+            if (dtWrap) dtWrap.classList.toggle('is-empty', offerInput.value === '');
+        };
+        offerInput.addEventListener('input', syncPh);
+        offerInput.addEventListener('change', syncPh);
+        syncPh();
+    }
+
+    root.addEventListener('click', function (e) {
+        var btn = e.target.closest('[data-b2b-offer-save]');
+        if (!btn || !offerInput) return;
+
+        var data = { expires_at: offerInput.value || '' };
+        if (pricingUser) data.user_id = pricingUser;
+
+        btn.disabled = true;
+        api('save_offer_expiry', data).then(function (res) {
+            btn.disabled = false;
+            if (res && res.ok) {
+                // Reload so the badge, the countdown and the reference column all
+                // come back from the server rather than being patched here.
+                reloadKeepingTab();
+                return;
+            }
+            say((res && res.error) || 'Eroare.', 'error');
         });
     });
 

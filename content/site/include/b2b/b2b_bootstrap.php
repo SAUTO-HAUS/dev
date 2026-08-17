@@ -109,6 +109,47 @@ if (!function_exists('b2b_user')) {
         return b2b_can_see_catalog($catalogType) ? '' : ' AND 1=0';
     }
 
+    /**
+     * Gifts granted to this partner that they have not opened yet.
+     *
+     * Resolved once per request: the header renders on every page, and this must
+     * not cost a query per call. 0 for guests and when the module is not migrated.
+     */
+    function b2b_gift_unseen(): int
+    {
+        if (!array_key_exists('b2b_gift_unseen', $GLOBALS)) {
+            $GLOBALS['b2b_gift_unseen'] = 0;
+            if (b2b_is_client()) {
+                try {
+                    $GLOBALS['b2b_gift_unseen'] = \App\Services\B2b\B2bGift::unseenCount(b2b_user_id());
+                } catch (\Throwable $e) {
+                    // Header must render even if the gifts table is missing.
+                }
+            }
+        }
+        return (int)$GLOBALS['b2b_gift_unseen'];
+    }
+
+    /**
+     * Cars matching the partner's saved filters that they have not seen yet.
+     * Resolved once per request, like b2b_gift_unseen(): the header renders on
+     * every page and must not pay for a scan per call.
+     */
+    function b2b_filter_unseen(): int
+    {
+        if (!array_key_exists('b2b_filter_unseen', $GLOBALS)) {
+            $GLOBALS['b2b_filter_unseen'] = 0;
+            if (b2b_is_client()) {
+                try {
+                    $GLOBALS['b2b_filter_unseen'] = \App\Services\B2b\B2bSavedFilter::unseenTotal(b2b_user_id());
+                } catch (\Throwable $e) {
+                    // Header must render even if the filters table is missing.
+                }
+            }
+        }
+        return (int)$GLOBALS['b2b_filter_unseen'];
+    }
+
     /** Audit: car viewed by a partner (acceptance criteria). */
     function b2b_log_car_view(int $carId): void
     {

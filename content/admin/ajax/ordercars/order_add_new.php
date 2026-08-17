@@ -655,7 +655,9 @@ if (__post('sub') == 'mo_search') {
                         // Photo cap per source — MUST match ParsingPublisher::processPhotos(),
                         // which is the same rule for the automatic path. Encar goes up in
                         // full, the auction sources at 20. 999 caps separately at 10.
-                        $imgCap = in_array($pRow['source'] ?? '', ['ecarstrade', 'openlane', 'auto1'], true) ? 20 : 30;
+                        $pSrcCap = $pRow['source'] ?? '';
+                        $imgCap = ($pSrcCap === 'autotrader') ? 25
+                                : (in_array($pSrcCap, ['ecarstrade', 'openlane', 'auto1'], true) ? 20 : 30);
                         $urls = array_slice($urls, 0, $imgCap);
 
                         if (!empty($urls)) {
@@ -729,21 +731,24 @@ if (__post('sub') == 'mo_search') {
                             }
                             ksort($fetched);   // keep the original visual order
 
-                            // Photoroom TEMPORARILY DISABLED — Encar photos now come
-                            // clean from the CDN (small "encar" watermark). Set
-                            // $usePhotoroom = true to re-enable. Block stays intact.
-                            $usePhotoroom = true;
-                            $photoroom = ($usePhotoroom && $isEncar) ? new \App\Services\Parsing\PhotoroomService() : null;
+                            // No Photoroom here: the white cut-out is wanted only on the
+                            // cover that goes to 999, and it happens there — see
+                            // photoroomCover999() in console/sauto_personal_cron.php.
+
+                            // Which photo the operator marked as main, as a URL:
+                            // these are downloaded here, so there is no file index
+                            // to match on. Falls back to the first photo.
+                            $mainUrl = trim((string)($_POST['parsing_main_url'] ?? ''));
+                            $mainIdx = null;
+                            if ($mainUrl !== '') {
+                                $found = array_search($mainUrl, $urls, true);
+                                if ($found !== false) $mainIdx = $found;
+                            }
 
                             $pos = 0;
-                            foreach ($fetched as $bytes) {
+                            foreach ($fetched as $srcIdx => $bytes) {
                                 $pos++;
                                 $n_nm = 'car_' . $last_id . '_' . $pos;
-
-                                if ($pos === 1 && $photoroom && $photoroom->isEnabled()) {
-                                    $clean = $photoroom->removeBackgroundToWhiteJpeg($bytes);
-                                    if ($clean !== null) $bytes = $clean;
-                                }
 
                                 // Write bytes directly — no PHP re-encode so quality is preserved.
                                 // Create both /high/ and /med/ folders; put the original in /high/
@@ -790,7 +795,7 @@ if (__post('sub') == 'mo_search') {
                                     'path'  => $zY . '/' . $zM,
                                     'name'  => $n_nm,
                                     'ff'    => 'jpg',
-                                    'main'  => $pos === 1 ? 1 : 0,
+                                    'main'  => ($mainIdx !== null) ? (int)($srcIdx === $mainIdx) : (int)($pos === 1),
                                     'pos'   => $pos,
                                 ]);
                                 // Mirror into R2 so the car stays servable once the

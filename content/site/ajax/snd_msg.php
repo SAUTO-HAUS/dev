@@ -1,7 +1,7 @@
 <?php defined( '_DOIT' ) or die( 'Restricted access' );
 
-$pdo = $db->prepare('INSERT INTO '.$prefx.'_mail (`folder`, `date`, `name`, `phone`, `email`, `message`, `page`, `ip`) 
-	VALUES (:folder, :date, :name, :phone, :email, :message, :page, :ip)');
+$pdo = $db->prepare('INSERT INTO '.$prefx.'_mail (`folder`, `date`, `name`, `phone`, `email`, `message`, `page`, `ip`, `marketing_optin`, `marketing_optin_at`)
+	VALUES (:folder, :date, :name, :phone, :email, :message, :page, :ip, :mkt, :mkt_at)');
 
 $zPg = isset($_POST['page'])?$_POST['page']:'x';
 
@@ -10,6 +10,9 @@ $zPhn = !empty($_POST['phone']) ? $_POST['phone'] : '-';
 $zEml = !empty($_POST['email']) ? $_POST['email'] : '-';
 $zMsg   = !empty($_POST['msg'])   ? $_POST['msg'] : '';
 
+// Marketing consent is a separate purpose from answering the enquiry: opt-in
+// only, and the moment of the opt-in is stored as proof.
+$zMkt = (isset($_POST['marketing_contact']) && $_POST['marketing_contact'] === 'yes') ? 1 : 0;
 
 $pdo->execute(array(
 	'folder'=>'message',
@@ -19,7 +22,10 @@ $pdo->execute(array(
 	'email'=>$zEml,
 	'message'=>$zMsg,
 	'page'=>$zPg,
-	'ip'=>$_SERVER['REMOTE_ADDR']
+	// Truncated: the lead record must not carry an identifying address.
+	'ip'=>anonymizeIp(),
+	'mkt'=>$zMkt,
+	'mkt_at'=>$zMkt ? date('Y-m-d H:i:s') : null
 ));
 
 $content = '';
@@ -53,12 +59,13 @@ try {
 	$mail->Body = 
 		'<b>Mesaj de pe pagină:</b> <a href="https://www.sauto.md'.$zPg.'">'.$zPg.'</a><br/>'
 		.'<b>Timp:</b> '.(date('d.m.Y (H:i:s)', time())).'<br/>'
-		.'<b>ip:</b> '.$_SERVER['REMOTE_ADDR'].'<br/><br/>'
+		.'<b>ip:</b> '.anonymizeIp().'<br/>'
+		.'<b>Marketing:</b> '.($zMkt ? 'DA (acord explicit)' : 'nu').'<br/><br/>'
 		.'<b>Mesaj:</b><br/>'.(nl2br(addslashes($zMsg))).'';
 	$mail->AltBody = 
 		'Mesaj de pe pagină: '.$zPg.' \r\n'
 		.'Timp: '.(date('d.m.Y (H:i:s)', time())).' \r\n'
-		.'ip: '.$_SERVER['REMOTE_ADDR'].' \r\n\r\n'
+		.'ip: '.anonymizeIp().' \r\n\r\n'
 		.'Mesaj: \r\n'.(nl2br(addslashes($zMsg))).'';
 
 	$mail->send();
@@ -67,5 +74,5 @@ try {
 	//$rtrn .= $lng['l']['msg']['fail'].'. '.$lng['w']['err'].": {$mail->ErrorInfo}";
 }
 
-unset($zPg, $zNm, $zPhn, $zEml, $zMsg);
+unset($zPg, $zNm, $zPhn, $zEml, $zMsg, $zMkt);
 ?>

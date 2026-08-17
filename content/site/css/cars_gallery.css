@@ -493,8 +493,16 @@ html.with-fancybox body {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
+        justify-content: center;
         gap: 10px;
     }
+    /* .val carries a 1rem left margin from style.css that would push the
+       centred group off-centre. */
+    main > .spc_bx > .prc.desktop > .val { margin-left: 0; }
+    /* .o_val--b2b sets margin-right:auto for the mobile row, where the flex is
+       space-between. An auto margin eats all the free space and beats
+       justify-content, so on desktop it has to go or the pair sits hard left. */
+    main > .spc_bx > .prc.desktop > .o_val--b2b { margin-right: 0; }
     .mobile-only-timer {
         display: none !important;
     }

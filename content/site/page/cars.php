@@ -349,14 +349,16 @@ if (isset($_GET['tg']) && $_GET['tg'] == 'fltr') {
             }
         }
 
-        $rtrn .= '<script>';
+        // Pixel event is queued through the consent engine: it only reaches Meta
+        // if the visitor granted the marketing category.
+        $rtrn .= '<script>SautoConsent.onMarketing(function(){';
         $rtrn .= 'fbq("track", "ViewContent", {';
         $rtrn .= 'content_ids:["'.implode('","',$card['ids']).'"],';
         $rtrn .= 'content_type:"vehicle"';
         if(isset($_GET['br'])) { $rtrn .= ',make:"'.$card['br'].'"'; }
         if(isset($_GET['mo'])) { $rtrn .= ',model:"'.$card['mo'].'"'; }
         $rtrn .= $trnslt_txt;
-        $rtrn .= '});</script>';
+        $rtrn .= '});});</script>';
     } else {
         // No results found - add a message
         if (empty($card['txt'])) {
@@ -554,7 +556,7 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
 
 
                 $rtrn .= '
-                        <script> fbq("track", "ViewContent", {
+                        <script> SautoConsent.onMarketing(function(){ fbq("track", "ViewContent", {
                             content_ids: ["c'.$it_id.'"]
                             ,content_type: "vehicle"
                             ,make: "'.$r['br_nm'].'"
@@ -564,8 +566,8 @@ elseif (is_numeric($t_mp[3]) || (isset($t_mp[3]) && !is_numeric($t_mp[3]) && !is
                 foreach($trnslt_ar as $k=>$v){ $rtrn .= isset( $lng_x['car'][$k][$r[$k]] )?','.$v.': "'.$lng_x['car'][$k][$r[$k]].'"':''; }
                 $rtrn .= '
                             '.($r['prc']>100?',price: '.(($r['prc_n']!=0 && $r['prc_n']<$r['prc']) ? $r['prc_n'] : $r['prc']).',currency: "'.$r['cur'].'"':'').'
-                        });</script>
-                        
+                        }); });</script>
+
                         <div class="pht_bx">
                             <input type="checkbox" id="img_bx_sz" class="cbx none">
                             <div class="list">
@@ -964,11 +966,12 @@ $iconTelegramParams = array(
                                             <textarea class="inp use txt" name="msg" spellcheck="false" placeholder="'.$lng['w']['message'].'" title="'.$lng['w']['message'].'"></textarea>
                                             <input class="use" type="hidden" name="page" value="'.$_SERVER['REQUEST_URI'].'" />
                                             <input class="use" type="hidden" name="target" value="overlay" />
-                                            <div class="agmt">
-                                                <input type="checkbox" name="agmt" id="f_agmt" class="cbx cnfrm" checked="checked" />
-                                                <span class="txt"><label for="f_agmt">'.$lng['t']['x']['prs_dat_agr'][1].'</label> <a class="x" href="/'.$_COOKIE['lang'].'/privacy" target="_blank" title="'.$lng['t']['x']['prs_dat_agr']['ttl'].'">'.$lng['t']['x']['prs_dat_agr'][2].'</a></span>
+                                            <div class="mkt-optin">
+                                                <input type="checkbox" class="use" name="marketing_contact" id="f_mkt_cr" value="yes" />
+                                                <label for="f_mkt_cr">'.$lng['t']['x']['prs_dat_agr']['mkt'].'</label>
                                             </div>
                                             <input class="btn sbmt" type="submit" value="'.$lng['w']['send'].'" onclick="event.preventDefault();" data-sent="'.$lng['w']['msg_snt'].'" data-sending="'.$lng['w']['sending'].'" data-req_fld="'.$lng['w']['req_not_filled'].'" />
+                                            <p class="legal-notice">'.$lng['t']['x']['prs_dat_agr'][1].' <a href="/'.$_COOKIE['lang'].'/privacy" target="_blank" title="'.$lng['t']['x']['prs_dat_agr']['ttl'].'">'.$lng['t']['x']['prs_dat_agr'][2].'</a>.</p>
                                         </form>
                                     </div>
                                 </div>
@@ -1034,7 +1037,7 @@ $iconTelegramParams = array(
                     <div style="margin:20px 0;padding:20px 24px;background:linear-gradient(135deg,#8a8a8a,#5a5a5a);border-radius:0.5rem;text-align:center;">
                         <div style="font-size:18px;font-weight:700;color:#fff;margin-bottom:4px;">'.$vt['title'].'</div>
                         <div style="font-size:14px;color:#ccc;margin-bottom:14px;">'.$vt['subtitle'].'</div>
-                        <a href="'.$cv_url.'" target="_blank" rel="noopener" class="vin-attention-btn" style="display:inline-block;padding:12px 36px;background:#e2001a;color:#fff;font-size:15px;font-weight:600;border-radius:0.5rem;text-decoration:none;" onclick="if(typeof gtag===\'function\'){gtag(\'event\',\'vin.check.click\',{event_category:\'VIN Check\',event_label:\'Car ID: '.$r['id'].'\',car_id:'.$r['id'].',vin:\''.$vin_val.'\'});}">'.$vt['btn'].'</a>
+                        <a href="'.$cv_url.'" target="_blank" rel="noopener" class="vin-attention-btn" style="display:inline-block;padding:12px 36px;background:#e2001a;color:#fff;font-size:15px;font-weight:600;border-radius:0.5rem;text-decoration:none;" onclick="SautoConsent.onAnalytics(function(){gtag(\'event\',\'vin.check.click\',{event_category:\'VIN Check\',event_label:\'Car ID: '.$r['id'].'\',car_id:'.$r['id'].',vin:\''.$vin_val.'\'});});">'.$vt['btn'].'</a>
                     </div>
                     <style>
                         @keyframes vinAttention {

@@ -432,6 +432,9 @@ if ( isset($t_mp[4]) ){
 	elseif ( $t_mp[4]=='ai_prompt' ){
 		include dirname(__FILE__) . '/sett/ai_prompt.php';
 	}
+	elseif ( $t_mp[4]=='gdpr' ){
+		include dirname(__FILE__) . '/sett/gdpr.php';
+	}
 	elseif ( $t_mp[4]=='changelog' ){
 		// Shift t_mp so changelog.php sees its action at [4]
 		$t_mp_orig = $t_mp;

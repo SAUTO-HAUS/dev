@@ -16,42 +16,17 @@ if (isset($t_mp[2]) && $t_mp[2] == 'ordercars') {
 
 <body class="ffd" <?php /*class="noselect ffd"*/ echo ' data-mbl="'.$isMobile.'" data-lng="'.$_COOKIE['lang'].'"'; ?> data-js="0" data-host="SAUTO">
 	
-	<!-- Google Tag Manager (noscript) -->
-	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KRRLB4X" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-	<!-- End Google Tag Manager (noscript) -->
-	
+	<!-- GTM noscript iframe removed: it fired the container with no way to ask for
+	     consent first, which is exactly what Legea 195/2024 forbids. -->
+
 	<?php /*
 	<!-- Yandex.Metrika informer --> <a style="display:none;" href="https://metrika.yandex.ru/stat/?id=87984800&amp;from=informer" target="_blank" rel="nofollow"><img src="https://metrika-informer.com/informer/87984800/3_1_FFFFFFFF_EFEFEFFF_0_pageviews" style="width:88px; height:31px; border:0;" alt="Яндекс.Метрика" title="Яндекс.Метрика: данные за сегодня (просмотры, визиты и уникальные посетители)" class="ym-advanced-informer" data-cid="87984800" data-lang="ru" /></a> <!-- /Yandex.Metrika informer --> 
 	<!-- Yandex.Metrika counter --> <script type="text/javascript" > (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter87984800 = new Ya.Metrika({ id:87984800, clickmap:true, trackLinks:true, accurateTrackBounce:true, trackHash:true, ecommerce:"dataLayer" }); } catch(e) { } }); var n = d.getElementsByTagName("script")[0], s = d.createElement("script"), f = function () { n.parentNode.insertBefore(s, n); }; s.type = "text/javascript"; s.async = true; s.src = "https://cdn.jsdelivr.net/npm/yandex-metrica-watch/watch.js"; if (w.opera == "[object Opera]") { d.addEventListener("DOMContentLoaded", f, false); } else { f(); } })(document, window, "yandex_metrika_callbacks"); </script> <!-- /Yandex.Metrika counter -->
 	*/ ?>
 	
-	<!--<noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-MG9WJ9" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>-->
 	
-	<div id="cons_bx" class="cons_bx" style="display:none;">
-		<div class="close-banner" onclick="setConsent(true, true, true, true);">×</div>
-		<div style="display: flex; align-items: center; justify-content: center; flex: 1;">
-			<p><?php echo $lng['l']['consent']['base_txt'][0].$lng['l']['consent']['acpt_all'].$lng['l']['consent']['base_txt'][1].' <a href="/'.$_COOKIE['lang'].'/privacy" target="_blank" style="color:#000; border-bottom:1px solid #e2001a;">"'.$lng['l']['menu']['privacy'].'"</a>'; ?></p>
-		</div>
-		<div class="cons_btns">
-			<button onclick="setConsent(true, true, true, true)" style="background: linear-gradient(135deg, #e2001a, #b8001a) !important; color: white !important; border: 1px solid #e2001a !important; padding: 1rem 3rem !important; font-size: 1.2rem !important; display: flex !important; align-items: center !important; justify-content: center !important; line-height: 1 !important; border-radius: 1.5rem !important;"><?php echo $lng['l']['consent']['acpt_all']; ?></button>
-		</div>
-	</div>
-	
-	<div id="pref_bx" class="cons_bx cons_pref" style="display:none;">
-		<div style="display:flex; flex-flow:column; gap:10px;">
-			<p class="ttl"><?php echo $lng['l']['consent']['cstmztn']; ?></p>
-			<label> <span class="txt"><?php echo $lng['l']['consent']['func_ck']; ?></span> <div class="chk_bx def"><div class="dot"></div></div></label>
-			<label><input checked="checked" type="checkbox" id="ad-storage" /> <span class="txt"><?php echo $lng['l']['consent']['ad_ck']; ?></span> <div class="chk_bx"><div class="dot"></div></div></label>
-			<label><input checked="checked" type="checkbox" id="ad-user-data" /> <span class="txt"><?php echo $lng['l']['consent']['usr_dt_ck']; ?></span> <div class="chk_bx"><div class="dot"></div></div></label>
-			<label><input checked="checked" type="checkbox" id="ad-personalization" /> <span class="txt"><?php echo $lng['l']['consent']['prsn_ck']; ?></span> <div class="chk_bx"><div class="dot"></div></div></label>
-			<label><input checked="checked" type="checkbox" id="analytics-storage" /> <span class="txt"><?php echo $lng['l']['consent']['ana_ck']; ?></span> <div class="chk_bx"><div class="dot"></div></div></label>
-		</div>
-		<div class="cons_btns">
-			<button onclick="savePref()"><?php echo $lng['l']['consent']['acpt_sel']; ?></button>
-			<button onclick="hidePref()"><?php echo $lng['l']['consent']['back']; ?></button>
-		</div>
-	</div>
-	
+	<?php include(_SITE_INCL.'/consent.php'); ?>
+
 	<div id="overlay" class="noselect">
 		<div class="close"></div> <div class="bg"></div> <div class="content"></div>
 	</div>
@@ -63,6 +38,7 @@ if (isset($t_mp[2]) && $t_mp[2] == 'ordercars') {
 		<div class="close"></div>
 		<div class="left"></div>
 		<div class="right"></div>
+		<div class="zoom"><button type="button" class="zin" aria-label="Zoom in" title="Zoom +">+</button><button type="button" class="zout" aria-label="Zoom out" title="Zoom −">&minus;</button></div>
 	</div>';
 	//echo substr( md5('22') , 0, 4 );
 	?>
@@ -266,7 +242,8 @@ if (isset($t_mp[2]) && $t_mp[2] == 'ordercars') {
 				//echo '<a class="'; if( $t_mp[2]==$k ){echo ' active';} echo '" href="/'.$_COOKIE['lang'].'/'.$k.'">'.$lang_xtra_menu[$k].'</a>';
 			//}
 			?>
-		<div id="copyrights"><?php echo date('Y') ?> <span title="Copyrighted">© Sauto S.R.L.</span></div>
+		<?php include(_SITE_INCL.'/footer_operator.php'); ?>
+		<div id="copyrights"><?php echo date('Y') ?> <span title="Copyrighted">© Sauto S.R.L.</span> &middot; IDNO 1017600006845</div>
 	</footer>
 	
 	<?php 
@@ -284,30 +261,17 @@ if (isset($t_mp[2]) && $t_mp[2] == 'ordercars') {
 		$adw_totalvalue = 0;
 	}
 	
+	// Google AdWords remarketing — parameters only. conversion.js is loaded by
+	// consent.js, and only once the marketing category has been granted.
 	echo '
-	<!-- Google AdWords -->    <!-- NEEEEEEEDS TO CHECK -->
-	<script type="text/javascript">
-		var google_tag_params = {
+	<script data-cfasync="false">
+		window.SAUTO_ADW_PARAMS = {
 			dynx_itemid: "'.$adw_itemid.'",
 			dynx_pagetype: "'.$adw_pagetype.'",
 			dynx_totalvalue: "'.$adw_totalvalue.'"
 		};
 	</script>';
 	?>
-	<script type="text/javascript">
-		/* <![CDATA[ */
-		var google_conversion_id = 865017510; 
-		var google_custom_params = window.google_tag_params;
-		var google_remarketing_only = true;
-		/* ]]> */
-	</script>
-	<script type="text/javascript" src="//www.googleadservices.com/pagead/conversion.js"></script>
-	<noscript>
-		<div style="display:inline;">
-			<img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/865017510/?value=0&amp;guid=ON&amp;script=0"/><?php //991949120 ?>
-		</div>
-	</noscript>
-	<!-- End Google AdWords -->
 	
 </body>
 

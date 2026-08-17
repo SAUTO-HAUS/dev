@@ -118,19 +118,47 @@ class PublicationService
     }
 
     /**
+     * Import region of a car: 'kr', 'us' or 'eu' (everything else).
+     *
+     * Resolved from the country CODE rather than a hardcoded id — the Korea id
+     * 41 was pasted across several files, and adding the USA route meant the
+     * same mistake would have been repeated. Falls back to 41 = Korea if the
+     * countries table can't be read.
+     */
+    private function importRegion(int $importCountryId): string
+    {
+        static $cache = [];
+        if ($importCountryId <= 0) return 'eu';
+        if (isset($cache[$importCountryId])) return $cache[$importCountryId];
+
+        $code = '';
+        try {
+            $st = $this->db->prepare('SELECT code FROM countries WHERE id = ? LIMIT 1');
+            $st->execute([$importCountryId]);
+            $code = strtoupper((string)$st->fetchColumn());
+        } catch (\Throwable $e) { /* fall through */ }
+
+        if ($code === 'KR' || ($code === '' && $importCountryId === 41)) return $cache[$importCountryId] = 'kr';
+        if ($code === 'US') return $cache[$importCountryId] = 'us';
+        return $cache[$importCountryId] = 'eu';
+    }
+
+    /**
      * Generate Facebook message for car
-     * 
+     *
      * @param array $carData Car data
      * @param string $catalogType 'in_stock' or 'on_order'
      * @return string
      */
     public function generateFacebookMessage($carData, $catalogType)
     {
-        // Build car title with proper capitalization
-        $brand = ucfirst(strtolower($carData['br'] ?? ''));
-        $model = ucwords(strtolower(str_replace('_', ' ', $carData['mo'] ?? '')));
-        $title = trim($brand . ' ' . $model);
-        
+        $title = trim(($carData['br_nm'] ?? '') . ' ' . ($carData['mo_nm'] ?? ''));
+
+        if ($title === '') {
+            $brand = ucfirst(strtolower($carData['br'] ?? ''));
+            $model = ucwords(strtolower(str_replace('_', ' ', $carData['mo'] ?? '')));
+            $title = trim($brand . ' ' . $model);
+        }
         if (empty($title)) {
             $title = $carData['name'] ?? 'Автомобиль';
         }
@@ -147,11 +175,15 @@ class PublicationService
                     $importCountryId = (int)$st->fetchColumn();
                 } catch (\Throwable $e) { /* fall back to 20 below */ }
             }
-            // Korea (41) vs Europe: different title, delivery term and price label.
-            $isKorea = ($importCountryId === 41);
-            $deliveryDays = $isKorea ? 60 : 20;
+            // Region drives the title, the delivery term and the price label.
+            $region = $this->importRegion($importCountryId);
+            $deliveryDays = ($region === 'eu') ? 20 : 60;   // overseas ships by sea
+            $isKorea = ($region === 'kr');
+            // Price wording: only Europe mentions European auctions.
+            $plainPrice = ($region !== 'eu');
 
-            $message = $isKorea ? "🇰🇷 LA COMANDĂ DIN COREEA" : "🇪🇺 LA COMANDĂ DIN EUROPA";
+            $message = ($region === 'kr') ? "🇰🇷 LA COMANDĂ DIN COREEA"
+                     : (($region === 'us') ? "🇺🇸 LA COMANDĂ DIN SUA" : "🇪🇺 LA COMANDĂ DIN EUROPA");
             $message .= "\n🚘 " . $title;
             $message .= "\n⏰ Termen de livrare: " . $deliveryDays . " zile lucratoare";
         } else {
@@ -170,8 +202,9 @@ class PublicationService
         if (!empty($effectivePrc)) {
             $price = number_format($effectivePrc, 0, '.', ',') . ' €';
             if ($catalogType === 'on_order') {
-                // Korea: plain "Pretul masinii"; Europe: "...la licitatii Europene".
-                $message .= !empty($isKorea)
+                // Overseas (Korea / USA): plain "Pretul masinii". Only Europe
+                // says "la licitatii Europene" — that line on a US car was wrong.
+                $message .= !empty($plainPrice)
                     ? "\n💰 Pretul masinii: " . $price
                     : "\n💰 Pretul masinii la licitatii Europene: " . $price;
             } else {
@@ -372,13 +405,27 @@ class PublicationService
                     $importCountryId = (int)$st->fetchColumn();
                 } catch (\Throwable $e) { /* fall back to 20 below */ }
             }
-            $deliveryDays = ($importCountryId === 41) ? 60 : 20;
+            // 60 days for the overseas routes (Korea and the USA both ship by
+            // sea), 20 for Europe.
+            $region = $this->importRegion($importCountryId);
+            $deliveryDays = ($region === 'eu') ? 20 : 60;
+            $regionLine = [
+                'kr' => '🇰🇷 Disponibilă la comandă din Coreea',
+                'us' => '🇺🇸 Disponibilă la comandă din SUA',
+            ][$region] ?? '🇪🇺 Disponibilă la comandă din Europa';
 
-            // Order cars format
+            // Order cars format. The car's link opens the post: it is the one
+            // line readers act on, and Telegram builds its preview from it.
+            if (!empty($carData['id'])) {
+                $caption_lines[] = '🔗 https://www.sauto.md/ro/ordercars/' . $carData['id'];
+            }
+            $caption_lines[] = $regionLine;
             $caption_lines[] = '🏆 Pretul masinii la cheie in MD este de ' . $parseCurr($carData['prc']) . '€';
             $caption_lines[] = '✨ Termen livrare ' . $deliveryDays . ' zile lucratoare';
             $caption_lines[] = '';
-            $caption_lines[] = '📋 Detalii despre o mașină disponibilă acum la comandă:';
+            // The origin is on the first line now, so this heading no longer
+            // repeats "la comandă".
+            $caption_lines[] = '📋 Detalii despre mașină:';
             
             $car_title = '#' . str_replace(" ", "", $carData['br_nm']) . str_replace(" ", "", $carData['mo_nm']);
             $caption_lines[] = '🚘 Model: ' . $car_title;
@@ -393,13 +440,6 @@ class PublicationService
 
             $transmission = $specValues['tra'][$carData['tra']] ?? ($carData['tra'] ?? 'Necunoscut');
             $caption_lines[] = '▪️ Transmisie: ' . $transmission;
-            $caption_lines[] = '';
-            
-            // Add link to website page
-            if (!empty($carData['id'])) {
-                $caption_lines[] = '🔗 https://www.sauto.md/ro/ordercars/' . $carData['id'];
-            }
-            
             $caption_lines[] = '';
             $caption_lines[] = '📞 <a href="tel:+37379600352">Pentru detalii: +37379600352</a>';
             $caption_lines[] = '';

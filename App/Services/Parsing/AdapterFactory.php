@@ -6,6 +6,7 @@ use App\Services\Parsing\Adapters\EncarAdapter;
 use App\Services\Parsing\Adapters\EcarsTradeAdapter;
 use App\Services\Parsing\Adapters\OpenLaneAdapter;
 use App\Services\Parsing\Adapters\Auto1Adapter;
+use App\Services\Parsing\Adapters\AutotraderAdapter;
 
 class AdapterFactory
 {
@@ -14,6 +15,7 @@ class AdapterFactory
         'ecarstrade' => EcarsTradeAdapter::class,
         'openlane' => OpenLaneAdapter::class,
         'auto1' => Auto1Adapter::class,
+        'autotrader' => AutotraderAdapter::class,
     ];
 
     public static function create(string $sourceCode): ?AdapterInterface

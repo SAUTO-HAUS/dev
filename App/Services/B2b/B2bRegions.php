@@ -8,7 +8,7 @@ use PDO;
  * Region access control (spec 3.2 / 4.2).
  *
  * Region -> country mapping follows the existing public `ic` filter in
- * content/site/include/order_functions.php: korea=KR, usa=US, china=CN,
+ * content/site/include/order_functions.php: korea=KR, canada=CA+US, china=CN,
  * europe = everything else. Deny by default: no row means no access.
  */
 class B2bRegions
@@ -58,16 +58,32 @@ class B2bRegions
 
         $out = [];
         foreach ($rows as $r) {
-            if ((int)($r['is_allowed'] ?? 0) === 1 && in_array($r['region'], B2bConfig::REGIONS, true)) {
-                $out[] = $r['region'];
+            if ((int)($r['is_allowed'] ?? 0) !== 1) continue;
+            $reg = self::normalizeRegion((string)($r['region'] ?? ''));
+            if (in_array($reg, B2bConfig::REGIONS, true)) {
+                $out[] = $reg;
             }
         }
         return self::$cache[$userId] = $out;
     }
 
+    /**
+     * Legacy region key → current one.
+     *
+     * The region was called 'usa' before the move to Canada, and that string is
+     * what sits in b2b_permissions rows and in saved-filter criteria written
+     * before the rename. Translating on read means those partners keep their
+     * access whether or not the migration has been run yet.
+     */
+    public static function normalizeRegion(string $region): string
+    {
+        $r = strtolower(trim($region));
+        return in_array($r, ['usa', 'us', 'ca'], true) ? 'canada' : $r;
+    }
+
     public static function isAllowed(int $userId, string $region): bool
     {
-        return in_array($region, self::allowed($userId), true);
+        return in_array(self::normalizeRegion($region), self::allowed($userId), true);
     }
 
     /**
@@ -102,7 +118,10 @@ class B2bRegions
     {
         switch (strtoupper(trim((string)$code))) {
             case 'KR': return 'korea';
-            case 'US': return 'usa';
+            // CA and US are one region: cars come from Canada now, and the few
+            // older US ones belong with them.
+            case 'CA':
+            case 'US': return 'canada';
             case 'CN': return 'china';
             default:   return 'europe';
         }
@@ -158,7 +177,7 @@ class B2bRegions
         foreach ($allowed as $region) {
             switch ($region) {
                 case 'korea':  $in[] = 'KR'; break;
-                case 'usa':    $in[] = 'US'; break;
+                case 'canada': $in[] = 'US'; $in[] = 'CA'; break;
                 case 'china':  $in[] = 'CN'; break;
                 case 'europe': $europe = true; break;
             }
@@ -175,5 +194,33 @@ class B2bRegions
         }
 
         return ' AND (' . implode(' OR ', $parts) . ')';
+    }
+
+    /**
+     * SQL condition matching ONE region, for callers that filter by choice
+     * rather than by permission (the cabinet's saved searches). Returns '' for
+     * an unknown region, so an unexpected value widens nothing.
+     *
+     * Same mapping sqlRestriction() uses above — kept here rather than copied,
+     * or the two would drift and a partner would be alerted about cars the
+     * catalog then refuses to show them.
+     */
+    public static function sqlForRegion(string $region, string $alias = ''): string
+    {
+        $col = $alias . '`import_country_id`';
+
+        switch (self::normalizeRegion($region)) {
+            case 'korea': $code = 'KR'; break;
+            case 'canada': $code = 'CA'; break;
+            case 'china': $code = 'CN'; break;
+            case 'europe':
+                // Cars with no import country count as Europe, as in the public filter.
+                return ' AND (' . $col . ' IS NULL OR ' . $col . ' IN (SELECT id FROM countries WHERE code NOT IN (\''
+                     . implode("','", self::NON_EUROPE_CODES) . '\')))';
+            default:
+                return '';
+        }
+
+        return ' AND ' . $col . ' IN (SELECT id FROM countries WHERE code = \'' . $code . '\')';
     }
 }

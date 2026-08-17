@@ -19,6 +19,7 @@ $accounts_999md = [
     'regular_999md'   => 'Comerciale',
     'order_999md'     => 'Comanda',
     'korea_999md'     => 'Encars',
+    'usa_999md'       => 'SautoSUA',
 ];
 $accounts_facebook = [
     '725963964220309'   => 'SAUTO',
@@ -42,9 +43,9 @@ $accounts_site = [
 
 // page_ids excluded per department (everything not listed is allowed)
 $dept_excluded_page_ids = [
-    'stock'  => ['order_999md', 'korea_999md', 'order_telegram', '482777831588669', 'ordercars', 'order'],
+    'stock'  => ['order_999md', 'korea_999md', 'usa_999md', 'order_telegram', '482777831588669', 'ordercars', 'order'],
     'order'  => ['sautohaus_999md', 'regular_telegram', '482777831588669', 'cars'],
-    'pruncul'=> ['order_999md', 'korea_999md', 'order_telegram', 'ordercars', 'order', '725963964220309'],
+    'pruncul'=> ['order_999md', 'korea_999md', 'usa_999md', 'order_telegram', 'ordercars', 'order', '725963964220309'],
 ];
 
 // Filter UI account lists based on crm_access

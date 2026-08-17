@@ -12,7 +12,7 @@ if (!parsing_has_access($user_id ?? 0)) {
 
 $parsingEncarOnly = parsing_is_encar_only($user_id ?? 0);
 if ($parsingEncarOnly) {
-    echo '<style>#sp-ecarstrade,#sp-openlane,.link-direct-bar,'
+    echo '<style>#sp-ecarstrade,#sp-openlane,#sp-auto1,#sp-autotrader,.link-direct-bar,'
         .'.parsing-tabs .tab[href$="/parsing/published"],'
         .'.parsing-tabs .tab[href$="/parsing/settings"],'
         .'.parsing-tabs .tab-favorites{display:none !important;}</style>';
@@ -539,6 +539,72 @@ $bodyOptionsAuto1 = '
     <option value="van">'.($t['opt_body_lighttruck'] ?? 'Furgon / Van').'</option>
     <option value="truck">'.($t['opt_body_pickup'] ?? 'Pickup / Camion').'</option>';
 
+// ── AutoTrader.ca brand + model options (from autotrader_taxonomy.json) ──
+// Built by console/autotrader_taxonomy_dump.php. Values are AutoTrader's NUMERIC
+// ids (make → mmvmk0, model → mmvmd0), because its make/model URL paths are SEO
+// pages that ignore every other filter — only the id parameters really filter.
+$autotraderTaxonomy = null;
+$autotraderTaxonomyFile = __DIR__ . '/../../../../App/Services/Parsing/Adapters/autotrader_taxonomy.json';
+if (file_exists($autotraderTaxonomyFile)) {
+    $autotraderTaxonomy = json_decode(file_get_contents($autotraderTaxonomyFile), true);
+}
+$brandOptionsAutotrader = '<option value="">'.$t['opt_all'].'</option>';
+$autotraderBrandsForJs = [];   // { "13": [ {value:16406, label:"X5"}, ... ] }
+if ($autotraderTaxonomy && !empty($autotraderTaxonomy['makes'])) {
+    $atMakes = $autotraderTaxonomy['makes'];
+    uasort($atMakes, fn($a, $b) => strcasecmp($a['name'] ?? '', $b['name'] ?? ''));
+    foreach ($atMakes as $makeId => $info) {
+        $name = trim((string)($info['name'] ?? ''));
+        if ((string)$makeId === '' || $name === '') continue;
+        $brandOptionsAutotrader .= '<option value="'.htmlspecialchars((string)$makeId, ENT_QUOTES).'">'
+            . htmlspecialchars($name) . '</option>';
+        $list = [];
+        foreach (($info['models'] ?? []) as $m) {
+            $mv = (string)($m['value'] ?? '');
+            if ($mv === '') continue;
+            $list[] = ['value' => $mv, 'label' => (string)($m['label'] ?? $mv)];
+        }
+        $autotraderBrandsForJs[(string)$makeId] = $list;
+    }
+}
+// Same km/year dropdowns as the European sources. Prices are picked in EUR like
+// everywhere else in the admin; the adapter converts them to CAD at BNM's daily
+// rate before querying AutoTrader.
+$kmOptionsAutotrader    = $olRangeOptions($olMileageSteps, $t['opt_all'] ?? 'Toate');
+$atPriceSteps = [1000, 2000, 3000, 5000, 7500, 10000, 12500, 15000, 17500, 20000, 25000, 30000, 35000, 40000, 50000, 60000, 80000];
+$priceOptionsAutotrader = $olRangeOptions($atPriceSteps, $t['opt_all'] ?? 'Toate');
+$yearOptionsAutotrader  = $yearOptionsOpenlane;
+// AutoTrader fuel values (fuel= param): B gasoline, D diesel, E electric,
+// 2 hybrid (one bucket for HEV/PHEV), L propane. Flex Fuel / Others are left
+// out — they map to no internal fuel code.
+$atFuelTypes = [
+    'benzina'  => $t['opt_gasoline'] ?? 'Benzină',
+    'diesel'   => $t['opt_diesel']   ?? 'Diesel',
+    'hybrid'   => $t['opt_hybrid']   ?? 'Hibrid',
+    'electric' => $t['opt_electric'] ?? 'Electric',
+    'lpg'      => $t['opt_ol_lpg']   ?? 'GPL / Gaz',
+];
+$fuelChecksAutotrader = $fuelCheckboxes($atFuelTypes);
+// Body values map to AutoTrader's own body ids in the adapter.
+$bodyOptionsAutotrader = '
+    <option value="">'.$t['opt_all'].'</option>
+    <option value="suv">'.($t['opt_body_suv'] ?? 'SUV').'</option>
+    <option value="sedan">'.($t['opt_body_sedan'] ?? 'Sedan').'</option>
+    <option value="wagon">'.($t['opt_body_wagon'] ?? 'Universal').'</option>
+    <option value="hatchback">'.($t['opt_body_hatchback'] ?? 'Hatchback').'</option>
+    <option value="coupe">'.($t['opt_body_coupe'] ?? 'Coupé').'</option>
+    <option value="convertible">'.($t['opt_body_cabrio'] ?? 'Cabriolet').'</option>
+    <option value="minivan">'.($t['opt_body_mpv'] ?? 'Minivan / MPV').'</option>
+    <option value="pickup">'.($t['opt_body_pickup'] ?? 'Pickup').'</option>';
+// Search radius around the postal code (the site's own radius list). The whole
+// country is the default — the car is shipped from Montreal either way, so
+// limiting the search to a radius only hides stock.
+$atRadiusSteps = [50, 100, 150, 200, 250, 300, 400];
+$radiusOptionsAutotrader = '<option value="0" selected>'.($t['opt_at_all_canada'] ?? 'Toată Canada').'</option>';
+foreach ($atRadiusSteps as $r) {
+    $radiusOptionsAutotrader .= '<option value="'.$r.'">'.$r.' km</option>';
+}
+
 // Source label / logo for filter card tags.
 $sourceLogo = function(string $src): string {
     $logos = [
@@ -546,6 +612,7 @@ $sourceLogo = function(string $src): string {
         'ecarstrade' => '/content/admin/page/parsing/media-parsing/ecarstrade-logo.svg',
         'openlane'   => '/content/admin/page/parsing/media-parsing/openlane-logo.svg',
         'auto1'      => '/content/admin/page/parsing/media-parsing/auto1.png',
+        'autotrader' => '/content/admin/page/parsing/media-parsing/logo-autotrader.svg',
     ];
     if (isset($logos[$src])) {
         return '<span class="ftag ftag-source"><img src="'.$logos[$src].'" alt="'.strtoupper($src).'" class="ftag-logo"></span>';
@@ -980,6 +1047,107 @@ $rtrn = '
             </div>
         </div>
 
+        <!-- ═══ AUTOTRADER.CA ═══ -->
+        <div class="source-panel" id="sp-autotrader">
+            <div class="source-panel-head" onclick="parsingTogglePanel(\'autotrader\')">
+                <img src="/content/admin/page/parsing/media-parsing/logo-autotrader.svg" class="sp-logo-img" alt="AutoTrader">
+            </div>
+            <div class="source-panel-body sp-collapsed" id="spb-autotrader">
+                <form id="sf-autotrader" class="source-search-form" onsubmit="parsingSearchSource(event, \'autotrader\')">
+                    <input type="hidden" name="source" value="autotrader">
+                    <div class="search-grid">
+
+                        <div class="field">
+                            <label>'.$t['field_brand'].'</label>
+                            <select class="form-control" name="brand" id="autotrader-brand">
+                                '.$brandOptionsAutotrader.'
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label>'.$t['field_model'].'</label>
+                            <select class="form-control" name="model" id="autotrader-model" def_text="'.$t['opt_all'].'">
+                                <option value="">'.$t['opt_all'].'</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label>'.$t['field_fuel'].'</label>
+                            '.$fuelChecksAutotrader.'
+                        </div>
+
+                        <div class="field">
+                            <label>'.$t['field_gearbox'].'</label>
+                            <select name="gearbox">
+                                <option value="">'.$t['opt_all'].'</option>
+                                <option value="automat">'.$t['opt_automatic'].'</option>
+                                <option value="manual">'.$t['opt_manual'].'</option>
+                            </select>
+                        </div>
+
+                        <div class="field field-range">
+                            <label>'.$t['field_year'].'</label>
+                            <div class="range-inputs">
+                                <select name="year_from">'.$yearOptionsAutotrader.'</select>
+                                <select name="year_to">'.$yearOptionsAutotrader.'</select>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label>'.$t['field_body_type'].'</label>
+                            <select name="body_type">'.$bodyOptionsAutotrader.'</select>
+                        </div>
+
+                        <div class="field field-range">
+                            <label>'.$t['field_km_max'].'</label>
+                            <div class="range-inputs">
+                                <select name="km_min">'.$kmOptionsAutotrader.'</select>
+                                <select name="km_max">'.$kmOptionsAutotrader.'</select>
+                            </div>
+                        </div>
+
+                        <div class="field field-range">
+                            <label>'.$t['field_price_max'].'</label>
+                            <div class="range-inputs">
+                                <select name="price_min">'.$priceOptionsAutotrader.'</select>
+                                <select name="price_max">'.$priceOptionsAutotrader.'</select>
+                            </div>
+                        </div>
+
+                        <!-- Location + seller are search SETTINGS, not filters:
+                             data-not-a-filter keeps them from satisfying the
+                             "pick something first" guard, which would otherwise
+                             let an empty form pull the whole Canadian catalog. -->
+                        <div class="field">
+                            <label>'.($t['field_at_zip'] ?? 'Cod poștal').'</label>
+                            <input type="text" name="zip" value="H7T2C9" maxlength="7" data-not-a-filter>
+                        </div>
+
+                        <div class="field">
+                            <label>'.($t['field_at_radius'] ?? 'Rază căutare').'</label>
+                            <select name="radius" data-not-a-filter>'.$radiusOptionsAutotrader.'</select>
+                        </div>
+
+                        <div class="field">
+                            <label>'.($t['field_at_seller'] ?? 'Vânzător').'</label>
+                            <select name="seller_type" data-not-a-filter>
+                                <option value="all">'.($t['opt_at_seller_all'] ?? 'Toți vânzătorii').'</option>
+                                <option value="dealer">'.($t['opt_at_dealer'] ?? 'Doar dealeri').'</option>
+                            </select>
+                        </div>
+
+                    </div>
+                    <div class="search-actions">
+                        <button type="button" class="btn-search-action" onclick="parsingSaveSourceFilter(\'autotrader\')"><img src="/content/admin/page/parsing/media-parsing/save.png" alt="" class="btn-ico"> '.$t['btn_save_as_filter'].'</button>
+                        <button type="reset" class="btn-search-action btn-clear"><img src="/content/admin/page/parsing/media-parsing/clean.png" alt="" class="btn-ico"> '.$t['btn_clear_form'].'</button>
+                        <span class="search-hint">'.$t['search_needs_filter'].'</span>
+                        <button type="submit" class="btn-search-action btn-search-go">'.$t['btn_search_now'].'</button>
+                    </div>
+                </form>
+                <div class="source-search-result" id="ssr-autotrader"></div>
+            </div>
+        </div>
+
     </div><!-- /source-panels -->
 
     <!-- ═══════════════════════════════════════════════
@@ -1007,6 +1175,18 @@ if (empty($savedFilters)) {
             $a1Code  = trim((string)($f['brand'] ?? ''));
             $a1Brand = $auto1Taxonomy['makes'][$a1Code]['name'] ?? $a1Code;
             $brandModel = trim($a1Brand . ' ' . ($f['model'] ?? ''));
+        } elseif ($primarySource === 'autotrader') {
+            // AutoTrader stores NUMERIC ids for make and model, so the card would read
+            // "29 16518" instead of "Dodge Charger" — resolve both through its taxonomy.
+            $atMakeId  = trim((string)($f['brand'] ?? ''));
+            $atModelId = trim((string)($f['model'] ?? ''));
+            $atMake    = $autotraderTaxonomy['makes'][$atMakeId] ?? null;
+            $atBrandNm = $atMake['name'] ?? $atMakeId;
+            $atModelNm = $atModelId;
+            foreach (($atMake['models'] ?? []) as $m) {
+                if ((string)($m['value'] ?? '') === $atModelId) { $atModelNm = (string)($m['label'] ?? $atModelId); break; }
+            }
+            $brandModel = trim($atBrandNm . ' ' . $atModelNm);
         } else {
             $brandModel = trim(($f['brand'] ?? '') . ' ' . ($f['model'] ?? ''));
         }
@@ -1160,6 +1340,7 @@ $rtrn .= '
     window.OPENLANE_BRANDS = '.json_encode($openlaneBrandsForJs, JSON_UNESCAPED_UNICODE).';
     window.ECARS_BRANDS = '.json_encode($ecarsBrandsForJs, JSON_UNESCAPED_UNICODE).';
     window.AUTO1_BRANDS = '.json_encode($auto1BrandsForJs, JSON_UNESCAPED_UNICODE).';
+    window.AUTOTRADER_BRANDS = '.json_encode($autotraderBrandsForJs, JSON_UNESCAPED_UNICODE).';
 </script>
 <script src="/content/admin/page/parsing/parsing.js?v='.filemtime(_ADM_PAGE.'/parsing/parsing.js').'"></script>
 ';

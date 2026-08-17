@@ -22,6 +22,9 @@ class Api999Service
     ], 4 => [
         "key" => "dfqNtulPKUh_6_kROZel6VKvHKxC",
         "name" => "Encars-MD",
+    ], 5 => [
+        "key" => "gu-Flmn1f31ONn_0sYbVw71CD6Dt",
+        "name" => "SautoSUA",
     ]];
     protected const BASE_URL = "https://partners-api.999.md";
 

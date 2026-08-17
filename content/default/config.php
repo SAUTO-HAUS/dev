@@ -93,6 +93,7 @@ $url_arr = [
     'search',
     'about',
     'privacy',
+    'cookies',
     'terms',
     'warranty',
     'dev_tools',

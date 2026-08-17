@@ -1,7 +1,7 @@
 {
   "permissions": {
     "allow": [
-      "PowerShell($php=\"C:\\\\laragon\\\\bin\\\\php\\\\php-8.3.30-Win32-vs16-x64\\\\php.exe\"; & $php -l \"d:\\\\SAUTO.MD\\\\dev\\\\content\\\\site\\\\ajax\\\\b2b.php\"; & $php -l \"d:\\\\SAUTO.MD\\\\dev\\\\content\\\\site\\\\head.php\")"
+      "Bash(git checkout *)"
     ]
   }
 }

@@ -154,6 +154,7 @@ switch ($section) {
                            CASE ins.page_id
                                WHEN 'order_999md'      THEN 'Comanda'
                                WHEN 'korea_999md'      THEN 'Encars'
+                               WHEN 'usa_999md'        THEN 'SautoSUA'
                                WHEN 'sautohaus_999md'  THEN 'SAUTO-HAUS'
                                WHEN 'regular_999md'    THEN 'Comerciale'
                                WHEN 'order_telegram'   THEN 'Comanda'

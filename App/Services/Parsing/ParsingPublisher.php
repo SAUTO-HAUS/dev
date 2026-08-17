@@ -52,7 +52,40 @@ class ParsingPublisher
 
         // sauto / all: insert into the catalog (only if not already there).
         if ($row['status'] === 'published') {
-            return ['success' => false, 'error' => 'Already published'];
+            // Publishing commits the catalog row first and downloads photos after.
+            // A worker killed between the two leaves a live ad with an empty
+            // gallery; the job is then re-claimed as stuck and lands here. Finish
+            // the photos instead of reporting a failure someone has to repair by
+            // hand. Guarded on an EMPTY gallery, so it can never duplicate photos.
+            $existingId = (int)($row['car_ctlg_id'] ?? 0);
+            if ($existingId > 0 && $this->carHasNoPhotos($existingId)) {
+                $this->processPhotos($existingId, $row);
+                return ['success' => true, 'car_ctlg_id' => $existingId, 'resumed' => true];
+            }
+            // The ad is live and has its photos, which is exactly what this job was
+            // asked to achieve — so it succeeded, even though it did nothing. It
+            // used to answer "failed", and because enqueue() revives an existing
+            // row, a car re-queued after publishing burned three retries and then
+            // sat in the failures panel waiting to be dismissed by hand.
+            return ['success' => true, 'car_ctlg_id' => $existingId, 'already' => true];
+        }
+
+        // AutoTrader: no readable CARFAX report, no publication. This is the gate
+        // that decides — not the import. Checking the report during a search costs
+        // one request PER LISTING and a filter with hundreds of results cannot pay
+        // for that inside a browser request, so everything is imported and the
+        // catalog is filtered here, one car, one request, at the moment it matters.
+        if (($row['source'] ?? '') === 'autotrader') {
+            $gate = $this->carfaxGate($parsingCarId, $row);
+            if (!$gate['ok']) {
+                // 'rejected' separates "this car is not wanted" from "publishing
+                // broke". The queue deletes a rejected job instead of parking it
+                // in the failures panel: nothing is wrong, there is nothing to
+                // retry, and nobody should have to dismiss them by hand.
+                return ['success' => false, 'error' => $gate['error'],
+                        'rejected' => !empty($gate['rejected'])];
+            }
+            $row = $this->loadParsingCar($parsingCarId) ?: $row;
         }
 
         try {
@@ -92,6 +125,56 @@ class ParsingPublisher
         $this->propagatePublicationFlags($parsingCarId, $carCtlgId);
 
         return ['success' => true, 'car_ctlg_id' => $carCtlgId];
+    }
+
+    /**
+     * Does this AutoTrader car carry a CARFAX report we can put behind a button?
+     *
+     * Answers from report_data when enrichment already stored it, otherwise asks
+     * the listing once and stores what it gets. A car without one is marked
+     * rejected so it leaves /parsing/ctlg and is not offered again.
+     *
+     * A network failure is NOT a rejection: the listing is simply unreachable
+     * right now, and marking it rejected would throw away a good car for good.
+     */
+    private function carfaxGate(int $parsingCarId, array $row): array
+    {
+        $stored = json_decode((string)($row['report_data'] ?? ''), true);
+        if (is_array($stored) && !empty($stored['carfax']['url'])) {
+            return ['ok' => true];
+        }
+
+        $guid = trim((string)($row['source_id'] ?? ''));
+        if ($guid === '') {
+            return ['ok' => false, 'error' => 'AutoTrader: lipsește id-ul anunțului.'];
+        }
+
+        try {
+            $adapter = AdapterFactory::create('autotrader');
+            if (!$adapter || !method_exists($adapter, 'carfaxFor')) {
+                return ['ok' => false, 'error' => 'AutoTrader: adaptorul nu poate verifica raportul.'];
+            }
+            $carfax = $adapter->carfaxFor($guid);
+        } catch (\Throwable $e) {
+            return ['ok' => false, 'error' => 'AutoTrader: raportul nu a putut fi verificat (' . $e->getMessage() . '). Încearcă din nou.'];
+        }
+
+        if (is_array($carfax) && !empty($carfax['url'])) {
+            // Merge, never overwrite: report_data may already hold other blocks.
+            $payload = is_array($stored) ? $stored : [];
+            $payload['carfax'] = $carfax;
+            $this->db->prepare('UPDATE '.$this->prefix.'_parsing_cars SET report_data = ? WHERE id = ?')
+                     ->execute([json_encode($payload, JSON_UNESCAPED_UNICODE), $parsingCarId]);
+            return ['ok' => true];
+        }
+
+        $this->db->prepare('UPDATE '.$this->prefix.'_parsing_cars
+            SET status = "rejected"
+            WHERE id = ? AND status = "proposed" AND (car_ctlg_id IS NULL OR car_ctlg_id = 0)')
+            ->execute([$parsingCarId]);
+
+        return ['ok' => false, 'rejected' => true,
+                'error' => 'Fără raport CARFAX vizibil — mașina nu se publică.'];
     }
 
     private function bakeOpenlaneReport(int $parsingCarId, array $row): void
@@ -347,6 +430,13 @@ class ParsingPublisher
         if ($brandId && !$modelId) {
             $modelId = $this->resolveModelId($parsingRow['model'] ?? '', $brandId);
         }
+        // Brand the catalog has never seen (RAM, GMC…): add it with its model instead
+        // of failing. Models already worked this way; a missing brand stopped the car.
+        if (!$brandId) {
+            [$brandId, $modelId] = $this->createBrandWithModel(
+                (string)($parsingRow['brand'] ?? ''), (string)($parsingRow['model'] ?? '')
+            );
+        }
         if (!$brandId || !$modelId) {
             throw new Exception("Brand/model not in sauto catalog: {$parsingRow['brand']} / {$parsingRow['model']}. Edit the car first to map manually.");
         }
@@ -443,6 +533,14 @@ class ParsingPublisher
         return (int)$this->db->lastInsertId();
     }
 
+    /** True when the catalog ad exists but carries no gallery row at all. */
+    private function carHasNoPhotos(int $carCtlgId): bool
+    {
+        $st = $this->db->prepare('SELECT 1 FROM '.$this->prefix.'_car_pht WHERE it_id = ? LIMIT 1');
+        $st->execute([$carCtlgId]);
+        return $st->fetchColumn() === false;
+    }
+
     private function processPhotos(int $carCtlgId, array $parsingRow): void
     {
         $images = json_decode($parsingRow['images_local'] ?? '[]', true);
@@ -466,7 +564,10 @@ class ParsingPublisher
         // through the JS in the form and never reaches this file.
         // 999 is separate and stays at 10 for every parsing car — see
         // buildImagesFeature14() in console/sauto_personal_cron.php.
-        $cap = in_array($source, ['ecarstrade', 'openlane', 'auto1'], true) ? 20 : 30;
+        // AutoTrader galleries are richer and get 25; the other auction sources stay
+        // at 20 (they repeat the same angles), a hand-made ad keeps 30.
+        $cap = ($source === 'autotrader') ? 25
+             : (in_array($source, ['ecarstrade', 'openlane', 'auto1'], true) ? 20 : 30);
         $urls = array_slice($urls, 0, $cap);
 
         $docRoot = rtrim($_SERVER['DOCUMENT_ROOT'] ?? '', '/');
@@ -488,10 +589,11 @@ class ParsingPublisher
             (`it_id`, `tp`, `path`, `name`, `ff`, `main`, `pos`)
             VALUES (:it_id, :tp, :path, :name, :ff, :main, :pos)');
 
-        $usePhotoroom = true;
-        $photoroom = ($usePhotoroom && $source === 'encar') ? new PhotoroomService() : null;
-        
-        $coverProcessed = false;
+        // No Photoroom here on purpose. The white cut-out is wanted only on 999, so it
+        // happens when the car is uploaded there (photoroomCover999 in
+        // console/sauto_personal_cron.php). sauto, Facebook and Telegram keep the
+        // dealer's own photo, and a credit is spent only for the cars that reach 999 —
+        // far fewer than what the catalogue publishes.
 
         $fetchUrls = [];
         foreach ($urls as $idx => $url) {
@@ -510,6 +612,41 @@ class ParsingPublisher
             ksort($fetched);
         }
 
+        // AutoTrader mixes dealer banners into the gallery. Drop them here, before
+        // anything is written: 999 uploads the car's sauto photos, so filtering at
+        // this one point keeps both catalogues clean.
+        if ($source === 'autotrader') {
+            $before = count(array_filter($fetched, fn($b) => $b !== null && $b !== ''));
+
+            // 1. Drawn banners — a few flat colours over the whole frame.
+            $fetched = BannerImage::filter($fetched);
+
+            // 2. Repeats — the same picture already seen in another listing. This is
+            //    what catches the busy adverts (a car photo pasted on a graphic with
+            //    logos), which no colour statistic can tell from a real photo.
+            $listingId = (int)($parsingRow['id'] ?? 0);
+            if ($listingId > 0) {
+                $kept = [];
+                foreach ($fetched as $idx => $bytes) {
+                    $hash = BannerImage::fingerprint((string)$bytes);
+                    if ($hash === null) { $kept[$idx] = $bytes; continue; }
+                    $isAdvert = BannerImage::seenOnAnotherListing($this->db, $this->prefix, $hash, $listingId);
+                    // Record it either way — including the ones we drop. That is what
+                    // lets the cleanup script recognise the same advert in the older
+                    // ads that were published before we knew about it.
+                    BannerImage::remember($this->db, $this->prefix, $hash, $listingId);
+                    if (!$isAdvert) $kept[$idx] = $bytes;
+                }
+                // Never strip a gallery to nothing.
+                if ($kept) $fetched = $kept;
+            }
+
+            $after = count($fetched);
+            if ($after < $before) {
+                error_log('ParsingPublisher: dropped ' . ($before - $after) . ' banner image(s) for car ' . $carCtlgId);
+            }
+        }
+
         $pos = 0;
         $written = []; // local files to mirror into R2 in one batch at the end
         foreach ($fetched as $bytes) {
@@ -521,17 +658,6 @@ class ParsingPublisher
             if ($info === false || ($info[2] ?? 0) !== IMAGETYPE_JPEG) {
                 if (!$this->toJpeg($tmpFile)) { @unlink($tmpFile); continue; }
             }
-            if (!$coverProcessed && $photoroom && $photoroom->isEnabled()) {
-                $coverProcessed = true;
-                $clean = $photoroom->removeBackgroundToWhiteJpeg((string)@file_get_contents($tmpFile));
-                if ($clean !== null) {
-                    @file_put_contents($tmpFile, $clean);
-                    error_log('ParsingPublisher: Photoroom cover background removed for car ' . $carCtlgId);
-                } else {
-                    error_log('ParsingPublisher: Photoroom skipped/failed for car ' . $carCtlgId . ' (kept original)');
-                }
-            }
-
             $pos++;
             $name = 'car_' . $carCtlgId . '_' . $pos;
 
@@ -708,7 +834,7 @@ class ParsingPublisher
             $rvin = strtoupper(preg_replace('/[^A-HJ-NPR-Z0-9]/i', '', (string)$rvin));
             if (strlen($rvin) === 17) $vin = $rvin;
         }
-        if ($vin === '' && in_array($parsingRow['source'] ?? '', ['encar', 'openlane', 'ecarstrade', 'auto1'], true)) {
+        if ($vin === '' && in_array($parsingRow['source'] ?? '', ['encar', 'openlane', 'ecarstrade', 'auto1', 'autotrader'], true)) {
             $vin = '00000000000000000';
         }
         return $vin;
@@ -724,7 +850,7 @@ class ParsingPublisher
     {
         $prc = !empty($parsingRow['price_final_eur']) ? (int)round($parsingRow['price_final_eur']) : 0;
         $src = $parsingRow['source'] ?? '';
-        if (in_array($src, ['encar', 'openlane', 'ecarstrade', 'auto1'], true)) {
+        if (in_array($src, ['encar', 'openlane', 'ecarstrade', 'auto1', 'autotrader'], true)) {
             $pricingFile = ($_SERVER['DOCUMENT_ROOT'] ?? '') . '/content/admin/page/parsing/parsing_pricing.php';
             if (is_file($pricingFile)) {
                 require_once $pricingFile;
@@ -735,9 +861,7 @@ class ParsingPublisher
                     'year'      => (int)($parsingRow['year'] ?? 0),
                 ];
                 try {
-                    $bd = ($src === 'encar')
-                        ? parsing_md_breakdown_kr($this->db, $this->prefix, $bdCar)
-                        : parsing_md_breakdown_eu($this->db, $this->prefix, $bdCar);
+                    $bd = parsing_md_breakdown_for($this->db, $this->prefix, $src, $bdCar);
                     if ($bd && !empty($bd['total'])) $prc = (int)round($bd['total']);
                 } catch (\Throwable $e) { /* keep fallback */ }
             }
@@ -809,7 +933,62 @@ class ParsingPublisher
         $stmt = $this->db->prepare('SELECT br FROM '.$this->prefix.'_car_list WHERE LOWER(br) = ? LIMIT 1');
         $stmt->execute([$brKey]);
         $val = $stmt->fetchColumn();
-        return $val !== false ? (string)$val : null;
+        if ($val !== false) return (string)$val;
+
+        // Fuzzy, same idea as models: ignore case, spaces and punctuation, so
+        // "Mercedes-Benz" finds "Mercedes Benz" and "RAM" finds "Ram" instead of
+        // creating a second brand next to the one that already exists.
+        $normKey = fn($s) => preg_replace('/[^a-z0-9]+/', '', mb_strtolower(trim((string)$s), 'UTF-8'));
+        $want = $normKey($brandName);
+        if ($want !== '' && mb_strlen($want) >= 2) {
+            $all = $this->db->query('SELECT DISTINCT br, br_nm FROM '.$this->prefix.'_car_list');
+            foreach ($all as $row) {
+                if ($normKey($row['br_nm']) === $want || $normKey($row['br']) === $want) {
+                    return (string)$row['br'];
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Add a brand the catalog simply does not have yet, together with the model that
+     * brought it in — car_list holds brand+model pairs, so a brand cannot exist alone.
+     *
+     * Without this, a source that carries a make sauto never sold (RAM, GMC, a Korean
+     * badge) stalls every one of its cars on "Brand/model not in sauto catalog", and
+     * an operator has to create the entry by hand before anything can publish. Models
+     * were already created automatically; brands were the missing half.
+     *
+     * @return array{0: ?string, 1: ?string} [brandCode, modelCode]
+     */
+    private function createBrandWithModel(string $brandName, string $modelName): array
+    {
+        $brandName = trim($brandName);
+        $modelName = trim($modelName);
+        // Refuse junk: a name has to be short and carry at least one letter or digit,
+        // otherwise a bad parse would plant rubbish in the catalogue for good.
+        $sane = fn(string $s) => $s !== '' && mb_strlen($s) <= 40 && preg_match('/[\p{L}\p{N}]/u', $s);
+        if (!$sane($brandName) || !$sane($modelName)) return [null, null];
+
+        try {
+            $brSlug = trim(preg_replace('/[^a-z0-9]+/u', '_', mb_strtolower($brandName, 'UTF-8')), '_');
+            $moSlug = trim(preg_replace('/[^a-z0-9]+/u', '_', mb_strtolower($modelName, 'UTF-8')), '_');
+            if ($brSlug === '' || $moSlug === '') return [null, null];
+
+            $chk = $this->db->prepare('SELECT br, mo FROM '.$this->prefix.'_car_list WHERE br = ? AND mo = ? LIMIT 1');
+            $chk->execute([$brSlug, $moSlug]);
+            if ($row = $chk->fetch(PDO::FETCH_ASSOC)) {
+                return [(string)$row['br'], (string)$row['mo']];
+            }
+
+            $ins = $this->db->prepare('INSERT INTO '.$this->prefix.'_car_list (br, mo, br_nm, mo_nm) VALUES (?, ?, ?, ?)');
+            $ins->execute([$brSlug, $moSlug, $brandName, $modelName]);
+            error_log("ParsingPublisher: added {$brandName} / {$modelName} to the sauto catalog");
+            return [$brSlug, $moSlug];
+        } catch (\Throwable $e) {
+            return [null, null];
+        }
     }
 
     private function resolveModelId(string $modelName, ?string $brandId): ?string
@@ -1006,20 +1185,16 @@ class ParsingPublisher
         return $val !== false ? (string)$val : null;
     }
 
-    // Passenger pickups the source labels as truck/pickup (so they'd become commercial),
-    // but that has no matching category on sauto/999 — publish them as a normal car.
-    // Matched on brand+model, trimmed + case-insensitive. Add pairs here as they come up.
-    private const PASSENGER_PICKUPS = [
-        'tesla|cybertruck',
-        'ford|ranger',
-    ];
-
     private function resolveGroup(string $bodyLower, string $brand, string $model): string
     {
-        $bm = mb_strtolower(trim($brand), 'UTF-8') . '|' . mb_strtolower(trim($model), 'UTF-8');
-        if (in_array($bm, self::PASSENGER_PICKUPS, true)) return 'car';
-
-        if (in_array($bodyLower, ['truck', 'pickup'], true)) return 'com';
+        // EVERY pickup is published as a passenger car. 999 has no commercial category
+        // that fits them, so as commercial they were rejected outright (Dodge Ram,
+        // Toyota Hilux, VW Amarok all failed with "Completați câmpul" on the
+        // commercial-only fields). This used to be a brand|model list — Cybertruck and
+        // Ranger — which meant every new pickup model had to be discovered by a failure
+        // first. 'truck' stays commercial: that is a lorry, not a pickup.
+        if ($bodyLower === 'pickup') return 'car';
+        if ($bodyLower === 'truck') return 'com';
 
         $commercialBody = in_array($bodyLower, ['van', 'microbus', 'minibus', 'minivan'], true);
         if (!$commercialBody) return 'car';
@@ -1086,6 +1261,17 @@ class ParsingPublisher
                     $eu = $this->db->query("SELECT id FROM countries WHERE code = 'EU' LIMIT 1")->fetchColumn();
                     if ($eu !== false) $importCountryId = (int)$eu;
                 }
+            } catch (\Throwable $e) { /* keep fallback */ }
+        }
+
+        // AutoTrader is autotrader.ca — the cars are Canadian and are now sold as
+        // such: the region on sauto was renamed from USA to Canada. Resolved by
+        // code, no hardcoded id to drift.
+        if ($source === 'autotrader') {
+            try {
+                $cstmt = $this->db->query("SELECT id FROM countries WHERE code = 'CA' LIMIT 1");
+                $cid = $cstmt ? $cstmt->fetchColumn() : false;
+                if ($cid !== false) $importCountryId = (int)$cid;
             } catch (\Throwable $e) { /* keep fallback */ }
         }
 

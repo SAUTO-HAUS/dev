@@ -56,15 +56,6 @@ if ($lockHandle === false || !flock($lockHandle, LOCK_EX | LOCK_NB)) {
 
 echo "[" . date('Y-m-d H:i:s') . "] Availability check started\n";
 
-// Batch per run, called every 5 min (flock prevents overlap). Measured real rate
-// ~0.8s/car (0.4s pause + ~0.4s Encar latency), so a ~9-min run does ~675 cars;
-// 12 runs/hour = ~8k checks/hour, so a ~17k catalog rotates fully in ~2h instead
-// of ~5 days. Priority: published + favorite first (those must stay real), then
-// proposed; longest-unchecked first so all rotate.
-// Re-check window of 2h: a car sold right after its last check is caught within
-// ~2h. Was 20h — far too slack. The LIMIT here is just a safety cap on how many
-// rows we pull; the actual batch is bounded by the time budget below, so this
-// scales to any catalog size (17k, 30k, 50k+) without manual tuning.
 $sql = "SELECT id, source, source_id, car_ctlg_id FROM {$prefx}_parsing_cars
         WHERE status IN ('proposed', 'published', 'favorite')
           AND (last_checked_at IS NULL
@@ -73,7 +64,7 @@ $sql = "SELECT id, source, source_id, car_ctlg_id FROM {$prefx}_parsing_cars
           (status = 'proposed') ASC,        -- published/favorite checked first
           last_checked_at IS NULL DESC,      -- never-checked next
           last_checked_at ASC                -- then oldest-checked
-        LIMIT 5000";
+        LIMIT 12000";
 $stmt = $db->prepare($sql);
 $stmt->execute();
 $cars = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -100,21 +91,57 @@ $markSautoNa     = $db->prepare("UPDATE {$prefx}_car_ctlg SET n_a = 1, offer_tim
 $cancel999       = $db->prepare("UPDATE gh3sp_sauto_personal_schedules
     SET status = 'postponed' WHERE car_id = ? AND status = 'pending'");
 
+// Cars are checked in waves, all requests in flight together. One at a time the
+// run spent about half its time waiting on Encar's ~0.4s latency, so a 30k
+// catalog needed ~7.4h to rotate and a sold car could stay on the site for most
+// of a day. A wave of 6 brings that down to roughly an hour.
+$WAVE  = 6;
+$PAUSE = 200000;   // 0.2s between waves, measured safe against Encar
+
 $checked = 0; $unavailable = 0; $budgetHit = false;
-foreach ($cars as $car) {
+foreach (array_chunk($cars, $WAVE) as $wave) {
     // Stop once the time budget is spent — leaves the rest for the next run,
     // keeping each run inside the 10-min cron window regardless of catalog size.
     if (microtime(true) - $startTs >= $timeBudget) {
         $budgetHit = true;
         break;
     }
+
+    // Resolve every Encar car in this wave with one parallel burst. Other
+    // sources stay one-at-a-time below — they are a handful of cars, and
+    // OpenLane sits behind Cloudflare where a burst is not welcome.
+    $verdict  = [];
+    $encarIds = [];
+    foreach ($wave as $c) {
+        if (($c['source'] ?? '') === 'encar' && !empty($c['source_id'])) $encarIds[] = (string)$c['source_id'];
+    }
+    if ($encarIds) {
+        try {
+            $enc = AdapterFactory::create('encar');
+            if ($enc && method_exists($enc, 'checkAvailabilityBatch')) {
+                $verdict = $enc->checkAvailabilityBatch($encarIds, $WAVE);
+            }
+        } catch (Throwable $e) {
+            echo "  Batch failed, falling back one by one: " . $e->getMessage() . "\n";
+        }
+    }
+
+foreach ($wave as $car) {
     $adapter = AdapterFactory::create($car['source']);
     if (!$adapter) {
         echo "  Skip #{$car['id']}: no adapter for {$car['source']}\n";
         continue;
     }
     try {
-        $available = $adapter->checkAvailability($car['source_id']);
+        // Use the batch answer when we have one; otherwise ask for this car alone
+        // and keep the old per-car pacing for it.
+        $sid = (string)$car['source_id'];
+        if (array_key_exists($sid, $verdict)) {
+            $available = $verdict[$sid];
+        } else {
+            $available = $adapter->checkAvailability($sid);
+            usleep(400000);
+        }
         if ($available) {
             $markAvailable->execute([$car['id']]);
         } else {
@@ -133,14 +160,14 @@ foreach ($cars as $car) {
             }
         }
         $checked++;
-        // 0.4s between requests — proven safe (probe hit Encar down to 0.2s with
-        // zero throttling), with margin for a sustained hourly run. 2000 cars/run
-        // => ~13 min, well within the hourly schedule; ~17k rotates in ~8h.
-        usleep(400000);
     } catch (Throwable $e) {
         echo "  Error #{$car['id']}: " . $e->getMessage() . "\n";
     }
-}
+}   // cars in this wave
+
+    // One pause per wave, not per car — that is where the speed-up comes from.
+    usleep($PAUSE);
+}   // waves
 
 // Reconcile: any car SOLD in /parsing/published (status=unavailable) that is still
 // on sauto → flag out of stock (n_a=1) + drop timer. Cleanup cron deletes on_order.

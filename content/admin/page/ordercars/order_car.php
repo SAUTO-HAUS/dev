@@ -48,7 +48,7 @@ function resolve_parsing_vin(array $pcar): string {
     }
     // No real VIN found → use the 17-zero placeholder for any parsing source
     // (Encar, OpenLane, eCarsTrade). Only kicks in when there's truly no VIN.
-    if (empty($vin) && in_array($pcar['source'] ?? '', ['encar', 'openlane', 'ecarstrade', 'auto1'], true)) {
+    if (empty($vin) && in_array($pcar['source'] ?? '', ['encar', 'openlane', 'ecarstrade', 'auto1', 'autotrader'], true)) {
         $vin = '00000000000000000';
     }
     return $vin;
@@ -157,9 +157,14 @@ if ($new && !empty($parsing_id_url)) {
                     }
                 }
             } catch (\Throwable $e) { /* keep the raw fallback */ }
-            // Group inferred from body type: vans/trucks/pickups -> commercial (com), rest -> personal (car).
+            // Group inferred from body type: vans/trucks -> commercial (com), rest ->
+            // personal (car). PICKUPS ARE CARS: 999 has no commercial category that
+            // fits them and rejects the ad outright, so they go out as passenger cars
+            // (subcategory 659). Same rule as ParsingPublisher::resolveGroup — this
+            // list is the form's own copy of it, and leaving 'pickup' here is what
+            // still preselected "commercial" for every Ram, F-150 and Hilux.
             $bodyLower = strtolower((string)($pcar['body_type'] ?? ''));
-            $commercialBodies = ['van','truck','pickup','minivan','microbus'];
+            $commercialBodies = ['van','truck','minivan','microbus'];
             $groupCode = in_array($bodyLower, $commercialBodies, true) ? 'com' : 'car';
 
             // Price field = full landed cost in Moldova ("MD" price), the same
@@ -168,7 +173,7 @@ if ($new && !empty($parsing_id_url)) {
             // (road delivery). Falls back to the source price if not computable.
             $parsing_prc = $pcar['price_final_eur'] ? (int)round($pcar['price_final_eur']) : '';
             $pcarSrc = $pcar['source'] ?? '';
-            if (in_array($pcarSrc, ['encar', 'openlane', 'ecarstrade', 'auto1'], true)) {
+            if (in_array($pcarSrc, ['encar', 'openlane', 'ecarstrade', 'auto1', 'autotrader'], true)) {
                 include_once _ADM_PAGE.'/parsing/parsing_pricing.php';
                 $bdCar = [
                     'price_eur' => (float)($pcar['price_eur'] ?? 0),
@@ -176,9 +181,7 @@ if ($new && !empty($parsing_id_url)) {
                     'capacity'  => (int)($pcar['engine_volume'] ?? 0),
                     'year'      => (int)($pcar['year'] ?? 0),
                 ];
-                $bd = ($pcarSrc === 'encar')
-                    ? parsing_md_breakdown_kr($db, $prefx, $bdCar)
-                    : parsing_md_breakdown_eu($db, $prefx, $bdCar);
+                $bd = parsing_md_breakdown_for($db, $prefx, $pcarSrc, $bdCar);
                 if ($bd && !empty($bd['total'])) {
                     $parsing_prc = (int)round($bd['total']);
                 }
@@ -193,6 +196,18 @@ if ($new && !empty($parsing_id_url)) {
             // guessed id map) so it can't point at the wrong country. Other
             // sources keep the per-source fallback.
             $importCountryId = $countryMap[$pcar['source']] ?? 39;
+            // AutoTrader cars are physically in Canada but are sold under the USA
+            // region (/ordercars/usa filters on country US), so they publish with
+            // the US country id — resolved by CODE, like the sources below, so
+            // there is no hardcoded id to drift. Without this the car falls back
+            // to the default id and shows up under Europe.
+            if (($pcar['source'] ?? '') === 'autotrader') {
+                try {
+                    $cstmt = $db->query("SELECT id FROM countries WHERE code = 'CA' LIMIT 1");
+                    $cid = $cstmt ? $cstmt->fetchColumn() : false;
+                    if ($cid !== false) $importCountryId = (int)$cid;
+                } catch (\Throwable $e) { /* keep fallback */ }
+            }
             // Auto1: the car's real country is in sourceCountry/countryCode (IT, BE,
             // DE...). Resolve it against the countries table like OpenLane below.
             if (($pcar['source'] ?? '') === 'auto1') {
@@ -672,16 +687,16 @@ $countries = (new \App\Db\Country())->getCountries(true); // true = European onl
                                         ? ($country['id'] == $prefillCountryId)
                                         : (strcasecmp((string)($country['code'] ?? ''), 'EU') === 0);
                                 ?>
-                                <option value="<?= $country['id'] ?>" <?= $isSel ? 'selected' : '' ?> data-flag="<?= $country['flag'] ?>"
+                                <option value="<?= $country['id'] ?>" <?= $isSel ? 'selected' : '' ?> data-flag="<?= $country['flag'] ?>" data-code="<?= htmlspecialchars((string)($country['code'] ?? '')) ?>"
                                     <?= ($country['id'] == 41) ? 'style="color: #ff0000; font-weight: bold;"' : '' ?>>
                                     <?= $country['name'] ?>
                                 </option>
                             <?php endforeach; ?>
                         <?php else : ?>
                             <?php foreach ($countries as $country) : ?>
-                                <option value="<?= $country['id'] ?>" 
+                                <option value="<?= $country['id'] ?>"
                                     <?= (isset($car['import_country_id']) && $country['id'] == $car['import_country_id']) ? 'selected' : '' ?>
-                                    data-flag="<?= $country['flag'] ?>"
+                                    data-flag="<?= $country['flag'] ?>" data-code="<?= htmlspecialchars((string)($country['code'] ?? '')) ?>"
                                     <?= ($country['id'] == 41) ? 'style="color: #ff0000; font-weight: bold;"' : '' ?>>
                                     <?= $country['name'] ?>
                                 </option>
@@ -1709,8 +1724,9 @@ document.addEventListener('DOMContentLoaded', function() {
             'opel': ['1'], 
             'peugeot': ['76'], 
             'pontiac': ['284'], 
-            'porsche': ['282'], 
-            'renault': ['8'], 
+            'porsche': ['282'],
+            'ram': ['43534'],
+            'renault': ['8'],
             'renault_samsung': ['27737'], 
             'rolls_royce': ['266'], 
             'rover': ['62'], 
@@ -3363,12 +3379,20 @@ function generateWithGemini() {
                 // order_add_new.php. Encar goes up in full; the auction sources
                 // stop at 20, their galleries repeat the same angles.
                 const _src = (data.source || data.parsing_source || '');
-                const _maxImgs = (_src === 'ecarstrade' || _src === 'openlane' || _src === 'auto1') ? 20 : 30;
+                const _maxImgs = _src === 'autotrader' ? 25
+                    : ((_src === 'ecarstrade' || _src === 'openlane' || _src === 'auto1') ? 20 : 30);
                 const list = urls.slice(0, _maxImgs);
                 const results = new Array(list.length).fill(null);
 
                 const fetchOne = (i) => {
-                    const proxyUrl = '/ajax.php?tp=adm&pg=parsing&action=image_proxy&url=' + encodeURIComponent(list[i]);
+                    // nobanner=1: the proxy refuses dealer banners, so they never
+                    // become files here. The catalog grid uses the same proxy
+                    // WITHOUT the flag, so browsing still shows the full gallery.
+                    // pid lets the proxy recognise a picture it has already seen in a
+                    // DIFFERENT listing — that is how the busy dealer adverts (car
+                    // photo on a graphic background) are caught; no statistic can.
+                    const _pid = data.parsing_id ? '&pid=' + encodeURIComponent(data.parsing_id) : '';
+                    const proxyUrl = '/ajax.php?tp=adm&pg=parsing&action=image_proxy&nobanner=1' + _pid + '&url=' + encodeURIComponent(list[i]);
                     return fetch(proxyUrl, { credentials: 'same-origin' })
                         .then(r => (r.ok && r.headers.get('content-type')?.includes('image')) ? r.blob() : null)
                         .then(b => {
@@ -3483,7 +3507,8 @@ function generateWithGemini() {
         try {
             const imgs = typeof data.images_local === 'string' ? JSON.parse(data.images_local) : data.images_local;
             const _src = (data.source || data.parsing_source || '');
-            const _maxImgs = (_src === 'ecarstrade' || _src === 'openlane' || _src === 'auto1') ? 20 : 30;
+            const _maxImgs = _src === 'autotrader' ? 25
+                    : ((_src === 'ecarstrade' || _src === 'openlane' || _src === 'auto1') ? 20 : 30);
             expectedImages = Math.min((Array.isArray(imgs) ? imgs.length : 0), _maxImgs);
         } catch (e) { expectedImages = 0; }
 

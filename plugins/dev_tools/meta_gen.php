@@ -87,15 +87,15 @@ $r = ['ttl'=>'', 'h1'=>'', 'dsc'=>'', 'kwd'=>''];
 // =====================================================================
 if ($current_lang == 'ru') {
     $sa['meta']['ttl'] = 'Авто бу и под заказ из Европы — Молдова';
-    $sa['meta']['dsc'] = 'Sauto.md — продажа авто в Молдове: проверенные авто бу из Европы в наличии и под заказ. Кредит, лизинг, trade-in. Доставка по всей Молдове.';
+    $sa['meta']['dsc'] = 'Sauto.md — продажа авто в Молдове: проверенные авто из Кореи, Европы и США, в наличии и под заказ. Кредит, лизинг, trade-in. Доставка по стране.';
     $sa['meta']['h1'] = 'Продажа авто в Молдове';
 } elseif ($current_lang == 'en') {
-    $sa['meta']['ttl'] = 'Used Cars & Cars on Order from Europe — Moldova';
-    $sa['meta']['dsc'] = 'Sauto.md — car sales in Moldova: inspected used cars from Europe, in stock and on order. Credit, leasing, trade-in. Delivery across Moldova.';
+    $sa['meta']['ttl'] = 'Used Cars & Cars on Order from Korea, Europe, USA';
+    $sa['meta']['dsc'] = 'Sauto.md — car sales in Moldova: inspected cars from Korea, Europe and USA, in stock and on order. Credit, leasing, trade-in. Delivery countrywide.';
     $sa['meta']['h1'] = 'Car Sales in Moldova';
 } else {
-    $sa['meta']['ttl'] = 'Auto rulate și la comandă din Europa — Moldova';
-    $sa['meta']['dsc'] = 'Sauto.md — vânzare auto în Moldova: mașini rulate verificate din Europa, în stoc și la comandă. Credit, leasing, trade-in. Livrare în toată Moldova.';
+    $sa['meta']['ttl'] = 'Auto rulate și la comandă din Coreea, Europa, SUA';
+    $sa['meta']['dsc'] = 'Sauto.md — vânzare auto în Moldova: mașini verificate din Coreea, Europa și SUA, în stoc și la comandă. Credit, leasing, trade-in. Livrare în toată țara.';
     $sa['meta']['h1'] = 'Vânzare auto în Moldova';
 }
 $sa['meta']['kwd'] = 'auto moldova, masini moldova, auto rulate moldova, auto bu moldova, dealer auto moldova, salon auto moldova, sauto';
@@ -175,13 +175,13 @@ if ($z2 === 'ordercars' && $z3 === '' && !isset($q_mp[1])) {
     switch ($current_lang) {
         case 'ru':
             $sa['meta']['ttl'] = 'Авто под заказ Корея, Европа, США — Экономия до 45%';
-            $sa['meta']['dsc'] = 'Авто под заказ из Кореи, Европы и США под ключ ['.$cy.']. Экономия до 45% vs салон. Подбор, проверка, доставка за 14 дней, растаможка. Гарантия. Доставка по всей Молдове.';
+            $sa['meta']['dsc'] = 'Авто под заказ из Кореи, Европы и США под ключ ['.$cy.']. Экономия до 45% vs салон. Подбор, проверка, доставка за 14 дней, растаможка. Гарантия включена.';
             $sa['meta']['kwd'] = 'авто под заказ молдова, заказать машину из европы, импорт авто молдова, авто из кореи, авто из германии под заказ, авто из бельгии, авто из америки молдова, привезти авто из европы, доставка авто молдова, растаможка авто, авто из европы цена, заказ авто из германии молдова';
             $sa['meta']['h1'] = 'Авто под заказ из Кореи, Европы и США в Молдову';
             break;
         case 'en':
             $sa['meta']['ttl'] = 'Cars on Order from Korea, Europe, USA — Save up to 45%';
-            $sa['meta']['dsc'] = 'Cars on order from Korea, Europe and USA, turnkey ['.$cy.']. Save up to 45% vs showroom. Selection, inspection, 14-day delivery, customs. Warranty. Delivery across Moldova.';
+            $sa['meta']['dsc'] = 'Cars on order from Korea, Europe and USA, turnkey ['.$cy.']. Save up to 45% vs showroom. Selection, inspection, 14-day delivery, customs. Warranty included.';
             $sa['meta']['kwd'] = 'cars on order moldova, order car from europe, car import moldova, cars from korea, cars from germany on order, cars from belgium, cars from usa moldova, bring car from europe, car delivery moldova, customs clearance moldova';
             $sa['meta']['h1'] = 'Cars on Order from Korea, Europe and USA to Moldova';
             break;
@@ -389,13 +389,13 @@ if ($z2 === 'services' && !isset($t_mp[3])) {
             break;
         case 'en':
             $sa['meta']['ttl'] = 'Sauto Services in Moldova ['.$cy.'] — Trade-in, Insurance';
-            $sa['meta']['dsc'] = 'Full service range: used car sales, 1-day Trade-in, free valuation, test drive, CASCO/RCA, order from Europe. Professional service across Moldova.';
+            $sa['meta']['dsc'] = 'Full service range: used car sales, 1-day Trade-in, free valuation, test drive, CASCO/RCA, order from Korea, Europe, USA. Professional service countrywide.';
             $sa['meta']['kwd'] = 'dealership services moldova, sauto services moldova, trade in moldova, car valuation moldova, car insurance moldova, test drive moldova, car order europe, car buy back moldova, rca casco moldova, auto dealer services';
             $sa['meta']['h1'] = 'Sauto Services in Moldova';
             break;
         default: // ro
             $sa['meta']['ttl'] = 'Servicii Sauto Moldova ['.$cy.'] — Trade-in, asigurări';
-            $sa['meta']['dsc'] = 'Gamă completă: vânzare auto rulate, Trade-in în 1 zi, evaluare gratuită, test-drive, CASCO/RCA, comandă din Europa. Servicii profesioniste în toată Moldova.';
+            $sa['meta']['dsc'] = 'Gamă completă: vânzare auto rulate, Trade-in în 1 zi, evaluare gratuită, test-drive, CASCO/RCA, comandă din Coreea, Europa și SUA. Servicii auto în toată țara.';
             $sa['meta']['kwd'] = 'servicii dealer auto moldova, sauto servicii moldova, trade in moldova, evaluare auto moldova, asigurari auto moldova, test drive moldova, comanda auto din europa, vinde masina moldova, rca casco moldova, servicii salon auto';
             $sa['meta']['h1'] = 'Servicii Sauto în Moldova';
             break;
@@ -499,23 +499,26 @@ if ($z2 === 'services' && isset($t_mp[3]) && !empty($t_mp[3])) {
 // =====================================================================
 // INFO PAGES (about, privacy, terms, warranty)
 // =====================================================================
-if (in_array($z2, ['about', 'privacy', 'terms', 'warranty'], true)) {
+if (in_array($z2, ['about', 'privacy', 'cookies', 'terms', 'warranty'], true)) {
     $info_meta = [
         'ro' => [
-            'about'    => ['ttl' => 'Despre Sauto.md — Dealer auto în Chișinău, Moldova', 'dsc' => 'Sauto — dealer auto de încredere din Chișinău, Moldova. Mașini importate din Europa, servicii complete: credit auto, leasing, trade-in, asigurări. Cumpărați cu încredere.', 'h1' => 'Despre Sauto'],
-            'privacy'  => ['ttl' => 'Politica de confidențialitate Sauto.md [GDPR '.$cy.']', 'dsc' => 'Politica de confidențialitate Sauto.md actualizată '.$cy.'. Cum colectăm, folosim și protejăm datele tale personale conform GDPR și legislației Republicii Moldova.', 'h1' => 'Politica de confidențialitate'],
+            'about'    => ['ttl' => 'Despre Sauto.md — Dealer auto în Chișinău, Moldova', 'dsc' => 'Sauto — dealer auto de încredere din Chișinău, Moldova. Mașini importate din Coreea, Europa și SUA, servicii complete: credit auto, leasing, trade-in, asigurări. Cumpărați cu încredere.', 'h1' => 'Despre Sauto'],
+            'privacy'  => ['ttl' => 'Politica de confidențialitate Sauto.md ['.$cy.']', 'dsc' => 'Cum colectăm, folosim și protejăm datele tale personale pe Sauto.md, conform Legii 195/2024. Ce drepturi ai și cum le exerciți. Actualizat '.$cy.'.', 'h1' => 'Politica de confidențialitate'],
+            'cookies'  => ['ttl' => 'Politica de cookie-uri Sauto.md ['.$cy.']', 'dsc' => 'Ce cookie-uri folosește Sauto.md, cine le pune și cât durează. Cele de analiză și marketing pornesc doar cu acordul tău, pe care îl poți retrage oricând.', 'h1' => 'Politica de cookie-uri'],
             'terms'    => ['ttl' => 'Termeni și condiții Sauto.md ['.$cy.'] — Transparenți', 'dsc' => 'Termenii și condițiile de utilizare a site-ului Sauto.md și de cumpărare automobile. Clar, transparent, conform legii. Actualizat '.$cy.'.', 'h1' => 'Termeni și condiții'],
             'warranty' => ['ttl' => 'Garanție auto Sauto ['.$cy.'] — 100% verificate tehnic', 'dsc' => 'Toate mașinile Sauto au garanție și sunt verificate tehnic. Asistență 24/7, condiții transparente. Cumpărați cu încredere — verificat înainte de livrare.', 'h1' => 'Garanție auto Sauto'],
         ],
         'ru' => [
             'about'    => ['ttl' => 'О Sauto.md — Автодилер в Кишинёве, Молдова', 'dsc' => 'Sauto — надёжный автодилер в Кишинёве, Молдова. Импорт авто из Европы, полный спектр услуг: автокредит, лизинг, trade-in, страхование. Покупайте с уверенностью.', 'h1' => 'О компании Sauto'],
-            'privacy'  => ['ttl' => 'Политика конфиденциальности Sauto.md [GDPR '.$cy.']', 'dsc' => 'Политика конфиденциальности Sauto.md обновлена '.$cy.'. Как мы собираем, используем и защищаем ваши данные согласно GDPR и законодательству РМ.', 'h1' => 'Политика конфиденциальности'],
+            'privacy'  => ['ttl' => 'Политика конфиденциальности Sauto.md ['.$cy.']', 'dsc' => 'Как мы собираем, используем и защищаем ваши персональные данные на Sauto.md согласно Закону 195/2024. Ваши права и как их реализовать. Обновлено '.$cy.'.', 'h1' => 'Политика конфиденциальности'],
+            'cookies'  => ['ttl' => 'Политика использования cookie Sauto.md ['.$cy.']', 'dsc' => 'Какие cookie использует Sauto.md, кто их устанавливает и на какой срок. Аналитика и маркетинг включаются только с вашего согласия, отозвать можно в любое время.', 'h1' => 'Политика использования cookie'],
             'terms'    => ['ttl' => 'Условия использования Sauto.md ['.$cy.'] — Прозрачно', 'dsc' => 'Условия использования сайта Sauto.md и покупки автомобилей. Прозрачно, чётко, в соответствии с законом. Обновлено '.$cy.'.', 'h1' => 'Условия использования'],
             'warranty' => ['ttl' => 'Гарантия авто Sauto ['.$cy.'] — 100% проверены', 'dsc' => 'Все авто Sauto имеют гарантию и техническую проверку. Поддержка 24/7, прозрачные условия. Покупайте с уверенностью — проверено до доставки.', 'h1' => 'Гарантия авто Sauto'],
         ],
         'en' => [
-            'about'    => ['ttl' => 'About Sauto.md — Car Dealer in Chișinău, Moldova', 'dsc' => 'Sauto — trusted car dealer in Chișinău, Moldova. Cars imported from Europe, full services: car loan, leasing, trade-in, insurance. Buy with confidence.', 'h1' => 'About Sauto'],
-            'privacy'  => ['ttl' => 'Privacy Policy Sauto.md [GDPR '.$cy.']', 'dsc' => 'Sauto.md Privacy Policy updated '.$cy.'. How we collect, use and protect your personal data in accordance with GDPR and Moldova legislation.', 'h1' => 'Privacy Policy'],
+            'about'    => ['ttl' => 'About Sauto.md — Car Dealer in Chișinău, Moldova', 'dsc' => 'Sauto — trusted car dealer in Chișinău, Moldova. Cars imported from Korea, Europe and USA, full services: car loan, leasing, trade-in, insurance. Buy with confidence.', 'h1' => 'About Sauto'],
+            'privacy'  => ['ttl' => 'Privacy Policy Sauto.md ['.$cy.']', 'dsc' => 'How we collect, use and protect your personal data on Sauto.md, under Law 195/2024. What rights you have and how to exercise them. Updated '.$cy.'.', 'h1' => 'Privacy Policy'],
+            'cookies'  => ['ttl' => 'Cookie Policy Sauto.md ['.$cy.']', 'dsc' => 'Which cookies Sauto.md uses, who sets them and how long they last. Analytics and marketing start only with your consent, which you can withdraw at any time.', 'h1' => 'Cookie Policy'],
             'terms'    => ['ttl' => 'Terms and Conditions Sauto.md ['.$cy.'] — Transparent', 'dsc' => 'Terms and conditions of using Sauto.md website and purchasing cars. Clear, transparent, compliant with the law. Updated '.$cy.'.', 'h1' => 'Terms and Conditions'],
             'warranty' => ['ttl' => 'Sauto Car Warranty ['.$cy.'] — 100% Inspected', 'dsc' => 'All Sauto cars have warranty and technical inspection. 24/7 support, transparent conditions. Buy with confidence — verified before delivery.', 'h1' => 'Sauto Car Warranty'],
         ],
@@ -528,19 +531,22 @@ if (in_array($z2, ['about', 'privacy', 'terms', 'warranty'], true)) {
         $info_kwd_map = [
             'ro' => [
                 'about'    => 'despre sauto, dealer auto moldova, salon auto chisinau, istoria sauto, despre sauto md, dealer auto de incredere chisinau',
-                'privacy'  => 'politica confidentialitate sauto, gdpr sauto, protectia datelor sauto md, confidentialitate auto moldova',
+                'privacy'  => 'politica confidentialitate sauto, protectia datelor sauto md, legea 195/2024, confidentialitate auto moldova',
+                'cookies'  => 'politica cookie sauto, cookie-uri sauto md, setari cookie sauto, gestionare cookie moldova, consimtamant cookie',
                 'terms'    => 'termeni conditii sauto, conditii utilizare sauto md, regulament sauto, termeni vanzare auto',
                 'warranty' => 'garantie auto sauto, garantie masini chisinau, garantie auto rulate moldova, masini verificate chisinau, garantie auto din europa',
             ],
             'ru' => [
                 'about'    => 'о sauto, автодилер молдова, автосалон кишинев, история sauto, о компании sauto md, надежный автодилер кишинев',
-                'privacy'  => 'политика конфиденциальности sauto, gdpr sauto, защита данных sauto md, конфиденциальность авто молдова',
+                'privacy'  => 'политика конфиденциальности sauto, защита данных sauto md, закон 195/2024, конфиденциальность авто молдова',
+                'cookies'  => 'политика cookie sauto, куки sauto md, настройки cookie sauto, управление cookie молдова, согласие на cookie',
                 'terms'    => 'условия использования sauto, условия sauto md, правила sauto, условия продажи авто',
                 'warranty' => 'гарантия авто sauto, гарантия машины кишинев, гарантия бу авто молдова, проверенные авто кишинев, гарантия авто из европы',
             ],
             'en' => [
                 'about'    => 'about sauto, car dealer moldova, car dealership chisinau, sauto history, about sauto md, trusted car dealer chisinau',
-                'privacy'  => 'sauto privacy policy, gdpr sauto, data protection sauto md, car privacy moldova',
+                'privacy'  => 'sauto privacy policy, data protection sauto md, law 195/2024, car privacy moldova',
+                'cookies'  => 'sauto cookie policy, cookies sauto md, cookie settings sauto, cookie management moldova, cookie consent',
                 'terms'    => 'sauto terms conditions, sauto md terms, sauto rules, car sale terms',
                 'warranty' => 'sauto car warranty, car warranty chisinau, used car warranty moldova, inspected cars chisinau, european car warranty',
             ],
@@ -696,14 +702,20 @@ if ( in_array($z2, ['cars', 'ordercars', 'tyres'], true) && is_numeric($z3) && !
 
 // =====================================================================
 // ORDERCARS - IMPORT REGION pages (clean URL)
-// /ro/ordercars/korea, /ro/ordercars/europe, /ro/ordercars/usa, /ro/ordercars/china
+// /ro/ordercars/korea, /ro/ordercars/europe, /ro/ordercars/canada, /ro/ordercars/china
 // These are dedicated landing pages (own canonical + h1/title/description),
 // not brands. Handled before the brand block so "korea" is not looked up as a brand.
 // Every label below is used after "din"/"из"/"from", so RU needs the genitive.
+//
+// A slug missing here does NOT fall back to a region page — it drops through to
+// the brand block below, finds no such brand, and ends up with the generic
+// "din Europa" text. Every slug in $oc_region_slugs (ordercars.php) belongs here.
 // =====================================================================
 $oc_region_meta = [
     'korea'  => ['ro' => 'Coreea', 'ru' => 'Корея',  'en' => 'Korea'],
     'europe' => ['ro' => 'Europa', 'ru' => 'Европа', 'en' => 'Europe'],
+    'canada' => ['ro' => 'Canada', 'ru' => 'Канады', 'en' => 'Canada'],
+    // Kept so the old indexed /usa URL still resolves; it redirects to /canada.
     'usa'    => ['ro' => 'SUA',    'ru' => 'США',    'en' => 'USA'],
     'china'  => ['ro' => 'China',  'ru' => 'Китая',  'en' => 'China'],
 ];
@@ -817,21 +829,21 @@ if ( in_array($z2, ['cars', 'ordercars'], true) && !is_numeric($z3) && isset($t_
                 case 'ru':
                     $sa['meta']['ttl'] = "{$brand_name} {$model_name} под заказ [{$cy}]";
                     $price_txt = $prc_min > 0 ? " От {$prc_min}€." : '';
-                    $sa['meta']['dsc'] = "{$brand_name} {$model_name} под заказ из Европы.{$price_txt} Подбор по VIN, проверка, доставка за 14 дней, растаможка. Экономия до 45%. Гарантия.";
+                    $sa['meta']['dsc'] = "{$brand_name} {$model_name} под заказ из Кореи, Европы и США.{$price_txt} Подбор по VIN, проверка, доставка за 14 дней, растаможка. Экономия до 45%. Гарантия.";
                     $sa['meta']['h1']  = "{$brand_name} {$model_name} под заказ";
                     $sa['meta']['kwd'] = mb_strtolower("{$brand_name} {$model_name} под заказ, заказать {$brand_name} {$model_name} молдова, {$brand_name} {$model_name} из европы, {$brand_name} {$model_name} из германии, {$brand_name} {$model_name} цена под заказ, привезти {$brand_name} {$model_name} в молдову, {$brand_name} {$model_name} молдова заказ", "UTF-8");
                     break;
                 case 'en':
                     $sa['meta']['ttl'] = "{$brand_name} {$model_name} on Order [{$cy}]";
                     $price_txt = $prc_min > 0 ? " From €{$prc_min}." : '';
-                    $sa['meta']['dsc'] = "{$brand_name} {$model_name} on order from Europe.{$price_txt} VIN check, 14-day delivery, customs. Save up to 45%. Warranty included.";
+                    $sa['meta']['dsc'] = "{$brand_name} {$model_name} on order from Korea, Europe and USA.{$price_txt} VIN check, 14-day delivery, customs. Save up to 45%. Warranty included.";
                     $sa['meta']['h1']  = "{$brand_name} {$model_name} on Order";
                     $sa['meta']['kwd'] = mb_strtolower("{$brand_name} {$model_name} on order, order {$brand_name} {$model_name} moldova, {$brand_name} {$model_name} from europe, {$brand_name} {$model_name} from germany, {$brand_name} {$model_name} order price, bring {$brand_name} {$model_name} to moldova, {$brand_name} {$model_name} moldova order", "UTF-8");
                     break;
                 default: // ro
-                    $sa['meta']['ttl'] = "{$brand_name} {$model_name} la comandă din Europa [{$cy}]";
+                    $sa['meta']['ttl'] = "{$brand_name} {$model_name} la comandă [{$cy}]";
                     $price_txt = $prc_min > 0 ? " De la {$prc_min}€." : '';
-                    $sa['meta']['dsc'] = "{$brand_name} {$model_name} la comandă din Europa.{$price_txt} Verificare VIN, livrare în 14 zile, vămuire. Economie până la 45%. Garanție inclusă.";
+                    $sa['meta']['dsc'] = "{$brand_name} {$model_name} la comandă din Coreea, Europa și SUA.{$price_txt} Verificare VIN, livrare în 14 zile, vămuire. Economie până la 45%. Garanție inclusă.";
                     $sa['meta']['h1']  = "{$brand_name} {$model_name} la comandă";
                     $sa['meta']['kwd'] = mb_strtolower("{$brand_name} {$model_name} la comanda, comanda {$brand_name} {$model_name} moldova, {$brand_name} {$model_name} din europa, {$brand_name} {$model_name} din germania, {$brand_name} {$model_name} pret la comanda, aducem {$brand_name} {$model_name} in moldova, {$brand_name} {$model_name} moldova comanda", "UTF-8");
                     break;
@@ -869,21 +881,21 @@ if ( in_array($z2, ['cars', 'ordercars'], true) && !is_numeric($z3) && isset($t_
                 case 'ru':
                     $sa['meta']['ttl'] = "{$brand_name} под заказ из Европы [{$cy}]";
                     $price_txt = $prc_min > 0 ? " От {$prc_min}€." : '';
-                    $sa['meta']['dsc'] = "Все модели {$brand_name} под заказ из Европы.{$price_txt} Подбор по VIN, доставка за 14 дней, растаможка. Экономия до 45%. Гарантия включена.";
+                    $sa['meta']['dsc'] = "Все модели {$brand_name} под заказ из Кореи, Европы и США.{$price_txt} Подбор по VIN, доставка за 14 дней, растаможка. Экономия до 45%. Гарантия включена.";
                     $sa['meta']['h1']  = "{$brand_name} под заказ";
                     $sa['meta']['kwd'] = mb_strtolower("{$brand_name} под заказ молдова, заказать {$brand_name} молдова, {$brand_name} из европы, {$brand_name} из германии, {$brand_name} цена под заказ, привезти {$brand_name} в молдову, импорт {$brand_name} молдова", "UTF-8");
                     break;
                 case 'en':
-                    $sa['meta']['ttl'] = "{$brand_name} on Order from Europe [{$cy}]";
+                    $sa['meta']['ttl'] = "{$brand_name} on Order from Korea, Europe, USA [{$cy}]";
                     $price_txt = $prc_min > 0 ? " From €{$prc_min}." : '';
-                    $sa['meta']['dsc'] = "All {$brand_name} models on order from Europe.{$price_txt} VIN check, 14-day delivery, customs. Save up to 45%. Warranty included.";
+                    $sa['meta']['dsc'] = "All {$brand_name} models on order from Korea, Europe and USA.{$price_txt} VIN check, 14-day delivery, customs. Save up to 45%. Warranty included.";
                     $sa['meta']['h1']  = "{$brand_name} on Order";
                     $sa['meta']['kwd'] = mb_strtolower("{$brand_name} on order moldova, order {$brand_name} moldova, {$brand_name} from europe, {$brand_name} from germany, {$brand_name} order price, bring {$brand_name} to moldova, {$brand_name} import moldova", "UTF-8");
                     break;
                 default: // ro
-                    $sa['meta']['ttl'] = "{$brand_name} la comandă din Europa [{$cy}]";
+                    $sa['meta']['ttl'] = "{$brand_name} la comandă din Coreea, Europa, SUA [{$cy}]";
                     $price_txt = $prc_min > 0 ? " De la {$prc_min}€." : '';
-                    $sa['meta']['dsc'] = "Toate modelele {$brand_name} la comandă din Europa.{$price_txt} Verificare VIN, livrare în 14 zile, vămuire. Economie până la 45%. Garanție inclusă.";
+                    $sa['meta']['dsc'] = "Toate modelele {$brand_name} la comandă din Coreea, Europa și SUA.{$price_txt} Verificare VIN, livrare 14 zile, vămuire. Economie până la 45%. Garanție.";
                     $sa['meta']['h1']  = "{$brand_name} la comandă";
                     $sa['meta']['kwd'] = mb_strtolower("{$brand_name} la comanda moldova, comanda {$brand_name} moldova, {$brand_name} din europa, {$brand_name} din germania, {$brand_name} pret la comanda, aducem {$brand_name} in moldova, import {$brand_name} moldova", "UTF-8");
                     break;
