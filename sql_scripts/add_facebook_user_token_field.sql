@@ -1,0 +1,13 @@
+INSERT INTO gh3sp_settings (name, value) 
+SELECT 'location_1_facebook_user_token', ''
+WHERE NOT EXISTS (
+    SELECT 1 FROM gh3sp_settings WHERE name = 'location_1_facebook_user_token'
+);
+
+UPDATE gh3sp_settings SET value = 'EAAPYJ3JWk0UBQHCyoZAVMKGZB52PHJQ4Ct7G9fh9nMI58XnPwksDKaOZBKXklZA3Vi6lQFbWPEJ8BAsuW099PH8MZClrVSBQIf1ChYG7NvbZBx7rjMksZAMZChuCsFaB90VWtjI5cRZA0sHstFHQyr8AyZB7Ti8Fu9sfrIzJ8viXcJZAaw8EJjLLfSpZBwPw6TREOpKB9BiH41R3RfsGkADFLMj4Dj7ZA' WHERE name = 'location_1_facebook_token';
+UPDATE gh3sp_settings SET value = 'EAAPYJ3JWk0UBQGz3R0J3ZCt0hN2NfwO1dX7IFaNsB700iSWnHKZCQCV3aJqFRWuDLZA2UUZBEef7WCYifwXKmWrKlQZBl4SMCHG0sJOI2Vk7J5esNlRR5Ilvw5E3rgyUckcyTJtZAZCBrPfQhEoObBidScEsluswEeN5NRkbHTn15PS3RDpS9LsAVp4EptKvWooYzGE3guqwPxJMuMU8afGAbLL' WHERE name = 'location_2_facebook_token';
+UPDATE gh3sp_settings SET value = 'EAAPYJ3JWk0UBQMNse1clyENP47uwNzFbYypHOZC5K1czzkKBVkeqjxlh3ajlZAqTZAoNfKMsF3ZCFWgoDzE0Qk3iqg8ZCRigEpsBhZAMhZBfjry1Jgv7FEzBMM99qKOeXBoBsLXWYD5UTDMTN9OuYivZCYgGuJKcYYwqzUKvf4U63SuKX1eif99HHwLiJiKs1ve7N7RCjBBUUwQ5eI7h' WHERE name = 'location_1_facebook_user_token';
+
+SELECT name, LEFT(value, 50) as value_preview, LENGTH(value) as token_length 
+FROM gh3sp_settings 
+WHERE name LIKE '%facebook%';
